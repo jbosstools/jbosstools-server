@@ -44,9 +44,9 @@ public class CredentialsWizardPageModel extends ObservableUIPojo {
 	private IUser user;
 	private StringPreferenceValue rhLoginPreferenceValue;
 
-	private ApplicationWizardModel wizardModel;
+	private ImportProjectWizardModel wizardModel;
 
-	public CredentialsWizardPageModel(ApplicationWizardModel model) {
+	public CredentialsWizardPageModel(ImportProjectWizardModel model) {
 		this.wizardModel = model;
 		this.serverUrl = IOpenshiftService.BASE_URL;
 		this.rhLoginPreferenceValue = new StringPreferenceValue(RHLOGIN_PREFS_KEY, OpenshiftUIActivator.PLUGIN_ID);

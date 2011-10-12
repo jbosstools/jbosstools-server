@@ -29,11 +29,11 @@ import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
 /**
  * @author André Dietisheim
  */
-public class ApplicationWizard extends Wizard implements INewWizard {
+public class ImportProjectWizard extends Wizard implements INewWizard {
 
-	private ApplicationWizardModel model;
+	private ImportProjectWizardModel model;
 
-	public ApplicationWizard() {
+	public ImportProjectWizard() {
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class ApplicationWizard extends Wizard implements INewWizard {
 
 	@Override
 	public void addPages() {
-		this.model = new ApplicationWizardModel();
+		this.model = new ImportProjectWizardModel();
 		addPage(new CredentialsWizardPage(this, model));
 		addPage(new ApplicationWizardPage(this, model));
 		addPage(new AdapterWizardPage(this, model));

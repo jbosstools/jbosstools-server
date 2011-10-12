@@ -43,7 +43,7 @@ import org.jboss.tools.openshift.express.internal.ui.wizard.projectimport.MavenP
 /**
  * @author André Dietisheim <adietish@redhat.com>
  */
-public class ApplicationWizardModel extends ObservableUIPojo {
+public class ImportProjectWizardModel extends ObservableUIPojo {
 
 	private HashMap<String, Object> dataModel = new HashMap<String, Object>();
 

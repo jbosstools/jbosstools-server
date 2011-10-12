@@ -17,6 +17,7 @@ import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.window.Window;
@@ -31,10 +32,12 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
@@ -54,7 +57,7 @@ import org.jboss.tools.openshift.express.client.OpenshiftException;
 import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
 
 public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IWizardPage {
-	
+
 	private AdapterWizardPageModel model;
 	private Combo suitableRuntimes;
 	private IServerType serverTypeToCreate;
@@ -62,8 +65,13 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 	private Label domainLabel;
 	private Label modeLabel;
 
-	public AdapterWizardPage(ApplicationWizard wizard, ApplicationWizardModel model) {
-		super("Server Adapter", "...", "Server Adapter", wizard);
+	public AdapterWizardPage(ImportProjectWizard wizard, ImportProjectWizardModel model) {
+		super(
+				"Import Project",
+				"Please select the destination for your local copy of the OpenShift Express repository, "
+						+ "what branch to clone and setup your server adapter, ",
+				"Server Adapter",
+				wizard);
 		this.model = new AdapterWizardPageModel(model);
 	}
 
@@ -71,41 +79,107 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 	protected void doCreateControls(Composite parent, DataBindingContext dbc) {
 		GridLayoutFactory.fillDefaults().applyTo(parent);
 
+		Group projectGroup = createProjectGroup(parent, dbc);
+		GridDataFactory.fillDefaults()
+				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(projectGroup);
+
+		Group serverAdapterGroup = createAdapterGroup(parent);
+		GridDataFactory.fillDefaults()
+				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(serverAdapterGroup);
+
+	}
+
+	private Group createProjectGroup(Composite parent, DataBindingContext dbc) {
 		Group projectGroup = new Group(parent, SWT.BORDER);
 		projectGroup.setText("Project setup");
 		GridDataFactory.fillDefaults()
 				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(projectGroup);
-		GridLayoutFactory.fillDefaults().margins(6, 6).numColumns(2).applyTo(projectGroup);
+		GridLayoutFactory.fillDefaults().margins(6, 6).numColumns(3).applyTo(projectGroup);
 
-		Label projectNameLabel = new Label(projectGroup, SWT.NONE);
-		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(projectNameLabel);
-		projectNameLabel.setText("Project name");
-		Text projectNameText = new Text(projectGroup, SWT.BORDER);
+		Label cloneDirLabel = new Label(projectGroup, SWT.NONE);
+		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(cloneDirLabel);
+		cloneDirLabel.setText("Repository Destination");
+		Text cloneDirText = new Text(projectGroup, SWT.BORDER);
 		GridDataFactory.fillDefaults()
-				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(projectNameText);
-
-		Label branchNameLabel = new Label(projectGroup, SWT.NONE);
-		branchNameLabel.setText("Name of remote branch");
-		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(branchNameLabel);
-		Text branchNameText = new Text(projectGroup, SWT.BORDER);
+				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(cloneDirText);
+		// DataBindingUtils.bindMandatoryTextField(
+		// cloneDirText, "Repository Destination",
+		// AdapterWizardPageModel.PROPERTY_CLONEDIR, model, dbc);
+		Button browseDestinationButton = new Button(projectGroup, SWT.PUSH);
+		browseDestinationButton.setText("Browse");
 		GridDataFactory.fillDefaults()
-				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(branchNameText);
+				.align(SWT.LEFT, SWT.CENTER).hint(100, SWT.DEFAULT).applyTo(browseDestinationButton);
+		browseDestinationButton.addSelectionListener(onBrowseDestination());
 
+		Label branchLabel = new Label(projectGroup, SWT.NONE);
+		branchLabel.setText("Branch to clone");
+		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(branchLabel);
+		Text branchText = new Text(projectGroup, SWT.NONE);
+		branchText.setEditable(false);
+		branchText.setBackground(projectGroup.getBackground());
+		GridDataFactory.fillDefaults()
+				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.CENTER).grab(true, false)
+				.applyTo(branchText);
+
+		Button selectBranchButton = new Button(projectGroup, SWT.PUSH);
+		selectBranchButton.setText("Select Branch");
+		GridDataFactory.fillDefaults()
+				.align(SWT.LEFT, SWT.CENTER).hint(100, SWT.DEFAULT).applyTo(selectBranchButton);
+		selectBranchButton.addSelectionListener(onSelectBranch());
+
+		return projectGroup;
+	}
+
+	private SelectionListener onBrowseDestination() {
+		return new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				DirectoryDialog dialog = new DirectoryDialog(getShell());
+				String cloneDir = dialog.open();
+				if (cloneDir != null) {
+					model.setCloneDir(cloneDir);
+				}
+			}
+		};
+	}
+
+	private SelectionListener onSelectBranch() {
+		return new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ListDialog branchesDialog = new ListDialog(getShell());
+				branchesDialog.setContentProvider(new BranchNameContentProvider());
+				branchesDialog.setTitle("Branches");
+				if (Dialog.OK == branchesDialog.open()) {
+					Object[] selectedBranches = branchesDialog.getResult();
+					if (selectedBranches != null
+							&& selectedBranches.length >= 1
+							&& selectedBranches[1] instanceof String) {
+						model.setBranch((String) selectedBranches[1]);
+					}
+				}
+			}
+		};
+	}
+
+	private Group createAdapterGroup(Composite parent) {
 		Group serverAdapterGroup = new Group(parent, SWT.BORDER);
 		serverAdapterGroup.setText("JBoss Server adapter");
-		GridDataFactory.fillDefaults()
-				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(serverAdapterGroup);
 		FillLayout fillLayout = new FillLayout();
 		fillLayout.marginHeight = 6;
 		fillLayout.marginWidth = 6;
 		serverAdapterGroup.setLayout(fillLayout);
 		fillServerAdapterGroup(serverAdapterGroup);
+
+		return serverAdapterGroup;
 	}
-	
+
 	protected void enableServerWidgets(boolean enabled) {
 		suitableRuntimes.setEnabled(enabled);
 	}
-	
+
 	private void fillServerAdapterGroup(Group serverAdapterGroup) {
 		Composite c = new Composite(serverAdapterGroup, SWT.BORDER);
 		c.setLayout(new FormLayout());
@@ -114,31 +188,34 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 		final Button serverAdapterCheckbox2 = serverAdapterCheckbox;
 		serverAdapterCheckbox.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
-				model.getParentModel().setProperty(AdapterWizardPageModel.CREATE_SERVER, serverAdapterCheckbox2.getSelection());
+				model.getParentModel().setProperty(AdapterWizardPageModel.CREATE_SERVER,
+						serverAdapterCheckbox2.getSelection());
 				enableServerWidgets(serverAdapterCheckbox2.getSelection());
 			}
+
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
-		
-		
+
 		Label l = new Label(c, SWT.BORDER);
 		l.setText("Local Runtime: ");
-		
+
 		suitableRuntimes = new Combo(c, SWT.READ_ONLY);
 		Link addRuntime = new Link(c, SWT.NONE);
 		addRuntime.setText("<a>" + Messages.addRuntime + "</a>");
-		
+
 		domainLabel = new Label(c, SWT.NONE);
-		//appLabel = new Label(c, SWT.NONE);
+		// appLabel = new Label(c, SWT.NONE);
 		modeLabel = new Label(c, SWT.NONE);
-		
-		suitableRuntimes.addSelectionListener(new SelectionListener(){
+
+		suitableRuntimes.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
 				updateSelectedRuntimeDelegate();
 			}
+
 			public void widgetDefaultSelected(SelectionEvent e) {
-			}});
+			}
+		});
 		addRuntime.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				IRuntimeType type = getValidRuntimeType();
@@ -146,63 +223,65 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 			}
 		});
 
-		serverAdapterCheckbox.setLayoutData(UIUtil.createFormData2(0,5,null,0,0,5,null,0));
-		l.setLayoutData(    UIUtil.createFormData2(serverAdapterCheckbox,5,null,0,0,5,null,0));
+		serverAdapterCheckbox.setLayoutData(UIUtil.createFormData2(0, 5, null, 0, 0, 5, null, 0));
+		l.setLayoutData(UIUtil.createFormData2(serverAdapterCheckbox, 5, null, 0, 0, 5, null, 0));
 		addRuntime.setLayoutData(UIUtil.createFormData2(serverAdapterCheckbox, 5, null, 0, null, 0, 100, -5));
-		suitableRuntimes.setLayoutData(UIUtil.createFormData2(serverAdapterCheckbox,5,null,0,l,5,addRuntime,-5));
+		suitableRuntimes.setLayoutData(UIUtil.createFormData2(serverAdapterCheckbox, 5, null, 0, l, 5, addRuntime, -5));
 		domainLabel.setLayoutData(UIUtil.createFormData2(suitableRuntimes, 5, null, 0, 0, 5, 100, 0));
-		//appLabel.setLayoutData(UIUtil.createFormData2(domainLabel, 5, null, 0, 0, 5, 100, 0));
+		// appLabel.setLayoutData(UIUtil.createFormData2(domainLabel, 5, null,
+		// 0, 0, 5, 100, 0));
 		modeLabel.setLayoutData(UIUtil.createFormData2(domainLabel, 5, null, 0, 0, 5, 100, 0));
-		
+
 	}
-	
+
 	private void updateSelectedRuntimeDelegate() {
-		if( suitableRuntimes.getSelectionIndex() != -1) {
+		if (suitableRuntimes.getSelectionIndex() != -1) {
 			runtimeDelegate = ServerCore.findRuntime(suitableRuntimes.getItem(suitableRuntimes.getSelectionIndex()));
 		} else {
 			runtimeDelegate = null;
 		}
 		model.getParentModel().setProperty(AdapterWizardPageModel.RUNTIME_DELEGATE, runtimeDelegate);
 	}
+
 	private IRuntimeType getValidRuntimeType() {
 		String cartridgeName = model.getParentModel().getApplication().getCartridge().getName();
-		if( ICartridge.JBOSSAS_7.getName().equals(cartridgeName)) {
+		if (ICartridge.JBOSSAS_7.getName().equals(cartridgeName)) {
 			return ServerCore.findRuntimeType(IJBossToolingConstants.AS_70);
 		}
 		return null;
 	}
+
 	private IServerType getServerTypeToCreate() {
 		String cartridgeName = model.getParentModel().getApplication().getCartridge().getName();
-		if( ICartridge.JBOSSAS_7.getName().equals(cartridgeName)) {
+		if (ICartridge.JBOSSAS_7.getName().equals(cartridgeName)) {
 			return ServerCore.findServerType(IJBossToolingConstants.SERVER_AS_70);
 		}
 		return null;
 	}
 
-	
 	private IRuntime[] getRuntimesOfType(String type) {
 		ArrayList<IRuntime> validRuntimes = new ArrayList<IRuntime>();
 		IRuntime[] allRuntimes = ServerCore.getRuntimes();
-		for( int i = 0; i < allRuntimes.length; i++ ) {
-			if( allRuntimes[i].getRuntimeType().getId().equals(type))
+		for (int i = 0; i < allRuntimes.length; i++) {
+			if (allRuntimes[i].getRuntimeType().getId().equals(type))
 				validRuntimes.add(allRuntimes[i]);
 		}
 		return validRuntimes.toArray(new IRuntime[validRuntimes.size()]);
 	}
-	
+
 	private void fillRuntimeCombo(Combo combo, IRuntime[] runtimes) {
 		String[] names = new String[runtimes.length];
-		for( int i = 0; i < runtimes.length; i++ ) {
+		for (int i = 0; i < runtimes.length; i++) {
 			names[i] = runtimes[i].getName();
 		}
 		combo.setItems(names);
 	}
-	
+
 	protected void onPageActivated(DataBindingContext dbc) {
 		serverTypeToCreate = getServerTypeToCreate();
 		model.getParentModel().setProperty(AdapterWizardPageModel.SERVER_TYPE, serverTypeToCreate);
 		refreshValidRuntimes();
-		if( suitableRuntimes.getItemCount() > 0 ) {
+		if (suitableRuntimes.getItemCount() > 0) {
 			suitableRuntimes.select(0);
 			updateSelectedRuntimeDelegate();
 		}
@@ -210,16 +289,17 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 			domainLabel.setText("Host: " + model.getParentModel().getApplication().getApplicationUrl());
 			modeLabel.setText("Mode: Source");
 			model.getParentModel().setProperty(AdapterWizardPageModel.MODE, AdapterWizardPageModel.MODE_SOURCE);
-		} catch(OpenshiftException ose ) {
-			OpenshiftUIActivator.getDefault().getLog().log(new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID, ose.getMessage(), ose));
+		} catch (OpenshiftException ose) {
+			OpenshiftUIActivator.getDefault().getLog()
+					.log(new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID, ose.getMessage(), ose));
 		}
 	}
-	
+
 	protected void refreshValidRuntimes() {
 		IRuntime[] runtimes = getRuntimesOfType(getValidRuntimeType().getId());
 		fillRuntimeCombo(suitableRuntimes, runtimes);
 	}
-	
+
 	/* Stolen from NewManualServerComposite */
 	protected int showRuntimeWizard(IRuntimeType runtimeType) {
 		WizardFragment fragment = null;
@@ -227,7 +307,7 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 		final WizardFragment fragment2 = ServerUIPlugin.getWizardFragment(runtimeType.getId());
 		if (fragment2 == null)
 			return Window.CANCEL;
-		
+
 		try {
 			IRuntimeWorkingCopy runtimeWorkingCopy = runtimeType.createRuntime(null, null);
 			taskModel.putObject(TaskModel.TASK_RUNTIME, runtimeWorkingCopy);
@@ -249,11 +329,11 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 		int returnValue = dialog.open();
 		refreshValidRuntimes();
 		if (returnValue != Window.CANCEL) {
-			IRuntime rt = (IRuntime)taskModel.getObject(TaskModel.TASK_RUNTIME);
+			IRuntime rt = (IRuntime) taskModel.getObject(TaskModel.TASK_RUNTIME);
 			if (rt != null && rt.getName() != null && suitableRuntimes.indexOf(rt.getName()) != -1) {
 				suitableRuntimes.select(suitableRuntimes.indexOf(rt.getName()));
 			}
-		} 
+		}
 		return returnValue;
 	}
 

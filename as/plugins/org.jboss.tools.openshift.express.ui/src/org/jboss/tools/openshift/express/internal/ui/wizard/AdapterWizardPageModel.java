@@ -13,9 +13,13 @@ package org.jboss.tools.openshift.express.internal.ui.wizard;
 import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
 
 /**
+ * @author André Dietisheim
  * @author Rob Stryker
  */
 public class AdapterWizardPageModel extends ObservableUIPojo {
+	public static final String PROPERTY_CLONEDIR = "cloneDir";
+	public static final String PROPERTY_BRANCH = "branch";
+	
 	public static final String CREATE_SERVER = "createServer";
 	public static final String MODE = "serverMode";
 	public static final String MODE_SOURCE = "serverModeSource";
@@ -23,15 +27,33 @@ public class AdapterWizardPageModel extends ObservableUIPojo {
 	public static final String RUNTIME_DELEGATE = "runtimeDelegate";
 	public static final String SERVER_TYPE = "serverType";
 
+	private String cloneDir;
+	private String branch;
+	
+	private ImportProjectWizardModel wizardModel;
 
-	private ApplicationWizardModel wizardModel;
-
-	public AdapterWizardPageModel(ApplicationWizardModel wizardModel) {
+	public AdapterWizardPageModel(ImportProjectWizardModel wizardModel) {
 		this.wizardModel = wizardModel;
 	}
 	
+	public String getCloneDir() {
+		return cloneDir;
+	}
+
+	public void setCloneDir(String cloneDir) {
+		firePropertyChange(PROPERTY_CLONEDIR, cloneDir, this.cloneDir = cloneDir);
+	}
+
+	public String getBranch() {
+		return branch;
+	}
+
+	public void setBranch(String branch) {
+		firePropertyChange(PROPERTY_BRANCH, branch, this.branch = branch);
+	}
+
 	// TODO is this the best way? Or should we expose ONLY getters to the parent model?
-	public ApplicationWizardModel getParentModel() {
+	public ImportProjectWizardModel getParentModel() {
 		return wizardModel;
 	}
 

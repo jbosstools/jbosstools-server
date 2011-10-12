@@ -68,9 +68,9 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 
 	private TableViewer viewer;
 	private ApplicationWizardPageModel model;
-	private ApplicationWizardModel wizardModel;
+	private ImportProjectWizardModel wizardModel;
 
-	protected ApplicationWizardPage(IWizard wizard, ApplicationWizardModel wizardModel) {
+	protected ApplicationWizardPage(IWizard wizard, ImportProjectWizardModel wizardModel) {
 		super("Application selection", "Please select an Openshift Express application",
 				"Application selection", wizard);
 		this.wizardModel = wizardModel;

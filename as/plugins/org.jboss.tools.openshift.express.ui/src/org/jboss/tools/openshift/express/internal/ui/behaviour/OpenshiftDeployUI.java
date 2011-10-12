@@ -9,7 +9,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI;
-import org.jboss.ide.eclipse.as.ui.editor.ServerModeSection;
 import org.jboss.tools.openshift.express.internal.core.behaviour.ExpressServerUtils;
 
 public class OpenshiftDeployUI implements IDeploymentTypeUI {

@@ -47,7 +47,7 @@ public class CredentialsWizardPage extends AbstractOpenshiftWizardPage {
 
 	private CredentialsWizardPageModel model;
 
-	public CredentialsWizardPage(IWizard wizard, ApplicationWizardModel wizardModel) {
+	public CredentialsWizardPage(IWizard wizard, ImportProjectWizardModel wizardModel) {
 		super("Server connetion", "Please provide the credentails of your user account on Openshift Express",
 				"Server Connection", wizard);
 		this.model = new CredentialsWizardPageModel(wizardModel);
@@ -71,8 +71,8 @@ public class CredentialsWizardPage extends AbstractOpenshiftWizardPage {
 		// dbc.bindValue(
 		// WidgetProperties.text(SWT.Modify).observe(serverUrlText),
 		// BeanProperties.value(
-		// ApplicationWizardModel.class,
-		// ApplicationWizardModel.PROPERTY_SERVER_URL).observe(model),
+		// ImportProjectWizardModel.class,
+		// ImportProjectWizardModel.PROPERTY_SERVER_URL).observe(model),
 		// new UpdateValueStrategy()
 		// .setAfterGetValidator(new
 		// MandatoryStringValidator("You have to provide a value for the server url."))
