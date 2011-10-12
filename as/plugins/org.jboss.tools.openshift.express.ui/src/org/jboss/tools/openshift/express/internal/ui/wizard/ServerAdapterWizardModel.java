@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
@@ -51,23 +52,33 @@ import org.jboss.tools.openshift.express.internal.ui.wizard.projectimport.MavenP
  */
 public class ServerAdapterWizardModel extends ObservableUIPojo {
 
-	private IUser user;
-	private IApplication application;
+	private HashMap<String, Object> dataModel = new HashMap<String, Object>();
 
+	private static final String USER = "user";
+	private static final String APPLICATION = "application";
+	
+	public void setProperty(String key, Object value) {
+		dataModel.put(key, value);
+	}
+	
+	public Object getProperty(String key) {
+		return dataModel.get(key);
+	}
+	
 	public void setUser(IUser user) {
-		this.user = user;
+		dataModel.put(USER, user);
 	}
 
 	public IUser getUser() {
-		return user;
+		return (IUser) dataModel.get(USER);
 	}
 
 	public IApplication getApplication() {
-		return application;
+		return (IApplication)dataModel.get(APPLICATION);
 	}
 
 	public void setApplication(IApplication application) {
-		this.application = application;
+		dataModel.put(APPLICATION, application);
 	}
 
 	public void importProject(File projectFolder, IProgressMonitor monitor) throws OpenshiftException, CoreException, InterruptedException {
@@ -97,8 +108,8 @@ public class ServerAdapterWizardModel extends ObservableUIPojo {
 	public File cloneRepository(IProgressMonitor monitor) throws URISyntaxException, OpenshiftException,
 			InvocationTargetException,
 			InterruptedException {
-		File destination = getDestinationDirectory(application);
-		cloneRepository(application.getGitUri(), destination, monitor);
+		File destination = getDestinationDirectory(getApplication());
+		cloneRepository(getApplication().getGitUri(), destination, monitor);
 		return destination;
 	}
 

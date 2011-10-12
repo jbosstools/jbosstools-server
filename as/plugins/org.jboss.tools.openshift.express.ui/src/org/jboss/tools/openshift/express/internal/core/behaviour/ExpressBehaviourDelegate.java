@@ -3,6 +3,7 @@ package org.jboss.tools.openshift.express.internal.core.behaviour;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.IJBossBehaviourDelegate;
 
@@ -56,8 +57,7 @@ public class ExpressBehaviourDelegate implements IJBossBehaviourDelegate {
 
 	@Override
 	public IStatus canChangeState(String launchMode) {
-		// TODO Auto-generated method stub
-		return null;
+		return Status.CANCEL_STATUS;
 	}
 
 	@Override

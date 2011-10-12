@@ -5,7 +5,9 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
+import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerCreationUtils;
@@ -94,7 +96,8 @@ public class ExpressServerUtils {
 	 */
 	public static IServer createAS7OpenshiftServer(
 			String host, String username, String password, 
-			String domain, String app, String sourceOrBinary,
+			String domain, String app,
+			String sourceOrBinary,
 			String localRuntimeHomeDir) throws CoreException {
 		IServer server = createServerAndRuntime(IJBossToolingConstants.AS_70,
 				IJBossToolingConstants.SERVER_AS_70, 
@@ -138,15 +141,16 @@ public class ExpressServerUtils {
 	 * @throws CoreException
 	 */
 	public static IServer fillServerWithOpenshiftDetails(IServer server,
-			String host, String username, String password, 
-			String domain, String app, String sourceOrBinary) throws CoreException {
+			String host, String username, String password, String domain, String app,
+			String mode) throws CoreException {
 		IServerWorkingCopy wc = server.createWorkingCopy();
 		wc.setHost(host);
+		wc.setAttribute(IDeployableServer.SERVER_MODE, "openshift");
 		wc.setAttribute(ATTRIBUTE_USERNAME, username);
 		wc.setAttribute(ATTRIBUTE_PASSWORD, password);
 		wc.setAttribute(ATTRIBUTE_DOMAIN, domain);
 		wc.setAttribute(ATTRIBUTE_APPLICATION, app);
-		wc.setAttribute(ATTRIBUTE_EXPRESS_MODE, sourceOrBinary);
+		wc.setAttribute(ATTRIBUTE_EXPRESS_MODE, mode);
 		return wc.save(true, new NullProgressMonitor());
 	}
 	
@@ -159,6 +163,10 @@ public class ExpressServerUtils {
 	
 	public static IServer createServer(IRuntime runtime, String serverID) throws CoreException {
 		return ServerCreationUtils.createServer2(runtime, serverID);
+	}
+	
+	public static IServer createServer(IRuntime runtime, IServerType serverType, String serverName) throws CoreException {
+		return ServerCreationUtils.createServer2(runtime, serverType, serverName);
 	}
 
 }
