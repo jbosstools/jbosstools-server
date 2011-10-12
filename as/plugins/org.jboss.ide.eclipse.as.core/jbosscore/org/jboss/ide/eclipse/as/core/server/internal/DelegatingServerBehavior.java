@@ -55,6 +55,7 @@ public class DelegatingServerBehavior extends DeployableServerBehavior {
 		
 		BehaviourImpl impl = BehaviourModel.getModel().getBehaviour(getServer().getServerType().getId()).getImpl(id);
 		delegate = impl.getBehaviourDelegate();
+		delegate.setActualBehaviour(this);
 		return delegate;
 	}
 	
