@@ -29,7 +29,7 @@ public class NewDomainDialog extends Wizard {
 	private String namespace;
 	private NewDomainWizardModel model;
 
-	public NewDomainDialog(String namespace, ServerAdapterWizardModel wizardModel) {
+	public NewDomainDialog(String namespace, ApplicationWizardModel wizardModel) {
 		this.namespace = namespace;
 		this.model = new NewDomainWizardModel(namespace, wizardModel.getUser());
 		setNeedsProgressMonitor(true);

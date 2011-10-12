@@ -62,7 +62,7 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 	private Label domainLabel;
 	private Label modeLabel;
 
-	public AdapterWizardPage(ServerAdapterWizard wizard, ServerAdapterWizardModel model) {
+	public AdapterWizardPage(ApplicationWizard wizard, ApplicationWizardModel model) {
 		super("Server Adapter", "...", "Server Adapter", wizard);
 		this.model = new AdapterWizardPageModel(model);
 	}

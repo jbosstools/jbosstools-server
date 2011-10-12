@@ -13,7 +13,7 @@ package org.jboss.tools.openshift.express.internal.ui.wizard;
 import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
 
 /**
- * @author André Dietisheim
+ * @author Rob Stryker
  */
 public class AdapterWizardPageModel extends ObservableUIPojo {
 	public static final String CREATE_SERVER = "createServer";
@@ -24,14 +24,14 @@ public class AdapterWizardPageModel extends ObservableUIPojo {
 	public static final String SERVER_TYPE = "serverType";
 
 
-	private ServerAdapterWizardModel wizardModel;
+	private ApplicationWizardModel wizardModel;
 
-	public AdapterWizardPageModel(ServerAdapterWizardModel wizardModel) {
+	public AdapterWizardPageModel(ApplicationWizardModel wizardModel) {
 		this.wizardModel = wizardModel;
 	}
 	
 	// TODO is this the best way? Or should we expose ONLY getters to the parent model?
-	public ServerAdapterWizardModel getParentModel() {
+	public ApplicationWizardModel getParentModel() {
 		return wizardModel;
 	}
 

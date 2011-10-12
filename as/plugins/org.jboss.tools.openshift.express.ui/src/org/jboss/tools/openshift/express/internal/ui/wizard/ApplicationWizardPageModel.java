@@ -32,9 +32,9 @@ public class ApplicationWizardPageModel extends ObservableUIPojo {
 	private String namespace;
 	private IDomain domain;
 	private IApplication selectedApplication;
-	private ServerAdapterWizardModel wizardModel;
+	private ApplicationWizardModel wizardModel;
 
-	public ApplicationWizardPageModel(ServerAdapterWizardModel wizardModel) {
+	public ApplicationWizardPageModel(ApplicationWizardModel wizardModel) {
 		this.wizardModel = wizardModel;
 	}
 

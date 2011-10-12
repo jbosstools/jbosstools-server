@@ -11,22 +11,23 @@
 package org.jboss.tools.openshift.express.internal.ui.wizard.projectimport;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.m2e.core.internal.jobs.IBackgroundProcessingQueue;
+import org.eclipse.m2e.core.project.configurator.ProjectConfigurationRequest;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.dialogs.IOverwriteQuery;
-import org.eclipse.ui.wizards.datatransfer.FileSystemStructureProvider;
-import org.eclipse.ui.wizards.datatransfer.ImportOperation;
 
 /**
  * @author Andre Dietisheim <adietish@redhat.com>
@@ -40,29 +41,36 @@ public class GeneralProjectImportOperation extends AbstractProjectImportOperatio
 
 	public List<IProject> importToWorkspace(IProgressMonitor monitor)
 			throws CoreException, InterruptedException {
-		
-		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-		IProject project = workspaceRoot.getProject(getProjectDirectory().getName());
+
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IProject project = workspace.getRoot().getProject(getProjectDirectory().getName());
 		overwriteExistingProject(project, monitor);
+		importToWorkspace(getProjectDirectory(), workspace, monitor);
 		return Collections.singletonList(project);
 	}
 
-	private void importToNewProject(File projectDirectory, IProject project, IProgressMonitor monitor)
-			throws CoreException, InvocationTargetException, InterruptedException {
-		project.create(monitor);
-		project.open(monitor);
-		ImportOperation operation =
-				new ImportOperation(
-						project.getFullPath()
-						, projectDirectory
-						, FileSystemStructureProvider.INSTANCE
-						, new IOverwriteQuery() {
-							public String queryOverwrite(String file) {
-								return IOverwriteQuery.ALL;
-							}
-						});
-		operation.setCreateContainerStructure(false);
-		operation.run(monitor);
+	private void importToWorkspace(File projectDirectory, IWorkspace workspace, IProgressMonitor monitor) throws CoreException {
+		String projectName = projectDirectory.getName();
+		IProjectDescription description = workspace.newProjectDescription(projectName);
+		description.setLocation(new Path(projectDirectory.toString()));
+		IProject project = workspace.getRoot().getProject(projectName);
+		project.create(description, monitor);
+		project.open(IResource.BACKGROUND_REFRESH, monitor);
+		// project.create(monitor);
+		// project.open(IResource.BACKGROUND_REFRESH, monitor);
+		// ImportOperation operation =
+		// new ImportOperation(
+		// project.getFullPath()
+		// , projectDirectory
+		// , FileSystemStructureProvider.INSTANCE
+		// , new IOverwriteQuery() {
+		// public String queryOverwrite(String file) {
+		// return IOverwriteQuery.ALL;
+		// }
+		// });
+		// operation.setCreateContainerStructure(false);
+		// operation.run(monitor);
+
 	}
 
 	private void overwriteExistingProject(final IProject project, IProgressMonitor monitor)
