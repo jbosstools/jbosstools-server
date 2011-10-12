@@ -26,7 +26,7 @@ import org.jboss.tools.openshift.express.client.OpenshiftException;
 public class Application extends UserInfoAware implements IApplication {
 
 	private static final String GIT_URI_PATTERN = "ssh://{0}@{1}-{2}.{3}/~/git/{1}.git/";
-	private static final String APPLICATION_URL_PATTERN = "http://{0}-{1}.{2}/";
+	private static final String APPLICATION_URL_PATTERN = "https://{0}-{1}.{2}/";
 
 	private String name;
 	private ICartridge cartridge;
