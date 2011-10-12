@@ -11,7 +11,6 @@
 package org.jboss.tools.openshift.express.internal.ui.wizard;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.util.Collections;
@@ -19,31 +18,25 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.egit.core.RepositoryUtil;
 import org.eclipse.egit.core.op.CloneOperation;
 import org.eclipse.egit.core.op.ConnectProviderOperation;
 import org.eclipse.egit.ui.Activator;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.InitCommand;
-import org.eclipse.jgit.api.errors.CheckoutConflictException;
-import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
-import org.eclipse.jgit.api.errors.InvalidMergeHeadsException;
-import org.eclipse.jgit.api.errors.NoHeadException;
-import org.eclipse.jgit.api.errors.NoMessageException;
-import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 import org.eclipse.jgit.lib.Constants;
-import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.merge.MergeStrategy;
+import org.eclipse.jgit.transport.JschConfigSessionFactory;
 import org.eclipse.jgit.transport.URIish;
+import org.eclipse.osgi.util.NLS;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
 import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.IUser;
 import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
 import org.jboss.tools.openshift.express.internal.ui.wizard.projectimport.GeneralProjectImportOperation;
 import org.jboss.tools.openshift.express.internal.ui.wizard.projectimport.MavenProjectImportOperation;
 
@@ -81,28 +74,45 @@ public class ApplicationWizardModel extends ObservableUIPojo {
 		dataModel.put(APPLICATION, application);
 	}
 
-	public void importProject(File projectFolder, IProgressMonitor monitor) throws OpenshiftException, CoreException,
+	public void importProject(final File projectFolder, IProgressMonitor monitor) throws OpenshiftException,
+			CoreException,
 			InterruptedException {
-		MavenProjectImportOperation mavenImport = new MavenProjectImportOperation(projectFolder);
-		List<IProject> importedProjects = Collections.emptyList();
-		if (mavenImport.isMavenProject()) {
-			importedProjects = mavenImport.importToWorkspace(monitor);
-		} else {
-			importedProjects = new GeneralProjectImportOperation(projectFolder).importToWorkspace(monitor);
-		}
+		new WorkspaceJob(NLS.bind("Importing projects from {0}", projectFolder.getAbsolutePath())) {
 
-		connectToGitRepo(importedProjects, monitor);
+			@Override
+			public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
+				try {
+					MavenProjectImportOperation mavenImport = new MavenProjectImportOperation(projectFolder);
+					List<IProject> importedProjects = Collections.emptyList();
+					if (mavenImport.isMavenProject()) {
+						importedProjects = mavenImport.importToWorkspace(monitor);
+					} else {
+						importedProjects = new GeneralProjectImportOperation(projectFolder).importToWorkspace(monitor);
+					}
 
-		createServerAdapterIfRequired();
+					File gitFolder = new File(projectFolder, Constants.DOT_GIT);
+					connectToGitRepo(importedProjects, gitFolder, monitor);
+
+					createServerAdapterIfRequired();
+					return Status.OK_STATUS;
+				} catch (Exception e) {
+					IStatus status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
+							NLS.bind("Could not import projects from {0}", projectFolder.getAbsolutePath()), e);
+					OpenshiftUIActivator.log(status);
+					return status;
+				}
+			}
+		}.schedule();
 	}
 
-	private void connectToGitRepo(List<IProject> projects, IProgressMonitor monitor) throws CoreException {
+	private void connectToGitRepo(List<IProject> projects, File gitFolder, IProgressMonitor monitor)
+			throws CoreException {
 		for (IProject project : projects) {
-			connectToGitRepo(project, monitor);
+			connectToGitRepo(project, gitFolder, monitor);
 		}
 	}
 
-	private void connectToGitRepo(IProject project, IProgressMonitor monitor) throws CoreException {
+	private void connectToGitRepo(IProject project, File gitFolder, IProgressMonitor monitor) throws CoreException {
 		new ConnectProviderOperation(project).execute(monitor);
 	}
 
@@ -123,24 +133,29 @@ public class ApplicationWizardModel extends ObservableUIPojo {
 		}
 		ensureEgitUIIsStarted();
 		URIish gitUri = new URIish(uri);
+		RepositoryUtil repositoryUtil = Activator.getDefault().getRepositoryUtil();
 		CloneOperation cloneOperation =
 				new CloneOperation(gitUri, true, null, destination, Constants.HEAD, "origin", 10 * 1024);
 		cloneOperation.run(null);
 		File gitDirectory = new File(destination, Constants.DOT_GIT);
-		Activator.getDefault().getRepositoryUtil().addConfiguredRepository(gitDirectory);
+		repositoryUtil.addConfiguredRepository(gitDirectory);
 	}
 
 	/**
-	 * The Egit UI {@link Activator#start} initializes the SshSessionFactory
-	 * with the EclipseSshSessionFactory. The EclipseSshSessionFactory overrides
-	 * JschConfigSessionFactory#configure to present a UserInfoPrompter if the
-	 * key passphrase was give entered before. Without this initialization, the
-	 * ssh connection would simply fail with a TransportException (Auth
-	 * failure). We therefore have to make sure that the EGit UI plugin is
-	 * started and initializes the JschConfigSessionFactory.
+	 * The EGit UI plugin initializes the ssh factory to present the user a
+	 * passphrase prompt if the ssh key was not read yet. If this initialization
+	 * is not executed, the ssh connection to the git repo would just fail with
+	 * an authentication error. We therefore have to make sure that the EGit UI
+	 * plugin is started and initializes the JSchConfigSessionFactory.
+	 * <p>
+	 * EGit initializes the SshSessionFactory with the EclipseSshSessionFactory.
+	 * The EclipseSshSessionFactory overrides JschConfigSessionFactory#configure
+	 * to present a UserInfoPrompter if the key passphrase was not entered
+	 * before.
 	 * 
 	 * @see Activator#start(org.osgi.framework.BundleContext)
 	 * @see Activator#setupSSH
+	 * @see JschConfigSessionFactory#configure
 	 * @see EclipseSshSessionFactory#configure
 	 */
 	private void ensureEgitUIIsStarted() {
@@ -156,30 +171,7 @@ public class ApplicationWizardModel extends ObservableUIPojo {
 		return new File(userHome, applicationDirectory);
 	}
 
-	private void mergeWithRemote(Git git, String remoteName) throws CoreException, NoHeadException,
-			ConcurrentRefUpdateException, CheckoutConflictException, InvalidMergeHeadsException,
-			WrongRepositoryStateException, NoMessageException, IOException {
-		Repository repository = git.getRepository();
-		ObjectId objectId = repository.resolve("HEAD");
-		git.merge().include(objectId).setStrategy(MergeStrategy.OURS).call();
-	}
-
 	private void createServerAdapterIfRequired() {
 		// TODO
 	}
-
-	private Git createGit(File repositoryFile) throws IOException {
-		InitCommand init = Git.init();
-		init.setDirectory(repositoryFile);
-		init.setBare(false);
-		return init.call();
-	}
-
-	private File createRepositoryFile(String name) {
-		IPath workspace = ResourcesPlugin.getWorkspace().getRoot().getLocation();
-		IPath gitRepoProject = workspace.append(name);
-		File repositoryFile = new File(gitRepoProject.toFile(), Constants.DOT_GIT);
-		return repositoryFile;
-	}
-
 }

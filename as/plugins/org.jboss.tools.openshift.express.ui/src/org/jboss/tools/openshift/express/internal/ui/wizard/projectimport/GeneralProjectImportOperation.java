@@ -23,8 +23,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.m2e.core.internal.jobs.IBackgroundProcessingQueue;
-import org.eclipse.m2e.core.project.configurator.ProjectConfigurationRequest;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
@@ -44,36 +42,22 @@ public class GeneralProjectImportOperation extends AbstractProjectImportOperatio
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IProject project = workspace.getRoot().getProject(getProjectDirectory().getName());
-		overwriteExistingProject(project, monitor);
+		overwriteExistingProject(project, workspace, monitor);
 		importToWorkspace(getProjectDirectory(), workspace, monitor);
 		return Collections.singletonList(project);
 	}
 
-	private void importToWorkspace(File projectDirectory, IWorkspace workspace, IProgressMonitor monitor) throws CoreException {
+	private void importToWorkspace(File projectDirectory, IWorkspace workspace, IProgressMonitor monitor)
+			throws CoreException {
 		String projectName = projectDirectory.getName();
 		IProjectDescription description = workspace.newProjectDescription(projectName);
-		description.setLocation(new Path(projectDirectory.toString()));
+		description.setLocation(Path.fromOSString(projectDirectory.getAbsolutePath()));
 		IProject project = workspace.getRoot().getProject(projectName);
 		project.create(description, monitor);
 		project.open(IResource.BACKGROUND_REFRESH, monitor);
-		// project.create(monitor);
-		// project.open(IResource.BACKGROUND_REFRESH, monitor);
-		// ImportOperation operation =
-		// new ImportOperation(
-		// project.getFullPath()
-		// , projectDirectory
-		// , FileSystemStructureProvider.INSTANCE
-		// , new IOverwriteQuery() {
-		// public String queryOverwrite(String file) {
-		// return IOverwriteQuery.ALL;
-		// }
-		// });
-		// operation.setCreateContainerStructure(false);
-		// operation.run(monitor);
-
 	}
 
-	private void overwriteExistingProject(final IProject project, IProgressMonitor monitor)
+	private void overwriteExistingProject(final IProject project, IWorkspace workspace, IProgressMonitor monitor)
 			throws CoreException {
 		if (project == null
 				|| !project.exists()) {
