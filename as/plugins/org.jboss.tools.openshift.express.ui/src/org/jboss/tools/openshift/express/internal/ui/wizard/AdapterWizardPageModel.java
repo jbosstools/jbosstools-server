@@ -32,18 +32,15 @@ public class AdapterWizardPageModel extends ObservableUIPojo {
 	public static final String RUNTIME_DELEGATE = "runtimeDelegate";
 	public static final String SERVER_TYPE = "serverType";
 
-	private String repositoryPath;
-	private String remoteName;
-
 	private ImportProjectWizardModel wizardModel;
 
 	public AdapterWizardPageModel(ImportProjectWizardModel wizardModel) {
 		this.wizardModel = wizardModel;
-		this.remoteName = REMOTE_NAME_DEFAULT;
+		setRemoteName(REMOTE_NAME_DEFAULT);
 	}
 
 	public String getRepositoryPath() {
-		return repositoryPath;
+		return wizardModel.getCloneDirectory();
 	}
 
 	public void setRepositoryPath(String repositoryPath) {
@@ -61,7 +58,7 @@ public class AdapterWizardPageModel extends ObservableUIPojo {
 	}
 
 	public String getRemoteName() {
-		return remoteName;
+		return wizardModel.getRemoteName();
 	}
 
 	public void setRemoteName(String remoteName) {
