@@ -70,6 +70,9 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 	private IRuntime runtimeDelegate;
 	private Label domainLabel;
 	private Label modeLabel;
+	private Link addRuntimeLink;
+	private Label runtimeLabel;
+	
 
 	public AdapterWizardPage(ImportProjectWizard wizard, ImportProjectWizardModel model) {
 		super(
@@ -183,9 +186,6 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 		modeLabel.setEnabled(enabled);
 	}
 
-	private Link addRuntimeLink;
-	private Label runtimeLabel;
-	
 	private void fillServerAdapterGroup(Group serverAdapterGroup) {
 		Composite c = new Composite(serverAdapterGroup, SWT.NONE);
 		c.setLayout(new FormLayout());
@@ -225,10 +225,11 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 		addRuntimeLink.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				IRuntimeType type = getValidRuntimeType();
-				showRuntimeWizard(type);
+				if( type != null )
+					showRuntimeWizard(type);
 			}
 		});
-
+		
 		serverAdapterCheckbox.setLayoutData(UIUtil.createFormData2(0, 5, null, 0, 0, 5, null, 0));
 		runtimeLabel.setLayoutData(UIUtil.createFormData2(serverAdapterCheckbox, 5, null, 0, 0, 5, null, 0));
 		addRuntimeLink.setLayoutData(UIUtil.createFormData2(serverAdapterCheckbox, 5, null, 0, null, 0, 100, -5));
@@ -238,6 +239,8 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 		// 0, 0, 5, 100, 0));
 		modeLabel.setLayoutData(UIUtil.createFormData2(domainLabel, 5, null, 0, 0, 5, 100, 0));
 		serverAdapterCheckbox.setSelection(true);
+		model.getParentModel().setProperty(AdapterWizardPageModel.CREATE_SERVER,
+				serverAdapterCheckbox2.getSelection());
 	}
 
 	private void updateSelectedRuntimeDelegate() {
@@ -291,6 +294,9 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 			suitableRuntimes.select(0);
 			updateSelectedRuntimeDelegate();
 		}
+		IRuntimeType type = getValidRuntimeType();
+		addRuntimeLink.setEnabled(type != null);
+
 		try {
 			domainLabel.setText("Host: " + model.getParentModel().getApplication().getApplicationUrl());
 			modeLabel.setText("Mode: Source");
@@ -302,8 +308,11 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 	}
 
 	protected void refreshValidRuntimes() {
-		IRuntime[] runtimes = getRuntimesOfType(getValidRuntimeType().getId());
-		fillRuntimeCombo(suitableRuntimes, runtimes);
+		IRuntimeType type = getValidRuntimeType();
+		if( type != null ) {
+			IRuntime[] runtimes = getRuntimesOfType(type.getId());
+			fillRuntimeCombo(suitableRuntimes, runtimes);
+		}
 	}
 
 	/* Stolen from NewManualServerComposite */
