@@ -17,6 +17,9 @@ import java.util.List;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.databinding.observable.value.IValueChangeListener;
+import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -111,12 +114,18 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 		GridDataFactory.fillDefaults()
 				.align(SWT.LEFT, SWT.CENTER).hint(100, SWT.DEFAULT).applyTo(defaultRepoPathButton);
 		defaultRepoPathButton.addSelectionListener(onDefaultRepoPath());
+		IObservableValue defaultRepoButtonSelection = WidgetProperties.selection().observe(defaultRepoPathButton);
 
 		Text repoPathText = new Text(projectGroup, SWT.BORDER);
 		GridDataFactory.fillDefaults()
 				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(repoPathText);
 		DataBindingUtils.bindMandatoryTextField(
 				repoPathText, "Location", AdapterWizardPageModel.PROPERTY_REPO_PATH, model, dbc);
+		dbc.bindValue(
+				defaultRepoButtonSelection 
+				, WidgetProperties.enabled().observe(repoPathText)
+				, new UpdateValueStrategy().setConverter(new InvertingBooleanConverter())
+				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER));
 
 		Button browseRepoPathButton = new Button(projectGroup, SWT.PUSH);
 		browseRepoPathButton.setText("Browse");
@@ -124,17 +133,12 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 				.align(SWT.LEFT, SWT.CENTER).hint(100, SWT.DEFAULT).applyTo(browseRepoPathButton);
 		browseRepoPathButton.addSelectionListener(onRepoPath());
 		dbc.bindValue(
-				WidgetProperties.selection().observe(defaultRepoPathButton)
+				defaultRepoButtonSelection
 				, WidgetProperties.enabled().observe(browseRepoPathButton)
 				, new UpdateValueStrategy().setConverter(new InvertingBooleanConverter())
 				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER));
 
-		dbc.bindValue(
-				WidgetProperties.selection().observe(defaultRepoPathButton)
-				, WidgetProperties.enabled().observe(repoPathText)
-				, new UpdateValueStrategy().setConverter(new InvertingBooleanConverter())
-				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER));
-		defaultRepoPathButton.setSelection(true);
+		defaultRepoButtonSelection.setValue(true);
 
 		Label remoteNameLabel = new Label(projectGroup, SWT.NONE);
 		remoteNameLabel.setText("Remote name");
@@ -153,12 +157,13 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 		DataBindingUtils.bindMandatoryTextField(
 				remoteNameText, "Remote name", AdapterWizardPageModel.PROPERTY_REMOTE_NAME, model, dbc);
 
+		IObservableValue defaultRemoteNameSelection = WidgetProperties.selection().observe(defaultRemoteNameButton);
 		dbc.bindValue(
-				WidgetProperties.selection().observe(defaultRemoteNameButton)
+				defaultRemoteNameSelection 
 				, WidgetProperties.enabled().observe(remoteNameText)
 				, new UpdateValueStrategy().setConverter(new InvertingBooleanConverter())
 				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER));
-		defaultRemoteNameButton.setSelection(true);
+		defaultRemoteNameSelection.setValue(true);
 
 		return projectGroup;
 	}
