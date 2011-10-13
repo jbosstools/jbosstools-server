@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.jboss.tools.openshift.express.internal.ui.wizard;
 
+import java.io.File;
+
 import org.eclipse.egit.ui.Activator;
 import org.eclipse.egit.ui.UIPreferences;
 import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
@@ -40,15 +42,19 @@ public class AdapterWizardPageModel extends ObservableUIPojo {
 	}
 
 	public String getRepositoryPath() {
-		return wizardModel.getCloneDirectory();
+		return wizardModel.getRepositoryPath();
 	}
 
 	public void setRepositoryPath(String repositoryPath) {
-		wizardModel.setCloneDirectory(repositoryPath);
+		firePropertyChange(PROPERTY_REPO_PATH
+				, wizardModel.getRepositoryPath()
+				, wizardModel.setRepositoryPath(repositoryPath));
 	}
 
 	public void resetRepositoryPath() {
-		setRepositoryPath(getEGitDefaultRepositoryPath() + wizardModel.getApplication().getName());
+		setRepositoryPath(getEGitDefaultRepositoryPath()
+				+ File.separatorChar
+				+ wizardModel.getApplication().getName());
 	}
 
 	public String getEGitDefaultRepositoryPath() {
@@ -62,14 +68,16 @@ public class AdapterWizardPageModel extends ObservableUIPojo {
 	}
 
 	public void setRemoteName(String remoteName) {
-		wizardModel.setRemoteName(remoteName);
+		firePropertyChange(PROPERTY_REMOTE_NAME
+				, wizardModel.getRemoteName()
+				, wizardModel.setRemoteName(remoteName));
 	}
 
 	public void resetRemoteName() {
 		setRemoteName(REMOTE_NAME_DEFAULT);
 	}
 
-	// TODO should this stay? 
+	// TODO should this stay?
 	public ImportProjectWizardModel getParentModel() {
 		return wizardModel;
 	}

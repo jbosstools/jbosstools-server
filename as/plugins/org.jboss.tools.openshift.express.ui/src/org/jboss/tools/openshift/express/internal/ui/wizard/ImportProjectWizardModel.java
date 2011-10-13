@@ -53,10 +53,10 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 
 	private HashMap<String, Object> dataModel = new HashMap<String, Object>();
 
-	protected static final String USER = "user";
-	protected static final String APPLICATION = "application";
-	protected static final String REMOTE_NAME = "remoteName";
-	protected static final String CLONE_DIR = "cloneDir";
+	public static final String USER = "user";
+	public static final String APPLICATION = "application";
+	public static final String REMOTE_NAME = "remoteName";
+	public static final String REPOSITORY_PATH = "repositoryPath";
 
 	public void setProperty(String key, Object value) {
 		Object oldVal = dataModel.get(key);
@@ -84,20 +84,22 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 		setProperty(APPLICATION, application);
 	}
 
-	public void setRemoteName(String remoteName) {
+	public String setRemoteName(String remoteName) {
 		setProperty(REMOTE_NAME, remoteName);
+		return remoteName;
 	}
 
 	public String getRemoteName() {
 		return (String) getProperty(REMOTE_NAME);
 	}
 
-	public void setCloneDirectory(String cloneDir) {
-		setProperty(CLONE_DIR, cloneDir);
+	public String setRepositoryPath(String repositoryPath) {
+		setProperty(REPOSITORY_PATH, repositoryPath);
+		return repositoryPath;
 	}
 
-	public String getCloneDirectory() {
-		return (String) getProperty(CLONE_DIR);
+	public String getRepositoryPath() {
+		return (String) getProperty(REPOSITORY_PATH);
 	}
 
 	public void importProject(final File projectFolder, IProgressMonitor monitor) throws OpenshiftException,
@@ -146,7 +148,7 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 			InvocationTargetException,
 			InterruptedException {
 		IApplication application = getApplication();
-		File destination = new File(getCloneDirectory(), application.getName());
+		File destination = new File(getRepositoryPath(), application.getName());
 		cloneRepository(application.getGitUri(), destination, monitor);
 		return destination;
 	}

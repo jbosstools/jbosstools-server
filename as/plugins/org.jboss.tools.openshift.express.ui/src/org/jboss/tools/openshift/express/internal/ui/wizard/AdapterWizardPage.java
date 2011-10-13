@@ -20,6 +20,9 @@ import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.databinding.observable.value.IValueChangeListener;
+import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.CoreException;
@@ -106,13 +109,13 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 		GridDataFactory.fillDefaults()
 				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(projectGroup);
 		GridLayoutFactory.fillDefaults().margins(6, 6).numColumns(3).applyTo(projectGroup);
-
+		
 		Button defaultRepoPathButton = new Button(projectGroup, SWT.CHECK);
 		defaultRepoPathButton.setText("Use default destination");
 		GridDataFactory.fillDefaults()
 				.span(3, 1).align(SWT.LEFT, SWT.CENTER).hint(100, SWT.DEFAULT).applyTo(defaultRepoPathButton);
 		defaultRepoPathButton.addSelectionListener(onDefaultRepoPath());
-
+		
 		Label repoPathLabel = new Label(projectGroup, SWT.NONE);
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(repoPathLabel);
 		repoPathLabel.setText("Repository Destination");
@@ -121,12 +124,25 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(repoPathText);
 		DataBindingUtils.bindMandatoryTextField(
 				repoPathText, "Repository path", AdapterWizardPageModel.PROPERTY_REPO_PATH, model, dbc);
+		IObservableValue selectionObservable = WidgetProperties.selection().observe(defaultRepoPathButton);
+		selectionObservable.addValueChangeListener(new IValueChangeListener() {
+			
+			@Override
+			public void handleValueChange(ValueChangeEvent event) {
+				System.err.println("selected!! = " + event.diff.getNewValue());
+			}
+		});
+		dbc.bindValue(
+				selectionObservable 
+				, WidgetProperties.enabled().observe(repoPathText)
+				, null
+				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER));
 		Button browseRepoPathButton = new Button(projectGroup, SWT.PUSH);
 		browseRepoPathButton.setText("Browse");
 		GridDataFactory.fillDefaults()
 				.align(SWT.LEFT, SWT.CENTER).hint(100, SWT.DEFAULT).applyTo(browseRepoPathButton);
 		browseRepoPathButton.addSelectionListener(onRepoPath());
-
+		
 		Label branchLabel = new Label(projectGroup, SWT.NONE);
 		branchLabel.setText("Branch to clone");
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(branchLabel);
