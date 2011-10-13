@@ -123,6 +123,11 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 		GridDataFactory.fillDefaults()
 				.align(SWT.LEFT, SWT.CENTER).hint(100, SWT.DEFAULT).applyTo(browseRepoPathButton);
 		browseRepoPathButton.addSelectionListener(onRepoPath());
+		dbc.bindValue(
+				WidgetProperties.selection().observe(defaultRepoPathButton)
+				, WidgetProperties.enabled().observe(browseRepoPathButton)
+				, new UpdateValueStrategy().setConverter(new InvertingBooleanConverter())
+				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER));
 
 		dbc.bindValue(
 				WidgetProperties.selection().observe(defaultRepoPathButton)
