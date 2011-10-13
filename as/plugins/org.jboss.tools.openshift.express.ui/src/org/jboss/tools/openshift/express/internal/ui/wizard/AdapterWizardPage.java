@@ -14,21 +14,12 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
-import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeanProperties;
-import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.core.databinding.observable.value.IValueChangeListener;
-import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
-import org.eclipse.core.databinding.validation.IValidator;
-import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -63,6 +54,7 @@ import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.tools.common.ui.databinding.DataBindingUtils;
+import org.jboss.tools.common.ui.databinding.InvertingBooleanConverter;
 import org.jboss.tools.openshift.express.client.ICartridge;
 import org.jboss.tools.openshift.express.client.OpenshiftException;
 import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
@@ -105,63 +97,63 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 
 	private Group createProjectGroup(Composite parent, DataBindingContext dbc) {
 		Group projectGroup = new Group(parent, SWT.BORDER);
-		projectGroup.setText("Project setup");
+		projectGroup.setText("Git clone");
 		GridDataFactory.fillDefaults()
 				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(projectGroup);
-		GridLayoutFactory.fillDefaults().margins(6, 6).numColumns(3).applyTo(projectGroup);
-		
-		Button defaultRepoPathButton = new Button(projectGroup, SWT.CHECK);
-		defaultRepoPathButton.setText("Use default destination");
-		GridDataFactory.fillDefaults()
-				.span(3, 1).align(SWT.LEFT, SWT.CENTER).hint(100, SWT.DEFAULT).applyTo(defaultRepoPathButton);
-		defaultRepoPathButton.addSelectionListener(onDefaultRepoPath());
-		
+		GridLayoutFactory.fillDefaults().margins(6, 6).numColumns(4).applyTo(projectGroup);
+
 		Label repoPathLabel = new Label(projectGroup, SWT.NONE);
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(repoPathLabel);
-		repoPathLabel.setText("Repository Destination");
+		repoPathLabel.setText("Location");
+
+		Button defaultRepoPathButton = new Button(projectGroup, SWT.CHECK);
+		defaultRepoPathButton.setText("default");
+		GridDataFactory.fillDefaults()
+				.align(SWT.LEFT, SWT.CENTER).hint(100, SWT.DEFAULT).applyTo(defaultRepoPathButton);
+		defaultRepoPathButton.addSelectionListener(onDefaultRepoPath());
+
 		Text repoPathText = new Text(projectGroup, SWT.BORDER);
 		GridDataFactory.fillDefaults()
 				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(repoPathText);
 		DataBindingUtils.bindMandatoryTextField(
-				repoPathText, "Repository path", AdapterWizardPageModel.PROPERTY_REPO_PATH, model, dbc);
-		IObservableValue selectionObservable = WidgetProperties.selection().observe(defaultRepoPathButton);
-		selectionObservable.addValueChangeListener(new IValueChangeListener() {
-			
-			@Override
-			public void handleValueChange(ValueChangeEvent event) {
-				System.err.println("selected!! = " + event.diff.getNewValue());
-			}
-		});
-		dbc.bindValue(
-				selectionObservable 
-				, WidgetProperties.enabled().observe(repoPathText)
-				, null
-				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER));
+				repoPathText, "Location", AdapterWizardPageModel.PROPERTY_REPO_PATH, model, dbc);
+
 		Button browseRepoPathButton = new Button(projectGroup, SWT.PUSH);
 		browseRepoPathButton.setText("Browse");
 		GridDataFactory.fillDefaults()
 				.align(SWT.LEFT, SWT.CENTER).hint(100, SWT.DEFAULT).applyTo(browseRepoPathButton);
 		browseRepoPathButton.addSelectionListener(onRepoPath());
-		
-		Label branchLabel = new Label(projectGroup, SWT.NONE);
-		branchLabel.setText("Branch to clone");
-		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(branchLabel);
-		Text branchText = new Text(projectGroup, SWT.BORDER);
-		GridDataFactory.fillDefaults()
-				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.CENTER).grab(true, false)
-				.applyTo(branchText);
-		Binding branchNameBinding = dbc.bindValue(
-				WidgetProperties.text(SWT.Modify).observe(branchText)
-				, BeanProperties.value(AdapterWizardPageModel.PROPERTY_REMOTE_NAME).observe(model)
-				, new UpdateValueStrategy().setAfterGetValidator(new BranchNameValidator())
-				, null);
-		ControlDecorationSupport.create(branchNameBinding, SWT.TOP | SWT.LEFT);
 
-		Button defaultBranchnameButton = new Button(projectGroup, SWT.PUSH);
-		defaultBranchnameButton.setText("Default");
+		dbc.bindValue(
+				WidgetProperties.selection().observe(defaultRepoPathButton)
+				, WidgetProperties.enabled().observe(repoPathText)
+				, new UpdateValueStrategy().setConverter(new InvertingBooleanConverter())
+				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER));
+		defaultRepoPathButton.setSelection(true);
+
+		Label remoteNameLabel = new Label(projectGroup, SWT.NONE);
+		remoteNameLabel.setText("Remote name");
+		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(remoteNameLabel);
+
+		Button defaultRemoteNameButton = new Button(projectGroup, SWT.CHECK);
+		defaultRemoteNameButton.setText("default");
 		GridDataFactory.fillDefaults()
-				.align(SWT.LEFT, SWT.CENTER).hint(100, SWT.DEFAULT).applyTo(defaultBranchnameButton);
-		defaultBranchnameButton.addSelectionListener(onBranchnameDefault());
+				.align(SWT.LEFT, SWT.CENTER).hint(100, SWT.DEFAULT).applyTo(defaultRemoteNameButton);
+		defaultRemoteNameButton.addSelectionListener(onDefaultRemoteName());
+
+		Text remoteNameText = new Text(projectGroup, SWT.BORDER);
+		GridDataFactory.fillDefaults()
+				.span(2, 1).align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.CENTER).grab(true, false)
+				.applyTo(remoteNameText);
+		DataBindingUtils.bindMandatoryTextField(
+				remoteNameText, "Remote name", AdapterWizardPageModel.PROPERTY_REMOTE_NAME, model, dbc);
+
+		dbc.bindValue(
+				WidgetProperties.selection().observe(defaultRemoteNameButton)
+				, WidgetProperties.enabled().observe(remoteNameText)
+				, new UpdateValueStrategy().setConverter(new InvertingBooleanConverter())
+				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER));
+		defaultRemoteNameButton.setSelection(true);
 
 		return projectGroup;
 	}
@@ -182,6 +174,7 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				DirectoryDialog dialog = new DirectoryDialog(getShell());
+				dialog.setMessage("Choose the location to store your repository clone to...");
 				String repositoryPath = dialog.open();
 				if (repositoryPath != null) {
 					model.setRepositoryPath(repositoryPath);
@@ -190,7 +183,7 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 		};
 	}
 
-	private SelectionListener onBranchnameDefault() {
+	private SelectionListener onDefaultRemoteName() {
 		return new SelectionAdapter() {
 
 			@Override
@@ -259,15 +252,16 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 		addRuntimeLink.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				IRuntimeType type = getValidRuntimeType();
-				if( type != null )
+				if (type != null)
 					showRuntimeWizard(type);
 			}
 		});
-		
+
 		serverAdapterCheckbox.setLayoutData(UIUtil.createFormData2(0, 5, null, 0, 0, 5, null, 0));
 		runtimeLabel.setLayoutData(UIUtil.createFormData2(serverAdapterCheckbox, 5, null, 0, 0, 5, null, 0));
 		addRuntimeLink.setLayoutData(UIUtil.createFormData2(serverAdapterCheckbox, 5, null, 0, null, 0, 100, -5));
-		suitableRuntimes.setLayoutData(UIUtil.createFormData2(serverAdapterCheckbox, 5, null, 0, runtimeLabel, 5, addRuntimeLink, -5));
+		suitableRuntimes.setLayoutData(UIUtil.createFormData2(serverAdapterCheckbox, 5, null, 0, runtimeLabel, 5,
+				addRuntimeLink, -5));
 		domainLabel.setLayoutData(UIUtil.createFormData2(suitableRuntimes, 5, null, 0, 0, 5, 100, 0));
 		// appLabel.setLayoutData(UIUtil.createFormData2(domainLabel, 5, null,
 		// 0, 0, 5, 100, 0));
@@ -287,7 +281,7 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 	}
 
 	private IRuntimeType getValidRuntimeType() {
-		String cartridgeName = model.getParentModel().getApplication().getCartridge().getName();
+		String cartridgeName = model.getParentModel().getApplicationCartridgeName();
 		if (ICartridge.JBOSSAS_7.getName().equals(cartridgeName)) {
 			return ServerCore.findRuntimeType(IJBossToolingConstants.AS_70);
 		}
@@ -295,7 +289,7 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 	}
 
 	private IServerType getServerTypeToCreate() {
-		String cartridgeName = model.getParentModel().getApplication().getCartridge().getName();
+		String cartridgeName = model.getParentModel().getApplicationCartridgeName();
 		if (ICartridge.JBOSSAS_7.getName().equals(cartridgeName)) {
 			return ServerCore.findServerType(IJBossToolingConstants.SERVER_AS_70);
 		}
@@ -321,6 +315,12 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 	}
 
 	protected void onPageActivated(DataBindingContext dbc) {
+		/*
+		 * this needs to be initialized at page visibility since the default
+		 * repository path default
+		 */
+		model.resetRepositoryPath();
+
 		serverTypeToCreate = getServerTypeToCreate();
 		model.getParentModel().setProperty(AdapterWizardPageModel.SERVER_TYPE, serverTypeToCreate);
 		refreshValidRuntimes();
@@ -343,7 +343,7 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 
 	protected void refreshValidRuntimes() {
 		IRuntimeType type = getValidRuntimeType();
-		if( type != null ) {
+		if (type != null) {
 			IRuntime[] runtimes = getRuntimesOfType(type.getId());
 			fillRuntimeCombo(suitableRuntimes, runtimes);
 		} else {
@@ -386,35 +386,13 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 		return returnValue;
 	}
 
-	private static class BranchNameValidator implements IValidator {
-
-		private static final Pattern BRANCH_PATTERN = Pattern.compile(".+\\/.+");
-
-		@Override
-		public IStatus validate(Object value) {
-			if (value == null
-					|| ((String) value).length() == 0) {
-				return ValidationStatus.error("you have to provide a branch to clone");
-			}
-
-			if (!isValidBranch((String) value)) {
-				return ValidationStatus.error("you have to provide a valid branch name (ex. origin/master)");
-			}
-			return ValidationStatus.ok();
-		}
-
-		private boolean isValidBranch(String branchname) {
-			return BRANCH_PATTERN.matcher(branchname).matches();
-		}
-	}
-
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		if( ImportProjectWizardModel.APPLICATION.equals(evt.getPropertyName())) {
+		if (ImportProjectWizardModel.APPLICATION.equals(evt.getPropertyName())) {
 			handleApplicationChanged();
 		}
 	}
-	
+
 	private void handleApplicationChanged() {
 		// we need to enable or disable all the server widgets depending on
 		// if we can make a server out of this

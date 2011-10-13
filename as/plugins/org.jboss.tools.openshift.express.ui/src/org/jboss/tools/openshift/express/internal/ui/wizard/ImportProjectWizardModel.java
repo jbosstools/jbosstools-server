@@ -37,6 +37,7 @@ import org.eclipse.wst.server.core.IServerType;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
 import org.jboss.tools.openshift.express.client.IApplication;
+import org.jboss.tools.openshift.express.client.ICartridge;
 import org.jboss.tools.openshift.express.client.IUser;
 import org.jboss.tools.openshift.express.client.OpenshiftException;
 import org.jboss.tools.openshift.express.internal.core.behaviour.ExpressServerUtils;
@@ -80,6 +81,33 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 		return (IApplication) getProperty(APPLICATION);
 	}
 
+	public String getApplicationName() {
+		String applicationName = null;
+		IApplication application = getApplication();
+		if (application != null) {
+			applicationName = application.getName();
+		}
+		return applicationName;
+	}
+
+	public ICartridge getApplicationCartridge() {
+		ICartridge cartridge = null;
+		IApplication application = getApplication();
+		if (application != null) {
+			cartridge = application.getCartridge();
+		}
+		return cartridge;
+	}
+
+	public String getApplicationCartridgeName() {
+		String cartridgeName = null;
+		ICartridge cartridge = getApplicationCartridge();
+		if (cartridge != null) {
+			cartridgeName = cartridge.getName();
+		}
+		return cartridgeName;
+	}
+	
 	public void setApplication(IApplication application) {
 		setProperty(APPLICATION, application);
 	}
