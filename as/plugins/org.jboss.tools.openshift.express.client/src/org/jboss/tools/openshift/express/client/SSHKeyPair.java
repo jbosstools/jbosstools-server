@@ -93,11 +93,11 @@ public class SSHKeyPair implements ISSHPublicKey {
 		return new String(Base64Encoder.encode(keyPair.getPublicKeyBlob()));
 	}
 
-	protected String getPrivateKeyPath() {
+	public String getPrivateKeyPath() {
 		return privateKeyPath;
 	}
 
-	protected String getPublicKeyPath() {
+	public String getPublicKeyPath() {
 		return publicKeyPath;
 	}
 }
