@@ -41,7 +41,7 @@ public class OpenshiftDeployUI implements IDeploymentTypeUI {
 		userText = new Text(composite, SWT.BORDER);
 		Label passLabel = new Label(composite, SWT.NONE);
 		passLabel.setText("Openshift Password:");
-		passText = new Text(composite, SWT.BORDER);
+		passText = new Text(composite, SWT.BORDER | SWT.PASSWORD);
 		
 		Label domainLabel = new Label(composite, SWT.NONE);
 		domainLabel.setText("Domain: " + ExpressServerUtils.getExpressDomain(callback.getServer()));
@@ -49,14 +49,17 @@ public class OpenshiftDeployUI implements IDeploymentTypeUI {
 		appLabel.setText("App: " + ExpressServerUtils.getExpressApplication(callback.getServer()));
 		
 		Label modeLabel = new Label(composite, SWT.NONE);
-		modeLabel.setText("Mode:");
+		modeLabel.setText("Mode: " + ExpressServerUtils.getExpressModeAsString(callback.getServer()));
+		
+		userText.setText(ExpressServerUtils.getExpressUsername(callback.getServer()));
+		passText.setText(ExpressServerUtils.getExpressPassword(callback.getServer()));
 		
 		// Maybe just make this a label ??
-		modeCombo = new Combo(composite, SWT.READ_ONLY);
-		modeCombo.setItems(new String[]{
-				"Source", "Binary"
-		});
-		modeCombo.select(0);
+//		modeCombo = new Combo(composite, SWT.READ_ONLY);
+//		modeCombo.setItems(new String[]{
+//				"Source", "Binary"
+//		});
+//		modeCombo.select(0);
 		
 		nameLabel.setLayoutData(UIUtil.createFormData2(0, 5,null,0,0,5,null,0));
 		userText.setLayoutData(UIUtil.createFormData2(0,3,null,0,nameLabel,5,100,-5));
@@ -67,7 +70,7 @@ public class OpenshiftDeployUI implements IDeploymentTypeUI {
 		domainLabel.setLayoutData(UIUtil.createFormData2(passText,5,null,0,0,5,null,0));
 		appLabel.setLayoutData(UIUtil.createFormData2(domainLabel,5,null,0,0,5,null,0));
 		modeLabel.setLayoutData(UIUtil.createFormData2(appLabel,5,null,0,0,5,null,0));
-		modeCombo.setLayoutData(UIUtil.createFormData2(appLabel,3,null,0,modeLabel,5,100,-5));
+//		modeCombo.setLayoutData(UIUtil.createFormData2(appLabel,3,null,0,modeLabel,5,100,-5));
 	}
 
 }

@@ -31,11 +31,15 @@ import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.transport.JschConfigSessionFactory;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerType;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
 import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.IUser;
 import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.internal.core.behaviour.ExpressServerUtils;
 import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
 import org.jboss.tools.openshift.express.internal.ui.wizard.projectimport.GeneralProjectImportOperation;
 import org.jboss.tools.openshift.express.internal.ui.wizard.projectimport.MavenProjectImportOperation;
@@ -185,5 +189,23 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 
 	private void createServerAdapterIfRequired() {
 		// TODO
+		Boolean b = (Boolean)getProperty(AdapterWizardPageModel.CREATE_SERVER);
+		if( b != null && b.booleanValue() ) {
+			IServerType type = (IServerType)getProperty(AdapterWizardPageModel.SERVER_TYPE);
+			IRuntime rt = (IRuntime)getProperty(AdapterWizardPageModel.RUNTIME_DELEGATE);
+			String mode = (String)getProperty(AdapterWizardPageModel.MODE);
+			
+			try {
+				IServer server = ExpressServerUtils.createServer(rt, type, "Openshift Server1");
+				ExpressServerUtils.fillServerWithOpenshiftDetails(server, getApplication().getApplicationUrl(), 
+						getUser().getRhlogin(), getUser().getPassword(), 
+						getUser().getDomain().getRhcDomain(), getApplication().getName(), mode);
+			} catch(CoreException ce) {
+				OpenshiftUIActivator.getDefault().getLog().log(ce.getStatus());
+			} catch( OpenshiftException ose) {
+				IStatus s = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID, "Cannot create openshift server adapter", ose);
+				OpenshiftUIActivator.getDefault().getLog().log(s);
+			}
+		}
 	}
 }

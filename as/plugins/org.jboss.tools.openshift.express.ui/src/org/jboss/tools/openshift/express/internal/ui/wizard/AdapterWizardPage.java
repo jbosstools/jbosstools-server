@@ -52,7 +52,6 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.ui.internal.Messages;
 import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
-import org.eclipse.wst.server.ui.internal.Trace;
 import org.eclipse.wst.server.ui.internal.wizard.TaskWizard;
 import org.eclipse.wst.server.ui.internal.wizard.WizardTaskUtil;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
@@ -178,8 +177,15 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 
 	protected void enableServerWidgets(boolean enabled) {
 		suitableRuntimes.setEnabled(enabled);
+		runtimeLabel.setEnabled(enabled);
+		addRuntimeLink.setEnabled(enabled);
+		domainLabel.setEnabled(enabled);
+		modeLabel.setEnabled(enabled);
 	}
 
+	private Link addRuntimeLink;
+	private Label runtimeLabel;
+	
 	private void fillServerAdapterGroup(Group serverAdapterGroup) {
 		Composite c = new Composite(serverAdapterGroup, SWT.NONE);
 		c.setLayout(new FormLayout());
@@ -197,12 +203,12 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 			}
 		});
 
-		Label l = new Label(c, SWT.BORDER);
-		l.setText("Local Runtime: ");
+		runtimeLabel = new Label(c, SWT.BORDER);
+		runtimeLabel.setText("Local Runtime: ");
 
 		suitableRuntimes = new Combo(c, SWT.READ_ONLY);
-		Link addRuntime = new Link(c, SWT.NONE);
-		addRuntime.setText("<a>" + Messages.addRuntime + "</a>");
+		addRuntimeLink = new Link(c, SWT.NONE);
+		addRuntimeLink.setText("<a>" + Messages.addRuntime + "</a>");
 
 		domainLabel = new Label(c, SWT.NONE);
 		// appLabel = new Label(c, SWT.NONE);
@@ -216,7 +222,7 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
-		addRuntime.addSelectionListener(new SelectionAdapter() {
+		addRuntimeLink.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				IRuntimeType type = getValidRuntimeType();
 				showRuntimeWizard(type);
@@ -224,14 +230,14 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 		});
 
 		serverAdapterCheckbox.setLayoutData(UIUtil.createFormData2(0, 5, null, 0, 0, 5, null, 0));
-		l.setLayoutData(UIUtil.createFormData2(serverAdapterCheckbox, 5, null, 0, 0, 5, null, 0));
-		addRuntime.setLayoutData(UIUtil.createFormData2(serverAdapterCheckbox, 5, null, 0, null, 0, 100, -5));
-		suitableRuntimes.setLayoutData(UIUtil.createFormData2(serverAdapterCheckbox, 5, null, 0, l, 5, addRuntime, -5));
+		runtimeLabel.setLayoutData(UIUtil.createFormData2(serverAdapterCheckbox, 5, null, 0, 0, 5, null, 0));
+		addRuntimeLink.setLayoutData(UIUtil.createFormData2(serverAdapterCheckbox, 5, null, 0, null, 0, 100, -5));
+		suitableRuntimes.setLayoutData(UIUtil.createFormData2(serverAdapterCheckbox, 5, null, 0, runtimeLabel, 5, addRuntimeLink, -5));
 		domainLabel.setLayoutData(UIUtil.createFormData2(suitableRuntimes, 5, null, 0, 0, 5, 100, 0));
 		// appLabel.setLayoutData(UIUtil.createFormData2(domainLabel, 5, null,
 		// 0, 0, 5, 100, 0));
 		modeLabel.setLayoutData(UIUtil.createFormData2(domainLabel, 5, null, 0, 0, 5, 100, 0));
-
+		serverAdapterCheckbox.setSelection(true);
 	}
 
 	private void updateSelectedRuntimeDelegate() {
@@ -312,9 +318,7 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 			IRuntimeWorkingCopy runtimeWorkingCopy = runtimeType.createRuntime(null, null);
 			taskModel.putObject(TaskModel.TASK_RUNTIME, runtimeWorkingCopy);
 		} catch (CoreException ce) {
-			if (Trace.SEVERE) {
-				Trace.trace(Trace.STRING_SEVERE, "Error creating runtime", ce);
-			}
+			OpenshiftUIActivator.getDefault().getLog().log(ce.getStatus());
 			return Window.CANCEL;
 		}
 		fragment = new WizardFragment() {

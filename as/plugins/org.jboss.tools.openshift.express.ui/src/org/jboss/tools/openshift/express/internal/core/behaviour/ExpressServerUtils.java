@@ -31,6 +31,13 @@ public class ExpressServerUtils {
 		return attributes.getAttribute(ATTRIBUTE_EXPRESS_MODE, EXPRESS_SOURCE_MODE);
 	}
 	
+	public static String getExpressModeAsString(IServerAttributes attributes) {
+		String mode = getExpressMode(attributes);
+		if( mode.equals(EXPRESS_SOURCE_MODE))
+			return "Source";
+		return "Binary";
+	}
+	
 	public static IServer setExpressMode(IServer server, String val) throws CoreException {
 		IServerWorkingCopy wc = server.createWorkingCopy();
 		wc.setAttribute(ATTRIBUTE_EXPRESS_MODE, val);
