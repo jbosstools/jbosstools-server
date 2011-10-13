@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.jboss.tools.openshift.express.internal.ui.wizard;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -62,7 +64,7 @@ import org.jboss.tools.openshift.express.client.ICartridge;
 import org.jboss.tools.openshift.express.client.OpenshiftException;
 import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
 
-public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IWizardPage {
+public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IWizardPage, PropertyChangeListener {
 
 	private AdapterWizardPageModel model;
 	private Combo suitableRuntimes;
@@ -72,7 +74,7 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 	private Label modeLabel;
 	private Link addRuntimeLink;
 	private Label runtimeLabel;
-	
+	private Button serverAdapterCheckbox;
 
 	public AdapterWizardPage(ImportProjectWizard wizard, ImportProjectWizardModel model) {
 		super(
@@ -82,6 +84,7 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 				"Server Adapter",
 				wizard);
 		this.model = new AdapterWizardPageModel(model);
+		model.addPropertyChangeListener(this);
 	}
 
 	@Override
@@ -204,7 +207,7 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 	private void fillServerAdapterGroup(Group serverAdapterGroup) {
 		Composite c = new Composite(serverAdapterGroup, SWT.NONE);
 		c.setLayout(new FormLayout());
-		Button serverAdapterCheckbox = new Button(c, SWT.CHECK);
+		serverAdapterCheckbox = new Button(c, SWT.CHECK);
 		serverAdapterCheckbox.setText("Create a JBoss server adapter");
 		final Button serverAdapterCheckbox2 = serverAdapterCheckbox;
 		serverAdapterCheckbox.addSelectionListener(new SelectionListener() {
@@ -218,7 +221,7 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 			}
 		});
 
-		runtimeLabel = new Label(c, SWT.BORDER);
+		runtimeLabel = new Label(c, SWT.NONE);
 		runtimeLabel.setText("Local Runtime: ");
 
 		suitableRuntimes = new Combo(c, SWT.READ_ONLY);
@@ -327,6 +330,8 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 		if( type != null ) {
 			IRuntime[] runtimes = getRuntimesOfType(type.getId());
 			fillRuntimeCombo(suitableRuntimes, runtimes);
+		} else {
+			suitableRuntimes.setItems(new String[0]);
 		}
 	}
 
@@ -385,6 +390,26 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 		private boolean isValidBranch(String branchname) {
 			return BRANCH_PATTERN.matcher(branchname).matches();
 		}
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if( ImportProjectWizardModel.APPLICATION.equals(evt.getPropertyName())) {
+			handleApplicationChanged();
+		}
+	}
+	
+	private void handleApplicationChanged() {
+		// we need to enable or disable all the server widgets depending on
+		// if we can make a server out of this
+		serverTypeToCreate = getServerTypeToCreate();
+		boolean canCreateServer = serverTypeToCreate != null;
+		serverAdapterCheckbox.setEnabled(canCreateServer);
+		serverAdapterCheckbox.setSelection(canCreateServer);
+		enableServerWidgets(canCreateServer);
+		refreshValidRuntimes();
+		model.getParentModel().setProperty(AdapterWizardPageModel.SERVER_TYPE, serverTypeToCreate);
+		model.getParentModel().setProperty(AdapterWizardPageModel.CREATE_SERVER, canCreateServer);
 	}
 
 }

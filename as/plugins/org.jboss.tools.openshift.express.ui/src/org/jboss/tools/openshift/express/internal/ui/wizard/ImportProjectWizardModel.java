@@ -53,10 +53,10 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 
 	private HashMap<String, Object> dataModel = new HashMap<String, Object>();
 
-	private static final String USER = "user";
-	private static final String APPLICATION = "application";
-	private static final String REMOTE_NAME = "remoteName";
-	private static final String CLONE_DIR = "cloneDir";
+	protected static final String USER = "user";
+	protected static final String APPLICATION = "application";
+	protected static final String REMOTE_NAME = "remoteName";
+	protected static final String CLONE_DIR = "cloneDir";
 
 	public void setProperty(String key, Object value) {
 		Object oldVal = dataModel.get(key);
