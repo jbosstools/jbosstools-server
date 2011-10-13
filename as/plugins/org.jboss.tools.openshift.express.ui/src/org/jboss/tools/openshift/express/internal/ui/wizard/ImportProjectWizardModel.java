@@ -97,7 +97,7 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 	public void setApplication(IApplication application) {
 		dataModel.put(APPLICATION, application);
 	}
-	
+
 	public void importProject(final File projectFolder, IProgressMonitor monitor) throws OpenshiftException,
 			CoreException,
 			InterruptedException {
@@ -137,7 +137,7 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 	}
 
 	private void connectToGitRepo(IProject project, File gitFolder, IProgressMonitor monitor) throws CoreException {
-		new ConnectProviderOperation(project).execute(monitor);
+		new ConnectProviderOperation(project, gitFolder).execute(monitor);
 	}
 
 	public File cloneRepository(IProgressMonitor monitor) throws URISyntaxException, OpenshiftException,
@@ -159,7 +159,7 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 		ensureEgitUIIsStarted();
 		URIish gitUri = new URIish(uri);
 		RepositoryUtil repositoryUtil = Activator.getDefault().getRepositoryUtil();
-		
+
 		CloneOperation cloneOperation =
 				new CloneOperation(gitUri, true, null, destination, Constants.HEAD, "origin", CLONE_TIMEOUT);
 		cloneOperation.run(monitor);
