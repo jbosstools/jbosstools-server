@@ -47,7 +47,6 @@ public class AdapterWizardPageModel extends ObservableUIPojo {
 	}
 
 	public void setRepositoryPath(String repositoryPath) {
-		firePropertyChange(PROPERTY_REPO_PATH, this.repositoryPath, this.repositoryPath = repositoryPath);
 		wizardModel.setCloneDirectory(repositoryPath);
 	}
 
@@ -66,7 +65,6 @@ public class AdapterWizardPageModel extends ObservableUIPojo {
 	}
 
 	public void setRemoteName(String remoteName) {
-		firePropertyChange(PROPERTY_REMOTE_NAME, this.remoteName, this.remoteName = remoteName);
 		wizardModel.setRemoteName(remoteName);
 	}
 
@@ -74,8 +72,7 @@ public class AdapterWizardPageModel extends ObservableUIPojo {
 		setRemoteName(REMOTE_NAME_DEFAULT);
 	}
 
-	// TODO is this the best way? Or should we expose ONLY getters to the parent
-	// model?
+	// TODO should this stay? 
 	public ImportProjectWizardModel getParentModel() {
 		return wizardModel;
 	}

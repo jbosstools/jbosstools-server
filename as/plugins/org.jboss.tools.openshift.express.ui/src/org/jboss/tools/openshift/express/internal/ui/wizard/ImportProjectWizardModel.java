@@ -59,7 +59,9 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 	private static final String CLONE_DIR = "cloneDir";
 
 	public void setProperty(String key, Object value) {
+		Object oldVal = dataModel.get(key);
 		dataModel.put(key, value);
+		firePropertyChange(key, oldVal, value);
 	}
 
 	public Object getProperty(String key) {
@@ -67,35 +69,35 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 	}
 
 	public void setUser(IUser user) {
-		dataModel.put(USER, user);
+		setProperty(USER, user);
 	}
 
 	public IUser getUser() {
-		return (IUser) dataModel.get(USER);
+		return (IUser)getProperty(USER);
 	}
 
 	public IApplication getApplication() {
-		return (IApplication) dataModel.get(APPLICATION);
-	}
-
-	public void setRemoteName(String remoteName) {
-		dataModel.put(REMOTE_NAME, remoteName);
-	}
-
-	public String getRemoteName() {
-		return (String) dataModel.get(REMOTE_NAME);
-	}
-
-	public void setCloneDirectory(String cloneDir) {
-		dataModel.put(CLONE_DIR, cloneDir);
-	}
-
-	public String getCloneDirectory() {
-		return (String) dataModel.get(CLONE_DIR);
+		return (IApplication) getProperty(APPLICATION);
 	}
 
 	public void setApplication(IApplication application) {
-		dataModel.put(APPLICATION, application);
+		setProperty(APPLICATION, application);
+	}
+
+	public void setRemoteName(String remoteName) {
+		setProperty(REMOTE_NAME, remoteName);
+	}
+
+	public String getRemoteName() {
+		return (String) getProperty(REMOTE_NAME);
+	}
+
+	public void setCloneDirectory(String cloneDir) {
+		setProperty(CLONE_DIR, cloneDir);
+	}
+
+	public String getCloneDirectory() {
+		return (String) getProperty(CLONE_DIR);
 	}
 
 	public void importProject(final File projectFolder, IProgressMonitor monitor) throws OpenshiftException,
