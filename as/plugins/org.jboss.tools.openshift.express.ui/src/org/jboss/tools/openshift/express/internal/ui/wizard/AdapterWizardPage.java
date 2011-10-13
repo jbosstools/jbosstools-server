@@ -95,7 +95,6 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 		Group serverAdapterGroup = createAdapterGroup(parent);
 		GridDataFactory.fillDefaults()
 				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(serverAdapterGroup);
-
 	}
 
 	private Group createProjectGroup(Composite parent, DataBindingContext dbc) {
@@ -105,19 +104,25 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(projectGroup);
 		GridLayoutFactory.fillDefaults().margins(6, 6).numColumns(3).applyTo(projectGroup);
 
-		Label cloneDirLabel = new Label(projectGroup, SWT.NONE);
-		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(cloneDirLabel);
-		cloneDirLabel.setText("Repository Destination");
-		Text cloneDirText = new Text(projectGroup, SWT.BORDER);
+		Button defaultRepoPathButton = new Button(projectGroup, SWT.CHECK);
+		defaultRepoPathButton.setText("Use default destination");
 		GridDataFactory.fillDefaults()
-				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(cloneDirText);
+				.span(3, 1).align(SWT.LEFT, SWT.CENTER).hint(100, SWT.DEFAULT).applyTo(defaultRepoPathButton);
+		defaultRepoPathButton.addSelectionListener(onDefaultRepoPath());
+
+		Label repoPathLabel = new Label(projectGroup, SWT.NONE);
+		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(repoPathLabel);
+		repoPathLabel.setText("Repository Destination");
+		Text repoPathText = new Text(projectGroup, SWT.BORDER);
+		GridDataFactory.fillDefaults()
+				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(repoPathText);
 		DataBindingUtils.bindMandatoryTextField(
-				cloneDirText, "Repository Destination", AdapterWizardPageModel.PROPERTY_CLONEDIR, model, dbc);
-		Button browseDestinationButton = new Button(projectGroup, SWT.PUSH);
-		browseDestinationButton.setText("Browse");
+				repoPathText, "Repository path", AdapterWizardPageModel.PROPERTY_REPO_PATH, model, dbc);
+		Button browseRepoPathButton = new Button(projectGroup, SWT.PUSH);
+		browseRepoPathButton.setText("Browse");
 		GridDataFactory.fillDefaults()
-				.align(SWT.LEFT, SWT.CENTER).hint(100, SWT.DEFAULT).applyTo(browseDestinationButton);
-		browseDestinationButton.addSelectionListener(onBrowseDestination());
+				.align(SWT.LEFT, SWT.CENTER).hint(100, SWT.DEFAULT).applyTo(browseRepoPathButton);
+		browseRepoPathButton.addSelectionListener(onRepoPath());
 
 		Label branchLabel = new Label(projectGroup, SWT.NONE);
 		branchLabel.setText("Branch to clone");
@@ -128,11 +133,11 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 				.applyTo(branchText);
 		Binding branchNameBinding = dbc.bindValue(
 				WidgetProperties.text(SWT.Modify).observe(branchText)
-				, BeanProperties.value(AdapterWizardPageModel.PROPERTY_BRANCHNAME).observe(model)
+				, BeanProperties.value(AdapterWizardPageModel.PROPERTY_REMOTE_NAME).observe(model)
 				, new UpdateValueStrategy().setAfterGetValidator(new BranchNameValidator())
 				, null);
 		ControlDecorationSupport.create(branchNameBinding, SWT.TOP | SWT.LEFT);
-		
+
 		Button defaultBranchnameButton = new Button(projectGroup, SWT.PUSH);
 		defaultBranchnameButton.setText("Default");
 		GridDataFactory.fillDefaults()
@@ -142,15 +147,25 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 		return projectGroup;
 	}
 
-	private SelectionListener onBrowseDestination() {
+	private SelectionListener onDefaultRepoPath() {
+		return new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				model.resetRepositoryPath();
+			}
+		};
+	}
+
+	private SelectionListener onRepoPath() {
 		return new SelectionAdapter() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				DirectoryDialog dialog = new DirectoryDialog(getShell());
-				String cloneDir = dialog.open();
-				if (cloneDir != null) {
-					model.setCloneDirectory(cloneDir);
+				String repositoryPath = dialog.open();
+				if (repositoryPath != null) {
+					model.setRepositoryPath(repositoryPath);
 				}
 			}
 		};
@@ -161,7 +176,7 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				model.resetBranchname();
+				model.resetRemoteName();
 			}
 		};
 	}

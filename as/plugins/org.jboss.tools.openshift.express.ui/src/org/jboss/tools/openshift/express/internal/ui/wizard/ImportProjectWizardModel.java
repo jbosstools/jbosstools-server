@@ -55,7 +55,7 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 
 	private static final String USER = "user";
 	private static final String APPLICATION = "application";
-	private static final String BRANCHNAME = "branchname";
+	private static final String REMOTE_NAME = "remoteName";
 	private static final String CLONE_DIR = "cloneDir";
 
 	public void setProperty(String key, Object value) {
@@ -78,12 +78,12 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 		return (IApplication) dataModel.get(APPLICATION);
 	}
 
-	public void setBranchname(String branchname) {
-		dataModel.put(BRANCHNAME, branchname);
+	public void setRemoteName(String remoteName) {
+		dataModel.put(REMOTE_NAME, remoteName);
 	}
 
-	public String getBranchname() {
-		return (String) dataModel.get(BRANCHNAME);
+	public String getRemoteName() {
+		return (String) dataModel.get(REMOTE_NAME);
 	}
 
 	public void setCloneDirectory(String cloneDir) {
@@ -158,11 +158,10 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 		}
 		ensureEgitUIIsStarted();
 		URIish gitUri = new URIish(uri);
-		RepositoryUtil repositoryUtil = Activator.getDefault().getRepositoryUtil();
-
 		CloneOperation cloneOperation =
-				new CloneOperation(gitUri, true, null, destination, Constants.HEAD, "origin", CLONE_TIMEOUT);
+				new CloneOperation(gitUri, true, null, destination, Constants.HEAD, getRemoteName(), CLONE_TIMEOUT);
 		cloneOperation.run(monitor);
+		RepositoryUtil repositoryUtil = Activator.getDefault().getRepositoryUtil();
 		repositoryUtil.addConfiguredRepository(new File(destination, Constants.DOT_GIT));
 	}
 

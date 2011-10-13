@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.jboss.tools.openshift.express.internal.ui.wizard;
 
+import org.eclipse.egit.ui.Activator;
+import org.eclipse.egit.ui.UIPreferences;
 import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
 
 /**
@@ -18,11 +20,11 @@ import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
  */
 public class AdapterWizardPageModel extends ObservableUIPojo {
 
-	private static final String BRANCHNAME_DEFAULT = "origin/master";
+	private static final String REMOTE_NAME_DEFAULT = "origin";
 
-	public static final String PROPERTY_CLONEDIR = "cloneDirectory";
-	public static final String PROPERTY_BRANCHNAME = "branchname";
-	
+	public static final String PROPERTY_REPO_PATH = "repositoryPath";
+	public static final String PROPERTY_REMOTE_NAME = "remoteName";
+
 	public static final String CREATE_SERVER = "createServer";
 	public static final String MODE = "serverMode";
 	public static final String MODE_SOURCE = "serverModeSource";
@@ -30,39 +32,50 @@ public class AdapterWizardPageModel extends ObservableUIPojo {
 	public static final String RUNTIME_DELEGATE = "runtimeDelegate";
 	public static final String SERVER_TYPE = "serverType";
 
-	private String cloneDir;
-	private String branchname;
-	
+	private String repositoryPath;
+	private String remoteName;
+
 	private ImportProjectWizardModel wizardModel;
 
 	public AdapterWizardPageModel(ImportProjectWizardModel wizardModel) {
 		this.wizardModel = wizardModel;
-		this.branchname = BRANCHNAME_DEFAULT;
-	}
-	
-	public String getCloneDirectory() {
-		return cloneDir;
+		this.remoteName = REMOTE_NAME_DEFAULT;
 	}
 
-	public void setCloneDirectory(String cloneDir) {
-		firePropertyChange(PROPERTY_CLONEDIR, this.cloneDir, this.cloneDir = cloneDir);
-		wizardModel.setCloneDirectory(cloneDir);
+	public String getRepositoryPath() {
+		return repositoryPath;
 	}
 
-	public String getBranchname() {
-		return branchname;
+	public void setRepositoryPath(String repositoryPath) {
+		firePropertyChange(PROPERTY_REPO_PATH, this.repositoryPath, this.repositoryPath = repositoryPath);
+		wizardModel.setCloneDirectory(repositoryPath);
 	}
 
-	public void setBranchname(String branchname) {
-		firePropertyChange(PROPERTY_BRANCHNAME, this.branchname, this.branchname = branchname);
-		wizardModel.setBranchname(branchname);
+	public void resetRepositoryPath() {
+		setRepositoryPath(getEGitDefaultRepositoryPath() + wizardModel.getApplication().getName());
 	}
 
-	public void resetBranchname() {
-		setBranchname(BRANCHNAME_DEFAULT);
+	public String getEGitDefaultRepositoryPath() {
+		String destinationDir =
+				Activator.getDefault().getPreferenceStore().getString(UIPreferences.DEFAULT_REPO_DIR);
+		return destinationDir;
 	}
 
-	// TODO is this the best way? Or should we expose ONLY getters to the parent model?
+	public String getRemoteName() {
+		return remoteName;
+	}
+
+	public void setRemoteName(String remoteName) {
+		firePropertyChange(PROPERTY_REMOTE_NAME, this.remoteName, this.remoteName = remoteName);
+		wizardModel.setRemoteName(remoteName);
+	}
+
+	public void resetRemoteName() {
+		setRemoteName(REMOTE_NAME_DEFAULT);
+	}
+
+	// TODO is this the best way? Or should we expose ONLY getters to the parent
+	// model?
 	public ImportProjectWizardModel getParentModel() {
 		return wizardModel;
 	}
