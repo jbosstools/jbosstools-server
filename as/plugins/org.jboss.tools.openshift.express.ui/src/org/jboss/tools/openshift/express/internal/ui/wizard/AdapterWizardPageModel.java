@@ -57,12 +57,10 @@ public class AdapterWizardPageModel extends ObservableUIPojo {
 	}
 
 	private String getDefaultRepositoryPath() {
-		return getEGitDefaultRepositoryPath()
-				+ File.separatorChar
-				+ StringUtils.null2emptyString(wizardModel.getApplicationName());
+		return getEGitDefaultRepositoryPath();
 	}
 
-	public String getEGitDefaultRepositoryPath() {
+	private String getEGitDefaultRepositoryPath() {
 		String destinationDir =
 				Activator.getDefault().getPreferenceStore().getString(UIPreferences.DEFAULT_REPO_DIR);
 		return destinationDir;
