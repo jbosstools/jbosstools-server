@@ -15,11 +15,15 @@ import java.util.Iterator;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
@@ -37,13 +41,14 @@ public class DelegatingStartLaunchConfiguration extends AbstractJBossStartLaunch
 		for( Iterator<IJBossLaunchDelegate> i = getSetupParticipants(server).iterator(); i.hasNext(); ) {
 			i.next().setupLaunchConfiguration(workingCopy, server);
 		}
-	}	
+	}
 
 	protected IJBossLaunchDelegate getDelegate(ILaunchConfiguration configuration) throws CoreException {
 		IServer server = ServerUtil.getServer(configuration);
 		DeployableServerBehavior beh = ServerConverter.getDeployableServerBehavior(server);
-		String currentMode = DeploymentPreferenceLoader.getCurrentDeploymentMethodTypeId(beh.getServer());
-		//return getLaunchDelegates(server).get(currentMode);
+		String currentMode = DeploymentPreferenceLoader.getCurrentDeploymentMethodTypeId(beh.getServer(), LocalPublishMethod.LOCAL_PUBLISH_METHOD);
+		if( currentMode == null )
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Server's mode (local/rse/etc) is unset or missing.")); //$NON-NLS-1$
 		return BehaviourModel.getModel().getLaunchDelegate(server, currentMode);
 	}
 	

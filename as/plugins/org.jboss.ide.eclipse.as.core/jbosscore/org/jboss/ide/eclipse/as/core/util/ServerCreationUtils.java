@@ -5,8 +5,6 @@ import java.util.HashMap;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.jdt.launching.IVMInstall;
-import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
@@ -18,6 +16,7 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
 import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 
@@ -66,14 +65,21 @@ public class ServerCreationUtils {
 		IServerType serverType = ServerCore.findServerType(serverTypeId);
 		return createServer2(currentRuntime, serverType, serverName);
 	}
-	
+	public static IServer createServer2(IRuntime currentRuntime, String serverTypeId, String serverName, String mode) throws CoreException {
+		IServerType serverType = ServerCore.findServerType(serverTypeId);
+		return createServer2(currentRuntime, serverType, serverName, mode);
+	}
 	
 	public static IServer createServer2(IRuntime currentRuntime, IServerType serverType, String serverName) throws CoreException {
+		return createServer2(currentRuntime, serverType, serverName, "local"); //$NON-NLS-1$
+	}
+	public static IServer createServer2(IRuntime currentRuntime, IServerType serverType, String serverName, String mode) throws CoreException {
 		IServerWorkingCopy serverWC = serverType.createServer(null, null,
 				new NullProgressMonitor());
 		serverWC.setRuntime(currentRuntime);
 		serverWC.setName(serverName);
 		serverWC.setServerConfiguration(null);
+		serverWC.setAttribute(IDeployableServer.SERVER_MODE, mode); 
 		return serverWC.save(true, new NullProgressMonitor());
 	}
 	
