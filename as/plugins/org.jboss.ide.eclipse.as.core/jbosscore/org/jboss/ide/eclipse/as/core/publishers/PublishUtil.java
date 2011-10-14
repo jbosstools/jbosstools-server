@@ -243,16 +243,17 @@ public class PublishUtil {
 	public static String getSuffix(String type) {
 		// TODO
 		// VirtualReferenceUtilities.INSTANCE. has utility methods to help!!
-
 		String suffix = null;
 		if( IWTPConstants.FACET_EAR.equals(type)) 
 			suffix = IWTPConstants.EXT_EAR;
 		else if( IWTPConstants.FACET_WEB.equals(type) || IWTPConstants.FACET_STATIC_WEB.equals(type)) 
 			suffix = IWTPConstants.EXT_WAR;
-		else if( IWTPConstants.FACET_CONNECTOR.equals(type)) 
-			suffix = IWTPConstants.EXT_RAR;
+		else if( IWTPConstants.FACET_WEB_FRAGMENT.equals(type))
+			suffix = IWTPConstants.EXT_JAR;
 		else if( IWTPConstants.FACET_UTILITY.equals(type)) 
 			suffix = IWTPConstants.EXT_JAR;
+		else if( IWTPConstants.FACET_CONNECTOR.equals(type)) 
+			suffix = IWTPConstants.EXT_RAR;
 		else if( IWTPConstants.FACET_ESB.equals(type))
 			suffix = IWTPConstants.EXT_ESB;
 		else if( "jboss.package".equals(type)) //$NON-NLS-1$ 
@@ -307,6 +308,8 @@ public class PublishUtil {
 		if( moduleTypeId.equals(IWTPConstants.FACET_UTILITY)) {
 			return true;
 		} else if( moduleTypeId.equals(IWTPConstants.FACET_APP_CLIENT)) { 
+			return true;
+		} else if( moduleTypeId.equals(IWTPConstants.FACET_WEB_FRAGMENT)) {
 			return true;
 		}
 		return false;
