@@ -13,8 +13,11 @@ package org.jboss.tools.openshift.express.internal.ui.wizard;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
@@ -22,6 +25,7 @@ import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.egit.core.RepositoryUtil;
 import org.eclipse.egit.core.op.CloneOperation;
@@ -31,9 +35,12 @@ import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.transport.JschConfigSessionFactory;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerType;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
 import org.jboss.tools.openshift.express.client.IApplication;
@@ -149,7 +156,7 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 					File gitFolder = new File(projectFolder, Constants.DOT_GIT);
 					connectToGitRepo(importedProjects, gitFolder, monitor);
 
-					createServerAdapterIfRequired();
+					createServerAdapterIfRequired(importedProjects);
 					return Status.OK_STATUS;
 				} catch (Exception e) {
 					IStatus status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
@@ -218,8 +225,7 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 		Activator.getDefault();
 	}
 
-	private void createServerAdapterIfRequired() {
-		// TODO
+	private void createServerAdapterIfRequired(List<IProject> importedProjects) {
 		Boolean b = (Boolean)getProperty(AdapterWizardPageModel.CREATE_SERVER);
 		if( b != null && b.booleanValue() ) {
 			IServerType type = (IServerType)getProperty(AdapterWizardPageModel.SERVER_TYPE);
@@ -231,6 +237,21 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 				ExpressServerUtils.fillServerWithOpenshiftDetails(server, getApplication().getApplicationUrl(), 
 						getUser().getRhlogin(), getUser().getPassword(), 
 						getUser().getDomain().getRhcDomain(), getApplication().getName(), mode);
+				
+				// Now add the projects
+				Iterator<IProject> i = importedProjects.iterator();
+				ArrayList<IModule> toAdd = new ArrayList<IModule>();
+				while(i.hasNext()) {
+					IProject p = i.next();
+					IModule[] m = ServerUtil.getModules(p);
+					if( m != null && m.length > 0 ) {
+						toAdd.addAll(Arrays.asList(m));
+					}
+				}
+				IServerWorkingCopy wc = server.createWorkingCopy();
+				IModule[] add = toAdd.toArray(new IModule[toAdd.size()]);
+				wc.modifyModules(add, new IModule[0], new NullProgressMonitor());
+				server = wc.save(true, new NullProgressMonitor());
 			} catch(CoreException ce) {
 				OpenshiftUIActivator.getDefault().getLog().log(ce.getStatus());
 			} catch( OpenshiftException ose) {
