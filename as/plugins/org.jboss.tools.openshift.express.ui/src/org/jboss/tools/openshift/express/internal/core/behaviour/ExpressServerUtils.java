@@ -169,11 +169,11 @@ public class ExpressServerUtils {
 	}
 	
 	public static IServer createServer(IRuntime runtime, String serverID) throws CoreException {
-		return ServerCreationUtils.createServer2(runtime, serverID);
+		return ServerCreationUtils.createServer2(runtime, serverID, serverID, "openshift");
 	}
 	
 	public static IServer createServer(IRuntime runtime, IServerType serverType, String serverName) throws CoreException {
-		return ServerCreationUtils.createServer2(runtime, serverType, serverName);
+		return ServerCreationUtils.createServer2(runtime, serverType, serverName, "openshift");
 	}
 
 }
