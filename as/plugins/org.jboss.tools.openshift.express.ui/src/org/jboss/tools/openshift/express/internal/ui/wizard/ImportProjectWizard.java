@@ -22,6 +22,7 @@ import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jgit.api.errors.JGitInternalException;
+import org.eclipse.jgit.errors.TransportException;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.jboss.tools.common.ui.WizardUtils;
@@ -48,39 +49,43 @@ public class ImportProjectWizard extends Wizard implements INewWizard {
 	public boolean performFinish() {
 		try {
 			WizardUtils.runInWizard(
-					new Job("Creating local git repo...") {
+					new Job("Cloning local git repo...") {
 
 						@Override
 						protected IStatus run(IProgressMonitor monitor) {
 							IStatus status = Status.OK_STATUS;
+							String errorMessage = null;
 							try {
 								File repositoryFile = model.cloneRepository(monitor);
 								model.importProject(repositoryFile, monitor);
 							} catch (OpenshiftException e) {
-								status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
-										"An exception occurred while creating local git repository.", e);
+								errorMessage = "An exception occurred while creating local git repository.";
+								status = OpenshiftUIActivator.createErrorStatus(e.getMessage(), e);
 							} catch (URISyntaxException e) {
-								status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
-										"The url of the remote git repository is not valid", e);
+								errorMessage = "The url of the remote git repository is not valid";
+								status = OpenshiftUIActivator.createErrorStatus(e.getMessage(), e);
 							} catch (InvocationTargetException e) {
-								if (e.getTargetException() instanceof JGitInternalException) {
-									status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
-											"Could not clone the repository. Authentication failed.", e
-													.getTargetException());
+								if (isTransportException(e)) {
+									errorMessage = "Could not clone the repository. Authentication failed.\n"
+											+ " Please make sure that you added your private key to the ssh preferences.";
+									TransportException te = getTransportException(e);
+									status = OpenshiftUIActivator.createErrorStatus(te.getMessage(), te);
 								} else {
-									status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
-											"An exception occurred while creating local git repository.", e);
+									errorMessage = "An exception occurred while creating local git repository.";
+									status = OpenshiftUIActivator.createErrorStatus(e.getMessage(), e);
 								}
 							} catch (Exception e) {
-								status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
-										"An exception occurred while creating local git repository.", e);
+								errorMessage = "An exception occurred while creating local git repository.";
+								status = OpenshiftUIActivator.createErrorStatus(e.getMessage(), e);
 							}
 
 							if (!status.isOK()) {
 								OpenshiftUIActivator.log(status);
+								openErrorDialog(errorMessage, status);
 							}
 							return status;
 						}
+
 					}, getContainer());
 			return true;
 		} catch (Exception e) {
@@ -98,4 +103,27 @@ public class ImportProjectWizard extends Wizard implements INewWizard {
 		addPage(new ApplicationWizardPage(this, model));
 		addPage(new AdapterWizardPage(this, model));
 	}
+
+	private boolean isTransportException(InvocationTargetException e) {
+		return e.getTargetException() instanceof JGitInternalException
+				&& e.getTargetException().getCause() instanceof TransportException;
+	}
+
+	private TransportException getTransportException(InvocationTargetException e) {
+		if (isTransportException(e)) {
+			return (TransportException) ((JGitInternalException) e.getTargetException()).getCause();
+		}
+		return null;
+	}
+
+	private void openErrorDialog(final String errorMessage, final IStatus status) {
+		getShell().getDisplay().syncExec(new Runnable() {
+
+			@Override
+			public void run() {
+				ErrorDialog.openError(getShell(), "Error cloning the git repo", errorMessage, status);
+			}
+		});
+	}
+
 }
