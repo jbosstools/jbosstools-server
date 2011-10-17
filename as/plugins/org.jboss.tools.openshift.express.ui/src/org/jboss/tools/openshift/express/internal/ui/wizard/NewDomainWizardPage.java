@@ -25,7 +25,6 @@ import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
-import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -124,20 +123,8 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 
-				InputDialog dialog = new InputDialog(getShell(),
-						"New ssh key"
-						, "Please pick a passphrase for your new ssh key pair", "openshift"
-						, new IInputValidator() {
-
-							@Override
-							public String isValid(String input) {
-								if (isEmpty(input)) {
-									return "You have to provide a pass phrase";
-								}
-								return null;
-							}
-						});
-				if (Dialog.OK == dialog.open()) {
+				InputDialog dialog = new PassphraseDialog(getShell());
+						if (Dialog.OK == dialog.open()) {
 					try {
 						String passPhrase = dialog.getValue();
 						String sshKeysDirectory = SshPrivateKeysPreferences.getSshKeyDirectory();
