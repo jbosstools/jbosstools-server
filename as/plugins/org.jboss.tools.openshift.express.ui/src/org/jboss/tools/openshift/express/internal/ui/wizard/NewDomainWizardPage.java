@@ -234,7 +234,7 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 			}
 			for (String preferencesKey : SshPrivateKeysPreferences.getKeys()) {
 				try {
-					File privateKey = SshPrivateKeysPreferences.getPrivateKey(preferencesKey);
+					File privateKey = SshPrivateKeysPreferences.getKeyFile(preferencesKey);
 					if (privateKey == null
 							|| !isReadable(privateKey)) {
 						continue;
