@@ -175,6 +175,7 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				SshPrivateKeysPreferences.openPreferencesPage(getShell());
+				getDatabindingContext().updateTargets();
 			}
 		};
 	}
@@ -197,8 +198,8 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 			}
 			if (!isKeyKnownToSsh((String) value)) {
 				return ValidationStatus.warning(
-						NLS.bind("Could not find the private portion for the public key \"{0}\". "
-								+ "Make sure your private key is listed in the ssh2 preferences.", value));
+						NLS.bind("Could not find the private portion for your public key. "
+								+ "Make sure it is listed in the ssh2 preferences.", value));
 			}
 			return ValidationStatus.ok();
 		}
