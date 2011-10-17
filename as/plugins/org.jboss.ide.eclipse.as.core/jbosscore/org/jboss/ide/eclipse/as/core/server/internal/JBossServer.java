@@ -200,12 +200,17 @@ public class JBossServer extends DeployableServer
         
         IWebModule webModule =(IWebModule)module.loadAdapter(IWebModule.class,null);
         String host = getHost();
-		String url = "http://"+host; //$NON-NLS-1$
+		String url = host;
+		if( !url.startsWith("http://") && !url.startsWith("https://") ) { //$NON-NLS-1$ //$NON-NLS-2$
+			url = "http://"+host; //$NON-NLS-1$
+		}
 		int port = getJBossWebPort();
 		if (port != 80)
 			url += ":" + port; //$NON-NLS-1$
 
-		url += "/"+webModule.getContextRoot(); //$NON-NLS-1$
+		String cxRoot = webModule.getContextRoot();
+		if( !cxRoot.equals("/") && !cxRoot.equals("./")) //$NON-NLS-1$ //$NON-NLS-2$
+			url += "/"+webModule.getContextRoot(); //$NON-NLS-1$
 
 		if (!url.endsWith("/")) //$NON-NLS-1$
 			url += "/"; //$NON-NLS-1$

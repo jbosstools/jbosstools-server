@@ -7,6 +7,8 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.eclipse.wst.server.core.internal.Server;
+import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
@@ -150,7 +152,11 @@ public class ExpressServerUtils {
 	public static IServer fillServerWithOpenshiftDetails(IServer server,
 			String host, String username, String password, String domain, String app,
 			String mode) throws CoreException {
-		IServerWorkingCopy wc = server.createWorkingCopy();
+		if( host.indexOf("://") != -1)
+			host = host.substring(host.indexOf("://") + 3);
+		if( host.endsWith("/"))
+			host = host.substring(0, host.length()-1);
+		ServerWorkingCopy wc = (ServerWorkingCopy)server.createWorkingCopy();
 		wc.setHost(host);
 		wc.setAttribute(IDeployableServer.SERVER_MODE, "openshift");
 		wc.setAttribute(ATTRIBUTE_USERNAME, username);
@@ -158,6 +164,10 @@ public class ExpressServerUtils {
 		wc.setAttribute(ATTRIBUTE_DOMAIN, domain);
 		wc.setAttribute(ATTRIBUTE_APPLICATION, app);
 		wc.setAttribute(ATTRIBUTE_EXPRESS_MODE, mode);
+		wc.setAutoPublishSetting(Server.AUTO_PUBLISH_DISABLE);
+		wc.setAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, "true");
+		wc.setAttribute(IJBossToolingConstants.WEB_PORT, 80);
+		wc.setAttribute(IJBossToolingConstants.WEB_PORT_DETECT, "false");
 		return wc.save(true, new NullProgressMonitor());
 	}
 	

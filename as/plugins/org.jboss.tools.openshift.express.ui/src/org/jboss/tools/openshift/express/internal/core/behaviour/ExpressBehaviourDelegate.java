@@ -8,21 +8,20 @@ import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.IJBossBehaviourDelegate;
 
 public class ExpressBehaviourDelegate implements IJBossBehaviourDelegate {
-
+	private DelegatingServerBehavior realBehaviour;
+	
 	public ExpressBehaviourDelegate() {
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public String getBehaviourTypeId() {
-		// TODO Auto-generated method stub
-		return null;
+		return "openshift";
 	}
 
 	@Override
 	public void setActualBehaviour(DelegatingServerBehavior actualBehaviour) {
-		// TODO Auto-generated method stub
-
+		realBehaviour = actualBehaviour;
 	}
 
 	@Override
@@ -57,7 +56,7 @@ public class ExpressBehaviourDelegate implements IJBossBehaviourDelegate {
 
 	@Override
 	public IStatus canChangeState(String launchMode) {
-		return Status.CANCEL_STATUS;
+		return Status.OK_STATUS;
 	}
 
 	@Override
