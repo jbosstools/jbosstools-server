@@ -47,8 +47,8 @@ import org.jboss.tools.common.ui.databinding.MandatoryStringValidator;
 import org.jboss.tools.common.ui.databinding.ParametrizableWizardPageSupport;
 import org.jboss.tools.common.ui.ssh.SshPrivateKeysPreferences;
 import org.jboss.tools.openshift.express.client.OpenshiftException;
-import org.jboss.tools.openshift.express.client.SSHKeyPair;
 import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
+import org.jboss.tools.openshift.express.internal.ui.common.FileUtils;
 import org.jboss.tools.openshift.express.internal.ui.common.StringUtils;
 
 /**
@@ -56,14 +56,12 @@ import org.jboss.tools.openshift.express.internal.ui.common.StringUtils;
  */
 public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 
-	private static final String OPENSHIFT_KEY_PREFIX = "openshift_id_rsa_";
-	private static final String PUBLIC_KEY_SUFFIX = ".pub";
 	private static final String FILTEREXPRESSION_PUBLIC_SSH_KEY = "*.pub";
 	private static final String FILTERNAME_PUBLIC_SSH_KEY = "Public ssh key file (*.pub)";
 
-	private NewDomainWizardModel model;
+	private NewDomainWizardPageModel model;
 
-	public NewDomainWizardPage(String namespace, NewDomainWizardModel model, IWizard wizard) {
+	public NewDomainWizardPage(String namespace, NewDomainWizardPageModel model, IWizard wizard) {
 		super("Domain", "Create a new domain", "New Domain", wizard);
 		this.model = model;
 	}
@@ -79,7 +77,7 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 		GridDataFactory.fillDefaults()
 				.span(3, 1).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(namespaceText);
 		DataBindingUtils.bindMandatoryTextField(
-				namespaceText, "Domain name", NewDomainWizardModel.PROPERTY_NAMESPACE, model, dbc);
+				namespaceText, "Domain name", NewDomainWizardPageModel.PROPERTY_NAMESPACE, model, dbc);
 
 		Label sshKeyLabel = new Label(container, SWT.NONE);
 		sshKeyLabel.setText("SSH Public Key");
@@ -90,7 +88,7 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 				.align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(sshKeyText);
 		Binding sshKeyTextBinding = dbc.bindValue(
 				WidgetProperties.text(SWT.Modify).observe(sshKeyText),
-				BeanProperties.value(NewDomainWizardModel.PROPERTY_SSHKEY).observe(model),
+				BeanProperties.value(NewDomainWizardPageModel.PROPERTY_SSHKEY).observe(model),
 				new UpdateValueStrategy().setAfterGetValidator(new MandatoryStringValidator(
 						"You have to select a ssh public key")),
 				new UpdateValueStrategy().setAfterGetValidator(new SSHKeyValidator()));
@@ -128,10 +126,7 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 						if (Dialog.OK == dialog.open()) {
 					try {
 						String passPhrase = dialog.getValue();
-						String sshKeysDirectory = SshPrivateKeysPreferences.getSshKeyDirectory();
-						SSHKeyPair keyPair = createSshKeyPair(passPhrase, sshKeysDirectory);
-						SshPrivateKeysPreferences.add(keyPair.getPrivateKeyPath());
-						model.setSshKey(keyPair.getPublicKeyPath());
+						model.createSShKeyPair(passPhrase);
 					} catch (FileNotFoundException ex) {
 						IStatus status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
 								"Could not read the ssh key folder", ex);
@@ -150,26 +145,6 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 				}
 			}
 		};
-	}
-
-	private SSHKeyPair createSshKeyPair(String passPhrase, String sshKeysDirectory) throws OpenshiftException {
-		String privateKeyPath = getKeyPairFileName(sshKeysDirectory);
-		String publicKeyPath = getPublicKeyPath(privateKeyPath);
-		return SSHKeyPair.create(passPhrase, privateKeyPath, publicKeyPath);
-	}
-
-	private String getKeyPairFileName(String sshKeysDirectory) {
-		int i = 0;
-		File privateKey = null;
-		while (isReadable(privateKey = new File(sshKeysDirectory, OPENSHIFT_KEY_PREFIX + i))
-				|| isReadable(new File(sshKeysDirectory, getPublicKeyPath(privateKey.getName())))) {
-			i++;
-		}
-		return privateKey.getAbsolutePath();
-	}
-
-	private String getPublicKeyPath(String privateKeyPath) {
-		return privateKeyPath + PUBLIC_KEY_SUFFIX;
 	}
 
 	private SelectionListener onBrowse() {
@@ -217,7 +192,7 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 		public IStatus validate(Object value) {
 			if (!(value instanceof String)
 					|| StringUtils.isEmpty((String) value)
-					|| !isReadable((String) value)) {
+					|| !FileUtils.canRead((String) value)) {
 				return ValidationStatus.error("You have to provide a valid ssh public key");
 			}
 			if (!isKeyKnownToSsh((String) value)) {
@@ -236,7 +211,7 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 				try {
 					File privateKey = SshPrivateKeysPreferences.getKeyFile(preferencesKey);
 					if (privateKey == null
-							|| !isReadable(privateKey)) {
+							|| !FileUtils.canRead(privateKey)) {
 						continue;
 					}
 					if (publicKeyPath.startsWith(privateKey.getAbsolutePath() + ".")) {
@@ -250,18 +225,4 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 		}
 	}
 
-	private boolean isReadable(String path) {
-		if (path == null) {
-			return false;
-		}
-		return isReadable(new File(path));
-	}
-
-	private boolean isReadable(File file) {
-		if (file == null) {
-			return false;
-		}
-		return file.exists()
-				&& file.canRead();
-	}
 }

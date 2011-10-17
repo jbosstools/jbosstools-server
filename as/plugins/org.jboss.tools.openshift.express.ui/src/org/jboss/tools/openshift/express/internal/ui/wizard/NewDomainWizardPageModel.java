@@ -11,19 +11,26 @@
 package org.jboss.tools.openshift.express.internal.ui.wizard;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
+import org.jboss.tools.common.ui.ssh.SshPrivateKeysPreferences;
 import org.jboss.tools.openshift.express.client.IDomain;
 import org.jboss.tools.openshift.express.client.ISSHPublicKey;
 import org.jboss.tools.openshift.express.client.IUser;
 import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.client.SSHKeyPair;
 import org.jboss.tools.openshift.express.client.SSHPublicKey;
+import org.jboss.tools.openshift.express.internal.ui.common.FileUtils;
 
 /**
  * @author André Dietisheim
  */
-public class NewDomainWizardModel extends ObservableUIPojo {
+public class NewDomainWizardPageModel extends ObservableUIPojo {
+
+	private static final String OPENSHIFT_KEY_PREFIX = "openshift_id_rsa_";
+	private static final String PUBLIC_KEY_SUFFIX = ".pub";
 
 	public static final String PROPERTY_NAMESPACE = "namespace";
 	public static final String PROPERTY_SSHKEY = "sshKey";
@@ -34,7 +41,7 @@ public class NewDomainWizardModel extends ObservableUIPojo {
 	private String sshKey;
 	private IUser user;
 
-	public NewDomainWizardModel(String namespace, IUser user) {
+	public NewDomainWizardPageModel(String namespace, IUser user) {
 		this.namespace = namespace;
 		this.user = user;
 	}
@@ -50,6 +57,33 @@ public class NewDomainWizardModel extends ObservableUIPojo {
 
 	public String getSshKey() {
 		return sshKey;
+	}
+
+	public void createSShKeyPair(String passPhrase) throws FileNotFoundException, OpenshiftException {
+		String sshKeysDirectory = SshPrivateKeysPreferences.getSshKeyDirectory();
+		SSHKeyPair keyPair = createSshKeyPair(passPhrase, sshKeysDirectory);
+		SshPrivateKeysPreferences.add(keyPair.getPrivateKeyPath());
+		setSshKey(keyPair.getPublicKeyPath());
+	}
+	
+	private SSHKeyPair createSshKeyPair(String passPhrase, String sshKeysDirectory) throws OpenshiftException {
+		String privateKeyPath = getKeyPairFileName(sshKeysDirectory);
+		String publicKeyPath = getPublicKeyPath(privateKeyPath);
+		return SSHKeyPair.create(passPhrase, privateKeyPath, publicKeyPath);
+	}
+	
+	private String getKeyPairFileName(String sshKeysDirectory) {
+		int i = 0;
+		File privateKey = null;
+		while (FileUtils.canRead(privateKey = new File(sshKeysDirectory, OPENSHIFT_KEY_PREFIX + i))
+				|| FileUtils.canRead(new File(sshKeysDirectory, getPublicKeyPath(privateKey.getName())))) {
+			i++;
+		}
+		return privateKey.getAbsolutePath();
+	}
+
+	private String getPublicKeyPath(String privateKeyPath) {
+		return privateKeyPath + PUBLIC_KEY_SUFFIX;
 	}
 
 	public void setSshKey(String sshKey) {

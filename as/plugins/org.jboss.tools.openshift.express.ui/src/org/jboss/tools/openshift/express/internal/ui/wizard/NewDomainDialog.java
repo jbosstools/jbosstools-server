@@ -27,11 +27,11 @@ import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
 public class NewDomainDialog extends Wizard {
 
 	private String namespace;
-	private NewDomainWizardModel model;
+	private NewDomainWizardPageModel model;
 
 	public NewDomainDialog(String namespace, ImportProjectWizardModel wizardModel) {
 		this.namespace = namespace;
-		this.model = new NewDomainWizardModel(namespace, wizardModel.getUser());
+		this.model = new NewDomainWizardPageModel(namespace, wizardModel.getUser());
 		setNeedsProgressMonitor(true);
 	}
 
