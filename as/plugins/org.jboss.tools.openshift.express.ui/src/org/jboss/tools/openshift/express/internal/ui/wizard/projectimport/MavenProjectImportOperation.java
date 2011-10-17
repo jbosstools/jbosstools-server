@@ -43,8 +43,7 @@ public class MavenProjectImportOperation extends AbstractProjectImportOperation 
 		IProjectConfigurationManager configurationManager = mavenPlugin.getProjectConfigurationManager();
 		MavenModelManager modelManager = mavenPlugin.getMavenModelManager();
 		List<MavenProjectInfo> projectInfos = getMavenProjects(getProjectDirectory(), modelManager, monitor);
-		ProjectImportConfiguration projectImportConfiguration =
-				new ProjectImportConfiguration();
+		ProjectImportConfiguration projectImportConfiguration = new ProjectImportConfiguration();
 		List<IMavenProjectImportResult> importResults =
 				configurationManager.importProjects(projectInfos, projectImportConfiguration, monitor);
 		return toProjects(importResults);
@@ -53,7 +52,10 @@ public class MavenProjectImportOperation extends AbstractProjectImportOperation 
 	private List<IProject> toProjects(List<IMavenProjectImportResult> importResults) {
 		List<IProject> projects = new ArrayList<IProject>();
 		for (IMavenProjectImportResult importResult : importResults) {
-			projects.add(importResult.getProject());
+			IProject project = importResult.getProject();
+			if (project != null) {
+				projects.add(importResult.getProject());
+			}
 		}
 		return projects;
 	}
