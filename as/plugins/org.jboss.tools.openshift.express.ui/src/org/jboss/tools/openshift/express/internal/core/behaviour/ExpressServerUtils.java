@@ -19,6 +19,7 @@ import org.jboss.ide.eclipse.as.core.util.ServerCreationUtils;
  * stored inside a server object, as well as the utility methods
  * used to get and set them for a server. 
  *
+ * @author Rob Stryker
  */
 public class ExpressServerUtils {
 	public static final String ATTRIBUTE_EXPRESS_MODE = "org.jboss.tools.openshift.express.internal.core.behaviour.ExpressMode";
