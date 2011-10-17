@@ -11,6 +11,7 @@
 package org.jboss.tools.openshift.express.internal.ui.wizard;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -20,6 +21,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.jboss.tools.common.ui.WizardUtils;
@@ -60,6 +62,14 @@ public class ImportProjectWizard extends Wizard implements INewWizard {
 							} catch (URISyntaxException e) {
 								return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
 										"The url of the remote git repository is not valid", e);
+							} catch(InvocationTargetException e) {
+								if (e.getTargetException() instanceof JGitInternalException) {
+									return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
+											"Could not clone the repository. Authentication failed.", e.getTargetException());
+								} else {									
+									return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
+											"An exception occurred while creating local git repository.", e);
+								}
 							} catch (Exception e) {
 								return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
 										"An exception occurred while creating local git repository.", e);
