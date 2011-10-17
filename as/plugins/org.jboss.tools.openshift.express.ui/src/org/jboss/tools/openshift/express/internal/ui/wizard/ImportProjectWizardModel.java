@@ -153,10 +153,8 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 						importedProjects = new GeneralProjectImportOperation(projectFolder).importToWorkspace(monitor);
 					}
 
-					File gitFolder = new File(projectFolder, Constants.DOT_GIT);
-					connectToGitRepo(importedProjects, gitFolder, monitor);
-
-					createServerAdapterIfRequired(importedProjects);
+					connectToGitRepo(importedProjects, projectFolder, monitor);
+					createServerAdapterIfRequired(importedProjects, monitor);
 					return Status.OK_STATUS;
 				} catch (Exception e) {
 					IStatus status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
@@ -168,8 +166,9 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 		}.schedule();
 	}
 
-	private void connectToGitRepo(List<IProject> projects, File gitFolder, IProgressMonitor monitor)
+	private void connectToGitRepo(List<IProject> projects, File projectFolder, IProgressMonitor monitor)
 			throws CoreException {
+		File gitFolder = new File(projectFolder, Constants.DOT_GIT);
 		for (IProject project : projects) {
 			if (project != null) {
 				connectToGitRepo(project, gitFolder, monitor);
@@ -227,12 +226,12 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 		Activator.getDefault();
 	}
 
-	private void createServerAdapterIfRequired(List<IProject> importedProjects) {
+	private void createServerAdapterIfRequired(List<IProject> importedProjects, IProgressMonitor monitor) {
 		Boolean b = (Boolean)getProperty(AdapterWizardPageModel.CREATE_SERVER);
 		if( b != null && b.booleanValue() ) {
 			try {
 				IServer server = createServerAdapter();
-				addModules(getModules(importedProjects), server);
+				addModules(getModules(importedProjects), server, monitor);
 			} catch(CoreException ce) {
 				OpenshiftUIActivator.getDefault().getLog().log(ce.getStatus());
 			} catch( OpenshiftException ose) {
@@ -255,7 +254,7 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 		return server;
 	}
 
-	private void addModules(List<IModule> modules, IServer server) throws CoreException {
+	private void addModules(List<IModule> modules, IServer server, IProgressMonitor monitor) throws CoreException {
 		if (modules == null
 				|| modules.size() == 0) {
 			return;
@@ -263,7 +262,7 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 		IServerWorkingCopy wc = server.createWorkingCopy();
 		IModule[] add = modules.toArray(new IModule[modules.size()]);
 		wc.modifyModules(add, new IModule[0], new NullProgressMonitor());
-		server = wc.save(true, new NullProgressMonitor());
+		server = wc.save(true, monitor);
 	}
 
 	private List<IModule> getModules(List<IProject> importedProjects) {
