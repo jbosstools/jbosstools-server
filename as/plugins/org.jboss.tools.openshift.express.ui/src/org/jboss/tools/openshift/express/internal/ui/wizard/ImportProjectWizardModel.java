@@ -230,15 +230,8 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 	private void createServerAdapterIfRequired(List<IProject> importedProjects) {
 		Boolean b = (Boolean)getProperty(AdapterWizardPageModel.CREATE_SERVER);
 		if( b != null && b.booleanValue() ) {
-			IServerType type = (IServerType)getProperty(AdapterWizardPageModel.SERVER_TYPE);
-			IRuntime rt = (IRuntime)getProperty(AdapterWizardPageModel.RUNTIME_DELEGATE);
-			String mode = (String)getProperty(AdapterWizardPageModel.MODE);
-			
 			try {
-				IServer server = ExpressServerUtils.createServer(rt, type, "Openshift Server1");
-				ExpressServerUtils.fillServerWithOpenshiftDetails(server, getApplication().getApplicationUrl(), 
-						getUser().getRhlogin(), getUser().getPassword(), 
-						getUser().getDomain().getRhcDomain(), getApplication().getName(), mode);
+				IServer server = createServerAdapter();
 				addModules(importedProjects, server);
 			} catch(CoreException ce) {
 				OpenshiftUIActivator.getDefault().getLog().log(ce.getStatus());
@@ -247,6 +240,19 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 				OpenshiftUIActivator.getDefault().getLog().log(s);
 			}
 		}
+	}
+
+	private IServer createServerAdapter() throws CoreException,
+			OpenshiftException {
+		IServerType type = (IServerType)getProperty(AdapterWizardPageModel.SERVER_TYPE);
+		IRuntime rt = (IRuntime)getProperty(AdapterWizardPageModel.RUNTIME_DELEGATE);
+		String mode = (String)getProperty(AdapterWizardPageModel.MODE);
+
+		IServer server = ExpressServerUtils.createServer(rt, type, "Openshift Server1");
+		ExpressServerUtils.fillServerWithOpenshiftDetails(server, getApplication().getApplicationUrl(), 
+				getUser().getRhlogin(), getUser().getPassword(), 
+				getUser().getDomain().getRhcDomain(), getApplication().getName(), mode);
+		return server;
 	}
 
 	private void addModules(List<IProject> importedProjects, IServer server) throws CoreException {
