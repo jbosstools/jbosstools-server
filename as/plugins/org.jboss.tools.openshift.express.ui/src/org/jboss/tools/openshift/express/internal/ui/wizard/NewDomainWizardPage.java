@@ -49,6 +49,7 @@ import org.jboss.tools.common.ui.ssh.SshPrivateKeysPreferences;
 import org.jboss.tools.openshift.express.client.OpenshiftException;
 import org.jboss.tools.openshift.express.client.SSHKeyPair;
 import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
+import org.jboss.tools.openshift.express.internal.ui.common.StringUtils;
 
 /**
  * @author André Dietisheim
@@ -215,7 +216,7 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 		@Override
 		public IStatus validate(Object value) {
 			if (!(value instanceof String)
-					|| isEmpty((String) value)
+					|| StringUtils.isEmpty((String) value)
 					|| !isReadable((String) value)) {
 				return ValidationStatus.error("You have to provide a valid ssh public key");
 			}
@@ -228,7 +229,7 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 		}
 
 		private boolean isKeyKnownToSsh(String publicKeyPath) {
-			if (isEmpty(publicKeyPath)) {
+			if (StringUtils.isEmpty(publicKeyPath)) {
 				return false;
 			}
 			for (String preferencesKey : SshPrivateKeysPreferences.getKeys()) {
@@ -262,10 +263,5 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 		}
 		return file.exists()
 				&& file.canRead();
-	}
-
-	private boolean isEmpty(String value) {
-		return value == null
-				|| ((String) value).length() == 0;
 	}
 }
