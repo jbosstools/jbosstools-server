@@ -35,6 +35,7 @@ import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.transport.JschConfigSessionFactory;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.common.componentcore.internal.util.ComponentUtilities;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
@@ -230,15 +231,26 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 		Boolean b = (Boolean)getProperty(AdapterWizardPageModel.CREATE_SERVER);
 		if( b != null && b.booleanValue() ) {
 			try {
+				renameWebContextRoot(importedProjects);
 				IServer server = createServerAdapter();
 				addModules(getModules(importedProjects), server, monitor);
 			} catch(CoreException ce) {
 				OpenshiftUIActivator.getDefault().getLog().log(ce.getStatus());
-			} catch( OpenshiftException ose) {
+			} catch(OpenshiftException ose) {
 				IStatus s = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID, "Cannot create openshift server adapter", ose);
 				OpenshiftUIActivator.getDefault().getLog().log(s);
 			}
 		}
+	}
+
+	private void renameWebContextRoot(List<IProject> importedProjects) {
+		for (IProject project : importedProjects) {
+			renameWebContextRoot(project);
+		}
+	}
+
+	private void renameWebContextRoot(IProject project) {
+		ComponentUtilities.setServerContextRoot(project, "/");
 	}
 
 	private IServer createServerAdapter() throws CoreException,
@@ -250,7 +262,7 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 		IServer server = ExpressServerUtils.createServer(rt, type, "Openshift Server1");
 		ExpressServerUtils.fillServerWithOpenshiftDetails(server, getApplication().getApplicationUrl(), 
 				getUser().getRhlogin(), getUser().getPassword(), 
-				getUser().getDomain().getRhcDomain(), getApplication().getName(), mode);
+				getUser().getDomain().getNamespace(), getApplication().getName(), mode);
 		return server;
 	}
 
