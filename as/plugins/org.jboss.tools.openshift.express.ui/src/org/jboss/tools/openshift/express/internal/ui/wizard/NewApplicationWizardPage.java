@@ -102,19 +102,20 @@ public class NewApplicationWizardPage extends AbstractOpenshiftWizardPage {
 						}
 						return null;
 					}
-				})
-				, new UpdateValueStrategy().setAfterGetValidator(
+				}).setAfterGetValidator(
 						new IValidator() {
 
 							@Override
 							public IStatus validate(Object value) {
-								if (!(value instanceof ICartridge)) {
+								if (!(value instanceof String)
+										|| ((String) value).length() == 0) {
 									return ValidationStatus.error("You have to select a type");
 								} else {
 									return ValidationStatus.ok();
 								}
 							}
-						}).setConverter(new Converter(ICartridge.class, String.class) {
+						})
+				, new UpdateValueStrategy().setConverter(new Converter(ICartridge.class, String.class) {
 							
 							@Override
 							public Object convert(Object fromObject) {
@@ -135,7 +136,6 @@ public class NewApplicationWizardPage extends AbstractOpenshiftWizardPage {
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
 					try {
-
 						model.loadCartridges();
 					} catch (OpenshiftException e) {
 						return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID, "Could not load cartridges", e);

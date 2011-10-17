@@ -11,7 +11,7 @@
 package org.jboss.tools.openshift.express.internal.ui.wizard;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
 import org.jboss.tools.common.ui.preferencevalue.StringPreferenceValue;
@@ -32,7 +32,7 @@ public class NewApplicationWizardPageModel extends ObservableUIPojo {
 	private IUser user;
 	private String name;
 
-	private Collection<ICartridge> cartridges = new ArrayList<ICartridge>();
+	private List<ICartridge> cartridges = new ArrayList<ICartridge>();
 	private ICartridge selectedCartridge;
 	private StringPreferenceValue selectedCartridgePreference;
 
@@ -41,16 +41,23 @@ public class NewApplicationWizardPageModel extends ObservableUIPojo {
 		this.selectedCartridgePreference = new StringPreferenceValue(
 				"org.jboss.tools.openshift.express.internal.ui.wizard.NewApplicationWizard.selectedCartridge",
 				OpenshiftUIActivator.PLUGIN_ID);
-		initSelectedCartridge();
 	}
 
-	private void initSelectedCartridge() {
+	private ICartridge initSelectedCartridge() {
 		String selectedCartridgeName = selectedCartridgePreference.get();
+		if (getSelectedCartridge() != null) {
+			selectedCartridgeName = getSelectedCartridge().getName();
+		}
 		if (selectedCartridgeName == null
 				|| selectedCartridgeName.length() == 0) {
-			selectedCartridge = ICartridge.JBOSSAS_7;
+			selectedCartridgeName = ICartridge.JBOSSAS_7.getName();
 		}
-		this.selectedCartridge = getCartridgeByName(selectedCartridgeName);
+		ICartridge selectedCartridge = getCartridgeByName(selectedCartridgeName);
+		if (selectedCartridge == null
+				&& getCartridges().size() > 0) {
+			selectedCartridge = getCartridges().get(0);
+		}
+		return selectedCartridge;
 	}
 
 	public String getName() {
@@ -65,11 +72,12 @@ public class NewApplicationWizardPageModel extends ObservableUIPojo {
 		setCartridges(user.getCartridges());
 	}
 
-	public void setCartridges(Collection<ICartridge> cartridges) {
+	public void setCartridges(List<ICartridge> cartridges) {
 		firePropertyChange(PROPERTY_CARTRIDGES, this.cartridges, this.cartridges = cartridges);
+		setSelectedCartridge(initSelectedCartridge());
 	}
 
-	public Collection<ICartridge> getCartridges() {
+	public List<ICartridge> getCartridges() {
 		return cartridges;
 	}
 
@@ -78,7 +86,9 @@ public class NewApplicationWizardPageModel extends ObservableUIPojo {
 	}
 
 	public void setSelectedCartridge(ICartridge cartridge) {
-		selectedCartridgePreference.store(cartridge.getName());
+		if (cartridge != null) {
+			selectedCartridgePreference.store(cartridge.getName());
+		}
 		firePropertyChange(PROPERTY_SELECTED_CARTRIDGE, selectedCartridge, this.selectedCartridge = cartridge);
 	}
 
@@ -101,7 +111,8 @@ public class NewApplicationWizardPageModel extends ObservableUIPojo {
 		try {
 			return user.getApplicationByName(name) != null;
 		} catch (OpenshiftException e) {
-			// TODO proper logging
+			OpenshiftUIActivator.log(
+					OpenshiftUIActivator.createErrorStatus("Could not get application by name", e));
 			return false;
 		}
 	}
