@@ -232,7 +232,7 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 		if( b != null && b.booleanValue() ) {
 			try {
 				IServer server = createServerAdapter();
-				addModules(importedProjects, server);
+				addModules(getModules(importedProjects), server);
 			} catch(CoreException ce) {
 				OpenshiftUIActivator.getDefault().getLog().log(ce.getStatus());
 			} catch( OpenshiftException ose) {
@@ -255,19 +255,18 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 		return server;
 	}
 
-	private void addModules(List<IProject> importedProjects, IServer server) throws CoreException {
-		ArrayList<IModule> toAdd = getModules(importedProjects);
-		if (toAdd == null
-				|| toAdd.size() == 0) {
+	private void addModules(List<IModule> modules, IServer server) throws CoreException {
+		if (modules == null
+				|| modules.size() == 0) {
 			return;
 		}
 		IServerWorkingCopy wc = server.createWorkingCopy();
-		IModule[] add = toAdd.toArray(new IModule[toAdd.size()]);
+		IModule[] add = modules.toArray(new IModule[modules.size()]);
 		wc.modifyModules(add, new IModule[0], new NullProgressMonitor());
 		server = wc.save(true, new NullProgressMonitor());
 	}
 
-	private ArrayList<IModule> getModules(List<IProject> importedProjects) {
+	private List<IModule> getModules(List<IProject> importedProjects) {
 		Iterator<IProject> i = importedProjects.iterator();
 		ArrayList<IModule> toAdd = new ArrayList<IModule>();
 		while(i.hasNext()) {
