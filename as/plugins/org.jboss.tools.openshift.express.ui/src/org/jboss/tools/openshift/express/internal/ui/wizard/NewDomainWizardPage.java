@@ -111,7 +111,7 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 		sshPrefsLink
 				.setText("Please make sure that your private key for the public key is listed in the <a>SSH2 Preferences</a>");
 		GridDataFactory.fillDefaults()
-				.span(2, 1).align(SWT.FILL, SWT.CENTER).hint(100, SWT.DEFAULT).applyTo(sshPrefsLink);
+				.span(2, 1).align(SWT.FILL, SWT.CENTER).applyTo(sshPrefsLink);
 		sshPrefsLink.addSelectionListener(onSshPrefs());
 
 	}

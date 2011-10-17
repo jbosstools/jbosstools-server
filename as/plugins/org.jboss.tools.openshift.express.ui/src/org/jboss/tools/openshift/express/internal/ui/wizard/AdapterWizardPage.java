@@ -56,6 +56,7 @@ import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.tools.common.ui.databinding.DataBindingUtils;
 import org.jboss.tools.common.ui.databinding.InvertingBooleanConverter;
+import org.jboss.tools.common.ui.ssh.SshPrivateKeysPreferences;
 import org.jboss.tools.openshift.express.client.ICartridge;
 import org.jboss.tools.openshift.express.client.OpenshiftException;
 import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
@@ -87,7 +88,7 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 	protected void doCreateControls(Composite parent, DataBindingContext dbc) {
 		GridLayoutFactory.fillDefaults().applyTo(parent);
 
-		Group projectGroup = createProjectGroup(parent, dbc);
+		Group projectGroup = createCloneGroup(parent, dbc);
 		GridDataFactory.fillDefaults()
 				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(projectGroup);
 
@@ -96,36 +97,36 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(serverAdapterGroup);
 	}
 
-	private Group createProjectGroup(Composite parent, DataBindingContext dbc) {
-		Group projectGroup = new Group(parent, SWT.BORDER);
-		projectGroup.setText("Git clone");
+	private Group createCloneGroup(Composite parent, DataBindingContext dbc) {
+		Group cloneGroup = new Group(parent, SWT.BORDER);
+		cloneGroup.setText("Git clone");
 		GridDataFactory.fillDefaults()
-				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(projectGroup);
-		GridLayoutFactory.fillDefaults().margins(6, 6).numColumns(4).applyTo(projectGroup);
+				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(cloneGroup);
+		GridLayoutFactory.fillDefaults().margins(6, 6).numColumns(4).applyTo(cloneGroup);
 
-		Label repoPathLabel = new Label(projectGroup, SWT.NONE);
+		Label repoPathLabel = new Label(cloneGroup, SWT.NONE);
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(repoPathLabel);
 		repoPathLabel.setText("Location");
 
-		Button defaultRepoPathButton = new Button(projectGroup, SWT.CHECK);
+		Button defaultRepoPathButton = new Button(cloneGroup, SWT.CHECK);
 		defaultRepoPathButton.setText("default");
 		GridDataFactory.fillDefaults()
 				.align(SWT.LEFT, SWT.CENTER).hint(100, SWT.DEFAULT).applyTo(defaultRepoPathButton);
 		defaultRepoPathButton.addSelectionListener(onDefaultRepoPath());
 		IObservableValue defaultRepoButtonSelection = WidgetProperties.selection().observe(defaultRepoPathButton);
 
-		Text repoPathText = new Text(projectGroup, SWT.BORDER);
+		Text repoPathText = new Text(cloneGroup, SWT.BORDER);
 		GridDataFactory.fillDefaults()
 				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(repoPathText);
 		DataBindingUtils.bindMandatoryTextField(
 				repoPathText, "Location", AdapterWizardPageModel.PROPERTY_REPO_PATH, model, dbc);
 		dbc.bindValue(
-				defaultRepoButtonSelection 
+				defaultRepoButtonSelection
 				, WidgetProperties.enabled().observe(repoPathText)
 				, new UpdateValueStrategy().setConverter(new InvertingBooleanConverter())
 				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER));
 
-		Button browseRepoPathButton = new Button(projectGroup, SWT.PUSH);
+		Button browseRepoPathButton = new Button(cloneGroup, SWT.PUSH);
 		browseRepoPathButton.setText("Browse");
 		GridDataFactory.fillDefaults()
 				.align(SWT.LEFT, SWT.CENTER).hint(100, SWT.DEFAULT).applyTo(browseRepoPathButton);
@@ -138,17 +139,17 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 
 		defaultRepoButtonSelection.setValue(true);
 
-		Label remoteNameLabel = new Label(projectGroup, SWT.NONE);
+		Label remoteNameLabel = new Label(cloneGroup, SWT.NONE);
 		remoteNameLabel.setText("Remote name");
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(remoteNameLabel);
 
-		Button defaultRemoteNameButton = new Button(projectGroup, SWT.CHECK);
+		Button defaultRemoteNameButton = new Button(cloneGroup, SWT.CHECK);
 		defaultRemoteNameButton.setText("default");
 		GridDataFactory.fillDefaults()
 				.align(SWT.LEFT, SWT.CENTER).hint(100, SWT.DEFAULT).applyTo(defaultRemoteNameButton);
 		defaultRemoteNameButton.addSelectionListener(onDefaultRemoteName());
 
-		Text remoteNameText = new Text(projectGroup, SWT.BORDER);
+		Text remoteNameText = new Text(cloneGroup, SWT.BORDER);
 		GridDataFactory.fillDefaults()
 				.span(2, 1).align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.CENTER).grab(true, false)
 				.applyTo(remoteNameText);
@@ -157,13 +158,21 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 
 		IObservableValue defaultRemoteNameSelection = WidgetProperties.selection().observe(defaultRemoteNameButton);
 		dbc.bindValue(
-				defaultRemoteNameSelection 
+				defaultRemoteNameSelection
 				, WidgetProperties.enabled().observe(remoteNameText)
 				, new UpdateValueStrategy().setConverter(new InvertingBooleanConverter())
 				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER));
 		defaultRemoteNameSelection.setValue(true);
 
-		return projectGroup;
+		Link sshPrefsLink = new Link(cloneGroup, SWT.NONE);
+		sshPrefsLink
+				.setText("Please make sure that the private part of the key pair, "
+						+ "you used to create your domain,\nis listed in the <a>SSH2 Preferences</a>");
+		GridDataFactory.fillDefaults()
+				.span(4, 1).align(SWT.FILL, SWT.CENTER).indent(0, 10).applyTo(sshPrefsLink);
+		sshPrefsLink.addSelectionListener(onSshPrefs());
+
+		return cloneGroup;
 	}
 
 	private SelectionListener onDefaultRepoPath() {
@@ -197,6 +206,16 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				model.resetRemoteName();
+			}
+		};
+	}
+
+	private SelectionAdapter onSshPrefs() {
+		return new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				SshPrivateKeysPreferences.openPreferencesPage(getShell());
 			}
 		};
 	}
