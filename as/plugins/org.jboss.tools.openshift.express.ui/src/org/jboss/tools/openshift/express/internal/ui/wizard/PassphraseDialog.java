@@ -21,7 +21,8 @@ public class PassphraseDialog extends InputDialog {
 	public PassphraseDialog(Shell shell) {
 		super(shell
 				, "New ssh key"
-				, "Please pick a passphrase for your new ssh key pair", "openshift"
+				, "Please pick a passphrase for your new ssh key pair"
+				, null
 				, new PassphraseValidator());
 	}
 
