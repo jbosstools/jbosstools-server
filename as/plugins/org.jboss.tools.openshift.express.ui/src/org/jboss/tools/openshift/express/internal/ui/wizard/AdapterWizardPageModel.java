@@ -13,6 +13,8 @@ package org.jboss.tools.openshift.express.internal.ui.wizard;
 import org.eclipse.egit.ui.Activator;
 import org.eclipse.egit.ui.UIPreferences;
 import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
+import org.jboss.tools.openshift.express.client.IApplication;
+import org.jboss.tools.openshift.express.client.OpenshiftException;
 
 /**
  * @author André Dietisheim
@@ -22,6 +24,7 @@ public class AdapterWizardPageModel extends ObservableUIPojo {
 
 	private static final String REMOTE_NAME_DEFAULT = "origin";
 
+	public static final String PROPERTY_GIT_URI = "gitUri";
 	public static final String PROPERTY_REPO_PATH = "repositoryPath";
 	public static final String PROPERTY_REMOTE_NAME = "remoteName";
 
@@ -33,10 +36,26 @@ public class AdapterWizardPageModel extends ObservableUIPojo {
 	public static final String SERVER_TYPE = "serverType";
 
 	private ImportProjectWizardModel wizardModel;
+	private String gitUri;
 
 	public AdapterWizardPageModel(ImportProjectWizardModel wizardModel) {
 		this.wizardModel = wizardModel;
 		setRemoteName(REMOTE_NAME_DEFAULT);
+	}
+
+	public void updateGitUri() throws OpenshiftException {
+		IApplication application = wizardModel.getApplication();
+		if (application != null) {
+			setGitUri(application.getGitUri());
+		}
+	}
+
+	public void setGitUri(String gitUri) {
+		firePropertyChange(PROPERTY_GIT_URI, this.gitUri, this.gitUri = gitUri);
+	}
+
+	public String getGitUri() {
+		return this.gitUri;
 	}
 
 	public String getRepositoryPath() {
@@ -58,9 +77,7 @@ public class AdapterWizardPageModel extends ObservableUIPojo {
 	}
 
 	private String getEGitDefaultRepositoryPath() {
-		String destinationDir =
-				Activator.getDefault().getPreferenceStore().getString(UIPreferences.DEFAULT_REPO_DIR);
-		return destinationDir;
+		return Activator.getDefault().getPreferenceStore().getString(UIPreferences.DEFAULT_REPO_DIR);
 	}
 
 	public String getRemoteName() {

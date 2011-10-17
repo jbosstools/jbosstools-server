@@ -17,10 +17,9 @@ import java.util.List;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -104,10 +103,24 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(cloneGroup);
 		GridLayoutFactory.fillDefaults().margins(6, 6).numColumns(4).applyTo(cloneGroup);
 
+		Label gitUriLabel = new Label(cloneGroup, SWT.NONE);
+		gitUriLabel.setText("Cloning From");
+		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(gitUriLabel);
+
+		Text gitUriValueText = new Text(cloneGroup, SWT.BORDER);
+		gitUriValueText.setEditable(false);
+//		gitUriValueText.setBackground(cloneGroup.getBackground());
+		GridDataFactory.fillDefaults().span(3, 1).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(gitUriValueText);
+		dbc.bindValue(
+				WidgetProperties.text(SWT.Modify).observe(gitUriValueText)
+				, BeanProperties.value(AdapterWizardPageModel.PROPERTY_GIT_URI).observe(model)
+				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER)
+				, null);
+		
 		Label repoPathLabel = new Label(cloneGroup, SWT.NONE);
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(repoPathLabel);
-		repoPathLabel.setText("Location");
-
+		repoPathLabel.setText("Destination");
+		
 		Button defaultRepoPathButton = new Button(cloneGroup, SWT.CHECK);
 		defaultRepoPathButton.setText("default");
 		GridDataFactory.fillDefaults()
@@ -166,8 +179,7 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 
 		Link sshPrefsLink = new Link(cloneGroup, SWT.NONE);
 		sshPrefsLink
-				.setText("Please make sure that the private part of the key pair, "
-						+ "you used to create your domain,\nis listed in the <a>SSH2 Preferences</a>");
+				.setText("Make sure your SSH key used with the domain is listed in <a>SSH2 Preferences</a>");
 		GridDataFactory.fillDefaults()
 				.span(4, 1).align(SWT.FILL, SWT.CENTER).indent(0, 10).applyTo(sshPrefsLink);
 		sshPrefsLink.addSelectionListener(onSshPrefs());
@@ -342,11 +354,12 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 	}
 
 	protected void onPageActivated(DataBindingContext dbc) {
-		/*
-		 * this needs to be initialized at page visibility since the default
-		 * repository path default
-		 */
 		model.resetRepositoryPath();
+		try {
+			model.updateGitUri();
+		} catch (OpenshiftException e) {
+			OpenshiftUIActivator.log(OpenshiftUIActivator.createErrorStatus(e.getMessage(), e));
+		}
 
 		serverTypeToCreate = getServerTypeToCreate();
 		model.getParentModel().setProperty(AdapterWizardPageModel.SERVER_TYPE, serverTypeToCreate);
@@ -363,8 +376,7 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 			modeLabel.setText("Mode: Source");
 			model.getParentModel().setProperty(AdapterWizardPageModel.MODE, AdapterWizardPageModel.MODE_SOURCE);
 		} catch (OpenshiftException ose) {
-			OpenshiftUIActivator.getDefault().getLog()
-					.log(new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID, ose.getMessage(), ose));
+			OpenshiftUIActivator.log(OpenshiftUIActivator.createErrorStatus(ose.getMessage(), ose));
 		}
 	}
 
