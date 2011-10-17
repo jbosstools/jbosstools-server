@@ -104,7 +104,8 @@ public class EGitUtils {
 				throw new CoreException(createStatus(null, "Repository \"{0}\" has no remote repository configured",
 						repository.toString()));
 			}
-			createPushOperation(remoteConfig, repository).run(monitor);
+			PushOperation pushOperation = createPushOperation(remoteConfig, repository);
+			pushOperation.run(monitor);
 		} catch (CoreException e) {
 			throw e;
 		} catch (Exception e) {
@@ -153,11 +154,14 @@ public class EGitUtils {
 			throws CoreException {
 
 		PushOperationSpecification spec = new PushOperationSpecification();
-		List<URIish> urisToPush = getPushURIs(remoteConfig);
+		List<URIish> pushToUris = getPushURIs(remoteConfig);
 		List<RefSpec> pushRefSpecs = getPushRefSpecs(remoteConfig);
-		addURIRefToPushSpecification(urisToPush, pushRefSpecs, repository, spec);
+		addURIRefToPushSpecification(pushToUris, pushRefSpecs, repository, spec);
 
-		return new PushOperation(repository, spec, false, PUSH_TIMEOUT);
+		// return new PushOperation(repository, spec, false, PUSH_TIMEOUT);
+		// TODO: fix pushoperation to really use the spec (currently seems like
+		// it does not work so we push everything to the remote)
+		return new PushOperation(repository, remoteConfig.getName(), false, PUSH_TIMEOUT);
 	}
 
 	/**
