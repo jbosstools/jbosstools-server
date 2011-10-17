@@ -171,7 +171,9 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 	private void connectToGitRepo(List<IProject> projects, File gitFolder, IProgressMonitor monitor)
 			throws CoreException {
 		for (IProject project : projects) {
-			connectToGitRepo(project, gitFolder, monitor);
+			if (project != null) {
+				connectToGitRepo(project, gitFolder, monitor);
+			}
 		}
 	}
 
@@ -237,21 +239,7 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 				ExpressServerUtils.fillServerWithOpenshiftDetails(server, getApplication().getApplicationUrl(), 
 						getUser().getRhlogin(), getUser().getPassword(), 
 						getUser().getDomain().getRhcDomain(), getApplication().getName(), mode);
-				
-				// Now add the projects
-				Iterator<IProject> i = importedProjects.iterator();
-				ArrayList<IModule> toAdd = new ArrayList<IModule>();
-				while(i.hasNext()) {
-					IProject p = i.next();
-					IModule[] m = ServerUtil.getModules(p);
-					if( m != null && m.length > 0 ) {
-						toAdd.addAll(Arrays.asList(m));
-					}
-				}
-				IServerWorkingCopy wc = server.createWorkingCopy();
-				IModule[] add = toAdd.toArray(new IModule[toAdd.size()]);
-				wc.modifyModules(add, new IModule[0], new NullProgressMonitor());
-				server = wc.save(true, new NullProgressMonitor());
+				addModules(importedProjects, server);
 			} catch(CoreException ce) {
 				OpenshiftUIActivator.getDefault().getLog().log(ce.getStatus());
 			} catch( OpenshiftException ose) {
@@ -259,5 +247,30 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 				OpenshiftUIActivator.getDefault().getLog().log(s);
 			}
 		}
+	}
+
+	private void addModules(List<IProject> importedProjects, IServer server) throws CoreException {
+		ArrayList<IModule> toAdd = getModules(importedProjects);
+		if (toAdd == null
+				|| toAdd.size() == 0) {
+			return;
+		}
+		IServerWorkingCopy wc = server.createWorkingCopy();
+		IModule[] add = toAdd.toArray(new IModule[toAdd.size()]);
+		wc.modifyModules(add, new IModule[0], new NullProgressMonitor());
+		server = wc.save(true, new NullProgressMonitor());
+	}
+
+	private ArrayList<IModule> getModules(List<IProject> importedProjects) {
+		Iterator<IProject> i = importedProjects.iterator();
+		ArrayList<IModule> toAdd = new ArrayList<IModule>();
+		while(i.hasNext()) {
+			IProject p = i.next();
+			IModule[] m = ServerUtil.getModules(p);
+			if( m != null && m.length > 0 ) {
+				toAdd.addAll(Arrays.asList(m));
+			}
+		}
+		return toAdd;
 	}
 }
