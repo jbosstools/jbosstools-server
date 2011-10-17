@@ -123,7 +123,7 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 			public void widgetSelected(SelectionEvent e) {
 
 				InputDialog dialog = new PassphraseDialog(getShell());
-						if (Dialog.OK == dialog.open()) {
+				if (Dialog.OK == dialog.open()) {
 					try {
 						String passPhrase = dialog.getValue();
 						model.createSShKeyPair(passPhrase);
@@ -175,7 +175,8 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				SshPrivateKeysPreferences.openPreferencesPage(getShell());
-				// refresh warning about key (since user may have changed SSH2 prefs)
+				// refresh warning about key 
+				// (since user may have changed SSH2 prefs)
 				getDatabindingContext().updateTargets();
 			}
 		};
@@ -183,9 +184,7 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 
 	@Override
 	protected void setupWizardPageSupport(DataBindingContext dbc) {
-		ParametrizableWizardPageSupport.create(
-				IStatus.ERROR, this,
-				dbc);
+		ParametrizableWizardPageSupport.create(IStatus.ERROR, this, dbc);
 	}
 
 	private class SSHKeyValidator implements IValidator {
