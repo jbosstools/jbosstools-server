@@ -41,6 +41,7 @@ import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
@@ -259,7 +260,10 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 		IRuntime rt = (IRuntime)getProperty(AdapterWizardPageModel.RUNTIME_DELEGATE);
 		String mode = (String)getProperty(AdapterWizardPageModel.MODE);
 
-		IServer server = ExpressServerUtils.createServer(rt, type, "Openshift Server1");
+		String serverNameBase = getApplication().getName() + " Openshift Server";
+		String serverName = org.jboss.ide.eclipse.as.core.util.ServerUtil.getDefaultServerName(serverNameBase);
+		
+		IServer server = ExpressServerUtils.createServer(rt, type, serverName);
 		ExpressServerUtils.fillServerWithOpenshiftDetails(server, getApplication().getApplicationUrl(), 
 				getUser().getRhlogin(), getUser().getPassword(), 
 				getUser().getDomain().getNamespace(), getApplication().getName(), mode);
