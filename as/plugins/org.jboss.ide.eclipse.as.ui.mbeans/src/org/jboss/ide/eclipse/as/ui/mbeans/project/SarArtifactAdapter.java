@@ -17,7 +17,7 @@ public class SarArtifactAdapter extends ModuleArtifactAdapterDelegate {
 			IProject p = ((IResource)obj).getProject();
 			if( p != null ) {
 				IModule[] mods = ServerUtil.getModules(p);
-				if( mods.length == 1 ) {
+				if( mods.length == 1 && mods[0].getModuleType().getId().equals(JBossSARModuleFactory.MODULE_TYPE)) {
 					return new MBeanNullArtifact(mods[0]);
 				}
 			}
