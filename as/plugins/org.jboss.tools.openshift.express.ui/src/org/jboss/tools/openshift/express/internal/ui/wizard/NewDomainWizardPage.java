@@ -175,6 +175,7 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				SshPrivateKeysPreferences.openPreferencesPage(getShell());
+				// refresh warning about key (since user may have changed SSH2 prefs)
 				getDatabindingContext().updateTargets();
 			}
 		};
