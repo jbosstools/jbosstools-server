@@ -52,28 +52,34 @@ public class ImportProjectWizard extends Wizard implements INewWizard {
 
 						@Override
 						protected IStatus run(IProgressMonitor monitor) {
+							IStatus status = Status.OK_STATUS;
 							try {
 								File repositoryFile = model.cloneRepository(monitor);
 								model.importProject(repositoryFile, monitor);
-								return Status.OK_STATUS;
 							} catch (OpenshiftException e) {
-								return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
+								status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
 										"An exception occurred while creating local git repository.", e);
 							} catch (URISyntaxException e) {
-								return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
+								status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
 										"The url of the remote git repository is not valid", e);
-							} catch(InvocationTargetException e) {
+							} catch (InvocationTargetException e) {
 								if (e.getTargetException() instanceof JGitInternalException) {
-									return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
-											"Could not clone the repository. Authentication failed.", e.getTargetException());
-								} else {									
-									return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
+									status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
+											"Could not clone the repository. Authentication failed.", e
+													.getTargetException());
+								} else {
+									status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
 											"An exception occurred while creating local git repository.", e);
 								}
 							} catch (Exception e) {
-								return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
+								status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
 										"An exception occurred while creating local git repository.", e);
 							}
+
+							if (!status.isOK()) {
+								OpenshiftUIActivator.log(status);
+							}
+							return status;
 						}
 					}, getContainer());
 			return true;
