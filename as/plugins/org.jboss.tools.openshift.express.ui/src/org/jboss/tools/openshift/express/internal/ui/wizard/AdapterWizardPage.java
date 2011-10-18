@@ -27,6 +27,8 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -280,12 +282,9 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 		// appLabel = new Label(c, SWT.NONE);
 		modeLabel = new Label(c, SWT.NONE);
 
-		suitableRuntimes.addSelectionListener(new SelectionListener() {
-			public void widgetSelected(SelectionEvent e) {
+		suitableRuntimes.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
 				updateSelectedRuntimeDelegate();
-			}
-
-			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
 		addRuntimeLink.addSelectionListener(new SelectionAdapter() {
