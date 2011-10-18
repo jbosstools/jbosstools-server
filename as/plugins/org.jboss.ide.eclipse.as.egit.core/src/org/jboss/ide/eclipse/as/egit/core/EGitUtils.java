@@ -62,7 +62,7 @@ public class EGitUtils {
 	 * @throws CoreException
 	 *             the core exception
 	 */
-	public static void commit(IProject project, IProgressMonitor monitor) throws CoreException {
+	public static void commit(IProject project, String commitMessage, IProgressMonitor monitor) throws CoreException {
 		Assert.isLegal(project != null, "Cannot commit project. No project provided");
 		/**
 		 * TODO: add capability to commit selectively
@@ -79,12 +79,16 @@ public class EGitUtils {
 				null,
 				getFormattedUser(userConfig.getAuthorName(), userConfig.getAuthorEmail()),
 				getFormattedUser(userConfig.getCommitterName(), userConfig.getCommitterEmail()),
-				"Push from JBoss Tools Server adapt	er " + System.currentTimeMillis());
+				commitMessage);
 		op.setCommitAll(true);
 		op.setRepository(repository);
 		op.execute(monitor);
 	}
 
+	public static void commit(IProject project, IProgressMonitor monitor) throws CoreException {
+		commit(project, "Commit from JBoss Tools", monitor);
+	}
+	
 	/**
 	 * Pushes the given repository to the remote repository it's current branch
 	 * originates from.
