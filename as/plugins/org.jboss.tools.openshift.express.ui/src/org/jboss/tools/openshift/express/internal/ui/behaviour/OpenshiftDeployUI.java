@@ -27,6 +27,7 @@ public class OpenshiftDeployUI implements IDeploymentTypeUI {
 		
 	}
 	
+	//private Text userText, passText;
 	private Text userText, passText;
 	private Combo modeCombo;
 	
@@ -53,7 +54,8 @@ public class OpenshiftDeployUI implements IDeploymentTypeUI {
 		
 		userText.setText(ExpressServerUtils.getExpressUsername(callback.getServer()));
 		passText.setText(ExpressServerUtils.getExpressPassword(callback.getServer()));
-		
+		userText.setEnabled(false);
+		passText.setEnabled(false);
 		// Maybe just make this a label ??
 //		modeCombo = new Combo(composite, SWT.READ_ONLY);
 //		modeCombo.setItems(new String[]{
