@@ -21,8 +21,8 @@ import java.util.concurrent.Executors;
 import org.jboss.tools.openshift.express.client.ApplicationLogReader;
 import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.ICartridge;
-import org.jboss.tools.openshift.express.client.IOpenshiftService;
-import org.jboss.tools.openshift.express.client.OpenshiftService;
+import org.jboss.tools.openshift.express.client.IOpenShiftService;
+import org.jboss.tools.openshift.express.client.OpenShiftService;
 import org.jboss.tools.openshift.express.internal.client.test.fakes.TestUser;
 import org.jboss.tools.openshift.express.internal.client.test.utils.ApplicationUtils;
 import org.junit.Before;
@@ -35,12 +35,12 @@ import org.junit.Test;
 public class ApplicationLogReaderIntegrationTest {
 
 	private static final int LOGREADER_TIMEOUT = 10 * 1024;
-	private IOpenshiftService service;
+	private IOpenShiftService service;
 	private TestUser user;
 
 	@Before
 	public void setUp() {
-		this.service = new OpenshiftService(TestUser.ID);
+		this.service = new OpenShiftService(TestUser.ID);
 		this.user = new TestUser();
 	}
 

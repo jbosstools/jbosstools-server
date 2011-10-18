@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.jboss.tools.openshift.express.client.IApplication;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
 import org.jboss.tools.openshift.express.client.utils.RFC822DateUtils;
 
 /**
@@ -43,7 +43,7 @@ public class ApplicationAsserts {
 	public static final Pattern APPLICATION_URL_REGEXP = Pattern.compile("http://(.+)-([^\\.]+)\\.(.+)/");
 
 	public static void assertThatContainsApplication(String applicationName, String embedded, String applicationUUID,
-			String cartridgeName, String creationTime, List<IApplication> applications) throws OpenshiftException {
+			String cartridgeName, String creationTime, List<IApplication> applications) throws OpenShiftException {
 		IApplication application = getApplication(applicationName, applications);
 		if (application == null) {
 			fail(MessageFormat.format("Could not find application with name \"{0}\"", applicationName));
@@ -67,7 +67,7 @@ public class ApplicationAsserts {
 	}
 
 	public static void assertApplication(String name, String uuid, String cartridgeName, String embedded,
-			String creationTime, IApplication application) throws OpenshiftException {
+			String creationTime, IApplication application) throws OpenShiftException {
 		assertNotNull(application);
 		assertEquals(embedded, application.getEmbedded());
 		assertEquals(uuid, application.getUUID());
@@ -78,7 +78,7 @@ public class ApplicationAsserts {
 		}
 	}
 
-	public static void assertApplication(String name, String cartridgeName, IApplication application) throws OpenshiftException {
+	public static void assertApplication(String name, String cartridgeName, IApplication application) throws OpenShiftException {
 		assertNotNull(application);
 		assertNotNull(application.getCartridge());
 		assertEquals(cartridgeName, application.getCartridge().getName());

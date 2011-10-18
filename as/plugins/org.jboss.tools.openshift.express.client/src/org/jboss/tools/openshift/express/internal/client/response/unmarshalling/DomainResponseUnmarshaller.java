@@ -12,27 +12,27 @@ package org.jboss.tools.openshift.express.internal.client.response.unmarshalling
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.tools.openshift.express.client.IDomain;
-import org.jboss.tools.openshift.express.client.IOpenshiftService;
+import org.jboss.tools.openshift.express.client.IOpenShiftService;
 import org.jboss.tools.openshift.express.internal.client.Domain;
 import org.jboss.tools.openshift.express.internal.client.InternalUser;
 
 /**
  * @author André Dietisheim
  */
-public class DomainResponseUnmarshaller extends AbstractOpenshiftJsonResponseUnmarshaller<IDomain> {
+public class DomainResponseUnmarshaller extends AbstractOpenShiftJsonResponseUnmarshaller<IDomain> {
 
 	private String domainName;
 	private InternalUser user;
-	private IOpenshiftService service;
+	private IOpenShiftService service;
 	
-	public DomainResponseUnmarshaller(String domainName, InternalUser user, IOpenshiftService service) {
+	public DomainResponseUnmarshaller(String domainName, InternalUser user, IOpenShiftService service) {
 		this.domainName = domainName;
 		this.user = user;
 		this.service = service;
 	}
 
 	@Override
-	protected IDomain createOpenshiftObject(ModelNode node) {
+	protected IDomain createOpenShiftObject(ModelNode node) {
 		return new Domain(domainName, user, service);
 	}
 }

@@ -19,7 +19,7 @@ import org.jboss.tools.common.ui.ssh.SshPrivateKeysPreferences;
 import org.jboss.tools.openshift.express.client.IDomain;
 import org.jboss.tools.openshift.express.client.ISSHPublicKey;
 import org.jboss.tools.openshift.express.client.IUser;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
 import org.jboss.tools.openshift.express.client.SSHKeyPair;
 import org.jboss.tools.openshift.express.client.SSHPublicKey;
 import org.jboss.tools.openshift.express.internal.ui.common.FileUtils;
@@ -50,7 +50,7 @@ public class NewDomainWizardPageModel extends ObservableUIPojo {
 		return this.namespace;
 	}
 
-	public void createDomain() throws OpenshiftException, IOException {
+	public void createDomain() throws OpenShiftException, IOException {
 		IDomain domain = user.createDomain(namespace, loadSshKey());
 		setDomain(domain);
 	}
@@ -59,14 +59,14 @@ public class NewDomainWizardPageModel extends ObservableUIPojo {
 		return sshKey;
 	}
 
-	public void createSShKeyPair(String passPhrase) throws FileNotFoundException, OpenshiftException {
+	public void createSShKeyPair(String passPhrase) throws FileNotFoundException, OpenShiftException {
 		String sshKeysDirectory = SshPrivateKeysPreferences.getSshKeyDirectory();
 		SSHKeyPair keyPair = createSshKeyPair(passPhrase, sshKeysDirectory);
 		SshPrivateKeysPreferences.add(keyPair.getPrivateKeyPath());
 		setSshKey(keyPair.getPublicKeyPath());
 	}
 	
-	private SSHKeyPair createSshKeyPair(String passPhrase, String sshKeysDirectory) throws OpenshiftException {
+	private SSHKeyPair createSshKeyPair(String passPhrase, String sshKeysDirectory) throws OpenShiftException {
 		String privateKeyPath = getKeyPairFileName(sshKeysDirectory);
 		String publicKeyPath = getPublicKeyPath(privateKeyPath);
 		return SSHKeyPair.create(passPhrase, privateKeyPath, publicKeyPath);
@@ -90,7 +90,7 @@ public class NewDomainWizardPageModel extends ObservableUIPojo {
 		firePropertyChange(PROPERTY_SSHKEY, this.sshKey, this.sshKey = sshKey);
 	}
 
-	private ISSHPublicKey loadSshKey() throws IOException, OpenshiftException {
+	private ISSHPublicKey loadSshKey() throws IOException, OpenShiftException {
 		return new SSHPublicKey(new File(sshKey));
 	}
 

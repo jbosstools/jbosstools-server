@@ -28,13 +28,13 @@ public class ApplicationLogReader extends Reader {
 
 	private static final long STATUS_REQUEST_DELAY = 4 * 1024;
 
-	private IOpenshiftService service;
+	private IOpenShiftService service;
 	private Reader logReader;
 	private Application application;
 	private InternalUser user;
 	private String currentStatus;
 
-	public ApplicationLogReader(Application application, InternalUser user, IOpenshiftService service) {
+	public ApplicationLogReader(Application application, InternalUser user, IOpenShiftService service) {
 		this.application = application;
 		this.user = user;
 		this.service = service;
@@ -54,7 +54,7 @@ public class ApplicationLogReader extends Reader {
 				}
 			}
 			return charactersRead;
-		} catch (OpenshiftException e) {
+		} catch (OpenShiftException e) {
 			throw new IOException(e);
 		} catch (InterruptedException e) {
 			return -1;
@@ -76,7 +76,7 @@ public class ApplicationLogReader extends Reader {
 		return status.substring(logStart);
 	}
 
-	protected String requestStatus() throws InterruptedException, OpenshiftException {
+	protected String requestStatus() throws InterruptedException, OpenShiftException {
 		String status = null;
 		while (status == null) {
 			status = service.getStatus(application.getName(), application.getCartridge(), user);

@@ -13,7 +13,7 @@ package org.jboss.tools.openshift.express.internal.client.request;
 /**
  * @author André Dietisheim
  */
-public class ListCartridgesRequest extends AbstractOpenshiftRequest {
+public class ListCartridgesRequest extends AbstractOpenShiftRequest {
 
 	private static final String CART_TYPE_STANDALONE = "standalone";
 

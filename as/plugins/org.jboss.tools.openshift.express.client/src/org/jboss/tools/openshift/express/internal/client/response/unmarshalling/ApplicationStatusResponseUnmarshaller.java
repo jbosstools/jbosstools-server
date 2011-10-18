@@ -11,17 +11,17 @@
 package org.jboss.tools.openshift.express.internal.client.response.unmarshalling;
 
 import org.jboss.dmr.ModelNode;
-import org.jboss.tools.openshift.express.internal.client.IOpenshiftJsonConstants;
+import org.jboss.tools.openshift.express.internal.client.IOpenShiftJsonConstants;
 
 
 /**
  * @author André Dietisheim
  */
-public class ApplicationStatusResponseUnmarshaller extends AbstractOpenshiftJsonResponseUnmarshaller<String> {
+public class ApplicationStatusResponseUnmarshaller extends AbstractOpenShiftJsonResponseUnmarshaller<String> {
 
 	@Override
-	protected String createOpenshiftObject(ModelNode responseNode) {
-		ModelNode resultNode = responseNode.get(IOpenshiftJsonConstants.PROPERTY_RESULT);
+	protected String createOpenShiftObject(ModelNode responseNode) {
+		ModelNode resultNode = responseNode.get(IOpenShiftJsonConstants.PROPERTY_RESULT);
 		return resultNode.asString();
 	}
 

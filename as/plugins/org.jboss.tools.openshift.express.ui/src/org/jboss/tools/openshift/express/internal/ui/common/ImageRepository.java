@@ -20,7 +20,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.graphics.Image;
-import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
+import org.jboss.tools.openshift.express.internal.ui.OpenShiftUIActivator;
 
 public class ImageRepository {
 
@@ -42,7 +42,7 @@ public class ImageRepository {
 			}
 			return baseUrl;
 		} catch (MalformedURLException e) {
-			OpenshiftUIActivator.log(e);
+			OpenShiftUIActivator.log(e);
 			return null;
 		}
 	}

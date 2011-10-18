@@ -23,21 +23,21 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.jboss.tools.common.ui.databinding.ParametrizableWizardPageSupport;
-import org.jboss.tools.openshift.express.internal.ui.OpenshiftImages;
+import org.jboss.tools.openshift.express.internal.ui.OpenShiftImages;
 
 /**
  * @author André Dietisheim
  */
-public abstract class AbstractOpenshiftWizardPage extends WizardPage {
+public abstract class AbstractOpenShiftWizardPage extends WizardPage {
 
 	private DataBindingContext dbc;
 
-	protected AbstractOpenshiftWizardPage(String title, String description, String pageName, IWizard wizard) {
+	protected AbstractOpenShiftWizardPage(String title, String description, String pageName, IWizard wizard) {
 		super(pageName);
 		setWizard(wizard);
 		setTitle(title);
 		setDescription(description);
-		setImageDescriptor(OpenshiftImages.OPENSHIFT_LOGO_WHITE_MEDIUM);
+		setImageDescriptor(OpenShiftImages.OPENSHIFT_LOGO_WHITE_MEDIUM);
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public abstract class AbstractOpenshiftWizardPage extends WizardPage {
 
 				@Override
 				public void pageChanged(PageChangedEvent event) {
-					if (event.getSelectedPage() == AbstractOpenshiftWizardPage.this) {
+					if (event.getSelectedPage() == AbstractOpenShiftWizardPage.this) {
 						onPageActivated(dbc);
 					} else {
 						onPageDeactivated(dbc);

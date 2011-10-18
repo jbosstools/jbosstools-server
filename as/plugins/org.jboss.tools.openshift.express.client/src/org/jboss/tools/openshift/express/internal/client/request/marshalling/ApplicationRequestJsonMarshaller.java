@@ -12,7 +12,7 @@ package org.jboss.tools.openshift.express.internal.client.request.marshalling;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.tools.openshift.express.client.ICartridge;
-import org.jboss.tools.openshift.express.internal.client.IOpenshiftJsonConstants;
+import org.jboss.tools.openshift.express.internal.client.IOpenShiftJsonConstants;
 import org.jboss.tools.openshift.express.internal.client.request.ApplicationAction;
 import org.jboss.tools.openshift.express.internal.client.request.ApplicationRequest;
 
@@ -23,9 +23,9 @@ public class ApplicationRequestJsonMarshaller extends AbstractJsonMarshaller<App
 
 	@Override
 	protected void setJsonDataProperties(ModelNode node, ApplicationRequest request) {
-		setStringProperty(IOpenshiftJsonConstants.PROPERTY_CARTRIDGE, getCartridgeName(request.getCartridge()), node);
-		setStringProperty(IOpenshiftJsonConstants.PROPERTY_ACTION, getActionName(request.getAction()), node);
-		setStringProperty(IOpenshiftJsonConstants.PROPERTY_APP_NAME, request.getName(), node);
+		setStringProperty(IOpenShiftJsonConstants.PROPERTY_CARTRIDGE, getCartridgeName(request.getCartridge()), node);
+		setStringProperty(IOpenShiftJsonConstants.PROPERTY_ACTION, getActionName(request.getAction()), node);
+		setStringProperty(IOpenShiftJsonConstants.PROPERTY_APP_NAME, request.getName(), node);
 	}
 
 	private String getCartridgeName(ICartridge cartridge) {

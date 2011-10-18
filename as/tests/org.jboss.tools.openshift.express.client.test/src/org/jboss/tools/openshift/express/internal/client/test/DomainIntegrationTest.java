@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.jboss.tools.openshift.express.client.IDomain;
-import org.jboss.tools.openshift.express.client.OpenshiftService;
+import org.jboss.tools.openshift.express.client.OpenShiftService;
 import org.jboss.tools.openshift.express.client.SSHKeyPair;
 import org.jboss.tools.openshift.express.internal.client.test.fakes.TestSSHKey;
 import org.jboss.tools.openshift.express.internal.client.test.fakes.TestUser;
@@ -24,12 +24,12 @@ import org.junit.Test;
 
 public class DomainIntegrationTest {
 
-	private OpenshiftService openshiftService;
+	private OpenShiftService openShiftService;
 	private TestUser user;
 
 	@Before
 	public void setUp() {
-		this.openshiftService = new OpenshiftService(TestUser.ID);
+		this.openShiftService = new OpenShiftService(TestUser.ID);
 		this.user = new TestUser();
 	}
 
@@ -39,7 +39,7 @@ public class DomainIntegrationTest {
 
 		String domainName = createRandomString();
 		SSHKeyPair sshKey = TestSSHKey.create();
-		IDomain domain = openshiftService.createDomain(domainName, sshKey, user);
+		IDomain domain = openShiftService.createDomain(domainName, sshKey, user);
 
 		assertNotNull(domain);
 		assertEquals(domainName, domain.getNamespace());
@@ -51,7 +51,7 @@ public class DomainIntegrationTest {
 
 		String domainName = createRandomString();
 		SSHKeyPair sshKey = TestSSHKey.create();
-		IDomain domain = openshiftService.changeDomain(domainName, sshKey, user);
+		IDomain domain = openShiftService.changeDomain(domainName, sshKey, user);
 
 		assertNotNull(domain);
 		assertEquals(domainName, domain.getNamespace());

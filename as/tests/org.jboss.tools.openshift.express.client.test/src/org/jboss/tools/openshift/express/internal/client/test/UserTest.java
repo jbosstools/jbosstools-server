@@ -27,14 +27,14 @@ import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.ICartridge;
 import org.jboss.tools.openshift.express.client.IDomain;
 import org.jboss.tools.openshift.express.client.ISSHPublicKey;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
-import org.jboss.tools.openshift.express.client.OpenshiftService;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
+import org.jboss.tools.openshift.express.client.OpenShiftService;
 import org.jboss.tools.openshift.express.client.utils.RFC822DateUtils;
 import org.jboss.tools.openshift.express.internal.client.ApplicationInfo;
 import org.jboss.tools.openshift.express.internal.client.InternalUser;
 import org.jboss.tools.openshift.express.internal.client.UserInfo;
 import org.jboss.tools.openshift.express.internal.client.test.fakes.CartridgeResponseFake;
-import org.jboss.tools.openshift.express.internal.client.test.fakes.NoopOpenshiftServiceFake;
+import org.jboss.tools.openshift.express.internal.client.test.fakes.NoopOpenShiftServiceFake;
 import org.jboss.tools.openshift.express.internal.client.test.fakes.UserInfoResponseFake;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,30 +44,30 @@ import org.junit.Test;
  */
 public class UserTest {
 
-	private OpenshiftService userInfoservice;
+	private OpenShiftService userInfoservice;
 	private InternalUser user;
 
 	@Before
-	public void setUp() throws OpenshiftException, DatatypeConfigurationException {
+	public void setUp() throws OpenShiftException, DatatypeConfigurationException {
 		UserInfo userInfo = createUserInfo();
 		this.userInfoservice = createUserInfoService(userInfo);
 		this.user = new InternalUser(UserInfoResponseFake.RHLOGIN, UserInfoResponseFake.PASSWORD, userInfoservice);
 	}
 
 	@Test
-	public void canGetUserUUID() throws OpenshiftException {
+	public void canGetUserUUID() throws OpenShiftException {
 		assertEquals(UserInfoResponseFake.UUID, user.getUUID());
 	}
 	
 	@Test
-	public void canGetPublicKey() throws OpenshiftException {
+	public void canGetPublicKey() throws OpenShiftException {
 		ISSHPublicKey key = user.getSshKey();
 		assertNotNull(key);
 		assertEquals(UserInfoResponseFake.SSH_KEY, key.getPublicKey());
 	}
 
 	@Test
-	public void canGetDomain() throws OpenshiftException {
+	public void canGetDomain() throws OpenShiftException {
 		IDomain domain = user.getDomain();
 		assertNotNull(domain);
 		assertEquals(UserInfoResponseFake.RHC_DOMAIN, domain.getRhcDomain());
@@ -75,11 +75,11 @@ public class UserTest {
 	}
 
 	@Test
-	public void canGetCartridges() throws OpenshiftException {
-		OpenshiftService cartridgeListService = new NoopOpenshiftServiceFake() {
+	public void canGetCartridges() throws OpenShiftException {
+		OpenShiftService cartridgeListService = new NoopOpenShiftServiceFake() {
 
 			@Override
-			public List<ICartridge> getCartridges(InternalUser user) throws OpenshiftException {
+			public List<ICartridge> getCartridges(InternalUser user) throws OpenShiftException {
 				ArrayList<ICartridge> cartridges = new ArrayList<ICartridge>();
 				cartridges.add(new Cartridge(CartridgeResponseFake.CARTRIDGE_JBOSSAS70));
 				cartridges.add(new Cartridge(CartridgeResponseFake.CARTRIDGE_PERL5));
@@ -101,7 +101,7 @@ public class UserTest {
 	}
 
 	@Test
-	public void canGetApplications() throws OpenshiftException {
+	public void canGetApplications() throws OpenShiftException {
 		/** response is UserInfoResponseFake */
 		Collection<IApplication> applications = user.getApplications();
 		assertNotNull(applications);
@@ -109,7 +109,7 @@ public class UserTest {
 	}
 
 	@Test
-	public void canGetApplicationByName() throws OpenshiftException, DatatypeConfigurationException {
+	public void canGetApplicationByName() throws OpenShiftException, DatatypeConfigurationException {
 		IApplication application = user.getApplicationByName(UserInfoResponseFake.APP2_NAME);
 		assertApplication(
 				UserInfoResponseFake.APP2_NAME
@@ -120,7 +120,7 @@ public class UserTest {
 				, application);
 	}
 
-	private UserInfo createUserInfo() throws OpenshiftException, DatatypeConfigurationException {
+	private UserInfo createUserInfo() throws OpenShiftException, DatatypeConfigurationException {
 		ApplicationInfo[] applicationInfos = new ApplicationInfo[] {
 				new ApplicationInfo(UserInfoResponseFake.APP1_NAME
 						, UserInfoResponseFake.APP1_UUID
@@ -142,11 +142,11 @@ public class UserTest {
 				, Arrays.asList(applicationInfos));
 	}
 
-	private OpenshiftService createUserInfoService(final UserInfo userInfo) {
-		return new NoopOpenshiftServiceFake() {
+	private OpenShiftService createUserInfoService(final UserInfo userInfo) {
+		return new NoopOpenShiftServiceFake() {
 
 			@Override
-			public UserInfo getUserInfo(InternalUser user) throws OpenshiftException {
+			public UserInfo getUserInfo(InternalUser user) throws OpenShiftException {
 				return userInfo;
 			}
 		};

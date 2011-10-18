@@ -11,8 +11,8 @@
 package org.jboss.tools.openshift.express.internal.client.request.marshalling;
 
 import org.jboss.dmr.ModelNode;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
-import org.jboss.tools.openshift.express.internal.client.IOpenshiftJsonConstants;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
+import org.jboss.tools.openshift.express.internal.client.IOpenShiftJsonConstants;
 import org.jboss.tools.openshift.express.internal.client.request.AbstractDomainRequest;
 
 /**
@@ -21,9 +21,9 @@ import org.jboss.tools.openshift.express.internal.client.request.AbstractDomainR
 public class DomainRequestJsonMarshaller extends AbstractJsonMarshaller<AbstractDomainRequest> {
 
 	@Override
-	protected void setJsonDataProperties(ModelNode node, AbstractDomainRequest request) throws OpenshiftException {
-		node.get(IOpenshiftJsonConstants.PROPERTY_NAMESPACE).set(request.getName());
-		node.get(IOpenshiftJsonConstants.PROPERTY_ALTER).set(String.valueOf(request.isAlter()));
-		node.get(IOpenshiftJsonConstants.PROPERTY_SSH).set(request.getSshKey().getPublicKey());
+	protected void setJsonDataProperties(ModelNode node, AbstractDomainRequest request) throws OpenShiftException {
+		node.get(IOpenShiftJsonConstants.PROPERTY_NAMESPACE).set(request.getName());
+		node.get(IOpenShiftJsonConstants.PROPERTY_ALTER).set(String.valueOf(request.isAlter()));
+		node.get(IOpenShiftJsonConstants.PROPERTY_SSH).set(request.getSshKey().getPublicKey());
 	}
 }

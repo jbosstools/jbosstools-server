@@ -16,7 +16,7 @@ import org.jboss.tools.openshift.express.client.ISSHPublicKey;
 /**
  * @author André Dietisheim
  */
-public abstract class AbstractDomainRequest extends AbstractOpenshiftRequest {
+public abstract class AbstractDomainRequest extends AbstractOpenShiftRequest {
 
 	private String name;
 	private ISSHPublicKey sshKey;

@@ -16,7 +16,7 @@ import java.util.List;
 import org.jboss.dmr.ModelNode;
 import org.jboss.tools.openshift.express.client.Cartridge;
 import org.jboss.tools.openshift.express.client.ICartridge;
-import org.jboss.tools.openshift.express.internal.client.IOpenshiftJsonConstants;
+import org.jboss.tools.openshift.express.internal.client.IOpenShiftJsonConstants;
 
 /**
  * WARNING: the current (9-7-2011) response from the openshift rest service is
@@ -25,16 +25,16 @@ import org.jboss.tools.openshift.express.internal.client.IOpenshiftJsonConstants
  * 
  * @author André Dietisheim
  */
-public class ListCartridgesResponseUnmarshaller extends AbstractOpenshiftJsonResponseUnmarshaller<List<ICartridge>> {
+public class ListCartridgesResponseUnmarshaller extends AbstractOpenShiftJsonResponseUnmarshaller<List<ICartridge>> {
 
 	@Override
-	protected List<ICartridge> createOpenshiftObject(ModelNode responseNode) {
+	protected List<ICartridge> createOpenShiftObject(ModelNode responseNode) {
 		List<ICartridge> cartridges = new ArrayList<ICartridge>();
-		ModelNode dataNode = responseNode.get(IOpenshiftJsonConstants.PROPERTY_DATA);
+		ModelNode dataNode = responseNode.get(IOpenShiftJsonConstants.PROPERTY_DATA);
 		if (dataNode == null) {
 			return cartridges;
 		}
-		ModelNode cartridgesNode = dataNode.get(IOpenshiftJsonConstants.PROPERTY_CARTS);
+		ModelNode cartridgesNode = dataNode.get(IOpenShiftJsonConstants.PROPERTY_CARTS);
 		if (cartridgesNode == null) {
 			return cartridges;
 		}

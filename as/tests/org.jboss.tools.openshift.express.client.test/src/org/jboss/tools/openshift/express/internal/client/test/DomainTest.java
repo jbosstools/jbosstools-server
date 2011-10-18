@@ -18,18 +18,18 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import org.jboss.tools.openshift.express.client.IDomain;
-import org.jboss.tools.openshift.express.client.IOpenshiftService;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.client.IOpenShiftService;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
 import org.jboss.tools.openshift.express.client.SSHKeyPair;
 import org.jboss.tools.openshift.express.internal.client.InternalUser;
 import org.jboss.tools.openshift.express.internal.client.request.ChangeDomainRequest;
 import org.jboss.tools.openshift.express.internal.client.request.CreateDomainRequest;
-import org.jboss.tools.openshift.express.internal.client.request.OpenshiftEnvelopeFactory;
+import org.jboss.tools.openshift.express.internal.client.request.OpenShiftEnvelopeFactory;
 import org.jboss.tools.openshift.express.internal.client.request.marshalling.DomainRequestJsonMarshaller;
-import org.jboss.tools.openshift.express.internal.client.response.OpenshiftResponse;
+import org.jboss.tools.openshift.express.internal.client.response.OpenShiftResponse;
 import org.jboss.tools.openshift.express.internal.client.response.unmarshalling.DomainResponseUnmarshaller;
 import org.jboss.tools.openshift.express.internal.client.response.unmarshalling.JsonSanitizer;
-import org.jboss.tools.openshift.express.internal.client.test.fakes.NoopOpenshiftServiceFake;
+import org.jboss.tools.openshift.express.internal.client.test.fakes.NoopOpenShiftServiceFake;
 import org.jboss.tools.openshift.express.internal.client.test.fakes.TestSSHKey;
 import org.junit.Test;
 
@@ -43,14 +43,14 @@ public class DomainTest {
 	private static final String UUID = "0c82860dae904a4d87f8e5d87a5af840";
 
 	@Test
-	public void canMarshallDomainCreateRequest() throws IOException, OpenshiftException {
+	public void canMarshallDomainCreateRequest() throws IOException, OpenShiftException {
 		SSHKeyPair sshKey = TestSSHKey.create();
 		String expectedRequestString = createDomainRequestString(PASSWORD, RHLOGIN, true, "myDomain", false,
 				sshKey.getPublicKey());
 
 		CreateDomainRequest request = new CreateDomainRequest("myDomain", sshKey, RHLOGIN, true);
 		String requestString =
-				new OpenshiftEnvelopeFactory(
+				new OpenShiftEnvelopeFactory(
 						PASSWORD,
 						new DomainRequestJsonMarshaller().marshall(request))
 						.createString();
@@ -58,29 +58,29 @@ public class DomainTest {
 	}
 
 	@Test
-	public void canUnmarshallDomainCreateResponse() throws IOException, OpenshiftException {
+	public void canUnmarshallDomainCreateResponse() throws IOException, OpenShiftException {
 		String domainName = "myDomain";
 		String responseString = createDomainResponseString(RHLOGIN, UUID);
 
 		responseString = JsonSanitizer.sanitize(responseString);
-		IOpenshiftService service = new NoopOpenshiftServiceFake();
+		IOpenShiftService service = new NoopOpenShiftServiceFake();
 		InternalUser user = new InternalUser(RHLOGIN, PASSWORD, service);
-		OpenshiftResponse<IDomain> response = new DomainResponseUnmarshaller(domainName, user, service).unmarshall(responseString);
+		OpenShiftResponse<IDomain> response = new DomainResponseUnmarshaller(domainName, user, service).unmarshall(responseString);
 
 		assertNotNull(response);
-		IDomain domain = response.getOpenshiftObject();
+		IDomain domain = response.getOpenShiftObject();
 		assertEquals(domainName, domain.getNamespace());
 	}
 
 	@Test
-	public void canMarshallDomainAlterRequest() throws IOException, OpenshiftException {
+	public void canMarshallDomainAlterRequest() throws IOException, OpenShiftException {
 		SSHKeyPair sshKey = TestSSHKey.create();
 		String expectedRequestString = createDomainRequestString(PASSWORD, RHLOGIN, true, "myDomain", true,
 				sshKey.getPublicKey());
 
 		ChangeDomainRequest request = new ChangeDomainRequest("myDomain", sshKey, RHLOGIN, true);
 		String requestString =
-				new OpenshiftEnvelopeFactory(
+				new OpenShiftEnvelopeFactory(
 						PASSWORD,
 						new DomainRequestJsonMarshaller().marshall(request))
 						.createString();

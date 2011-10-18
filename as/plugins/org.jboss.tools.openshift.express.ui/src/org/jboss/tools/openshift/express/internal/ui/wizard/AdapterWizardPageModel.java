@@ -14,7 +14,7 @@ import org.eclipse.egit.ui.Activator;
 import org.eclipse.egit.ui.UIPreferences;
 import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
 import org.jboss.tools.openshift.express.client.IApplication;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
 
 /**
  * @author André Dietisheim
@@ -43,7 +43,7 @@ public class AdapterWizardPageModel extends ObservableUIPojo {
 		setRemoteName(REMOTE_NAME_DEFAULT);
 	}
 
-	public void updateGitUri() throws OpenshiftException {
+	public void updateGitUri() throws OpenShiftException {
 		IApplication application = wizardModel.getApplication();
 		if (application != null) {
 			setGitUri(application.getGitUri());

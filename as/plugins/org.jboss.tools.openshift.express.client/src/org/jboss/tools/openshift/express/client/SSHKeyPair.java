@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.jboss.tools.openshift.express.client;
 
-import org.jboss.tools.openshift.express.internal.client.OpenshiftCoreActivator;
+import org.jboss.tools.openshift.express.internal.client.OpenShiftCoreActivator;
 import org.jboss.tools.openshift.express.internal.client.utils.Base64Encoder;
 
 import com.jcraft.jsch.JSch;
@@ -36,7 +36,7 @@ public class SSHKeyPair implements ISSHPublicKey {
 
 	private String publicKeyPath;
 
-	private SSHKeyPair(KeyPair keyPair, String privateKeyPath, String publicKeyPath) throws OpenshiftException {
+	private SSHKeyPair(KeyPair keyPair, String privateKeyPath, String publicKeyPath) throws OpenShiftException {
 		this.keyPair = keyPair;
 		this.privateKeyPath = privateKeyPath;
 		this.publicKeyPath = publicKeyPath;
@@ -53,19 +53,19 @@ public class SSHKeyPair implements ISSHPublicKey {
 	 * @param publicKeyPath
 	 *            the path where the new public key gets stored
 	 * @return
-	 * @throws OpenshiftException
+	 * @throws OpenShiftException
 	 *             if the key could not be created
 	 */
 	public static SSHKeyPair create(String passPhrase, String privateKeyPath, String publicKeyPath)
-			throws OpenshiftException {
+			throws OpenShiftException {
 		try {
 			KeyPair keyPair = KeyPair.genKeyPair(new JSch(), KeyPair.RSA, KEYLENGTH);
 			keyPair.setPassphrase(passPhrase);
-			keyPair.writePublicKey(publicKeyPath, "created by " + OpenshiftCoreActivator.PLUGIN_ID);
+			keyPair.writePublicKey(publicKeyPath, "created by " + OpenShiftCoreActivator.PLUGIN_ID);
 			keyPair.writePrivateKey(privateKeyPath);
 			return new SSHKeyPair(keyPair, privateKeyPath, publicKeyPath);
 		} catch (Exception e) {
-			throw new OpenshiftException(e, "Could not create new rsa key", e);
+			throw new OpenShiftException(e, "Could not create new rsa key", e);
 		}
 	}
 
@@ -77,19 +77,19 @@ public class SSHKeyPair implements ISSHPublicKey {
 	 * @param publicKeyPath
 	 *            the path to the public key
 	 * @return
-	 * @throws OpenshiftException
+	 * @throws OpenShiftException
 	 */
 	public static SSHKeyPair load(String privateKeyPath, String publicKeyPath)
-			throws OpenshiftException {
+			throws OpenShiftException {
 		try {
 			KeyPair keyPair = KeyPair.load(new JSch(), privateKeyPath, publicKeyPath);
 			return new SSHKeyPair(keyPair, privateKeyPath, publicKeyPath);
 		} catch (JSchException e) {
-			throw new OpenshiftException(e, "Could not create new rsa key");
+			throw new OpenShiftException(e, "Could not create new rsa key");
 		}
 	}
 
-	public String getPublicKey() throws OpenshiftException {
+	public String getPublicKey() throws OpenShiftException {
 		return new String(Base64Encoder.encode(keyPair.getPublicKeyBlob()));
 	}
 

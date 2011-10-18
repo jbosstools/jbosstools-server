@@ -11,8 +11,8 @@
 package org.jboss.tools.openshift.express.internal.client;
 
 import org.jboss.tools.openshift.express.client.IDomain;
-import org.jboss.tools.openshift.express.client.IOpenshiftService;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.client.IOpenShiftService;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
 
 
 /**
@@ -21,13 +21,13 @@ import org.jboss.tools.openshift.express.client.OpenshiftException;
 public class Domain extends UserInfoAware implements IDomain {
 
 	private String namespace;
-	private IOpenshiftService service;
+	private IOpenShiftService service;
 
-	public Domain(String namespace, InternalUser user, IOpenshiftService service) {
+	public Domain(String namespace, InternalUser user, IOpenShiftService service) {
 		this(namespace, null, user, service);
 	}
 
-	public Domain(String namespace, String rhcDomain, InternalUser user, IOpenshiftService service) {
+	public Domain(String namespace, String rhcDomain, InternalUser user, IOpenShiftService service) {
 		super(user);
 		this.namespace = namespace;
 		this.service = service;
@@ -39,12 +39,12 @@ public class Domain extends UserInfoAware implements IDomain {
 	}
 
 	@Override
-	public String getRhcDomain() throws OpenshiftException {
+	public String getRhcDomain() throws OpenShiftException {
 		return getUserInfo().getRhcDomain();
 	}
 
 	@Override
-	public void setNamespace(String namespace) throws OpenshiftException {
+	public void setNamespace(String namespace) throws OpenShiftException {
 		InternalUser user = getUser();
 		IDomain domain = service.changeDomain(namespace, user.getSshKey(), user);
 		update(domain);

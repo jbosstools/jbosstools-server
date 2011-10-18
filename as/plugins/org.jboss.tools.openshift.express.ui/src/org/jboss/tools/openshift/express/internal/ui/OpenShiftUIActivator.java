@@ -8,18 +8,18 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class OpenshiftUIActivator extends AbstractUIPlugin {
+public class OpenShiftUIActivator extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.jboss.tools.openshift.express.ui"; //$NON-NLS-1$
 
 	// The shared instance
-	private static OpenshiftUIActivator plugin;
+	private static OpenShiftUIActivator plugin;
 	
 	/**
 	 * The constructor
 	 */
-	public OpenshiftUIActivator() {
+	public OpenShiftUIActivator() {
 	}
 
 	/*
@@ -45,7 +45,7 @@ public class OpenshiftUIActivator extends AbstractUIPlugin {
 	 *
 	 * @return the shared instance
 	 */
-	public static OpenshiftUIActivator getDefault() {
+	public static OpenShiftUIActivator getDefault() {
 		return plugin;
 	}
 	
@@ -58,7 +58,7 @@ public class OpenshiftUIActivator extends AbstractUIPlugin {
 	}
 
 	public static IStatus createErrorStatus(String message, Throwable throwable) {
-		return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
+		return new Status(IStatus.ERROR, OpenShiftUIActivator.PLUGIN_ID,
 				message, throwable);
 	}
 	

@@ -11,7 +11,7 @@
 package org.jboss.tools.openshift.express.internal.client.request.marshalling;
 
 import org.jboss.dmr.ModelNode;
-import org.jboss.tools.openshift.express.internal.client.IOpenshiftJsonConstants;
+import org.jboss.tools.openshift.express.internal.client.IOpenShiftJsonConstants;
 import org.jboss.tools.openshift.express.internal.client.request.ListCartridgesRequest;
 
 /**
@@ -21,6 +21,6 @@ public class ListCartridgesRequestJsonMarshaller extends AbstractJsonMarshaller<
 
 	@Override
 	protected void setJsonDataProperties(ModelNode node, ListCartridgesRequest request) {
-		setStringProperty(IOpenshiftJsonConstants.PROPERTY_CART_TYPE, request.getCartType(), node);
+		setStringProperty(IOpenShiftJsonConstants.PROPERTY_CART_TYPE, request.getCartType(), node);
 	}
 }

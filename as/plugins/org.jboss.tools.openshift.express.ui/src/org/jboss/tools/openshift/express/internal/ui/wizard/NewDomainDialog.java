@@ -19,7 +19,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.osgi.util.NLS;
 import org.jboss.tools.common.ui.WizardUtils;
-import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
+import org.jboss.tools.openshift.express.internal.ui.OpenShiftUIActivator;
 
 /**
  * @author André Dietisheim
@@ -48,7 +48,7 @@ public class NewDomainDialog extends Wizard {
 						queue.offer(true);
 					} catch (Exception e) {
 						queue.offer(false);
-						return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
+						return new Status(IStatus.ERROR, OpenShiftUIActivator.PLUGIN_ID,
 								NLS.bind("Could not create domain \"{0}\"", model.getNamespace()), e);
 					}
 					return Status.OK_STATUS;

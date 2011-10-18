@@ -8,15 +8,14 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.tools.openshift.express.internal.client.test;
+package org.jboss.tools.openshift.express.internal.client.test.fakes;
 
-import org.jboss.tools.openshift.express.client.IOpenshiftService;
+import org.jboss.tools.openshift.express.client.OpenShiftService;
+import org.jboss.tools.openshift.express.internal.client.test.IOpenShiftTestService;
 
-/**
- * @author André Dietisheim
- */
-public interface IOpenshiftTestService extends IOpenshiftService {
+public class OpenShiftTestService extends OpenShiftService implements IOpenShiftTestService {
 
-	public static final String STAGING_BASE_URL = "";
-
+	public OpenShiftTestService() {
+		super(STAGING_BASE_URL);
+	}
 }

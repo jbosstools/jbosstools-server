@@ -19,7 +19,7 @@ import java.util.List;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 
-import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
 import org.jboss.tools.openshift.express.client.utils.RFC822DateUtils;
 import org.jboss.tools.openshift.express.internal.client.ApplicationInfo;
 
@@ -29,7 +29,7 @@ import org.jboss.tools.openshift.express.internal.client.ApplicationInfo;
 public class ApplicationInfoAsserts {
 
 	public static void assertThatContainsApplicationInfo(String applicationName, String embedded, String applicationUUID,
-			String cartridgeName, String creationTime, List<ApplicationInfo> applicationInfos) throws OpenshiftException {
+			String cartridgeName, String creationTime, List<ApplicationInfo> applicationInfos) throws OpenShiftException {
 		ApplicationInfo applicationInfo = getApplicationInfo(applicationName, applicationInfos);
 		if (applicationInfo == null) {
 			fail(MessageFormat.format("Could not find application with name \"{0}\"", applicationName));
@@ -53,7 +53,7 @@ public class ApplicationInfoAsserts {
 	}
 	
 	private static void assertApplicationInfo(String embedded, String uuid, String cartridgeName,
-			String creationTime, ApplicationInfo applicationInfo) throws OpenshiftException {
+			String creationTime, ApplicationInfo applicationInfo) throws OpenShiftException {
 		assertEquals(embedded, applicationInfo.getEmbedded());
 		assertEquals(uuid, applicationInfo.getUuid());
 		assertNotNull(applicationInfo.getCartridge());

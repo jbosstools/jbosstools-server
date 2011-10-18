@@ -14,21 +14,21 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
 import org.jboss.tools.common.ui.preferencevalue.StringPreferenceValue;
-import org.jboss.tools.openshift.express.client.IOpenshiftService;
+import org.jboss.tools.openshift.express.client.IOpenShiftService;
 import org.jboss.tools.openshift.express.client.IUser;
-import org.jboss.tools.openshift.express.client.NotFoundOpenshiftException;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.client.NotFoundOpenShiftException;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
 import org.jboss.tools.openshift.express.client.User;
 import org.jboss.tools.openshift.express.client.UserConfiguration;
-import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
+import org.jboss.tools.openshift.express.internal.ui.OpenShiftUIActivator;
 
 /**
  * @author André Dietisheim
  */
 public class CredentialsWizardPageModel extends ObservableUIPojo {
 
-	private static final String ID = OpenshiftUIActivator.PLUGIN_ID
-			+ OpenshiftUIActivator.getDefault().getBundle().getVersion();
+	private static final String ID = OpenShiftUIActivator.PLUGIN_ID
+			+ OpenShiftUIActivator.getDefault().getBundle().getVersion();
 
 	private static final String RHLOGIN_PREFS_KEY = "org.jboss.tools.openshift.express.internal.ui.wizard.CredentialsWizardModel_RHLOGIN";
 
@@ -48,8 +48,8 @@ public class CredentialsWizardPageModel extends ObservableUIPojo {
 
 	public CredentialsWizardPageModel(ImportProjectWizardModel model) {
 		this.wizardModel = model;
-		this.serverUrl = IOpenshiftService.BASE_URL;
-		this.rhLoginPreferenceValue = new StringPreferenceValue(RHLOGIN_PREFS_KEY, OpenshiftUIActivator.PLUGIN_ID);
+		this.serverUrl = IOpenShiftService.BASE_URL;
+		this.rhLoginPreferenceValue = new StringPreferenceValue(RHLOGIN_PREFS_KEY, OpenShiftUIActivator.PLUGIN_ID);
 		this.rhLogin = initRhLogin();
 		resetCredentialsStatus();
 	}
@@ -125,16 +125,16 @@ public class CredentialsWizardPageModel extends ObservableUIPojo {
 	}
 
 	public IStatus validateCredentials() {
-		IStatus status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID, "Your credentails are not valid.");
+		IStatus status = new Status(IStatus.ERROR, OpenShiftUIActivator.PLUGIN_ID, "Your credentails are not valid.");
 		try {
 			this.user = new User(getRhLogin(), getPassword(), ID);
 			if (user.isValid()) {
 				status = Status.OK_STATUS;
 			}
-		} catch (NotFoundOpenshiftException e) {
+		} catch (NotFoundOpenShiftException e) {
 			// valid user without domain
 			status = Status.OK_STATUS;
-		} catch (OpenshiftException e) {
+		} catch (OpenShiftException e) {
 			this.user = null;
 		}
 		wizardModel.setUser(user);

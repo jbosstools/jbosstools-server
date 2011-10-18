@@ -15,7 +15,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
 import org.jboss.tools.openshift.express.client.UserConfiguration;
 import org.jboss.tools.openshift.express.internal.client.utils.StreamUtils;
 
@@ -25,12 +25,12 @@ import org.jboss.tools.openshift.express.internal.client.utils.StreamUtils;
 public class UserConfigurationFake extends UserConfiguration {
 
 	
-	public UserConfigurationFake() throws OpenshiftException, IOException {
+	public UserConfigurationFake() throws OpenShiftException, IOException {
 		super();
 	}
 
 	@Override
-	protected File getUserConfigurationFile() throws OpenshiftException, IOException {
+	protected File getUserConfigurationFile() throws OpenShiftException, IOException {
 		Writer writer = null;
 		try {
 			File file = File.createTempFile(createRandomString(), null);

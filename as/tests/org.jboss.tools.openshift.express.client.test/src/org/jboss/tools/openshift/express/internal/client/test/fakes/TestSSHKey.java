@@ -13,7 +13,7 @@ package org.jboss.tools.openshift.express.internal.client.test.fakes;
 import java.io.File;
 import java.io.IOException;
 
-import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
 import org.jboss.tools.openshift.express.client.SSHKeyPair;
 import org.jboss.tools.openshift.express.internal.client.test.utils.StreamUtils;
 
@@ -50,7 +50,7 @@ public class TestSSHKey {
 					"1rS3C4svRSjdWaG36vDY2KxowdFvpKj8i8IYNPlLoRA/7EzzyneS6iyw" +
 					"== created by org.jboss.tools.openshift.express.client";
 
-	public static SSHKeyPair create() throws IOException, OpenshiftException {
+	public static SSHKeyPair create() throws IOException, OpenShiftException {
 		File privateKeyFile = File.createTempFile(createRandomString(), null);
 		StreamUtils.writeTo(privateKey, privateKeyFile);
 

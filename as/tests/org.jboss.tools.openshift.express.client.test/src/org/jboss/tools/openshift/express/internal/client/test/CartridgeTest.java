@@ -16,8 +16,8 @@ import static org.junit.Assert.assertNotNull;
 import java.util.List;
 
 import org.jboss.tools.openshift.express.client.ICartridge;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
-import org.jboss.tools.openshift.express.internal.client.response.OpenshiftResponse;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
+import org.jboss.tools.openshift.express.internal.client.response.OpenShiftResponse;
 import org.jboss.tools.openshift.express.internal.client.response.unmarshalling.JsonSanitizer;
 import org.jboss.tools.openshift.express.internal.client.response.unmarshalling.ListCartridgesResponseUnmarshaller;
 import org.jboss.tools.openshift.express.internal.client.test.fakes.CartridgeResponseFake;
@@ -29,11 +29,11 @@ import org.junit.Test;
 public class CartridgeTest {
 
 	@Test
-	public void canUnmarshallApplicationResponse() throws OpenshiftException {
+	public void canUnmarshallApplicationResponse() throws OpenShiftException {
 		String response = JsonSanitizer.sanitize(CartridgeResponseFake.RESPONSE);
-		OpenshiftResponse<List<ICartridge>> openshiftResponse =
+		OpenShiftResponse<List<ICartridge>> openshiftResponse =
 				new ListCartridgesResponseUnmarshaller().unmarshall(response);
-		List<ICartridge> cartridges = openshiftResponse.getOpenshiftObject();
+		List<ICartridge> cartridges = openshiftResponse.getOpenShiftObject();
 		assertNotNull(cartridges);
 		assertThatContainsCartridge(CartridgeResponseFake.CARTRIDGE_JBOSSAS70, cartridges);
 		assertThatContainsCartridge(CartridgeResponseFake.CARTRIDGE_PERL5, cartridges);

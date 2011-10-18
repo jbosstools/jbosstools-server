@@ -21,7 +21,7 @@ import java.io.Writer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
 import org.jboss.tools.openshift.express.internal.client.test.fakes.UserConfigurationFake;
 import org.jboss.tools.openshift.express.internal.client.utils.StreamUtils;
 import org.junit.Test;
@@ -36,7 +36,7 @@ public class UserConfigurationTest {
 	private static final String ANOTHER_USERNAME = "anotherUser";
 
 	@Test
-	public void canReadUsername() throws OpenshiftException, IOException {
+	public void canReadUsername() throws OpenShiftException, IOException {
 		UserConfigurationFake userConfiguration = new UserConfigurationFake() {
 
 			@Override
@@ -49,7 +49,7 @@ public class UserConfigurationTest {
 	}
 
 	@Test
-	public void canStoreUsername() throws OpenshiftException, IOException {
+	public void canStoreUsername() throws OpenShiftException, IOException {
 		UserConfigurationFake userConfiguration = new UserConfigurationFake() {
 
 			@Override
@@ -71,7 +71,7 @@ public class UserConfigurationTest {
 	}
 
 	@Test
-	public void canStoreAndReadUsername() throws OpenshiftException, IOException {
+	public void canStoreAndReadUsername() throws OpenShiftException, IOException {
 		UserConfigurationFake userConfiguration = new UserConfigurationFake() {
 
 			@Override
@@ -87,7 +87,7 @@ public class UserConfigurationTest {
 		UserConfigurationFake userConfiguration2 = new UserConfigurationFake() {
 
 			@Override
-			protected File getUserConfigurationFile() throws OpenshiftException, IOException {
+			protected File getUserConfigurationFile() throws OpenShiftException, IOException {
 				return userConfigurationFile;
 			}
 		};

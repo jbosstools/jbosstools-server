@@ -8,16 +8,11 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.tools.openshift.express.internal.client.request.marshalling;
-
-import org.jboss.tools.openshift.express.client.OpenshiftException;
-import org.jboss.tools.openshift.express.internal.client.request.IOpenshiftRequest;
+package org.jboss.tools.openshift.express.internal.client.request;
 
 /**
  * @author André Dietisheim
  */
-public interface IOpenshiftMarshaller<REQUEST extends IOpenshiftRequest> {
+public interface IOpenShiftRequest {
 
-	public String marshall(REQUEST object) throws OpenshiftException;
-	
 }

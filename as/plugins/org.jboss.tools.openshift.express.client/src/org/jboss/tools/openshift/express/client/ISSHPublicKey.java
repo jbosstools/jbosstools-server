@@ -21,8 +21,8 @@ public interface ISSHPublicKey {
 	 * 
 	 * @return the content of the public key (without signature, without
 	 *         comment)
-	 * @throws OpenshiftException
+	 * @throws OpenShiftException
 	 */
-	public String getPublicKey() throws OpenshiftException ;
+	public String getPublicKey() throws OpenShiftException ;
 	
 }

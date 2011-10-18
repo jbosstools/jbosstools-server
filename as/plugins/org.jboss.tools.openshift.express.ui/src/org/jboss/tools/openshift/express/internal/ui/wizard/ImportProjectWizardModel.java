@@ -48,9 +48,9 @@ import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
 import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.ICartridge;
 import org.jboss.tools.openshift.express.client.IUser;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
 import org.jboss.tools.openshift.express.internal.core.behaviour.ExpressServerUtils;
-import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
+import org.jboss.tools.openshift.express.internal.ui.OpenShiftUIActivator;
 import org.jboss.tools.openshift.express.internal.ui.wizard.projectimport.GeneralProjectImportOperation;
 import org.jboss.tools.openshift.express.internal.ui.wizard.projectimport.MavenProjectImportOperation;
 
@@ -139,7 +139,7 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 		return (String) getProperty(REPOSITORY_PATH);
 	}
 
-	public void importProject(final File projectFolder, IProgressMonitor monitor) throws OpenshiftException,
+	public void importProject(final File projectFolder, IProgressMonitor monitor) throws OpenShiftException,
 			CoreException,
 			InterruptedException {
 		new WorkspaceJob(NLS.bind("Importing projects from {0}", projectFolder.getAbsolutePath())) {
@@ -159,9 +159,9 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 					createServerAdapterIfRequired(importedProjects, monitor);
 					return Status.OK_STATUS;
 				} catch (Exception e) {
-					IStatus status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
+					IStatus status = new Status(IStatus.ERROR, OpenShiftUIActivator.PLUGIN_ID,
 							NLS.bind("Could not import projects from {0}", projectFolder.getAbsolutePath()), e);
-					OpenshiftUIActivator.log(status);
+					OpenShiftUIActivator.log(status);
 					return status;
 				}
 			}
@@ -182,7 +182,7 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 		new ConnectProviderOperation(project, gitFolder).execute(monitor);
 	}
 
-	public File cloneRepository(IProgressMonitor monitor) throws URISyntaxException, OpenshiftException,
+	public File cloneRepository(IProgressMonitor monitor) throws URISyntaxException, OpenShiftException,
 			InvocationTargetException,
 			InterruptedException {
 		IApplication application = getApplication();
@@ -192,7 +192,7 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 	}
 
 	private void cloneRepository(String uri, File destination, IProgressMonitor monitor) throws URISyntaxException,
-			OpenshiftException,
+			OpenShiftException,
 			InvocationTargetException,
 			InterruptedException {
 		if (destination.exists()) {
@@ -236,10 +236,10 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 				IServer server = createServerAdapter();
 				addModules(getModules(importedProjects), server, monitor);
 			} catch(CoreException ce) {
-				OpenshiftUIActivator.getDefault().getLog().log(ce.getStatus());
-			} catch(OpenshiftException ose) {
-				IStatus s = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID, "Cannot create openshift server adapter", ose);
-				OpenshiftUIActivator.getDefault().getLog().log(s);
+				OpenShiftUIActivator.getDefault().getLog().log(ce.getStatus());
+			} catch(OpenShiftException ose) {
+				IStatus s = new Status(IStatus.ERROR, OpenShiftUIActivator.PLUGIN_ID, "Cannot create openshift server adapter", ose);
+				OpenShiftUIActivator.getDefault().getLog().log(s);
 			}
 		}
 	}
@@ -255,16 +255,16 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 	}
 
 	private IServer createServerAdapter() throws CoreException,
-			OpenshiftException {
+			OpenShiftException {
 		IServerType type = (IServerType)getProperty(AdapterWizardPageModel.SERVER_TYPE);
 		IRuntime rt = (IRuntime)getProperty(AdapterWizardPageModel.RUNTIME_DELEGATE);
 		String mode = (String)getProperty(AdapterWizardPageModel.MODE);
 
-		String serverNameBase = getApplication().getName() + " Openshift Server";
+		String serverNameBase = getApplication().getName() + " OpenShift Server";
 		String serverName = org.jboss.ide.eclipse.as.core.util.ServerUtil.getDefaultServerName(serverNameBase);
 		
 		IServer server = ExpressServerUtils.createServer(rt, type, serverName);
-		ExpressServerUtils.fillServerWithOpenshiftDetails(server, getApplication().getApplicationUrl(), 
+		ExpressServerUtils.fillServerWithOpenShiftDetails(server, getApplication().getApplicationUrl(), 
 				getUser().getRhlogin(), getUser().getPassword(), 
 				getUser().getDomain().getNamespace(), getApplication().getName(), mode);
 		return server;

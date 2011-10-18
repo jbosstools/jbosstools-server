@@ -1,9 +1,9 @@
 package org.jboss.tools.openshift.express.internal.client.request.marshalling;
 
-import org.jboss.tools.openshift.express.internal.client.request.IOpenshiftRequest;
+import org.jboss.tools.openshift.express.internal.client.request.IOpenShiftRequest;
 
 
-public abstract class AbstractOpenshiftMarshaller<REQUEST extends IOpenshiftRequest> implements IOpenshiftMarshaller<REQUEST> {
+public abstract class AbstractOpenShiftMarshaller<REQUEST extends IOpenShiftRequest> implements IOpenShiftMarshaller<REQUEST> {
 
 	@Override
 	public String marshall(REQUEST object) {

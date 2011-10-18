@@ -20,10 +20,10 @@ import java.util.Date;
 
 import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.ICartridge;
-import org.jboss.tools.openshift.express.client.IOpenshiftService;
-import org.jboss.tools.openshift.express.client.InvalidCredentialsOpenshiftException;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
-import org.jboss.tools.openshift.express.client.OpenshiftService;
+import org.jboss.tools.openshift.express.client.IOpenShiftService;
+import org.jboss.tools.openshift.express.client.InvalidCredentialsOpenShiftException;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
+import org.jboss.tools.openshift.express.client.OpenShiftService;
 import org.jboss.tools.openshift.express.client.User;
 import org.jboss.tools.openshift.express.internal.client.ApplicationInfo;
 import org.jboss.tools.openshift.express.internal.client.UserInfo;
@@ -37,19 +37,19 @@ import org.junit.Test;
  */
 public class ApplicationIntegrationTest {
 
-	private IOpenshiftService service;
+	private IOpenShiftService service;
 
 	private User user;
 	private User invalidUser;
 
 	@Before
 	public void setUp() {
-		this.service = new OpenshiftService(TestUser.ID);
+		this.service = new OpenShiftService(TestUser.ID);
 		this.user = new TestUser();
 		this.invalidUser = new TestUser("bogusPassword");
 	}
 
-	@Test(expected = InvalidCredentialsOpenshiftException.class)
+	@Test(expected = InvalidCredentialsOpenShiftException.class)
 	public void createApplicationWithInvalidCredentialsThrowsException() throws Exception {
 		service.createApplication(ApplicationUtils.createRandomApplicationName(), ICartridge.JBOSSAS_7, invalidUser);
 	}
@@ -75,7 +75,7 @@ public class ApplicationIntegrationTest {
 		service.destroyApplication(applicationName, ICartridge.JBOSSAS_7, user);
 	}
 
-	@Test(expected = OpenshiftException.class)
+	@Test(expected = OpenShiftException.class)
 	public void createDuplicateApplicationThrowsException() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		try {

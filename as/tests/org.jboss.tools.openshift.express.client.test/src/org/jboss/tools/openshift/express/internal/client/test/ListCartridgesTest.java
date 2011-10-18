@@ -17,11 +17,11 @@ import java.net.URLEncoder;
 import java.util.List;
 
 import org.jboss.tools.openshift.express.client.ICartridge;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
 import org.jboss.tools.openshift.express.internal.client.request.ListCartridgesRequest;
-import org.jboss.tools.openshift.express.internal.client.request.OpenshiftEnvelopeFactory;
+import org.jboss.tools.openshift.express.internal.client.request.OpenShiftEnvelopeFactory;
 import org.jboss.tools.openshift.express.internal.client.request.marshalling.ListCartridgesRequestJsonMarshaller;
-import org.jboss.tools.openshift.express.internal.client.response.OpenshiftResponse;
+import org.jboss.tools.openshift.express.internal.client.response.OpenShiftResponse;
 import org.jboss.tools.openshift.express.internal.client.response.unmarshalling.JsonSanitizer;
 import org.jboss.tools.openshift.express.internal.client.response.unmarshalling.ListCartridgesResponseUnmarshaller;
 import org.junit.Test;
@@ -42,13 +42,13 @@ public class ListCartridgesTest {
 
 		String listCartridgeRequest = new ListCartridgesRequestJsonMarshaller().marshall(
 				new ListCartridgesRequest(USERNAME, true));
-		String effectiveRequest = new OpenshiftEnvelopeFactory(PASSWORD, listCartridgeRequest).createString();
+		String effectiveRequest = new OpenShiftEnvelopeFactory(PASSWORD, listCartridgeRequest).createString();
 
 		assertEquals(expectedRequestString, effectiveRequest);
 	}
 
 	@Test
-	public void canUnmarshallCartridgeListResponse() throws OpenshiftException {
+	public void canUnmarshallCartridgeListResponse() throws OpenShiftException {
 		String cartridgeListResponse =
 				"{"
 						+ "\"messages\":\"\","
@@ -75,12 +75,12 @@ public class ListCartridgesTest {
 						+ "\"exit_code\":0}";
 
 		cartridgeListResponse = JsonSanitizer.sanitize(cartridgeListResponse);
-		OpenshiftResponse<List<ICartridge>> response =
+		OpenShiftResponse<List<ICartridge>> response =
 				new ListCartridgesResponseUnmarshaller().unmarshall(cartridgeListResponse);
 		assertEquals("", response.getMessages());
 		assertEquals(false, response.isDebug());
 
-		List<ICartridge> cartridges = response.getOpenshiftObject();
+		List<ICartridge> cartridges = response.getOpenShiftObject();
 		assertEquals(5, cartridges.size());
 		assertThatContainsCartridge("perl-5.10", cartridges);
 		assertThatContainsCartridge("jbossas-7.0", cartridges);

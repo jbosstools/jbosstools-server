@@ -13,7 +13,7 @@ package org.jboss.tools.openshift.express.internal.client.test;
 import static org.junit.Assert.assertEquals;
 
 import org.jboss.dmr.ModelNode;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
 import org.jboss.tools.openshift.express.internal.client.response.unmarshalling.JsonSanitizer;
 import org.junit.Test;
 
@@ -23,7 +23,7 @@ import org.junit.Test;
 public class JsonSanitizerTest {
 
 	@Test
-	public void canSanitizeQuotedJsonObject() throws OpenshiftException {
+	public void canSanitizeQuotedJsonObject() throws OpenShiftException {
 		String quotedJsonObject =
 				"\"{"
 						+ "\\\"carts\\\":"
@@ -35,7 +35,7 @@ public class JsonSanitizerTest {
 	}
 
 	@Test
-	public void doesNotTuchValidJson() throws OpenshiftException {
+	public void doesNotTuchValidJson() throws OpenShiftException {
 		String quotedJsonObject =
 				"{"
 						+ "\"carts\":"
@@ -47,7 +47,7 @@ public class JsonSanitizerTest {
 	}
 
 	@Test
-	public void doesNotRemoveEscapedQuoteInStringValue() throws OpenshiftException {
+	public void doesNotRemoveEscapedQuoteInStringValue() throws OpenShiftException {
 		String quotedJsonObject =
 				"\"{"
 						+ "\\\"property\\\":"
@@ -61,7 +61,7 @@ public class JsonSanitizerTest {
 	}
 
 	@Test
-	public void doesNotRemoveEscapedQuoteInStringValueWithinValidJsonObject() throws OpenshiftException {
+	public void doesNotRemoveEscapedQuoteInStringValueWithinValidJsonObject() throws OpenShiftException {
 		String quotedJsonObject =
 				"{"
 						+ "\"property\":"

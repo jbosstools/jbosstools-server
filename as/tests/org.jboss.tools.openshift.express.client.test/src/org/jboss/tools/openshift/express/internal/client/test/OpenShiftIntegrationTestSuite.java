@@ -27,6 +27,6 @@ import org.junit.runners.Suite;
 /**
  * @author André Dietisheim
  */
-public class OpenshiftIntegrationTestSuite {
+public class OpenShiftIntegrationTestSuite {
 
 }

@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2007 Red Hat, Inc. 
+ * Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -8,14 +8,20 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.tools.openshift.express.internal.client.test.fakes;
+package org.jboss.tools.openshift.express.internal.client.request;
 
-import org.jboss.tools.openshift.express.client.OpenshiftService;
-import org.jboss.tools.openshift.express.internal.client.test.IOpenshiftTestService;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
 
-public class OpenshiftTestService extends OpenshiftService implements IOpenshiftTestService {
+/**
+ * @author André Dietisheim
+ */
+public interface IOpenShiftRequestFactory {
 
-	public OpenshiftTestService() {
-		super(STAGING_BASE_URL);
-	}
+	/**
+	 * Creates an request String that may be sent to the openshift server
+	 * @return
+	 * @throws OpenShiftException
+	 */
+	public String createString() throws OpenShiftException;
+
 }

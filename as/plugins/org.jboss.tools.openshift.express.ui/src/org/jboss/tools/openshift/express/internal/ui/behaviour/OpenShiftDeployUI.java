@@ -11,9 +11,9 @@ import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI;
 import org.jboss.tools.openshift.express.internal.core.behaviour.ExpressServerUtils;
 
-public class OpenshiftDeployUI implements IDeploymentTypeUI {
+public class OpenShiftDeployUI implements IDeploymentTypeUI {
 
-	public OpenshiftDeployUI() {
+	public OpenShiftDeployUI() {
 		// TODO Auto-generated constructor stub
 	}
 
@@ -38,10 +38,10 @@ public class OpenshiftDeployUI implements IDeploymentTypeUI {
 		composite.setLayout(new FormLayout());
 		
 		Label nameLabel = new Label(composite, SWT.NONE);
-		nameLabel.setText("Openshift Username:");
+		nameLabel.setText("OpenShift Username:");
 		userText = new Text(composite, SWT.BORDER);
 		Label passLabel = new Label(composite, SWT.NONE);
-		passLabel.setText("Openshift Password:");
+		passLabel.setText("OpenShift Password:");
 		passText = new Text(composite, SWT.BORDER | SWT.PASSWORD);
 		
 		Label domainLabel = new Label(composite, SWT.NONE);

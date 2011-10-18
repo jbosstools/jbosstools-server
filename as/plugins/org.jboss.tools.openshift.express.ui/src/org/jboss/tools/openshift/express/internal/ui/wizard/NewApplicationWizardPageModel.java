@@ -17,8 +17,8 @@ import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
 import org.jboss.tools.common.ui.preferencevalue.StringPreferenceValue;
 import org.jboss.tools.openshift.express.client.ICartridge;
 import org.jboss.tools.openshift.express.client.IUser;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
-import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
+import org.jboss.tools.openshift.express.internal.ui.OpenShiftUIActivator;
 
 /**
  * @author André Dietisheim
@@ -40,7 +40,7 @@ public class NewApplicationWizardPageModel extends ObservableUIPojo {
 		this.user = user;
 		this.selectedCartridgePreference = new StringPreferenceValue(
 				"org.jboss.tools.openshift.express.internal.ui.wizard.NewApplicationWizard.selectedCartridge",
-				OpenshiftUIActivator.PLUGIN_ID);
+				OpenShiftUIActivator.PLUGIN_ID);
 	}
 
 	private ICartridge initSelectedCartridge() {
@@ -68,7 +68,7 @@ public class NewApplicationWizardPageModel extends ObservableUIPojo {
 		firePropertyChange(PROPERTY_NAME, this.name, this.name = name);
 	}
 
-	public void loadCartridges() throws OpenshiftException {
+	public void loadCartridges() throws OpenShiftException {
 		setCartridges(user.getCartridges());
 	}
 
@@ -103,16 +103,16 @@ public class NewApplicationWizardPageModel extends ObservableUIPojo {
 		return matchingCartridge;
 	}
 
-	public void createApplication() throws OpenshiftException {
+	public void createApplication() throws OpenShiftException {
 		user.createApplication(name, selectedCartridge);
 	}
 
 	public boolean hasApplication(String name) {
 		try {
 			return user.getApplicationByName(name) != null;
-		} catch (OpenshiftException e) {
-			OpenshiftUIActivator.log(
-					OpenshiftUIActivator.createErrorStatus("Could not get application by name", e));
+		} catch (OpenShiftException e) {
+			OpenShiftUIActivator.log(
+					OpenShiftUIActivator.createErrorStatus("Could not get application by name", e));
 			return false;
 		}
 	}

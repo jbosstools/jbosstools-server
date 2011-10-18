@@ -13,7 +13,7 @@ package org.jboss.tools.openshift.express.internal.client;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-public class OpenshiftCoreActivator implements BundleActivator {
+public class OpenShiftCoreActivator implements BundleActivator {
 
 	public static final String PLUGIN_ID = "org.jboss.tools.openshift.express.client"; 
 
@@ -24,10 +24,10 @@ public class OpenshiftCoreActivator implements BundleActivator {
 	}
 
 	public void start(BundleContext bundleContext) throws Exception {
-		OpenshiftCoreActivator.context = bundleContext;
+		OpenShiftCoreActivator.context = bundleContext;
 	}
 
 	public void stop(BundleContext bundleContext) throws Exception {
-		OpenshiftCoreActivator.context = null;
+		OpenShiftCoreActivator.context = null;
 	}
 }

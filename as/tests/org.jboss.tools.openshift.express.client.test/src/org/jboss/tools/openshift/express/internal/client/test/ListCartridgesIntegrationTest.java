@@ -17,7 +17,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.jboss.tools.openshift.express.client.ICartridge;
-import org.jboss.tools.openshift.express.client.OpenshiftService;
+import org.jboss.tools.openshift.express.client.OpenShiftService;
 import org.jboss.tools.openshift.express.internal.client.test.fakes.TestUser;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,18 +27,18 @@ import org.junit.Test;
  */
 public class ListCartridgesIntegrationTest {
 
-	private OpenshiftService openshiftService;
+	private OpenShiftService openShiftService;
 	private TestUser user;
 
 	@Before
 	public void setUp() {
-		this.openshiftService = new OpenshiftService(TestUser.ID);
+		this.openShiftService = new OpenShiftService(TestUser.ID);
 		this.user = new TestUser();
 	}
 
 	@Test
 	public void canListCartridges() throws Exception {
-		List<ICartridge> cartridges = openshiftService.getCartridges(user);
+		List<ICartridge> cartridges = openShiftService.getCartridges(user);
 		assertNotNull(cartridges);
 		assertTrue(cartridges.size() > 0);
 		assertThatContainsCartridge("jbossas-7.0", cartridges);

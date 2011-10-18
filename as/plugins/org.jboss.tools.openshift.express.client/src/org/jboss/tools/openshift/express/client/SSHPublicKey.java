@@ -28,7 +28,7 @@ public class SSHPublicKey implements ISSHPublicKey {
 
 	private String publicKey;
 
-	public SSHPublicKey(File publicKeyFilePath) throws IOException, OpenshiftException {
+	public SSHPublicKey(File publicKeyFilePath) throws IOException, OpenShiftException {
 		this.publicKey = extractPublicKey(publicKeyFilePath);
 	}
 
@@ -36,12 +36,12 @@ public class SSHPublicKey implements ISSHPublicKey {
 		this.publicKey = publicKey;
 	}
 
-	private String extractPublicKey(File file) throws OpenshiftException, FileNotFoundException, IOException {
+	private String extractPublicKey(File file) throws OpenShiftException, FileNotFoundException, IOException {
 		String keyWithIdAndComment = StreamUtils.readToString(new FileReader(file));
 		Matcher matcher = PUBLICKEY_PATTERN.matcher(keyWithIdAndComment);
 		if (!matcher.find()
 				|| matcher.groupCount() < 1) {
-			throw new OpenshiftException("Could not load public key from file \"{0}\"", file.getAbsolutePath());
+			throw new OpenShiftException("Could not load public key from file \"{0}\"", file.getAbsolutePath());
 		}
 
 		return matcher.group(1);

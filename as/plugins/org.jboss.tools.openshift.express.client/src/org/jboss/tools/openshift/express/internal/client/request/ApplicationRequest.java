@@ -15,7 +15,7 @@ import org.jboss.tools.openshift.express.client.ICartridge;
 /**
  * @author André Dietisheim
  */
-public class ApplicationRequest extends AbstractOpenshiftRequest {
+public class ApplicationRequest extends AbstractOpenShiftRequest {
 
 	private String name;
 	private ICartridge cartridge ;

@@ -57,21 +57,21 @@ import org.jboss.tools.common.ui.WizardUtils;
 import org.jboss.tools.common.ui.databinding.DataBindingUtils;
 import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.IDomain;
-import org.jboss.tools.openshift.express.client.NotFoundOpenshiftException;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
-import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
+import org.jboss.tools.openshift.express.client.NotFoundOpenShiftException;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
+import org.jboss.tools.openshift.express.internal.ui.OpenShiftUIActivator;
 
 /**
  * @author André Dietisheim
  */
-public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
+public class ApplicationWizardPage extends AbstractOpenShiftWizardPage {
 
 	private TableViewer viewer;
 	private ApplicationWizardPageModel model;
 	private ImportProjectWizardModel wizardModel;
 
 	protected ApplicationWizardPage(IWizard wizard, ImportProjectWizardModel wizardModel) {
-		super("Application selection", "Please select an Openshift Express application",
+		super("Application selection", "Please select an OpenShift Express application",
 				"Application selection", wizard);
 		this.wizardModel = wizardModel;
 		this.model = new ApplicationWizardPageModel(wizardModel);
@@ -176,9 +176,9 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 				} else {
 					try {
 						createDomain();
-					} catch (OpenshiftException ex) {
-						IStatus status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID, ex.getMessage(), ex);
-						OpenshiftUIActivator.getDefault().getLog().log(status);
+					} catch (OpenShiftException ex) {
+						IStatus status = new Status(IStatus.ERROR, OpenShiftUIActivator.PLUGIN_ID, ex.getMessage(), ex);
+						OpenShiftUIActivator.getDefault().getLog().log(status);
 						ErrorDialog.openError(getShell(), "Error creating domain",
 								"An error occurred while creating the domain.", status);
 					}
@@ -187,7 +187,7 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 		};
 	}
 
-	private void createDomain() throws OpenshiftException {
+	private void createDomain() throws OpenShiftException {
 		if (WizardUtils.openWizardDialog(
 				new NewDomainDialog(model.getNamespace(), wizardModel), getContainer().getShell()) == Dialog.OK) {
 			model.loadDomain();
@@ -205,7 +205,7 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 								model.renameDomain();
 								return Status.OK_STATUS;
 							} catch (Exception e) {
-								return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
+								return new Status(IStatus.ERROR, OpenShiftUIActivator.PLUGIN_ID,
 										"Could not rename domain", e);
 							}
 						}
@@ -258,7 +258,7 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 		// try {
 		// IApplication application = (IApplication) cell.getElement();
 		// cell.setText(application.getApplicationUrl());
-		// } catch (OpenshiftException e) {
+		// } catch (OpenShiftException e) {
 		// // ignore
 		// }
 		// }
@@ -297,8 +297,8 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 									model.destroyCurrentApplication();
 									refreshViewer();
 									return Status.OK_STATUS;
-								} catch (OpenshiftException e) {
-									return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID, NLS.bind(
+								} catch (OpenShiftException e) {
+									return new Status(IStatus.ERROR, OpenShiftUIActivator.PLUGIN_ID, NLS.bind(
 											"Could not delete application \"{0}\"",
 											model.getSelectedApplication().getName()));
 								}
@@ -352,13 +352,13 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 						final Collection<IApplication> applications = model.loadApplications();
 						setViewerInput(applications);
 						return Status.OK_STATUS;
-					} catch (NotFoundOpenshiftException e) {
+					} catch (NotFoundOpenShiftException e) {
 						// no domain and therefore no applications present
 						clearViewer();
 						return Status.OK_STATUS;
 					} catch (Exception e) {
 						clearViewer();
-						return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
+						return new Status(IStatus.ERROR, OpenShiftUIActivator.PLUGIN_ID,
 								"Could not load applications", e);
 					}
 				}

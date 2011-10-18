@@ -14,11 +14,11 @@ package org.jboss.tools.openshift.express.client;
 /**
  * @author André Dietisheim
  */
-public class NotFoundOpenshiftException extends OpenshiftEndpointException {
+public class InvalidCredentialsOpenShiftException extends OpenShiftEndpointException {
 
 	private static final long serialVersionUID = 1L;
 
-	public  NotFoundOpenshiftException(String url, Throwable cause) {
-		super(url, cause, "Could not find any Openshift Express resource at \"{0}\"", url);
+	public  InvalidCredentialsOpenShiftException(String url, Throwable cause) {
+		super(url, cause, "Your credentials are not authorized to access \"{0}\"", url);
 	}
 }

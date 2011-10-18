@@ -19,13 +19,13 @@ import java.util.List;
 import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.ICartridge;
 import org.jboss.tools.openshift.express.client.IDomain;
-import org.jboss.tools.openshift.express.client.IOpenshiftService;
+import org.jboss.tools.openshift.express.client.IOpenShiftService;
 import org.jboss.tools.openshift.express.client.ISSHPublicKey;
 import org.jboss.tools.openshift.express.client.IUser;
-import org.jboss.tools.openshift.express.client.InvalidCredentialsOpenshiftException;
-import org.jboss.tools.openshift.express.client.NotFoundOpenshiftException;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
-import org.jboss.tools.openshift.express.client.OpenshiftService;
+import org.jboss.tools.openshift.express.client.InvalidCredentialsOpenShiftException;
+import org.jboss.tools.openshift.express.client.NotFoundOpenShiftException;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
+import org.jboss.tools.openshift.express.client.OpenShiftService;
 import org.jboss.tools.openshift.express.client.UserConfiguration;
 
 /**
@@ -41,29 +41,29 @@ public class InternalUser implements IUser {
 	private List<ICartridge> cartridges;
 	private List<IApplication> applications = new ArrayList<IApplication>();
 
-	private IOpenshiftService service;
+	private IOpenShiftService service;
 
-	public InternalUser(String password, String id) throws OpenshiftException, IOException {
+	public InternalUser(String password, String id) throws OpenShiftException, IOException {
 		this(new UserConfiguration(), password, id);
 	}
 
 	public InternalUser(UserConfiguration configuration, String password, String id) {
-		this(configuration.getRhlogin(), password, (ISSHPublicKey) null, new OpenshiftService(id));
+		this(configuration.getRhlogin(), password, (ISSHPublicKey) null, new OpenShiftService(id));
 	}
 
 	public InternalUser(String rhlogin, String password, String id) {
-		this(rhlogin, password, (ISSHPublicKey) null, new OpenshiftService(id));
+		this(rhlogin, password, (ISSHPublicKey) null, new OpenShiftService(id));
 	}
 
 	public InternalUser(String rhlogin, String password, String id, String url) {
-		this(rhlogin, password, (ISSHPublicKey) null, new OpenshiftService(id, url));
+		this(rhlogin, password, (ISSHPublicKey) null, new OpenShiftService(id, url));
 	}
 
-	public InternalUser(String rhlogin, String password, IOpenshiftService service) {
+	public InternalUser(String rhlogin, String password, IOpenShiftService service) {
 		this(rhlogin, password, (ISSHPublicKey) null, service);
 	}
 
-	public InternalUser(String rhlogin, String password, ISSHPublicKey sshKey, IOpenshiftService service) {
+	public InternalUser(String rhlogin, String password, ISSHPublicKey sshKey, IOpenShiftService service) {
 		this.rhlogin = rhlogin;
 		this.password = password;
 		this.sshKey = sshKey;
@@ -71,23 +71,23 @@ public class InternalUser implements IUser {
 	}
 
 	@Override
-	public boolean isValid() throws OpenshiftException {
+	public boolean isValid() throws OpenShiftException {
 		try {
 			return service.isValid(this);
-		} catch (InvalidCredentialsOpenshiftException e) {
+		} catch (InvalidCredentialsOpenShiftException e) {
 			return false;
 		}
 	}
 
 	@Override
-	public IDomain createDomain(String name, ISSHPublicKey key) throws OpenshiftException {
+	public IDomain createDomain(String name, ISSHPublicKey key) throws OpenShiftException {
 		setSshKey(key);
 		this.domain = getService().createDomain(name, key, this);
 		return domain;
 	}
 
 	@Override
-	public IDomain getDomain() throws OpenshiftException {
+	public IDomain getDomain() throws OpenShiftException {
 		if (domain == null) {
 			try {
 				this.domain = new Domain(
@@ -95,14 +95,14 @@ public class InternalUser implements IUser {
 						, getUserInfo().getRhcDomain()
 						, this
 						, service);
-			} catch (NotFoundOpenshiftException e) {
+			} catch (NotFoundOpenShiftException e) {
 				return null;
 			}
 		}
 		return domain;
 	}
 
-	public boolean hasDomain() throws OpenshiftException {
+	public boolean hasDomain() throws OpenShiftException {
 		return getDomain() != null;
 	}
 	
@@ -111,7 +111,7 @@ public class InternalUser implements IUser {
 	}
 
 	@Override
-	public ISSHPublicKey getSshKey() throws OpenshiftException {
+	public ISSHPublicKey getSshKey() throws OpenShiftException {
 		if (sshKey == null) {
 			this.sshKey = getUserInfo().getSshPublicKey();
 		}
@@ -129,12 +129,12 @@ public class InternalUser implements IUser {
 	}
 
 	@Override
-	public String getUUID() throws OpenshiftException {
+	public String getUUID() throws OpenShiftException {
 		return getUserInfo().getUuid();
 	}
 
 	@Override
-	public List<ICartridge> getCartridges() throws OpenshiftException {
+	public List<ICartridge> getCartridges() throws OpenShiftException {
 		if (cartridges == null) {
 			this.cartridges = service.getCartridges(this);
 		}
@@ -142,7 +142,7 @@ public class InternalUser implements IUser {
 	}
 
 	@Override
-	public ICartridge getCartridgeByName(String name) throws OpenshiftException {
+	public ICartridge getCartridgeByName(String name) throws OpenShiftException {
 		ICartridge matchingCartridge = null;
 		for(ICartridge cartridge : getCartridges()) {
 			if (name.equals(cartridge.getName())) {
@@ -154,14 +154,14 @@ public class InternalUser implements IUser {
 	}
 	
 	@Override
-	public IApplication createApplication(String name, ICartridge cartridge) throws OpenshiftException {
+	public IApplication createApplication(String name, ICartridge cartridge) throws OpenShiftException {
 		IApplication application = service.createApplication(name, cartridge, this);
 		add(application);
 		return application;
 	}
 
 	@Override
-	public Collection<IApplication> getApplications() throws OpenshiftException {
+	public Collection<IApplication> getApplications() throws OpenShiftException {
 		if (getUserInfo().getApplicationInfos().size() > applications.size()) {
 			update(getUserInfo().getApplicationInfos());
 		}
@@ -169,7 +169,7 @@ public class InternalUser implements IUser {
 	}
 
 	@Override
-	public IApplication getApplicationByName(String name) throws OpenshiftException {
+	public IApplication getApplicationByName(String name) throws OpenShiftException {
 		return getApplicationByName(name, getApplications());
 	}
 
@@ -195,12 +195,12 @@ public class InternalUser implements IUser {
 		this.sshKey = key;
 	}
 
-	protected UserInfo refreshUserInfo() throws OpenshiftException {
+	protected UserInfo refreshUserInfo() throws OpenShiftException {
 		this.userInfo = null;
 		return getUserInfo();
 	}
 	
-	protected UserInfo getUserInfo() throws OpenshiftException {
+	protected UserInfo getUserInfo() throws OpenShiftException {
 		if (userInfo == null) {
 			this.userInfo = service.getUserInfo(this);
 		}
@@ -208,7 +208,7 @@ public class InternalUser implements IUser {
 	}
 
 	@Override
-	public void refresh() throws OpenshiftException {
+	public void refresh() throws OpenShiftException {
 		this.domain = null;
 		this.sshKey = null;
 		getUserInfo();
@@ -230,7 +230,7 @@ public class InternalUser implements IUser {
 				, this, service);
 	}
 
-	protected IOpenshiftService getService() {
+	protected IOpenShiftService getService() {
 		return service;
 	}
 }

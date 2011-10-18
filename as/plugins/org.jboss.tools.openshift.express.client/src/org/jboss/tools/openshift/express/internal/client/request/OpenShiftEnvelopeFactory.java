@@ -13,7 +13,7 @@ package org.jboss.tools.openshift.express.internal.client.request;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
 
 /**
  * A factory that creates the json string that the openshift rest service
@@ -21,7 +21,7 @@ import org.jboss.tools.openshift.express.client.OpenshiftException;
  * 
  * @author André Dietisheim
  */
-public class OpenshiftEnvelopeFactory implements IOpenshiftRequestFactory {
+public class OpenShiftEnvelopeFactory implements IOpenShiftRequestFactory {
 
 	private static final char EQ = '=';
 	private static final String PROPERTY_PASSWORD = "password";
@@ -32,12 +32,12 @@ public class OpenshiftEnvelopeFactory implements IOpenshiftRequestFactory {
 	private String[] payloads;
 	private String password;
 
-	public OpenshiftEnvelopeFactory(String password, String... payloads) {
+	public OpenShiftEnvelopeFactory(String password, String... payloads) {
 		this.password = password;
 		this.payloads = payloads;
 	}
 
-	public String createString() throws OpenshiftException {
+	public String createString() throws OpenShiftException {
 		try {
 			StringBuilder builder = new StringBuilder();
 			appendPassword(builder);
@@ -45,7 +45,7 @@ public class OpenshiftEnvelopeFactory implements IOpenshiftRequestFactory {
 			appendPayload(builder);
 			return builder.toString();
 		} catch (UnsupportedEncodingException e) {
-			throw new OpenshiftException(e, "Could not create request");
+			throw new OpenShiftException(e, "Could not create request");
 		}
 	}
 

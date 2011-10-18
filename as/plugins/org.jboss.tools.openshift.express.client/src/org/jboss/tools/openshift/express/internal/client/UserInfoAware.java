@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.jboss.tools.openshift.express.internal.client;
 
-import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
 
 public class UserInfoAware {
 
@@ -21,7 +21,7 @@ public class UserInfoAware {
 		this.user = user;
 	}
 
-	protected UserInfo getUserInfo() throws OpenshiftException {
+	protected UserInfo getUserInfo() throws OpenShiftException {
 		if (userInfo == null) {
 			this.userInfo = user.refreshUserInfo();
 		}

@@ -17,7 +17,7 @@ import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
 import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.IDomain;
 import org.jboss.tools.openshift.express.client.IUser;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
 
 /**
  * @author André Dietisheim
@@ -67,15 +67,15 @@ public class ApplicationWizardPageModel extends ObservableUIPojo {
 		setNamespace(domain);
 	}
 
-	public void renameDomain() throws OpenshiftException {
+	public void renameDomain() throws OpenShiftException {
 		getDomain().setNamespace(namespace);
 	}
 
-	public void loadDomain() throws OpenshiftException {
+	public void loadDomain() throws OpenShiftException {
 		setDomain(getUser().getDomain());
 	}
 
-	public Collection<IApplication> loadApplications() throws OpenshiftException {
+	public Collection<IApplication> loadApplications() throws OpenShiftException {
 		IUser user = getUser();
 		if (user == null) {
 			return Collections.emptyList();
@@ -92,7 +92,7 @@ public class ApplicationWizardPageModel extends ObservableUIPojo {
 		firePropertyChange(PROPERTY_SELECTED_APPLICATION, this.selectedApplication, this.selectedApplication = application);
 	}
 
-	public void destroyCurrentApplication() throws OpenshiftException {
+	public void destroyCurrentApplication() throws OpenShiftException {
 		if (selectedApplication == null) {
 			return;
 		}

@@ -19,26 +19,26 @@ public interface IApplication {
 
 	public String getName();
 	
-	public String getUUID() throws OpenshiftException;
+	public String getUUID() throws OpenShiftException;
 
 	public ICartridge getCartridge();
 
-	public String getEmbedded() throws OpenshiftException;
+	public String getEmbedded() throws OpenShiftException;
 
-	public Date getCreationTime() throws OpenshiftException;
+	public Date getCreationTime() throws OpenShiftException;
 
-	public void destroy() throws OpenshiftException;
+	public void destroy() throws OpenShiftException;
 
-	public void start() throws OpenshiftException;
+	public void start() throws OpenShiftException;
 
-	public void restart() throws OpenshiftException;
+	public void restart() throws OpenShiftException;
 
-	public void stop() throws OpenshiftException;
+	public void stop() throws OpenShiftException;
 
-	public ApplicationLogReader getLogReader() throws OpenshiftException;
+	public ApplicationLogReader getLogReader() throws OpenShiftException;
 
-	public String getGitUri() throws OpenshiftException;
+	public String getGitUri() throws OpenShiftException;
 
-	public String getApplicationUrl() throws OpenshiftException;
+	public String getApplicationUrl() throws OpenShiftException;
 
 }

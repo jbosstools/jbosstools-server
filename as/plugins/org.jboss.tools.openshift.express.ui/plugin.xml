@@ -20,7 +20,7 @@
       <behaviour
             behaviourDelegate="org.jboss.tools.openshift.express.internal.core.behaviour.ExpressBehaviourDelegate"
             launchDelegate="org.jboss.tools.openshift.express.internal.core.behaviour.ExpressLaunchDelegate"
-            name="Openshift"
+            name="OpenShift Express"
             publishMethod="org.jboss.tools.openshift.express.internal.core.behaviour.ExpressPublishMethod"
             serverTypes="org.jboss.ide.eclipse.as.70,org.jboss.ide.eclipse.as.eap.60"
             typeId="openshift">
@@ -29,7 +29,7 @@
    <extension
          point="org.jboss.ide.eclipse.as.ui.DeployMethodUI">
       <ui
-            class="org.jboss.tools.openshift.express.internal.ui.behaviour.OpenshiftDeployUI"
+            class="org.jboss.tools.openshift.express.internal.ui.behaviour.OpenShiftDeployUI"
             deployMethodId="openshift">
       </ui>
    </extension>

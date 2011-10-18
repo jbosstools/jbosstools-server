@@ -46,15 +46,15 @@ import org.jboss.tools.common.ui.databinding.DataBindingUtils;
 import org.jboss.tools.common.ui.databinding.MandatoryStringValidator;
 import org.jboss.tools.common.ui.databinding.ParametrizableWizardPageSupport;
 import org.jboss.tools.common.ui.ssh.SshPrivateKeysPreferences;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
-import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
+import org.jboss.tools.openshift.express.internal.ui.OpenShiftUIActivator;
 import org.jboss.tools.openshift.express.internal.ui.common.FileUtils;
 import org.jboss.tools.openshift.express.internal.ui.common.StringUtils;
 
 /**
  * @author André Dietisheim
  */
-public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
+public class NewDomainWizardPage extends AbstractOpenShiftWizardPage {
 
 	private static final String FILTEREXPRESSION_PUBLIC_SSH_KEY = "*.pub";
 	private static final String FILTERNAME_PUBLIC_SSH_KEY = "Public ssh key file (*.pub)";
@@ -128,16 +128,16 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 						String passPhrase = dialog.getValue();
 						model.createSShKeyPair(passPhrase);
 					} catch (FileNotFoundException ex) {
-						IStatus status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
+						IStatus status = new Status(IStatus.ERROR, OpenShiftUIActivator.PLUGIN_ID,
 								"Could not read the ssh key folder", ex);
-						OpenshiftUIActivator.log(status);
+						OpenShiftUIActivator.log(status);
 						ErrorDialog.openError(getShell(),
 								"Error creating a new ssh key pair",
 								"Could not create a new ssh key pair", status);
-					} catch (OpenshiftException ex) {
-						IStatus status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
+					} catch (OpenShiftException ex) {
+						IStatus status = new Status(IStatus.ERROR, OpenShiftUIActivator.PLUGIN_ID,
 								"Could not create an ssh key pair", ex);
-						OpenshiftUIActivator.log(status);
+						OpenShiftUIActivator.log(status);
 						ErrorDialog.openError(getShell(),
 								"Error creating a new ssh key pair",
 								"Could not create a new ssh key pair", status);

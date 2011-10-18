@@ -18,13 +18,13 @@ import java.net.URLEncoder;
 import java.util.List;
 
 import org.jboss.tools.openshift.express.client.ISSHPublicKey;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
 import org.jboss.tools.openshift.express.internal.client.ApplicationInfo;
 import org.jboss.tools.openshift.express.internal.client.UserInfo;
-import org.jboss.tools.openshift.express.internal.client.request.OpenshiftEnvelopeFactory;
+import org.jboss.tools.openshift.express.internal.client.request.OpenShiftEnvelopeFactory;
 import org.jboss.tools.openshift.express.internal.client.request.UserInfoRequest;
 import org.jboss.tools.openshift.express.internal.client.request.marshalling.UserInfoRequestJsonMarshaller;
-import org.jboss.tools.openshift.express.internal.client.response.OpenshiftResponse;
+import org.jboss.tools.openshift.express.internal.client.response.OpenShiftResponse;
 import org.jboss.tools.openshift.express.internal.client.response.unmarshalling.JsonSanitizer;
 import org.jboss.tools.openshift.express.internal.client.response.unmarshalling.UserInfoResponseUnmarshaller;
 import org.jboss.tools.openshift.express.internal.client.test.fakes.UserInfoResponseFake;
@@ -48,7 +48,7 @@ public class UserInfoTest {
 		String userInfoRequest = new UserInfoRequestJsonMarshaller().marshall(
 				new UserInfoRequest(UserInfoResponseFake.RHLOGIN, true));
 		String effectiveRequest =
-				new OpenshiftEnvelopeFactory(UserInfoResponseFake.PASSWORD, userInfoRequest).createString();
+				new OpenShiftEnvelopeFactory(UserInfoResponseFake.PASSWORD, userInfoRequest).createString();
 
 		assertEquals(expectedRequestString, effectiveRequest);
 	}
@@ -87,16 +87,16 @@ public class UserInfoTest {
 	}
 
 	@Test
-	public void canGetApplicationByName() throws OpenshiftException {
+	public void canGetApplicationByName() throws OpenShiftException {
 		UserInfo userInfo = getUserInfo(JsonSanitizer.sanitize(UserInfoResponseFake.RESPONSE));
 		ApplicationInfo applicationInfo = userInfo.getApplicationInfoByName(UserInfoResponseFake.APP1_NAME);
 		assertNotNull(applicationInfo);
 		assertEquals(UserInfoResponseFake.APP1_NAME, applicationInfo.getName());
 	}
 
-	protected UserInfo getUserInfo(String response) throws OpenshiftException {
+	protected UserInfo getUserInfo(String response) throws OpenShiftException {
 		UserInfoResponseUnmarshaller unmarshaller = new UserInfoResponseUnmarshaller();
-		OpenshiftResponse<UserInfo> openshiftResponse = unmarshaller.unmarshall(response);
-		return openshiftResponse.getOpenshiftObject();
+		OpenShiftResponse<UserInfo> openshiftResponse = unmarshaller.unmarshall(response);
+		return openshiftResponse.getOpenShiftObject();
 	}
 }

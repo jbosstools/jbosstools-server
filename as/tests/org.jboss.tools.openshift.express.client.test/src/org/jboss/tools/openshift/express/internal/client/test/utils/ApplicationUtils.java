@@ -13,8 +13,8 @@ package org.jboss.tools.openshift.express.internal.client.test.utils;
 import org.jboss.tools.openshift.express.client.Cartridge;
 import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.ICartridge;
-import org.jboss.tools.openshift.express.client.IOpenshiftService;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.client.IOpenShiftService;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
 import org.jboss.tools.openshift.express.client.User;
 
 /**
@@ -26,17 +26,17 @@ public class ApplicationUtils {
 		return String.valueOf(System.currentTimeMillis());
 	}
 
-	public static IApplication createApplication(User user, IOpenshiftService service) throws OpenshiftException {
+	public static IApplication createApplication(User user, IOpenShiftService service) throws OpenShiftException {
 		return service.createApplication(createRandomApplicationName(), Cartridge.JBOSSAS_7, user);
 	}
 	
-	public static void silentlyDestroyAS7Application(String name, User user, IOpenshiftService service) {
+	public static void silentlyDestroyAS7Application(String name, User user, IOpenShiftService service) {
 		try {
 			if (name == null) {
 				return;
 			}
 			service.destroyApplication(name, ICartridge.JBOSSAS_7, user);
-		} catch (OpenshiftException e) {
+		} catch (OpenShiftException e) {
 			e.printStackTrace();
 		}
 	}

@@ -20,33 +20,33 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.tools.openshift.express.client.Cartridge;
 import org.jboss.tools.openshift.express.client.ICartridge;
 import org.jboss.tools.openshift.express.internal.client.ApplicationInfo;
-import org.jboss.tools.openshift.express.internal.client.IOpenshiftJsonConstants;
+import org.jboss.tools.openshift.express.internal.client.IOpenShiftJsonConstants;
 import org.jboss.tools.openshift.express.internal.client.UserInfo;
 
 /**
  * @author André Dietisheim
  */
-public class UserInfoResponseUnmarshaller extends AbstractOpenshiftJsonResponseUnmarshaller<UserInfo> {
+public class UserInfoResponseUnmarshaller extends AbstractOpenShiftJsonResponseUnmarshaller<UserInfo> {
 
 	@Override
-	protected UserInfo createOpenshiftObject(ModelNode node) throws DatatypeConfigurationException {
-		ModelNode dataNode = node.get(IOpenshiftJsonConstants.PROPERTY_DATA);
+	protected UserInfo createOpenShiftObject(ModelNode node) throws DatatypeConfigurationException {
+		ModelNode dataNode = node.get(IOpenShiftJsonConstants.PROPERTY_DATA);
 		if (!isSet(dataNode)) {
 			return null;
 		}
 
-		ModelNode userInfoNode = dataNode.get(IOpenshiftJsonConstants.PROPERTY_USER_INFO);
+		ModelNode userInfoNode = dataNode.get(IOpenShiftJsonConstants.PROPERTY_USER_INFO);
 		if (!isSet(userInfoNode)) {
 			return null;
 		}
 
-		String sshPublicKey = getString(IOpenshiftJsonConstants.PROPERTY_SSH_KEY, userInfoNode);
-		String rhlogin = getString(IOpenshiftJsonConstants.PROPERTY_RHLOGIN, userInfoNode);
-		String uuid = getString(IOpenshiftJsonConstants.PROPERTY_UUID, userInfoNode);
-		String namespace = getString(IOpenshiftJsonConstants.PROPERTY_NAMESPACE, userInfoNode);
-		String rhcDomain = getString(IOpenshiftJsonConstants.PROPERTY_RHC_DOMAIN, userInfoNode);
+		String sshPublicKey = getString(IOpenShiftJsonConstants.PROPERTY_SSH_KEY, userInfoNode);
+		String rhlogin = getString(IOpenShiftJsonConstants.PROPERTY_RHLOGIN, userInfoNode);
+		String uuid = getString(IOpenShiftJsonConstants.PROPERTY_UUID, userInfoNode);
+		String namespace = getString(IOpenShiftJsonConstants.PROPERTY_NAMESPACE, userInfoNode);
+		String rhcDomain = getString(IOpenShiftJsonConstants.PROPERTY_RHC_DOMAIN, userInfoNode);
 
-		List<ApplicationInfo> applicationInfos = createApplicationInfos(dataNode.get(IOpenshiftJsonConstants.PROPERTY_APP_INFO));
+		List<ApplicationInfo> applicationInfos = createApplicationInfos(dataNode.get(IOpenShiftJsonConstants.PROPERTY_APP_INFO));
 
 		return new UserInfo(rhlogin, uuid, sshPublicKey, rhcDomain, namespace, applicationInfos);
 	}
@@ -64,10 +64,10 @@ public class UserInfoResponseUnmarshaller extends AbstractOpenshiftJsonResponseU
 	}
 
 	private ApplicationInfo createApplicationInfo(String name, ModelNode appNode) throws DatatypeConfigurationException {
-		String uuid = getString(IOpenshiftJsonConstants.PROPERTY_UUID, appNode);
-		String embedded = getString(IOpenshiftJsonConstants.PROPERTY_EMBEDDED, appNode);
-		ICartridge cartrdige = new Cartridge(getString(IOpenshiftJsonConstants.PROPERTY_FRAMEWORK, appNode));
-		Date creationTime = getDate(IOpenshiftJsonConstants.PROPERTY_CREATION_TIME, appNode);
+		String uuid = getString(IOpenShiftJsonConstants.PROPERTY_UUID, appNode);
+		String embedded = getString(IOpenShiftJsonConstants.PROPERTY_EMBEDDED, appNode);
+		ICartridge cartrdige = new Cartridge(getString(IOpenShiftJsonConstants.PROPERTY_FRAMEWORK, appNode));
+		Date creationTime = getDate(IOpenShiftJsonConstants.PROPERTY_CREATION_TIME, appNode);
 		return new ApplicationInfo(name, uuid, embedded, cartrdige, creationTime);
 	}
 }

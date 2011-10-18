@@ -18,16 +18,16 @@ import org.jboss.tools.openshift.express.internal.client.utils.UrlBuilder;
 /**
  * @author André Dietisheim
  */
-public abstract class AbstractOpenshiftRequest implements IOpenshiftRequest {
+public abstract class AbstractOpenShiftRequest implements IOpenShiftRequest {
 
 	private String rhlogin;
 	private boolean debug;
 
-	public AbstractOpenshiftRequest(String username) {
+	public AbstractOpenShiftRequest(String username) {
 		this(username, false);
 	}
 
-	public AbstractOpenshiftRequest(String username, boolean debug) {
+	public AbstractOpenShiftRequest(String username, boolean debug) {
 		this.rhlogin = username;
 		this.debug = debug;
 	}

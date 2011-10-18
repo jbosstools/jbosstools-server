@@ -26,8 +26,8 @@ import org.eclipse.jgit.errors.TransportException;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.jboss.tools.common.ui.WizardUtils;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
-import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
+import org.jboss.tools.openshift.express.internal.ui.OpenShiftUIActivator;
 
 /**
  * @author André Dietisheim
@@ -58,29 +58,29 @@ public class ImportProjectWizard extends Wizard implements INewWizard {
 							try {
 								File repositoryFile = model.cloneRepository(monitor);
 								model.importProject(repositoryFile, monitor);
-							} catch (OpenshiftException e) {
+							} catch (OpenShiftException e) {
 								errorMessage = "An exception occurred while creating local git repository.";
-								status = OpenshiftUIActivator.createErrorStatus(e.getMessage(), e);
+								status = OpenShiftUIActivator.createErrorStatus(e.getMessage(), e);
 							} catch (URISyntaxException e) {
 								errorMessage = "The url of the remote git repository is not valid";
-								status = OpenshiftUIActivator.createErrorStatus(e.getMessage(), e);
+								status = OpenShiftUIActivator.createErrorStatus(e.getMessage(), e);
 							} catch (InvocationTargetException e) {
 								if (isTransportException(e)) {
 									errorMessage = "Could not clone the repository. Authentication failed.\n"
 											+ " Please make sure that you added your private key to the ssh preferences.";
 									TransportException te = getTransportException(e);
-									status = OpenshiftUIActivator.createErrorStatus(te.getMessage(), te);
+									status = OpenShiftUIActivator.createErrorStatus(te.getMessage(), te);
 								} else {
 									errorMessage = "An exception occurred while creating local git repository.";
-									status = OpenshiftUIActivator.createErrorStatus(e.getMessage(), e);
+									status = OpenShiftUIActivator.createErrorStatus(e.getMessage(), e);
 								}
 							} catch (Exception e) {
 								errorMessage = "An exception occurred while creating local git repository.";
-								status = OpenshiftUIActivator.createErrorStatus(e.getMessage(), e);
+								status = OpenShiftUIActivator.createErrorStatus(e.getMessage(), e);
 							}
 
 							if (!status.isOK()) {
-								OpenshiftUIActivator.log(status);
+								OpenShiftUIActivator.log(status);
 								openErrorDialog(errorMessage, status);
 							}
 							return status;
@@ -90,7 +90,7 @@ public class ImportProjectWizard extends Wizard implements INewWizard {
 			return true;
 		} catch (Exception e) {
 			ErrorDialog.openError(getShell(), "Error", "Could not create local git repository.",
-					new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
+					new Status(IStatus.ERROR, OpenShiftUIActivator.PLUGIN_ID,
 							"An exception occurred while creating local git repository.", e));
 			return false;
 		}

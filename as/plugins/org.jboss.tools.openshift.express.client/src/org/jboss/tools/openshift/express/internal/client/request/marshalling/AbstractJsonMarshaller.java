@@ -11,25 +11,25 @@
 package org.jboss.tools.openshift.express.internal.client.request.marshalling;
 
 import org.jboss.dmr.ModelNode;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
-import org.jboss.tools.openshift.express.internal.client.IOpenshiftJsonConstants;
-import org.jboss.tools.openshift.express.internal.client.request.AbstractOpenshiftRequest;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
+import org.jboss.tools.openshift.express.internal.client.IOpenShiftJsonConstants;
+import org.jboss.tools.openshift.express.internal.client.request.AbstractOpenShiftRequest;
 
 /**
  * @author André Dietisheim
  */
-public abstract class AbstractJsonMarshaller<REQUEST extends AbstractOpenshiftRequest> implements
-		IOpenshiftMarshaller<REQUEST> {
+public abstract class AbstractJsonMarshaller<REQUEST extends AbstractOpenShiftRequest> implements
+		IOpenShiftMarshaller<REQUEST> {
 
-	public String marshall(REQUEST request) throws OpenshiftException {
+	public String marshall(REQUEST request) throws OpenShiftException {
 		ModelNode node = new ModelNode();
-		setStringProperty(IOpenshiftJsonConstants.PROPERTY_RHLOGIN, request.getRhLogin(), node);
-		setStringProperty(IOpenshiftJsonConstants.PROPERTY_DEBUG, String.valueOf(request.isDebug()), node);
+		setStringProperty(IOpenShiftJsonConstants.PROPERTY_RHLOGIN, request.getRhLogin(), node);
+		setStringProperty(IOpenShiftJsonConstants.PROPERTY_DEBUG, String.valueOf(request.isDebug()), node);
 		setJsonDataProperties(node, request);
 		return node.toJSONString(true);
 	}
 
-	protected void setJsonDataProperties(ModelNode node, REQUEST request) throws OpenshiftException {
+	protected void setJsonDataProperties(ModelNode node, REQUEST request) throws OpenShiftException {
 		// empty default implementation
 	}
 

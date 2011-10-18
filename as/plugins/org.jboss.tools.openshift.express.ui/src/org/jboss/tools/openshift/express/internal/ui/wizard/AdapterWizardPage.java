@@ -59,10 +59,10 @@ import org.jboss.tools.common.ui.databinding.DataBindingUtils;
 import org.jboss.tools.common.ui.databinding.InvertingBooleanConverter;
 import org.jboss.tools.common.ui.ssh.SshPrivateKeysPreferences;
 import org.jboss.tools.openshift.express.client.ICartridge;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
-import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
+import org.jboss.tools.openshift.express.internal.ui.OpenShiftUIActivator;
 
-public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IWizardPage, PropertyChangeListener {
+public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IWizardPage, PropertyChangeListener {
 
 	private AdapterWizardPageModel model;
 	private Combo suitableRuntimes;
@@ -356,8 +356,8 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 		model.resetRepositoryPath();
 		try {
 			model.updateGitUri();
-		} catch (OpenshiftException e) {
-			OpenshiftUIActivator.log(OpenshiftUIActivator.createErrorStatus(e.getMessage(), e));
+		} catch (OpenShiftException e) {
+			OpenShiftUIActivator.log(OpenShiftUIActivator.createErrorStatus(e.getMessage(), e));
 		}
 
 		serverTypeToCreate = getServerTypeToCreate();
@@ -374,8 +374,8 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 			domainLabel.setText("Host: " + model.getParentModel().getApplication().getApplicationUrl());
 			modeLabel.setText("Mode: Source");
 			model.getParentModel().setProperty(AdapterWizardPageModel.MODE, AdapterWizardPageModel.MODE_SOURCE);
-		} catch (OpenshiftException ose) {
-			OpenshiftUIActivator.log(OpenshiftUIActivator.createErrorStatus(ose.getMessage(), ose));
+		} catch (OpenShiftException ose) {
+			OpenShiftUIActivator.log(OpenShiftUIActivator.createErrorStatus(ose.getMessage(), ose));
 		}
 	}
 
@@ -401,7 +401,7 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 			IRuntimeWorkingCopy runtimeWorkingCopy = runtimeType.createRuntime(null, null);
 			taskModel.putObject(TaskModel.TASK_RUNTIME, runtimeWorkingCopy);
 		} catch (CoreException ce) {
-			OpenshiftUIActivator.getDefault().getLog().log(ce.getStatus());
+			OpenShiftUIActivator.getDefault().getLog().log(ce.getStatus());
 			return Window.CANCEL;
 		}
 		fragment = new WizardFragment() {

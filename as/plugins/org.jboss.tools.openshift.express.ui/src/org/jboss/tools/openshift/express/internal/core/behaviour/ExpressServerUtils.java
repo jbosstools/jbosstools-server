@@ -104,7 +104,7 @@ public class ExpressServerUtils {
 	 * @return
 	 * @throws CoreException
 	 */
-	public static IServer createAS7OpenshiftServer(
+	public static IServer createAS7OpenShiftServer(
 			String host, String username, String password, 
 			String domain, String app,
 			String sourceOrBinary,
@@ -112,7 +112,7 @@ public class ExpressServerUtils {
 		IServer server = createServerAndRuntime(IJBossToolingConstants.AS_70,
 				IJBossToolingConstants.SERVER_AS_70, 
 				localRuntimeHomeDir, /* irrelevant */ "default");
-		return fillServerWithOpenshiftDetails(server, host, username, password, domain, app, sourceOrBinary);
+		return fillServerWithOpenShiftDetails(server, host, username, password, domain, app, sourceOrBinary);
 	}
 	
 	/**
@@ -129,12 +129,12 @@ public class ExpressServerUtils {
 	 * @return
 	 * @throws CoreException
 	 */
-	public static IServer createAS7OpenshiftServer(
+	public static IServer createAS7OpenShiftServer(
 			String host, String username, String password, 
 			String domain, String app, String sourceOrBinary,
 			IRuntime runtime) throws CoreException {
 		IServer server = createServer(runtime, IJBossToolingConstants.SERVER_AS_70);
-		return fillServerWithOpenshiftDetails(server, host, username, password, domain, app, sourceOrBinary);
+		return fillServerWithOpenShiftDetails(server, host, username, password, domain, app, sourceOrBinary);
 	}
 	
 	/**
@@ -150,7 +150,7 @@ public class ExpressServerUtils {
 	 * @return
 	 * @throws CoreException
 	 */
-	public static IServer fillServerWithOpenshiftDetails(IServer server,
+	public static IServer fillServerWithOpenShiftDetails(IServer server,
 			String host, String username, String password, String domain, String app,
 			String mode) throws CoreException {
 		if( host.indexOf("://") != -1)

@@ -36,19 +36,19 @@ import org.eclipse.swt.widgets.Text;
 import org.jboss.tools.common.ui.WizardUtils;
 import org.jboss.tools.openshift.express.client.Cartridge;
 import org.jboss.tools.openshift.express.client.ICartridge;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
-import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
+import org.jboss.tools.openshift.express.internal.ui.OpenShiftUIActivator;
 
 /**
  * @author André Dietisheim
  */
-public class NewApplicationWizardPage extends AbstractOpenshiftWizardPage {
+public class NewApplicationWizardPage extends AbstractOpenShiftWizardPage {
 
 	private NewApplicationWizardPageModel model;
 
 	public NewApplicationWizardPage(NewApplicationWizardPageModel model, IWizard wizard) {
-		super("Create new Openshift Express application", "Create new Openshift Express application",
-				"Create new Openshift Express application", wizard);
+		super("Create new OpenShift Express application", "Create new OpenShift Express application",
+				"Create new OpenShift Express application", wizard);
 		this.model = model;
 	}
 
@@ -137,8 +137,8 @@ public class NewApplicationWizardPage extends AbstractOpenshiftWizardPage {
 				protected IStatus run(IProgressMonitor monitor) {
 					try {
 						model.loadCartridges();
-					} catch (OpenshiftException e) {
-						return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID, "Could not load cartridges", e);
+					} catch (OpenShiftException e) {
+						return new Status(IStatus.ERROR, OpenShiftUIActivator.PLUGIN_ID, "Could not load cartridges", e);
 					}
 					return Status.OK_STATUS;
 				}

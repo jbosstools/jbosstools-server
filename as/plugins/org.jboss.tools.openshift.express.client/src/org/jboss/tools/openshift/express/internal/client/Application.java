@@ -17,8 +17,8 @@ import org.jboss.tools.openshift.express.client.ApplicationLogReader;
 import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.ICartridge;
 import org.jboss.tools.openshift.express.client.IDomain;
-import org.jboss.tools.openshift.express.client.IOpenshiftService;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.client.IOpenShiftService;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
 
 /**
  * @author André Dietisheim
@@ -30,16 +30,16 @@ public class Application extends UserInfoAware implements IApplication {
 
 	private String name;
 	private ICartridge cartridge;
-	private IOpenshiftService service;
+	private IOpenShiftService service;
 	private ApplicationLogReader logReader;
 	private ApplicationInfo applicationInfo;
 
-	public Application(String name, ICartridge cartridge, InternalUser user, IOpenshiftService service) {
+	public Application(String name, ICartridge cartridge, InternalUser user, IOpenShiftService service) {
 		this(name, cartridge, null, user, service);
 	}
 
 	public Application(String name, ICartridge cartridge, ApplicationInfo applicationInfo, InternalUser user,
-			IOpenshiftService service) {
+			IOpenShiftService service) {
 		super(user);
 		this.name = name;
 		this.cartridge = cartridge;
@@ -52,7 +52,7 @@ public class Application extends UserInfoAware implements IApplication {
 	}
 
 	@Override
-	public String getUUID() throws OpenshiftException {
+	public String getUUID() throws OpenShiftException {
 		return getApplicationInfo().getUuid();
 	}
 
@@ -62,41 +62,41 @@ public class Application extends UserInfoAware implements IApplication {
 	}
 
 	@Override
-	public String getEmbedded() throws OpenshiftException {
+	public String getEmbedded() throws OpenShiftException {
 		return getApplicationInfo().getEmbedded();
 	}
 
 	@Override
-	public Date getCreationTime() throws OpenshiftException {
+	public Date getCreationTime() throws OpenShiftException {
 		 ApplicationInfo applicationInfo = getApplicationInfo();
 		 if (applicationInfo == null) {
-			 throw new OpenshiftException("Could not find info for application {0}", getName());
+			 throw new OpenShiftException("Could not find info for application {0}", getName());
 		 }
 		 return applicationInfo.getCreationTime();
 	}
 
 	@Override
-	public void destroy() throws OpenshiftException {
+	public void destroy() throws OpenShiftException {
 		service.destroyApplication(name, cartridge, getUser());
 	}
 
 	@Override
-	public void start() throws OpenshiftException {
+	public void start() throws OpenShiftException {
 		service.startApplication(name, cartridge, getUser());
 	}
 
 	@Override
-	public void restart() throws OpenshiftException {
+	public void restart() throws OpenShiftException {
 		service.restartApplication(name, cartridge, getUser());
 	}
 
 	@Override
-	public void stop() throws OpenshiftException {
+	public void stop() throws OpenShiftException {
 		service.stopApplication(name, cartridge, getUser());
 	}
 
 	@Override
-	public ApplicationLogReader getLogReader() throws OpenshiftException {
+	public ApplicationLogReader getLogReader() throws OpenShiftException {
 		if (logReader == null) {
 			this.logReader = new ApplicationLogReader(this, getUser(), service);
 		}
@@ -104,7 +104,7 @@ public class Application extends UserInfoAware implements IApplication {
 	}
 
 	@Override
-	public String getGitUri() throws OpenshiftException {
+	public String getGitUri() throws OpenShiftException {
 		IDomain domain = getUser().getDomain();
 		if (domain == null) {
 			return null;
@@ -114,7 +114,7 @@ public class Application extends UserInfoAware implements IApplication {
 	}
 
 	@Override
-	public String getApplicationUrl() throws OpenshiftException {
+	public String getApplicationUrl() throws OpenShiftException {
 		IDomain domain = getUser().getDomain();
 		if (domain == null) {
 			return null;
@@ -122,11 +122,11 @@ public class Application extends UserInfoAware implements IApplication {
 		return MessageFormat.format(APPLICATION_URL_PATTERN, name, domain.getNamespace(), domain.getRhcDomain());
 	}
 
-	protected IOpenshiftService getService() {
+	protected IOpenShiftService getService() {
 		return service;
 	}
 	
-	protected ApplicationInfo getApplicationInfo() throws OpenshiftException {
+	protected ApplicationInfo getApplicationInfo() throws OpenShiftException {
 		if (applicationInfo == null) {
 			this.applicationInfo = getUserInfo().getApplicationInfoByName(getName());
 		}

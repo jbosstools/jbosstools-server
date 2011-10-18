@@ -34,12 +34,12 @@ import org.eclipse.swt.widgets.Text;
 import org.jboss.tools.common.ui.BrowserUtil;
 import org.jboss.tools.common.ui.WizardUtils;
 import org.jboss.tools.common.ui.databinding.DataBindingUtils;
-import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
+import org.jboss.tools.openshift.express.internal.ui.OpenShiftUIActivator;
 
 /**
  * @author André Dietisheim
  */
-public class CredentialsWizardPage extends AbstractOpenshiftWizardPage {
+public class CredentialsWizardPage extends AbstractOpenShiftWizardPage {
 
 	protected static final String OPENSHIFT_EXPRESS_SIGNUP_URL = "https://openshift.redhat.com/app/user/new/express"; //$NON-NLS-1$
 
@@ -48,7 +48,7 @@ public class CredentialsWizardPage extends AbstractOpenshiftWizardPage {
 	private CredentialsWizardPageModel model;
 
 	public CredentialsWizardPage(IWizard wizard, ImportProjectWizardModel wizardModel) {
-		super("Server connetion", "Please provide the credentails of your user account on Openshift Express",
+		super("Server connetion", "Please provide the credentails of your user account on OpenShift Express",
 				"Server Connection", wizard);
 		this.model = new CredentialsWizardPageModel(wizardModel);
 	}
@@ -149,7 +149,7 @@ public class CredentialsWizardPage extends AbstractOpenshiftWizardPage {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				BrowserUtil.checkedCreateInternalBrowser(OPENSHIFT_EXPRESS_SIGNUP_URL, OPENSHIFT_EXPRESS_SIGNUP_URL,
-						OpenshiftUIActivator.PLUGIN_ID, OpenshiftUIActivator.getDefault().getLog());
+						OpenShiftUIActivator.PLUGIN_ID, OpenShiftUIActivator.getDefault().getLog());
 				getContainer().getShell().close();
 			}
 		};

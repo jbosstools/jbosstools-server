@@ -20,7 +20,7 @@ import org.jboss.tools.openshift.express.internal.client.UserInfo;
 /**
  * @author André Dietisheim
  */
-public interface IOpenshiftService {
+public interface IOpenShiftService {
 
 	/**
 	 * The platform base url
@@ -51,23 +51,23 @@ public interface IOpenshiftService {
 	 * <code>false</code> otherwise.
 	 * 
 	 * @return
-	 * @throws OpenshiftException
+	 * @throws OpenShiftException
 	 * @throws MalformedURLException
 	 */
-	public boolean isValid(InternalUser user) throws OpenshiftException;
+	public boolean isValid(InternalUser user) throws OpenShiftException;
 
 	/**
-	 * List all cartridges that are available on the Openshift Express platform.
+	 * List all cartridges that are available on the OpenShift Express platform.
 	 * 
 	 * @param user
 	 *            the user account that shall be used
 	 * @return the list of cartridges available on the platform
-	 * @throws OpenshiftException
+	 * @throws OpenShiftException
 	 * @throws MalformedURLException
 	 * 
 	 * @see InternalUser
 	 */
-	public List<ICartridge> getCartridges(InternalUser user) throws OpenshiftException;
+	public List<ICartridge> getCartridges(InternalUser user) throws OpenShiftException;
 
 	/**
 	 * Creates an application with the given name and cartridge for the given
@@ -80,14 +80,14 @@ public interface IOpenshiftService {
 	 * @param user
 	 *            the user account
 	 * @return the application that was created
-	 * @throws OpenshiftException
+	 * @throws OpenShiftException
 	 * 
 	 * @see ICartridge
 	 * @see InternalUser
 	 * @see IApplication
 	 */
 	public IApplication createApplication(String name, ICartridge cartridge, InternalUser user)
-			throws OpenshiftException;
+			throws OpenShiftException;
 
 	/**
 	 * Destroys the application with the given name and cartridge for the given
@@ -99,12 +99,12 @@ public interface IOpenshiftService {
 	 *            the cartridge that the application is running on
 	 * @param user
 	 *            the user account
-	 * @throws OpenshiftException
+	 * @throws OpenShiftException
 	 * 
 	 * @see ICartridge
 	 * @see InternalUser
 	 */
-	public void destroyApplication(String name, ICartridge cartridge, InternalUser user) throws OpenshiftException;
+	public void destroyApplication(String name, ICartridge cartridge, InternalUser user) throws OpenShiftException;
 
 	/**
 	 * Starts the application with the given name and cartridge for the given
@@ -118,14 +118,14 @@ public interface IOpenshiftService {
 	 * @param user
 	 *            the user account to use
 	 * @return the application that was started
-	 * @throws OpenshiftException
+	 * @throws OpenShiftException
 	 * 
 	 * @see ICartridge
 	 * @see InternalUser
 	 * @see IApplication
 	 */
 	public IApplication startApplication(String name, ICartridge cartridge, InternalUser user)
-			throws OpenshiftException;
+			throws OpenShiftException;
 
 	/**
 	 * Restarts the application with the given name and cartridge for the given
@@ -138,14 +138,14 @@ public interface IOpenshiftService {
 	 * @param user
 	 *            the user account to use
 	 * @return the application that was started
-	 * @throws OpenshiftException
+	 * @throws OpenShiftException
 	 * 
 	 * @see ICartridge
 	 * @see InternalUser
 	 * @see IApplication
 	 */
 	public IApplication restartApplication(String name, ICartridge cartridge, InternalUser user)
-			throws OpenshiftException;
+			throws OpenShiftException;
 
 	/**
 	 * Stops the application with the given name and cartridge for the given
@@ -159,13 +159,13 @@ public interface IOpenshiftService {
 	 * @param user
 	 *            the user account to use
 	 * @return the application that was stopped
-	 * @throws OpenshiftException
+	 * @throws OpenShiftException
 	 * 
 	 * @see ICartridge
 	 * @see InternalUser
 	 * @see IApplication
 	 */
-	public IApplication stopApplication(String name, ICartridge cartridge, InternalUser user) throws OpenshiftException;
+	public IApplication stopApplication(String name, ICartridge cartridge, InternalUser user) throws OpenShiftException;
 
 	/**
 	 * Returns the log of the application with the given name and cartridge.
@@ -179,12 +179,12 @@ public interface IOpenshiftService {
 	 * @param user
 	 *            the user account to use
 	 * @return the log of the application
-	 * @throws OpenshiftException
+	 * @throws OpenShiftException
 	 * 
 	 * @see ICartridge
 	 * @see InternalUser
 	 */
-	public String getStatus(String name, ICartridge cartridge, InternalUser user) throws OpenshiftException;
+	public String getStatus(String name, ICartridge cartridge, InternalUser user) throws OpenShiftException;
 
 	/**
 	 * Changes the current domain (namespace) to the given name.
@@ -196,7 +196,7 @@ public interface IOpenshiftService {
 	 * @param user
 	 *            the user account to use
 	 * @return the domain that was changed
-	 * @throws OpenshiftException
+	 * @throws OpenShiftException
 	 * 
 	 * @see ICartridge
 	 * @see InternalUser
@@ -204,12 +204,12 @@ public interface IOpenshiftService {
 	 * @see ISSHPublicKey
 	 * @see IDomain
 	 */
-	public IDomain changeDomain(String name, ISSHPublicKey sshKey, InternalUser user) throws OpenshiftException;
+	public IDomain changeDomain(String name, ISSHPublicKey sshKey, InternalUser user) throws OpenShiftException;
 
 	/**
 	 * Creates a domain (namespace) with the given name for the given user
 	 * account with the given ssh public key. If a domain already exists an
-	 * OpenshiftEndpointException is thrown.
+	 * OpenShiftEndpointException is thrown.
 	 * 
 	 * @param name
 	 *            the new domain name(-space)
@@ -218,7 +218,7 @@ public interface IOpenshiftService {
 	 * @param user
 	 *            the user account to use
 	 * @return the domain that was changed
-	 * @throws OpenshiftException
+	 * @throws OpenShiftException
 	 * 
 	 * @see ICartridge
 	 * @see InternalUser
@@ -226,7 +226,7 @@ public interface IOpenshiftService {
 	 * @see ISSHPublicKey
 	 * @see IDomain
 	 */
-	public IDomain createDomain(String name, ISSHPublicKey sshKey, InternalUser user) throws OpenshiftException;
+	public IDomain createDomain(String name, ISSHPublicKey sshKey, InternalUser user) throws OpenShiftException;
 
 	/**
 	 * Returns all informations for the given user and its applications.
@@ -234,11 +234,11 @@ public interface IOpenshiftService {
 	 * @param user
 	 *            the user account to use
 	 * @return all user informations (user related info and applications)
-	 * @throws OpenshiftException
+	 * @throws OpenShiftException
 	 * 
 	 * @see InternalUser
 	 * @see InternalUserInfo
 	 * @see ApplicationInfo
 	 */
-	public UserInfo getUserInfo(InternalUser user) throws OpenshiftException;
+	public UserInfo getUserInfo(InternalUser user) throws OpenShiftException;
 }

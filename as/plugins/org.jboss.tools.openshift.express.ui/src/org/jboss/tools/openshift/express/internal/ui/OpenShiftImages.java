@@ -14,12 +14,12 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.jboss.tools.openshift.express.internal.ui.common.ImageRepository;
 
-public class OpenshiftImages {
+public class OpenShiftImages {
 
 	private static final String ICONS_FOLDER = "icons/";
 
 	private static final ImageRepository repo = 
-			new ImageRepository(ICONS_FOLDER, OpenshiftUIActivator.getDefault(), OpenshiftUIActivator.getDefault().getImageRegistry());
+			new ImageRepository(ICONS_FOLDER, OpenShiftUIActivator.getDefault(), OpenShiftUIActivator.getDefault().getImageRegistry());
 
 	public static final ImageDescriptor OPENSHIFT_LOGO_DARK = repo.create("openshift-logo-dark.png"); //$NON-NLS-1$ 
 	public static final ImageDescriptor OPENSHIFT_LOGO_WHITE = repo.create("openshift-logo-white.png"); //$NON-NLS-1$ 

@@ -33,15 +33,15 @@ public class UserConfiguration {
 	private Properties properties;
 	protected File file;
 	
-	public UserConfiguration() throws OpenshiftException, IOException {
+	public UserConfiguration() throws OpenShiftException, IOException {
 		this.file = getUserConfigurationFile();
 		this.properties = getUserProperties(file);
 	}
 
-	protected File getUserConfigurationFile() throws OpenshiftException, IOException {
+	protected File getUserConfigurationFile() throws OpenShiftException, IOException {
 		String userHome = System.getProperty(PROPERTY_USERHOME);
 		if (userHome == null) {
-			throw new OpenshiftException("Could not read user configuration: user home directory not found");
+			throw new OpenShiftException("Could not read user configuration: user home directory not found");
 		}
 		return new File(userHome + File.separatorChar + CONFIGURATION_FOLDER, CONFIGURATION_FILE);
 	}

@@ -30,8 +30,8 @@ import org.eclipse.swt.widgets.Text;
 import org.jboss.tools.common.ui.BrowserUtil;
 import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.utils.RFC822DateUtils;
-import org.jboss.tools.openshift.express.internal.ui.OpenshiftImages;
-import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
+import org.jboss.tools.openshift.express.internal.ui.OpenShiftImages;
+import org.jboss.tools.openshift.express.internal.ui.OpenShiftUIActivator;
 
 /**
  * @author André Dietisheim
@@ -106,7 +106,7 @@ public class ApplicationDetailsDialog extends TitleAreaDialog {
 	private void setupDialog(Composite parent) {
 		parent.getShell().setText("Application Details");
 		setTitle(NLS.bind("Application {0}", application.getName()));
-		setTitleImage(OpenshiftImages.OPENSHIFT_LOGO_WHITE_MEDIUM_IMG);
+		setTitleImage(OpenShiftImages.OPENSHIFT_LOGO_WHITE_MEDIUM_IMG);
 		setDialogHelpAvailable(false);
 	}
 
@@ -121,8 +121,8 @@ public class ApplicationDetailsDialog extends TitleAreaDialog {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				ILog log = OpenshiftUIActivator.getDefault().getLog();
-				BrowserUtil.checkedCreateExternalBrowser(applicationUrl, OpenshiftUIActivator.PLUGIN_ID, log);
+				ILog log = OpenShiftUIActivator.getDefault().getLog();
+				BrowserUtil.checkedCreateExternalBrowser(applicationUrl, OpenShiftUIActivator.PLUGIN_ID, log);
 			}
 		};
 	}

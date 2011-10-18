@@ -14,7 +14,7 @@ package org.jboss.tools.openshift.express.internal.client.response;
 /**
  * @author André Dietisheim
  */
-public class OpenshiftResponse<OPENSHIFTOBJECT> {
+public class OpenShiftResponse<OPENSHIFTOBJECT> {
 
 	private boolean debug;
 	private String messages;
@@ -22,7 +22,7 @@ public class OpenshiftResponse<OPENSHIFTOBJECT> {
 	private OPENSHIFTOBJECT openshiftObject;
 	private int exitCode;
 
-	public OpenshiftResponse(boolean debug, String messages, String result, OPENSHIFTOBJECT openshiftObject, int exitCode) {
+	public OpenShiftResponse(boolean debug, String messages, String result, OPENSHIFTOBJECT openshiftObject, int exitCode) {
 		this.debug = debug;
 		this.messages = messages;
 		this.result = result;
@@ -42,7 +42,7 @@ public class OpenshiftResponse<OPENSHIFTOBJECT> {
 		return result;
 	}
 
-	public OPENSHIFTOBJECT getOpenshiftObject() {
+	public OPENSHIFTOBJECT getOpenShiftObject() {
 		return openshiftObject;
 	}
 

@@ -10,20 +10,23 @@
  ******************************************************************************/ 
 package org.jboss.tools.openshift.express.client;
 
-import java.text.MessageFormat;
 
 /**
  * @author André Dietisheim
  */
-public class OpenshiftException extends Exception {
+public class OpenShiftEndpointException extends OpenShiftException {
 
 	private static final long serialVersionUID = 1L;
 
-	public OpenshiftException(Throwable cause, String message, Object... arguments) {
-		super(MessageFormat.format(message, arguments), cause);
+	private String url;
+
+	public OpenShiftEndpointException(String url, Throwable cause, String message, Object... arguments) {
+		super(cause, message, arguments);
+		this.url = url;
 	}
 
-	public OpenshiftException(String message, Object... arguments) {
-		super(MessageFormat.format(message, arguments));
+	protected String getUrl() {
+		return url;
 	}
+
 }

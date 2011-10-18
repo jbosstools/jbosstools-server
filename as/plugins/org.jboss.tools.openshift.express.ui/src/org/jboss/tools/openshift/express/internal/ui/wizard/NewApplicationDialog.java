@@ -20,8 +20,8 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.osgi.util.NLS;
 import org.jboss.tools.common.ui.WizardUtils;
 import org.jboss.tools.openshift.express.client.IUser;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
-import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
+import org.jboss.tools.openshift.express.internal.ui.OpenShiftUIActivator;
 
 /**
  * @author André Dietisheim
@@ -46,9 +46,9 @@ public class NewApplicationDialog extends Wizard {
 					try {
 						newApplicationModel.createApplication();
 						queue.offer(true);
-					} catch (OpenshiftException e) {
+					} catch (OpenShiftException e) {
 						queue.offer(false);
-						return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
+						return new Status(IStatus.ERROR, OpenShiftUIActivator.PLUGIN_ID,
 								NLS.bind("Could not create application \"{0}\"", newApplicationModel.getName()), e);
 					}
 					return Status.OK_STATUS;

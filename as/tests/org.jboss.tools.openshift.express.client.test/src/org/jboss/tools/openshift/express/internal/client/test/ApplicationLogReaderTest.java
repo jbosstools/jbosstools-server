@@ -20,11 +20,11 @@ import java.util.concurrent.Executors;
 
 import org.jboss.tools.openshift.express.client.ApplicationLogReader;
 import org.jboss.tools.openshift.express.client.ICartridge;
-import org.jboss.tools.openshift.express.client.IOpenshiftService;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.client.IOpenShiftService;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
 import org.jboss.tools.openshift.express.internal.client.Application;
 import org.jboss.tools.openshift.express.internal.client.InternalUser;
-import org.jboss.tools.openshift.express.internal.client.test.fakes.NoopOpenshiftServiceFake;
+import org.jboss.tools.openshift.express.internal.client.test.fakes.NoopOpenShiftServiceFake;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -64,16 +64,16 @@ public class ApplicationLogReaderTest {
 					+ "11:32:14,207 INFO  [org.jboss.as.server.controller] (DeploymentScanner-threads - 2) Deployed \"ROOT.war\"\n";
 
 	private String status = LOG_HEADER + INITIAL_LOG;
-	private IOpenshiftService statusService;
+	private IOpenShiftService statusService;
 	private Application application;
 
 	@Before
 	public void setUp() {
-		this.statusService = new NoopOpenshiftServiceFake() {
+		this.statusService = new NoopOpenShiftServiceFake() {
 
 			@Override
 			public String getStatus(String applicationName, ICartridge cartridge, InternalUser user)
-					throws OpenshiftException {
+					throws OpenShiftException {
 				return status;
 			}
 		};
@@ -110,12 +110,12 @@ public class ApplicationLogReaderTest {
 
 	private class ApplicationLogFake extends Application {
 
-		private ApplicationLogFake(IOpenshiftService service) {
+		private ApplicationLogFake(IOpenShiftService service) {
 			super("fakeApplication", ICartridge.JBOSSAS_7, null, service);
 		}
 
 		@Override
-		public synchronized void restart() throws OpenshiftException {
+		public synchronized void restart() throws OpenShiftException {
 			status = LOG_CONTINUATION;
 			this.notifyAll();
 		}

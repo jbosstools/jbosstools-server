@@ -12,21 +12,21 @@ package org.jboss.tools.openshift.express.internal.client.response.unmarshalling
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.tools.openshift.express.client.ICartridge;
-import org.jboss.tools.openshift.express.client.OpenshiftService;
+import org.jboss.tools.openshift.express.client.OpenShiftService;
 import org.jboss.tools.openshift.express.internal.client.Application;
 import org.jboss.tools.openshift.express.internal.client.InternalUser;
 
 /**
  * @author André Dietisheim
  */
-public class ApplicationResponseUnmarshaller extends AbstractOpenshiftJsonResponseUnmarshaller<Application> {
+public class ApplicationResponseUnmarshaller extends AbstractOpenShiftJsonResponseUnmarshaller<Application> {
 
 	private InternalUser user;
 	private String applicationName;
 	private ICartridge cartridge;
-	private OpenshiftService service;
+	private OpenShiftService service;
 
-	public ApplicationResponseUnmarshaller(String applicationName, ICartridge cartridge, InternalUser user, OpenshiftService service) {
+	public ApplicationResponseUnmarshaller(String applicationName, ICartridge cartridge, InternalUser user, OpenShiftService service) {
 		this.applicationName = applicationName;
 		this.cartridge = cartridge;
 		this.user = user;
@@ -34,7 +34,7 @@ public class ApplicationResponseUnmarshaller extends AbstractOpenshiftJsonRespon
 	}
 
 	@Override
-	protected Application createOpenshiftObject(ModelNode node) {
+	protected Application createOpenShiftObject(ModelNode node) {
 		return new Application(applicationName, cartridge, user, service);
 	}
 }

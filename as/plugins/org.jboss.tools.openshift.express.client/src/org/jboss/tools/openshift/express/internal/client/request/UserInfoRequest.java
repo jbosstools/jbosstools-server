@@ -13,7 +13,7 @@ package org.jboss.tools.openshift.express.internal.client.request;
 /**
  * @author André Dietisheim
  */
-public class UserInfoRequest extends AbstractOpenshiftRequest {
+public class UserInfoRequest extends AbstractOpenShiftRequest {
 
 	public UserInfoRequest(String username) {
 		this(username, false);

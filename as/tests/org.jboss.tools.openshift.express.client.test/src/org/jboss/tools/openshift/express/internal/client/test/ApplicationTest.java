@@ -23,22 +23,22 @@ import java.util.Arrays;
 import org.jboss.tools.openshift.express.client.ApplicationLogReader;
 import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.ICartridge;
-import org.jboss.tools.openshift.express.client.OpenshiftException;
-import org.jboss.tools.openshift.express.client.OpenshiftService;
+import org.jboss.tools.openshift.express.client.OpenShiftException;
+import org.jboss.tools.openshift.express.client.OpenShiftService;
 import org.jboss.tools.openshift.express.internal.client.Application;
 import org.jboss.tools.openshift.express.internal.client.ApplicationInfo;
 import org.jboss.tools.openshift.express.internal.client.InternalUser;
 import org.jboss.tools.openshift.express.internal.client.UserInfo;
 import org.jboss.tools.openshift.express.internal.client.request.ApplicationAction;
 import org.jboss.tools.openshift.express.internal.client.request.ApplicationRequest;
-import org.jboss.tools.openshift.express.internal.client.request.OpenshiftEnvelopeFactory;
+import org.jboss.tools.openshift.express.internal.client.request.OpenShiftEnvelopeFactory;
 import org.jboss.tools.openshift.express.internal.client.request.marshalling.ApplicationRequestJsonMarshaller;
-import org.jboss.tools.openshift.express.internal.client.response.OpenshiftResponse;
+import org.jboss.tools.openshift.express.internal.client.response.OpenShiftResponse;
 import org.jboss.tools.openshift.express.internal.client.response.unmarshalling.ApplicationResponseUnmarshaller;
 import org.jboss.tools.openshift.express.internal.client.response.unmarshalling.ApplicationStatusResponseUnmarshaller;
 import org.jboss.tools.openshift.express.internal.client.response.unmarshalling.JsonSanitizer;
 import org.jboss.tools.openshift.express.internal.client.test.fakes.ApplicationResponseFake;
-import org.jboss.tools.openshift.express.internal.client.test.fakes.NoopOpenshiftServiceFake;
+import org.jboss.tools.openshift.express.internal.client.test.fakes.NoopOpenShiftServiceFake;
 import org.junit.Test;
 
 /**
@@ -47,7 +47,7 @@ import org.junit.Test;
 public class ApplicationTest {
 
 	private InternalUser user = new InternalUser(ApplicationResponseFake.RHLOGIN, ApplicationResponseFake.PASSWORD,
-			new NoopOpenshiftServiceFake());
+			new NoopOpenShiftServiceFake());
 
 	@Test
 	public void canMarshallApplicationCreateRequest() throws Exception {
@@ -69,7 +69,7 @@ public class ApplicationTest {
 				new ApplicationRequest(
 						"test-application", ICartridge.JBOSSAS_7, ApplicationAction.CONFIGURE,
 						ApplicationResponseFake.RHLOGIN, true));
-		String effectiveRequest = new OpenshiftEnvelopeFactory(ApplicationResponseFake.PASSWORD,
+		String effectiveRequest = new OpenShiftEnvelopeFactory(ApplicationResponseFake.PASSWORD,
 				createApplicationRequest).createString();
 
 		assertEquals(expectedRequestString, effectiveRequest);
@@ -94,29 +94,29 @@ public class ApplicationTest {
 				new ApplicationRequest(
 						"test-application", ICartridge.JBOSSAS_7, ApplicationAction.DECONFIGURE,
 						ApplicationResponseFake.RHLOGIN, true));
-		String effectiveRequest = new OpenshiftEnvelopeFactory(ApplicationResponseFake.PASSWORD,
+		String effectiveRequest = new OpenShiftEnvelopeFactory(ApplicationResponseFake.PASSWORD,
 				createApplicationRequest).createString();
 
 		assertEquals(expectedRequestString, effectiveRequest);
 	}
 
 	@Test
-	public void canUnmarshallApplicationResponse() throws OpenshiftException {
+	public void canUnmarshallApplicationResponse() throws OpenShiftException {
 		String response = JsonSanitizer.sanitize(ApplicationResponseFake.appResponse);
-		OpenshiftResponse<Application> openshiftResponse =
+		OpenShiftResponse<Application> openshiftResponse =
 				new ApplicationResponseUnmarshaller(
 						ApplicationResponseFake.APPLICATION_NAME, ApplicationResponseFake.APPLICATION_CARTRIDGE,
-						user, new NoopOpenshiftServiceFake())
+						user, new NoopOpenShiftServiceFake())
 						.unmarshall(response);
-		Application application = openshiftResponse.getOpenshiftObject();
+		Application application = openshiftResponse.getOpenShiftObject();
 		assertNotNull(application);
 		assertEquals(ApplicationResponseFake.APPLICATION_NAME, application.getName());
 		assertEquals(ApplicationResponseFake.APPLICATION_CARTRIDGE, application.getCartridge());
 	}
 
 	@Test
-	public void returnsValidGitUri() throws OpenshiftException {
-		OpenshiftService userInfoService = createUserInfoService();
+	public void returnsValidGitUri() throws OpenShiftException {
+		OpenShiftService userInfoService = createUserInfoService();
 		InternalUser user = createUser(userInfoService);
 		IApplication application = createApplication(userInfoService, user);
 
@@ -131,8 +131,8 @@ public class ApplicationTest {
 	}
 
 	@Test
-	public void returnsValidApplicationUrl() throws OpenshiftException {
-		OpenshiftService userInfoService = createUserInfoService();
+	public void returnsValidApplicationUrl() throws OpenShiftException {
+		OpenShiftService userInfoService = createUserInfoService();
 		InternalUser user = createUser(userInfoService);
 		IApplication application = createApplication(userInfoService, user);
 
@@ -146,11 +146,11 @@ public class ApplicationTest {
 	}
 
 	@Test
-	public void canUnmarshallApplicationStatus() throws OpenshiftException {
+	public void canUnmarshallApplicationStatus() throws OpenShiftException {
 		String response = JsonSanitizer.sanitize(ApplicationResponseFake.statusResponse);
-		OpenshiftResponse<String> openshiftResponse =
+		OpenShiftResponse<String> openshiftResponse =
 				new ApplicationStatusResponseUnmarshaller().unmarshall(response);
-		String status = openshiftResponse.getOpenshiftObject();
+		String status = openshiftResponse.getOpenShiftObject();
 		assertNotNull(status);
 		assertTrue(status.startsWith("tailing "));
 	}
@@ -158,9 +158,9 @@ public class ApplicationTest {
 	@Test
 	public void canReadFromApplicationLogReader() throws IOException {
 
-		OpenshiftService service = new NoopOpenshiftServiceFake() {
+		OpenShiftService service = new NoopOpenShiftServiceFake() {
 			@Override
-			public String getStatus(String applicationName, ICartridge cartridge, InternalUser user) throws OpenshiftException {
+			public String getStatus(String applicationName, ICartridge cartridge, InternalUser user) throws OpenShiftException {
 				return ApplicationResponseFake.tail;
 			}
 		};
@@ -183,7 +183,7 @@ public class ApplicationTest {
 		}
 	}
 
-	private IApplication createApplication(OpenshiftService userInfoService, InternalUser user) {
+	private IApplication createApplication(OpenShiftService userInfoService, InternalUser user) {
 		Application application = new Application(
 				ApplicationResponseFake.APPLICATION_NAME
 				, ApplicationResponseFake.APPLICATION_CARTRIDGE
@@ -205,14 +205,14 @@ public class ApplicationTest {
 		return application;
 	}
 
-	private InternalUser createUser(OpenshiftService userInfoService) {
+	private InternalUser createUser(OpenShiftService userInfoService) {
 		return new InternalUser(ApplicationResponseFake.RHLOGIN, ApplicationResponseFake.PASSWORD, userInfoService);
 	}
 
-	private OpenshiftService createUserInfoService() {
-		OpenshiftService userInfoService = new NoopOpenshiftServiceFake() {
+	private OpenShiftService createUserInfoService() {
+		OpenShiftService userInfoService = new NoopOpenShiftServiceFake() {
 			@Override
-			public UserInfo getUserInfo(InternalUser user) throws OpenshiftException {
+			public UserInfo getUserInfo(InternalUser user) throws OpenShiftException {
 				ApplicationInfo applicationInfo = new ApplicationInfo(
 						ApplicationResponseFake.APPLICATION_NAME,
 						ApplicationResponseFake.APPLICATION_UUID,

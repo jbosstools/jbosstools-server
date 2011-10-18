@@ -13,7 +13,7 @@ package org.jboss.tools.openshift.express.internal.client;
 /**
  * @author André Dietisheim
  */
-public class IOpenshiftJsonConstants {
+public class IOpenShiftJsonConstants {
 
 	public static final String PROPERTY_DEBUG = "debug";
 	public static final String PROPERTY_RHLOGIN = "rhlogin";
