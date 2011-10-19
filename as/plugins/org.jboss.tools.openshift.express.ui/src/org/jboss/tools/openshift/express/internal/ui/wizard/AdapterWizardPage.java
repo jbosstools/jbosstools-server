@@ -20,6 +20,10 @@ import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -38,6 +42,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
@@ -58,12 +63,14 @@ import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.tools.common.ui.databinding.DataBindingUtils;
 import org.jboss.tools.common.ui.databinding.InvertingBooleanConverter;
 import org.jboss.tools.common.ui.ssh.SshPrivateKeysPreferences;
+import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.ICartridge;
 import org.jboss.tools.openshift.express.client.OpenShiftException;
 import org.jboss.tools.openshift.express.internal.ui.OpenShiftUIActivator;
 
 public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IWizardPage, PropertyChangeListener {
-
+	private Text gitUriValueText;
+	
 	private AdapterWizardPageModel model;
 	private Combo suitableRuntimes;
 	private IServerType serverTypeToCreate;
@@ -109,7 +116,7 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		gitUriLabel.setText("Cloning From");
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(gitUriLabel);
 
-		Text gitUriValueText = new Text(cloneGroup, SWT.BORDER);
+		gitUriValueText = new Text(cloneGroup, SWT.BORDER);
 		gitUriValueText.setEditable(false);
 //		gitUriValueText.setBackground(cloneGroup.getBackground());
 		GridDataFactory.fillDefaults().span(3, 1).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(gitUriValueText);
@@ -353,12 +360,9 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 	}
 
 	protected void onPageActivated(DataBindingContext dbc) {
+		gitUriValueText.setEnabled(false);
+		gitUriValueText.setText("Loading...");
 		model.resetRepositoryPath();
-		try {
-			model.updateGitUri();
-		} catch (OpenShiftException e) {
-			OpenShiftUIActivator.log(OpenShiftUIActivator.createErrorStatus(e.getMessage(), e));
-		}
 
 		serverTypeToCreate = getServerTypeToCreate();
 		model.getParentModel().setProperty(AdapterWizardPageModel.SERVER_TYPE, serverTypeToCreate);
@@ -369,14 +373,40 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		}
 		IRuntimeType type = getValidRuntimeType();
 		addRuntimeLink.setEnabled(type != null);
-
-		try {
-			domainLabel.setText("Host: " + model.getParentModel().getApplication().getApplicationUrl());
-			modeLabel.setText("Mode: Source");
-			model.getParentModel().setProperty(AdapterWizardPageModel.MODE, AdapterWizardPageModel.MODE_SOURCE);
-		} catch (OpenShiftException ose) {
-			OpenShiftUIActivator.log(OpenShiftUIActivator.createErrorStatus(ose.getMessage(), ose));
-		}
+		modeLabel.setText("Mode: Source");
+		model.getParentModel().setProperty(AdapterWizardPageModel.MODE, AdapterWizardPageModel.MODE_SOURCE);
+		
+		setPageComplete(false);
+		getWizard().getContainer().updateButtons();
+		onPageActivatedBackground(dbc);
+	}
+	
+	protected void onPageActivatedBackground2(DataBindingContext dbc) throws OpenShiftException {
+		model.updateGitUri();
+		gitUriValueText.setEnabled(true);
+		domainLabel.setText("Host: " + model.getParentModel().getApplication().getApplicationUrl());
+		setPageComplete(true);
+		getWizard().getContainer().updateButtons();
+	}
+	
+	protected void onPageActivatedBackground(final DataBindingContext dbc) {
+		new Job("Loading remote OpenShift application") {
+			public IStatus run(IProgressMonitor monitor) {
+				final IApplication application = model.getParentModel().getApplication();
+				if (application != null) {
+					Display.getDefault().asyncExec(new Runnable() {
+						public void run() {
+							try {
+								onPageActivatedBackground2(dbc);
+							} catch( OpenShiftException e) {
+								OpenShiftUIActivator.log(OpenShiftUIActivator.createErrorStatus(e.getMessage(), e));
+							}
+						}
+					});
+				}
+				return Status.OK_STATUS;
+			}
+		}.schedule();
 	}
 
 	protected void refreshValidRuntimes() {
