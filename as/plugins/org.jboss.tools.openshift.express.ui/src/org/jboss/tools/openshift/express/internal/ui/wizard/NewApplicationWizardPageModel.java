@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
 import org.jboss.tools.common.ui.preferencevalue.StringPreferenceValue;
+import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.ICartridge;
 import org.jboss.tools.openshift.express.client.IUser;
 import org.jboss.tools.openshift.express.client.OpenShiftException;
@@ -25,12 +26,14 @@ import org.jboss.tools.openshift.express.internal.ui.OpenShiftUIActivator;
  */
 public class NewApplicationWizardPageModel extends ObservableUIPojo {
 
+	public static final String PROPERTY_APPLICATION = "application";
 	public static final String PROPERTY_NAME = "name";
 	public static final String PROPERTY_CARTRIDGES = "cartridges";
 	public static final String PROPERTY_SELECTED_CARTRIDGE = "selectedCartridge";
 
 	private IUser user;
 	private String name;
+	private IApplication application;
 
 	private List<ICartridge> cartridges = new ArrayList<ICartridge>();
 	private ICartridge selectedCartridge;
@@ -104,7 +107,16 @@ public class NewApplicationWizardPageModel extends ObservableUIPojo {
 	}
 
 	public void createApplication() throws OpenShiftException {
-		user.createApplication(name, selectedCartridge);
+		IApplication application = user.createApplication(name, selectedCartridge);
+		setApplication(application);
+	}
+
+	public void setApplication(IApplication application) {
+		firePropertyChange(PROPERTY_APPLICATION, this.application, this.application = application);
+	}
+	
+	public IApplication getApplication() {
+		return application;
 	}
 
 	public boolean hasApplication(String name) {

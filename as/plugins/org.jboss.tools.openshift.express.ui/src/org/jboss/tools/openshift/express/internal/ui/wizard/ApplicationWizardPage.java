@@ -129,7 +129,6 @@ public class ApplicationWizardPage extends AbstractOpenShiftWizardPage {
 		this.viewer = createTable(tableContainer);
 		GridDataFactory.fillDefaults().span(3, 1).align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(tableContainer);
 		viewer.addDoubleClickListener(onApplicationDoubleClick());
-
 		Binding selectedApplicationBinding = dbc.bindValue(
 				ViewerProperties.singleSelection().observe(viewer),
 				BeanProperties.value(ApplicationWizardPageModel.PROPERTY_SELECTED_APPLICATION).observe(model),
@@ -318,9 +317,10 @@ public class ApplicationWizardPage extends AbstractOpenShiftWizardPage {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Shell shell = getContainer().getShell();
-				if (WizardUtils.openWizardDialog(
-						new NewApplicationDialog(model.getUser()), shell) == Dialog.OK) {
+				NewApplicationDialog applicationDialog = new NewApplicationDialog(model.getUser());
+				if (WizardUtils.openWizardDialog(applicationDialog, shell) == Dialog.OK) {
 					viewer.refresh();
+					model.setSelectedApplication(applicationDialog.getApplication());
 				}
 			}
 		};

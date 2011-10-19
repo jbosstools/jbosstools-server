@@ -11,6 +11,7 @@
 package org.jboss.tools.openshift.express.internal.ui.wizard;
 
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -19,6 +20,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.osgi.util.NLS;
 import org.jboss.tools.common.ui.WizardUtils;
+import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.IUser;
 import org.jboss.tools.openshift.express.client.OpenShiftException;
 import org.jboss.tools.openshift.express.internal.ui.OpenShiftUIActivator;
@@ -54,14 +56,18 @@ public class NewApplicationDialog extends Wizard {
 					return Status.OK_STATUS;
 				}
 			}, getContainer());
+			return queue.poll(10, TimeUnit.SECONDS);
 		} catch (Exception e) {
-			// ignore
+			return false;
 		}
-		return queue.poll();
 	}
 
 	@Override
 	public void addPages() {
 		addPage(new NewApplicationWizardPage(newApplicationModel, this));
+	}
+	
+	public IApplication getApplication() {
+		return newApplicationModel.getApplication();
 	}
 }
