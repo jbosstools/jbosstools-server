@@ -526,7 +526,7 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		}
 
 		public IStatus validate(Object value) {
-			if (!serverAdapterCheckbox.getSelection()) {
+			if (!serverAdapterCheckbox.getSelection()) { 
 				updateBinding();
 				return Status.OK_STATUS;
 			}
