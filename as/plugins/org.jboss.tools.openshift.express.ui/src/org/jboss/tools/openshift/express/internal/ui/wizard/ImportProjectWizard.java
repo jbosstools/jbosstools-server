@@ -13,6 +13,8 @@ package org.jboss.tools.openshift.express.internal.ui.wizard;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -48,46 +50,45 @@ public class ImportProjectWizard extends Wizard implements INewWizard {
 	@Override
 	public boolean performFinish() {
 		try {
-			WizardUtils.runInWizard(
-					new Job("Cloning local git repo...") {
-
-						@Override
-						protected IStatus run(IProgressMonitor monitor) {
-							IStatus status = Status.OK_STATUS;
-							String errorMessage = null;
-							try {
-								File repositoryFile = model.cloneRepository(monitor);
-								model.importProject(repositoryFile, monitor);
-							} catch (OpenShiftException e) {
-								errorMessage = "An exception occurred while creating local git repository.";
-								status = OpenShiftUIActivator.createErrorStatus(e.getMessage(), e);
-							} catch (URISyntaxException e) {
-								errorMessage = "The url of the remote git repository is not valid";
-								status = OpenShiftUIActivator.createErrorStatus(e.getMessage(), e);
-							} catch (InvocationTargetException e) {
-								if (isTransportException(e)) {
-									errorMessage = "Could not clone the repository. Authentication failed.\n"
-											+ " Please make sure that you added your private key to the ssh preferences.";
-									TransportException te = getTransportException(e);
-									status = OpenShiftUIActivator.createErrorStatus(te.getMessage(), te);
-								} else {
-									errorMessage = "An exception occurred while creating local git repository.";
-									status = OpenShiftUIActivator.createErrorStatus(e.getMessage(), e);
-								}
-							} catch (Exception e) {
-								errorMessage = "An exception occurred while creating local git repository.";
-								status = OpenShiftUIActivator.createErrorStatus(e.getMessage(), e);
-							}
-
-							if (!status.isOK()) {
-								OpenShiftUIActivator.log(status);
-								openErrorDialog(errorMessage, status);
-							}
-							return status;
+			final ArrayBlockingQueue<IStatus> queue = new ArrayBlockingQueue<IStatus>(1);
+			WizardUtils.runInWizard(new Job("Cloning local git repo...") {
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					IStatus status = Status.OK_STATUS;
+					try {
+						File repositoryFile = model.cloneRepository(monitor);
+						model.importProject(repositoryFile, monitor);
+					} catch (OpenShiftException e) {
+						status = OpenShiftUIActivator.createErrorStatus(
+								"An exception occurred while creating local git repository.", e);
+					} catch (URISyntaxException e) {
+						status = OpenShiftUIActivator.createErrorStatus(
+								"The url of the remote git repository is not valid", e);
+					} catch (InvocationTargetException e) {
+						if (isTransportException(e)) {
+							TransportException te = getTransportException(e);
+							status = OpenShiftUIActivator.createErrorStatus(
+											"Could not clone the repository. Authentication failed.\n"
+													+ " Please make sure that you added your private key to the ssh preferences.", te);
+						} else {
+							status = OpenShiftUIActivator.createErrorStatus(
+									"An exception occurred while creating local git repository.", e);
 						}
+					} catch (Exception e) {
+						status = OpenShiftUIActivator.createErrorStatus(
+								"An exception occurred while creating local git repository.", e);
+					}
 
-					}, getContainer());
-			return true;
+					if (!status.isOK()) {
+						OpenShiftUIActivator.log(status);
+					}
+					queue.offer(status);
+					return status;
+				}
+			}, getContainer());
+			IStatus status = queue.poll(10, TimeUnit.SECONDS);
+			return status != null
+					&& status.isOK();
 		} catch (Exception e) {
 			ErrorDialog.openError(getShell(), "Error", "Could not create local git repository.",
 					new Status(IStatus.ERROR, OpenShiftUIActivator.PLUGIN_ID,
@@ -115,15 +116,4 @@ public class ImportProjectWizard extends Wizard implements INewWizard {
 		}
 		return null;
 	}
-
-	private void openErrorDialog(final String errorMessage, final IStatus status) {
-		getShell().getDisplay().syncExec(new Runnable() {
-
-			@Override
-			public void run() {
-				ErrorDialog.openError(getShell(), "Error cloning the git repo", errorMessage, status);
-			}
-		});
-	}
-
 }
