@@ -10,6 +10,9 @@
  ******************************************************************************/
 package org.jboss.tools.openshift.express.internal.ui.wizard;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
@@ -20,6 +23,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.dialogs.PageChangingEvent;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.wizard.IWizard;
@@ -34,6 +38,7 @@ import org.eclipse.swt.widgets.Text;
 import org.jboss.tools.common.ui.BrowserUtil;
 import org.jboss.tools.common.ui.WizardUtils;
 import org.jboss.tools.common.ui.databinding.DataBindingUtils;
+import org.jboss.tools.common.ui.databinding.ParametrizableWizardPageSupport;
 import org.jboss.tools.openshift.express.internal.ui.OpenShiftUIActivator;
 
 /**
@@ -61,25 +66,6 @@ public class CredentialsWizardPage extends AbstractOpenShiftWizardPage {
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).span(3, 1).hint(SWT.DEFAULT, 30).applyTo(signupLink);
 		signupLink.addSelectionListener(onSignupLinkClicked());
 
-		// Label serverUrlLabel = new Label(container, SWT.NONE);
-		// serverUrlLabel.setText("Server URL");
-		// GridDataFactory.fillDefaults().align(SWT.LEFT,
-		// SWT.CENTER).applyTo(serverUrlLabel);
-		// Text serverUrlText = new Text(container, SWT.BORDER);
-		// GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true,
-		// false).span(2, 1).applyTo(serverUrlText);
-		// dbc.bindValue(
-		// WidgetProperties.text(SWT.Modify).observe(serverUrlText),
-		// BeanProperties.value(
-		// ImportProjectWizardModel.class,
-		// ImportProjectWizardModel.PROPERTY_SERVER_URL).observe(model),
-		// new UpdateValueStrategy()
-		// .setAfterGetValidator(new
-		// MandatoryStringValidator("You have to provide a value for the server url."))
-		// .setBeforeSetValidator(new SimpleUrlStringValidator())
-		// .setConverter(new TrimTrailingSlashConverter()),
-		// null);
-
 		Label rhLoginLabel = new Label(container, SWT.NONE);
 		rhLoginLabel.setText("&Username");
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(rhLoginLabel);
@@ -105,10 +91,11 @@ public class CredentialsWizardPage extends AbstractOpenShiftWizardPage {
 
 		this.validateButton = new Button(container, SWT.NONE);
 		validateButton.setText("&Validate");
-		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).span(2, 1).indent(0, 10).hint(100, SWT.DEFAULT).applyTo(validateButton);
+		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).span(2, 1).indent(0, 10).hint(100, SWT.DEFAULT)
+				.applyTo(validateButton);
 		DataBindingUtils.bindEnablementToValidationStatus(
 				validateButton
-				, IStatus.INFO 
+				, IStatus.INFO
 				, dbc);
 		validateButton.addSelectionListener(onValidate(dbc));
 		dbc.bindValue(
@@ -128,7 +115,7 @@ public class CredentialsWizardPage extends AbstractOpenShiftWizardPage {
 			public void widgetSelected(SelectionEvent e) {
 				try {
 					WizardUtils.runInWizard(
-							new Job("Testing user credentials") {
+							new Job("Testing user credentials...") {
 
 								@Override
 								protected IStatus run(IProgressMonitor monitor) {
@@ -154,7 +141,14 @@ public class CredentialsWizardPage extends AbstractOpenShiftWizardPage {
 			}
 		};
 	}
-	
+
+	@Override
+	protected void setupWizardPageSupport(DataBindingContext dbc) {
+		ParametrizableWizardPageSupport.create(
+				IStatus.ERROR | IStatus.CANCEL, this,
+				dbc);
+	}
+
 	private static class CredentialsStatusValidator implements IValidator {
 		public IStatus validate(Object value) {
 			if (value instanceof IStatus) {
@@ -169,4 +163,27 @@ public class CredentialsWizardPage extends AbstractOpenShiftWizardPage {
 		}
 	}
 
+	@Override
+	protected void onPageWillGetDeactivated(PageChangingEvent event, DataBindingContext dbc) {
+		if (!model.areCredentialsValidated()) {
+			try {
+				final ArrayBlockingQueue<IStatus> queue = new ArrayBlockingQueue<IStatus>(1);
+				WizardUtils.runInWizard(
+						new Job("Testing user credentials...") {
+
+							@Override
+							protected IStatus run(IProgressMonitor monitor) {
+								IStatus status = model.validateCredentials();
+								queue.offer(status);
+								return Status.OK_STATUS;
+							}
+						}, getContainer(), getDatabindingContext());
+				queue.poll(10, TimeUnit.SECONDS);
+				event.doit = model.areCredentialsValid();
+			} catch (Exception ex) {
+				// ignore
+			}
+		}
+
+	}
 }

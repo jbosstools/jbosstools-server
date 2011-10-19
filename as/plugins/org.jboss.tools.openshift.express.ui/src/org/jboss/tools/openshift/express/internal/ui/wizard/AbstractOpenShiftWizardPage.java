@@ -13,7 +13,9 @@ package org.jboss.tools.openshift.express.internal.ui.wizard;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.IPageChangedListener;
+import org.eclipse.jface.dialogs.IPageChangingListener;
 import org.eclipse.jface.dialogs.PageChangedEvent;
+import org.eclipse.jface.dialogs.PageChangingEvent;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.wizard.IWizard;
@@ -73,6 +75,17 @@ public abstract class AbstractOpenShiftWizardPage extends WizardPage {
 					}
 				}
 			});
+			((WizardDialog) getContainer()).addPageChangingListener(new IPageChangingListener() {
+
+				@Override
+				public void handlePageChanging(PageChangingEvent event) {
+					if (event.getTargetPage() == AbstractOpenShiftWizardPage.this) {
+						onPageWillGetActivated(event, dbc);
+					} else {
+						onPageWillGetDeactivated(event, dbc);
+					}
+				}
+			});
 		}
 	}
 
@@ -86,6 +99,11 @@ public abstract class AbstractOpenShiftWizardPage extends WizardPage {
 	protected void onPageDeactivated(DataBindingContext dbc) {
 	}
 
+	protected void onPageWillGetActivated(PageChangingEvent event, DataBindingContext dbc) {
+	}
+	
+	protected void onPageWillGetDeactivated(PageChangingEvent event, DataBindingContext dbc) {
+	}
 
 	protected abstract void doCreateControls(Composite parent, DataBindingContext dbc);
 

@@ -119,6 +119,12 @@ public class CredentialsWizardPageModel extends ObservableUIPojo {
 	public IStatus getCredentialsValidity() {
 		return credentialsValidity;
 	}
+	
+	public boolean areCredentialsValid() {
+		IStatus validationStatus = getCredentialsValidity();
+		return validationStatus != null
+				&& validationStatus.isOK();
+	}
 
 	public boolean areCredentialsValidated() {
 		return credentialsValidity != null;
