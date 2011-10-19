@@ -22,13 +22,17 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.egit.core.EclipseGitProgressTransformer;
+import org.eclipse.egit.core.IteratorService;
 import org.eclipse.egit.core.op.CommitOperation;
 import org.eclipse.egit.core.op.PushOperation;
 import org.eclipse.egit.core.op.PushOperationSpecification;
 import org.eclipse.egit.core.project.RepositoryMapping;
+import org.eclipse.egit.ui.UIText;
 import org.eclipse.jgit.errors.NotSupportedException;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.IndexDiff;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
@@ -444,5 +448,28 @@ public class EGitUtils {
 			status = new Status(IStatus.ERROR, EGitCoreActivator.PLUGIN_ID, NLS.bind(message, arguments), e);
 		}
 		return status;
+	}
+	
+	public static int countCommitableChanges(IProject project, IProgressMonitor monitor) {
+		try {
+			Repository repo = getRepository(project);
+			
+			EclipseGitProgressTransformer jgitMonitor = new EclipseGitProgressTransformer(monitor);
+			IndexDiff indexDiff = new IndexDiff(repo, Constants.HEAD,
+					IteratorService.createInitialIterator(repo));
+			indexDiff.diff(jgitMonitor, 0, 0, NLS.bind(
+					UIText.CommitActionHandler_repository, repo.getDirectory().getPath()));
+			System.out.println(indexDiff.getAdded().size());
+			System.out.println(indexDiff.getChanged().size());
+			System.out.println(indexDiff.getConflicting().size());
+			System.out.println(indexDiff.getMissing().size());
+			System.out.println(indexDiff.getModified().size());
+			System.out.println(indexDiff.getRemoved().size());
+			System.out.println(indexDiff.getUntracked().size());
+			
+			return indexDiff.getModified().size();
+		} catch( IOException ioe ) {
+		}
+		return -1;
 	}
 }
