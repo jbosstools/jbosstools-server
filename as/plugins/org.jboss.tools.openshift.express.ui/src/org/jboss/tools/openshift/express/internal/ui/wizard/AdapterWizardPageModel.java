@@ -25,8 +25,10 @@ public class AdapterWizardPageModel extends ObservableUIPojo {
 	private static final String REMOTE_NAME_DEFAULT = "origin";
 
 	public static final String PROPERTY_GIT_URI = "gitUri";
+	public static final String PROPERTY_APPLICATION_URL = "applicationUrl";
 	public static final String PROPERTY_REPO_PATH = "repositoryPath";
 	public static final String PROPERTY_REMOTE_NAME = "remoteName";
+	public static final String PROPERTY_LOADING = "loading";
 
 	public static final String CREATE_SERVER = "createServer";
 	public static final String MODE = "serverMode";
@@ -36,26 +38,51 @@ public class AdapterWizardPageModel extends ObservableUIPojo {
 	public static final String SERVER_TYPE = "serverType";
 
 	private ImportProjectWizardModel wizardModel;
-	private String gitUri;
+//	private String gitUri;
+//	private String applicationUrl;
+	private boolean loading;
 
 	public AdapterWizardPageModel(ImportProjectWizardModel wizardModel) {
 		this.wizardModel = wizardModel;
 		setRemoteName(REMOTE_NAME_DEFAULT);
 	}
 
-	public void updateGitUri() throws OpenShiftException {
+	public void loadGitUri() throws OpenShiftException {
+		setLoading(true);
+		setGitUri(null);
+		setGitUri(getGitUri());
+		setLoading(false);
+	}
+
+	private void setGitUri(String gitUri) {
+		firePropertyChange(PROPERTY_GIT_URI, null, gitUri);
+	}
+
+	public String getGitUri() throws OpenShiftException {
 		IApplication application = wizardModel.getApplication();
-		if (application != null) {
-			setGitUri(application.getGitUri());
+		if (application == null) {
+			return null;
 		}
+		return application.getGitUri();
 	}
 
-	public void setGitUri(String gitUri) {
-		firePropertyChange(PROPERTY_GIT_URI, this.gitUri, this.gitUri = gitUri);
+	public void loadApplicationUrl() throws OpenShiftException {
+		setLoading(true);
+		setApplicationUrl(null);
+		setApplicationUrl(getApplicationUrl());
+		setLoading(false);
 	}
 
-	public String getGitUri() {
-		return this.gitUri;
+	public String getApplicationUrl() throws OpenShiftException {
+		IApplication application = wizardModel.getApplication();
+		if (application == null) {
+			return null;
+		}
+		return application.getApplicationUrl();
+	}
+
+	public void setApplicationUrl(String applicationUrl) {
+		firePropertyChange(PROPERTY_APPLICATION_URL, null, applicationUrl);
 	}
 
 	public String getRepositoryPath() {
@@ -98,4 +125,13 @@ public class AdapterWizardPageModel extends ObservableUIPojo {
 	public ImportProjectWizardModel getParentModel() {
 		return wizardModel;
 	}
+
+	public boolean isLoading() {
+		return loading;
+	}
+
+	public void setLoading(boolean loading) {
+		firePropertyChange(PROPERTY_LOADING, this.loading, this.loading = loading);
+	}
+
 }

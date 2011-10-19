@@ -18,7 +18,11 @@ import java.util.List;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.conversion.Converter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.databinding.observable.value.WritableValue;
+import org.eclipse.core.databinding.validation.IValidator;
+import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -42,7 +46,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
@@ -63,14 +66,13 @@ import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.tools.common.ui.databinding.DataBindingUtils;
 import org.jboss.tools.common.ui.databinding.InvertingBooleanConverter;
 import org.jboss.tools.common.ui.ssh.SshPrivateKeysPreferences;
-import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.ICartridge;
 import org.jboss.tools.openshift.express.client.OpenShiftException;
 import org.jboss.tools.openshift.express.internal.ui.OpenShiftUIActivator;
 
 public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IWizardPage, PropertyChangeListener {
 	private Text gitUriValueText;
-	
+
 	private AdapterWizardPageModel model;
 	private Combo suitableRuntimes;
 	private IServerType serverTypeToCreate;
@@ -118,18 +120,41 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 
 		gitUriValueText = new Text(cloneGroup, SWT.BORDER);
 		gitUriValueText.setEditable(false);
-//		gitUriValueText.setBackground(cloneGroup.getBackground());
-		GridDataFactory.fillDefaults().span(3, 1).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(gitUriValueText);
+		// gitUriValueText.setBackground(cloneGroup.getBackground());
+		GridDataFactory.fillDefaults().span(3, 1).align(SWT.FILL, SWT.CENTER).grab(true, false)
+				.applyTo(gitUriValueText);
 		dbc.bindValue(
 				WidgetProperties.text(SWT.Modify).observe(gitUriValueText)
 				, BeanProperties.value(AdapterWizardPageModel.PROPERTY_GIT_URI).observe(model)
 				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER)
 				, null);
-		
+		dbc.bindValue(
+				WidgetProperties.enabled().observe(gitUriValueText)
+				, BeanProperties.value(AdapterWizardPageModel.PROPERTY_LOADING).observe(model)
+				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER)
+				, new UpdateValueStrategy().setConverter(new InvertingBooleanConverter()));
+
+		// bind loading state to page complete
+		dbc.bindValue(
+				new WritableValue(false, Boolean.class)
+				, BeanProperties.value(AdapterWizardPageModel.PROPERTY_LOADING).observe(model)
+				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER)
+				, new UpdateValueStrategy().setAfterGetValidator(new IValidator() {
+
+					@Override
+					public IStatus validate(Object value) {
+						if (Boolean.FALSE.equals(value)) {
+							return ValidationStatus.ok();
+						} else {
+							return ValidationStatus.cancel("Loading...");
+						}
+					}
+				}));
+
 		Label repoPathLabel = new Label(cloneGroup, SWT.NONE);
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(repoPathLabel);
 		repoPathLabel.setText("Destination");
-		
+
 		Button defaultRepoPathButton = new Button(cloneGroup, SWT.CHECK);
 		defaultRepoPathButton.setText("default");
 		GridDataFactory.fillDefaults()
@@ -257,7 +282,7 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		suitableRuntimes.setEnabled(enabled);
 		runtimeLabel.setEnabled(enabled);
 		addRuntimeLink.setEnabled(enabled);
-		domainLabel.setEnabled(enabled);
+		// domainLabel.setEnabled(enabled);
 		modeLabel.setEnabled(enabled);
 	}
 
@@ -286,6 +311,23 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		addRuntimeLink.setText("<a>" + Messages.addRuntime + "</a>");
 
 		domainLabel = new Label(c, SWT.NONE);
+		DataBindingContext dbc = getDatabindingContext();
+		dbc.bindValue(
+				WidgetProperties.text().observe(domainLabel)
+				, BeanProperties.value(AdapterWizardPageModel.PROPERTY_APPLICATION_URL).observe(model)
+				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER)
+				, new UpdateValueStrategy().setConverter(new Converter(String.class, String.class) {
+
+					@Override
+					public Object convert(Object fromObject) {
+						String host = "";
+						if (fromObject instanceof String && ((String) fromObject).length() > 0) {
+							host = (String) fromObject;
+						}
+						return "Host: " + host;
+					}
+
+				}));
 		// appLabel = new Label(c, SWT.NONE);
 		modeLabel = new Label(c, SWT.NONE);
 
@@ -360,8 +402,6 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 	}
 
 	protected void onPageActivated(DataBindingContext dbc) {
-		gitUriValueText.setEnabled(false);
-		gitUriValueText.setText("Loading...");
 		model.resetRepositoryPath();
 
 		serverTypeToCreate = getServerTypeToCreate();
@@ -375,34 +415,20 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		addRuntimeLink.setEnabled(type != null);
 		modeLabel.setText("Mode: Source");
 		model.getParentModel().setProperty(AdapterWizardPageModel.MODE, AdapterWizardPageModel.MODE_SOURCE);
-		
+
 		setPageComplete(false);
 		getWizard().getContainer().updateButtons();
 		onPageActivatedBackground(dbc);
 	}
-	
-	protected void onPageActivatedBackground2(DataBindingContext dbc) throws OpenShiftException {
-		model.updateGitUri();
-		gitUriValueText.setEnabled(true);
-		domainLabel.setText("Host: " + model.getParentModel().getApplication().getApplicationUrl());
-		setPageComplete(true);
-		getWizard().getContainer().updateButtons();
-	}
-	
+
 	protected void onPageActivatedBackground(final DataBindingContext dbc) {
 		new Job("Loading remote OpenShift application") {
 			public IStatus run(IProgressMonitor monitor) {
-				final IApplication application = model.getParentModel().getApplication();
-				if (application != null) {
-					Display.getDefault().asyncExec(new Runnable() {
-						public void run() {
-							try {
-								onPageActivatedBackground2(dbc);
-							} catch( OpenShiftException e) {
-								OpenShiftUIActivator.log(OpenShiftUIActivator.createErrorStatus(e.getMessage(), e));
-							}
-						}
-					});
+				try {
+					model.loadGitUri();
+					model.loadApplicationUrl();
+				} catch (OpenShiftException e) {
+					OpenShiftUIActivator.log(OpenShiftUIActivator.createErrorStatus(e.getMessage(), e));
 				}
 				return Status.OK_STATUS;
 			}
