@@ -17,16 +17,11 @@ for a full listing of individual contributors.
    </license>
 
 	<plugin id="org.jboss.ide.eclipse.as.archives.integration.test.source" download-size="0" install-size="0" version="0.0.0" unpack="false" />
+  	<plugin id="org.jboss.ide.eclipse.as.egit.test.source" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+	<plugin id="org.jboss.ide.eclipse.as.management.as7.tests.source" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 	<plugin id="org.jboss.ide.eclipse.as.test.source" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 	<plugin id="org.jboss.ide.eclipse.as.ui.test.source" download-size="0" install-size="0" version="0.0.0" unpack="false" />
-	<plugin id="org.jboss.ide.eclipse.as.management.as7.tests.source" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 
-	<!-- JBIDE-9871 :: TODO: add to ../pom.xml
-   <plugin id="org.jboss.ide.eclipse.as.egit.test.source" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-   -->
-
-	<!-- JBIDE-9871 :: TODO: add to ../pom.xml
-   <plugin id="org.jboss.tools.openshift.express.client.test.source" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-   <plugin id="org.jboss.ide.eclipse.as.openshift.test.source" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-   -->
+	<plugin id="org.jboss.ide.eclipse.as.openshift.test.source" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+	<plugin id="org.jboss.tools.openshift.express.client.test.source" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
 </feature>
