@@ -102,7 +102,7 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		GridDataFactory.fillDefaults()
 				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(projectGroup);
 
-		Group serverAdapterGroup = createAdapterGroup(parent);
+		Group serverAdapterGroup = createAdapterGroup(parent, dbc);
 		GridDataFactory.fillDefaults()
 				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(serverAdapterGroup);
 	}
@@ -266,7 +266,7 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		};
 	}
 
-	private Group createAdapterGroup(Composite parent) {
+	private Group createAdapterGroup(Composite parent, DataBindingContext dbc) {
 		Group serverAdapterGroup = new Group(parent, SWT.BORDER);
 		serverAdapterGroup.setText("JBoss Server adapter");
 		FillLayout fillLayout = new FillLayout();
@@ -274,6 +274,25 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		fillLayout.marginWidth = 6;
 		serverAdapterGroup.setLayout(fillLayout);
 		fillServerAdapterGroup(serverAdapterGroup);
+		IObservableValue runtimeSelection = WidgetProperties.singleSelectionIndex().observe(suitableRuntimes);
+		dbc.bindValue(
+				WidgetProperties.singleSelectionIndex().observe(suitableRuntimes)
+				, WidgetProperties.singleSelectionIndex().observe(suitableRuntimes)
+				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER)
+				, new UpdateValueStrategy().setAfterGetValidator(new IValidator() {
+					public IStatus validate(Object value) {
+						if( !serverAdapterCheckbox.getSelection())
+							return Status.OK_STATUS;
+						if( new Integer(-1).equals(value)) {
+							if( suitableRuntimes.getItems() == null || suitableRuntimes.getItems().length == 0) {
+								return ValidationStatus.error("Please add a new valid runtime."); 
+							}
+							return ValidationStatus.error("Please select a runtime"); 
+						}
+						return Status.OK_STATUS;
+					}
+				}));
+		runtimeSelection.setValue(null);
 
 		return serverAdapterGroup;
 	}
