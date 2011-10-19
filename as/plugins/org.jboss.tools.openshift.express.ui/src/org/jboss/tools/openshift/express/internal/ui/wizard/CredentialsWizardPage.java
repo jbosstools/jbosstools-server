@@ -82,10 +82,6 @@ public class CredentialsWizardPage extends AbstractOpenShiftWizardPage {
 		DataBindingUtils.bindMandatoryTextField(
 				passwordText, "Password", CredentialsWizardPageModel.PROPERTY_PASSWORD, model, dbc);
 
-		// Label credentialsValidatyLabel = new Label(container, SWT.None);
-		// GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.CENTER).hint(64,
-		// 64).applyTo(credentialsValidatyLabel);
-
 		Label spacerLabel = new Label(container, SWT.None);
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(spacerLabel);
 
@@ -149,20 +145,6 @@ public class CredentialsWizardPage extends AbstractOpenShiftWizardPage {
 				dbc);
 	}
 
-	private static class CredentialsStatusValidator implements IValidator {
-		public IStatus validate(Object value) {
-			if (value instanceof IStatus) {
-				int currentSeverity = ((IStatus) value).getSeverity();
-				if (currentSeverity < IStatus.ERROR) {
-					return ValidationStatus.ok();
-				}
-			} else if (value == null) {
-				return ValidationStatus.info("You have to validate your credentials");
-			}
-			return ValidationStatus.error("The given credentials are not valid");
-		}
-	}
-
 	@Override
 	protected void onPageWillGetDeactivated(PageChangingEvent event, DataBindingContext dbc) {
 		if (!model.areCredentialsValidated()) {
@@ -181,9 +163,22 @@ public class CredentialsWizardPage extends AbstractOpenShiftWizardPage {
 				queue.poll(10, TimeUnit.SECONDS);
 				event.doit = model.areCredentialsValid();
 			} catch (Exception ex) {
-				// ignore
+				event.doit = false;
 			}
 		}
+	}
 
+	private static class CredentialsStatusValidator implements IValidator {
+		public IStatus validate(Object value) {
+			if (value instanceof IStatus) {
+				int currentSeverity = ((IStatus) value).getSeverity();
+				if (currentSeverity < IStatus.ERROR) {
+					return ValidationStatus.ok();
+				}
+			} else if (value == null) {
+				return ValidationStatus.info("You have to validate your credentials");
+			}
+			return ValidationStatus.error("The given credentials are not valid");
+		}
 	}
 }
