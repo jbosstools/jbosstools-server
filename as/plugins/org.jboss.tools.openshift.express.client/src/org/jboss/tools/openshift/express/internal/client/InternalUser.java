@@ -165,7 +165,7 @@ public class InternalUser implements IUser {
 		if (getUserInfo().getApplicationInfos().size() > applications.size()) {
 			update(getUserInfo().getApplicationInfos());
 		}
-		return Collections.unmodifiableList(applications);
+		return applications;
 	}
 
 	@Override
