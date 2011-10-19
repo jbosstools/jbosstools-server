@@ -15,6 +15,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
@@ -275,23 +276,20 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		serverAdapterGroup.setLayout(fillLayout);
 		fillServerAdapterGroup(serverAdapterGroup);
 		IObservableValue runtimeSelection = WidgetProperties.singleSelectionIndex().observe(suitableRuntimes);
-		dbc.bindValue(
-				WidgetProperties.singleSelectionIndex().observe(suitableRuntimes)
+
+		IObservableValue dummyObservable = new WritableValue();
+		Binding comboSelectionBinding = dbc.bindValue(
+				dummyObservable
 				, WidgetProperties.singleSelectionIndex().observe(suitableRuntimes)
 				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER)
-				, new UpdateValueStrategy().setAfterGetValidator(new IValidator() {
-					public IStatus validate(Object value) {
-						if( !serverAdapterCheckbox.getSelection())
-							return Status.OK_STATUS;
-						if( new Integer(-1).equals(value)) {
-							if( suitableRuntimes.getItems() == null || suitableRuntimes.getItems().length == 0) {
-								return ValidationStatus.error("Please add a new valid runtime."); 
-							}
-							return ValidationStatus.error("Please select a runtime"); 
-						}
-						return Status.OK_STATUS;
-					}
-				}));
+				, new UpdateValueStrategy().setAfterGetValidator(new SelectedRuntimeValidator(null)));
+
+		dbc.bindValue(
+				dummyObservable
+				, WidgetProperties.selection().observe(serverAdapterCheckbox)
+				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER)
+				, new UpdateValueStrategy().setAfterGetValidator(new SelectedRuntimeValidator(comboSelectionBinding)));
+
 		runtimeSelection.setValue(null);
 
 		return serverAdapterGroup;
@@ -517,6 +515,36 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		refreshValidRuntimes();
 		model.getParentModel().setProperty(AdapterWizardPageModel.SERVER_TYPE, serverTypeToCreate);
 		model.getParentModel().setProperty(AdapterWizardPageModel.CREATE_SERVER, canCreateServer);
+	}
+
+	private class SelectedRuntimeValidator implements IValidator {
+
+		private Binding binding;
+
+		public SelectedRuntimeValidator(Binding binding) {
+			this.binding = binding;
+		}
+
+		public IStatus validate(Object value) {
+			if (!serverAdapterCheckbox.getSelection()) {
+				updateBinding();
+				return Status.OK_STATUS;
+			}
+			if (new Integer(-1).equals(suitableRuntimes.getSelectionIndex())) {
+				if (suitableRuntimes.getItems() == null || suitableRuntimes.getItems().length == 0) {
+					return ValidationStatus.error("Please add a new valid runtime.");
+				}
+				return ValidationStatus.error("Please select a runtime");
+			}
+			updateBinding();
+			return Status.OK_STATUS;
+		}
+
+		private void updateBinding() {
+			if (binding != null) {
+				this.binding.updateModelToTarget();
+			}
+		}
 	}
 
 }
