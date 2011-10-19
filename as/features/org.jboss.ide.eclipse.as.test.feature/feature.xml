@@ -21,6 +21,5 @@
 	<plugin id="org.jboss.ide.eclipse.as.test" download-size="0" install-size="0" version="0.0.0" />
 	<plugin id="org.jboss.ide.eclipse.as.ui.test" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 
-	<plugin id="org.jboss.ide.eclipse.as.openshift.test" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 	<plugin id="org.jboss.tools.openshift.express.client.test" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 </feature>

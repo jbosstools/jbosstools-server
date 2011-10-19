@@ -22,6 +22,5 @@ for a full listing of individual contributors.
 	<plugin id="org.jboss.ide.eclipse.as.test.source" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 	<plugin id="org.jboss.ide.eclipse.as.ui.test.source" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 
-	<plugin id="org.jboss.ide.eclipse.as.openshift.test.source" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
 	<plugin id="org.jboss.tools.openshift.express.client.test.source" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
 </feature>
