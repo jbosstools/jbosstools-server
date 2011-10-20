@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
@@ -62,9 +61,9 @@ import org.eclipse.wst.server.ui.internal.wizard.TaskWizard;
 import org.eclipse.wst.server.ui.internal.wizard.WizardTaskUtil;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-import org.jboss.tools.common.ui.databinding.ValueBindingBuilder;
 import org.jboss.tools.common.ui.databinding.DataBindingUtils;
 import org.jboss.tools.common.ui.databinding.InvertingBooleanConverter;
+import org.jboss.tools.common.ui.databinding.ValueBindingBuilder;
 import org.jboss.tools.common.ui.ssh.SshPrivateKeysPreferences;
 import org.jboss.tools.openshift.express.client.ICartridge;
 import org.jboss.tools.openshift.express.client.OpenShiftException;
@@ -130,25 +129,23 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		gitUriValueText = new Text(cloneGroup, SWT.BORDER);
 		gitUriValueText.setEditable(false);
 		// gitUriValueText.setBackground(cloneGroup.getBackground());
-		GridDataFactory.fillDefaults().span(3, 1).align(SWT.FILL, SWT.CENTER).grab(true, false)
-				.applyTo(gitUriValueText);
-		dbc.bindValue(
-				WidgetProperties.text(SWT.Modify).observe(gitUriValueText)
-				, BeanProperties.value(AdapterWizardPageModel.PROPERTY_GIT_URI).observe(model)
-				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER)
-				, null);
-		dbc.bindValue(
-				WidgetProperties.enabled().observe(gitUriValueText)
-				, BeanProperties.value(AdapterWizardPageModel.PROPERTY_LOADING).observe(model)
-				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER)
-				, new UpdateValueStrategy().setConverter(new InvertingBooleanConverter()));
+		GridDataFactory
+				.fillDefaults().span(3, 1).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(gitUriValueText);
+		ValueBindingBuilder
+				.bind(WidgetProperties.text(SWT.Modify).observe(gitUriValueText))
+				.notUpdating(BeanProperties.value(AdapterWizardPageModel.PROPERTY_GIT_URI).observe(model))
+				.using(dbc);
+		ValueBindingBuilder
+				.bind(WidgetProperties.enabled().observe(gitUriValueText))
+				.notUpdating(BeanProperties.value(AdapterWizardPageModel.PROPERTY_LOADING).observe(model))
+				.converting(new InvertingBooleanConverter())
+				.using(dbc);
 
 		// bind loading state to page complete
-		dbc.bindValue(
-				new WritableValue(false, Boolean.class)
-				, BeanProperties.value(AdapterWizardPageModel.PROPERTY_LOADING).observe(model)
-				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER)
-				, new UpdateValueStrategy().setAfterGetValidator(new IValidator() {
+		ValueBindingBuilder
+				.bind(new WritableValue(false, Boolean.class))
+				.notUpdating(BeanProperties.value(AdapterWizardPageModel.PROPERTY_LOADING).observe(model))
+				.validatingAfterGet(new IValidator() {
 
 					@Override
 					public IStatus validate(Object value) {
@@ -158,7 +155,8 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 							return ValidationStatus.cancel("Loading...");
 						}
 					}
-				}));
+				})
+				.using(dbc);
 
 		Label repoPathLabel = new Label(cloneGroup, SWT.NONE);
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(repoPathLabel);
@@ -176,22 +174,24 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(repoPathText);
 		DataBindingUtils.bindMandatoryTextField(
 				repoPathText, "Location", AdapterWizardPageModel.PROPERTY_REPO_PATH, model, dbc);
-		dbc.bindValue(
-				defaultRepoButtonSelection
-				, WidgetProperties.enabled().observe(repoPathText)
-				, new UpdateValueStrategy().setConverter(new InvertingBooleanConverter())
-				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER));
+		ValueBindingBuilder
+				.bind(defaultRepoButtonSelection)
+				.converting(new InvertingBooleanConverter())
+				.to(WidgetProperties.enabled().observe(repoPathText))
+				.notUpdatingParticipant()
+				.using(dbc);
 
 		Button browseRepoPathButton = new Button(cloneGroup, SWT.PUSH);
 		browseRepoPathButton.setText("Browse");
 		GridDataFactory.fillDefaults()
 				.align(SWT.LEFT, SWT.CENTER).hint(100, SWT.DEFAULT).applyTo(browseRepoPathButton);
 		browseRepoPathButton.addSelectionListener(onRepoPath());
-		dbc.bindValue(
-				defaultRepoButtonSelection
-				, WidgetProperties.enabled().observe(browseRepoPathButton)
-				, new UpdateValueStrategy().setConverter(new InvertingBooleanConverter())
-				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER));
+		ValueBindingBuilder
+				.bind(defaultRepoButtonSelection)
+				.converting(new InvertingBooleanConverter())
+				.to(WidgetProperties.enabled().observe(browseRepoPathButton))
+				.notUpdatingParticipant()
+				.using(dbc);
 
 		defaultRepoButtonSelection.setValue(true);
 
@@ -213,11 +213,12 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 				remoteNameText, "Remote name", AdapterWizardPageModel.PROPERTY_REMOTE_NAME, model, dbc);
 
 		IObservableValue defaultRemoteNameSelection = WidgetProperties.selection().observe(defaultRemoteNameButton);
-		dbc.bindValue(
-				defaultRemoteNameSelection
-				, WidgetProperties.enabled().observe(remoteNameText)
-				, new UpdateValueStrategy().setConverter(new InvertingBooleanConverter())
-				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER));
+		ValueBindingBuilder
+				.bind(defaultRemoteNameSelection)
+				.converting(new InvertingBooleanConverter())
+				.to(WidgetProperties.enabled().observe(remoteNameText))
+				.notUpdatingParticipant()
+				.using(dbc);
 		defaultRemoteNameSelection.setValue(true);
 
 		Link sshPrefsLink = new Link(cloneGroup, SWT.NONE);
