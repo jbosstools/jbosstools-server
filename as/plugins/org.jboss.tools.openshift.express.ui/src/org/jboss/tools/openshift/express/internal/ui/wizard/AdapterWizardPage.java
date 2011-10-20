@@ -95,8 +95,8 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 	public AdapterWizardPage(ImportProjectWizard wizard, ImportProjectWizardModel model) {
 		super(
 				"Import Project",
-				"Please select the destination for your local copy of the OpenShift Express repository, "
-						+ "what branch to clone and setup your server adapter, ",
+				"Select the Git clone destination, the branch to clone "
+						+ "and configure your server adapter ",
 				"Server Adapter",
 				wizard);
 		this.model = new AdapterWizardPageModel(model);
