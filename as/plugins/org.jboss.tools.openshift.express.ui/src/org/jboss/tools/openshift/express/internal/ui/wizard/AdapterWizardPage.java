@@ -29,7 +29,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -63,7 +62,6 @@ import org.eclipse.wst.server.ui.internal.wizard.TaskWizard;
 import org.eclipse.wst.server.ui.internal.wizard.WizardTaskUtil;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.tools.common.ui.databinding.DataBindingUtils;
 import org.jboss.tools.common.ui.databinding.InvertingBooleanConverter;
 import org.jboss.tools.common.ui.ssh.SshPrivateKeysPreferences;
@@ -71,6 +69,11 @@ import org.jboss.tools.openshift.express.client.ICartridge;
 import org.jboss.tools.openshift.express.client.OpenShiftException;
 import org.jboss.tools.openshift.express.internal.ui.OpenShiftUIActivator;
 
+/**
+ * @author André Dietisheim
+ * @author Rob Stryker
+ *
+ */
 public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IWizardPage, PropertyChangeListener {
 	private Text gitUriValueText;
 
