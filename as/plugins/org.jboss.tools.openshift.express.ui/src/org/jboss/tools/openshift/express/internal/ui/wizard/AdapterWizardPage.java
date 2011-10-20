@@ -134,12 +134,12 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		ValueBindingBuilder
 				.bind(WidgetProperties.text(SWT.Modify).observe(gitUriValueText))
 				.notUpdating(BeanProperties.value(AdapterWizardPageModel.PROPERTY_GIT_URI).observe(model))
-				.using(dbc);
+				.in(dbc);
 		ValueBindingBuilder
 				.bind(WidgetProperties.enabled().observe(gitUriValueText))
 				.notUpdating(BeanProperties.value(AdapterWizardPageModel.PROPERTY_LOADING).observe(model))
 				.converting(new InvertingBooleanConverter())
-				.using(dbc);
+				.in(dbc);
 
 		// bind loading state to page complete
 		ValueBindingBuilder
@@ -156,7 +156,7 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 						}
 					}
 				})
-				.using(dbc);
+				.in(dbc);
 
 		Label repoPathLabel = new Label(cloneGroup, SWT.NONE);
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(repoPathLabel);
@@ -179,7 +179,7 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 				.converting(new InvertingBooleanConverter())
 				.to(WidgetProperties.enabled().observe(repoPathText))
 				.notUpdatingParticipant()
-				.using(dbc);
+				.in(dbc);
 
 		Button browseRepoPathButton = new Button(cloneGroup, SWT.PUSH);
 		browseRepoPathButton.setText("Browse");
@@ -191,7 +191,7 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 				.converting(new InvertingBooleanConverter())
 				.to(WidgetProperties.enabled().observe(browseRepoPathButton))
 				.notUpdatingParticipant()
-				.using(dbc);
+				.in(dbc);
 
 		defaultRepoButtonSelection.setValue(true);
 
@@ -218,7 +218,7 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 				.converting(new InvertingBooleanConverter())
 				.to(WidgetProperties.enabled().observe(remoteNameText))
 				.notUpdatingParticipant()
-				.using(dbc);
+				.in(dbc);
 		defaultRemoteNameSelection.setValue(true);
 
 		Link sshPrefsLink = new Link(cloneGroup, SWT.NONE);
@@ -327,7 +327,7 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		ValueBindingBuilder
 				.bind(WidgetProperties.text().observe(domainValueLabel))
 				.notUpdating(BeanProperties.value(AdapterWizardPageModel.PROPERTY_APPLICATION_URL).observe(model))
-				.using(dbc);
+				.in(dbc);
 		// appLabel = new Label(c, SWT.NONE);
 		Label modeLabel = new Label(c, SWT.NONE);
 		modeLabel.setText("Mode");
