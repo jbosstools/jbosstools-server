@@ -18,7 +18,6 @@ import java.util.List;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
-import org.eclipse.core.databinding.conversion.Converter;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.observable.value.WritableValue;
@@ -30,6 +29,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -43,7 +43,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -79,8 +78,8 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 	private Combo suitableRuntimesCombo;
 	private IServerType serverTypeToCreate;
 	private IRuntime runtimeDelegate;
-	private Label domainLabel;
-	private Label modeLabel;
+	private Label domainValueLabel;
+	private Label modeValueLabel;
 	private Link addRuntimeLink;
 	private Label runtimeLabel;
 	private Button serverAdapterCheckbox;
@@ -288,13 +287,14 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		suitableRuntimesCombo.setEnabled(enabled);
 		runtimeLabel.setEnabled(enabled);
 		addRuntimeLink.setEnabled(enabled);
-		// domainLabel.setEnabled(enabled);
-		modeLabel.setEnabled(enabled);
+		domainValueLabel.setEnabled(enabled);
+		modeValueLabel.setEnabled(enabled);
 	}
 
 	private void fillServerAdapterGroup(Group serverAdapterGroup) {
 		Composite c = new Composite(serverAdapterGroup, SWT.NONE);
-		c.setLayout(new FormLayout());
+		GridLayoutFactory.fillDefaults().numColumns(3).margins(6, 6).spacing(12, 8).applyTo(c);
+
 		serverAdapterCheckbox = new Button(c, SWT.CHECK);
 		serverAdapterCheckbox.setText("Create a JBoss server adapter");
 		serverAdapterCheckbox.addSelectionListener(new SelectionListener() {
@@ -309,32 +309,25 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		});
 
 		runtimeLabel = new Label(c, SWT.NONE);
-		runtimeLabel.setText("Local Runtime: ");
+		runtimeLabel.setText("Local Runtime");
 
 		suitableRuntimesCombo = new Combo(c, SWT.READ_ONLY);
 		addRuntimeLink = new Link(c, SWT.NONE);
 		addRuntimeLink.setText("<a>" + Messages.addRuntime + "</a>");
 
-		domainLabel = new Label(c, SWT.NONE);
+		Label domainLabel = new Label(c, SWT.NONE);
+		domainLabel.setText("Host");
+		domainValueLabel = new Label(c, SWT.NONE);
 		DataBindingContext dbc = getDatabindingContext();
 		dbc.bindValue(
-				WidgetProperties.text().observe(domainLabel)
+				WidgetProperties.text().observe(domainValueLabel)
 				, BeanProperties.value(AdapterWizardPageModel.PROPERTY_APPLICATION_URL).observe(model)
 				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER)
-				, new UpdateValueStrategy().setConverter(new Converter(String.class, String.class) {
-
-					@Override
-					public Object convert(Object fromObject) {
-						String host = "";
-						if (fromObject instanceof String && ((String) fromObject).length() > 0) {
-							host = (String) fromObject;
-						}
-						return "Host: " + host;
-					}
-
-				}));
+				, null);
 		// appLabel = new Label(c, SWT.NONE);
-		modeLabel = new Label(c, SWT.NONE);
+		Label modeLabel = new Label(c, SWT.NONE);
+		modeLabel.setText("Mode");
+		modeValueLabel = new Label(c, SWT.NONE);
 
 		suitableRuntimesCombo.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
@@ -344,26 +337,28 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		addRuntimeLink.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				IRuntimeType type = getValidRuntimeType();
-				if (type != null) {
-					int result = showRuntimeWizard(type);
-					if( result == Window.OK ) {
-						suitableRuntimesCombo.select(0);
-						selectedRuntimeObservable.setValue(0);
-						updateSelectedRuntimeDelegate();
-					}
-				}
+				if (type != null)
+					showRuntimeWizard(type);
 			}
 		});
 
-		serverAdapterCheckbox.setLayoutData(UIUtil.createFormData2(0, 5, null, 0, 0, 5, null, 0));
-		runtimeLabel.setLayoutData(UIUtil.createFormData2(serverAdapterCheckbox, 5, null, 0, 0, 5, null, 0));
-		addRuntimeLink.setLayoutData(UIUtil.createFormData2(serverAdapterCheckbox, 5, null, 0, null, 0, 100, -5));
-		suitableRuntimesCombo.setLayoutData(UIUtil.createFormData2(serverAdapterCheckbox, 5, null, 0, runtimeLabel, 5,
-				addRuntimeLink, -5));
-		domainLabel.setLayoutData(UIUtil.createFormData2(suitableRuntimesCombo, 5, null, 0, 0, 5, 100, 0));
-		// appLabel.setLayoutData(UIUtil.createFormData2(domainLabel, 5, null,
-		// 0, 0, 5, 100, 0));
-		modeLabel.setLayoutData(UIUtil.createFormData2(domainLabel, 5, null, 0, 0, 5, 100, 0));
+		GridDataFactory.fillDefaults()
+				.span(3, 1).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(serverAdapterCheckbox);
+		GridDataFactory.fillDefaults()
+				.align(SWT.LEFT, SWT.CENTER).applyTo(runtimeLabel);
+		GridDataFactory.fillDefaults()
+				.align(SWT.LEFT, SWT.CENTER).applyTo(runtimeLabel);
+		GridDataFactory.fillDefaults()
+				.align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(suitableRuntimesCombo);
+		GridDataFactory.fillDefaults()
+				.align(SWT.LEFT, SWT.CENTER).applyTo(domainLabel);
+		GridDataFactory.fillDefaults()
+				.span(2, 1).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(domainValueLabel);
+		GridDataFactory.fillDefaults()
+				.align(SWT.LEFT, SWT.CENTER).applyTo(modeLabel);
+		GridDataFactory.fillDefaults()
+				.span(2, 1).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(modeValueLabel);
+
 		model.getParentModel().setProperty(AdapterWizardPageModel.CREATE_SERVER,
 				serverAdapterCheckbox.getSelection());
 
@@ -374,13 +369,16 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		this.serverAdapterCheckboxObservable =
 				WidgetProperties.selection().observe(serverAdapterCheckbox);
 
-		dbc.addValidationStatusProvider(new SelectedRuntimeValidator());
+		SelectedRuntimeValidator selectedRuntimeValidator = new SelectedRuntimeValidator();
+		dbc.addValidationStatusProvider(selectedRuntimeValidator);
+
+//		ControlDecorationSupport.create(selectedRuntimeValidator, SWT.TOP | SWT.LEFT);
 	}
 
 	private void updateSelectedRuntimeDelegate() {
-		if (suitableRuntimesCombo.getSelectionIndex() != -1) {
-			runtimeDelegate = ServerCore.findRuntime(suitableRuntimesCombo.getItem(suitableRuntimesCombo
-					.getSelectionIndex()));
+		if (!(new Integer(-1).equals(selectedRuntimeObservable.getValue()))) {
+			String selectedRuntimeName = (String) suitableRuntimesObservable.get((Integer) selectedRuntimeObservable.getValue());
+			runtimeDelegate = ServerCore.findRuntime(selectedRuntimeName);
 		} else {
 			runtimeDelegate = null;
 		}
@@ -413,13 +411,13 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		return validRuntimes.toArray(new IRuntime[validRuntimes.size()]);
 	}
 
-	private void fillRuntimeCombo(Combo combo, IRuntime[] runtimes) {
+	private void fillRuntimeCombo(IRuntime[] runtimes) {
+		suitableRuntimesObservable.clear();
 		String[] names = new String[runtimes.length];
 		for (int i = 0; i < runtimes.length; i++) {
 			names[i] = runtimes[i].getName();
 			suitableRuntimesObservable.add(runtimes[i].getName());
 		}
-		combo.setItems(names);
 	}
 
 	protected void onPageActivated(DataBindingContext dbc) {
@@ -428,18 +426,16 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		serverTypeToCreate = getServerTypeToCreate();
 		model.getParentModel().setProperty(AdapterWizardPageModel.SERVER_TYPE, serverTypeToCreate);
 		refreshValidRuntimes();
-		if (suitableRuntimesCombo.getItemCount() > 0) {
-			suitableRuntimesCombo.select(0);
+		if (suitableRuntimesObservable.size() > 0) {
 			selectedRuntimeObservable.setValue(0);
 			updateSelectedRuntimeDelegate();
 		}
+		
 		IRuntimeType type = getValidRuntimeType();
 		addRuntimeLink.setEnabled(type != null);
-		modeLabel.setText("Mode: Source");
+		modeValueLabel.setText("Source");
 		model.getParentModel().setProperty(AdapterWizardPageModel.MODE, AdapterWizardPageModel.MODE_SOURCE);
 
-		setPageComplete(false);
-		getWizard().getContainer().updateButtons();
 		onPageActivatedBackground(dbc);
 	}
 
@@ -461,9 +457,10 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		IRuntimeType type = getValidRuntimeType();
 		if (type != null) {
 			IRuntime[] runtimes = getRuntimesOfType(type.getId());
-			fillRuntimeCombo(suitableRuntimesCombo, runtimes);
+			fillRuntimeCombo(runtimes);
 		} else {
-			suitableRuntimesCombo.setItems(new String[0]);
+//			suitableRuntimesCombo.setItems(new String[0]);
+			selectedRuntimeObservable.setValue(0);
 		}
 	}
 
