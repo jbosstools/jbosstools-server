@@ -38,8 +38,6 @@ public class AdapterWizardPageModel extends ObservableUIPojo {
 	public static final String SERVER_TYPE = "serverType";
 
 	private ImportProjectWizardModel wizardModel;
-//	private String gitUri;
-//	private String applicationUrl;
 	private boolean loading;
 
 	public AdapterWizardPageModel(ImportProjectWizardModel wizardModel) {
@@ -49,7 +47,7 @@ public class AdapterWizardPageModel extends ObservableUIPojo {
 
 	public void loadGitUri() throws OpenShiftException {
 		setLoading(true);
-		setGitUri(null);
+		setGitUri("Loading...");
 		setGitUri(getGitUri());
 		setLoading(false);
 	}
@@ -68,7 +66,7 @@ public class AdapterWizardPageModel extends ObservableUIPojo {
 
 	public void loadApplicationUrl() throws OpenShiftException {
 		setLoading(true);
-		setApplicationUrl(null);
+		setApplicationUrl("Loading...");
 		setApplicationUrl(getApplicationUrl());
 		setLoading(false);
 	}

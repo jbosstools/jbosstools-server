@@ -62,6 +62,7 @@ import org.eclipse.wst.server.ui.internal.wizard.TaskWizard;
 import org.eclipse.wst.server.ui.internal.wizard.WizardTaskUtil;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.tools.common.ui.databinding.ValueBindingBuilder;
 import org.jboss.tools.common.ui.databinding.DataBindingUtils;
 import org.jboss.tools.common.ui.databinding.InvertingBooleanConverter;
 import org.jboss.tools.common.ui.ssh.SshPrivateKeysPreferences;
@@ -72,7 +73,7 @@ import org.jboss.tools.openshift.express.internal.ui.OpenShiftUIActivator;
 /**
  * @author André Dietisheim
  * @author Rob Stryker
- *
+ * 
  */
 public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IWizardPage, PropertyChangeListener {
 	private Text gitUriValueText;
@@ -322,11 +323,11 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		domainLabel.setText("Host");
 		domainValueLabel = new Label(c, SWT.NONE);
 		DataBindingContext dbc = getDatabindingContext();
-		dbc.bindValue(
-				WidgetProperties.text().observe(domainValueLabel)
-				, BeanProperties.value(AdapterWizardPageModel.PROPERTY_APPLICATION_URL).observe(model)
-				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER)
-				, null);
+		ValueBindingBuilder
+				.bind(WidgetProperties.text().observe(domainValueLabel))
+				.withoutUpdate()
+				.to(BeanProperties.value(AdapterWizardPageModel.PROPERTY_APPLICATION_URL).observe(model))
+				.using(dbc);
 		// appLabel = new Label(c, SWT.NONE);
 		Label modeLabel = new Label(c, SWT.NONE);
 		modeLabel.setText("Mode");
@@ -375,12 +376,14 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		SelectedRuntimeValidator selectedRuntimeValidator = new SelectedRuntimeValidator();
 		dbc.addValidationStatusProvider(selectedRuntimeValidator);
 
-//		ControlDecorationSupport.create(selectedRuntimeValidator, SWT.TOP | SWT.LEFT);
+		// ControlDecorationSupport.create(selectedRuntimeValidator, SWT.TOP |
+		// SWT.LEFT);
 	}
 
 	private void updateSelectedRuntimeDelegate() {
 		if (!(new Integer(-1).equals(selectedRuntimeObservable.getValue()))) {
-			String selectedRuntimeName = (String) suitableRuntimesObservable.get((Integer) selectedRuntimeObservable.getValue());
+			String selectedRuntimeName = (String) suitableRuntimesObservable.get((Integer) selectedRuntimeObservable
+					.getValue());
 			runtimeDelegate = ServerCore.findRuntime(selectedRuntimeName);
 		} else {
 			runtimeDelegate = null;
@@ -433,7 +436,7 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 			selectedRuntimeObservable.setValue(0);
 			updateSelectedRuntimeDelegate();
 		}
-		
+
 		IRuntimeType type = getValidRuntimeType();
 		addRuntimeLink.setEnabled(type != null);
 		modeValueLabel.setText("Source");
@@ -462,7 +465,7 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 			IRuntime[] runtimes = getRuntimesOfType(type.getId());
 			fillRuntimeCombo(runtimes);
 		} else {
-//			suitableRuntimesCombo.setItems(new String[0]);
+			// suitableRuntimesCombo.setItems(new String[0]);
 			selectedRuntimeObservable.setValue(0);
 		}
 	}
