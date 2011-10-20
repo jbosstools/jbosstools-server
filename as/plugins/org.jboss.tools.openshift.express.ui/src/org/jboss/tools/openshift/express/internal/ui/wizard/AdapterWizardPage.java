@@ -19,9 +19,11 @@ import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.conversion.Converter;
+import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.observable.value.WritableValue;
 import org.eclipse.core.databinding.validation.IValidator;
+import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -74,7 +76,7 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 	private Text gitUriValueText;
 
 	private AdapterWizardPageModel model;
-	private Combo suitableRuntimes;
+	private Combo suitableRuntimesCombo;
 	private IServerType serverTypeToCreate;
 	private IRuntime runtimeDelegate;
 	private Label domainLabel;
@@ -82,6 +84,10 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 	private Link addRuntimeLink;
 	private Label runtimeLabel;
 	private Button serverAdapterCheckbox;
+
+	private IObservableValue serverAdapterCheckboxObservable;
+	private IObservableValue selectedRuntimeObservable;
+	private IObservableList suitableRuntimesObservable;
 
 	public AdapterWizardPage(ImportProjectWizard wizard, ImportProjectWizardModel model) {
 		super(
@@ -102,7 +108,7 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		GridDataFactory.fillDefaults()
 				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(projectGroup);
 
-		Group serverAdapterGroup = createAdapterGroup(parent);
+		Group serverAdapterGroup = createAdapterGroup(parent, dbc);
 		GridDataFactory.fillDefaults()
 				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(serverAdapterGroup);
 	}
@@ -266,7 +272,7 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		};
 	}
 
-	private Group createAdapterGroup(Composite parent) {
+	private Group createAdapterGroup(Composite parent, DataBindingContext dbc) {
 		Group serverAdapterGroup = new Group(parent, SWT.BORDER);
 		serverAdapterGroup.setText("JBoss Server adapter");
 		FillLayout fillLayout = new FillLayout();
@@ -279,7 +285,7 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 	}
 
 	protected void enableServerWidgets(boolean enabled) {
-		suitableRuntimes.setEnabled(enabled);
+		suitableRuntimesCombo.setEnabled(enabled);
 		runtimeLabel.setEnabled(enabled);
 		addRuntimeLink.setEnabled(enabled);
 		// domainLabel.setEnabled(enabled);
@@ -291,12 +297,11 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		c.setLayout(new FormLayout());
 		serverAdapterCheckbox = new Button(c, SWT.CHECK);
 		serverAdapterCheckbox.setText("Create a JBoss server adapter");
-		final Button serverAdapterCheckbox2 = serverAdapterCheckbox;
 		serverAdapterCheckbox.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
 				model.getParentModel().setProperty(AdapterWizardPageModel.CREATE_SERVER,
-						serverAdapterCheckbox2.getSelection());
-				enableServerWidgets(serverAdapterCheckbox2.getSelection());
+						serverAdapterCheckbox.getSelection());
+				enableServerWidgets(serverAdapterCheckbox.getSelection());
 			}
 
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -306,7 +311,7 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		runtimeLabel = new Label(c, SWT.NONE);
 		runtimeLabel.setText("Local Runtime: ");
 
-		suitableRuntimes = new Combo(c, SWT.READ_ONLY);
+		suitableRuntimesCombo = new Combo(c, SWT.READ_ONLY);
 		addRuntimeLink = new Link(c, SWT.NONE);
 		addRuntimeLink.setText("<a>" + Messages.addRuntime + "</a>");
 
@@ -331,7 +336,7 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		// appLabel = new Label(c, SWT.NONE);
 		modeLabel = new Label(c, SWT.NONE);
 
-		suitableRuntimes.addModifyListener(new ModifyListener() {
+		suitableRuntimesCombo.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				updateSelectedRuntimeDelegate();
 			}
@@ -347,20 +352,29 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		serverAdapterCheckbox.setLayoutData(UIUtil.createFormData2(0, 5, null, 0, 0, 5, null, 0));
 		runtimeLabel.setLayoutData(UIUtil.createFormData2(serverAdapterCheckbox, 5, null, 0, 0, 5, null, 0));
 		addRuntimeLink.setLayoutData(UIUtil.createFormData2(serverAdapterCheckbox, 5, null, 0, null, 0, 100, -5));
-		suitableRuntimes.setLayoutData(UIUtil.createFormData2(serverAdapterCheckbox, 5, null, 0, runtimeLabel, 5,
+		suitableRuntimesCombo.setLayoutData(UIUtil.createFormData2(serverAdapterCheckbox, 5, null, 0, runtimeLabel, 5,
 				addRuntimeLink, -5));
-		domainLabel.setLayoutData(UIUtil.createFormData2(suitableRuntimes, 5, null, 0, 0, 5, 100, 0));
+		domainLabel.setLayoutData(UIUtil.createFormData2(suitableRuntimesCombo, 5, null, 0, 0, 5, 100, 0));
 		// appLabel.setLayoutData(UIUtil.createFormData2(domainLabel, 5, null,
 		// 0, 0, 5, 100, 0));
 		modeLabel.setLayoutData(UIUtil.createFormData2(domainLabel, 5, null, 0, 0, 5, 100, 0));
-		serverAdapterCheckbox.setSelection(true);
 		model.getParentModel().setProperty(AdapterWizardPageModel.CREATE_SERVER,
-				serverAdapterCheckbox2.getSelection());
+				serverAdapterCheckbox.getSelection());
+
+		this.selectedRuntimeObservable =
+				WidgetProperties.singleSelectionIndex().observe(suitableRuntimesCombo);
+		this.suitableRuntimesObservable =
+				WidgetProperties.items().observe(suitableRuntimesCombo);
+		this.serverAdapterCheckboxObservable =
+				WidgetProperties.selection().observe(serverAdapterCheckbox);
+
+		dbc.addValidationStatusProvider(new SelectedRuntimeValidator());
 	}
 
 	private void updateSelectedRuntimeDelegate() {
-		if (suitableRuntimes.getSelectionIndex() != -1) {
-			runtimeDelegate = ServerCore.findRuntime(suitableRuntimes.getItem(suitableRuntimes.getSelectionIndex()));
+		if (suitableRuntimesCombo.getSelectionIndex() != -1) {
+			runtimeDelegate = ServerCore.findRuntime(suitableRuntimesCombo.getItem(suitableRuntimesCombo
+					.getSelectionIndex()));
 		} else {
 			runtimeDelegate = null;
 		}
@@ -407,8 +421,8 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		serverTypeToCreate = getServerTypeToCreate();
 		model.getParentModel().setProperty(AdapterWizardPageModel.SERVER_TYPE, serverTypeToCreate);
 		refreshValidRuntimes();
-		if (suitableRuntimes.getItemCount() > 0) {
-			suitableRuntimes.select(0);
+		if (suitableRuntimesCombo.getItemCount() > 0) {
+			suitableRuntimesCombo.select(0);
 			updateSelectedRuntimeDelegate();
 		}
 		IRuntimeType type = getValidRuntimeType();
@@ -439,9 +453,9 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		IRuntimeType type = getValidRuntimeType();
 		if (type != null) {
 			IRuntime[] runtimes = getRuntimesOfType(type.getId());
-			fillRuntimeCombo(suitableRuntimes, runtimes);
+			fillRuntimeCombo(suitableRuntimesCombo, runtimes);
 		} else {
-			suitableRuntimes.setItems(new String[0]);
+			suitableRuntimesCombo.setItems(new String[0]);
 		}
 	}
 
@@ -473,8 +487,8 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		refreshValidRuntimes();
 		if (returnValue != Window.CANCEL) {
 			IRuntime rt = (IRuntime) taskModel.getObject(TaskModel.TASK_RUNTIME);
-			if (rt != null && rt.getName() != null && suitableRuntimes.indexOf(rt.getName()) != -1) {
-				suitableRuntimes.select(suitableRuntimes.indexOf(rt.getName()));
+			if (rt != null && rt.getName() != null && suitableRuntimesCombo.indexOf(rt.getName()) != -1) {
+				suitableRuntimesCombo.select(suitableRuntimesCombo.indexOf(rt.getName()));
 			}
 		}
 		return returnValue;
@@ -493,11 +507,34 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		serverTypeToCreate = getServerTypeToCreate();
 		boolean canCreateServer = serverTypeToCreate != null;
 		serverAdapterCheckbox.setEnabled(canCreateServer);
-		serverAdapterCheckbox.setSelection(canCreateServer);
+		// serverAdapterCheckbox.setSelection(canCreateServer);
+		serverAdapterCheckboxObservable.setValue(true);
 		enableServerWidgets(canCreateServer);
 		refreshValidRuntimes();
 		model.getParentModel().setProperty(AdapterWizardPageModel.SERVER_TYPE, serverTypeToCreate);
 		model.getParentModel().setProperty(AdapterWizardPageModel.CREATE_SERVER, canCreateServer);
 	}
 
+	private class SelectedRuntimeValidator extends MultiValidator {
+
+		@Override
+		protected IStatus validate() {
+			/**
+			 * WARNING: it is important to evaluate the validation state on
+			 * behalf of observable values (not widgets!). The multi validator
+			 * is tracking what observables are read to know when he has to
+			 * recalculate it's state.
+			 */
+			if (Boolean.FALSE.equals(serverAdapterCheckboxObservable.getValue())) {
+				return ValidationStatus.ok();
+			}
+			if (new Integer(-1).equals(selectedRuntimeObservable.getValue())) {
+				if (suitableRuntimesObservable.size() == 0) {
+					return ValidationStatus.error("Please add a new valid runtime.");
+				}
+				return ValidationStatus.error("Please select a runtime");
+			}
+			return ValidationStatus.ok();
+		}
+	}
 }
