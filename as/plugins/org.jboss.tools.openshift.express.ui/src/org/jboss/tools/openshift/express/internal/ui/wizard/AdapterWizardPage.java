@@ -297,7 +297,7 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 
 	private void fillServerAdapterGroup(Group serverAdapterGroup) {
 		Composite c = new Composite(serverAdapterGroup, SWT.NONE);
-		GridLayoutFactory.fillDefaults().numColumns(3).margins(6, 6).spacing(12, 8).applyTo(c);
+		GridLayoutFactory.fillDefaults().numColumns(3).spacing(12, 8).applyTo(c);
 
 		serverAdapterCheckbox = new Button(c, SWT.CHECK);
 		serverAdapterCheckbox.setText("Create a JBoss server adapter");
@@ -325,8 +325,7 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		DataBindingContext dbc = getDatabindingContext();
 		ValueBindingBuilder
 				.bind(WidgetProperties.text().observe(domainValueLabel))
-				.withoutUpdate()
-				.to(BeanProperties.value(AdapterWizardPageModel.PROPERTY_APPLICATION_URL).observe(model))
+				.notUpdating(BeanProperties.value(AdapterWizardPageModel.PROPERTY_APPLICATION_URL).observe(model))
 				.using(dbc);
 		// appLabel = new Label(c, SWT.NONE);
 		Label modeLabel = new Label(c, SWT.NONE);
