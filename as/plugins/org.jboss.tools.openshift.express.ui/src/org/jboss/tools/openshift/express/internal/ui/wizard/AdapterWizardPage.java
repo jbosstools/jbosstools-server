@@ -344,8 +344,14 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		addRuntimeLink.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				IRuntimeType type = getValidRuntimeType();
-				if (type != null)
-					showRuntimeWizard(type);
+				if (type != null) {
+					int result = showRuntimeWizard(type);
+					if( result == Window.OK ) {
+						suitableRuntimesCombo.select(0);
+						selectedRuntimeObservable.setValue(0);
+						updateSelectedRuntimeDelegate();
+					}
+				}
 			}
 		});
 
@@ -411,6 +417,7 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		String[] names = new String[runtimes.length];
 		for (int i = 0; i < runtimes.length; i++) {
 			names[i] = runtimes[i].getName();
+			suitableRuntimesObservable.add(runtimes[i].getName());
 		}
 		combo.setItems(names);
 	}
@@ -423,6 +430,7 @@ public class AdapterWizardPage extends AbstractOpenShiftWizardPage implements IW
 		refreshValidRuntimes();
 		if (suitableRuntimesCombo.getItemCount() > 0) {
 			suitableRuntimesCombo.select(0);
+			selectedRuntimeObservable.setValue(0);
 			updateSelectedRuntimeDelegate();
 		}
 		IRuntimeType type = getValidRuntimeType();

@@ -459,13 +459,13 @@ public class EGitUtils {
 					IteratorService.createInitialIterator(repo));
 			indexDiff.diff(jgitMonitor, 0, 0, NLS.bind(
 					UIText.CommitActionHandler_repository, repo.getDirectory().getPath()));
-			System.out.println(indexDiff.getAdded().size());
-			System.out.println(indexDiff.getChanged().size());
-			System.out.println(indexDiff.getConflicting().size());
-			System.out.println(indexDiff.getMissing().size());
-			System.out.println(indexDiff.getModified().size());
-			System.out.println(indexDiff.getRemoved().size());
-			System.out.println(indexDiff.getUntracked().size());
+//			System.out.println(indexDiff.getAdded().size());
+//			System.out.println(indexDiff.getChanged().size());
+//			System.out.println(indexDiff.getConflicting().size());
+//			System.out.println(indexDiff.getMissing().size());
+//			System.out.println(indexDiff.getModified().size());
+//			System.out.println(indexDiff.getRemoved().size());
+//			System.out.println(indexDiff.getUntracked().size());
 			
 			return indexDiff.getModified().size();
 		} catch( IOException ioe ) {
