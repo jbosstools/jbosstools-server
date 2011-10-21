@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -42,8 +43,15 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
@@ -58,6 +66,7 @@ import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
+import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.DeploymentModuleOptionCompositeAssistant;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI;
@@ -284,6 +293,42 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 				combo.setLayoutData(UIUtil.createFormData2(0, 0, null, 0, l, 5, newHost, -5));
 				refreshConnections();
 				combo.addModifyListener(this);
+				
+				Link openRSEView = new Link(this, SWT.NONE);
+				openRSEView.setText("<a>Open Remote System Explorer View...</a>");
+				openRSEView.setLayoutData(UIUtil.createFormData2(combo, 5, null, 0, null, 0, 100, -5));
+				openRSEView.addSelectionListener(new SelectionListener() {
+					public void widgetSelected(SelectionEvent e) {
+						String viewId = "org.eclipse.rse.ui.view.systemView";
+						IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow() ;
+						if (window != null) {
+							IWorkbenchPage page = window.getActivePage();
+							if (page != null) {
+								IWorkbenchPart part = page.findView(viewId);
+								if (part == null) {
+									try {
+										part = page.showView(viewId);
+									} catch (PartInitException pie) {
+										// I like pie
+										IStatus status = new Status(IStatus.ERROR, RSEUIPlugin.PLUGIN_ID, pie.getMessage(), pie);
+										JBossServerUIPlugin.getDefault().getLog().log(status);
+									}
+								} else /* if( part != null ) */ {
+									final IViewPart view = (IViewPart) part.getAdapter(IViewPart.class);
+									if (view != null) {
+										PlatformUI.getWorkbench()
+									    .getActiveWorkbenchWindow()
+									    .getActivePage()
+									    .activate(view);
+										view.setFocus();
+									}
+								}
+							}
+						}
+					}
+					public void widgetDefaultSelected(SelectionEvent e) {
+					}
+				});
 			}
 			
 			protected void newHostClicked() {

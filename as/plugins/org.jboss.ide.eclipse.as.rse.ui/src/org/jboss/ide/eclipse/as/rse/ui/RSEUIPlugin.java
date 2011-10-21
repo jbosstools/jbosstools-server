@@ -9,7 +9,7 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 public class RSEUIPlugin implements BundleActivator {
-
+	public static final String PLUGIN_ID = "org.jboss.ide.eclipse.as.rse.ui";
 	private static BundleContext context;
 	private JBASConsoleWriter consoleWriter;
 	
