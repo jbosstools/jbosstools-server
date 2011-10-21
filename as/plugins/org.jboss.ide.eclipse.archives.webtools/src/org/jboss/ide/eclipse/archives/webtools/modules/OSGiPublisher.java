@@ -5,6 +5,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.pde.core.plugin.PluginRegistry;
 import org.eclipse.pde.internal.core.exports.FeatureExportInfo;
 import org.eclipse.pde.internal.core.exports.PluginExportOperation;
@@ -39,6 +40,9 @@ public class OSGiPublisher extends AltMethodZippedJSTPublisher {
 		IDeployableServer server2 = ServerConverter.getDeployableServer(server);
 		IPath destination = PublishUtil.getDeployPath(method, module, server2);
 		String remoteTempDeployRoot = getDeployRoot(module, ServerConverter.getDeployableServer(server));
+		if( new Path(remoteTempDeployRoot).toFile().exists())
+			new Path(remoteTempDeployRoot).toFile().mkdirs();
+		
 		IPath presumedSourcePath = PublishUtil.getDeployPath(module, remoteTempDeployRoot, server2);
 		String name = presumedSourcePath.lastSegment();
 		IPath realSourcePathFolder = presumedSourcePath.removeLastSegments(1).append("plugins"); //$NON-NLS-1$

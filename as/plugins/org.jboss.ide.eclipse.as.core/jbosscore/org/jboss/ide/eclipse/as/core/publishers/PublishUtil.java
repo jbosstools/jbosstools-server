@@ -263,6 +263,8 @@ public class PublishUtil {
 			suffix = ""; //$NON-NLS-1$
 		else if( "jst.jboss.sar".equals(type)) //$NON-NLS-1$
 			suffix = IWTPConstants.EXT_SAR;
+		if( suffix == null )
+			suffix = IWTPConstants.EXT_JAR;
 		return suffix;
 	}
 	
