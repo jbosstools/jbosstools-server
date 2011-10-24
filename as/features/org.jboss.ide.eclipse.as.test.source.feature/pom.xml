@@ -9,7 +9,5 @@
 	</parent>
 	<groupId>org.jboss.ide.eclipse.as.features</groupId>
 	<artifactId>org.jboss.ide.eclipse.as.test.source.feature</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
-
 	<packaging>eclipse-feature</packaging>
 </project>

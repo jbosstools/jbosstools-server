@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<feature id="org.jboss.ide.eclipse.as.test.source.feature" label="%featureName" version="1.0.0.qualifier" provider-name="%featureProvider">
+<feature id="org.jboss.ide.eclipse.as.test.source.feature" label="%featureName" version="2.3.0.qualifier" provider-name="%featureProvider">
 
 	<description>
       %description
@@ -17,10 +17,10 @@ for a full listing of individual contributors.
    </license>
 
 	<plugin id="org.jboss.ide.eclipse.as.archives.integration.test.source" download-size="0" install-size="0" version="0.0.0" unpack="false" />
-  	<plugin id="org.jboss.ide.eclipse.as.egit.test.source" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+  	<!-- JBIDE-10013 MOVE to new component, openshift <plugin id="org.jboss.ide.eclipse.as.egit.test.source" download-size="0" install-size="0" version="0.0.0" unpack="false"/> -->
 	<plugin id="org.jboss.ide.eclipse.as.management.as7.tests.source" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 	<plugin id="org.jboss.ide.eclipse.as.test.source" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 	<plugin id="org.jboss.ide.eclipse.as.ui.test.source" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 
-	<plugin id="org.jboss.tools.openshift.express.client.test.source" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
+	<!-- JBIDE-10013 MOVE to new component, openshift <plugin id="org.jboss.tools.openshift.express.client.test.source" download-size="0" install-size="0" version="0.0.0" unpack="false"/> -->
 </feature>
