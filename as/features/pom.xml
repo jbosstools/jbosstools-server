@@ -22,10 +22,6 @@
 		<module>org.jboss.ide.eclipse.as.test.feature</module>
 		<module>org.jboss.ide.eclipse.as.test.source.feature</module>
 
-		<module>org.jboss.ide.eclipse.as.server.egit.integration.feature</module>
-		<module>org.jboss.ide.eclipse.as.server.egit.integration.source.feature</module>
-		<module>org.jboss.tools.openshift.express.feature</module>
-		<module>org.jboss.tools.openshift.express.source.feature</module>
 	</modules>
 </project>
 	
