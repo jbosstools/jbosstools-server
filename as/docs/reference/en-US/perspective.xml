@@ -792,8 +792,16 @@
 				</mediaobject>
 			</figure>
 			<para>
-				Using the group of radio buttons in the <guilabel>Default Settings</guilabel> section a user can set where the application will be deployed to. By default it is deployed to the user's workspace folder, <filename>[workspaceDirecotry]\.metadata\.plugins</filename>. If you would like the application to be deployed to your JBoss server deploy folder select the <guilabel>Use the JBoss deploy folder</guilabel> option. The option to specify your custom deploy folder is also available.
+				Using the group of radio buttons in the <guilabel>Default Settings</guilabel> section a user can set where the application will be deployed to. By default it is deployed to the user's workspace folder, <filename>[workspaceDirecotry]\.metadata\.plugins</filename>. If you would like the application to be deployed to your JBoss server deploy folder select the <guilabel>Use the JBoss deploy folder</guilabel> option. The option to specify a custom deploy folder is also available.
 			</para>
+			<figure>
+				<title>Deployment tab - custom deploy folder</title>
+				<mediaobject>
+					<imageobject>
+						<imagedata fileref="images/perspective/perspective_7b.png"/>
+					</imageobject>
+				</mediaobject>
+			</figure>
 		</section>
 
 		<section>
