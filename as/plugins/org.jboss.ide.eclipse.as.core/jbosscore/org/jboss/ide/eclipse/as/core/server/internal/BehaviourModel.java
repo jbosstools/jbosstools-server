@@ -18,7 +18,7 @@ import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 
 public class BehaviourModel {
 	private static BehaviourModel model;
-	public static BehaviourModel getModel() {
+	public static synchronized BehaviourModel getModel() {
 		if( model == null ) 
 			model = new BehaviourModel();
 		return model;
