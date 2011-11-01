@@ -20,4 +20,6 @@ public class ServerActionMessages extends NLS {
 	public static String CHANGE_TIME_STAMP_DEFAULT;
 	public static String ChangeTimeStampActionDelegate_cannot_unregister;
 	public static String ChangeTimeStampActionDelegate_could_not_register_project;
+	public static String DeployActionMessageBoxTitle;
+	public static String DeployActionMessageBoxMsg;
 }

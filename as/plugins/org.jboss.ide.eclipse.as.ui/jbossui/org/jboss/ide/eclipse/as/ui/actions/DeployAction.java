@@ -22,8 +22,10 @@
 package org.jboss.ide.eclipse.as.ui.actions;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -48,13 +50,17 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.PublishServerJob;
 import org.eclipse.wst.server.ui.internal.ImageResource;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory;
@@ -135,6 +141,19 @@ public class DeployAction implements IObjectActionDelegate {
 		IStructuredSelection sel2 = (IStructuredSelection)selection;
 		Object[] objs = sel2.toArray();
 		IModule[] modules = new IModule[objs.length];
+		HashSet<IProject> alreadyDeployable = new HashSet<IProject>();
+		for( int i = 0; i < objs.length; i++ ) {
+			IProject p = ((IResource)objs[i]).getProject();
+			IModule[] mods = ServerUtil.getModules(p);
+			if( mods != null && mods.length > 0 && ModuleCoreNature.isFlexibleProject(p))
+				alreadyDeployable.add(p);
+		}
+		
+		if( alreadyDeployable.size() > 0 ) {
+			if( !showAreYouSureDialog(alreadyDeployable))
+				return;
+		}
+		
 		for( int i = 0; i < objs.length; i++ ) {
 			SingleDeployableFactory.makeDeployable(((IResource)objs[i]).getFullPath());
 			modules[i] = SingleDeployableFactory.findModule(((IResource)objs[i]).getFullPath());
@@ -143,6 +162,23 @@ public class DeployAction implements IObjectActionDelegate {
 		tryToPublish();
 	}
 
+	private boolean showAreYouSureDialog(HashSet<IProject> set) {
+		Iterator<IProject> i = set.iterator();
+		String projs = ""; //$NON-NLS-1$
+		while(i.hasNext())
+			projs += i.next().getName() + ", "; //$NON-NLS-1$
+		projs = projs.substring(0, projs.length() - 2);
+		
+		int style = SWT.APPLICATION_MODAL | SWT.OK | SWT.CANCEL;
+		MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), style);
+		messageBox.setText(ServerActionMessages.DeployActionMessageBoxTitle);
+		messageBox.setMessage(ServerActionMessages.DeployActionMessageBoxMsg);
+		if (messageBox.open() == SWT.OK) {
+			return true;
+		}
+		return false;
+	}
+	
 	protected void makeUndeployable() {
 		IStructuredSelection sel2 = (IStructuredSelection)selection;
 		Object[] objs = sel2.toArray();
