@@ -18,5 +18,6 @@ package org.jboss.ide.eclipse.as.core.server.v7.management;
  */
 public enum JBoss7DeploymentState {
 	STARTED ,
-	STOPPED;
+	STOPPED,
+	NOT_FOUND;
 }

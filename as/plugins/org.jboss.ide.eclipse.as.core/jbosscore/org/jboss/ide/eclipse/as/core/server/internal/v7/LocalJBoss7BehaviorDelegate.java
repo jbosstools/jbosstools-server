@@ -10,12 +10,10 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
-import java.text.MessageFormat;
-
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
@@ -58,7 +56,7 @@ public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
 		} catch (Exception e) {
 			return new Status(
 					IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
-					MessageFormat.format(Messages.JBoss7ServerBehavior_could_not_stop, server.getName()), e);
+					NLS.bind(Messages.JBoss7ServerBehavior_could_not_stop, server.getName()), e);
 		}
 	}
 

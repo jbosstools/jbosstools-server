@@ -9,11 +9,13 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
@@ -26,9 +28,15 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
+import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossLaunchAdapter.JBTCustomHttpLaunchable;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server;
+import org.jboss.ide.eclipse.as.core.server.v7.management.IJBoss7ManagerService;
+import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7DeploymentState;
+import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ManagerUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 
 public class JBTWebLaunchableClient extends ClientDelegate {
@@ -41,7 +49,7 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 		return (launchable instanceof JBTCustomHttpLaunchable);
 	}
 
-	protected boolean shouldSuspendScanner(IServer server) {
+	protected boolean isJMXServer(IServer server) {
 		JBossServer jbs = ServerConverter.getJBossServer(server);
 		return jbs != null && server.getServerState() == IServer.STATE_STARTED
 				&&  jbs.hasJMXProvider() && ExtensionManager.getDefault().getJMXRunner() != null;
@@ -75,10 +83,45 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 	}
 	
 	protected void wait(final IServer server, final IModule module) {
-		if( shouldSuspendScanner(server)) {
+		if( isJMXServer(server)) {
+			waitJMX(server, module);
+		} else if( ServerUtil.isJBoss7(server)) {
+			waitJBoss7(server, module);
+		}
+	}
+	
+	protected void waitJBoss7(final IServer server, final IModule module) {
+		try {
+			JBoss7Server jbossServer = ServerConverter.checkedGetJBossServer(server, JBoss7Server.class);
+			IJBoss7ManagerService service = JBoss7ManagerUtil.getService(server);
+			IPath deployPath = PublishUtil.getDeployPath(new IModule[]{module}, jbossServer);
+			long time = new Date().getTime();
+			long endTime = time + getMaxDelay();
+			while( new Date().getTime() < endTime ) {
+				JBoss7DeploymentState state = service.getDeploymentState(jbossServer.getHost(), jbossServer.getManagementPort(), 
+						deployPath.lastSegment());
+				boolean done = (state == JBoss7DeploymentState.STARTED);
+				if( done ) {
+					return;
+				}
+				try {
+					Thread.sleep(2000);
+				} catch(InterruptedException ie) {}
+			}
+		} catch (Exception e) {
+			IStatus s = new Status(
+					IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID,
+					NLS.bind("Could not acquire the management service for this JBoss installation", 
+							server.getName()), e);
+			JBossServerUIPlugin.log(s.getMessage(), e);
+		}
+
+	}
+	
+	protected void waitJMX(final IServer server, final IModule module) {
 			IServerJMXRunnable r = new IServerJMXRunnable() {
 				public void run(MBeanServerConnection connection) throws Exception {
-					waitForDeploymentStarted(server, module, connection, null);
+					jmxWaitForDeploymentStarted(server, module, connection, null);
 				}
 			};
 			try {
@@ -89,17 +132,16 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 			} finally {
 				ExtensionManager.getDefault().getJMXRunner().endTransaction(server, this);
 			}
-		}
 	}
 	
-	protected void waitForDeploymentStarted(final IServer server, final IModule module,
+	protected void jmxWaitForDeploymentStarted(final IServer server, final IModule module,
 			final MBeanServerConnection connection, IProgressMonitor monitor) throws Exception {
 		monitor = monitor == null ? new NullProgressMonitor() : monitor;
 		monitor.beginTask("Ensuring Deployments are Loaded", 10000); //$NON-NLS-1$
 		long time = new Date().getTime();
-		while( new Date().getTime() < (time + 20000)) {
+		long endTime = time + getMaxDelay();
+		while( new Date().getTime() < endTime ) {
 			boolean done = checkDeploymentStarted(server, module, connection, monitor);
-			System.out.println(done);
 			if( done ) {
 				monitor.done();
 				return;
@@ -108,6 +150,10 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 				Thread.sleep(1000);
 			} catch(InterruptedException ie) {}
 		}
+	}
+	
+	protected long getMaxDelay() {
+		return 20000;
 	}
 
 	protected boolean checkDeploymentStarted(final IServer server, final IModule module,

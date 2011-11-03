@@ -11,12 +11,15 @@
 package org.jboss.ide.eclipse.as.internal.management.as7;
 
 import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.ADDRESS;
+import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.CHILD_TYPE;
 import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.DEPLOYMENT;
 import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.ENABLED;
 import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.FAILURE_DESCRIPTION;
 import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.NAME;
 import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.OP;
+import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.OP_ADDR;
 import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.READ_ATTRIBUTE_OPERATION;
+import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.READ_CHILDREN_NAMES_OPERATION;
 import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.READ_RESOURCE_OPERATION;
 import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.RESULT;
 import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.SERVER_STATE;
@@ -25,6 +28,10 @@ import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionC
 import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.Future;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -127,11 +134,42 @@ public class AS7Manager {
 		}
 	}
 
+	/**
+	 * Get the deployment state
+	 * This API may cause additional management requests, but it prevents exceptions
+	 * from being thrown on the server. 
+	 * 
+	 * @param name
+	 * @return
+	 * @throws JBoss7ManangerException
+	 */
+	public JBoss7DeploymentState getDeploymentStateSafe(String name) throws JBoss7ManangerException {
+		if( !getDeploymentNames().contains(name))
+			return JBoss7DeploymentState.NOT_FOUND;
+		
+		return getDeploymentState(name);
+	}
+	
+	/**
+	 * Get the deployment state. 
+	 * This may cause exceptions to be thrown on the server side if the deployment has not yet 
+	 * been found or started to register. 
+	 * 
+	 *  
+	 * @param name
+	 * @return
+	 * @throws JBoss7ManangerException
+	 */
 	public JBoss7DeploymentState getDeploymentState(String name) throws JBoss7ManangerException {
 		ModelNode request = new ModelNode();
 		request.get(OP).set(READ_RESOURCE_OPERATION);
 		request.get(ADDRESS).add(DEPLOYMENT, name);
-		ModelNode result = execute(request);
+		ModelNode result = null;
+		try {
+			result = execute(request);
+		} catch( JBoss7ManangerException j7me ) {
+			return JBoss7DeploymentState.NOT_FOUND;
+		}
 
 		Boolean enabled = AS7ManagerUtil.getBooleanProperty(ENABLED, result);
 		if (enabled == null) {
@@ -225,4 +263,39 @@ public class AS7Manager {
 			throw new JBoss7ManangerException(e);
 		}
 	}
+	
+    public static ModelNode getEmptyOperation(String operationName, ModelNode address) {
+        ModelNode op = new ModelNode();
+        op.get(OP).set(operationName);
+        if (address != null) {
+            op.get(OP_ADDR).set(address);
+        }
+        else {
+            // Just establish the standard structure; caller can fill in address later
+            op.get(OP_ADDR);
+        }
+        return op;
+    }
+    
+    private Set<String> getDeploymentNames() throws CancellationException {
+        final ModelNode op = getEmptyOperation(READ_CHILDREN_NAMES_OPERATION, new ModelNode());
+        op.get(CHILD_TYPE).set(DEPLOYMENT);
+        ModelNode response;
+        try {
+            response = client.execute(op);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        final ModelNode result = response.get(RESULT);
+        final Set<String> deploymentNames = new HashSet<String>();
+        if (result.isDefined()) {
+            final List<ModelNode> deploymentNodes = result.asList();
+            for (ModelNode node : deploymentNodes) {
+                deploymentNames.add(node.asString());
+            }
+        }
+        return deploymentNames;
+    }
+
+
 }
