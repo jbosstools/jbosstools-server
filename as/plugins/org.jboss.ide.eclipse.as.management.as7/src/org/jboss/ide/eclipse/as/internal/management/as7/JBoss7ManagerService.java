@@ -49,7 +49,7 @@ public class JBoss7ManagerService implements IJBoss7ManagerService {
 
 	public JBoss7DeploymentState getDeploymentState(String host, int port, String deploymentName) throws Exception {
 		AS7Manager manager = new AS7Manager(host, port);
-		return manager.getDeploymentState(deploymentName);
+		return manager.getDeploymentStateSafe(deploymentName);
 	}
 	
 	@Deprecated
