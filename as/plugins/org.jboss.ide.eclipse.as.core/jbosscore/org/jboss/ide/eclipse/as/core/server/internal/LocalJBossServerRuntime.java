@@ -67,7 +67,7 @@ public class LocalJBossServerRuntime extends AbstractLocalJBossServerRuntime imp
 		String rtVersion = getRuntime().getRuntimeType().getVersion(); 
 		String prefix = Messages.jboss;
 		if( isEAP()) {
-			prefix = Messages.jboss + " EAP "; //$NON-NLS-1$
+			prefix = Messages.jboss + " EAP"; //$NON-NLS-1$
 			if( rtVersion.equals(IJBossToolingConstants.V5_0)) {
 				rtVersion = "5.x"; //$NON-NLS-1$
 			}
