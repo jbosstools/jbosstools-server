@@ -380,6 +380,19 @@
 	<!--		<para>
 				We hope this guide helped you to get started with the JBoss Tools server manager. For additional information you are welcome on <ulink url="http://www.jboss.com/index.html?module=bb&amp;op=viewforum&amp;f=201">JBoss forum</ulink>.
 			</para> -->
+				<important>
+					<para>
+						It is not recommended to run two servers on the same host, at the same time as you may experience a conflict in ports. If a server is already running on the same host a warning will appear indicating this and will ask if you wish to <guilabel>Set the server adapter to 'started', but do not launch</guilabel> or <guilabel>Launch a new instance anyway</guilabel>
+					</para>
+				<figure>
+						<title>Multiple server adaptors warning</title>
+						<mediaobject>
+							<imageobject>
+								<imagedata fileref="images/runtimes_servers/runtimes_servers_8.png"/>
+							</imageobject>
+						</mediaobject>
+					</figure>
+				</important>
 		</section>
 <!--		<section id="remote_system_deployment">
 			<title>Creating a new remote server</title>
@@ -388,6 +401,4 @@
 			</para>
 		</section> -->
 	</section>
-
-
 </chapter>
