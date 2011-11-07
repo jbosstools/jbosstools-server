@@ -4,12 +4,11 @@ import java.io.File;
 import java.text.MessageFormat;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Composite;
@@ -18,7 +17,6 @@ import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.TaskModel;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
-import org.jboss.ide.eclipse.as.ui.IPreferenceKeys;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
@@ -93,14 +91,11 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	}
 
 	private boolean standaloneScriptExists() {
-		String standaloneScriptPath = new StringBuilder(homeDir)
-				.append(File.separator)
-				.append("bin") //$NON-NLS-1$
-				.append(File.separator)
-				.append("standalone.sh") //$NON-NLS-1$
-				.toString();
-		return new File(standaloneScriptPath).exists();
+		String s = JBossServerType.AS7.getSystemJarPath();
+		IPath p = new Path(homeDir).append(s);
+		return p.toFile().exists();
 	}
+	
 	@Override
 	protected String getSystemJarPath() {
 		return JBossServerType.AS7.getSystemJarPath();
