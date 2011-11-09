@@ -108,14 +108,21 @@ public class JBossServerWizardFragment extends WizardFragment {
 	}
 
 
-	private void createRuntimeGroup(Composite main) {
-		
+	protected void createRuntimeGroup(Composite main) {
+		createRuntimeGroup2(main);
+		fillRuntimeGroupStandard();
+		fillRuntimeGroupConfig();
+	}
+	
+	protected void createRuntimeGroup2(Composite main) {
 		runtimeGroup = new Group(main, SWT.NONE);
 		runtimeGroup.setText(Messages.swf_RuntimeInformation);
 		FormData groupData = UIUtil.createFormData2(serverExplanationLabel, 5, null, 0, 0,5,100,-5);
 		runtimeGroup.setLayoutData(groupData);
-
 		runtimeGroup.setLayout(new GridLayout(2, false));
+	}
+	
+	protected void fillRuntimeGroupStandard() {
 		GridData d = new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
 		
 		// explanation 2
@@ -141,7 +148,9 @@ public class JBossServerWizardFragment extends WizardFragment {
 		jreValLabel = new Label(runtimeGroup, SWT.NONE);
 		d = new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
 		jreValLabel.setLayoutData(d);
-		
+	}
+	
+	protected void fillRuntimeGroupConfig() {	
 		Label configLocationLabel = new Label(runtimeGroup, SWT.NONE);
 		configLocationLabel.setText(Messages.swf_ConfigurationLocation);
 		configLocValLabel = new Label(runtimeGroup, SWT.NONE);
@@ -149,7 +158,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 		configLabel = new Label(runtimeGroup, SWT.NONE);
 		configLabel.setText(Messages.wf_ConfigLabel);
 		configValLabel = new Label(runtimeGroup, SWT.NONE);
-		d = new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
+		GridData d = new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
 		configValLabel.setLayoutData(d);
 	}
 	
@@ -201,13 +210,15 @@ public class JBossServerWizardFragment extends WizardFragment {
 		if(homeValLabel !=null && !homeValLabel.isDisposed()) {
 			IJBossServerRuntime srt = getRuntime();
 			homeValLabel.setText(srt.getRuntime().getLocation().toOSString());
-			configValLabel.setText(srt.getJBossConfiguration());
 			execEnvironmentValLabel.setText(srt.getExecutionEnvironment().getDescription());
 			IVMInstall vm = srt.getHardVM();
 			String jreVal = vm == null ? NLS.bind(Messages.rwf_DefaultJREForExecEnv, getRuntime().getExecutionEnvironment().getId()) : 
 				vm.getInstallLocation().getAbsolutePath() + " (" + vm.getName() + ")";//$NON-NLS-1$ //$NON-NLS-2$
 			jreValLabel.setText(jreVal);
-			configLocValLabel.setText(srt.getConfigLocation());
+			if( configValLabel != null && !configValLabel.isDisposed())
+				configValLabel.setText(srt.getJBossConfiguration());
+			if( configLocValLabel != null && !configLocValLabel.isDisposed()) 
+				configLocValLabel.setText(srt.getConfigLocation());
 			runtimeGroup.layout();
 			updateErrorMessage();
 		}
