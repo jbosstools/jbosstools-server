@@ -907,6 +907,16 @@
                version="5.0">
          </facet>
       </default-facets>
+      <default-facets>
+         <runtime-component
+               id="org.jboss.ide.eclipse.eap.runtime.component"
+               version="6.0">
+         </runtime-component>
+         <facet
+               id="jst.java"
+               version="6.0">
+         </facet>
+      </default-facets>
    </extension>
 
    <extension
