@@ -98,8 +98,11 @@ public class DelegatingServerBehavior extends DeployableServerBehavior {
 	}
 	
 	protected void publishFinish(final IProgressMonitor monitor) throws CoreException {
-		getDelegate().publishFinish(monitor);
-		super.publishFinish(monitor);
+		try {
+			getDelegate().publishFinish(monitor);
+		} finally {
+			super.publishFinish(monitor);
+		}
 	}
 
 	@Deprecated

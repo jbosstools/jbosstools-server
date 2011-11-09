@@ -87,8 +87,11 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 	@Override
 	protected void publishFinish(IProgressMonitor monitor) throws CoreException {
 		// Handle the dodeploy
-		createDoDeployMarkers(monitor);
-		super.publishFinish(new SubProgressMonitor(monitor, 1));
+		try {
+			createDoDeployMarkers(monitor);
+		} finally {
+			super.publishFinish(new SubProgressMonitor(monitor, 1));
+		}
 	}
 
 	private void createDoDeployMarkers(IProgressMonitor monitor) throws CoreException {
