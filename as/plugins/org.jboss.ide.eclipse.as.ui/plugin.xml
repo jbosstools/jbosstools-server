@@ -42,7 +42,7 @@
             id="org.jboss.ide.eclipse.as.ui.jboss7RuntimeWizardFragment"
             typeIds="%RuntimeTypesJBoss7"/>
       <fragment
-            class="org.jboss.ide.eclipse.as.ui.wizards.JBossServerWizardFragment"
+            class="org.jboss.ide.eclipse.as.ui.wizards.JBoss7ServerWizardFragment"
             id="org.jboss.ide.eclipse.as.ui.jboss7ServerWizardFragment"
             typeIds="%ServerTypesJBoss7"/>
       <fragment
