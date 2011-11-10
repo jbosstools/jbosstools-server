@@ -270,7 +270,7 @@
 	      <moduleType types="jst.utility" versions="1.0"/>
           <moduleType types="jboss.package" versions="1.0"/>
           <moduleType types="jboss.singlefile" versions="1.0"/>
-          <moduleType types="jst.jboss.esb" versions="4.2,4.3,4.4,4.5,4.6,4.7"/>
+          <moduleType types="jst.jboss.esb" versions="4.2,4.3,4.4,4.5,4.6,4.7,4.8,4.9,4.10"/>
           <moduleType types="jst.jboss.sar" versions="1.0"/>
           <moduleType types="jbt.bpel.module" versions="1.1, 2.0"/>
           <moduleType types="bpel.module" versions="1.1, 2.0"/>
@@ -291,7 +291,7 @@
 	      <moduleType types="jst.utility" versions="1.0"/>
           <moduleType types="jboss.package" versions="1.0"/>
           <moduleType types="jboss.singlefile" versions="1.0"/>
-          <moduleType types="jst.jboss.esb" versions="4.2,4.3,4.4,4.5,4.6,4.7,4.9"/>
+          <moduleType types="jst.jboss.esb" versions="4.2,4.3,4.4,4.5,4.6,4.7,4.8,4.9,4.10"/>
           <moduleType types="jst.jboss.sar" versions="1.0"/>
           <moduleType types="jbt.bpel.module" versions="1.1, 2.0"/>
           <moduleType types="bpel.module" versions="1.1, 2.0"/>
@@ -312,7 +312,7 @@
 	      <moduleType types="jst.utility" versions="1.0"/>
           <moduleType types="jboss.package" versions="1.0"/>
           <moduleType types="jboss.singlefile" versions="1.0"/>
-          <moduleType types="jst.jboss.esb" versions="4.2,4.3,4.4,4.5,4.6,4.7,4.9"/>
+          <moduleType types="jst.jboss.esb" versions="4.2,4.3,4.4,4.5,4.6,4.7,4.9,4.10"/>
           <moduleType types="jst.jboss.sar" versions="1.0"/>
           <moduleType types="jbt.bpel.module" versions="1.1, 2.0"/>
           <moduleType types="bpel.module" versions="1.1, 2.0"/>
@@ -379,7 +379,7 @@
 	      <moduleType types="jst.utility" versions="1.0"/>
           <moduleType types="jboss.package" versions="1.0"/>
           <moduleType types="jboss.singlefile" versions="1.0"/>
-          <moduleType types="jst.jboss.esb" versions="4.2,4.3,4.4,4.5,4.6,4.7,4.9"/>
+          <moduleType types="jst.jboss.esb" versions="4.2,4.3,4.4,4.5,4.6,4.7,4.9,4.10"/>
           <moduleType types="jst.jboss.sar" versions="1.0"/>
           <moduleType types="jbt.bpel.module" versions="1.1, 2.0"/>
           <moduleType types="bpel.module" versions="1.1, 2.0"/>
@@ -406,7 +406,6 @@
           <moduleType types="jbt.bpel.module" versions="1.1, 2.0"/>
           <moduleType types="bpel.module" versions="1.1, 2.0"/>
           <moduleType types="jboss.osgi" versions="1.0"/>
-          
       </runtimeType>
 
 
@@ -426,11 +425,12 @@
 	      <moduleType types="jst.utility" versions="1.0"/>
           <moduleType types="jboss.package" versions="1.0"/>
           <moduleType types="jboss.singlefile" versions="1.0"/>
-          <moduleType types="jst.jboss.esb" versions="4.2,4.3,4.4,4.5,4.6,4.7,4.9"/>
+          <moduleType types="jst.jboss.esb" versions="4.2,4.3,4.4,4.5,4.6,4.7,4.9,4.10"/>
           <moduleType types="jst.jboss.sar" versions="1.0"/>
           <moduleType types="jbt.bpel.module" versions="1.1, 2.0"/>
           <moduleType types="bpel.module" versions="1.1, 2.0"/>
           <moduleType types="jbt.egit" versions="1.0"/>
+          <moduleType types="jboss.osgi" versions="1.0"/>
       </runtimeType>
    </extension>
 
