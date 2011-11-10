@@ -31,7 +31,6 @@ import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.Future;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -144,9 +143,9 @@ public class AS7Manager {
 	 * @throws JBoss7ManangerException
 	 */
 	public JBoss7DeploymentState getDeploymentStateSafe(String name) throws JBoss7ManangerException {
-		if( !getDeploymentNames().contains(name))
+		if( hasDeployment(name)) {
 			return JBoss7DeploymentState.NOT_FOUND;
-		
+		}
 		return getDeploymentState(name);
 	}
 	
@@ -182,6 +181,11 @@ public class AS7Manager {
 		}
 	}
 
+	public void addDeploymentDirectory(String path) {
+		
+	}
+
+	
 	/**
 	 * Shuts the server down.
 	 * 
@@ -277,19 +281,18 @@ public class AS7Manager {
         return op;
     }
     
-    private Set<String> getDeploymentNames() throws CancellationException {
+    public boolean hasDeployment(String name) throws JBoss7ManangerException {
+    	return getDeploymentNames().contains(name);
+    }
+    
+    private Set<String> getDeploymentNames() throws JBoss7ManangerException {
         final ModelNode op = getEmptyOperation(READ_CHILDREN_NAMES_OPERATION, new ModelNode());
         op.get(CHILD_TYPE).set(DEPLOYMENT);
-        ModelNode response;
-        try {
-            response = client.execute(op);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        final ModelNode result = response.get(RESULT);
-        final Set<String> deploymentNames = new HashSet<String>();
+        ModelNode response = execute(op);
+        ModelNode result = response.get(RESULT);
+        Set<String> deploymentNames = new HashSet<String>();
         if (result.isDefined()) {
-            final List<ModelNode> deploymentNodes = result.asList();
+        	final List<ModelNode> deploymentNodes = result.asList();
             for (ModelNode node : deploymentNodes) {
                 deploymentNames.add(node.asString());
             }

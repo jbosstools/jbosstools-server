@@ -43,10 +43,10 @@ public class AS7ManagerIntegrationTest {
 
 	@Before
 	public void setUp() throws IOException {
-		assertTrue("There is no server at " + AS7ManagerTestUtils.HOST +
+		assertTrue("There is no server at " + AS7ManagerTestUtils.LOCALHOST +
 				" that listens on port " + AS7Manager.MGMT_PORT,
-				AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.HOST, AS7Manager.MGMT_PORT));
-		this.manager = new AS7Manager(AS7ManagerTestUtils.HOST, AS7Manager.MGMT_PORT);
+				AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.LOCALHOST, AS7Manager.MGMT_PORT));
+		this.manager = new AS7Manager(AS7ManagerTestUtils.LOCALHOST, AS7Manager.MGMT_PORT);
 	}
 
 	@After
@@ -62,7 +62,7 @@ public class AS7ManagerIntegrationTest {
 			AS7ManagerTestUtils.waitUntilFinished(manager.deploy(warFile));
 
 			String response = AS7ManagerTestUtils.waitForRespose(
-					"minimalistic", AS7ManagerTestUtils.HOST, AS7ManagerTestUtils.WEB_PORT);
+					"minimalistic", AS7ManagerTestUtils.LOCALHOST, AS7ManagerTestUtils.WEB_PORT);
 			assertTrue(response != null
 					&& response.indexOf("minimalistic") >= 0);
 		} finally {
@@ -78,7 +78,7 @@ public class AS7ManagerIntegrationTest {
 			AS7ManagerTestUtils.waitUntilFinished(manager.deploy(warFile));
 
 			String response = AS7ManagerTestUtils.waitForRespose(
-					"minimalistic", AS7ManagerTestUtils.HOST, AS7ManagerTestUtils.WEB_PORT);
+					"minimalistic", AS7ManagerTestUtils.LOCALHOST, AS7ManagerTestUtils.WEB_PORT);
 			assertTrue(response != null
 					&& response.indexOf("minimalistic") >= 0);
 
@@ -115,7 +115,7 @@ public class AS7ManagerIntegrationTest {
 			AS7ManagerTestUtils.waitUntilFinished(manager.deploy(name, warFile));
 			AS7ManagerTestUtils.waitUntilFinished(manager.replace(name, warFile2));
 			String response = AS7ManagerTestUtils.waitForRespose(
-					"minimalistic", AS7ManagerTestUtils.HOST, AS7ManagerTestUtils.WEB_PORT);
+					"minimalistic", AS7ManagerTestUtils.LOCALHOST, AS7ManagerTestUtils.WEB_PORT);
 			assertTrue(response != null
 					&& response.indexOf("GWT") >= 0);
 		} finally {
@@ -162,6 +162,22 @@ public class AS7ManagerIntegrationTest {
 		}
 	}
 
+	@Ignore
+	@Test
+	public void canAddDeploymentDirectory() throws URISyntaxException, IOException, JBoss7ManangerException {
+		String deploymentName = getRandomDeploymentName();
+		File warFile = AS7ManagerTestUtils.getWarFile(AS7ManagerTestUtils.MINIMALISTIC_WAR);
+		try {
+			assertFalse(manager.hasDeployment(deploymentName));
+			File deploymentDir = new File(System.getProperty("java.io.tmpdir"), "as7dir");
+			manager.addDeploymentDirectory(deploymentDir.getAbsolutePath());
+			
+			AS7ManagerTestUtils.waitForResponseCode(200, deploymentName, AS7ManagerTestUtils.LOCALHOST, AS7ManagerTestUtils.WEB_PORT);
+		} finally {
+			AS7ManagerTestUtils.quietlyRemove(deploymentName, manager);
+		}
+	}
+
 	@Test
 	public void canGetServerState() throws JBoss7ManangerException {
 		assertEquals(JBoss7ServerState.RUNNING, manager.getServerState());
@@ -171,8 +187,10 @@ public class AS7ManagerIntegrationTest {
 	public void canStopServer() throws JBoss7ManangerException, UnknownHostException, IOException {
 		manager.stopServer();
 		assertFalse(
-				AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.HOST, AS7Manager.MGMT_PORT));
+				AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.LOCALHOST, AS7Manager.MGMT_PORT));
 	}
 
-
+	private String getRandomDeploymentName() {
+		return String.valueOf(System.currentTimeMillis());
+	}
 }

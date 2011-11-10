@@ -38,7 +38,7 @@ public class AS7ManagerTestUtils {
 	public static final String GWT_HELLOWORLD_WAR = "gwt-helloworld.war";
 	public static final String MINIMALISTIC_WAR = "minimalistic.war";
 
-	public static final String HOST = "localhost";
+	public static final String LOCALHOST = "localhost";
 	public static final int WEB_PORT = 8080;
 
 	private static final String WAR_FOLDER = "/wars/";
@@ -68,7 +68,7 @@ public class AS7ManagerTestUtils {
 
 	public static void quietlyUndeploy(String name, AS7Manager manager) {
 		try {
-			// DetypedDeployer.undeploy(name, AS7ManagerTestUtils.HOST,
+			// DetypedDeployer.undeploy(name, AS7ManagerTestUtils.LOCALHOST,
 			// AS7ManagerTestUtils.MGMT_PORT);
 			waitUntilFinished(manager.undeploy(name));
 		} catch (Exception e) {
@@ -78,7 +78,7 @@ public class AS7ManagerTestUtils {
 
 	public static void quietlyRemove(String name, AS7Manager manager) {
 		try {
-			// DetypedDeployer.remove(name, AS7ManagerTestUtils.HOST,
+			// DetypedDeployer.remove(name, AS7ManagerTestUtils.LOCALHOST,
 			// AS7ManagerTestUtils.MGMT_PORT);
 			waitUntilFinished(manager.remove(name));
 		} catch (Exception e) {
