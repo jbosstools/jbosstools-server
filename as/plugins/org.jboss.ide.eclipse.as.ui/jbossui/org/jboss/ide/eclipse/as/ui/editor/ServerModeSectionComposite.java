@@ -95,7 +95,8 @@ public class ServerModeSectionComposite extends Composite {
 		String current = null;
 		if( ds != null ) {
 			Behaviour b = BehaviourModel.getModel().getBehaviour(callback.getServer().getOriginal().getServerType().getId());
-			String behaviourType = DeploymentPreferenceLoader.getCurrentDeploymentMethodTypeId(callback.getServer().getOriginal());
+			String behaviourType = DeploymentPreferenceLoader.getCurrentDeploymentMethodTypeId(
+					callback.getServer().getOriginal(), getDefaultServerMode());
 			current = b.getImpl(behaviourType).getName();
 		} else {
 			String host = callback.getServer().getHost();
@@ -103,10 +104,10 @@ public class ServerModeSectionComposite extends Composite {
 			BehaviourImpl impl = null;
 			String serverTypeId = callback.getServer().getServerType().getId();
 			if( SocketUtil.isLocalhost(host)) {
-				impl = BehaviourModel.getModel().getBehaviour(serverTypeId).getImpl(LocalPublishMethod.LOCAL_PUBLISH_METHOD);
+				impl = BehaviourModel.getModel().getBehaviour(serverTypeId).getImpl(getDefaultLocalServerMode());
 			} else {
 				// socket is not localhost, hard code this for now
-				impl = BehaviourModel.getModel().getBehaviour(serverTypeId).getImpl("rse");
+				impl = BehaviourModel.getModel().getBehaviour(serverTypeId).getImpl(getDefaultRemoteServerMode());
 			}
 			current = impl.getName();
 			callback.execute(new ChangeServerPropertyCommand(
@@ -123,6 +124,16 @@ public class ServerModeSectionComposite extends Composite {
 				deployTypeChanged(true);
 			}});
 	    deployTypeChanged(false);
+	}
+	
+	protected String getDefaultServerMode() {
+		return LocalPublishMethod.LOCAL_PUBLISH_METHOD;
+	}
+	protected String getDefaultLocalServerMode() {
+		return LocalPublishMethod.LOCAL_PUBLISH_METHOD;
+	}
+	protected String getDefaultRemoteServerMode() {
+		return "rse"; //$NON-NLS-1$
 	}
 	
 	protected boolean showExecuteShellCheckbox() {
