@@ -10,10 +10,13 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.wst.server.core.IServer;
@@ -29,7 +32,39 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 	public LocalJBoss7StartConfigurator(IServer server) throws CoreException {
 		super(server);
 	}
+	
+	private JBoss7LaunchConfigProperties properties = null;
+	
+	@Override
+	protected JBoss7LaunchConfigProperties getProperties() {
+		if( properties == null )
+			properties = createProperties();
+		return properties;
+	}
+	@Override
+	protected JBoss7LaunchConfigProperties createProperties() {
+		return new JBoss7LaunchConfigProperties();
+	}
 
+
+	
+	@Override
+	protected void doOverrides(ILaunchConfigurationWorkingCopy launchConfig, JBossServer jbossServer, IJBossServerRuntime jbossRuntime) throws CoreException {
+		getProperties().setHost(getHost(jbossServer, jbossRuntime), launchConfig);
+		getProperties().setServerHome(getServerHome(jbossRuntime), jbossRuntime, launchConfig);
+		getProperties().setJreContainer(getJreContainerPath(jbossRuntime), launchConfig);
+		getProperties().setEndorsedDir(getEndorsedDir(jbossRuntime), launchConfig);
+		getProperties().setJavaLibPath(getJavaLibraryPath(jbossRuntime), launchConfig);
+		getProperties().setWorkingDirectory(getWorkingDirectory(jbossServer, jbossRuntime), launchConfig);
+		getProperties().setClasspathProvider(getClasspathProvider(), launchConfig);
+		getProperties().setClasspath(getClasspath(jbossServer, jbossRuntime, getProperties().getClasspath(launchConfig)), launchConfig);
+		getProperties().setUseDefaultClassPath(isUseDefaultClasspath(), launchConfig);
+		getProperties().setServerId(getServerId(jbossServer), launchConfig);
+		getProperties().setModulesFolder(getModulesFolder(jbossServer, jbossRuntime), launchConfig);
+		getProperties().setBootLogFile(getBootLogPath(jbossRuntime), launchConfig);
+		getProperties().setLoggingConfigFile(getLoggingConfigPath(jbossRuntime), launchConfig);
+	}
+	
 	@Override
 	protected String getMainType() {
 		return IJBossRuntimeConstants.START7_MAIN_TYPE;
@@ -42,6 +77,10 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 				.toString();
 	}
 	
+	protected String getModulesFolder(JBossServer server, IJBossServerRuntime runtime)  throws CoreException {
+		return runtime.getRuntime().getLocation().append(IJBossRuntimeConstants.MODULES).toString();
+	}
+
 	@Override
 	protected List<String> getClasspath(JBossServer server, IJBossServerRuntime runtime, List<String> currentClasspath) throws CoreException {
 		IVMInstall vmInstall = runtime.getVM();
@@ -65,8 +104,7 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 
 	@Override
 	protected String getServerHome(IJBossServerRuntime runtime) {
-		// not needed
-		return null;
+		return runtime.getRuntime().getLocation().toString();
 	}
 
 	@Override
@@ -85,4 +123,31 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 	protected String getDefaultVMArguments(IJBossServerRuntime runtime) {
 		return runtime.getDefaultRunVMArgs();
 	}
+
+	@Override
+	protected String getJavaLibraryPath(IJBossServerRuntime runtime) {
+		// Intentionally empty
+		return null;
+	}
+	
+	protected String getBootLogPath(IJBossServerRuntime runtime) {
+		IPath serverHome = runtime.getRuntime().getLocation();
+		IJBossRuntimeResourceConstants c = new IJBossRuntimeResourceConstants() {};
+		IPath bootLog = serverHome.append(c.AS7_STANDALONE).append(c.FOLDER_LOG).append(c.AS7_BOOT_LOG);
+		return bootLog.toString();
+	}
+	
+	protected String getLoggingConfigPath(IJBossServerRuntime runtime) {
+		IJBossRuntimeResourceConstants c = new IJBossRuntimeResourceConstants() {};
+		IPath serverHome = runtime.getRuntime().getLocation();
+		IPath logConfigPath = serverHome.append(c.AS7_STANDALONE).append(c.CONFIGURATION).append(c.LOGGING_PROPERTIES);
+		String logConfigString = null;
+		try {
+			logConfigString = logConfigPath.toFile().toURL().toString();
+		} catch (MalformedURLException murle) {
+		}
+		return logConfigString;
+	}
+
+
 }

@@ -44,62 +44,139 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 	public boolean shouldRestartModule() {
 		return shouldRestartModule;
 	}
-	public IStatus[] copyFile(IModuleFile mf, IPath path,
-			IProgressMonitor monitor) throws CoreException {
-		File file = PublishUtil.getFile(mf);
+	public IStatus[] copyFile(final IModuleFile mf, final IPath path,
+			final IProgressMonitor monitor) throws CoreException {
+		final File file = PublishUtil.getFile(mf);
 		shouldRestartModule |= PublishCopyUtil.checkRestartModule(file);
-		IPath remotePath = root.append(path);
-		try {
-			method.getFileService().upload(file, remotePath.removeLastSegments(1).toString(), 
-					remotePath.lastSegment(), true, null, null, monitor);
-		} catch( SystemMessageException sme ) {
-			IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL,
-					"failed to copy to " + remotePath.toString(), sme);
-			throw new CoreException(s);
+		final IPath remotePath = root.append(path);
+		
+		final CoreException[] coreEx = new CoreException[1];
+		final RuntimeException[] runtEx = new RuntimeException[1];
+		coreEx[0] = null;
+		runtEx[0] = null;
+		
+		Thread t = new Thread("RSERemotePublishHandler") {
+			public void run() {
+				try {
+					method.getFileService().upload(file, remotePath.removeLastSegments(1).toString(), 
+							remotePath.lastSegment(), true, null, null, monitor);
+				} catch( CoreException ce ) { 
+					coreEx[0] = ce;
+				} catch( SystemMessageException sme ) {
+					IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL,
+							"failed to copy to " + remotePath.toString(), sme);
+					coreEx[0] = new CoreException(s);
+				} catch( RuntimeException re) {
+					runtEx[0] = re;
+				} 
+			}
+		};
+		t.start();
+		while(!monitor.isCanceled() && t.isAlive()) {
+			try {
+				Thread.sleep(500);
+			} catch(InterruptedException ie) {}
 		}
+		
+		if( monitor.isCanceled()) {
+			throw new CoreException(Status.CANCEL_STATUS);
+		}
+		if( runtEx[0] != null ) throw runtEx[0];
+		if( coreEx[0] != null ) throw coreEx[0];
 		return new IStatus[]{};
 	}
 
-	public IStatus[] deleteResource(IPath path, IProgressMonitor monitor)
+	public IStatus[] deleteResource(final IPath path, final IProgressMonitor monitor)
 			throws CoreException {
-		IPath remotePath = root.append(path);
-		try {
-			method.getFileService().delete(remotePath.removeLastSegments(1).toString(), remotePath.lastSegment(), monitor);
-		} catch(SystemElementNotFoundException senfe ) {
-			// ignore, file already does not exist remotely
-		} catch( SystemMessageException sme ) {
-			IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL,
-					"failed to delete " + remotePath.toString(), sme);
-			throw new CoreException(s);
+		final IPath remotePath = root.append(path);
+		final CoreException[] coreEx = new CoreException[1];
+		final RuntimeException[] runtEx = new RuntimeException[1];
+		coreEx[0] = null;
+		runtEx[0] = null;
+		Thread t = new Thread("RSERemotePublishHandler") {
+			public void run() {
+				try {
+					method.getFileService().delete(remotePath.removeLastSegments(1).toString(), remotePath.lastSegment(), monitor);
+				} catch(SystemElementNotFoundException senfe ) {
+					// ignore, file already does not exist remotely
+				} catch( SystemMessageException sme ) {
+					IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL,
+							"failed to delete " + remotePath.toString(), sme);
+					coreEx[0] = new CoreException(s);
+				} catch(CoreException ce) {
+					coreEx[0] = ce;
+				} catch(RuntimeException re) {
+					runtEx[0] = re;
+				}
+			}
+		};
+		t.start();
+		while(!monitor.isCanceled() && t.isAlive()) {
+			try {
+				Thread.sleep(500);
+			} catch(InterruptedException ie) {}
 		}
+		
+		if( monitor.isCanceled())
+			throw new CoreException(Status.CANCEL_STATUS);
+		if( runtEx[0] != null ) throw runtEx[0];
+		if( coreEx[0] != null ) throw coreEx[0];
 		return new IStatus[]{};
 	}
 
-	public IStatus[] makeDirectoryIfRequired(IPath dir,
-			IProgressMonitor monitor) throws CoreException {
+	public IStatus[] makeDirectoryIfRequired(final IPath dir,
+			final IProgressMonitor monitor) throws CoreException {
 		monitor.beginTask("Make directory " + dir.toString(), 100); //$NON-NLS-1$
 		if( dir.segmentCount() > 0 )
 			makeDirectoryIfRequired(dir.removeLastSegments(1), ProgressMonitorUtil.submon(monitor, 70));
-		IPath toMake = root.append(dir);
+		final IPath toMake = root.append(dir);
 		if( createdFolders.contains(toMake)) 
 			return new IStatus[]{Status.OK_STATUS};
-		try {
-			if( toMake.segmentCount() > 0 ) {
-				method.getFileService().createFolder(toMake.removeLastSegments(1).toString(), 
-						toMake.lastSegment(), ProgressMonitorUtil.submon(monitor, 30));
+
+		final CoreException[] coreEx = new CoreException[1];
+		final RuntimeException[] runtEx = new RuntimeException[1];
+		final IStatus[] failStat = new IStatus[1];
+		coreEx[0] = null;
+		runtEx[0] = null;
+		failStat[0] = null;
+		Thread t = new Thread("RSERemotePublishHandler") {
+			public void run() {
+				try {
+					if( toMake.segmentCount() > 0 ) {
+						method.getFileService().createFolder(toMake.removeLastSegments(1).toString(), 
+								toMake.lastSegment(), ProgressMonitorUtil.submon(monitor, 30));
+					}
+				} catch( SystemMessageException sme ) {
+					IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL,
+							"failed to create folder " + toMake.toString(), sme);
+					failStat[0] = s;
+				} catch( CoreException ce ) {
+					coreEx[0] = ce;
+				} catch( RuntimeException re) {
+					runtEx[0] = re;
+				}
+				createdFolders.add(toMake);
 			}
-		} catch( SystemMessageException sme ) {
-			IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL,
-					"failed to create folder " + toMake.toString(), sme);
-			return new IStatus[]{s};
+		};
+		t.start();
+		while(!monitor.isCanceled() && t.isAlive()) {
+			try {
+				Thread.sleep(500);
+			} catch(InterruptedException ie) {}
 		}
-		createdFolders.add(toMake);
+		
+		if( monitor.isCanceled())
+			throw new CoreException(Status.CANCEL_STATUS);
+		if( runtEx[0] != null ) throw runtEx[0];
+		if( coreEx[0] != null ) throw coreEx[0];
+		if( failStat[0] != null ) return failStat;
 		monitor.done();
 		return new IStatus[]{};
 	}
 
-	public IStatus[] touchResource(IPath path) {
-		IPath file = root.append(path);
+	// TODO DEPRECATE! This needs an IProgressMonitor api to avoid blockage! JBIDE-9384
+	public IStatus[] touchResource(final IPath path) {
+		final IPath file = root.append(path);
 		try {
 			IRemoteFile rf = method.getFileServiceSubSystem().getRemoteFileObject(file.toString(), new NullProgressMonitor());
 			if( !rf.exists()) {
@@ -114,17 +191,43 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 		return new IStatus[]{};
 	}
 
-	public boolean isFile(IPath path, IProgressMonitor monitor)
+	public boolean isFile(final IPath path, final IProgressMonitor monitor)
 			throws CoreException {
-		IPath file = root.append(path);
-		try {
-			IRemoteFile rf = method.getFileServiceSubSystem().getRemoteFileObject(file.toString(), new NullProgressMonitor());
-			return rf.exists() && rf.isFile();
-		} catch(SystemMessageException sme) {
-			IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL,
-					"failed to touch remote resource " + file.toString(), sme);
-			throw new CoreException(s);
+		final IPath file = root.append(path);
+		final CoreException[] coreEx = new CoreException[1];
+		final RuntimeException[] runtEx = new RuntimeException[1];
+		final Boolean[] boolRet = new Boolean[1];
+		coreEx[0] = null;
+		runtEx[0] = null;
+		boolRet[0] = null;
+		Thread t = new Thread("RSERemotePublishHandler") {
+			public void run() {
+				try {
+					IRemoteFile rf = method.getFileServiceSubSystem().getRemoteFileObject(file.toString(), new NullProgressMonitor());
+					boolRet[0] = rf.exists() && rf.isFile();
+				} catch(SystemMessageException sme) {
+					IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL,
+							"failed to touch remote resource " + file.toString(), sme);
+					coreEx[0] = new CoreException(s);
+				} catch( RuntimeException re) {
+					runtEx[0] = re;
+				}
+			}
+		};
+		t.start();
+		while(!monitor.isCanceled() && t.isAlive()) {
+			try {
+				Thread.sleep(500);
+			} catch(InterruptedException ie) {}
 		}
+		
+		if( monitor.isCanceled()) {
+			throw new CoreException(Status.CANCEL_STATUS);
+		}
+		if( runtEx[0] != null ) throw runtEx[0];
+		if( coreEx[0] != null ) throw coreEx[0];
+		monitor.done();
+		return boolRet[0];
 	}
 }
 

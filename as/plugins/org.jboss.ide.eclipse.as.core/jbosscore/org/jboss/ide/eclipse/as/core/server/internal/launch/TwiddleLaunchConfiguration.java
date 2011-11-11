@@ -63,10 +63,10 @@ public class TwiddleLaunchConfiguration {
 		String launchName = TwiddleLaunchConfiguration.class.getName();
 		launchName = launchManager.generateUniqueLaunchConfigurationNameFrom(launchName); 
 		ILaunchConfigurationWorkingCopy wc = launchConfigType.newInstance(null, launchName);
-		JBossLaunchConfigProperties.setProgramArguments(args, wc);
-		JBossLaunchConfigProperties.setMainType(IJBossRuntimeConstants.TWIDDLE_MAIN_TYPE, wc);
-		JBossLaunchConfigProperties.setWorkingDirectory(serverHome + Path.SEPARATOR + IJBossRuntimeResourceConstants.BIN, wc);
-		JBossLaunchConfigProperties.setServerId(server.getId(), wc);
+		new JBossLaunchConfigProperties().setProgramArguments(args, wc);
+		new JBossLaunchConfigProperties().setMainType(IJBossRuntimeConstants.TWIDDLE_MAIN_TYPE, wc);
+		new JBossLaunchConfigProperties().setWorkingDirectory(serverHome + Path.SEPARATOR + IJBossRuntimeResourceConstants.BIN, wc);
+		new JBossLaunchConfigProperties().setServerId(server.getId(), wc);
 
 		ArrayList<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
 		LaunchConfigUtils.addCPEntry(TWIDDLE_JAR_LOC, serverHome, classpath);
@@ -76,8 +76,8 @@ public class TwiddleLaunchConfiguration {
 		LaunchConfigUtils.addDirectory(serverHome, classpath, IJBossRuntimeResourceConstants.CLIENT);
 		LaunchConfigUtils.addJREEntry(jbrt.getVM(), classpath);
 		List<String> runtimeClassPaths = LaunchConfigUtils.toStrings(classpath);
-		JBossLaunchConfigProperties.setClasspath(runtimeClassPaths, wc);
-		JBossLaunchConfigProperties.setUseDefaultClassPath(false, wc);
+		new JBossLaunchConfigProperties().setClasspath(runtimeClassPaths, wc);
+		new JBossLaunchConfigProperties().setUseDefaultClassPath(false, wc);
 
 		return wc;
 	}

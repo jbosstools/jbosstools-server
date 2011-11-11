@@ -13,6 +13,7 @@ package org.jboss.ide.eclipse.as.core.util;
 public interface IJBossRuntimeConstants {
 	// Launch configuration constants / Command Line Args
 	public static final String SPACE = " ";//$NON-NLS-1$
+	public static final String DASH = "-"; //$NON-NLS-1$
 	public static final String SYSPROP = "-D";//$NON-NLS-1$
 	public static final String EQ = "="; //$NON-NLS-1$
 	public static final String QUOTE = "\""; //$NON-NLS-1$
@@ -44,6 +45,16 @@ public interface IJBossRuntimeConstants {
 	public static final String SUN_SERVER_GC_ARG = "sun.rmi.dgc.server.gcInterval"; //$NON-NLS-1$
 	public static final String JAVA_PREFER_IP4_ARG = "java.net.preferIPv4Stack"; //$NON-NLS-1$
 	public static final String PROGRAM_NAME_ARG = "program.name"; //$NON-NLS-1$
+	
+	public static final String JB7_MP_ARG = "mp"; //$NON-NLS-1$
+	public static final String MODULES = "modules"; //$NON-NLS-1$
+	public static final String JB7_LOGMODULE_ARG = "logmodule"; //$NON-NLS-1$
+	public static final String JB7_LOGMODULE_DEFAULT = "org.jboss.logmanager"; //$NON-NLS-1$
+	public static final String JB7_JAXPMODULE = "jaxpmodule"; //$NON-NLS-1$
+	public static final String JB7_JAXP_PROVIDER = "javax.xml.jaxp-provider"; //$NON-NLS-1$
+	public static final String JB7_STANDALONE_ARG = "org.jboss.as.standalone"; //$NON-NLS-1$
+	public static final String JB7_BOOT_LOG_ARG = "org.jboss.boot.log.file"; //$NON-NLS-1$
+	public static final String JB7_LOGGING_CONFIG_FILE = "logging.configuration"; //$NON-NLS-1$
 	
 	/* JBoss classes and methods for reflection */
 	public static final String TWIDDLE_MAIN_TYPE = "org.jboss.console.twiddle.Twiddle"; //$NON-NLS-1$

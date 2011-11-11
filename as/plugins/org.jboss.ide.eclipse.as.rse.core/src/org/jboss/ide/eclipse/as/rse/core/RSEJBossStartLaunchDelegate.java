@@ -162,7 +162,7 @@ public class RSEJBossStartLaunchDelegate extends AbstractRSELaunchDelegate {
 	}
 
 	private String getDefaultLaunchCommand(ILaunchConfiguration config) throws CoreException {
-		String serverId = JBossLaunchConfigProperties.getServerId(config);
+		String serverId = new JBossLaunchConfigProperties().getServerId(config);
 		JBossServer jbossServer = ServerConverter.checkedFindJBossServer(serverId);
 		String rseHome = jbossServer.getServer().getAttribute(RSEUtils.RSE_SERVER_HOME_DIR, "");
 		// initialize startup command to something reasonable

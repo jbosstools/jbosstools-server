@@ -10,11 +10,15 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.core.server.internal.launch.configuration;
 
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.BIN;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.NATIVE;
+
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.IVMInstall;
@@ -119,5 +123,14 @@ public class LocalJBossStartLaunchConfigurator extends AbstractStartLaunchConfig
 	@Override
 	protected String getDefaultVMArguments(IJBossServerRuntime runtime) {
 		return runtime.getDefaultRunVMArgs();
+	}
+
+	@Override
+	protected String getJavaLibraryPath(IJBossServerRuntime runtime) {
+		IPath serverHome = runtime.getRuntime().getLocation();
+		IPath p = serverHome.append(BIN).append(NATIVE);
+		if( p.toFile().exists() ) 
+			return p.toString();
+		return null;
 	}
 }

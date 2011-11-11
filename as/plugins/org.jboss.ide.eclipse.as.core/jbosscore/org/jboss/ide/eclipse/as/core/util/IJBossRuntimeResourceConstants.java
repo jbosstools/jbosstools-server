@@ -33,7 +33,9 @@ public interface IJBossRuntimeResourceConstants {
 	public static final String NATIVE = "native"; //$NON-NLS-1$
 	public static final String AS7_STANDALONE = "standalone";//$NON-NLS-1$
 	public static final String AS7_DEPLOYMENTS = "deployments";//$NON-NLS-1$
+	public static final String CONFIGURATION = "configuration"; //$NON-NLS-1$
 	public static final String AS7_MODULES = "modules";//$NON-NLS-1$
+	public static final String AS7_BOOT_LOG = "boot.log"; //$NON-NLS-1$
 	public static final String JAVAX = "javax";//$NON-NLS-1$
 	
 	public static final String[] JBOSS_TEMPORARY_FOLDERS = new String[] { WORK, DATA, FOLDER_TMP, FOLDER_LOG};

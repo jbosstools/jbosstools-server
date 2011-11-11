@@ -35,15 +35,21 @@ public class LocalStopLaunchConfigurator extends AbstractLaunchConfigurator {
 	}
 
 	@Override
+	protected void doOverrides(ILaunchConfigurationWorkingCopy launchConfig,
+			JBossServer jbossServer, IJBossServerRuntime jbossRuntime)
+			throws CoreException {
+		// Intentionally left blank
+	}
+
+	@Override
 	protected void doConfigure(ILaunchConfigurationWorkingCopy launchConfig, JBossServer jbossServer,
 			IJBossServerRuntime jbossRuntime) throws CoreException {
-
-		JBossLaunchConfigProperties.setProgramArguments(getDefaultProgramArguments(jbossServer, jbossRuntime), launchConfig);
-		JBossLaunchConfigProperties.setMainType(getMainType(), launchConfig);
-		JBossLaunchConfigProperties.setWorkingDirectory(getWorkingDirectory(jbossServer, jbossRuntime), launchConfig);
-		JBossLaunchConfigProperties.setClasspath(getClasspath(jbossServer, jbossRuntime, JBossLaunchConfigProperties.getClasspath(launchConfig)), launchConfig);
-		JBossLaunchConfigProperties.setUseDefaultClassPath(isUseDefaultClasspath(), launchConfig);
-		JBossLaunchConfigProperties.setServerId(getServerId(jbossServer), launchConfig);
+		new JBossLaunchConfigProperties().setProgramArguments(getDefaultProgramArguments(jbossServer, jbossRuntime), launchConfig);
+		new JBossLaunchConfigProperties().setMainType(getMainType(), launchConfig);
+		new JBossLaunchConfigProperties().setWorkingDirectory(getWorkingDirectory(jbossServer, jbossRuntime), launchConfig);
+		new JBossLaunchConfigProperties().setClasspath(getClasspath(jbossServer, jbossRuntime, new JBossLaunchConfigProperties().getClasspath(launchConfig)), launchConfig);
+		new JBossLaunchConfigProperties().setUseDefaultClassPath(isUseDefaultClasspath(), launchConfig);
+		new JBossLaunchConfigProperties().setServerId(getServerId(jbossServer), launchConfig);
 	}
 
 	@Override
@@ -70,4 +76,5 @@ public class LocalStopLaunchConfigurator extends AbstractLaunchConfigurator {
 		LaunchConfigUtils.addJREEntry(runtime.getVM(), classpath);
 		return LaunchConfigUtils.toStrings(classpath);
 	}
+
 }

@@ -30,71 +30,71 @@ public class JBossLaunchConfigProperties {
 
 	private static final String SERVER_ID = "server-id"; //$NON-NLS-1$
 
-	public static void setClasspath(List<String> entries, ILaunchConfigurationWorkingCopy launchConfig) {
+	public void setClasspath(List<String> entries, ILaunchConfigurationWorkingCopy launchConfig) {
 		if (isSet(entries)) {
 			launchConfig.setAttribute(
 					IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, entries);
 		}
 	}
 
-	public static boolean isClasspathSet(ILaunchConfiguration launchConfig) throws CoreException {
+	public boolean isClasspathSet(ILaunchConfiguration launchConfig) throws CoreException {
 		return launchConfig.hasAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH);
 	}
 
-	public static void setUseDefaultClassPath(boolean useDefaultClassPath, ILaunchConfigurationWorkingCopy launchConfig) {
+	public void setUseDefaultClassPath(boolean useDefaultClassPath, ILaunchConfigurationWorkingCopy launchConfig) {
 		launchConfig.setAttribute(
 				IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, useDefaultClassPath);
 	}
 
-	public static boolean isUseDefaultClasspath(ILaunchConfiguration launchConfig) throws CoreException {
+	public boolean isUseDefaultClasspath(ILaunchConfiguration launchConfig) throws CoreException {
 		return isUseDefaultClasspath(launchConfig, true);
 	}
 
-	public static boolean isUseDefaultClasspath(ILaunchConfiguration launchConfig, boolean defaultValue) throws CoreException {
+	public boolean isUseDefaultClasspath(ILaunchConfiguration launchConfig, boolean defaultValue) throws CoreException {
 		return launchConfig.getAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, defaultValue);
 	}
 
-	public static boolean isUseDefaultClasspathSet(ILaunchConfiguration launchConfig) throws CoreException {
+	public boolean isUseDefaultClasspathSet(ILaunchConfiguration launchConfig) throws CoreException {
 		return launchConfig.hasAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH);
 	}
 
-	public static void setMainType(String mainType, ILaunchConfigurationWorkingCopy launchConfig) {
+	public void setMainType(String mainType, ILaunchConfigurationWorkingCopy launchConfig) {
 		if (isSet(mainType)) {
 			launchConfig.setAttribute(
 					IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, mainType);
 		}
 	}
 
-	public static boolean isMainTypeSet(ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
+	public boolean isMainTypeSet(ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
 		return launchConfig.hasAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME);
 	}
 
-	public static void setWorkingDirectory(String directory, ILaunchConfigurationWorkingCopy launchConfig) {
+	public void setWorkingDirectory(String directory, ILaunchConfigurationWorkingCopy launchConfig) {
 		if (isSet(directory)) {
 			launchConfig.setAttribute(
 					IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, directory);
 		}
 	}
 
-	public static boolean isWorkingDirectorySet(ILaunchConfiguration launchConfig) throws CoreException {
+	public boolean isWorkingDirectorySet(ILaunchConfiguration launchConfig) throws CoreException {
 		return launchConfig.hasAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY);
 	}
 
-	public static void setServerId(String serverId, ILaunchConfigurationWorkingCopy launchConfig) {
+	public void setServerId(String serverId, ILaunchConfigurationWorkingCopy launchConfig) {
 		if (isSet(serverId)) {
 			launchConfig.setAttribute(SERVER_ID, serverId);
 		}
 	}
 
-	public static String getServerId(ILaunchConfiguration launchConfig) throws CoreException {
+	public String getServerId(ILaunchConfiguration launchConfig) throws CoreException {
 		return launchConfig.getAttribute(SERVER_ID, (String) null);
 	}
 
-	public static boolean isServerIdSet(ILaunchConfiguration launchConfig) throws CoreException {
+	public boolean isServerIdSet(ILaunchConfiguration launchConfig) throws CoreException {
 		return launchConfig.hasAttribute(SERVER_ID);
 	}
 
-	public static void setHost(String host, ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
+	public void setHost(String host, ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
 		if (isSet(host)) {
 			String currentHost = getHost(launchConfig);
 			if (currentHost == null
@@ -109,40 +109,40 @@ public class JBossLaunchConfigProperties {
 		}
 	}
 
-	public static boolean isHostSet(ILaunchConfiguration launchConfig) throws CoreException {
+	public boolean isHostSet(ILaunchConfiguration launchConfig) throws CoreException {
 		String value = ArgsUtil.getValue(getProgramArguments(launchConfig),
 				IJBossRuntimeConstants.STARTUP_ARG_HOST_SHORT,
 				IJBossRuntimeConstants.STARTUP_ARG_HOST_LONG);
 		return value != null;
 	}
 
-	public static void setProgramArguments(String programArguments, ILaunchConfigurationWorkingCopy launchConfig)
+	public void setProgramArguments(String programArguments, ILaunchConfigurationWorkingCopy launchConfig)
 			throws CoreException {
 		launchConfig.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, programArguments);
 	}
 
-	public static String getProgramArguments(ILaunchConfiguration launchConfig) throws CoreException {
+	public String getProgramArguments(ILaunchConfiguration launchConfig) throws CoreException {
 		return launchConfig.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, ""); //$NON-NLS-1$;
 	}
 
-	public static boolean areProgramArgumentsSet(ILaunchConfiguration launchConfig) throws CoreException {
+	public boolean areProgramArgumentsSet(ILaunchConfiguration launchConfig) throws CoreException {
 		return launchConfig.hasAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS);
 	}
 
-	public static boolean isConfigSet(ILaunchConfiguration launchConfig) throws CoreException {
+	public boolean isConfigSet(ILaunchConfiguration launchConfig) throws CoreException {
 		String value = ArgsUtil.getValue(getProgramArguments(launchConfig),
 				IJBossRuntimeConstants.STARTUP_ARG_CONFIG_SHORT,
 				IJBossRuntimeConstants.STARTUP_ARG_CONFIG_LONG);
 		return value != null;
 	}
 
-	public static String getHost(ILaunchConfiguration launchConfig) throws CoreException {
+	public String getHost(ILaunchConfiguration launchConfig) throws CoreException {
 		return ArgsUtil.getValue(getProgramArguments(launchConfig),
 				IJBossRuntimeConstants.STARTUP_ARG_HOST_SHORT,
 				IJBossRuntimeConstants.STARTUP_ARG_HOST_LONG);
 	}
 
-	public static void setConfig(String config, ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
+	public void setConfig(String config, ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
 		if (isSet(config)) {
 			String programArguments = getProgramArguments(launchConfig);
 			programArguments = ArgsUtil.setArg(programArguments,
@@ -152,17 +152,17 @@ public class JBossLaunchConfigProperties {
 		}
 	}
 
-	public static void setJreContainer(String vmContainerPath, ILaunchConfigurationWorkingCopy launchConfig) {
+	public void setJreContainer(String vmContainerPath, ILaunchConfigurationWorkingCopy launchConfig) {
 		if (isSet(vmContainerPath)) {
 			launchConfig.setAttribute(IJavaLaunchConfigurationConstants.ATTR_JRE_CONTAINER_PATH, vmContainerPath);
 		}
 	}
 
-	public static boolean isJreContainerSet(ILaunchConfiguration launchConfig) throws CoreException {
+	public boolean isJreContainerSet(ILaunchConfiguration launchConfig) throws CoreException {
 		return launchConfig.hasAttribute(IJavaLaunchConfigurationConstants.ATTR_JRE_CONTAINER_PATH);
 	}
 
-	public static void setServerHome(String serverHome, IJBossServerRuntime runtime,
+	public void setServerHome(String serverHome, IJBossServerRuntime runtime,
 			ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
 		if (isSet(serverHome)) {
 			String programArguments = getProgramArguments(launchConfig);
@@ -174,24 +174,24 @@ public class JBossLaunchConfigProperties {
 		}
 	}
 
-	public static boolean isServerHomeSet(ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
+	public boolean isServerHomeSet(ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
 		String value = ArgsUtil.getValue(getProgramArguments(launchConfig),
 				null,
 				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JBOSS_SERVER_HOME_URL);
 		return value != null;
 	}
 
-	public static void setClasspathProvider(String classpathProvider, ILaunchConfigurationWorkingCopy launchConfig) {
+	public void setClasspathProvider(String classpathProvider, ILaunchConfigurationWorkingCopy launchConfig) {
 		if (isSet(classpathProvider)) {
 			launchConfig.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER, classpathProvider);
 		}
 	}
 
-	public static boolean isClasspathProviderSet(ILaunchConfiguration launchConfig) throws CoreException {
+	public boolean isClasspathProviderSet(ILaunchConfiguration launchConfig) throws CoreException {
 		return launchConfig.hasAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER);
 	}
 
-	public static void setEndorsedDir(String endorsedDir, ILaunchConfigurationWorkingCopy launchConfig)
+	public void setEndorsedDir(String endorsedDir, ILaunchConfigurationWorkingCopy launchConfig)
 			throws CoreException {
 		if (isSet(endorsedDir)) {
 			String vmArguments = getVMArguments(launchConfig);
@@ -200,54 +200,66 @@ public class JBossLaunchConfigProperties {
 			setVmArguments(vmArguments, launchConfig);
 		}
 	}
+	
+	public void setJavaLibPath(String libPath, ILaunchConfigurationWorkingCopy launchConfig)
+			throws CoreException {
+		if (isSet(libPath)) {
+			String vmArguments = getVMArguments(launchConfig);
+			vmArguments = ArgsUtil.setArg(vmArguments,
+					null, IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JAVA_LIB_PATH, 
+					IJBossRuntimeConstants.QUOTE + libPath + IJBossRuntimeConstants.QUOTE);
+			setVmArguments(vmArguments, launchConfig);
+		}
+	}
 
-	public static boolean isEndorsedDirSet(ILaunchConfiguration launchConfig) throws CoreException {
+
+	public boolean isEndorsedDirSet(ILaunchConfiguration launchConfig) throws CoreException {
 		String value = ArgsUtil.getValue(getVMArguments(launchConfig),
 				null,
 				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.ENDORSED_DIRS);
 		return value != null;
 	}
 
-	public static void setVmArguments(String vmArguments, ILaunchConfigurationWorkingCopy launchConfig) {
+	public void setVmArguments(String vmArguments, ILaunchConfigurationWorkingCopy launchConfig) {
 		if (isSet(vmArguments)) {
 			launchConfig.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, vmArguments);
 		}
 	}
 
-	public static String getVMArguments(ILaunchConfiguration launchConfig) throws CoreException {
+	public String getVMArguments(ILaunchConfiguration launchConfig) throws CoreException {
 		return launchConfig.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, ""); //$NON-NLS-1$
 	}
 
-	public static boolean areVMArgumentsSet(ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
+	public boolean areVMArgumentsSet(ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
 		return launchConfig.hasAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS);
 	}
 
-	public static void setEnvironmentVariables(Map<String, String> environmentVariables,
+	public void setEnvironmentVariables(Map<String, String> environmentVariables,
 			ILaunchConfigurationWorkingCopy launchConfig) {
 		if (isSet(environmentVariables)) {
 			launchConfig.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, environmentVariables);
 		}
 	}
 
-	public static boolean areEnvironmentVariablesSet(ILaunchConfiguration launchConfig) throws CoreException {
+	public boolean areEnvironmentVariablesSet(ILaunchConfiguration launchConfig) throws CoreException {
 		return launchConfig.hasAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<String> getClasspath(ILaunchConfiguration launchConfig) throws CoreException {
+	public List<String> getClasspath(ILaunchConfiguration launchConfig) throws CoreException {
 		return (List<String>) launchConfig.getAttribute(
 				IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, new ArrayList<String>());
 	}
 
-	private static boolean isSet(String value) {
+	protected boolean isSet(String value) {
 		return value != null && value.length() > 0;
 	}
 
-	private static boolean isSet(List<String> list) {
+	protected boolean isSet(List<String> list) {
 		return list != null;
 	}
 
-	private static boolean isSet(Map<String, String> map) {
+	protected boolean isSet(Map<String, String> map) {
 		return map != null;
 	}
 

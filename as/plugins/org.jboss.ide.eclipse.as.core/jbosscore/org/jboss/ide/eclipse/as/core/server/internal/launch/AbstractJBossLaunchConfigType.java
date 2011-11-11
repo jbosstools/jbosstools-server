@@ -187,7 +187,7 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 	
 	@Deprecated
 	public IVMInstall getVMInstall(ILaunchConfiguration configuration) throws CoreException {
-		String serverId = JBossLaunchConfigProperties.getServerId(configuration);
+		String serverId = new JBossLaunchConfigProperties().getServerId(configuration);
 		JBossServer jbs = ServerConverter.findJBossServer(serverId);
 		IJBossServerRuntime runtime = RuntimeUtils.checkedGetJBossServerRuntime(jbs.getServer());
 		return runtime.getVM();

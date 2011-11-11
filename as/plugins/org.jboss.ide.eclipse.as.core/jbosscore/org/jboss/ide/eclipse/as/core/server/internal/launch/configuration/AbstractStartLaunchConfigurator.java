@@ -32,26 +32,53 @@ public abstract class AbstractStartLaunchConfigurator extends AbstractLaunchConf
 		super(server);
 	}
 
+	private JBossLaunchConfigProperties properties = null;
+	protected JBossLaunchConfigProperties getProperties() {
+		if( properties == null )
+			properties = createProperties();
+		return properties;
+	}
+	
+	protected JBossLaunchConfigProperties createProperties() {
+		return new JBossLaunchConfigProperties();
+	}
+	
 	@Override
 	protected void doConfigure(ILaunchConfigurationWorkingCopy launchConfig, JBossServer jbossServer, IJBossServerRuntime jbossRuntime) throws CoreException {
-		JBossLaunchConfigProperties.setProgramArguments(getDefaultProgramArguments(jbossServer, jbossRuntime), launchConfig);
-		JBossLaunchConfigProperties.setHost(getHost(jbossServer, jbossRuntime), launchConfig);
-		JBossLaunchConfigProperties.setConfig(getServerConfig(jbossRuntime), launchConfig);
-		JBossLaunchConfigProperties.setServerHome(getServerHome(jbossRuntime), jbossRuntime, launchConfig);
-		JBossLaunchConfigProperties.setVmArguments(getDefaultVMArguments(jbossRuntime), launchConfig);
-		JBossLaunchConfigProperties.setJreContainer(getJreContainerPath(jbossRuntime), launchConfig);
-		JBossLaunchConfigProperties.setEndorsedDir(getEndorsedDir(jbossRuntime), launchConfig);
-		JBossLaunchConfigProperties.setMainType(getMainType(), launchConfig);
-		JBossLaunchConfigProperties.setWorkingDirectory(getWorkingDirectory(jbossServer, jbossRuntime), launchConfig);
-		JBossLaunchConfigProperties.setEnvironmentVariables(getEnvironmentVariables(jbossRuntime), launchConfig);
-		JBossLaunchConfigProperties.setClasspathProvider(getClasspathProvider(), launchConfig);
-		JBossLaunchConfigProperties.setClasspath(getClasspath(jbossServer, jbossRuntime, JBossLaunchConfigProperties.getClasspath(launchConfig)), launchConfig);
-		JBossLaunchConfigProperties.setUseDefaultClassPath(isUseDefaultClasspath(), launchConfig);
-		JBossLaunchConfigProperties.setServerId(getServerId(jbossServer), launchConfig);
+		getProperties().setProgramArguments(getDefaultProgramArguments(jbossServer, jbossRuntime), launchConfig);
+		getProperties().setHost(getHost(jbossServer, jbossRuntime), launchConfig);
+		getProperties().setConfig(getServerConfig(jbossRuntime), launchConfig);
+		getProperties().setServerHome(getServerHome(jbossRuntime), jbossRuntime, launchConfig);
+		getProperties().setVmArguments(getDefaultVMArguments(jbossRuntime), launchConfig);
+		getProperties().setJreContainer(getJreContainerPath(jbossRuntime), launchConfig);
+		getProperties().setEndorsedDir(getEndorsedDir(jbossRuntime), launchConfig);
+		getProperties().setMainType(getMainType(), launchConfig);
+		getProperties().setWorkingDirectory(getWorkingDirectory(jbossServer, jbossRuntime), launchConfig);
+		getProperties().setEnvironmentVariables(getEnvironmentVariables(jbossRuntime), launchConfig);
+		getProperties().setClasspathProvider(getClasspathProvider(), launchConfig);
+		getProperties().setClasspath(getClasspath(jbossServer, jbossRuntime, getProperties().getClasspath(launchConfig)), launchConfig);
+		getProperties().setUseDefaultClassPath(isUseDefaultClasspath(), launchConfig);
+		getProperties().setServerId(getServerId(jbossServer), launchConfig);
 	}
 
+	@Override
+	protected void doOverrides(ILaunchConfigurationWorkingCopy launchConfig, JBossServer jbossServer, IJBossServerRuntime jbossRuntime) throws CoreException {
+		getProperties().setHost(getHost(jbossServer, jbossRuntime), launchConfig);
+		getProperties().setConfig(getServerConfig(jbossRuntime), launchConfig);
+		getProperties().setServerHome(getServerHome(jbossRuntime), jbossRuntime, launchConfig);
+		getProperties().setJreContainer(getJreContainerPath(jbossRuntime), launchConfig);
+		getProperties().setEndorsedDir(getEndorsedDir(jbossRuntime), launchConfig);
+		getProperties().setJavaLibPath(getJavaLibraryPath(jbossRuntime), launchConfig);
+		getProperties().setWorkingDirectory(getWorkingDirectory(jbossServer, jbossRuntime), launchConfig);
+		getProperties().setClasspathProvider(getClasspathProvider(), launchConfig);
+		getProperties().setClasspath(getClasspath(jbossServer, jbossRuntime, getProperties().getClasspath(launchConfig)), launchConfig);
+		getProperties().setUseDefaultClassPath(isUseDefaultClasspath(), launchConfig);
+		getProperties().setServerId(getServerId(jbossServer), launchConfig);
+	}	
 
 	protected abstract String getEndorsedDir(IJBossServerRuntime runtime);
+
+	protected abstract String getJavaLibraryPath(IJBossServerRuntime runtime);
 
 	protected abstract String getServerConfig(IJBossServerRuntime runtime);
 

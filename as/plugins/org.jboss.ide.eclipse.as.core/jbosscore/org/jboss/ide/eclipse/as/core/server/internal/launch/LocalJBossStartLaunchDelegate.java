@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.core.server.internal.launch;
 
 import java.util.ArrayList;
 
+import org.apache.tools.ant.property.GetProperty;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -78,7 +79,7 @@ public class LocalJBossStartLaunchDelegate extends AbstractJBossStartLaunchConfi
 	public static class JBossServerDefaultClasspathProvider extends StandardClasspathProvider {
 		public IRuntimeClasspathEntry[] computeUnresolvedClasspath(ILaunchConfiguration configuration)
 				throws CoreException {
-			if (JBossLaunchConfigProperties.isUseDefaultClasspath(configuration)) {
+			if (new JBossLaunchConfigProperties().isUseDefaultClasspath(configuration)) {
 				return defaultEntries(configuration);
 			}
 			return super.computeUnresolvedClasspath(configuration);
@@ -86,7 +87,7 @@ public class LocalJBossStartLaunchDelegate extends AbstractJBossStartLaunchConfi
 
 		protected IRuntimeClasspathEntry[] defaultEntries(ILaunchConfiguration config) {
 			try {
-				String server = JBossLaunchConfigProperties.getServerId(config);
+				String server = new JBossLaunchConfigProperties().getServerId(config);
 				IServer s = ServerCore.findServer(server);
 				AbstractLocalJBossServerRuntime ibjsrt = (AbstractLocalJBossServerRuntime)
 						s.getRuntime().loadAdapter(AbstractLocalJBossServerRuntime.class, new NullProgressMonitor());

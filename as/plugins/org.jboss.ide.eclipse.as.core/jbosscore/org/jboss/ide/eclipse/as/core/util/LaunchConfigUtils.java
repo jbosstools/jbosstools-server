@@ -89,7 +89,7 @@ public class LaunchConfigUtils {
 	
 	public static String classpathUserClassesToString(ILaunchConfiguration config) throws CoreException {
 		StringBuilder builder = new StringBuilder();
-		List<String> classpath = JBossLaunchConfigProperties.getClasspath(config);
+		List<String> classpath = new JBossLaunchConfigProperties().getClasspath(config);
 		for(String entry : classpath) {
 			IRuntimeClasspathEntry runtimeEntry = JavaRuntime.newRuntimeClasspathEntry(entry);
 			int classpathProperty = runtimeEntry.getClasspathProperty();
@@ -159,7 +159,7 @@ public class LaunchConfigUtils {
 	}
 	
 	public static IServer checkedGetServer(ILaunchConfiguration launchConfig) throws CoreException {
-		String serverId = JBossLaunchConfigProperties.getServerId(launchConfig);
+		String serverId = new JBossLaunchConfigProperties().getServerId(launchConfig);
 		JBossServer server = ServerConverter.checkedFindJBossServer(serverId);
 		return server.getServer();
 	}

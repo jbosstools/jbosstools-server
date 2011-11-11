@@ -14,9 +14,13 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 
-public class LocalJBoss7ServerRuntime extends LocalJBossServerRuntime {
-
+public class LocalJBoss7ServerRuntime extends LocalJBossServerRuntime implements IJBossRuntimeConstants {
+	
+	
+	
 	@Override
 	public IStatus validate() {
 		return Status.OK_STATUS;
@@ -25,21 +29,23 @@ public class LocalJBoss7ServerRuntime extends LocalJBossServerRuntime {
 	@Override
 	public String getDefaultRunArgs() {
 		return getDefaultRunArgs(getRuntime().getLocation());
-	}
+	} 
 
 	@Override
 	public String getDefaultRunArgs(IPath serverHome) {
-		return "-mp \"" + serverHome.append("modules").toString() + "\"" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ 
-				+ " -logmodule org.jboss.logmanager" //$NON-NLS-1$
-				+ " -jaxpmodule javax.xml.jaxp-provider" //$NON-NLS-1$
-				+ " org.jboss.as.standalone"; //$NON-NLS-1$
+		return DASH + JB7_MP_ARG + SPACE + QUOTE 
+				+ serverHome.append(MODULES).toString() + QUOTE 
+				+ SPACE + DASH + JB7_LOGMODULE_ARG + SPACE + JB7_LOGMODULE_DEFAULT
+				+ SPACE + DASH + JB7_JAXPMODULE + SPACE + JB7_JAXP_PROVIDER
+				+ SPACE + JB7_STANDALONE_ARG;
 	}
 		
 	@Override
 	public String getDefaultRunVMArgs(IPath serverHome) {
-		IPath bootLog = serverHome.append("standalone").append("log").append("boot.log"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		IPath logConfig = serverHome.append("standalone").append("configuration").append("logging.properties"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
-		return "-server" //$NON-NLS-1$
+		IJBossRuntimeResourceConstants c = new IJBossRuntimeResourceConstants() {};
+		IPath bootLog = serverHome.append(c.AS7_STANDALONE).append(c.FOLDER_LOG).append(c.AS7_BOOT_LOG);
+		IPath logConfig = serverHome.append(c.AS7_STANDALONE).append(c.CONFIGURATION).append(c.LOGGING_PROPERTIES);
+		return SERVER_ARG
 				+ " -Xms64m" //$NON-NLS-1$
 				+ " -Xmx512m" //$NON-NLS-1$
 				+ " -XX:MaxPermSize=256m" //$NON-NLS-1$
@@ -47,26 +53,14 @@ public class LocalJBoss7ServerRuntime extends LocalJBossServerRuntime {
 				+ " -Dorg.jboss.resolver.warning=true"  //$NON-NLS-1$
 				+ " -Dsun.rmi.dgc.client.gcInterval=3600000" //$NON-NLS-1$
 				+ " -Dsun.rmi.dgc.server.gcInterval=3600000" //$NON-NLS-1$
-				+ " \"-Dorg.jboss.boot.log.file=" + bootLog.toString() + "\"" //$NON-NLS-1$ //$NON-NLS-2$
-				+ " \"-Dlogging.configuration=file:" + logConfig.toString() + "\"" //$NON-NLS-1$ //$NON-NLS-2$ 
-				+ " \"-Djboss.home.dir=" + serverHome.toString() + "\""; //$NON-NLS-1$ //$NON-NLS-2$"
+				+ SPACE + QUOTE + SYSPROP + JB7_BOOT_LOG_ARG + EQ + bootLog.toString() + QUOTE 
+				+ SPACE + QUOTE + SYSPROP + JB7_LOGGING_CONFIG_FILE + EQ + "file:" + logConfig.toString() + QUOTE //$NON-NLS-1$  
+				+ SPACE + QUOTE + SYSPROP + JBOSS_HOME_DIR + EQ + serverHome.toString() + QUOTE;
 	}
 
 	@Override
 	public String getDefaultRunVMArgs() {
 		IPath loc = getRuntime().getLocation();
-		IPath bootLog = loc.append("standalone").append("log").append("boot.log"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		IPath logConfig = loc.append("standalone").append("configuration").append("logging.properties"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
-		return "-server" //$NON-NLS-1$
-				+ " -Xms64m" //$NON-NLS-1$
-				+ " -Xmx512m" //$NON-NLS-1$
-				+ " -XX:MaxPermSize=256m" //$NON-NLS-1$
-				+ " -Djava.net.preferIPv4Stack=true" //$NON-NLS-1$
-				+ " -Dorg.jboss.resolver.warning=true"  //$NON-NLS-1$
-				+ " -Dsun.rmi.dgc.client.gcInterval=3600000" //$NON-NLS-1$
-				+ " -Dsun.rmi.dgc.server.gcInterval=3600000" //$NON-NLS-1$
-				+ " \"-Dorg.jboss.boot.log.file=" + bootLog.toString() + "\"" //$NON-NLS-1$ //$NON-NLS-2$
-				+ " \"-Dlogging.configuration=file:" + logConfig.toString() + "\"" //$NON-NLS-1$ //$NON-NLS-2$ 
-				+ " \"-Djboss.home.dir=" + loc.toString() + "\""; //$NON-NLS-1$ //$NON-NLS-2$"
+		return getDefaultRunVMArgs(loc);
 	}
 }

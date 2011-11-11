@@ -71,7 +71,8 @@ public class ArgsUtil {
 			boolean done = false;
 			String tmp = EMPTY;
 			StringBuffer buf = new StringBuffer();
-	
+			if( s.length() == 0 )
+				done = true;
 			while( !done ) {
 				switch(s.charAt(current)) {
 				case '"':

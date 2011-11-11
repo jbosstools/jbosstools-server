@@ -39,11 +39,15 @@ public abstract class AbstractLaunchConfigurator implements ILaunchConfigConfigu
 		if (!areDefaultsSet(launchConfig)) {
 			doConfigure(launchConfig, jbossServer, jbossRuntime);
 			setDefaultsSet(launchConfig);
+		} else {
+			doOverrides(launchConfig, jbossServer, jbossRuntime);
 		}
 	}
 
 	protected abstract void doConfigure(ILaunchConfigurationWorkingCopy launchConfig, JBossServer jbossServer, IJBossServerRuntime jbossRuntime) throws CoreException;
 
+	protected abstract void doOverrides (ILaunchConfigurationWorkingCopy launchConfig, JBossServer jbossServer, IJBossServerRuntime jbossRuntime) throws CoreException;
+	
 	protected abstract String getDefaultProgramArguments(JBossServer server, IJBossServerRuntime runtime) throws CoreException;
 
 	protected abstract String getMainType();
