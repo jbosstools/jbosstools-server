@@ -353,11 +353,7 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 	}
 
 	public static IModule[] combine(IModule[] module, IModule newMod) {
-		IModule[] retval = new IModule[module.length + 1];
-		for( int i = 0; i < module.length; i++ )
-			retval[i]=module[i];
-		retval[retval.length-1] = newMod;
-		return retval;
+		return PublishUtil.combine(module, newMod);
 	}
 	
 	public IPath getOutputFilePath() {

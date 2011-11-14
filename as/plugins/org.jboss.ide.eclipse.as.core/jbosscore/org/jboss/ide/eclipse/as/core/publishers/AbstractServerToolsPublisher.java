@@ -31,9 +31,11 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.util.ModuleFile;
+import org.eclipse.wst.server.core.util.ProjectModule;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
+import org.jboss.ide.eclipse.as.core.modules.ResourceModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
@@ -202,7 +204,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		List<IStatus> list = new ArrayList<IStatus>();
 
 		boolean isBinaryObject = ServerModelUtilities.isBinaryModule(module);
-		boolean forceZip = forceZipModule(moduleTree);
+		boolean forceZip = forceZipModule(moduleTree) || parentModuleIsForcedZip(moduleTree);
 		
 		if( !forceZip && !isBinaryObject) {
 			PublishCopyUtil util = new PublishCopyUtil(callback);
@@ -224,31 +226,72 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		return status;
 	}
 	
+	private File createForceZippedChild(IPath deployRoot, IModule module, IModule[] moduleTree, 
+			ArrayList<IStatus> errors) throws CoreException {
+		File temp = null;
+		try {
+			ProjectModule pm = (ProjectModule) module.loadAdapter(ProjectModule.class, null);
+			IModuleResource[] resources = pm.members();
+
+			IModule[] children = server.getServer().getChildModules(moduleTree, new NullProgressMonitor());
+			for( int i = 0; i < children.length; i++ ) {
+				IPath path = new Path(pm.getPath(children[i]));
+				IModule[] tmpTree = PublishUtil.combine(moduleTree, children[i]);
+				File childFile = createForceZippedChild(deployRoot, children[i], tmpTree, errors);
+				resources = ResourceModuleResourceUtil.addFileToModuleResources(
+						tmpTree, new Path("/"), resources, path, childFile); //$NON-NLS-1$
+			}
+			
+			// Make output
+			temp = File.createTempFile(module.getName(), ".tmp", deployRoot.toFile()); //$NON-NLS-1$
+			IPath tempFile = new Path(temp.getAbsolutePath());
+			IStatus[] e2 = PublishUtil.packModuleIntoJar(moduleTree[moduleTree.length-1].getName(), resources, tempFile);
+			errors.addAll(Arrays.asList(e2));
+			return temp;
+		} catch( IOException ioe) {
+			errors.add( new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, ioe.getMessage(), ioe));
+			return null;
+		}
+	}
+	
+	private boolean parentModuleIsForcedZip(IModule[] moduleTree) {
+		ArrayList<IModule> tmp = new ArrayList<IModule>();
+		tmp.addAll(Arrays.asList(moduleTree));
+		tmp.remove(tmp.size()-1);
+		while( tmp.size() > 0 ) {
+			IModule[] tmpArray = tmp.toArray(new IModule[tmp.size()]);
+			if( forceZipModule(tmpArray) ) {
+				return true;
+			}
+			tmp.remove(tmp.size()-1);
+		}
+		return false;
+	}
+	
 	protected IStatus[] transferForceZippedChild(IPath deployPath, IModule module, IModule[] moduleTree, IProgressMonitor monitor) throws CoreException {
+		// Been here already
+		if(parentModuleIsForcedZip(moduleTree))
+			return new IStatus[]{};
+		
 		// A child that must be zipped, forceZip is true
 		ArrayList<IStatus> list = new ArrayList<IStatus>();
 		IPath deployRoot = JBossServerCorePlugin.getServerStateLocation(server.getServer()).
 			append(IJBossToolingConstants.TEMP_DEPLOY).makeAbsolute();
 		
-		try {
 			// Make local jar copy
-			File temp = File.createTempFile(module.getName(), ".tmp", deployRoot.toFile()); //$NON-NLS-1$
-			IPath tempFile = new Path(temp.getAbsolutePath());
-			list.addAll(Arrays.asList(PublishUtil.packModuleIntoJar(moduleTree[moduleTree.length-1], tempFile)));
-			
-			// TODO !!!!! Transfer it
+		File temp = createForceZippedChild(deployRoot, module, moduleTree, list);
+		if( temp != null ) {
+			// Transfer it
 			IPath deployPathInner = getParentDeployPath(moduleTree, server);
 			IPublishCopyCallbackHandler handler = getCallbackHandler(getRootPath(deployPathInner).append(deployPathInner));
 			IPath filePath = deployPath.removeFirstSegments(deployPathInner.segments().length);
 			IPath parentFolderPath = filePath.removeLastSegments(1);
 			handler.makeDirectoryIfRequired(parentFolderPath, getSubMon(monitor, 200));
-			ModuleFile mf = new ModuleFile(tempFile.toFile(), tempFile.lastSegment(), tempFile);
+			ModuleFile mf = new ModuleFile(temp, temp.getName(), new Path(temp.getAbsolutePath()));
 			handler.copyFile(mf, filePath, getSubMon(monitor, 500));
 			
 			// Cleanup
-			tempFile.toFile().delete();
-		} catch( IOException ioe) {
-			list.add( new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, ioe.getMessage(), ioe));
+			temp.delete();
 		}
 		return list.toArray(new IStatus[list.size()]);
 	}
@@ -272,7 +315,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		
 		boolean isBinaryObject = ServerModelUtilities.isBinaryModule(module);
 		monitor.beginTask("Incremental Publish: " + moduleTree[moduleTree.length-1].getName(), 100); //$NON-NLS-1$
-		boolean forceZip = forceZipModule(moduleTree);
+		boolean forceZip = forceZipModule(moduleTree) || parentModuleIsForcedZip(moduleTree);
 		IPublishCopyCallbackHandler  handler = null;
 		if( !forceZip && !isBinaryObject) {
 			handler = getCallbackHandler(deployPath);

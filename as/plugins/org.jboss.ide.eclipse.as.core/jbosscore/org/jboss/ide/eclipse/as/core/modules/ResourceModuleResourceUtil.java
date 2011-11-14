@@ -10,6 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.modules;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import org.eclipse.core.resources.IContainer;
@@ -18,6 +19,10 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
+import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.model.IModuleFile;
+import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.util.ModuleFile;
 import org.eclipse.wst.server.core.util.ModuleFolder;
@@ -38,8 +43,7 @@ public class ResourceModuleResourceUtil {
 	
 	public static IModuleResource createFile(IFile resource, IPath path) {
 		IPath global = resource.getLocation();
-		return new ModuleFile(global.toFile(),
-				global.lastSegment(), path);
+		return new ModuleFile(global.toFile(), global.lastSegment(), path);
 	}
 	
 	public static IModuleResource createFolder(IContainer cont, IPath path) {
@@ -71,4 +75,47 @@ public class ResourceModuleResourceUtil {
 		}
 		return modChildren.toArray(new IModuleResource[modChildren.size()]);
 	}
+	
+	public static IModuleResource[] addFileToModuleResources(IModule[] moduleTree, IPath prevPath,
+			IModuleResource[] resources, IPath remainingPath, File childFile) {
+		boolean found = false;
+		String name = remainingPath.segment(0);
+		remainingPath = remainingPath.removeFirstSegments(1);
+		
+		for( int i = 0; i < resources.length; i++ ) {
+			if( resources[i].getName().equals(remainingPath.segment(0))) {
+				found = true;
+				if( resources[i] instanceof IModuleFile ) {
+					resources[i] = new ModuleFile(childFile, name, prevPath);
+					return resources;
+				} else if( resources[i] instanceof IModuleFolder){
+					IModuleFolder mf = (IModuleFolder) resources[i];
+					IModuleResource[] mfChildren = mf.members();
+					IModuleResource[] newChildren = addFileToModuleResources(moduleTree, 
+							prevPath.append(name), mfChildren, remainingPath, childFile);
+					((ModuleFolder)mf).setMembers(newChildren);
+				}
+			}
+		}
+		
+		if( found )
+			return resources;
+
+		IModuleResource[] newResources = new IModuleResource[resources.length+1];
+		System.arraycopy(resources, 0, newResources, 0, resources.length);
+		if( remainingPath.segmentCount() == 0 ) {
+			// add a file
+			newResources[newResources.length-1] = new ModuleFile(childFile, name, prevPath);
+		} else {
+			// add a folder
+			ModuleFolder mf = new ModuleFolder(null, name, prevPath);
+			IModuleResource[] newChildren = addFileToModuleResources(moduleTree, 
+					prevPath.append(name), new IModuleResource[]{}, remainingPath, childFile);
+			((ModuleFolder)mf).setMembers(newChildren);
+			newResources[newResources.length-1] = mf;
+		}
+		return newResources;
+	}
+	
+
 }
