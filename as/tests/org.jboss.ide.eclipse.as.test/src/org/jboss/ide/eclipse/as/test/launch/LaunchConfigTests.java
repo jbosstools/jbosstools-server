@@ -10,8 +10,6 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.test.launch;
 
-import static org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties.isServerHomeSet;
-
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -23,6 +21,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.AbstractStartLaunchConfigurator;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.ILaunchConfigConfigurator;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties;
 import org.jboss.ide.eclipse.as.test.util.ServerRuntimeUtils;
 
 /**
@@ -117,17 +116,22 @@ public class LaunchConfigTests extends TestCase {
 		protected String getDefaultVMArguments(IJBossServerRuntime runtime) {
 			return null;
 		}
+
+		@Override
+		protected String getJavaLibraryPath(IJBossServerRuntime runtime) {
+			return null;
+		}
 	};
 
 	public void testServerHomeIsNotSetIfNotCustomConfigLocation() throws CoreException {
 		ILaunchConfigurationWorkingCopy launchConfig = LaunchConfigConfiguratorFactory.createNonCustomConfigLocationLaunchConfig(mockServer);
-		
-		assertFalse(isServerHomeSet(launchConfig));
+		JBossLaunchConfigProperties props = new JBossLaunchConfigProperties();
+		assertFalse(props.isServerHomeSet(launchConfig));
 	}
 
 	public void testServerHomeIsSetIfCustomConfigLocation() throws CoreException {
 		ILaunchConfigurationWorkingCopy launchConfig = LaunchConfigConfiguratorFactory.createCustomConfigLocationLaunchConfig(mockServer);
-		
-		assertTrue(isServerHomeSet(launchConfig));
+		JBossLaunchConfigProperties props = new JBossLaunchConfigProperties();
+		assertTrue(props.isServerHomeSet(launchConfig));
 	}
 }
