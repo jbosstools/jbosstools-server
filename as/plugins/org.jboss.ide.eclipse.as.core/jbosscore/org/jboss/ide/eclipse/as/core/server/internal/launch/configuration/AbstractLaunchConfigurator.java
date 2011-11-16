@@ -39,7 +39,7 @@ public abstract class AbstractLaunchConfigurator implements ILaunchConfigConfigu
 		if (!areDefaultsSet(launchConfig)) {
 			doConfigure(launchConfig, jbossServer, jbossRuntime);
 			setDefaultsSet(launchConfig);
-		} else {
+		} else if( shouldUpdateLaunch(launchConfig)){
 			doOverrides(launchConfig, jbossServer, jbossRuntime);
 		}
 	}
@@ -75,6 +75,10 @@ public abstract class AbstractLaunchConfigurator implements ILaunchConfigConfigu
 
 	private boolean areDefaultsSet(ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
 		return launchConfig.hasAttribute(DEFAULTS_SET);
+	}
+
+	private boolean shouldUpdateLaunch(ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
+		return launchConfig.getAttribute(JBossServer.AUTOMATICALLY_UPDATE_LAUNCH, true);
 	}
 
 	private void setDefaultsSet(ILaunchConfigurationWorkingCopy launchConfig) {

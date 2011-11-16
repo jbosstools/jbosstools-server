@@ -59,7 +59,9 @@ import org.jboss.ide.eclipse.as.core.util.ServerUtil;
  */
 public class JBossServer extends DeployableServer 
 		implements IDeployableServer, IURLProvider {
-
+	
+	public static final String AUTOMATICALLY_UPDATE_LAUNCH = "org.jboss.ide.eclipse.as.core.server.internal.AUTOMATICALLY_UPDATE_LAUNCH";  //$NON-NLS-1$
+	
 	public void setDefaults(IProgressMonitor monitor) {
 		super.setDefaults(monitor);
 		setAttribute("auto-publish-time", 1); //$NON-NLS-1$

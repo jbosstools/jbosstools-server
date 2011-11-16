@@ -258,7 +258,9 @@ public class Messages extends NLS {
 	public static String ServerAlreadyStartedDialog_Desc;
 	public static String ServerAlreadyStartedDialog_Connect;
 	public static String ServerAlreadyStartedDialog_Launch;
-	
+
+	public static String ServerJavaArgsSyncText;
+	public static String ServerJavaArgsSyncDesc;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME,
