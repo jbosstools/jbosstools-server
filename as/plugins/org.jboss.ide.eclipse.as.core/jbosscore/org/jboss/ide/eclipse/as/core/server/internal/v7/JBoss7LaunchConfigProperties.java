@@ -28,6 +28,15 @@ public class JBoss7LaunchConfigProperties extends JBossLaunchConfigProperties {
 			setProgramArguments(progArgs, launchConfig);
 		}
 	}
+	public void setConfigurationFile(String file, ILaunchConfigurationWorkingCopy launchConfig)
+			throws CoreException {
+		if (isSet(file)) {
+			String progArgs = getProgramArguments(launchConfig);
+			progArgs = ArgsUtil.setArg(progArgs,
+					null, IJBossRuntimeConstants.JB7_SERVER_CONFIG_ARG, file);
+			setProgramArguments(progArgs, launchConfig);
+		}
+	}
 
 	public void setBootLogFile(String blf, ILaunchConfigurationWorkingCopy launchConfig)
 			throws CoreException {

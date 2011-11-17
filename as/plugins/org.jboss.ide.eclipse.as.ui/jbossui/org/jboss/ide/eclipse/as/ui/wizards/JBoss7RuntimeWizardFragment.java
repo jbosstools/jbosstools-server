@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2010 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.ide.eclipse.as.ui.wizards;
 
 import java.io.File;
@@ -11,14 +21,28 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.TaskModel;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
+import org.jboss.ide.eclipse.as.ui.UIUtil;
 
 public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 
@@ -38,8 +62,86 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 		createNameComposite(main);
 		createHomeComposite(main);
 		createJREComposite(main);
+		createConfigurationComposite(main);
 	}
 
+	protected void createConfigurationComposite(Composite main) {
+		UIUtil u = new UIUtil(); // top bottom left right
+		configComposite = new Composite(main, SWT.NONE);
+		configComposite.setLayoutData(u.createFormData(
+				jreComposite, 10, 100, -5, 0, 5, 100, -5));
+		configComposite.setLayout(new FormLayout());
+		
+		configDirLabel = new Label(configComposite, SWT.NONE);
+		configDirLabel.setText("Configuration file: ");
+		configDirText = new Text(configComposite, SWT.BORDER);
+		
+		configBrowse = new Button(configComposite, SWT.DEFAULT);
+		configBrowse.setText(Messages.browse);
+		
+		// Organize them
+		configDirLabel.setLayoutData(u.createFormData(
+				0, 7, null, 0, 0, 5, null, 0));
+		configDirText.setLayoutData(u.createFormData(
+				0, 5, null, 0, configDirLabel, 5, configBrowse, -5));
+		configBrowse.setLayoutData(u.createFormData(
+				0, 5, null, 0, null, 0, 100, -5));
+		
+		configDirText.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				configDirTextVal = configDirText.getText();
+				updatePage();
+			} 
+		});
+		
+		configBrowse.addSelectionListener(new SelectionListener(){
+			public void widgetSelected(SelectionEvent e) {
+				configBrowsePressed();
+			}
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+
+	}
+	
+	protected void configBrowsePressed() {
+		String folder = new Path(configDirText.getText()).isAbsolute() ? 
+				configDirText.getText() : new Path(homeDir).append(configDirText.getText()).toString();
+		File file = new File(folder);
+		if (!file.exists()) {
+			file = null;
+		}
+
+		File ffile = getFile(file, homeDirComposite.getShell());
+		if (ffile != null) {
+			if(ffile.getAbsolutePath().startsWith(new Path(homeDir).toString())) {
+				String result = ffile.getAbsolutePath().substring(homeDir.length());
+				configDirText.setText(new Path(result).makeRelative().toString());
+			} else {
+				configDirText.setText(ffile.getAbsolutePath());
+			}
+		}
+		configDirTextVal = configDirText.getText();
+	}
+
+
+	protected static File getFile(File startingDirectory, Shell shell) {
+		FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
+		if (startingDirectory != null) {
+			fileDialog.setFilterPath(startingDirectory.getPath());
+		}
+
+		String dir = fileDialog.open();
+		if (dir != null) {
+			dir = dir.trim();
+			if (dir.length() > 0) {
+				return new File(dir);
+			}
+		}
+		return null;
+	}
+	
+	
 	protected void fillWidgets() {
 		IRuntime rt = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
 		
@@ -47,12 +149,18 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 			try {
 				fillNameWidgets(rt);
 				fillHomeDir(rt);
+				fillConfigWidgets(rt);
 				fillJREWidgets(rt);
 			} catch (Exception e) {
 				IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, MessageFormat.format(Messages.JBoss7ServerWizardFragment_could_not_create_ui, rt.getName()), e);
 				JBossServerUIPlugin.getDefault().getLog().log(status);
 			}
 		}
+	}
+
+	protected void fillConfigWidgets(IRuntime rt) {
+		LocalJBoss7ServerRuntime rt2 = (LocalJBoss7ServerRuntime)rt.loadAdapter(LocalJBoss7ServerRuntime.class, null);
+		configDirText.setText(rt2.getConfigurationFile());
 	}
 
 	@Override
@@ -63,6 +171,7 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 			selectedVM = installedJREs.get(sel + offset);
 		else // if sel < 0 or sel == 0 and offset == -1
 			selectedVM = null;
+		configDirTextVal = configDirText.getText();
 		updateErrorMessage();
 	}
 
@@ -79,7 +188,16 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 
 		if (name == null || name.equals("")) //$NON-NLS-1$
 			return Messages.rwf_nameTextBlank;
-
+		
+		if( configDirTextVal != null) {
+			IPath p = new Path(configDirTextVal);
+			IPath actualPath = p.isAbsolute() ? p : new Path(homeDir)
+					.append(IJBossRuntimeResourceConstants.AS7_STANDALONE)
+					.append(IJBossRuntimeResourceConstants.CONFIGURATION).append(p);
+			if( !actualPath.toFile().exists()) {
+				return Messages.bind(Messages.rwf7_ConfigFileError, actualPath.toString());
+			}
+		}
 		return null;
 	}
 
@@ -103,6 +221,7 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 
 	@Override
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
+		exit();
 		IRuntime rt = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
 		((IRuntimeWorkingCopy) rt).setLocation(new Path(homeDir));
 	}
@@ -116,9 +235,10 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 
 		runtimeWC.setName(name);
 		runtimeWC.setLocation(new Path(homeDir));
-		IJBossServerRuntime srt = (IJBossServerRuntime) runtimeWC.loadAdapter(
-				IJBossServerRuntime.class, new NullProgressMonitor());
+		LocalJBoss7ServerRuntime srt = (LocalJBoss7ServerRuntime) runtimeWC.loadAdapter(
+				LocalJBoss7ServerRuntime.class, new NullProgressMonitor());
 		srt.setVM(selectedVM);
+		srt.setConfigurationFile(configDirTextVal);
 
 		getTaskModel().putObject(TaskModel.TASK_RUNTIME, runtimeWC);
 	}

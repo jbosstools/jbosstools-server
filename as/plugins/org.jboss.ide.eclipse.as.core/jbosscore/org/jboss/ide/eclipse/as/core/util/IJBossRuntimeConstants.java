@@ -47,6 +47,9 @@ public interface IJBossRuntimeConstants {
 	public static final String PROGRAM_NAME_ARG = "program.name"; //$NON-NLS-1$
 	
 	public static final String JB7_MP_ARG = "mp"; //$NON-NLS-1$
+	public static final String JB7_SERVER_CONFIG = "server-config"; //$NON-NLS-1$
+	public static final String JB7_SERVER_CONFIG_ARG = "--server-config"; //$NON-NLS-1$
+	
 	public static final String MODULES = "modules"; //$NON-NLS-1$
 	public static final String JB7_LOGMODULE_ARG = "logmodule"; //$NON-NLS-1$
 	public static final String JB7_LOGMODULE_DEFAULT = "org.jboss.logmanager"; //$NON-NLS-1$

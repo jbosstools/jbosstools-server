@@ -61,6 +61,7 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 		getProperties().setUseDefaultClassPath(isUseDefaultClasspath(), launchConfig);
 		getProperties().setServerId(getServerId(jbossServer), launchConfig);
 		getProperties().setModulesFolder(getModulesFolder(jbossServer, jbossRuntime), launchConfig);
+		getProperties().setConfigurationFile(getServerConfigFile(jbossServer, jbossRuntime), launchConfig);
 		getProperties().setBootLogFile(getBootLogPath(jbossRuntime), launchConfig);
 		getProperties().setLoggingConfigFile(getLoggingConfigPath(jbossRuntime), launchConfig);
 	}
@@ -80,6 +81,12 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 	protected String getModulesFolder(JBossServer server, IJBossServerRuntime runtime)  throws CoreException {
 		return runtime.getRuntime().getLocation().append(IJBossRuntimeConstants.MODULES).toString();
 	}
+	
+	protected String getServerConfigFile(JBossServer server, IJBossServerRuntime runtime)  throws CoreException {
+		LocalJBoss7ServerRuntime rt = (LocalJBoss7ServerRuntime)runtime.getRuntime().loadAdapter(LocalJBoss7ServerRuntime.class, null);
+		return rt.getConfigurationFile();
+	}
+
 
 	@Override
 	protected List<String> getClasspath(JBossServer server, IJBossServerRuntime runtime, List<String> currentClasspath) throws CoreException {

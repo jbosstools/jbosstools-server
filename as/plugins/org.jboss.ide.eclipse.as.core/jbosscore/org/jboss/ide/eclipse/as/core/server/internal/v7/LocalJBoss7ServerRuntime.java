@@ -18,7 +18,8 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 
 public class LocalJBoss7ServerRuntime extends LocalJBossServerRuntime implements IJBossRuntimeConstants {
-	
+	public static final String CONFIG_FILE = "org.jboss.ide.eclipse.as.core.server.internal.v7.CONFIG_FILE"; //$NON-NLS-1$
+	public static final String CONFIG_FILE_DEFAULT = "standalone.xml"; //$NON-NLS-1$
 	
 	
 	@Override
@@ -62,5 +63,12 @@ public class LocalJBoss7ServerRuntime extends LocalJBossServerRuntime implements
 	public String getDefaultRunVMArgs() {
 		IPath loc = getRuntime().getLocation();
 		return getDefaultRunVMArgs(loc);
+	}
+	
+	public String getConfigurationFile() {
+		return getAttribute(CONFIG_FILE, CONFIG_FILE_DEFAULT);
+	}
+	public void setConfigurationFile(String file) {
+		setAttribute(CONFIG_FILE, file);
 	}
 }
