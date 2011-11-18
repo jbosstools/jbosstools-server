@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IModule;
@@ -61,11 +62,26 @@ public class DelegatingServerBehavior extends DeployableServerBehavior {
 	
 	public void stop(boolean force) {
 		if( LaunchCommandPreferences.isIgnoreLaunchCommand(getServer())) {
-			super.setServerStopped();
+			setServerStopped();
 			return;
 		}
 		getDelegate().stop(force);
 	}
+	
+	public void setServerStopped() {
+		super.setServerStopped();
+		IModule[] mods = getServer().getModules();
+		setModulesStopped(new IModule[]{}, mods);
+	}
+	
+	protected void setModulesStopped(IModule[] parent, IModule[] children) {
+		for( int i = 0; i < children.length; i++ ) {
+			IModule[] combined = PublishUtil.combine(parent, children[i]);
+			setModuleState(combined, IServer.STATE_UNKNOWN);
+			setModulesStopped(combined, getServer().getChildModules(combined, new NullProgressMonitor()));
+		}
+	}
+
 	
 	/*
 	 * This shouldn't be done in the delegate. 
