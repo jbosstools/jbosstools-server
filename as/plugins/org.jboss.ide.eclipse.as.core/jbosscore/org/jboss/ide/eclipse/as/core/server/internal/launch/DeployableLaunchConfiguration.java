@@ -20,7 +20,7 @@ import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 
 /**
- * @deprecated
+ * Not deprecated, still in use by the deploy-only server
  */
 public class DeployableLaunchConfiguration implements
 		ILaunchConfigurationDelegate {
