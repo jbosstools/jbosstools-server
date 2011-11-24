@@ -41,6 +41,9 @@ public class RuntimeUtils {
 	}
 	
 	public static IJBossServerRuntime getJBossServerRuntime(IRuntime runtime) {
+		if (runtime == null) {
+			return null;
+		}
 		return (IJBossServerRuntime) runtime.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
 	}
 	
