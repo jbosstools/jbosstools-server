@@ -105,8 +105,15 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	}
 	
 	protected void configBrowsePressed() {
-		String folder = new Path(configDirText.getText()).isAbsolute() ? 
-				configDirText.getText() : new Path(homeDir).append(configDirText.getText()).toString();
+		IPath f1 = null;
+		if(new Path(configDirText.getText()).isAbsolute()) {
+			f1 = new Path(configDirText.getText());
+		} else {
+			f1 = new Path(homeDir).append(IJBossRuntimeResourceConstants.AS7_STANDALONE)
+					.append(IJBossRuntimeResourceConstants.CONFIGURATION)
+					.append(configDirText.getText());
+		}
+		String folder = f1.removeLastSegments(1).toString();
 		File file = new File(folder);
 		if (!file.exists()) {
 			file = null;
@@ -114,8 +121,10 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 
 		File ffile = getFile(file, homeDirComposite.getShell());
 		if (ffile != null) {
-			if(ffile.getAbsolutePath().startsWith(new Path(homeDir).toString())) {
-				String result = ffile.getAbsolutePath().substring(homeDir.length());
+			IPath standaloneFolder = new Path(homeDir).append(IJBossRuntimeResourceConstants.AS7_STANDALONE)
+					.append(IJBossRuntimeResourceConstants.CONFIGURATION);
+			if(ffile.getAbsolutePath().startsWith(standaloneFolder.toString())) {
+				String result = ffile.getAbsolutePath().substring(standaloneFolder.toString().length());
 				configDirText.setText(new Path(result).makeRelative().toString());
 			} else {
 				configDirText.setText(ffile.getAbsolutePath());
