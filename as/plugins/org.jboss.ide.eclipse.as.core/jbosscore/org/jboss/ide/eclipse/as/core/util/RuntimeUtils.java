@@ -60,7 +60,7 @@ public class RuntimeUtils {
 		IJBossServerRuntime jbossRuntime = getJBossServerRuntime(runtime);
 		if (jbossRuntime == null)
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
-					NLS.bind(Messages.ServerRuntimeNotFound, runtime.getName())));
+					NLS.bind(Messages.ServerRuntimeNotFound, ((runtime==null)?"null":runtime.getName())))); //$NON-NLS-1$
 		return jbossRuntime;
 	}
 	
