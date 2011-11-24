@@ -26,30 +26,40 @@ public class JBoss7ManagerService implements IJBoss7ManagerService {
 	public IJBoss7DeploymentResult deployAsync(String host, int port, String deploymentName,
 			File file, IProgressMonitor monitor) throws Exception {
 		AS7Manager manager = new AS7Manager(host, port);
-		return manager.deploy(deploymentName, file);
+		IJBoss7DeploymentResult result = manager.deploy(deploymentName, file);
+		manager.dispose();
+		return result;
 	}
 
 	public IJBoss7DeploymentResult deploySync(String host, int port, String deploymentName,
 			File file, IProgressMonitor monitor) throws Exception {
 		AS7Manager manager = new AS7Manager(host, port);
-		return manager.deploySync(deploymentName, file, monitor);
+		IJBoss7DeploymentResult result = manager.deploySync(deploymentName, file, monitor);
+		manager.dispose();
+		return result;
 	}
 
 	public IJBoss7DeploymentResult undeployAsync(String host, int port, String deploymentName,
 			boolean removeFile, IProgressMonitor monitor) throws Exception {
 		AS7Manager manager = new AS7Manager(host, port);
-		return manager.undeploy(deploymentName);
+		IJBoss7DeploymentResult result = manager.undeploy(deploymentName);
+		manager.dispose();
+		return result;
 	}
 
 	public IJBoss7DeploymentResult syncUndeploy(String host, int port, String deploymentName,
 			boolean removeFile, IProgressMonitor monitor) throws Exception {
 		AS7Manager manager = new AS7Manager(host, port);
-		return manager.undeploySync(deploymentName, monitor);
+		IJBoss7DeploymentResult result = manager.undeploySync(deploymentName, monitor);
+		manager.dispose();
+		return result;
 	}
 
 	public JBoss7DeploymentState getDeploymentState(String host, int port, String deploymentName) throws Exception {
 		AS7Manager manager = new AS7Manager(host, port);
-		return manager.getDeploymentStateSafe(deploymentName);
+		JBoss7DeploymentState result = manager.getDeploymentStateSafe(deploymentName);
+		manager.dispose();
+		return result;
 	}
 	
 	@Deprecated
@@ -59,11 +69,16 @@ public class JBoss7ManagerService implements IJBoss7ManagerService {
 
 	public JBoss7ServerState getServerState(String host, int port) throws Exception {
 		AS7Manager manager = new AS7Manager(host, port);
-		return manager.getServerState();
+		JBoss7ServerState state = manager.getServerState();
+		manager.dispose();
+		return state;
 	}
 
 	public boolean isRunning(String host, int port) throws Exception {
-		return new AS7Manager(host, port).isRunning();
+		AS7Manager manager = new AS7Manager(host, port);
+		boolean ret = manager.isRunning();
+		manager.dispose();
+		return ret;
 	}
 
 	@Deprecated
@@ -72,7 +87,9 @@ public class JBoss7ManagerService implements IJBoss7ManagerService {
 	}
 	
 	public void stop(String host, int port) throws Exception {
-		new AS7Manager(host, port).stopServer();
+		AS7Manager manager = new AS7Manager(host, port);
+		manager.stopServer();
+		manager.dispose();
 	}
 
 	@Override
