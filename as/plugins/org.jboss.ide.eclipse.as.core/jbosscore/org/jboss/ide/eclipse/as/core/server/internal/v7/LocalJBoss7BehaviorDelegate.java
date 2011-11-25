@@ -28,20 +28,23 @@ import org.osgi.framework.InvalidSyntaxException;
 public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
 
 	private IJBoss7ManagerService service;
-
+	private boolean previousStopFailed = false;
+	
 	public IStatus canChangeState(String launchMode) {
 		return Status.OK_STATUS;
 	}
 
 	@Override
 	public void stop(boolean force) {
-		if (force) {
+		if (force || previousStopFailed) {
 			forceStop();
+			previousStopFailed = false;
 		} else {
 			setServerStopping();
 			IStatus result = gracefullStop();
 			if (!result.isOK()) {
-				forceStop();
+				previousStopFailed = true;
+				setServerStarted();
 			}
 		}
 	}
