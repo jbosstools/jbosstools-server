@@ -15,7 +15,6 @@ import static org.junit.Assert.assertNotNull;
 import java.net.UnknownHostException;
 
 import org.jboss.ide.eclipse.as.core.server.v7.management.IJBoss7ManagerService;
-import org.jboss.ide.eclipse.as.internal.management.as7.AS7ManagementActivator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +30,7 @@ import org.osgi.framework.ServiceReference;
 public class JBossManagementServiceTest {
 
 	private static final String DS_BUNDLEID = "org.eclipse.equinox.ds";
+	private static final String AS7MANAGER_PLUGINID = "org.jboss.ide.eclipse.as.management.as7";
 
 	@Before
 	public void setUp() throws UnknownHostException {
@@ -55,8 +55,8 @@ public class JBossManagementServiceTest {
 	private void ensureServiceBundleIsRunning() throws BundleException {
 		BundleContext context = Activator.getContext();
 		assertNotNull("bundle of this test is not active", context);
-		Bundle bundle = getBundle(AS7ManagementActivator.PLUGIN_ID);
-		assertNotNull(AS7ManagementActivator.PLUGIN_ID + " not installed", bundle);
+		Bundle bundle = getBundle(AS7MANAGER_PLUGINID);
+		assertNotNull(AS7MANAGER_PLUGINID + " not installed", bundle);
 		startBundle(bundle);
 	}
 
