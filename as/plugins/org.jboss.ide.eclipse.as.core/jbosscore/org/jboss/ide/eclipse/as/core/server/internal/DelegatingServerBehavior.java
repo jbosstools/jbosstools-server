@@ -48,25 +48,43 @@ public class DelegatingServerBehavior extends DeployableServerBehavior {
 		super();
 	}
 
-	public IJBossBehaviourDelegate getDelegate() {
+	public synchronized IJBossBehaviourDelegate getDelegate() {
 		IJBossServerPublishMethodType type = DeploymentPreferenceLoader.getCurrentDeploymentMethodType(getServer());
 		String id = type == null ? LocalPublishMethod.LOCAL_PUBLISH_METHOD : type.getId();
 		if( id.equals(lastModeId) && delegate != null && delegate.getBehaviourTypeId().equals(id))
 			return delegate;
 		
 		BehaviourImpl impl = BehaviourModel.getModel().getBehaviour(getServer().getServerType().getId()).getImpl(id);
-		delegate = impl.getBehaviourDelegate();
-		delegate.setActualBehaviour(this);
+		IJBossBehaviourDelegate d = impl.getBehaviourDelegate();
+		d.setActualBehaviour(this);
+		lastModeId = id;
+		delegate = d;
 		return delegate;
 	}
 	
 	public void stop(boolean force) {
-		if( LaunchCommandPreferences.isIgnoreLaunchCommand(getServer())) {
-			setServerStopped();
-			return;
-		}
 		getDelegate().stop(force);
 	}
+	
+	@Override
+	public void setServerStarting() {
+		super.setServerStarting();
+		getDelegate().onServerStarting();
+	}
+
+	@Override
+	public void setServerStarted() {
+		super.setServerStarted();
+		getDelegate().onServerStarted();
+	}
+
+	@Override
+	public void setServerStopping() {
+		super.setServerStopping();
+		getDelegate().onServerStopping();
+	}
+	
+
 	
 	public void setServerStopped() {
 		super.setServerStopped();
@@ -94,18 +112,6 @@ public class DelegatingServerBehavior extends DeployableServerBehavior {
 
 	public void setRunMode(String mode) {
 		setMode(mode);
-	}
-	
-	@Override
-	public void setServerStarting() {
-		super.setServerStarting();
-		getDelegate().onServerStarting();
-	}
-	
-	@Override
-	public void setServerStopping() {
-		super.setServerStopping();
-		getDelegate().onServerStopping();
 	}
 	
 	protected void publishStart(final IProgressMonitor monitor) throws CoreException {

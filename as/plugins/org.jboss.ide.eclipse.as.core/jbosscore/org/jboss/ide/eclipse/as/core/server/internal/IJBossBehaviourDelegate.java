@@ -31,6 +31,10 @@ public interface IJBossBehaviourDelegate {
 
 	public void onServerStopping();
 
+	public void onServerStarted();
+
+	public void onServerStopped();
+
 	public IStatus canChangeState(String launchMode);
 
 	public String getDefaultStopArguments() throws CoreException;

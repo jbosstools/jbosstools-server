@@ -161,6 +161,7 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	protected int getServerStateVal() {
 		return serverStateVal;
 	}
+	
 	public void setServerStarted() {
 		serverStateVal = IServer.STATE_STARTED;
 		setServerState(IServer.STATE_STARTED);
@@ -180,6 +181,7 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		serverStateVal = IServer.STATE_STOPPING;
 		setServerState(IServer.STATE_STOPPING);
 	}
+	
 	protected void initialize(IProgressMonitor monitor) {
 		serverStateVal =  getServer().getServerState();
 		getServer().addServerListener(new IServerListener() {

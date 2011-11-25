@@ -19,6 +19,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBoss6Server;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
@@ -44,6 +45,16 @@ public abstract class AbstractJBossBehaviourDelegate implements IJBossBehaviourD
 	public void publishFinish(IProgressMonitor monitor) throws CoreException {		
 	}
 
+	public void stop(boolean force) {
+		if( LaunchCommandPreferences.isIgnoreLaunchCommand(getServer())) {
+			actualBehavior.setServerStopped();
+			return;
+		}
+		stopImpl(force);
+	}
+	
+	protected abstract void stopImpl(boolean force);
+	
 	protected abstract void forceStop();
 
 	protected abstract IStatus gracefullStop();
@@ -52,6 +63,12 @@ public abstract class AbstractJBossBehaviourDelegate implements IJBossBehaviourD
 	}
 	
 	public void onServerStopping() {
+	}
+
+	public void onServerStarted() {
+	}
+	
+	public void onServerStopped() {
 	}
 
 	@Override

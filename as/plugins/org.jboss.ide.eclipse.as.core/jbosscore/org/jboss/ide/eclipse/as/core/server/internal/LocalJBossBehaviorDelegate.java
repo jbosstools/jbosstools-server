@@ -67,7 +67,7 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 	}
 
 	@Override
-	public void stop(boolean force) {
+	public void stopImpl(boolean force) {
 		int state = getServer().getServerState();
 		if (force
 				|| !isProcessRunning()
