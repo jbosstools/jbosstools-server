@@ -1,7 +1,19 @@
+/******************************************************************************* 
+ * Copyright (c) 2010 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ * 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.rse.ui;
 
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel;
 import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
+import org.jboss.ide.eclipse.as.ui.console.JBASConsoleWriter;
 import org.jboss.ide.eclipse.as.ui.editor.DeploymentModuleOptionCompositeAssistant;
 import org.jboss.ide.eclipse.as.ui.launch.JBoss7LaunchConfigurationTabGroup;
 import org.jboss.ide.eclipse.as.ui.launch.JBossLaunchConfigurationTabGroup;

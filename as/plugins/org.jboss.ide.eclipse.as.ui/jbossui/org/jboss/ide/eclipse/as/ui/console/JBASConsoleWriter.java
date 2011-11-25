@@ -8,14 +8,14 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.rse.ui;
+package org.jboss.ide.eclipse.as.ui.console;
 
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
-import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.IJBASHostShellListener;
+import org.jboss.ide.eclipse.as.core.server.IJBASHostShellListener;
 
 public class JBASConsoleWriter implements IJBASHostShellListener {
 	public void writeToShell(String serverId, String[] lines) {
