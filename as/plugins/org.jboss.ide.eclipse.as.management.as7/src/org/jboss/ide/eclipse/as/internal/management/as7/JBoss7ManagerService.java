@@ -17,49 +17,64 @@ import org.jboss.ide.eclipse.as.core.server.v7.management.IJBoss7DeploymentResul
 import org.jboss.ide.eclipse.as.core.server.v7.management.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7DeploymentState;
 import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ServerState;
+import org.jboss.ide.eclipse.as.internal.management.as7.AS7Manager;
 
 /**
  * @author Rob Stryker
  */
 public class JBoss7ManagerService implements IJBoss7ManagerService {
-
 	public IJBoss7DeploymentResult deployAsync(String host, int port, String deploymentName,
 			File file, IProgressMonitor monitor) throws Exception {
 		AS7Manager manager = new AS7Manager(host, port);
-		IJBoss7DeploymentResult result = manager.deploy(deploymentName, file);
-		manager.dispose();
-		return result;
+		try {
+			IJBoss7DeploymentResult result = manager.deploy(deploymentName, file);
+			return result;
+		} finally {
+			manager.dispose();
+		}
 	}
 
 	public IJBoss7DeploymentResult deploySync(String host, int port, String deploymentName,
 			File file, IProgressMonitor monitor) throws Exception {
 		AS7Manager manager = new AS7Manager(host, port);
-		IJBoss7DeploymentResult result = manager.deploySync(deploymentName, file, monitor);
-		manager.dispose();
-		return result;
+		try {
+			IJBoss7DeploymentResult result = manager.deploySync(deploymentName, file, monitor);
+			return result;
+		} finally {
+			manager.dispose();
+		}
 	}
 
 	public IJBoss7DeploymentResult undeployAsync(String host, int port, String deploymentName,
 			boolean removeFile, IProgressMonitor monitor) throws Exception {
 		AS7Manager manager = new AS7Manager(host, port);
-		IJBoss7DeploymentResult result = manager.undeploy(deploymentName);
-		manager.dispose();
-		return result;
+		try {
+			IJBoss7DeploymentResult result = manager.undeploy(deploymentName);
+			return result;
+		} finally {
+			manager.dispose();
+		}
 	}
 
 	public IJBoss7DeploymentResult syncUndeploy(String host, int port, String deploymentName,
 			boolean removeFile, IProgressMonitor monitor) throws Exception {
 		AS7Manager manager = new AS7Manager(host, port);
-		IJBoss7DeploymentResult result = manager.undeploySync(deploymentName, monitor);
-		manager.dispose();
-		return result;
+		try {
+			IJBoss7DeploymentResult result = manager.undeploySync(deploymentName, monitor);
+			return result;
+		} finally {
+			manager.dispose();
+		}
 	}
 
 	public JBoss7DeploymentState getDeploymentState(String host, int port, String deploymentName) throws Exception {
 		AS7Manager manager = new AS7Manager(host, port);
-		JBoss7DeploymentState result = manager.getDeploymentStateSafe(deploymentName);
-		manager.dispose();
-		return result;
+		try {
+			JBoss7DeploymentState result = manager.getDeploymentStateSafe(deploymentName);
+			return result;
+		} finally {
+			manager.dispose();
+		}
 	}
 	
 	@Deprecated
@@ -69,16 +84,22 @@ public class JBoss7ManagerService implements IJBoss7ManagerService {
 
 	public JBoss7ServerState getServerState(String host, int port) throws Exception {
 		AS7Manager manager = new AS7Manager(host, port);
-		JBoss7ServerState state = manager.getServerState();
-		manager.dispose();
-		return state;
+		try {
+			JBoss7ServerState state = manager.getServerState();
+			return state;
+		} finally {
+			manager.dispose();
+		}
 	}
 
 	public boolean isRunning(String host, int port) throws Exception {
 		AS7Manager manager = new AS7Manager(host, port);
-		boolean ret = manager.isRunning();
-		manager.dispose();
-		return ret;
+		try {
+			boolean ret = manager.isRunning();
+			return ret;
+		} finally {
+			manager.dispose();
+		}
 	}
 
 	@Deprecated
@@ -88,8 +109,11 @@ public class JBoss7ManagerService implements IJBoss7ManagerService {
 	
 	public void stop(String host, int port) throws Exception {
 		AS7Manager manager = new AS7Manager(host, port);
-		manager.stopServer();
-		manager.dispose();
+		try {
+			manager.stopServer();
+		} finally {
+			manager.dispose();
+		}
 	}
 
 	@Override

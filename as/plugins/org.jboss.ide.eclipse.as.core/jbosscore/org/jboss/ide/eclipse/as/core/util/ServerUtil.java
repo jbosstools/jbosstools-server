@@ -101,6 +101,7 @@ public class ServerUtil {
 	
 	public static boolean isJBoss7(IServerType type) {
 		return type.getId().equals(IJBossToolingConstants.SERVER_AS_70)
+				 || type.getId().equals(IJBossToolingConstants.SERVER_AS_71)
 				 || type.getId().equals(IJBossToolingConstants.SERVER_EAP_60);
 	}
 	

@@ -24,6 +24,7 @@ public interface IJBossToolingConstants {
 	public static final String AS_51 = "org.jboss.ide.eclipse.as.runtime.51"; //$NON-NLS-1$
 	public static final String AS_60 = "org.jboss.ide.eclipse.as.runtime.60"; //$NON-NLS-1$
 	public static final String AS_70 = "org.jboss.ide.eclipse.as.runtime.70"; //$NON-NLS-1$
+	public static final String AS_71 = "org.jboss.ide.eclipse.as.runtime.71"; //$NON-NLS-1$
 	public static final String EAP_RUNTIME_PREFIX = "org.jboss.ide.eclipse.as.runtime.eap."; //$NON-NLS-1$
 	public static final String EAP_43 = "org.jboss.ide.eclipse.as.runtime.eap.43"; //$NON-NLS-1$
 	public static final String EAP_50 = "org.jboss.ide.eclipse.as.runtime.eap.50"; //$NON-NLS-1$
@@ -36,6 +37,7 @@ public interface IJBossToolingConstants {
 	public static final String SERVER_AS_51 = "org.jboss.ide.eclipse.as.51"; //$NON-NLS-1$
 	public static final String SERVER_AS_60 = "org.jboss.ide.eclipse.as.60"; //$NON-NLS-1$
 	public static final String SERVER_AS_70 = "org.jboss.ide.eclipse.as.70"; //$NON-NLS-1$
+	public static final String SERVER_AS_71 = "org.jboss.ide.eclipse.as.71"; //$NON-NLS-1$
 	public static final String EAP_SERVER_PREFIX = "org.jboss.ide.eclipse.as.eap."; //$NON-NLS-1$
 	public static final String SERVER_EAP_43 = "org.jboss.ide.eclipse.as.eap.43"; //$NON-NLS-1$
 	public static final String SERVER_EAP_50 = "org.jboss.ide.eclipse.as.eap.50"; //$NON-NLS-1$
@@ -79,8 +81,10 @@ public interface IJBossToolingConstants {
 	public static final String DEFAULT_PROPS_51 = "jboss.51.default.ports.properties"; //$NON-NLS-1$
 	public static final String DEFAULT_PROPS_60 = "jboss.60.default.ports.properties"; //$NON-NLS-1$
 	public static final String DEFAULT_PROPS_70 = "jboss.70.default.ports.properties"; //$NON-NLS-1$
+	public static final String DEFAULT_PROPS_71 = "jboss.71.default.ports.properties"; //$NON-NLS-1$
 	public static final String DEFAULT_PROPS_EAP_43 = "jboss.eap.43.default.ports.properties"; //$NON-NLS-1$
 	public static final String DEFAULT_PROPS_EAP_50 = "jboss.eap.50.default.ports.properties"; //$NON-NLS-1$
+	public static final String DEFAULT_PROPS_EAP_60 = "jboss.eap.60.default.ports.properties"; //$NON-NLS-1$
 	
 	// Poller constants
 	public static final String DEFAULT_STARTUP_POLLER = WebPortPoller.WEB_POLLER_ID;

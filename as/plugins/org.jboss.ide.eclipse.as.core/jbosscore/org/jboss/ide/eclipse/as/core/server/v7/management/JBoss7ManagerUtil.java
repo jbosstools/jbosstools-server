@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2007 Red Hat, Inc. 
+ * Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -7,7 +7,7 @@
  * 
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
- ******************************************************************************/
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.v7.management;
 
 import org.eclipse.wst.server.core.IServer;
@@ -18,21 +18,50 @@ import org.osgi.framework.InvalidSyntaxException;
 public class JBoss7ManagerUtil {
 
 	private static final String JBOSS7_RUNTIME = "org.jboss.ide.eclipse.as.runtime.70"; //$NON-NLS-1$
+	private static final String JBOSS71_RUNTIME = "org.jboss.ide.eclipse.as.runtime.71"; //$NON-NLS-1$
 	private static final String EAP6_RUNTIME = "org.jboss.ide.eclipse.as.runtime.eap.60"; //$NON-NLS-1$
 	
 	public static IJBoss7ManagerService getService(IServer server) throws InvalidSyntaxException  {
 		BundleContext context = JBossServerCorePlugin.getContext();
+		skipLazyInit();
 		JBoss7ManagerServiceProxy proxy = new JBoss7ManagerServiceProxy(context, getRequiredVersion(server));
 		proxy.open();
 		return proxy;
 	}
 
+	private static boolean initialized = false;
+	/* HUUUUUUUUGE HACK */
+	private synchronized static void skipLazyInit() {
+		if( !initialized ) {
+			// Testing to see if forcing the proxy open will
+			BundleContext context = JBossServerCorePlugin.getContext();
+			JBoss7ManagerServiceProxy proxy = null;
+			try {
+				proxy = new JBoss7ManagerServiceProxy(context, IJBoss7ManagerService.AS_VERSION_710_Beta);
+				proxy.open();
+				proxy.getServerState("localhost", 9999); //$NON-NLS-1$
+			} catch( Exception e ) {
+				e.printStackTrace();
+			}
+			try {
+				proxy = new JBoss7ManagerServiceProxy(context, IJBoss7ManagerService.AS_VERSION_700);
+				proxy.open();
+				proxy.getServerState("localhost", 9999); //$NON-NLS-1$
+			} catch(Exception e ) {
+				e.printStackTrace();
+			}
+			initialized = true;
+		}
+	}
+	
 	private static String getRequiredVersion(IServer server) {
 		String id = server.getRuntime().getRuntimeType().getId();
 		if (JBOSS7_RUNTIME.equals(id)
 				|| EAP6_RUNTIME.equals(id)) {
 			return IJBoss7ManagerService.AS_VERSION_700;
 		}
+		if( JBOSS71_RUNTIME.equals(id))
+			return IJBoss7ManagerService.AS_VERSION_710_Beta;
 		return null;
 	}
 

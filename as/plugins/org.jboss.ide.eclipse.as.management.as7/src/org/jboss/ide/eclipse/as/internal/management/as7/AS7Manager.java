@@ -65,6 +65,9 @@ public class AS7Manager {
 	public AS7Manager(String host, int port) throws UnknownHostException {
 		this.client = ModelControllerClient.Factory.create(host, port);
 		this.manager = ServerDeploymentManager.Factory.create(client);
+		System.out.println("70 client class: " + client.getClass());
+		System.out.println("70 manager class: " + manager.getClass());
+		
 	}
 
 	public IJBoss7DeploymentResult undeploySync(String name, IProgressMonitor monitor)

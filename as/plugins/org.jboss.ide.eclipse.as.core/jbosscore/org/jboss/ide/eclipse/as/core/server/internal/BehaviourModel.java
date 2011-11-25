@@ -48,7 +48,7 @@ public class BehaviourModel {
 		ArrayList<IJBossLaunchDelegate> list = new ArrayList<IJBossLaunchDelegate>();
 		BehaviourImpl[] impls = beh.getImplementations();
 		for( int i = 0; i < impls.length; i++ ) {
-			list.add(impls[i].getLaunchDelegate());
+			list.add(impls[i].createLaunchDelegate());
 		}
 		return list;
 	}
@@ -58,7 +58,7 @@ public class BehaviourModel {
 	 */
 	public IJBossLaunchDelegate getLaunchDelegate(IServer server, String mode) {
 		Behaviour beh = map.get(server.getServerType().getId());
-		return beh.getImpl(mode).getLaunchDelegate();
+		return beh.getImpl(mode).createLaunchDelegate();
 	}
 
 	protected void loadModel() {
@@ -126,9 +126,7 @@ public class BehaviourModel {
 		private String name;
 		private String typeId;
 		private IConfigurationElement element;
-		private IJBossLaunchDelegate launchDelegate;
 		private String supportedServers;
-		private IJBossBehaviourDelegate behaviourDelegate = null;
 		
 		public BehaviourImpl(IConfigurationElement element) {
 			this.element = element;
@@ -161,25 +159,18 @@ public class BehaviourModel {
 			return null;
 		}
 		
-		public IJBossLaunchDelegate getLaunchDelegate() {
-			if( launchDelegate != null)
-				return launchDelegate;
-			
+		public IJBossLaunchDelegate createLaunchDelegate() {
 			try {
-				launchDelegate = (IJBossLaunchDelegate) element.createExecutableExtension("launchDelegate"); //$NON-NLS-1$
-				return launchDelegate;
+				return (IJBossLaunchDelegate) element.createExecutableExtension("launchDelegate"); //$NON-NLS-1$
 			} catch( CoreException ce ) {
 				JBossServerCorePlugin.getInstance().getLog().log(ce.getStatus());
 			}
 			return null;
 		}
 		
-		public IJBossBehaviourDelegate getBehaviourDelegate() {
-			if( behaviourDelegate != null )
-				return behaviourDelegate;
+		public IJBossBehaviourDelegate createBehaviourDelegate() {
 			try {
-				behaviourDelegate = (IJBossBehaviourDelegate)element.createExecutableExtension("behaviourDelegate"); //$NON-NLS-1$
-				return behaviourDelegate;
+				return (IJBossBehaviourDelegate)element.createExecutableExtension("behaviourDelegate"); //$NON-NLS-1$
 			} catch(CoreException ce) {
 				JBossServerCorePlugin.getInstance().getLog().log(ce.getStatus());
 			}
