@@ -32,6 +32,7 @@ import org.eclipse.rse.services.shells.IShellService;
 import org.eclipse.rse.subsystems.shells.core.subsystems.servicesubsystem.IShellServiceSubSystem;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
+import org.jboss.ide.eclipse.as.core.server.IJBASHostShellListener;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.ThreadUtils;
 import org.jboss.ide.eclipse.as.rse.core.xpl.ConnectAllSubsystemsUtil;
@@ -49,10 +50,6 @@ public class RSEHostShellModel {
 		new HashMap<String, ServerShellModel>();
 	RSEHostShellModel() {
 		
-	}
-	
-	public interface IJBASHostShellListener {
-		public void writeToShell(String serverId, String[] lines);
 	}
 	
 	private ArrayList<IJBASHostShellListener> listeners = new ArrayList<IJBASHostShellListener>();

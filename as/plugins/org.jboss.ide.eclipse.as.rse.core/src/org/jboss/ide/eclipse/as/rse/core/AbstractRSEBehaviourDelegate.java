@@ -25,7 +25,7 @@ public abstract class AbstractRSEBehaviourDelegate extends AbstractJBossBehaviou
 	}
 	
 	@Override
-	public void stop(boolean force) {
+	public void stopImpl(boolean force) {
 		if( force ) {
 			forceStop();
 		}
