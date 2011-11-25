@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JBoss AS7.1 management API
+Bundle-SymbolicName: org.jboss.ide.eclipse.as.management.as71
+Bundle-Version: 2.3.0.qualifier
+Bundle-Activator: org.jboss.ide.eclipse.as.internal.management.as71.AS71ManagementActivator
+Require-Bundle: org.jboss.ide.eclipse.as.core;bundle-version="2.3.0",
+ org.eclipse.core.runtime;bundle-version="[3.7.0,4.0.0)",
+ org.eclipse.wst.server.core;bundle-version="1.1.302"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ClassPath: .,
+ jboss-as-controller-client-7.1.0.CR1-SNAPSHOT.jar,
+ jboss-as-protocol-7.1.0.CR1-SNAPSHOT.jar,
+ jboss-dmr-1.1.0.Final.jar,
+ jboss-logging-3.1.0.CR2.jar,
+ jboss-marshalling-1.3.4.GA.jar,
+ jboss-remoting-3.2.0.CR3.jar,
+ jboss-sasl-1.0.0.Beta6.jar,
+ jboss-threads-2.0.0.GA.jar,
+ xnio-api-3.0.0.CR4.jar,
+ xnio-nio-3.0.0.CR4.jar
+Service-Component: META-INF/jboss-management-service.xml
+Export-Package: org.jboss.ide.eclipse.as.internal.management.as71;x-friends:="org.jboss.ide.eclipse.as.management.as7.tests"
+Bundle-Vendor: JBoss by Red Hat
