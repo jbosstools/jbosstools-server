@@ -31,6 +31,8 @@ import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ManangerExceptio
  */
 public class DeploymentOperationResult implements IJBoss7DeploymentResult {
 
+	public static final String BUNDLE_ID = "org.jboss.ide.eclipse.as.management.as71"; //$NON-NLS-1$
+	
 	private Future<ServerDeploymentPlanResult> planResult;
 	private DeploymentAction action;
 
@@ -89,7 +91,7 @@ public class DeploymentOperationResult implements IJBoss7DeploymentResult {
 	}
 
 	private IStatus createStatus(int severity, String messagePattern, Object... messageArguments) {
-		return new Status(severity, AS71ManagementActivator.getContext().getBundle().getSymbolicName(), MessageFormat.format(
+		return new Status(severity, BUNDLE_ID, MessageFormat.format(
 				messagePattern, messageArguments));
 	}
 }

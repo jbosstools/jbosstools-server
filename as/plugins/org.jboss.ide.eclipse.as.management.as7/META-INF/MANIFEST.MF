@@ -3,11 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: JBoss AS7 management API
 Bundle-SymbolicName: org.jboss.ide.eclipse.as.management.as7
 Bundle-Version: 2.3.0.qualifier
-Bundle-Activator: org.jboss.ide.eclipse.as.internal.management.as7.AS7ManagementActivator
-Require-Bundle: org.jboss.ide.eclipse.as.core;bundle-version="2.3.0",
- org.eclipse.core.runtime;bundle-version="[3.7.0,4.0.0)",
+Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.7.0,4.0.0)",
  org.eclipse.wst.server.core;bundle-version="1.1.302"
-Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: .,
  jboss-as-controller-client-7.0.0.Final.jar,
@@ -23,3 +20,4 @@ Bundle-ClassPath: .,
 Service-Component: META-INF/jboss-management-service.xml
 Export-Package: org.jboss.ide.eclipse.as.internal.management.as7;x-friends:="org.jboss.ide.eclipse.as.management.as7.tests"
 Bundle-Vendor: JBoss by Red Hat
+Import-Package: org.jboss.ide.eclipse.as.core.server.v7.management
