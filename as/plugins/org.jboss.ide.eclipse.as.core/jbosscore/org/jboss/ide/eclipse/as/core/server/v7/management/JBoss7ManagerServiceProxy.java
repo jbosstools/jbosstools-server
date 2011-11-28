@@ -31,6 +31,10 @@ public class JBoss7ManagerServiceProxy extends ServiceTracker<IJBoss7ManagerServ
 						.format("(&(objectClass={0})(as.version={1}))", IJBoss7ManagerService.class.getCanonicalName(), asVersion)), null); //$NON-NLS-1$
 	}
 
+	public void init() throws Exception {
+		checkedGetService().init();
+	}
+
 	public IJBoss7DeploymentResult deployAsync(String host, int port, String deploymentName, File file,
 			IProgressMonitor monitor) throws Exception {
 		return checkedGetService().deployAsync(host, port, deploymentName, file, monitor);

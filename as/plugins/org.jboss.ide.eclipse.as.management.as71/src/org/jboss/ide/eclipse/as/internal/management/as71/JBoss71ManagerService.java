@@ -11,17 +11,26 @@
 package org.jboss.ide.eclipse.as.internal.management.as71;
 
 import java.io.File;
+import java.security.Security;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.jboss.ide.eclipse.as.core.server.v7.management.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.core.server.v7.management.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7DeploymentState;
 import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ServerState;
+import org.jboss.sasl.JBossSaslProvider;
 
 /**
  * @author Rob Stryker
  */
 public class JBoss71ManagerService implements IJBoss7ManagerService {
+
+	public void init() throws Exception {
+		JBossSaslProvider saslProvider = new JBossSaslProvider();
+        if (Security.getProvider(saslProvider.getName()) == null) {
+            Security.insertProviderAt(saslProvider, 1);
+        }
+	}
 
 	public IJBoss7DeploymentResult deployAsync(String host, int port, String deploymentName,
 			File file, IProgressMonitor monitor) throws Exception {
@@ -119,4 +128,5 @@ public class JBoss71ManagerService implements IJBoss7ManagerService {
 	@Override
 	public void dispose() {
 	}
+
 }

@@ -117,5 +117,8 @@ public class JBossManagerTest {
 
 		public void dispose() {
 		}
+
+		public void init() throws Exception {
+		}
 	}
 }

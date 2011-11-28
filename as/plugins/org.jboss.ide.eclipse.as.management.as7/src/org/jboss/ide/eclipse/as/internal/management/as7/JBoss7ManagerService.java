@@ -23,6 +23,9 @@ import org.jboss.ide.eclipse.as.internal.management.as7.AS7Manager;
  * @author Rob Stryker
  */
 public class JBoss7ManagerService implements IJBoss7ManagerService {
+	public void init() throws Exception {
+	}
+	
 	public IJBoss7DeploymentResult deployAsync(String host, int port, String deploymentName,
 			File file, IProgressMonitor monitor) throws Exception {
 		AS7Manager manager = new AS7Manager(host, port);
@@ -116,7 +119,7 @@ public class JBoss7ManagerService implements IJBoss7ManagerService {
 		}
 	}
 
-	@Override
 	public void dispose() {
 	}
+
 }

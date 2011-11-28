@@ -664,7 +664,10 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		IRuntime rt = (IRuntime) getTaskModel().getObject(
 				TaskModel.TASK_RUNTIME);
 		String v = rt.getRuntimeType().getVersion();
-		
+		return getHomeVersionWarning(version, v);
+	}
+
+	protected String getHomeVersionWarning(String version, String v) {
 		/* 
 		 * CHEAP WARNING HACK - 
 		 *   EAP 5.0 was started as named 5.0, but is now 5.x.

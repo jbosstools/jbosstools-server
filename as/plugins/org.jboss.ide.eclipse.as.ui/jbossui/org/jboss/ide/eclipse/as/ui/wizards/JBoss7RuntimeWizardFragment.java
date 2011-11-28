@@ -183,6 +183,11 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 		configDirTextVal = configDirText.getText();
 		updateErrorMessage();
 	}
+	protected String getWarningString() {
+		if( getHomeVersionWarning() != null )
+			return getHomeVersionWarning();
+		return null;
+	}
 
 	protected String getErrorString() {
 		if (nameText == null)
@@ -207,6 +212,21 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 				return Messages.bind(Messages.rwf7_ConfigFileError, actualPath.toString());
 			}
 		}
+		
+		// Forced error strings for as7.0 and 7.1 incompatabilities. 
+		File loc = new File(homeDir, getSystemJarPath() );
+		String version = getVersionString(loc);
+		IRuntime rt = (IRuntime) getTaskModel().getObject(
+				TaskModel.TASK_RUNTIME);
+		String adapterVersion = rt.getRuntimeType().getVersion();
+		
+		if(!isEAP() && (adapterVersion.equals("7.0") && !version.startsWith("7.0."))
+				|| (adapterVersion.equals("7.1") && version.startsWith("7.0."))) {
+			return NLS.bind(Messages.rwf_homeIncorrectVersionError, adapterVersion, version);
+		}
+		if( isEAP() && (adapterVersion.equals("6.0") && version.startsWith("7.0.")))
+				return NLS.bind(Messages.rwf_homeIncorrectVersionError, adapterVersion, version);
+		
 		return null;
 	}
 

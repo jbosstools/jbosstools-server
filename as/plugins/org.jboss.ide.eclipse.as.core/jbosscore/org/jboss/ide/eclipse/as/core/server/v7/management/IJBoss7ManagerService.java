@@ -22,6 +22,8 @@ public interface IJBoss7ManagerService {
 	public static final String AS_VERSION_710_Beta = "710.beta1"; //$NON-NLS-1$
 	public static final int MGMT_PORT = 9999;
 
+	public void init() throws Exception;
+	
 	/**
 	 * Asynchronously deploy a file to a server
 	 * @param host

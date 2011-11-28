@@ -33,6 +33,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Future;
 
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.callback.NameCallback;
+import javax.security.auth.callback.PasswordCallback;
+import javax.security.auth.callback.UnsupportedCallbackException;
+import javax.security.sasl.RealmCallback;
+import javax.security.sasl.RealmChoiceCallback;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.osgi.util.NLS;
 import org.jboss.as.controller.client.ModelControllerClient;
@@ -63,12 +71,39 @@ public class AS71Manager {
 	}
 
 	public AS71Manager(String host, int port) throws UnknownHostException {
-		this.client = ModelControllerClient.Factory.create(host, port);
+		this.client = ModelControllerClient.Factory.create(host, port,getCallbackHandler());
 		this.manager = ServerDeploymentManager.Factory.create(client);
-		System.out.println("71 client class: " + client.getClass());
-		System.out.println("71 client class: " + manager.getClass());
 	}
 
+	protected CallbackHandler getCallbackHandler() {
+		return new Tools71CallbackHandler();
+	}
+	
+	protected class Tools71CallbackHandler implements CallbackHandler {
+		public void handle(Callback[] callbacks) throws IOException,
+				UnsupportedCallbackException {
+            if (callbacks.length == 1 && callbacks[0] instanceof NameCallback) {
+                ((NameCallback) callbacks[0]).setName("anonymous JBossTools user");
+                return;
+            }
+
+            NameCallback name = null;
+            PasswordCallback pass = null;
+            for (Callback current : callbacks) {
+            	if (current instanceof NameCallback) {
+                    name = (NameCallback) current;
+                } else if (current instanceof PasswordCallback) {
+                    pass = (PasswordCallback) current;
+                } 
+            }
+            // TODO get the username
+            String username, password;
+            username = password = "test";
+            name.setName(username);
+            pass.setPassword(password.toCharArray());
+		}
+	}
+	
 	public IJBoss7DeploymentResult undeploySync(String name, IProgressMonitor monitor)
 			throws JBoss7ManangerException {
 		IJBoss7DeploymentResult result = undeploy(name);
