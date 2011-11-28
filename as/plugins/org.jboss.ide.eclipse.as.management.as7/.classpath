@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry exported="true" kind="lib" path="jboss-as-controller-client-7.0.0.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="jboss-as-protocol-7.0.0.Final.jar" sourcepath="/home/rob/code/jboss/as7/jboss-as/protocol"/>
+	<classpathentry exported="true" kind="lib" path="jboss-as-protocol-7.0.0.Final.jar"/>
 	<classpathentry exported="true" kind="lib" path="jboss-dmr-1.0.0.Final.jar"/>
 	<classpathentry exported="true" kind="lib" path="jboss-logging-3.0.0.GA.jar"/>
 	<classpathentry exported="true" kind="lib" path="jboss-marshalling-1.3.0.GA.jar"/>
