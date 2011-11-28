@@ -23,8 +23,8 @@ public class JBoss7ManagerUtil {
 	
 	public static IJBoss7ManagerService getService(IServer server) throws InvalidSyntaxException  {
 		BundleContext context = JBossServerCorePlugin.getContext();
-//		skipLazyInit();
 		JBoss7ManagerServiceProxy proxy = new JBoss7ManagerServiceProxy(context, getRequiredVersion(server));
+		skipLazyInit();
 		proxy.open();
 		return proxy;
 	}
