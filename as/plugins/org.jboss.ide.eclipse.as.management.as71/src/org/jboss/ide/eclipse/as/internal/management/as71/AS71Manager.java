@@ -38,6 +38,7 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
+import javax.security.sasl.RealmCallback;
 import javax.security.sasl.RealmChoiceCallback;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -94,8 +95,10 @@ public class AS71Manager {
             NameCallback name = null;
             PasswordCallback pass = null;
             for (Callback current : callbacks) {
-	            if (current instanceof RealmChoiceCallback) {
-	                throw new UnsupportedCallbackException(current, "Realm choice not currently supported.");
+	            if (current instanceof RealmCallback) {
+	            	RealmCallback rcb = (RealmCallback) current;
+                    String defaultText = rcb.getDefaultText();
+                    rcb.setText(defaultText); // For now just use the realm suggested.
 	            }
                 if (current instanceof NameCallback) {
                     name = (NameCallback) current;
