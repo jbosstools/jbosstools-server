@@ -38,8 +38,6 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
-import javax.security.sasl.RealmCallback;
-import javax.security.sasl.RealmChoiceCallback;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.osgi.util.NLS;
@@ -50,6 +48,7 @@ import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentManager
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentPlanResult;
 import org.jboss.as.protocol.StreamUtils;
 import org.jboss.dmr.ModelNode;
+import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
 import org.jboss.ide.eclipse.as.core.server.v7.management.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7DeploymentState;
 import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ManangerException;
@@ -65,13 +64,16 @@ public class AS71Manager {
 
 	private ModelControllerClient client;
 	private ServerDeploymentManager manager;
-
+	private AS7ManagementDetails details;
+	
 	public AS71Manager(String host) throws UnknownHostException {
-		this(host, MGMT_PORT);
+		this(new AS7ManagementDetails(host, MGMT_PORT));
 	}
 
-	public AS71Manager(String host, int port) throws UnknownHostException {
-		this.client = ModelControllerClient.Factory.create(host, port,getCallbackHandler());
+	public AS71Manager(AS7ManagementDetails details) throws UnknownHostException {
+		this.details = details;
+		this.client = ModelControllerClient.Factory.create(details.getHost(), details.getManagementPort(),
+				getCallbackHandler());
 		this.manager = ServerDeploymentManager.Factory.create(client);
 	}
 
@@ -96,11 +98,10 @@ public class AS71Manager {
                     pass = (PasswordCallback) current;
                 } 
             }
-            // TODO get the username
-            String username, password;
-            username = password = "test";
-            name.setName(username);
-            pass.setPassword(password.toCharArray());
+            
+            String[] results = details.handleCallbacks(new String[] { name.getPrompt(), pass.getPrompt()});
+            name.setName(results[0]);
+            pass.setPassword(results[1].toCharArray());
 		}
 	}
 	

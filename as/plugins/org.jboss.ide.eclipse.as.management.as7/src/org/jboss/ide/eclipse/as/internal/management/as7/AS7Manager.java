@@ -42,6 +42,7 @@ import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentManager
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentPlanResult;
 import org.jboss.as.protocol.old.StreamUtils;
 import org.jboss.dmr.ModelNode;
+import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
 import org.jboss.ide.eclipse.as.core.server.v7.management.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7DeploymentState;
 import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ManangerException;
@@ -57,13 +58,15 @@ public class AS7Manager {
 
 	private ModelControllerClient client;
 	private ServerDeploymentManager manager;
+	private AS7ManagementDetails details;
 
 	public AS7Manager(String host) throws UnknownHostException {
-		this(host, MGMT_PORT);
+		this(new AS7ManagementDetails(host, MGMT_PORT));
 	}
 
-	public AS7Manager(String host, int port) throws UnknownHostException {
-		this.client = ModelControllerClient.Factory.create(host, port);
+	public AS7Manager(AS7ManagementDetails details) throws UnknownHostException {
+		this.details = details;
+		this.client = ModelControllerClient.Factory.create(details.getHost(), details.getManagementPort());
 		this.manager = ServerDeploymentManager.Factory.create(client);
 	}
 

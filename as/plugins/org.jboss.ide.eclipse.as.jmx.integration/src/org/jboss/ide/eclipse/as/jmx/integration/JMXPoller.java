@@ -74,14 +74,6 @@ public class JMXPoller implements IServerStatePoller2 {
 		launchJMXPoller();
 	}
 
-	@Deprecated
-	public void beginPolling(IServer server, boolean expectedState,
-			PollThread pt) {
-		ceFound = nnfeFound = startingFound = canceled = done = false;
-		this.server = server;
-		launchJMXPoller();
-	}
-
 	private static class JMXPollerRunnable implements IJMXRunnable {
 		private boolean result;
 		public void run(MBeanServerConnection connection) throws Exception {

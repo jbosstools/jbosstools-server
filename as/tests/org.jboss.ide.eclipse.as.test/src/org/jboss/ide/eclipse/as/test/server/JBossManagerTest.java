@@ -17,6 +17,7 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
 import org.jboss.ide.eclipse.as.core.server.v7.management.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.core.server.v7.management.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7DeploymentState;
@@ -60,7 +61,7 @@ public class JBossManagerTest {
 		managerProxy.open();
 		IJBoss7ManagerService manager = managerProxy.getService();
 		assertNotNull(manager);
-		manager.getDeploymentState("fake", 4242, "fake");
+		manager.getDeploymentState(new AS7ManagementDetails("fake", 4242), "fake");
 	}
 
 	private void registerFakeASService(String version) {
@@ -72,47 +73,40 @@ public class JBossManagerTest {
 
 	private static class JBoss71Manager implements IJBoss7ManagerService {
 
-		public IJBoss7DeploymentResult deployAsync(String host, int port, String deploymentName, File file,
+		public IJBoss7DeploymentResult deployAsync(AS7ManagementDetails details, String deploymentName, File file,
 				IProgressMonitor monitor) throws JBoss7ManangerException {
 			throw new UnsupportedOperationException();
 		}
 
-		public IJBoss7DeploymentResult deploySync(String host, int port, String deploymentName, File file,
+		public IJBoss7DeploymentResult deploySync(AS7ManagementDetails details, String deploymentName, File file,
 				IProgressMonitor monitor) throws JBoss7ManangerException {
 			throw new UnsupportedOperationException();
 		}
 
-		public IJBoss7DeploymentResult undeployAsync(String host, int port, String deploymentName, boolean removeFile,
+		public IJBoss7DeploymentResult undeployAsync(AS7ManagementDetails details, String deploymentName, boolean removeFile,
 				IProgressMonitor monitor) throws JBoss7ManangerException {
 			throw new UnsupportedOperationException();
 		}
 
-		public IJBoss7DeploymentResult syncUndeploy(String host, int port, String deploymentName, boolean removeFile,
+		public IJBoss7DeploymentResult syncUndeploy(AS7ManagementDetails details, String deploymentName, boolean removeFile,
 				IProgressMonitor monitor) throws JBoss7ManangerException {
 			throw new UnsupportedOperationException();
 		}
 
-		public JBoss7DeploymentState getDeploymentState(String host, int port, String deploymentName)
+		public JBoss7DeploymentState getDeploymentState(AS7ManagementDetails details, String deploymentName)
 				throws JBoss7ManangerException {
 			throw new UnsupportedOperationException();
 		}
 		
-		public JBoss7ServerState getServerState(String host, int port) throws Exception {
+		public JBoss7ServerState getServerState(AS7ManagementDetails details) throws Exception {
 			throw new UnsupportedOperationException();
 		}
 
-		public JBoss7ServerState getServerState(String host) throws Exception {
+		public boolean isRunning(AS7ManagementDetails details) {
 			throw new UnsupportedOperationException();
 		}
 
-		public boolean isRunning(String host, int port) {
-			throw new UnsupportedOperationException();
-		}
-
-		public void stop(String host, int port) throws JBoss7ManangerException {
-		}
-
-		public void stop(String host) throws JBoss7ManangerException {
+		public void stop(AS7ManagementDetails details) throws JBoss7ManangerException {
 		}
 
 		public void dispose() {

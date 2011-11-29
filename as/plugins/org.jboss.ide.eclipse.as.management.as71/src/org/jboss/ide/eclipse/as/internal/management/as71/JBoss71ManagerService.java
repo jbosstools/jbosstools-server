@@ -14,6 +14,7 @@ import java.io.File;
 import java.security.Security;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
 import org.jboss.ide.eclipse.as.core.server.v7.management.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.core.server.v7.management.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7DeploymentState;
@@ -32,9 +33,9 @@ public class JBoss71ManagerService implements IJBoss7ManagerService {
         }
 	}
 
-	public IJBoss7DeploymentResult deployAsync(String host, int port, String deploymentName,
+	public IJBoss7DeploymentResult deployAsync(AS7ManagementDetails details, String deploymentName,
 			File file, IProgressMonitor monitor) throws Exception {
-		AS71Manager manager = new AS71Manager(host, port);
+		AS71Manager manager = new AS71Manager(details);
 		try {
 			IJBoss7DeploymentResult result = manager.deploy(deploymentName, file);
 			return result;
@@ -43,9 +44,9 @@ public class JBoss71ManagerService implements IJBoss7ManagerService {
 		}
 	}
 
-	public IJBoss7DeploymentResult deploySync(String host, int port, String deploymentName,
+	public IJBoss7DeploymentResult deploySync(AS7ManagementDetails details, String deploymentName,
 			File file, IProgressMonitor monitor) throws Exception {
-		AS71Manager manager = new AS71Manager(host, port);
+		AS71Manager manager = new AS71Manager(details);
 		try {
 			IJBoss7DeploymentResult result = manager.deploySync(deploymentName, file, monitor);
 			return result;
@@ -54,9 +55,9 @@ public class JBoss71ManagerService implements IJBoss7ManagerService {
 		}
 	}
 
-	public IJBoss7DeploymentResult undeployAsync(String host, int port, String deploymentName,
+	public IJBoss7DeploymentResult undeployAsync(AS7ManagementDetails details, String deploymentName,
 			boolean removeFile, IProgressMonitor monitor) throws Exception {
-		AS71Manager manager = new AS71Manager(host, port);
+		AS71Manager manager = new AS71Manager(details);
 		try {
 			IJBoss7DeploymentResult result = manager.undeploy(deploymentName);
 			return result;
@@ -65,9 +66,9 @@ public class JBoss71ManagerService implements IJBoss7ManagerService {
 		}
 	}
 
-	public IJBoss7DeploymentResult syncUndeploy(String host, int port, String deploymentName,
+	public IJBoss7DeploymentResult syncUndeploy(AS7ManagementDetails details, String deploymentName,
 			boolean removeFile, IProgressMonitor monitor) throws Exception {
-		AS71Manager manager = new AS71Manager(host, port);
+		AS71Manager manager = new AS71Manager(details);
 		try {
 			IJBoss7DeploymentResult result = manager.undeploySync(deploymentName, monitor);
 			return result;
@@ -76,8 +77,8 @@ public class JBoss71ManagerService implements IJBoss7ManagerService {
 		}
 	}
 
-	public JBoss7DeploymentState getDeploymentState(String host, int port, String deploymentName) throws Exception {
-		AS71Manager manager = new AS71Manager(host, port);
+	public JBoss7DeploymentState getDeploymentState(AS7ManagementDetails details, String deploymentName) throws Exception {
+		AS71Manager manager = new AS71Manager(details);
 		try {
 			JBoss7DeploymentState result = manager.getDeploymentStateSafe(deploymentName);
 			return result;
@@ -86,13 +87,8 @@ public class JBoss71ManagerService implements IJBoss7ManagerService {
 		}
 	}
 	
-	@Deprecated
-	public JBoss7ServerState getServerState(String host) throws Exception {
-		return getServerState(host, AS71Manager.MGMT_PORT);
-	}
-
-	public JBoss7ServerState getServerState(String host, int port) throws Exception {
-		AS71Manager manager = new AS71Manager(host, port);
+	public JBoss7ServerState getServerState(AS7ManagementDetails details) throws Exception {
+		AS71Manager manager = new AS71Manager(details);
 		try {
 			JBoss7ServerState state = manager.getServerState();
 			return state;
@@ -101,8 +97,8 @@ public class JBoss71ManagerService implements IJBoss7ManagerService {
 		}
 	}
 
-	public boolean isRunning(String host, int port) throws Exception {
-		AS71Manager manager = new AS71Manager(host, port);
+	public boolean isRunning(AS7ManagementDetails details) throws Exception {
+		AS71Manager manager = new AS71Manager(details);
 		try {
 			boolean ret = manager.isRunning();
 			return ret;
@@ -111,13 +107,8 @@ public class JBoss71ManagerService implements IJBoss7ManagerService {
 		}
 	}
 
-	@Deprecated
-	public void stop(String host) throws Exception {
-		stop(host, AS71Manager.MGMT_PORT);
-	}
-	
-	public void stop(String host, int port) throws Exception {
-		AS71Manager manager = new AS71Manager(host, port);
+	public void stop(AS7ManagementDetails details) throws Exception {
+		AS71Manager manager = new AS71Manager(details);
 		try {
 			manager.stopServer();
 		} finally {

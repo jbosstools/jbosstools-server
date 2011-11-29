@@ -19,6 +19,7 @@ import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate;
+import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
 import org.jboss.ide.eclipse.as.core.server.v7.management.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ManagerUtil;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
@@ -53,8 +54,7 @@ public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
 	protected IStatus gracefullStop() {
 		IServer server = getServer();
 		try {
-			JBoss7Server jbossServer = ServerConverter.checkedGetJBossServer(server, JBoss7Server.class);
-			getService().stop(jbossServer.getHost(), jbossServer.getManagementPort());
+			getService().stop(new AS7ManagementDetails(getServer()));
 			return Status.OK_STATUS;
 		} catch (Exception e) {
 			return new Status(

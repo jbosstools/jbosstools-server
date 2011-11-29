@@ -42,6 +42,7 @@ import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossLaunchAdapter.JBTCustomHttpLaunchable;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server;
+import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
 import org.jboss.ide.eclipse.as.core.server.v7.management.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7DeploymentState;
 import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ManagerUtil;
@@ -108,7 +109,8 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 			long time = new Date().getTime();
 			long endTime = time + getMaxDelay();
 			while( new Date().getTime() < endTime ) {
-				JBoss7DeploymentState state = service.getDeploymentState(jbossServer.getHost(), jbossServer.getManagementPort(), 
+				JBoss7DeploymentState state = service.getDeploymentState(
+						new AS7ManagementDetails(server),
 						deployPath.lastSegment());
 				boolean done = (state == JBoss7DeploymentState.STARTED);
 				if( done ) {

@@ -26,98 +26,74 @@ public interface IJBoss7ManagerService {
 	
 	/**
 	 * Asynchronously deploy a file to a server
-	 * @param host
-	 * 
-	 *            The host
-	 * @param port
-	 *            The port
-	 * @param name
-	 *            The deployment's name
-	 * @param file
-	 *            The file to be deployed
-	 * @param monitor
-	 *            The progress monitor
+	 * @param host     The host
+	 * @param port     The port
+	 * @param name     The deployment's name
+	 * @param file     The file to be deployed
+	 * @param monitor  The progress monitor
 	 * 
 	 * @return Not sure what to return yet
 	 * @throws Exception
 	 */
-	public IJBoss7DeploymentResult deployAsync(String host, int port,
+	public IJBoss7DeploymentResult deployAsync(AS7ManagementDetails details,
 			String deploymentName, File file, IProgressMonitor monitor) throws Exception;
 
 	/**
 	 * Synchronously deploy a file to a server
 	 * 
-	 * @param host
-	 *            The host
-	 * @param port
-	 *            The port
-	 * @param name
-	 *            The deployment's name
-	 * @param file
-	 *            The file to be deployed
-	 * @param monitor
-	 *            The progress monitor
+	 * @param host    The host
+	 * @param port    The port
+	 * @param name    The deployment's name
+	 * @param file    The file to be deployed
+	 * @param monitor The progress monitor
 	 * 
 	 * @return Not sure what to return yet
 	 * @throws Exception
 	 */
-	public IJBoss7DeploymentResult deploySync(String host, int port,
+	public IJBoss7DeploymentResult deploySync(AS7ManagementDetails details,
 			String deploymentName, File file, IProgressMonitor monitor) throws Exception;
 
 	/**
 	 * Asynchronously undeploy a file to a server
 	 * 
-	 * @param host
-	 *            The host
-	 * @param port
-	 *            The port
-	 * @param name
-	 *            The deployment's name
-	 * @param file
-	 *            The file to be deployed
-	 * @param monitor
-	 *            The progress monitor
+	 * @param host    The host
+	 * @param port    The port
+	 * @param name    The deployment's name
+	 * @param file    The file to be deployed
+	 * @param monitor The progress monitor
 	 * 
 	 * @return Not sure what to return yet
 	 * @throws Exception
 	 */
-	public IJBoss7DeploymentResult undeployAsync(String host, int port,
+	public IJBoss7DeploymentResult undeployAsync(AS7ManagementDetails details,
 			String deploymentName, boolean removeFile, IProgressMonitor monitor) throws Exception;
 
 	/**
 	 * Synchronously undeploy a file to a server
 	 * 
-	 * @param host
-	 *            The host
-	 * @param port
-	 *            The port
-	 * @param name
-	 *            The deployment's name
-	 * @param file
-	 *            The file to be deployed
-	 * @param monitor
-	 *            The progress monitor
+	 * @param host    The host
+	 * @param port    The port
+	 * @param name    The deployment's name
+	 * @param file    The file to be deployed
+	 * @param monitor The progress monitor
 	 * 
 	 * @return Not sure what to return yet
 	 * @throws Exception
 	 */
-	public IJBoss7DeploymentResult syncUndeploy(String host, int port,
+	public IJBoss7DeploymentResult syncUndeploy(AS7ManagementDetails details,
 			String deploymentName, boolean removeFile, IProgressMonitor monitor) throws Exception;
 
 	/**
 	 * Returns the state for a given deployment name on a given host and port.
 	 * 
-	 * @param host
-	 *            the host to query
-	 * @param port
-	 *            the port to contact it on
-	 * @param deploymentName
-	 *            the name of the deployment that shall be queried
+	 * @param host    the host to query
+	 * @param port    the port to contact it on
+	 * @param deploymentName  the name of the deployment that shall be queried
 	 * 
 	 * @return the state of the deployment
 	 * @throws Exception
 	 */
-	public JBoss7DeploymentState getDeploymentState(String host, int port, String deploymentName) throws Exception;
+	public JBoss7DeploymentState getDeploymentState(AS7ManagementDetails details, String deploymentName) throws Exception;
 
 	/**
 	 * Returns the state of the server 
@@ -128,7 +104,7 @@ public interface IJBoss7ManagerService {
 	 * 
 	 * @throws Exception
 	 */
-	public JBoss7ServerState getServerState(String host, int port) throws Exception;
+	public JBoss7ServerState getServerState(AS7ManagementDetails details) throws Exception;
 
 	/**
 	 * Returns <code>true</code> if the server is running, <code>false</code>
@@ -139,21 +115,15 @@ public interface IJBoss7ManagerService {
 	 * @return true if it's running, false otherwise
 	 * @throws Exception
 	 */
-	public boolean isRunning(String host, int port) throws Exception;
+	public boolean isRunning(AS7ManagementDetails details) throws Exception;
 
-	@Deprecated
-	public JBoss7ServerState getServerState(String host) throws Exception;
-	
 	/**
 	 * Stops the given server
 	 * 
 	 * @throws JBoss7ManangerException
 	 * @throws Exception 
 	 */
-	public void stop(String host, int port) throws Exception;
+	public void stop(AS7ManagementDetails details) throws Exception;
 
-	@Deprecated
-	public void stop(String host) throws Exception;
-	
 	public void dispose();
 }

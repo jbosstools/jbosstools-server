@@ -15,7 +15,6 @@ import java.util.Properties;
 
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
-import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 
 /**
@@ -55,11 +54,18 @@ public interface IServerStatePoller {
 	/*
 	 * expected to launch own thread
 	 */
-	@Deprecated
-	public void beginPolling(IServer server, boolean expectedState, PollThread pt) throws Exception; 
 	public void beginPolling(IServer server, boolean expectedState) throws PollingException; 
 	public IServer getServer();
 	public boolean isComplete() throws PollingException, RequiresInfoException;
+	
+	/**
+	 * Called only after poller is "done".  
+	 * Should return cached final state rather than poll again. 
+	 *  
+	 * @return
+	 * @throws PollingException
+	 * @throws RequiresInfoException
+	 */
 	public boolean getState() throws PollingException, RequiresInfoException; 
 	/*
 	 * clean up any resources / processes. Will ALWAYS be called

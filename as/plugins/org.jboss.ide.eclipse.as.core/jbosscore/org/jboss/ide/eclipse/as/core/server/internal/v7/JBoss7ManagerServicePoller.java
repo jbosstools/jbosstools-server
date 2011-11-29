@@ -11,7 +11,8 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -24,13 +25,13 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
-import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
+import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
 import org.jboss.ide.eclipse.as.core.server.v7.management.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ManagerUtil;
+import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ManagerUtil.IServiceAware;
 import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ManangerConnectException;
 import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ServerState;
-import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ManagerUtil.IServiceAware;
 import org.osgi.framework.InvalidSyntaxException;
 
 /**
@@ -40,24 +41,58 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 
 	public static final String POLLER_ID = "org.jboss.ide.eclipse.as.core.server.JBoss7ManagerServicePoller"; //$NON-NLS-1$
 	private IServer server;
+	private AS7ManagementDetails managementDetails;
 	private ServerStatePollerType type;
 	private boolean expectedState;
 	private IJBoss7ManagerService service;
+	private boolean done = false;
+	private boolean canceled = false;
+	private PollingException pollingException = null;
+	private RequiresInfoException requiresInfoException = null;
+	private List<String> requiredProperties = null; 
+	private Properties requiredPropertiesReturned = null;
 
-	@Deprecated
-	public void beginPolling(IServer server, boolean expectedState, PollThread pollTread) throws Exception {
-	}
-	
 	public void beginPolling(IServer server, boolean expectedState) throws PollingException {
 		try {
 			this.service = JBoss7ManagerUtil.getService(server);
+			this.managementDetails = createManagementDetails();
 			this.server = server;
 			this.expectedState = expectedState;
+			launchPollingThread();
 		} catch(InvalidSyntaxException e) {
 			throw new PollingException(NLS.bind(Messages.CouldNotBeginPolling,server.getName()), e);
 		}
 	}
 
+	private AS7ManagementDetails createManagementDetails() {
+		return new AS7ManagementDetails(server) {
+			public String[] handleCallbacks(String[] prompts) {
+				return handleAsynchCallbacks(prompts);
+			}
+		};
+	}
+	
+
+	private String[] handleAsynchCallbacks(String[] prompts) {
+		List<String> tmp = new ArrayList<String>();
+		tmp.addAll(Arrays.asList(prompts));
+		requiredProperties = tmp;
+		requiresInfoException = new RequiresInfoException("Requires proper credentials"); //$NON-NLS-1$
+		while( !done && !canceled && requiredPropertiesReturned == null ) {
+			try {
+				Thread.sleep(500);
+			} catch(InterruptedException ie) {/* Do nothing */}
+		}
+		
+		if( done || canceled )
+			return new String[0];
+		String[] retPrompts = new String[prompts.length];
+		for( int i = 0; i < retPrompts.length; i++) {
+			retPrompts[i] = (String)requiredPropertiesReturned.get(prompts[i]);
+		}
+		return retPrompts;
+	}
+	
 	public ServerStatePollerType getPollerType() {
 		return type;
 	}
@@ -69,45 +104,63 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 	public IServer getServer() {
 		return server;
 	}
-
-	private int getManagementPort(IServer server) {
-		if( server != null ) {
-			JBoss7Server jbossServer = (JBoss7Server) server.loadAdapter(JBoss7Server.class, new NullProgressMonitor());
-			return jbossServer.getManagementPort();
-		}
-		return IJBoss7ManagerService.MGMT_PORT;
-	}
 	
 	public boolean isComplete() throws PollingException, RequiresInfoException {
+		if (pollingException != null)
+			throw pollingException;
+		if( requiresInfoException != null )
+			throw requiresInfoException;
+		return done;
+	}
+
+	public boolean getState() throws PollingException, RequiresInfoException {
+		if( done ) 
+			return expectedState;
+		return !expectedState;
+	}
+	
+	public void launchPollingThread() {
+		new Thread() {
+			public void run() {
+				runLoop();
+			}
+		}.start();
+	}
+	
+	public void runLoop() {
 		try {
-			if (expectedState == SERVER_DOWN) {
-				return awaitShutdown(service);
-			} else {
-				return awaitRunning(service);
+			while( !done && !canceled )  {
+				if (expectedState == SERVER_DOWN) {
+					done = checkShutdown(service);
+				} else {
+					done = checkRunning(service);
+				}
+				if( !done ) {
+					try {
+						Thread.sleep(300);
+					} catch(InterruptedException ie) {
+						// Ignore
+					}
+				}
 			}
 		} catch (Exception e) {
-			throw new PollingException(e.getMessage());
+			pollingException = new PollingException(e.getMessage());
 		}
 	}
 
-	private Boolean awaitRunning(IJBoss7ManagerService service) {
+	private boolean checkRunning(IJBoss7ManagerService service) {
 		try {
 			JBoss7ServerState serverState = null;
-			do {
-				serverState = service.getServerState(getServer().getHost(), getManagementPort(getServer()));
-			} while (serverState == JBoss7ServerState.STARTING);
+			serverState = service.getServerState(managementDetails);
 			return serverState == JBoss7ServerState.RUNNING;
 		} catch (Exception e) {
 			return false;
 		}
 	}
 
-	private Boolean awaitShutdown(IJBoss7ManagerService service) {
+	private boolean checkShutdown(IJBoss7ManagerService service) {
 		try {
-			JBoss7ServerState serverState = null;
-			do {
-				serverState = service.getServerState(getServer().getHost(), getManagementPort(getServer()));
-			} while (serverState == JBoss7ServerState.RUNNING);
+			service.getServerState(managementDetails);
 			return false;
 		} catch (JBoss7ManangerConnectException e) {
 			return true;
@@ -116,42 +169,41 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 		}
 	}
 
-	public boolean getState() throws PollingException, RequiresInfoException {
-		try {
-			JBoss7ServerState serverState = service.getServerState(getServer().getHost(), getManagementPort(getServer()));
-			return serverState == JBoss7ServerState.RUNNING
-					|| serverState == JBoss7ServerState.RESTART_REQUIRED;
-		} catch (Exception e) {
-			throw new PollingException(e.getMessage());
-		}
-	}
-
 	public void cleanup() {
 		JBoss7ManagerUtil.dispose(service);
 	}
 
 	public List<String> getRequiredProperties() {
-		return Collections.emptyList();
+		return requiredProperties == null ? new ArrayList<String>() : requiredProperties;
 	}
 
 	public void failureHandled(Properties properties) {
+		requiredPropertiesReturned = properties;
 	}
 
 	public void cancel(int type) {
+		canceled = true;
 	}
 
 	public int getTimeoutBehavior() {
 		return TIMEOUT_BEHAVIOR_FAIL;
 	}
 
+	
+	/* Code related to synchronous state checking */
+	private boolean callbacksCalled = false;
 	public IStatus getCurrentStateSynchronous(final IServer server) {
 		try {
 			Boolean result = JBoss7ManagerUtil.executeWithService(new IServiceAware<Boolean>() {
-	
 				@Override
 				public Boolean execute(IJBoss7ManagerService service) throws Exception {
-					JBoss7ServerState state = service.getServerState(server.getHost(), getManagementPort(server));
-					return state == JBoss7ServerState.RUNNING ? IServerStatePoller.SERVER_UP : IServerStatePoller.SERVER_DOWN;
+					try {
+						JBoss7ServerState state = service.getServerState(createSynchronousManagementDetails(server));
+						return state == JBoss7ServerState.RUNNING ? IServerStatePoller.SERVER_UP : IServerStatePoller.SERVER_DOWN;
+					} catch(Exception e) {
+						/* Should be JBoss7ManagerException, but cannot compile against since it is in jboss-as jars */
+						return callbacksCalled ? IServerStatePoller.SERVER_UP : IServerStatePoller.SERVER_DOWN;
+					}
 				}
 			}, server);
 			if( result.booleanValue()) {
@@ -171,4 +223,24 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 			return s;
 		}
 	}
+	
+	private AS7ManagementDetails createSynchronousManagementDetails(IServer server) {
+		return new AS7ManagementDetails(server) {
+			public String[] handleCallbacks(String[] prompts) throws UnsupportedOperationException {
+				// No need to do verification here... simply know that a server responded requesting callbacks
+				// This means a server is up already
+				callbacksCalled = true;
+				throw new UnsupportedOperationException();
+			}
+		};
+	}
+	
+	private int getManagementPort(IServer server) {
+		if( server != null ) {
+			JBoss7Server jbossServer = (JBoss7Server) server.loadAdapter(JBoss7Server.class, new NullProgressMonitor());
+			return jbossServer.getManagementPort();
+		}
+		return IJBoss7ManagerService.MGMT_PORT;
+	}
+
 }

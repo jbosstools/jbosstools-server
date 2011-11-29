@@ -35,54 +35,44 @@ public class JBoss7ManagerServiceProxy extends ServiceTracker<IJBoss7ManagerServ
 		checkedGetService().init();
 	}
 
-	public IJBoss7DeploymentResult deployAsync(String host, int port, String deploymentName, File file,
+	public IJBoss7DeploymentResult deployAsync(AS7ManagementDetails details, String deploymentName, File file,
 			IProgressMonitor monitor) throws Exception {
-		return checkedGetService().deployAsync(host, port, deploymentName, file, monitor);
+		return checkedGetService().deployAsync(details, deploymentName, file, monitor);
 	}
 
-	public IJBoss7DeploymentResult deploySync(String host, int port, String deploymentName, File file,
+	public IJBoss7DeploymentResult deploySync(AS7ManagementDetails details, String deploymentName, File file,
 			IProgressMonitor monitor) throws Exception {
-		return checkedGetService().deployAsync(host, port, deploymentName, file, monitor);
+		return checkedGetService().deployAsync(details, deploymentName, file, monitor);
 	}
 
-	public IJBoss7DeploymentResult undeployAsync(String host, int port, String deploymentName, boolean removeFile,
+	public IJBoss7DeploymentResult undeployAsync(AS7ManagementDetails details, String deploymentName, boolean removeFile,
 			IProgressMonitor monitor) throws Exception {
-		return checkedGetService().undeployAsync(host, port, deploymentName, removeFile, monitor);
+		return checkedGetService().undeployAsync(details, deploymentName, removeFile, monitor);
 	}
 
-	public IJBoss7DeploymentResult syncUndeploy(String host, int port, String deploymentName, boolean removeFile,
+	public IJBoss7DeploymentResult syncUndeploy(AS7ManagementDetails details, String deploymentName, boolean removeFile,
 			IProgressMonitor monitor) throws Exception {
-		return checkedGetService().syncUndeploy(host, port, deploymentName, removeFile, monitor);
+		return checkedGetService().syncUndeploy(details, deploymentName, removeFile, monitor);
 	}
 
-	public JBoss7DeploymentState getDeploymentState(String host, int port, String deploymentName) throws Exception {
-		return checkedGetService().getDeploymentState(host, port, deploymentName);
+	public JBoss7DeploymentState getDeploymentState(AS7ManagementDetails details, String deploymentName) throws Exception {
+		return checkedGetService().getDeploymentState(details, deploymentName);
 	}
 
-	public JBoss7ServerState getServerState(String host, int port) throws Exception {
-		return checkedGetService().getServerState(host, port);
+	public JBoss7ServerState getServerState(AS7ManagementDetails details) throws Exception {
+		return checkedGetService().getServerState(details);
 	}
 
-	public boolean isRunning(String host, int port) throws Exception {
+	public boolean isRunning(AS7ManagementDetails details) throws Exception {
 		try {
-			return checkedGetService().isRunning(host, port);
+			return checkedGetService().isRunning(details);
 		} catch (Exception e) {
 			return false;
 		}
 	}
 
-	@Deprecated
-	public JBoss7ServerState getServerState(String host) throws Exception {
-		return checkedGetService().getServerState(host);
-	}
-
-	public void stop(String host, int port) throws Exception {
-		checkedGetService().stop(host, port);
-	}
-
-	@Deprecated
-	public void stop(String host) throws Exception {
-		checkedGetService().stop(host);
+	public void stop(AS7ManagementDetails details) throws Exception {
+		checkedGetService().stop(details);
 	}
 
 	private IJBoss7ManagerService checkedGetService() throws JBoss7ManangerException {

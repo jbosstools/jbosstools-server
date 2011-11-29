@@ -137,13 +137,7 @@ public class PollThread extends Thread {
 					// This way each request for new info is checked only once.
 					if (!rie.getChecked()) {
 						rie.setChecked();
-						String action = expectedState == IServerStatePoller.SERVER_UP ? SERVER_STARTING
-								: SERVER_STOPPING;
-						IPollerFailureHandler handler = ExtensionManager
-								.getDefault().getFirstPollFailureHandler(poller,
-										action, poller.getRequiredProperties());
-						handler.handle(poller, action, poller
-								.getRequiredProperties());
+						firePollerFailureHandler(expectedState, poller);
 					}
 				}
 				stateStartedOrStopped = checkServerState();
@@ -177,7 +171,6 @@ public class PollThread extends Thread {
 				try {
 					currentState = poller.getState();
 					poller.cleanup();
-//					alertBehavior(currentState);
 					alertListener(currentState);
 					if (finalAlert) {
 						alertEventLog(currentState);
@@ -187,7 +180,6 @@ public class PollThread extends Thread {
 					poller.cancel(IServerStatePoller.CANCEL);
 					poller.cleanup();
 					alertEventLogPollerException(pe);
-//					alertBehavior(!expectedState);
 					alertListener(!expectedState);
 					return;
 				} catch (RequiresInfoException rie) {
@@ -232,19 +224,6 @@ public class PollThread extends Thread {
 			alertEventLogFailure();			
 		} else {
 			alertEventLogSuccess(currentState);
-		}
-	}
-	
-	@Deprecated
-	protected void alertBehavior(boolean currentState) {
-		if (currentState != expectedState) {
-			// it didnt work... cancel all processes! force stop
-			behavior.stop(true);
-		} else {
-			if (currentState == IServerStatePoller.SERVER_UP)
-				behavior.setServerStarted();
-			else 
-				behavior.stop(true);
 		}
 	}
 
@@ -326,5 +305,14 @@ public class PollThread extends Thread {
 		if( !expected && !success)
 			return STATE_STARTED;
 		return STATE_STOPPED;
+	}
+	
+	public static void firePollerFailureHandler(boolean expectedState, IServerStatePoller poller) {
+		String action = expectedState == IServerStatePoller.SERVER_UP ? SERVER_STARTING
+				: SERVER_STOPPING;
+		IPollerFailureHandler handler = ExtensionManager
+				.getDefault().getFirstPollFailureHandler(poller,
+						action, poller.getRequiredProperties());
+		handler.handle(poller, action, poller.getRequiredProperties());
 	}
 }
