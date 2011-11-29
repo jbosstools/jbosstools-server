@@ -32,7 +32,11 @@ public class JBoss7ManagerUtil {
 	}
 
 	private static boolean initialized = false;
-	/* HUUUUUUUUGE HACK */
+	/* HUUUUUUUUGE HACK
+	 * 
+	 * Workaround for https://issues.jboss.org/browse/AS7-2772
+	 * Issue is that AS7.1beta1 client jars changes the security protocol thus we need to ensure it gets registered first.
+	 *  */
 	private synchronized static void skipLazyInit() {
 		if( !initialized ) {
 			
