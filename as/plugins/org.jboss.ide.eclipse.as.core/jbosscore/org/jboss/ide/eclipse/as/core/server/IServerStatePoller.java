@@ -10,9 +10,6 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server;
 
-import java.util.List;
-import java.util.Properties;
-
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
@@ -22,7 +19,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
  * @author Rob Stryker
  *
  */
-public interface IServerStatePoller {
+public interface IServerStatePoller extends INeedCredentials {
 	public static final int POLLING_CODE = IEventCodes.POLLING_CODE;
 	public static final int POLLER_MASK = IEventCodes.POLLER_MASK;
 	
@@ -55,7 +52,6 @@ public interface IServerStatePoller {
 	 * expected to launch own thread
 	 */
 	public void beginPolling(IServer server, boolean expectedState) throws PollingException; 
-	public IServer getServer();
 	public boolean isComplete() throws PollingException, RequiresInfoException;
 	
 	/**
@@ -71,9 +67,7 @@ public interface IServerStatePoller {
 	 * clean up any resources / processes. Will ALWAYS be called
 	 */
 	public void cleanup();
-	public List<String> getRequiredProperties();
-	public void failureHandled(Properties properties);
-	
+
 	/**
 	 * Cancel the polling. 
 	 * @param type CANCEL or TIMEOUT_REACHED

@@ -19,7 +19,7 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
-import org.jboss.ide.eclipse.as.core.server.IPollerFailureHandler;
+import org.jboss.ide.eclipse.as.core.server.IProvideCredentials;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller.PollingException;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller.RequiresInfoException;
@@ -137,7 +137,7 @@ public class PollThread extends Thread {
 					// This way each request for new info is checked only once.
 					if (!rie.getChecked()) {
 						rie.setChecked();
-						firePollerFailureHandler(expectedState, poller);
+						fireRequestCredentials(expectedState, poller);
 					}
 				}
 				stateStartedOrStopped = checkServerState();
@@ -307,12 +307,10 @@ public class PollThread extends Thread {
 		return STATE_STOPPED;
 	}
 	
-	public static void firePollerFailureHandler(boolean expectedState, IServerStatePoller poller) {
-		String action = expectedState == IServerStatePoller.SERVER_UP ? SERVER_STARTING
-				: SERVER_STOPPING;
-		IPollerFailureHandler handler = ExtensionManager
-				.getDefault().getFirstPollFailureHandler(poller,
-						action, poller.getRequiredProperties());
-		handler.handle(poller, action, poller.getRequiredProperties());
+	public static void fireRequestCredentials(boolean expectedState, IServerStatePoller poller) {
+		IProvideCredentials handler = ExtensionManager
+				.getDefault().getFirstCredentialProvider(poller,
+						poller.getRequiredProperties());
+		handler.handle(poller, poller.getRequiredProperties());
 	}
 }

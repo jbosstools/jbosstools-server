@@ -60,6 +60,7 @@ public class AS7Manager {
 	private ServerDeploymentManager manager;
 	private AS7ManagementDetails details;
 
+	@Deprecated
 	public AS7Manager(String host) throws UnknownHostException {
 		this(new AS7ManagementDetails(host, MGMT_PORT));
 	}

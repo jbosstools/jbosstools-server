@@ -25,6 +25,13 @@
             supportsStartup="true"/>
    </extension>
    
+   <extension
+         point="org.jboss.ide.eclipse.as.core.pollerFailureHandler">
+      <pollerHandler
+            class="org.jboss.ide.eclipse.as.jmx.integration.SecurityFailureHandler"
+            id="org.jboss.ide.eclipse.as.ui.launch.jmxSecurityCredentialProvider">
+      </pollerHandler>
+   </extension>
    
    	<extension
       point="org.eclipse.ui.navigator.navigatorContent">
@@ -42,9 +49,9 @@
           id="org.jboss.ide.eclipse.as.ui.extensions.jmx"
           icon="$nl$/icons/jmeth_obj.gif"
           activeByDefault="false"
-          priority="low">
+          priority="low"
           contentProvider="org.jboss.ide.eclipse.as.jmx.integration.JMXProvider$ContentProvider"
-          labelProvider="org.jboss.ide.eclipse.as.jmx.integration.JMXProvider$LabelProvider"
+          labelProvider="org.jboss.ide.eclipse.as.jmx.integration.JMXProvider$LabelProvider">
        <triggerPoints>
           <instanceof
                 value="org.eclipse.wst.server.core.IServer">

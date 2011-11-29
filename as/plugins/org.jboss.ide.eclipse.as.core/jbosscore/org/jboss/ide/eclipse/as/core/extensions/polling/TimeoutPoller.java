@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2007 Red Hat, Inc. 
+ * Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -32,10 +32,6 @@ public class TimeoutPoller implements IServerStatePoller {
 	private IServer server;
 	private ServerStatePollerType type;
 
-	@Deprecated
-	public void beginPolling(IServer server, boolean expectedState, PollThread pollThread) {
-	}
-	
 	public void beginPolling(IServer server, boolean expectedState) {
 		this.expectedState = expectedState;
 		this.server = server;
@@ -69,18 +65,10 @@ public class TimeoutPoller implements IServerStatePoller {
 			return (getServer().getStopTimeout()-3) * 1000;
 	}
 
-	public boolean supportsShutdown() {
-		return true;
+	public void provideCredentials(Properties properties) {
 	}
 
-	public boolean supportsStartup() {
-		return true;
-	}
-
-	public void failureHandled(Properties properties) {
-	}
-
-	public List getRequiredProperties() {
+	public List<String> getRequiredProperties() {
 		return null;
 	}
 	

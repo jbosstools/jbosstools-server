@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2007 Red Hat, Inc. 
+ * Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -18,7 +18,6 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.IProcessProvider;
-import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 
 /**
@@ -36,10 +35,6 @@ public class ProcessTerminatedPoller implements IServerStatePoller {
 	
 	private ServerStatePollerType type;
 	private IServer server;
-	
-	@Deprecated
-	public void beginPolling(IServer server, boolean expectedState, PollThread pollThread) {
-	}
 	
 	public void beginPolling(IServer server, boolean expectedState) {
 		this.server = server;
@@ -71,10 +66,10 @@ public class ProcessTerminatedPoller implements IServerStatePoller {
 		return false;
 	}
 
-	public void failureHandled(Properties properties) {
+	public void provideCredentials(Properties properties) {
 	}
 
-	public List getRequiredProperties() {
+	public List<String> getRequiredProperties() {
 		return null;
 	}
 	

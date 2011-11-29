@@ -38,6 +38,7 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
+import javax.security.sasl.RealmChoiceCallback;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.osgi.util.NLS;
@@ -66,6 +67,7 @@ public class AS71Manager {
 	private ServerDeploymentManager manager;
 	private AS7ManagementDetails details;
 	
+	@Deprecated
 	public AS71Manager(String host) throws UnknownHostException {
 		this(new AS7ManagementDetails(host, MGMT_PORT));
 	}
@@ -92,7 +94,10 @@ public class AS71Manager {
             NameCallback name = null;
             PasswordCallback pass = null;
             for (Callback current : callbacks) {
-            	if (current instanceof NameCallback) {
+	            if (current instanceof RealmChoiceCallback) {
+	                throw new UnsupportedCallbackException(current, "Realm choice not currently supported.");
+	            }
+                if (current instanceof NameCallback) {
                     name = (NameCallback) current;
                 } else if (current instanceof PasswordCallback) {
                     pass = (PasswordCallback) current;

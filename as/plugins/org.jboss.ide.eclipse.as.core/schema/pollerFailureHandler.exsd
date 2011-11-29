@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.jboss.ide.eclipse.as.core">
+<schema targetNamespace="org.jboss.ide.eclipse.as.core" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appInfo>
          <meta.schema plugin="org.jboss.ide.eclipse.as.core" id="pollerFailureHandler" name="org.jboss.ide.eclipse.as.core.runtime.server."/>
@@ -11,6 +11,11 @@
    </annotation>
 
    <element name="extension">
+      <annotation>
+         <appInfo>
+            <meta.element />
+         </appInfo>
+      </annotation>
       <complexType>
          <sequence>
             <element ref="pollerHandler" minOccurs="1" maxOccurs="unbounded"/>
@@ -57,7 +62,7 @@
                   
                </documentation>
                <appInfo>
-                  <meta.attribute kind="java" basedOn=":org.jboss.ide.eclipse.as.core.server.IPollerFailureHandler"/>
+                  <meta.attribute kind="java" basedOn=":org.jboss.ide.eclipse.as.core.server.IProvideCredentials"/>
                </appInfo>
             </annotation>
          </attribute>
@@ -100,13 +105,5 @@
       </documentation>
    </annotation>
 
-   <annotation>
-      <appInfo>
-         <meta.section type="copyright"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
 
 </schema>

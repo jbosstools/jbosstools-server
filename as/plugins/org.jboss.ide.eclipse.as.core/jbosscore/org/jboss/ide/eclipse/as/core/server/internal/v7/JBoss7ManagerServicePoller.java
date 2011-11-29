@@ -55,8 +55,8 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 	public void beginPolling(IServer server, boolean expectedState) throws PollingException {
 		try {
 			this.service = JBoss7ManagerUtil.getService(server);
-			this.managementDetails = createManagementDetails();
 			this.server = server;
+			this.managementDetails = createManagementDetails();
 			this.expectedState = expectedState;
 			launchPollingThread();
 		} catch(InvalidSyntaxException e) {
@@ -177,7 +177,7 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 		return requiredProperties == null ? new ArrayList<String>() : requiredProperties;
 	}
 
-	public void failureHandled(Properties properties) {
+	public void provideCredentials(Properties properties) {
 		requiredPropertiesReturned = properties;
 	}
 

@@ -241,7 +241,7 @@
    <extension
          point="org.jboss.ide.eclipse.as.core.pollerFailureHandler">
       <pollerHandler
-            class="org.jboss.ide.eclipse.as.ui.launch.SecurityFailureHandler"
+            class="org.jboss.ide.eclipse.as.ui.launch.UserPassCredentialProvider"
             id="org.jboss.ide.eclipse.as.ui.launch.securityPollerHandler">
       </pollerHandler>
    </extension>

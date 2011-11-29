@@ -1,3 +1,13 @@
+/******************************************************************************* 
+ * Copyright (c) 2011 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.extensions.polling;
 
 import java.io.FileNotFoundException;
@@ -16,7 +26,6 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
@@ -28,10 +37,6 @@ public class WebPortPoller implements IServerStatePoller2 {
 	private boolean canceled, done;
 	private boolean state;
 	private boolean expectedState;
-
-	@Deprecated
-	public void beginPolling(IServer server, boolean expectedState, PollThread pollTread) throws Exception {
-	}
 
 	public void beginPolling(IServer server, boolean expectedState) {
 		this.server = server;
@@ -59,6 +64,9 @@ public class WebPortPoller implements IServerStatePoller2 {
 				done = true;
 				state = expectedState;
 			}
+			try {
+				Thread.sleep(100);
+			} catch(InterruptedException ie) {} // ignore
 		}
 	}
 	
@@ -75,21 +83,26 @@ public class WebPortPoller implements IServerStatePoller2 {
 	}
 	
 	private static boolean onePing(String url) {
+		URLConnection conn = null;
 		try {
 			URL pingUrl = new URL(url);
-			URLConnection conn = pingUrl.openConnection();
+			conn = pingUrl.openConnection();
 			((HttpURLConnection)conn).getResponseCode();
 			return true;
 		} catch( FileNotFoundException fnfe ) {
 			return true;
 		} catch (MalformedURLException e) {
-			// Should NEVER happen since hte URL's are hand-crafted, but whatever
+			// Should NEVER happen since the URL's are hand-crafted, but whatever
 			Status s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, e.getMessage(), e);
 			JBossServerCorePlugin.getDefault().log(s);
 		} catch (IOException e) {
 			// Does not need to be logged
 			return false;
-		} 
+		} finally {
+			if( conn != null ) {
+				((HttpURLConnection)conn).disconnect();
+			}
+		}
 		return false;
 	}
 	
@@ -120,7 +133,7 @@ public class WebPortPoller implements IServerStatePoller2 {
 		return new ArrayList<String>();
 	}
 
-	public void failureHandled(Properties properties) {
+	public void provideCredentials(Properties properties) {
 	}
 
 	public void cancel(int type) {

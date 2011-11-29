@@ -30,7 +30,6 @@ import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
-import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.tools.jmx.core.IJMXRunnable;
@@ -213,7 +212,7 @@ public class JMXPoller implements IServerStatePoller2 {
 		return done;
 	}
 	
-	public void failureHandled(Properties properties) {
+	public void provideCredentials(Properties properties) {
 		if( properties == null ) {
 			requiredPropertiesReturned = IGNORED_PROPERTIES;
 		} else

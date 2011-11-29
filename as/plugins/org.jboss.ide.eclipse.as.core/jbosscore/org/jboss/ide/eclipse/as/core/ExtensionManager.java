@@ -30,9 +30,9 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
-import org.jboss.ide.eclipse.as.core.server.IPollerFailureHandler;
+import org.jboss.ide.eclipse.as.core.server.IProvideCredentials;
 import org.jboss.ide.eclipse.as.core.server.IServerAlreadyStartedHandler;
-import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.server.IServerProvider;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 
 /**
@@ -55,7 +55,7 @@ public class ExtensionManager {
 	private HashMap<String, ServerStatePollerType> pollers;
 	
 	/** The map of pollerID -> PollerObject */
-	private HashMap<String, IPollerFailureHandler> pollerFailureHandlers;
+	private HashMap<String, IProvideCredentials> credentialProviders;
 
 	/** The method used to load / instantiate the pollers */
 	public void loadPollers() {
@@ -123,14 +123,14 @@ public class ExtensionManager {
 	}
 	
 	/** The method used to load / instantiate the failure handlers */
-	public void loadFailureHandler() {
-		pollerFailureHandlers = new HashMap<String, IPollerFailureHandler>();
+	public void loadCredentialProviders() {
+		credentialProviders = new HashMap<String, IProvideCredentials>();
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
 		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerCorePlugin.PLUGIN_ID, "pollerFailureHandler"); //$NON-NLS-1$
 		for( int i = 0; i < cf.length; i++ ) {
 			try {
-				pollerFailureHandlers.put(cf[i].getAttribute("id"),  //$NON-NLS-1$
-						(IPollerFailureHandler)cf[i].createExecutableExtension("class")); //$NON-NLS-1$
+				credentialProviders.put(cf[i].getAttribute("id"),  //$NON-NLS-1$
+						(IProvideCredentials)cf[i].createExecutableExtension("class")); //$NON-NLS-1$
 			} catch( CoreException e ) {
 				// TODO ERROR LOG
 			} catch( ClassCastException cce ) {
@@ -139,17 +139,17 @@ public class ExtensionManager {
 		}
 	}
 
-	public IPollerFailureHandler[] getPollerFailureHandlers() {
-		if( pollerFailureHandlers == null ) 
-			loadFailureHandler();
-		Collection<IPollerFailureHandler> c = pollerFailureHandlers.values();
-		return c.toArray(new IPollerFailureHandler[c.size()]);
+	public IProvideCredentials[] getCredentialProviders() {
+		if( credentialProviders == null ) 
+			loadCredentialProviders();
+		Collection<IProvideCredentials> c = credentialProviders.values();
+		return c.toArray(new IProvideCredentials[c.size()]);
 	}
 	
-	public IPollerFailureHandler getFirstPollFailureHandler(IServerStatePoller poller, String action, List<String> requiredProperties) {
-		IPollerFailureHandler[] handlers = getPollerFailureHandlers();
+	public IProvideCredentials getFirstCredentialProvider(IServerProvider serverProvider, List<String> requiredProperties) {
+		IProvideCredentials[] handlers = getCredentialProviders();
 		for( int i = 0; i < handlers.length; i++ ) {
-			if( handlers[i].accepts(poller, action, requiredProperties)) {
+			if( handlers[i].accepts(serverProvider, requiredProperties)) {
 				return handlers[i];
 			}
 		}
