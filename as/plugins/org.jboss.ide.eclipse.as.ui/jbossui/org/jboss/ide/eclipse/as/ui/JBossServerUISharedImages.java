@@ -50,8 +50,7 @@ public class JBossServerUISharedImages {
 	public static final String XPATH_LEVEL_1 = "xpath_level_1"; //$NON-NLS-1$
 	public static final String XPATH_LEVEL_2 = "xpath_level_2"; //$NON-NLS-1$
 	public static final String XPATH_LEVEL_3 = "xpath_level_3"; //$NON-NLS-1$
-	
-	
+	public static final String CONSOLE = "console"; //$NON-NLS-1$
 	
 	private static JBossServerUISharedImages instance;
 	
@@ -77,6 +76,7 @@ public class JBossServerUISharedImages {
 		descriptors.put(XPATH_LEVEL_2, createImageDescriptor(pluginBundle, "icons/xpath_level_2.gif")); //$NON-NLS-1$
 		descriptors.put(XPATH_LEVEL_3, createImageDescriptor(pluginBundle, "icons/xpath_level_3.gif")); //$NON-NLS-1$
 		
+		descriptors.put(CONSOLE, createImageDescriptor(pluginBundle, "/icons/console.gif")); //$NON-NLS-1$
 		
 		Iterator<String> iter = descriptors.keySet().iterator();
 		while (iter.hasNext()) {
