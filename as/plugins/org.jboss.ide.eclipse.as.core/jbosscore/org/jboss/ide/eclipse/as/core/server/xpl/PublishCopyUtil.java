@@ -241,17 +241,15 @@ public final class PublishCopyUtil {
 						InputStream in = new FileInputStream(tempFile);
 						IStatus status = copyFile(in, file.getPath());
 						throwOnErrorStatus(file, status);
+						return;
 					} catch (FileNotFoundException e) {
 						// shouldn't occur
 					} finally {
 						tempFile.delete();
 					}
-					/*if (!safeDelete(file, 8)) {
-						tempFile.delete();
-						throw new CoreException(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorDeleting, file.toString()), null));
-					}*/
 				}
 			}
+			// At this point, the file should be guaranteed not to exist. 
 			if (!safeRename(tempFile, file, 10))
 				throw new CoreException(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, IEventCodes.JST_PUB_ASSEMBLE_FAIL, 
 						NLS.bind(org.jboss.ide.eclipse.as.core.Messages.PublishRenameFailure, 
