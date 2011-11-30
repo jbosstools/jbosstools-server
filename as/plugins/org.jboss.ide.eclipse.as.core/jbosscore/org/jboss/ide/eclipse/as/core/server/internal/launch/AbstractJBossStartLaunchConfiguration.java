@@ -112,7 +112,6 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 		}
 		Trace.trace(Trace.STRING_FINEST, "There is no handler available to prompt the user. The server will be set to started automatically. "); //$NON-NLS-1$
 		// force server to started mode
-		jbsBehavior.setServerStarting();
 		jbsBehavior.setServerStarted();
 		return false;
 	}

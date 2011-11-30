@@ -49,21 +49,9 @@ public class PollThread extends Thread {
 	private boolean expectedState, abort, stateStartedOrStopped;
 	private IServerStatePoller poller;
 	private String abortMessage;
-	@Deprecated
-	private DelegatingServerBehavior behavior;
 	private String pollerId;
 	private IPollResultListener listener;
 	private IServer server;
-
-	@Deprecated
-	public PollThread(boolean expectedState, IServerStatePoller poller, DelegatingServerBehavior behavior) {
-		super(getThreadName(behavior.getServer()));
-		this.expectedState = expectedState;
-		this.behavior = behavior;
-		this.server = behavior.getServer();
-		this.poller = poller;
-		this.abort = false;
-	}
 
 	public PollThread(boolean expectedState, IServerStatePoller poller, IPollResultListener listener, IServer server) {
 		super(getThreadName(server));
@@ -96,11 +84,10 @@ public class PollThread extends Thread {
 	}
 
 	public void run() {
-		// Poller not found
+		// Poller not found. Abort
 		if (poller == null) {
 			alertEventLogStarting();
 			alertPollerNotFound();
-//			alertBehavior(!expectedState);
 			alertListener(!expectedState);
 			return;
 		}
@@ -130,7 +117,6 @@ public class PollThread extends Thread {
 					poller.cancel(IServerStatePoller.CANCEL);
 					poller.cleanup();
 					alertEventLogPollerException(e);
-//					alertBehavior(!expectedState);
 					alertListener(!expectedState);
 					return;
 				} catch (RequiresInfoException rie) {
@@ -148,64 +134,73 @@ public class PollThread extends Thread {
 			ServerLogger.getDefault().log(server, s);
 		}
 
-		// we stopped. Did we abort?
 		if (stateStartedOrStopped) {
-			int state = server.getServerState();
-			boolean success = false;
-			if (expectedState == IServerStatePoller.SERVER_UP)
-				success = state == IServer.STATE_STARTED;
-			else
-				success = state == IServer.STATE_STOPPED;
-
-			poller.cancel(success ? IServerStatePoller.SUCCESS
-					: IServerStatePoller.FAILED);
-			poller.cleanup();
+			// we stopped. Did we abort?
+			handleUncertainTermination();
 		} else if (abort) {
+			// Definite abort
 			poller.cleanup();
 			alertEventLogAbort();
+		} else if (done) {
+			// the poller has an answer
+			handlePollerHasAnswer();
 		} else {
-			boolean currentState = !expectedState;
-			boolean finalAlert = true;
-			if (done) {
-				// the poller has an answer
-				try {
-					currentState = poller.getState();
-					poller.cleanup();
-					alertListener(currentState);
-					if (finalAlert) {
-						alertEventLog(currentState);
-					}
-				} catch (PollingException pe) {
-					// abort and put the message in event log
-					poller.cancel(IServerStatePoller.CANCEL);
-					poller.cleanup();
-					alertEventLogPollerException(pe);
-					alertListener(!expectedState);
-					return;
-				} catch (RequiresInfoException rie) {
-					// You don't have an answer... liar!
-				}
-			} else {
-				// we timed out. get response from preferences
-				poller.cancel(IServerStatePoller.TIMEOUT_REACHED);
-				int behavior = poller.getTimeoutBehavior();
-				poller.cleanup();
-				alertEventLogTimeout();
-				if (behavior != IServerStatePoller.TIMEOUT_BEHAVIOR_IGNORE) {
-					// xnor;
-					// if behavior is to succeed and we're expected to go up,
-					// we're up
-					// if behavior is to fail and we're expecting to be down,
-					// we're up (failed to shutdown)
-					// all other cases, we're down.
-					currentState = (expectedState == (behavior == IServerStatePoller.TIMEOUT_BEHAVIOR_SUCCEED));
-//					alertBehavior(currentState);					
-					alertListener(currentState);
-				}
-			}
+			// we timed out. get response from preferences
+			handleTimeoutTermination();
 		}
 	}
 
+	private void handlePollerHasAnswer() {
+		boolean finalAlert = true;
+		try {
+			boolean currentState = poller.getState();
+			poller.cleanup();
+			alertListener(currentState);
+			if (finalAlert) {
+				alertEventLog(currentState);
+			}
+		} catch (PollingException pe) {
+			// Poller's answer was exception:  abort and put the message in event log
+			poller.cancel(IServerStatePoller.CANCEL);
+			poller.cleanup();
+			alertEventLogPollerException(pe);
+			alertListener(!expectedState);
+			return;
+		} catch (RequiresInfoException rie) {
+			// You don't have an answer... liar!
+		}
+	}
+	
+	private void handleTimeoutTermination() {
+		poller.cancel(IServerStatePoller.TIMEOUT_REACHED);
+		int behavior = poller.getTimeoutBehavior();
+		poller.cleanup();
+		alertEventLogTimeout();
+		if (behavior != IServerStatePoller.TIMEOUT_BEHAVIOR_IGNORE) {
+			// xnor;
+			// if behavior is to succeed and we're expected to go up,
+			// we're up
+			// if behavior is to fail and we're expecting to be down,
+			// we're up (failed to shutdown)
+			// all other cases, we're down.
+			boolean currentState = (expectedState == (behavior == IServerStatePoller.TIMEOUT_BEHAVIOR_SUCCEED));
+			alertListener(currentState);
+		}
+	}
+	
+	private void handleUncertainTermination() {
+		int state = server.getServerState();
+		boolean success = false;
+		if (expectedState == IServerStatePoller.SERVER_UP)
+			success = state == IServer.STATE_STARTED;
+		else
+			success = state == IServer.STATE_STOPPED;
+
+		poller.cancel(success ? IServerStatePoller.SUCCESS
+				: IServerStatePoller.FAILED);
+		poller.cleanup();
+	}
+	
 	private boolean timeoutReached(long startTime, int maxWait) {
 		return System.currentTimeMillis() >= (startTime + maxWait);
 	}

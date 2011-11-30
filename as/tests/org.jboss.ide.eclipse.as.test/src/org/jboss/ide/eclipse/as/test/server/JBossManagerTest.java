@@ -61,7 +61,7 @@ public class JBossManagerTest {
 		managerProxy.open();
 		IJBoss7ManagerService manager = managerProxy.getService();
 		assertNotNull(manager);
-		manager.getDeploymentState(new AS7ManagementDetails("fake", 4242), "fake");
+		manager.getDeploymentState(new MockAS7ManagementDetails("fake", 4242), "fake");
 	}
 
 	private void registerFakeASService(String version) {
@@ -113,6 +113,26 @@ public class JBossManagerTest {
 		}
 
 		public void init() throws Exception {
+		}
+	}
+	
+	public static class MockAS7ManagementDetails extends AS7ManagementDetails {
+		private String host;
+		private int port;
+		public MockAS7ManagementDetails(String host, int port) {
+			super(null);
+			this.host = host;
+			this.port = port;
+		}
+		public String getHost() {
+			return host;
+		}
+		
+		public int getManagementPort() {
+			return port;
+		}
+		public String[] handleCallbacks(String[] prompts) throws UnsupportedOperationException {
+			return new String[]{};
 		}
 	}
 }

@@ -60,15 +60,6 @@ public class AS7Manager {
 	private ServerDeploymentManager manager;
 	private AS7ManagementDetails details;
 
-	@Deprecated
-	public AS7Manager(String host) throws UnknownHostException {
-		this(new AS7ManagementDetails(host, MGMT_PORT));
-	}
-
-	public AS7Manager(String host, int port) throws UnknownHostException {
-		this(new AS7ManagementDetails(host, port));
-	}
-
 	public AS7Manager(AS7ManagementDetails details) throws UnknownHostException {
 		this.details = details;
 		this.client = ModelControllerClient.Factory.create(details.getHost(), details.getManagementPort());

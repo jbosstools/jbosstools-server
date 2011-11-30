@@ -25,6 +25,8 @@ public interface IProvideCredentials {
 	
 	/**
 	 * Handles the fetching / requesting and subsequent delivery of these credentials
+	 * This method is performed asynchronously, with a Properties object
+	 * eventually being delivered to "inNeed" via inNeed.provideCredentials(etc)
 	 * 
 	 * @param inNeed the object requiring access to the credentials
 	 * @param requiredProperties a list of required properties

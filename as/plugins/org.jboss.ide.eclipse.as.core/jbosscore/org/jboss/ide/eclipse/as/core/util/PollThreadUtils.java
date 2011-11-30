@@ -10,15 +10,21 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.core.util;
 
+import java.util.List;
+import java.util.Properties;
+
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
+import org.jboss.ide.eclipse.as.core.server.INeedCredentials;
+import org.jboss.ide.eclipse.as.core.server.IProvideCredentials;
+import org.jboss.ide.eclipse.as.core.server.IServerProvider;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
-import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.IPollResultListener;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
+import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
 
 /**
  * @author Rob Stryker
@@ -62,19 +68,6 @@ public class PollThreadUtils {
 	 * Returns the poller for the given poller id. 
 	 * 
 	 * @param pollerId the id of the poller to use
-	 * @param expectedState
-	 * @param server
-	 * @return
-	 */
-	@Deprecated
-	public static IServerStatePoller getPoller(String pollerId, boolean expectedState, IServer server) {
-		return getPoller(pollerId);
-	}
-
-	/**
-	 * Returns the poller for the given poller id. 
-	 * 
-	 * @param pollerId the id of the poller to use
 	 * @return the poller for the given id
 	 */
 	public static IServerStatePoller getPoller(String pollerId) {
@@ -112,40 +105,6 @@ public class PollThreadUtils {
 		}
 	}
 
-	/**
-	 * Stops the given poll thread and creates a new poll thread for the given
-	 * expected state and server behavior.
-	 * 
-	 * @param expectedState the state to wait for 
-	 * @param pollThread the poll thread to stop
-	 * @param behaviour the server behavior to use.
-	 * @return 
-	 * @return the new poll thread
-	 */
-	@Deprecated
-	public static PollThread pollServer(final boolean expectedState, PollThread currentPollThread, DelegatingServerBehavior behaviour) {
-		IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, behaviour.getServer());
-		return pollServer(expectedState, poller, currentPollThread, behaviour);
-	}
-
-	/**
-	 * Stops the given poll thread and creates a new poll thread for the given
-	 * expected state, poller and server behavior.
-	 * 
-	 * @param expectedState the state to wait for 
-	 * @param poller the poller to use to wait for the expected state
-	 * @param pollThread the poll thread to stop
-	 * @param behaviour the server behavior to use.
-	 * @return the new poll thread
-	 */
-	@Deprecated
-	public static PollThread pollServer(boolean expectedState, IServerStatePoller poller, PollThread currentPollThread,
-			DelegatingServerBehavior behaviour) {
-		stopPolling(currentPollThread);
-		PollThread newPollThread = new PollThread(expectedState, poller, behaviour);
-		newPollThread.start();
-		return newPollThread;
-	}
 
 	/**
 	 * Stops the given poll thread and creates a new poll thread for the given
@@ -164,5 +123,67 @@ public class PollThreadUtils {
 		newPollThread.start();
 		return newPollThread;
 	}
+	
+	/**
+	 * The credential provider is alerted that credentials are needed. 
+	 * The response may come at any time. 
+	 * 
+	 * @param requester
+	 * @param requiredProps
+	 */
+	public static void requestCredentialsAsynch(INeedCredentials requester, List<String> requiredProps) {
+		IProvideCredentials provider = ExtensionManager.getDefault()
+				.getFirstCredentialProvider(requester, requiredProps);
+		provider.handle(requester, requiredProps);
+	}
+	
+	/**
+	 * The credential provider is alerted that credentials are needed. 
+	 * The thread is then delayed until some result is provided. 
+	 * 
+	 * @param requester
+	 * @param requiredProps
+	 * @return
+	 */
 
+	public static Properties requestCredentialsSynchronous(final IServerProvider requester, List<String> requiredProps) {
+		IProvideCredentials provider = ExtensionManager.getDefault()
+				.getFirstCredentialProvider(requester, requiredProps);
+		final Properties[] returnedProps = new Properties[1];
+		final Boolean[] gotProps = new Boolean[1];
+		returnedProps[0] = null;
+		gotProps[0] = false;
+		
+		/*
+		 * This dummy requirer will set variables when the credentials finally arrive. 
+		 * Then this synchronous method can finish. 
+		 */
+		
+		INeedCredentials dummyRequirer = new INeedCredentials() {
+			public IServer getServer() {
+				return requester.getServer();
+			}
+			public List<String> getRequiredProperties() {
+				// ignore
+				return null;
+			}
+			public void provideCredentials(Properties credentials) {
+				returnedProps[0] = credentials;
+				// necessary to have a gotProps since a cancelation on the UI may 
+				// set null as the returned properties
+				gotProps[0] = true;
+			}
+		};
+		
+		provider.handle(dummyRequirer, requiredProps);
+
+		while( !gotProps[0]) {
+			try {
+				Thread.sleep(100);
+			} catch(InterruptedException ie) {
+				// ignore
+			}
+		}
+		return returnedProps[0];
+	}
 }

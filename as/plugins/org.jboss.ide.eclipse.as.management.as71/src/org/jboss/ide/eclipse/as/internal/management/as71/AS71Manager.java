@@ -67,11 +67,6 @@ public class AS71Manager {
 	private ModelControllerClient client;
 	private ServerDeploymentManager manager;
 	private AS7ManagementDetails details;
-	
-	@Deprecated
-	public AS71Manager(String host) throws UnknownHostException {
-		this(new AS7ManagementDetails(host, MGMT_PORT));
-	}
 
 	public AS71Manager(AS7ManagementDetails details) throws UnknownHostException {
 		this.details = details;
@@ -108,8 +103,10 @@ public class AS71Manager {
             }
             
             String[] results = details.handleCallbacks(new String[] { name.getPrompt(), pass.getPrompt()});
-            name.setName(results[0]);
-            pass.setPassword(results[1].toCharArray());
+            if( results != null && results.length >= 2 ) {
+	            name.setName(results[0]);
+	            pass.setPassword(results[1].toCharArray());
+            }
 		}
 	}
 	
