@@ -223,8 +223,7 @@ public class Messages extends NLS {
 	public static String ExploreUtils_Action_Text;
 	public static String ExploreUtils_Description;
 
-	public static String OpenManagementConsole_Action_Text;
-	public static String OpenConsole_Action_Description;
+	public static String OpenWebManagementConsole_Action_Text;
 
 	public static String Configure;
 	public static String ConfigureRuntimeMarkerResolution_Description;
