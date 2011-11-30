@@ -237,7 +237,7 @@
 				</para>
 			</important>
 			<para>
-				Clicking on the <guibutton>Download</guibutton> button will display a new screen of available runtimes that can be downloaded. Highlight the server you wish to download and install, and click the <guibutton>OK</guibuton> button.
+				Clicking on the <guibutton>Download</guibutton> button will display a new screen of available runtimes that can be downloaded. Highlight the server you wish to download and install, and click the <guibutton>OK</guibutton> button.
 			</para>
 			<figure>
 				<title>JBoss Runtime search results</title>
@@ -248,7 +248,7 @@
 				</mediaobject>
 			</figure>
 			<para>
-				A new dialog will appear asking you to specify an <guilabel>Install folder</guilabel> and <guilabel>Download folder</guilabel>; the option to <guilabel>Delete archive after installing</guilabel> is checked by default. Once you have specified the two paths above, click the <guibuton>OK</guibutton> button and the server will begin downloading.
+				A new dialog will appear asking you to specify an <guilabel>Install folder</guilabel> and <guilabel>Download folder</guilabel>; the option to <guilabel>Delete archive after installing</guilabel> is checked by default. Once you have specified the two paths above, click the <guibutton>OK</guibutton> button and the server will begin downloading.
 			</para>
 			<figure>
 				<title>JBoss Runtime search results</title>
