@@ -28,6 +28,7 @@ import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ManangerExceptio
 import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ServerState;
 import org.jboss.ide.eclipse.as.internal.management.as7.AS7Manager;
 import org.jboss.ide.eclipse.as.internal.management.as7.tests.utils.AS7ManagerTestUtils;
+import org.jboss.ide.eclipse.as.test.server.JBossManagerTest.MockAS7ManagementDetails;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -46,7 +47,8 @@ public class AS7ManagerIntegrationTest {
 		assertTrue("There is no server at " + AS7ManagerTestUtils.LOCALHOST +
 				" that listens on port " + AS7Manager.MGMT_PORT,
 				AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.LOCALHOST, AS7Manager.MGMT_PORT));
-		this.manager = new AS7Manager(AS7ManagerTestUtils.LOCALHOST, AS7Manager.MGMT_PORT);
+		this.manager = new AS7Manager( new MockAS7ManagementDetails(
+				AS7ManagerTestUtils.LOCALHOST, AS7Manager.MGMT_PORT));
 	}
 
 	@After

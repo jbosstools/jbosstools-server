@@ -49,6 +49,7 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.jboss.ide.eclipse.as.test,
  org.jboss.ide.eclipse.as.test.classpath,
  org.jboss.ide.eclipse.as.test.defects,
+ org.jboss.ide.eclipse.as.test.launch,
  org.jboss.ide.eclipse.as.test.projectcreation,
  org.jboss.ide.eclipse.as.test.publishing,
  org.jboss.ide.eclipse.as.test.publishing.v2,
