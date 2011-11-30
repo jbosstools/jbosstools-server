@@ -219,12 +219,14 @@ public class Messages extends NLS {
 	public static String EditorLocalDeployment;
 	public static String EditorRefreshViewer;
 	
-	
 	public static String ExploreUtils_Action_Text;
 	public static String ExploreUtils_Description;
 
-	public static String OpenWebManagementConsole_Action_Text;
-
+	public static String ShowInWebManagementConsole_Action_Text;
+	public static String ShowInWelcomePage_Action_Text;
+	public static String ShowInAction_Error;
+	public static String ShowInAction_Error_Title;
+	
 	public static String Configure;
 	public static String ConfigureRuntimeMarkerResolution_Description;
 

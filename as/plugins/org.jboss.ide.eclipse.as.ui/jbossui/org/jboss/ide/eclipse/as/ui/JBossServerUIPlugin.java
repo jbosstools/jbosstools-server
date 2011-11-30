@@ -124,6 +124,10 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 	
 	public static void log(String message, Exception e) {
 		IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, message, e);
+		log(status);
+	}
+
+	public static void log(IStatus status) {
 		JBossServerUIPlugin.getDefault().getLog().log(status);
 	}
 	

@@ -1,11 +1,13 @@
 package org.jboss.ide.eclipse.as.ui.views.server.extensions;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jface.action.IContributionItem;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.ISelectionProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.osgi.util.NLS;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonActionProvider;
 import org.eclipse.ui.navigator.ICommonActionExtensionSite;
 import org.eclipse.ui.navigator.ICommonViewerWorkbenchSite;
@@ -14,18 +16,17 @@ import org.eclipse.wst.server.ui.internal.view.servers.AbstractServerAction;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
-import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.tools.common.ui.BrowserUtil;
 
 import com.ibm.icu.text.MessageFormat;
 
-public class OpenManagementConsoleActionProvider extends CommonActionProvider {
+public class ShowInWelcomePageActionProvider extends CommonActionProvider {
 
-	private static final String CONSOLE_URL_PATTERN = "http://{0}:{1}/console";
+	private static final String WELCOME_PAGE_URL_PATTERN = "http://{0}:{1}/"; //$NON-NLS-1$
 
 	private ICommonActionExtensionSite actionSite;
-	private OpenWebManagementConsoleAction openWebManagementConsoleAction;
+	private OpenWelcomePageAction openWelcomePageAction;
 
 	public void init(ICommonActionExtensionSite site) {
 		super.init(site);
@@ -37,19 +38,18 @@ public class OpenManagementConsoleActionProvider extends CommonActionProvider {
 		ICommonViewerWorkbenchSite commonViewerWorkbenchSite = 
 				CommonActionProviderUtils.getCommonViewerWorkbenchSite(site);
 		if (commonViewerWorkbenchSite != null) {
-			openWebManagementConsoleAction = 
-					new OpenWebManagementConsoleAction(commonViewerWorkbenchSite.getSelectionProvider());
+			openWelcomePageAction = 
+					new OpenWelcomePageAction(commonViewerWorkbenchSite.getSelectionProvider());
 		}
 	}
 
 	public void fillContextMenu(IMenuManager menu) {
-		CommonActionProviderUtils.addToShowInQuickSubMenu(openWebManagementConsoleAction, menu, actionSite);
+		CommonActionProviderUtils.addToShowInQuickSubMenu(openWelcomePageAction, menu, actionSite);
 	}
 
-	private static class OpenWebManagementConsoleAction extends AbstractServerAction {
-		public OpenWebManagementConsoleAction(ISelectionProvider sp) {
-			super(sp, Messages.OpenWebManagementConsole_Action_Text);
-			setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.CONSOLE));
+	private static class OpenWelcomePageAction extends AbstractServerAction {
+		public OpenWelcomePageAction(ISelectionProvider sp) {
+			super(sp, Messages.ShowInWelcomePage_Action_Text);
 		}
 
 		public boolean accept(IServer server) {
@@ -58,18 +58,21 @@ public class OpenManagementConsoleActionProvider extends CommonActionProvider {
 		}
 		
 		public void perform(IServer server) {
-			JBossServer jbossServer;
 			try {
-				jbossServer = ServerUtil.checkedGetServerAdapter(server, JBossServer.class);
+				JBossServer jbossServer = ServerUtil.checkedGetServerAdapter(server, JBossServer.class);
 				String host = jbossServer.getHost();
 				int webPort = jbossServer.getJBossWebPort();
-				String consoleUrl = MessageFormat.format(CONSOLE_URL_PATTERN, host, String.valueOf(webPort));
+				String consoleUrl = MessageFormat.format(WELCOME_PAGE_URL_PATTERN, host, String.valueOf(webPort));
 				BrowserUtil.checkedCreateInternalBrowser(
 						consoleUrl, server.getName(), JBossServerUIPlugin.PLUGIN_ID, JBossServerUIPlugin.getDefault()
 								.getLog());
 			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, e.getMessage(), e);
+				JBossServerUIPlugin.log(status);
+				ErrorDialog.openError(
+						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell()
+						, Messages.ShowInAction_Error_Title
+						, NLS.bind(Messages.ShowInAction_Error, Messages.ShowInWelcomePage_Action_Text), status);
 			}
 		}
 	}
