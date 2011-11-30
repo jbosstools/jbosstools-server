@@ -131,59 +131,69 @@ public class PollThreadUtils {
 	 * @param requester
 	 * @param requiredProps
 	 */
-	public static void requestCredentialsAsynch(INeedCredentials requester, List<String> requiredProps) {
-		IProvideCredentials provider = ExtensionManager.getDefault()
-				.getFirstCredentialProvider(requester, requiredProps);
-		provider.handle(requester, requiredProps);
+	public static void requestCredentialsAsynch(final INeedCredentials requester, final List<String> requiredProps) {
+		new Thread() {
+			public void run() {
+				requestCredentialsSynchronous(requester, requiredProps);
+			}
+		}.start();
 	}
 	
 	/**
 	 * The credential provider is alerted that credentials are needed. 
-	 * The thread is then delayed until some result is provided. 
+	 * The calling thread will block until this method is finished. 
+	 * The requester will be told of its credentials by the provider.
 	 * 
 	 * @param requester
 	 * @param requiredProps
 	 * @return
 	 */
 
-	public static Properties requestCredentialsSynchronous(final IServerProvider requester, List<String> requiredProps) {
+	public static void requestCredentialsSynchronous(final INeedCredentials requester, List<String> requiredProps) {
 		IProvideCredentials provider = ExtensionManager.getDefault()
 				.getFirstCredentialProvider(requester, requiredProps);
-		final Properties[] returnedProps = new Properties[1];
-		final Boolean[] gotProps = new Boolean[1];
-		returnedProps[0] = null;
-		gotProps[0] = false;
-		
-		/*
-		 * This dummy requirer will set variables when the credentials finally arrive. 
-		 * Then this synchronous method can finish. 
-		 */
-		
-		INeedCredentials dummyRequirer = new INeedCredentials() {
-			public IServer getServer() {
-				return requester.getServer();
-			}
-			public List<String> getRequiredProperties() {
-				// ignore
-				return null;
-			}
-			public void provideCredentials(Properties credentials) {
-				returnedProps[0] = credentials;
-				// necessary to have a gotProps since a cancelation on the UI may 
-				// set null as the returned properties
-				gotProps[0] = true;
-			}
-		};
-		
-		provider.handle(dummyRequirer, requiredProps);
+		provider.handle(requester, requiredProps);
+	}
 
-		while( !gotProps[0]) {
-			try {
-				Thread.sleep(100);
-			} catch(InterruptedException ie) {
-				// ignore
-			}
+
+	/**
+	 * The credential provider is alerted that credentials are needed. 
+	 * The calling thread will block until this method is finished. 
+	 * A dummy requester is created, which will receive the properties. 
+	 * It will then return them to the caller directly. 
+	 * 
+	 * @param requester
+	 * @param requiredProps
+	 * @return Properties 
+	 */
+
+	public static Properties requestCredentialsSynchronous(final IServerProvider server, List<String> requiredProps) {
+		NeedCredentials requester = new NeedCredentials(server.getServer(), requiredProps);
+		IProvideCredentials provider = ExtensionManager.getDefault()
+				.getFirstCredentialProvider(requester, requiredProps);
+		provider.handle(requester, requiredProps);
+		return requester.getReturnedCredentials();
+	}
+	
+	public static class NeedCredentials implements INeedCredentials {
+		private IServer server;
+		private List<String> requiredProps;
+		private Properties returnedCredentials;
+		public NeedCredentials(IServer server, List<String> requiredProps) {
+			this.server = server;
+			this.requiredProps = requiredProps;
 		}
-		return returnedProps[0];
+		public IServer getServer() {
+			return server;
+		}
+		public List<String> getRequiredProperties() {
+			return requiredProps;
+		}
+		public void provideCredentials(Properties credentials) {
+			returnedCredentials = credentials;
+		}
+		public Properties getReturnedCredentials() {
+			return returnedCredentials;
+		}
 	}
 }

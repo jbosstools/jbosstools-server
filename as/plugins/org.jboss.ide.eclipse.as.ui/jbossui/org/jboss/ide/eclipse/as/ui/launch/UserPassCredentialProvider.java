@@ -52,7 +52,7 @@ public class UserPassCredentialProvider implements IProvideCredentials {
 	 */
 	public void handle(final INeedCredentials inNeed,
 			final List<String> requiredProperties) {
-		Display.getDefault().asyncExec(new Runnable() { 
+		Display.getDefault().syncExec(new Runnable() { 
 			public void run() {
 				IServer server = inNeed.getServer();
 				IServerWorkingCopy copy = server.createWorkingCopy();

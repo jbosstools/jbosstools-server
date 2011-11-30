@@ -23,6 +23,7 @@ import org.jboss.ide.eclipse.as.core.server.IProvideCredentials;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller.PollingException;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller.RequiresInfoException;
+import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 
 /**
  * 
@@ -303,9 +304,6 @@ public class PollThread extends Thread {
 	}
 	
 	public static void fireRequestCredentials(boolean expectedState, IServerStatePoller poller) {
-		IProvideCredentials handler = ExtensionManager
-				.getDefault().getFirstCredentialProvider(poller,
-						poller.getRequiredProperties());
-		handler.handle(poller, poller.getRequiredProperties());
+		PollThreadUtils.requestCredentialsAsynch(poller, poller.getRequiredProperties());
 	}
 }
