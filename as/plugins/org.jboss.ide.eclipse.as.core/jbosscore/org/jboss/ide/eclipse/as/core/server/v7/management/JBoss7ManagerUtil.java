@@ -20,47 +20,13 @@ public class JBoss7ManagerUtil {
 	private static final String JBOSS7_RUNTIME = "org.jboss.ide.eclipse.as.runtime.70"; //$NON-NLS-1$
 	private static final String JBOSS71_RUNTIME = "org.jboss.ide.eclipse.as.runtime.71"; //$NON-NLS-1$
 	private static final String EAP6_RUNTIME = "org.jboss.ide.eclipse.as.runtime.eap.60"; //$NON-NLS-1$
-	private static final int UNLIKELY_PORT = 65401;
 	
 	
 	public static IJBoss7ManagerService getService(IServer server) throws InvalidSyntaxException  {
 		BundleContext context = JBossServerCorePlugin.getContext();
 		JBoss7ManagerServiceProxy proxy = new JBoss7ManagerServiceProxy(context, getRequiredVersion(server));
-		skipLazyInit();
 		proxy.open();
 		return proxy;
-	}
-
-	private static boolean initialized = false;
-	/* HUUUUUUUUGE HACK
-	 * 
-	 * Workaround for https://issues.jboss.org/browse/AS7-2772
-	 * Issue is that AS7.1beta1 client jars changes the security protocol thus we need to ensure it gets registered first.
-	 *  */
-	private synchronized static void skipLazyInit() {
-		if( !initialized ) {
-			
-			// Testing to see if forcing the proxy open will
-			BundleContext context = JBossServerCorePlugin.getContext();
-			JBoss7ManagerServiceProxy proxy = null;
-			try {
-				proxy = new JBoss7ManagerServiceProxy(context, IJBoss7ManagerService.AS_VERSION_710_Beta);
-				proxy.open();
-				//proxy.getServerState("localhost", UNLIKELY_PORT); //$NON-NLS-1$
-				proxy.init();
-			} catch( Exception e ) {
-				// ignore, expected failure
-			}
-			try {
-				proxy = new JBoss7ManagerServiceProxy(context, IJBoss7ManagerService.AS_VERSION_700);
-				proxy.open();
-				//proxy.getServerState("localhost", UNLIKELY_PORT); //$NON-NLS-1$
-				proxy.init();
-			} catch(Exception e ) {
-				// ignore, expected failure
-			}
-			initialized = true;
-		}
 	}
 	
 	private static String getRequiredVersion(IServer server) {

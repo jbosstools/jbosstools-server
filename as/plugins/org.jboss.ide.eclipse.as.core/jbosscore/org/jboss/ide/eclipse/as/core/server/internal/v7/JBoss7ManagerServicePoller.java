@@ -90,6 +90,10 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 		for( int i = 0; i < retPrompts.length; i++) {
 			retPrompts[i] = (String)requiredPropertiesReturned.get(prompts[i]);
 		}
+		
+		// If not cleared then it will keep asking for username/password
+		requiresInfoException = null;
+		
 		return retPrompts;
 	}
 	

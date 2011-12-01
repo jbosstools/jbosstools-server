@@ -27,10 +27,6 @@ import org.jboss.sasl.JBossSaslProvider;
 public class JBoss71ManagerService implements IJBoss7ManagerService {
 
 	public void init() throws Exception {
-		JBossSaslProvider saslProvider = new JBossSaslProvider();
-        if (Security.getProvider(saslProvider.getName()) == null) {
-            Security.insertProviderAt(saslProvider, 1);
-        }
 	}
 
 	public IJBoss7DeploymentResult deployAsync(AS7ManagementDetails details, String deploymentName,
