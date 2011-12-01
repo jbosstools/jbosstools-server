@@ -33,6 +33,8 @@ public class JBoss7Server extends JBossServer implements IJBoss7Deployment {
 		setAttribute(DEPLOY_DIRECTORY_TYPE, DEPLOY_SERVER);
 		setAttribute(IJBossToolingConstants.WEB_PORT_DETECT, true);
 		setAttribute(IJBossToolingConstants.WEB_PORT, IJBossToolingConstants.JBOSS_WEB_DEFAULT_PORT);
+		setUsername(null);
+		setPassword(null);
 		// In an emergency, we can switch pollers for EAP
 		if( isEAP(getServer()))
 			setAttribute(IJBossToolingConstants.STARTUP_POLLER_KEY, WebPortPoller.WEB_POLLER_ID);

@@ -17,8 +17,10 @@ import java.util.Properties;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IServerProvider;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class AS7ManagementDetails implements IServerProvider {
 	private IServer server;
@@ -48,6 +50,14 @@ public class AS7ManagementDetails implements IServerProvider {
 	public String[] handleCallbacks(String[] prompts) throws UnsupportedOperationException {
 		ArrayList<String> requiredProperties = new ArrayList<String>();
 		requiredProperties.addAll(Arrays.asList(prompts));
+		JBossServer jbs = ServerConverter.getJBossServer(server);
+		boolean emptyCreds = 
+				(jbs.getUsername() == null || jbs.getUsername().equals("")) //$NON-NLS-1$
+				&& (jbs.getPassword() == null || jbs.getPassword().equals("")); //$NON-NLS-1$
+		if( !emptyCreds ) {
+			return new String[]{jbs.getUsername(), jbs.getPassword()};
+		}
+		
 		Properties props = PollThreadUtils.requestCredentialsSynchronous(this, requiredProperties);
 
 		if( props == null )

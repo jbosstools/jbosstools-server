@@ -180,7 +180,7 @@
             id="org.jboss.ide.eclipse.as.ui.editor.passwordSection"
             insertionId="org.eclipse.wst.server.editor.overview.left"
             order="10"
-            typeIds="%ServerTypesJBoss6OrLower"/>
+            typeIds="%AllJBossServerTypes"/>
       <section
             class="org.jboss.ide.eclipse.as.ui.editor.ServerModeSection"
             id="org.jboss.ide.eclipse.as.ui.editor.serverModeSection"
