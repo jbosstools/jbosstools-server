@@ -35,7 +35,6 @@ import org.jboss.ide.eclipse.as.ui.dialogs.RequiredCredentialsDialog;
  */
 public class UserPassCredentialProvider implements IProvideCredentials {
 
-	@Override
 	public boolean accepts(IServerProvider serverProvider,
 			List<String> requiredProperties) {
 		IServer s = serverProvider.getServer();
