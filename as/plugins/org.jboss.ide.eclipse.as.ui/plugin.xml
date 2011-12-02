@@ -366,8 +366,8 @@
             </enablement>
     </actionProvider>
     <actionProvider
-          class="org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerLogActionProvider"
-          id="org.jboss.ide.eclipse.as.ui.extensions.serverLog">
+          class="org.jboss.ide.eclipse.as.ui.views.server.extensions.ShowInJMXConsoleActionProvider"
+          id="org.jboss.ide.eclipse.as.ui.extensions.jmxConsole.showIn">
        <enablement>
           <instanceof
                 value="org.eclipse.wst.server.core.IServer">
@@ -386,6 +386,15 @@
     <actionProvider
           class="org.jboss.ide.eclipse.as.ui.views.server.extensions.ShowInWelcomePageActionProvider"
           id="org.jboss.ide.eclipse.as.ui.extensions.welcomePage">
+       <enablement>
+          <instanceof
+                value="org.eclipse.wst.server.core.IServer">
+          </instanceof>
+       </enablement>
+    </actionProvider>
+    <actionProvider
+          class="org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerLogActionProvider"
+          id="org.jboss.ide.eclipse.as.ui.extensions.serverLog">
        <enablement>
           <instanceof
                 value="org.eclipse.wst.server.core.IServer">
@@ -415,6 +424,8 @@
                 pattern="org.jboss.ide.eclipse.as.ui.extensions.serverLog"/>
           <actionExtension
                 pattern="org.jboss.tools.as.wst.server.ui.ServersView.ExploreActionProvider"/>
+          <actionExtension
+                pattern="org.jboss.ide.eclipse.as.ui.extensions.jmxConsole.showIn"/>
           <actionExtension
                 pattern="org.jboss.ide.eclipse.as.ui.extensions.managementConsole"/>
           <actionExtension

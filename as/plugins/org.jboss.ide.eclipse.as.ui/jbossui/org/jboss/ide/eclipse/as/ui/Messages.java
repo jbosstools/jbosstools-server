@@ -222,6 +222,7 @@ public class Messages extends NLS {
 	public static String ExploreUtils_Action_Text;
 	public static String ExploreUtils_Description;
 
+	public static String ShowInJMXConsole_Action_Text;
 	public static String ShowInWebManagementConsole_Action_Text;
 	public static String ShowInWelcomePage_Action_Text;
 	public static String ShowInAction_Error;

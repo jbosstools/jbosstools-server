@@ -38,6 +38,8 @@ import org.eclipse.ui.views.IViewRegistry;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.ui.internal.view.servers.AbstractServerAction;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
@@ -84,8 +86,11 @@ public class JMXProvider {
 			IContributionItem quick = menu.find("org.eclipse.ui.navigate.showInQuickMenu"); //$NON-NLS-1$
 			if( quick != null && selection != null && selection.toArray().length == 1 ) {
 				if( selection.getFirstElement() instanceof IServer ) {
-					if( menu instanceof MenuManager ) {
-						((MenuManager)quick).add(showInJMXViewAction);
+					IServer server = (IServer)selection.getFirstElement();
+					if( ServerConverter.getJBossServer(server) != null && !ServerUtil.isJBoss7(server)) {
+						if( menu instanceof MenuManager ) {
+							((MenuManager)quick).add(showInJMXViewAction);
+						}
 					}
 				}
 			}
