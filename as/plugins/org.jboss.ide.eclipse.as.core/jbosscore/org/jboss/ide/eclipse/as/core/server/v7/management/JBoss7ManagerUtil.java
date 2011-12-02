@@ -33,7 +33,8 @@ public class JBoss7ManagerUtil {
 		String id = server.getRuntime().getRuntimeType().getId();
 		if (JBOSS7_RUNTIME.equals(id)
 				|| EAP6_RUNTIME.equals(id)) {
-			return IJBoss7ManagerService.AS_VERSION_700;
+			// This is the proper fix for now. See JBIDE-10293
+			return IJBoss7ManagerService.AS_VERSION_710_Beta; 
 		}
 		if( JBOSS71_RUNTIME.equals(id))
 			return IJBoss7ManagerService.AS_VERSION_710_Beta;
