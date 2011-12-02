@@ -9,20 +9,20 @@
    <extension
          point="org.eclipse.wst.server.ui.serverImages">
       <image
-            icon="$nl$/icons/jboss.gif"
+            icon="$nl$/icons/jboss.png"
             typeIds="%AllJBossServerTypes"
             id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
       <image
-            icon="$nl$/icons/jboss.gif"
+            icon="$nl$/icons/jboss.png"
             typeIds="%AllJBossRuntimeTypes"
             id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
 
       <image
-            icon="$nl$/icons/jboss.gif"
+            icon="$nl$/icons/jboss.png"
             typeIds="org.jboss.ide.eclipse.as.systemCopyServer"
             id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
       <image
-            icon="$nl$/icons/jboss.gif"
+            icon="$nl$/icons/jboss.png"
             typeIds="org.jboss.ide.eclipse.as.runtime.stripped"
             id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
    </extension>
@@ -197,7 +197,7 @@
          point="org.eclipse.debug.ui.launchConfigurationTypeImages">
       <launchConfigurationTypeImage
             configTypeID="org.jboss.ide.eclipse.as.core.server.launchConfiguration"
-            icon="$nl$/icons/jboss.gif"
+            icon="$nl$/icons/jboss.png"
             id="org.jboss.ide.eclipse.as.ui.launchConfigurationImage1"/>
    </extension>
 
@@ -461,7 +461,7 @@
 	   <extension
          point="org.jboss.tools.jmx.ui.providerUI">
       <providerUI
-            icon="$nl$/icons/jboss.gif"
+            icon="$nl$/icons/jboss.png"
             id="org.jboss.ide.eclipse.as.core.extensions.jmx.JBossServerConnectionProvider"
             name="JBoss Server">
       </providerUI>
@@ -470,7 +470,7 @@
           point="org.eclipse.debug.ui.launchConfigurationTypeImages">
        <launchConfigurationTypeImage
              configTypeID="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
-             icon="$nl$/icons/jboss.gif"
+             icon="$nl$/icons/jboss.png"
              id="org.jboss.ide.eclipse.as.ui.launchConfigurationTypeImage1">
        </launchConfigurationTypeImage>
     </extension>
