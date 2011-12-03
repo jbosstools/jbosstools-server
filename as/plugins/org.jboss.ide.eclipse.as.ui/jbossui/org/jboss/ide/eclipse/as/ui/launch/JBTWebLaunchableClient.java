@@ -78,6 +78,8 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 	public IStatus launch2(IServer server, Object launchable, String launchMode, ILaunch launch) {
 		final JBTCustomHttpLaunchable http = (JBTCustomHttpLaunchable) launchable;
 		wait(server, http.getModule());
+		
+		if(server.getServerState() == server.STATE_STARTED) {
 		Display.getDefault().asyncExec(new Runnable(){
 			public void run() {
 				try {
@@ -90,6 +92,10 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 				}
 			}
 		});
+		} else {
+			JBossServerUIPlugin.getDefault().getLog().log(
+					new Status(IStatus.WARNING, JBossServerUIPlugin.PLUGIN_ID, "Server stopped before before browser could be opened.", null));
+		}
 		return null;
 	}
 	
@@ -101,6 +107,8 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 		}
 	}
 	
+	//TODO: the waiting/timeout logic in here should be done for waitJMX too.
+	//TODO: should return true for succss or false if timeout so upper layer can report it.
 	protected void waitJBoss7(final IServer server, final IModule module) {
 		try {
 			JBoss7Server jbossServer = ServerConverter.checkedGetJBossServer(server, JBoss7Server.class);
@@ -108,22 +116,33 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 			IPath deployPath = PublishUtil.getDeployPath(new IModule[]{module}, jbossServer);
 			long time = new Date().getTime();
 			long endTime = time + getMaxDelay();
-			while( new Date().getTime() < endTime ) {
-				JBoss7DeploymentState state = service.getDeploymentState(
-						new AS7ManagementDetails(server),
-						deployPath.lastSegment());
-				boolean done = (state == JBoss7DeploymentState.STARTED);
-				if( done ) {
+			boolean waitedOnce = false;
+			while (new Date().getTime() < endTime) { // no need to keep doing this if timed out or server stopping/stopped but not sure how to avoid race condition.
+				AS7ManagementDetails details = new AS7ManagementDetails(server);
+				boolean done = false;
+				if (service.isRunning(details)) { // to avoid asking while server is starting up.
+					JBoss7DeploymentState state = service.getDeploymentState(
+							details, deployPath.lastSegment());
+					done = (state == JBoss7DeploymentState.STARTED);
+				}
+				if (done) {
 					return;
 				}
 				try {
+					if(!waitedOnce) {
+						JBossServerUIPlugin.log(new Status(IStatus.INFO, JBossServerUIPlugin.PLUGIN_ID, "Module " + module.getName() + " on " + server.getName() + " not ready to be shown in web browser. Waiting...", null));
+					}
+					waitedOnce = true;
 					Thread.sleep(2000);
-				} catch(InterruptedException ie) {}
+				} catch (InterruptedException ie) {
+				}
 			}
 		} catch (Exception e) {
 			IStatus s = new Status(
-					IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID,
-					NLS.bind("Could not acquire the management service for this JBoss installation", 
+					IStatus.WARNING,
+					JBossServerCorePlugin.PLUGIN_ID,
+					NLS.bind(
+							"Error occurred while waiting for " + module.getName() + " to start on " + server.getName(),
 							server.getName()), e);
 			JBossServerUIPlugin.log(s.getMessage(), e);
 		}

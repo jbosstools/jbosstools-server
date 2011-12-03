@@ -186,7 +186,7 @@ public class AS71Manager {
 	 * @throws JBoss7ManangerException
 	 */
 	public JBoss7DeploymentState getDeploymentStateSafe(String name) throws JBoss7ManangerException {
-		if( hasDeployment(name)) {
+		if( !hasDeployment(name)) {
 			return JBoss7DeploymentState.NOT_FOUND;
 		}
 		return getDeploymentState(name);
@@ -331,8 +331,7 @@ public class AS71Manager {
     private Set<String> getDeploymentNames() throws JBoss7ManangerException {
         final ModelNode op = getEmptyOperation(READ_CHILDREN_NAMES_OPERATION, new ModelNode());
         op.get(CHILD_TYPE).set(DEPLOYMENT);
-        ModelNode response = execute(op);
-        ModelNode result = response.get(RESULT);
+        ModelNode result = execute(op);
         Set<String> deploymentNames = new HashSet<String>();
         if (result.isDefined()) {
         	final List<ModelNode> deploymentNodes = result.asList();

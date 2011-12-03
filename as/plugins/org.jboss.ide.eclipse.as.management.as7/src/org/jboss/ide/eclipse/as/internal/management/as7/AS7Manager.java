@@ -24,6 +24,9 @@ import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionC
 import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.RESULT;
 import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.SERVER_STATE;
 import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.SHUTDOWN;
+import static org.jboss.ide.eclipse.as.internal.management.as71.ModelDescriptionConstants.CHILD_TYPE;
+import static org.jboss.ide.eclipse.as.internal.management.as71.ModelDescriptionConstants.DEPLOYMENT;
+import static org.jboss.ide.eclipse.as.internal.management.as71.ModelDescriptionConstants.READ_CHILDREN_NAMES_OPERATION;
 
 import java.io.File;
 import java.io.IOException;
@@ -142,7 +145,7 @@ public class AS7Manager {
 	 * @throws JBoss7ManangerException
 	 */
 	public JBoss7DeploymentState getDeploymentStateSafe(String name) throws JBoss7ManangerException {
-		if( hasDeployment(name)) {
+		if( !hasDeployment(name)) {
 			return JBoss7DeploymentState.NOT_FOUND;
 		}
 		return getDeploymentState(name);
@@ -287,8 +290,7 @@ public class AS7Manager {
     private Set<String> getDeploymentNames() throws JBoss7ManangerException {
         final ModelNode op = getEmptyOperation(READ_CHILDREN_NAMES_OPERATION, new ModelNode());
         op.get(CHILD_TYPE).set(DEPLOYMENT);
-        ModelNode response = execute(op);
-        ModelNode result = response.get(RESULT);
+        ModelNode result = execute(op);
         Set<String> deploymentNames = new HashSet<String>();
         if (result.isDefined()) {
         	final List<ModelNode> deploymentNodes = result.asList();
@@ -298,6 +300,7 @@ public class AS7Manager {
         }
         return deploymentNames;
     }
+
 
 
 }
