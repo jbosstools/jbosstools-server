@@ -56,9 +56,9 @@
 				In order to debug your applications or EJB's that are deployed to the server, the server must be started in debug mode. By starting the server in debug mode, Eclipse will allow you to set breakpoints on code in your workspace and step through the code.
 			</para>
 
-			<para>
+	<!--		<para>
 				The <guibutton>Start the server in profiling mode</guibutton> button allows you to enable profiling actions for your application. For more details on how to start using TPTP profiling with <property>JBoss Tools</property> see <xref linkend="tptp_support"/>.
-			</para>
+			</para> -->
 
 			<para>
 				The <guibutton>Publish to the server</guibutton> button will republish any modules where it has determined that the workspace is out of synchronization with the server. It will attempt to do an incremental publish if the module in question is capable of doing one.

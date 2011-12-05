@@ -65,7 +65,7 @@
 						</entry>
 					</row>
 
-					<row>
+			<!--		<row>
 						<entry>
 							<para>TPTP Support</para>
 						</entry>
@@ -75,7 +75,7 @@
 						<entry>
 							<link linkend="tptp_support">TPTP support</link>
 						</entry>
-					</row>
+					</row> -->
 
 				</tbody>
 
