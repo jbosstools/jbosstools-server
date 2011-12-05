@@ -10,6 +10,9 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.ui.launch;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -19,6 +22,7 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -27,6 +31,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.wst.server.core.IModule;
@@ -85,14 +91,7 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 		if(server.getServerState() == server.STATE_STARTED) {
 		Display.getDefault().asyncExec(new Runnable(){
 			public void run() {
-				try {
-					IWorkbenchBrowserSupport browserSupport = JBossServerUIPlugin.getDefault().getWorkbench().getBrowserSupport();
-					IWebBrowser browser = browserSupport.createBrowser(IWorkbenchBrowserSupport.LOCATION_BAR | IWorkbenchBrowserSupport.NAVIGATION_BAR, null, null, null);
-					browser.openURL(http.getURL());
-				} catch (Exception e) {
-					JBossServerUIPlugin.getDefault().getLog().log(
-							new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, "Unable to open web browser", e)); //$NON-NLS-1$
-				}
+				openBrowser(http.getURL());
 			}
 		});
 		} else {
@@ -266,4 +265,63 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 		}
 		return null;
 	}
+	
+	
+	
+	
+	/*
+	 * Stolen from BrowserUtil
+	 */
+	private static final String BROWSER_COULD_NOT_OPEN_BROWSER = "Unable to open web browser"; //$NON-NLS-1$
+	public static void checkedCreateInternalBrowser(String url, String browserId, String pluginId, ILog log) {
+		try {
+			openUrl(url, PlatformUI.getWorkbench().getBrowserSupport().createBrowser(browserId), pluginId, log);
+		} catch (PartInitException e) {
+			IStatus errorStatus = createErrorStatus(pluginId, BROWSER_COULD_NOT_OPEN_BROWSER, e, url);
+			log.log(errorStatus);
+		}
+	}
+
+	private static IStatus createErrorStatus(String pluginId, String message, Throwable e,
+			Object... messageArguments) {
+		String formattedMessage = null;
+		if (message != null) {
+			formattedMessage = MessageFormat.format(message, messageArguments);
+		}
+		return new Status(Status.ERROR, pluginId, Status.ERROR, formattedMessage, e);
+	}
+
+	public static void checkedCreateExternalBrowser(String url, String pluginId, ILog log) {
+		try {
+			openUrl(url, PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser(), pluginId, log);
+		} catch (PartInitException e) {
+			IStatus errorStatus = createErrorStatus(pluginId, BROWSER_COULD_NOT_OPEN_BROWSER, e, url);
+			log.log(errorStatus);
+		}
+	}
+
+	public static void openUrl(String url, IWebBrowser browser, String pluginId, ILog log) {
+		try {
+			browser.openURL(new URL(url));
+		} catch (PartInitException e) {
+			IStatus errorStatus = createErrorStatus(pluginId, BROWSER_COULD_NOT_OPEN_BROWSER, e, url);
+			log.log(errorStatus);
+		} catch (MalformedURLException e) {
+			IStatus errorStatus = createErrorStatus(pluginId, BROWSER_COULD_NOT_OPEN_BROWSER, e,
+					url);
+			log.log(errorStatus);
+		}
+	}
+
+	public static void openBrowser(URL url) {
+		try {
+			IWorkbenchBrowserSupport browserSupport = JBossServerUIPlugin.getDefault().getWorkbench().getBrowserSupport();
+			IWebBrowser browser = browserSupport.createBrowser(IWorkbenchBrowserSupport.LOCATION_BAR | IWorkbenchBrowserSupport.NAVIGATION_BAR, null, null, null);
+			browser.openURL(url);
+		} catch (Exception e) {
+			JBossServerUIPlugin.getDefault().getLog().log(
+					new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, "Unable to open web browser", e)); //$NON-NLS-1$
+		}
+	}
+	
 }

@@ -29,7 +29,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.tools.common.ui.BrowserUtil;
+import org.jboss.ide.eclipse.as.ui.launch.JBTWebLaunchableClient;
 
 public abstract class AbstractOpenBrowserServerAction extends CommonActionProvider {
 
@@ -100,7 +100,7 @@ public abstract class AbstractOpenBrowserServerAction extends CommonActionProvid
 		public void perform(IServer server) {
 			try {
 				String consoleUrl = getURL(server);
-				BrowserUtil.checkedCreateInternalBrowser(
+				JBTWebLaunchableClient.checkedCreateInternalBrowser(
 						consoleUrl, server.getName(), JBossServerUIPlugin.PLUGIN_ID, 
 						JBossServerUIPlugin.getDefault().getLog());
 			} catch (CoreException e) {
