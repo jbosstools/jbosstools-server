@@ -24,9 +24,6 @@ import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionC
 import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.RESULT;
 import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.SERVER_STATE;
 import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.SHUTDOWN;
-import static org.jboss.ide.eclipse.as.internal.management.as71.ModelDescriptionConstants.CHILD_TYPE;
-import static org.jboss.ide.eclipse.as.internal.management.as71.ModelDescriptionConstants.DEPLOYMENT;
-import static org.jboss.ide.eclipse.as.internal.management.as71.ModelDescriptionConstants.READ_CHILDREN_NAMES_OPERATION;
 
 import java.io.File;
 import java.io.IOException;

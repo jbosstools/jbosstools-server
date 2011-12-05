@@ -31,6 +31,8 @@ import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerListener;
+import org.eclipse.wst.server.core.ServerEvent;
 import org.eclipse.wst.server.core.model.ClientDelegate;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.ExtensionManager.IServerJMXRunnable;
@@ -53,7 +55,6 @@ import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 public class JBTWebLaunchableClient extends ClientDelegate {
 
 	public JBTWebLaunchableClient() {
-		// TODO Auto-generated constructor stub
 	}	
 	
 	public boolean supports(IServer server, Object launchable, String launchMode) {
@@ -62,11 +63,13 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 
 	protected boolean isJMXServer(IServer server) {
 		JBossServer jbs = ServerConverter.getJBossServer(server);
-		return jbs != null && server.getServerState() == IServer.STATE_STARTED
-				&&  jbs.hasJMXProvider() && ExtensionManager.getDefault().getJMXRunner() != null;
+		return jbs != null && jbs.hasJMXProvider() && ExtensionManager.getDefault().getJMXRunner() != null;
 	}
 
 	public IStatus launch(final IServer server, final Object launchable, final String launchMode, final ILaunch launch) {
+		if( server.getServerState() == IServer.STATE_STOPPED || server.getServerState() == IServer.STATE_STOPPED)
+			return Status.CANCEL_STATUS;
+		
 		new Thread() {
 			public void run() {
 				launch2(server, launchable, launchMode, launch);
@@ -100,11 +103,36 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 	}
 	
 	protected void wait(final IServer server, final IModule module) {
+		waitServerStarted(server);
 		if( isJMXServer(server)) {
 			waitJMX(server, module);
 		} else if( ServerUtil.isJBoss7(server)) {
 			waitJBoss7(server, module);
 		}
+	}
+	
+	private void waitServerStarted(final IServer server) {
+		final Object lock = new Object();
+		IServerListener listener = new IServerListener() {
+			public void serverChanged(ServerEvent event) {
+				synchronized(lock) {
+					if( server.getServerState() != IServer.STATE_STARTING ) {
+						lock.notifyAll();
+					}
+				}
+			}
+		};
+		synchronized(lock) {
+			server.addServerListener(listener);
+			if( server.getServerState() == IServer.STATE_STARTING) {
+				try {
+					lock.wait();
+				} catch(InterruptedException ie) {
+					// ignore
+				}
+			}
+		}
+		server.removeServerListener(listener);
 	}
 	
 	//TODO: the waiting/timeout logic in here should be done for waitJMX too.
