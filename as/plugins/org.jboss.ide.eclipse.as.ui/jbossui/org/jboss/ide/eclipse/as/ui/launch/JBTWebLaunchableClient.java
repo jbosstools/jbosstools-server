@@ -67,7 +67,7 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 	}
 
 	public IStatus launch(final IServer server, final Object launchable, final String launchMode, final ILaunch launch) {
-		if( server.getServerState() == IServer.STATE_STOPPED || server.getServerState() == IServer.STATE_STOPPED)
+		if( server.getServerState() == IServer.STATE_STOPPED || server.getServerState() == IServer.STATE_STOPPING)
 			return Status.CANCEL_STATUS;
 		
 		new Thread() {
