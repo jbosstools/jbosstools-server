@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IContributionItem;
@@ -22,13 +23,12 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerUtil;
-import org.eclipse.wst.server.core.internal.PublishServerJob;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.ui.internal.cnf.ServerActionProvider;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
-import org.jboss.ide.eclipse.as.core.util.ModuleUtil;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
+import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
 public class ModuleActionProvider extends CommonActionProvider {
 	private Action deleteModuleAction, fullPublishModuleAction, incrementalPublishModuleAction;
@@ -126,12 +126,12 @@ public class ModuleActionProvider extends CommonActionProvider {
 			for( int i = 0; i < selection.length; i++ ) {
 				IModule[] mod = selection[i].module;
 				s.setModulePublishState(mod, type);
-				ArrayList<IModule[]> allChildren = ModuleUtil.getDeepChildren(s, mod);
+				ArrayList<IModule[]> allChildren = ServerModelUtilities.getDeepChildren(s, mod);
 				for( int j = 0; j < allChildren.size(); j++ ) {
 					s.setModulePublishState((IModule[])allChildren.get(j), type);
 				}
 			}
-			new PublishServerJob(s, IServer.PUBLISH_INCREMENTAL, true).schedule();
+			s.publish(IServer.PUBLISH_INCREMENTAL, null, getUserInitiatedAdaptable(), null);
 		}
 	}
 
@@ -152,7 +152,7 @@ public class ModuleActionProvider extends CommonActionProvider {
 							(IModule[]) topModsToRemove.toArray(new IModule[topModsToRemove.size()]);
 						ServerUtil.modifyModules(serverWC, new IModule[0], modsToRemove, new NullProgressMonitor());
 						IServer server2 = serverWC.save(true, null);
-						new PublishServerJob(server2, IServer.PUBLISH_INCREMENTAL, true).schedule();
+						server2.publish(IServer.PUBLISH_INCREMENTAL, null, getUserInitiatedAdaptable(), null);
 					}
 				} catch (CoreException e) {
 					// ignore
@@ -160,5 +160,16 @@ public class ModuleActionProvider extends CommonActionProvider {
 			}};
 			t.start();
 		}
+	}
+	
+	public IAdaptable getUserInitiatedAdaptable() {
+		IAdaptable info = new IAdaptable() {
+			public Object getAdapter(Class adapter) {
+				if (String.class.equals(adapter))
+					return "user";
+				return null;
+			}
+		};
+		return info;
 	}
 }

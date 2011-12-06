@@ -22,6 +22,17 @@ public interface IJBossServerPublishMethod {
 //	public IJBossServerPublishMethodType getPublishMethodType();
 	public void publishStart(DeployableServerBehavior behaviour, IProgressMonitor monitor) throws CoreException;
 	public int publishFinish(DeployableServerBehavior behaviour, IProgressMonitor monitor) throws CoreException;
+
+	/**
+	 * Publish this module
+	 * @param behaviour The behaviour associated with this server
+	 * @param kind The kind of publish, as a constant from IServer
+	 * @param deltaKind The kind of delta, as a constant from ServerBehaviourDelegate
+	 * @param module  The module to be published
+	 * @param monitor The progress monitor
+	 * @return An IServer.STATE_XXX constant, or -1 if the behaviour should not change server state
+	 * @throws CoreException
+	 */
 	public int publishModule(DeployableServerBehavior behaviour, int kind, int deltaKind, IModule[] module, IProgressMonitor monitor) throws CoreException;
 
 	// Methods moved from publishers into the publish method

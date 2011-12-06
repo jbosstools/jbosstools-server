@@ -11,7 +11,6 @@
 package org.jboss.ide.eclipse.as.core.server.internal;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
@@ -23,26 +22,12 @@ import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
-public abstract class AbstractJBossBehaviourDelegate implements IJBossBehaviourDelegate {
+public abstract class AbstractJBossBehaviourDelegate extends AbstractBehaviourDelegate {
 
-	private DelegatingServerBehavior actualBehavior;
 	private PollThread pollThread = null;
 
-	@Override
-	public void setActualBehaviour(DelegatingServerBehavior actualBehaviour) {
-		this.actualBehavior = actualBehaviour;
-	}
-	
 	public IServer getServer() {
 		return actualBehavior.getServer();
-	}
-
-	@Override
-	public void publishStart(IProgressMonitor monitor) throws CoreException {
-	}
-
-	@Override
-	public void publishFinish(IProgressMonitor monitor) throws CoreException {		
 	}
 
 	public void stop(boolean force) {
@@ -59,18 +44,6 @@ public abstract class AbstractJBossBehaviourDelegate implements IJBossBehaviourD
 
 	protected abstract IStatus gracefullStop();
 	
-	public void onServerStarting() {
-	}
-	
-	public void onServerStopping() {
-	}
-
-	public void onServerStarted() {
-	}
-	
-	public void onServerStopped() {
-	}
-
 	@Override
 	public IStatus canChangeState(String launchMode) {
 		return Status.OK_STATUS;
@@ -156,10 +129,5 @@ public abstract class AbstractJBossBehaviourDelegate implements IJBossBehaviourD
 
 	protected void setServerStarting() {
 		actualBehavior.setServerStarting();
-	}
-
-	@Override
-	public void dispose() {
-		// do nothing
 	}
 }

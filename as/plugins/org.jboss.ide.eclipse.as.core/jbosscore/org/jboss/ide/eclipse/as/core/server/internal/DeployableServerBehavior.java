@@ -90,8 +90,10 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Not publishing")); //$NON-NLS-1$
 		try { 
 			int result = method.publishModule(this, kind, deltaKind, module, monitor);
-			setModulePublishState(module, result);
-			setModuleState(module, IServer.STATE_STARTED );
+			if( result != -1 ) {
+				setModulePublishState(module, result);
+				setModuleState(module, IServer.STATE_STARTED );
+			}
 		} catch(CoreException ce) {
 			setModulePublishState(module, IServer.PUBLISH_STATE_FULL);
 			setModuleState(module, IServer.STATE_UNKNOWN );
