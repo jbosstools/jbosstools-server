@@ -275,7 +275,7 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 	private static final String BROWSER_COULD_NOT_OPEN_BROWSER = "Unable to open web browser"; //$NON-NLS-1$
 	public static void checkedCreateInternalBrowser(String url, String browserId, String pluginId, ILog log) {
 		try {
-			openUrl(url, PlatformUI.getWorkbench().getBrowserSupport().createBrowser(browserId), pluginId, log);
+			openUrl(url, PlatformUI.getWorkbench().getBrowserSupport().createBrowser(IWorkbenchBrowserSupport.LOCATION_BAR | IWorkbenchBrowserSupport.NAVIGATION_BAR, browserId, null, null), pluginId, log);
 		} catch (PartInitException e) {
 			IStatus errorStatus = createErrorStatus(pluginId, BROWSER_COULD_NOT_OPEN_BROWSER, e, url);
 			log.log(errorStatus);
