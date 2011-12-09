@@ -338,7 +338,7 @@
        <actionProvider
              class="org.jboss.ide.eclipse.as.ui.views.server.extensions.XPathActionProvider"
              id="org.jboss.ide.eclipse.as.ui.extensions.xml.actions"
-             priority="highest">
+             priority="higher">
        </actionProvider>
     </navigatorContent>
     <actionProvider
@@ -353,7 +353,7 @@
     <actionProvider
 	            class="org.jboss.tools.as.wst.server.ui.xpl.ExploreActionProvider"
 	            id="org.jboss.tools.as.wst.server.ui.ServersView.ExploreActionProvider"
-	            priority="highest">
+	            priority="higher">
 			<enablement>
              <or>
                 <instanceof
