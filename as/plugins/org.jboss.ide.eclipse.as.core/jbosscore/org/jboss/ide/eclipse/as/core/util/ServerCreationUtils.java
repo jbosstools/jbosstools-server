@@ -34,6 +34,7 @@ public class ServerCreationUtils {
 		runtimeServerTypeMap.put(IJBossToolingConstants.AS_70, IJBossToolingConstants.SERVER_AS_70);
 		runtimeServerTypeMap.put(IJBossToolingConstants.EAP_43, IJBossToolingConstants.SERVER_EAP_43);
 		runtimeServerTypeMap.put(IJBossToolingConstants.EAP_50, IJBossToolingConstants.SERVER_EAP_50);
+		// NEW_SERVER_ADAPTER Add the server / runtime mapping here 
 	}
 	
 	

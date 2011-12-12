@@ -271,6 +271,7 @@ public class XPathModel extends UnitedServerListener {
 		rtToPortsFile.put(IConstants.EAP_43, properties.append(IJBossToolingConstants.DEFAULT_PROPS_EAP_43));
 		rtToPortsFile.put(IConstants.EAP_50, properties.append(IJBossToolingConstants.DEFAULT_PROPS_EAP_50));
 		rtToPortsFile.put(IConstants.EAP_60, properties.append(IJBossToolingConstants.DEFAULT_PROPS_70));
+		// TODO NEW_SERVER_ADAPTER Add the new server ID to port mapping file above this line 
 	}
 
 	private static ArrayList<XPathCategory> loadDefaults(IServer server, String configFolder) {

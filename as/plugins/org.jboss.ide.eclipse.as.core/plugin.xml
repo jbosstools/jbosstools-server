@@ -213,7 +213,9 @@
             runtimeTypeId="org.jboss.ide.eclipse.as.runtime.stripped"
             supportsRemoteHosts="true"/>
 
- </extension>
+
+     <!-- NEW_SERVER_ADAPTER Add the new server type above this line -->
+   </extension>
 
    <extension
          point="org.eclipse.wst.server.core.runtimeTypes">
@@ -447,7 +449,8 @@
           <moduleType types="bpel.module" versions="1.1, 2.0"/>
           <moduleType types="jboss.osgi" versions="1.0"/>
       </runtimeType>
-
+    
+      <!-- NEW_SERVER_ADAPTER Add the new Runtime type above this line -->
 
       <runtimeType
             class="org.jboss.ide.eclipse.as.core.server.internal.DeployableServerRuntime"
@@ -604,6 +607,7 @@
             supportsShutdown="true"
             supportsStartup="true">
        </serverPoller>
+       <!-- NEW_SERVER_ADAPTER Add a new management poller above if the new server type requires a custom poller -->
    </extension>
 
 
@@ -662,6 +666,7 @@
             runtimeTypeId="org.jboss.ide.eclipse.as.runtime.eap.60"
             runtime-component="org.jboss.ide.eclipse.eap.runtime.component"
             version="6.0"/>
+      <!-- NEW_SERVER_ADAPTER Add the new runtime to runtime-component mapping above this line -->
    </extension>
 
 
@@ -885,6 +890,7 @@
        <facet id="jst.webfragment" version="3.0"/>
      </supported>
 
+     <!-- NEW_SERVER_ADAPTER  Add the new runtime component version and facets above this line -->
    </extension>
 
 
@@ -979,6 +985,7 @@
                version="6.0">
          </facet>
       </default-facets>
+      <!-- NEW_SERVER_ADAPTER Add the new default facet for a new runtime above this line -->
    </extension>
 
    <extension
@@ -1142,6 +1149,9 @@
             typeId="local">
       </behaviour>
    </extension>
+   <!-- NEW_SERVER_ADAPTER Add the behaviour extension for a new server type above this line --> 
+   
+   
    
    <!-- The default publisher declaration. -->
    <extension

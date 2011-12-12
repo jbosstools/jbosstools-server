@@ -23,4 +23,5 @@
             typeId="rse">
       </behaviour>
    </extension>
+   <!-- NEW_SERVER_ADAPTER  Add the new RSE behaviour delegate if needed for the new server above this line -->
 </plugin>

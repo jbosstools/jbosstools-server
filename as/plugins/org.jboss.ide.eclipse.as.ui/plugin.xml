@@ -45,6 +45,7 @@
             class="org.jboss.ide.eclipse.as.ui.wizards.JBoss7ServerWizardFragment"
             id="org.jboss.ide.eclipse.as.ui.jboss7ServerWizardFragment"
             typeIds="%ServerTypesJBoss7"/>
+      <!-- NEW_SERVER_ADAPTER  Add the wizard fragment (if applicable) for the new server adapter above this line -->
       <fragment
              class="org.jboss.ide.eclipse.as.ui.wizards.StrippedServerWizardFragment"
              id="org.jboss.ide.eclipse.as.ui.strippedServerWizardFragment"
@@ -187,6 +188,8 @@
             insertionId="org.eclipse.wst.server.editor.overview.left"
             order="9"
             typeIds="%AllJBTServerTypes"/>
+            
+      <!-- NEW_SERVER_ADAPTER  Add the server editor sections for a new server above this line -->
    </extension>
 
 
@@ -281,6 +284,8 @@
             class="org.jboss.ide.eclipse.as.ui.editor.PortSection$JBoss7ManagementPortEditorExtension"
             serverIds="%ServerTypesJBoss7">
       </section>
+      
+      <!-- NEW_SERVER_ADAPTER  Add the new port sections in the server editor above this line -->
    </extension>
 
 
