@@ -224,7 +224,7 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 				|| (adapterVersion.equals("7.1") && version.startsWith("7.0."))) {
 			return NLS.bind(Messages.rwf_homeIncorrectVersionError, adapterVersion, version);
 		}
-		if( isEAP() && (adapterVersion.equals("6.0") && version.startsWith("7.0.")))
+		if( isEAP() && (adapterVersion.equals("6.0") && !version.startsWith("7.")))
 				return NLS.bind(Messages.rwf_homeIncorrectVersionError, adapterVersion, version);
 		
 		return null;
