@@ -14,15 +14,17 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
+import org.jboss.ide.eclipse.as.core.publishers.JSTPublisherXMLToucher;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
+import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class JBoss7JSTPublisher extends AbstractServerToolsPublisher {
@@ -45,7 +47,6 @@ public class JBoss7JSTPublisher extends AbstractServerToolsPublisher {
 			int publishType, IModuleResourceDelta[] delta,
 			IProgressMonitor monitor) throws CoreException {
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
-
 		DeploymentMarkerUtils.removeDeployFailedMarker(method, server, PublishUtil.getDeployPath(method, module, ds), monitor);
 		
 		if( publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
@@ -58,13 +59,27 @@ public class JBoss7JSTPublisher extends AbstractServerToolsPublisher {
 					publishType == IJBossServerPublisher.FULL_PUBLISH) {
 				// Only mark a doDeploy file for the root module, but this must be delayed, 
 				// becuase we don't know how many children modules will get published here (SUCK)
-				markDeployed(method, ds, module, monitor);
+				doDeployRequired(method, ds, module, monitor);
 			}
 			return s;
 		}
 	}    
 	
-	private void markDeployed(IJBossServerPublishMethod method,IDeployableServer server,
+	@Override
+	protected void markModuleRequiresRestart(IPath deployPath, IModule[] moduleTree,
+			IJBossServerPublishMethod method, IPublishCopyCallbackHandler handler) throws CoreException {
+		boolean useAS7Behavior = DeploymentMarkerUtils.supportsJBoss7MarkerDeployment(server.getServer());
+		if( !useAS7Behavior) {
+			// Simply touch the descriptor as needed
+			JSTPublisherXMLToucher.getInstance().touch(deployPath, 
+					moduleTree[moduleTree.length-1], handler);
+		} else {
+			// Mark this module as if it needs a module restart
+			doDeployRequired(method, this.server, moduleTree, new NullProgressMonitor());
+		}
+	}
+
+	private void doDeployRequired(IJBossServerPublishMethod method,IDeployableServer server,
 			IModule[] moduleTree, IProgressMonitor monitor ) throws CoreException {
 		IPath p = PublishUtil.getDeployPath(method, moduleTree, server);
 		DelegatingJBoss7ServerBehavior beh = ServerConverter.getJBoss7ServerBehavior(server.getServer());

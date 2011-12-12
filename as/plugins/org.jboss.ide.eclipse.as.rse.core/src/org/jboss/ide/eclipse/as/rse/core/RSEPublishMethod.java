@@ -30,9 +30,9 @@ import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBoss6Server;
+import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -54,9 +54,12 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 		this.behaviour = beh;
 	}
 	
+	public DeployableServerBehavior getBehaviour() {
+		return this.behaviour;
+	}
+	
 	private IFileServiceSubSystem fileSubSystem = null;
 	private IPath remoteRootFolder;
-	@Deprecated	private IPath remoteTemporaryFolder;
 	
 	public void publishStart(DeployableServerBehavior behaviour,
 			IProgressMonitor monitor) throws CoreException {
@@ -145,12 +148,6 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 		return remoteRootFolder;
 	}
 	
-	@Deprecated
-	public IPath getRemoteTemporaryFolder() {
-		// This should not be used anymore. We do not need to upload and move the file if 
-		// deployment scanner is disabled
-		return remoteTemporaryFolder;
-	}
 	public IFileServiceSubSystem getFileServiceSubSystem() {
 		return fileSubSystem;
 	}

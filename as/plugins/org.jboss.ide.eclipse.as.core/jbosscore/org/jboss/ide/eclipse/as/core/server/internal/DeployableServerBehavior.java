@@ -10,6 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
@@ -196,5 +197,11 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 				}
 			} 
 		} );
+	}
+	
+	public boolean changedFileRequiresModuleRestart(File file) {
+		if( file.getName().toLowerCase().endsWith(".jar")) //$NON-NLS-1$
+			return true;
+		return false;
 	}
 }

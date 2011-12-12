@@ -339,13 +339,23 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		}
 		
 		if( handler != null && handler.shouldRestartModule() ) {
-			JSTPublisherXMLToucher.getInstance().touch(deployPath, module, handler);
+			// We cannot always simply restart the module immediately mid-publish. 
+			// We can only mark the module in our model as one that requires a restart.
+			// The restart may be done after all publishes are finished. 
+			markModuleRequiresRestart(deployPath, moduleTree, publishMethod, handler);
 		}
 
 		IStatus ret = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FULL_SUCCESS, 
 				NLS.bind(Messages.CountModifiedMembers, PublishUtil.countChanges(delta), module.getName()), null);
 		return ret;
 	}
+	
+	/* 
+	 * This publisher should either restart the module, or mark it as requiring a restart 
+	 * such that upon publishFinish, it cleans up and completes the task
+	 */
+	protected abstract void markModuleRequiresRestart(IPath deployPath, IModule[] moduleTree,
+			IJBossServerPublishMethod method, IPublishCopyCallbackHandler handler) throws CoreException;
 	
 	protected IStatus createMultiStatus(List<IStatus> list, IModule module) {
 		MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FULL_FAIL, 

@@ -36,7 +36,7 @@ public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
 	}
 
 	@Override
-	public void stop(boolean force) {
+	public void stopImpl(boolean force) {
 		if (force || previousStopFailed) {
 			forceStop();
 			previousStopFailed = false;

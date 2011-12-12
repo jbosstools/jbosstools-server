@@ -29,8 +29,10 @@ import org.eclipse.wst.common.project.facet.core.util.internal.ProgressMonitorUt
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
+import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 	protected IPath root;
@@ -47,7 +49,7 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 	public IStatus[] copyFile(final IModuleFile mf, final IPath path,
 			final IProgressMonitor monitor) throws CoreException {
 		final File file = PublishUtil.getFile(mf);
-		shouldRestartModule |= PublishCopyUtil.checkRestartModule(file);
+		shouldRestartModule |= method.getBehaviour().changedFileRequiresModuleRestart(file);
 		final IPath remotePath = root.append(path);
 		
 		final CoreException[] coreEx = new CoreException[1];
