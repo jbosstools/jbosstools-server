@@ -16,8 +16,23 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.WorkspaceJob;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.internal.ui.util.CoreUtility;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -25,14 +40,21 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.archives.webtools.filesets.Fileset;
 import org.jboss.ide.eclipse.archives.webtools.filesets.FilesetDialog;
 import org.jboss.ide.eclipse.archives.webtools.filesets.FilesetLabelProvider;
+import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
+import org.jboss.ide.eclipse.as.classpath.core.RuntimeKey;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel.IDefaultPathProvider;
+import org.jboss.ide.eclipse.as.classpath.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.preferences.ServerTypePreferencePage;
 import org.osgi.service.prefs.BackingStoreException;
@@ -54,12 +76,16 @@ public class CustomClasspathPreferencePage extends ServerTypePreferencePage {
 		String[] changed2 = rootComp.getChanged();
 		ArrayList<Object> list;
 		IDefaultPathProvider[] arr;
+		final ArrayList<IProject> projectsNeedRefresh = new ArrayList<IProject>();
 		for( int i = 0; i < changed2.length; i++ ) {
 			String runtimeId = changed2[i];
 			IRuntimeType rt = ServerCore.findRuntimeType(runtimeId);
 			list = rootComp.getDataForComboSelection(changed2[i]);
 			arr = (IDefaultPathProvider[]) list.toArray(new IDefaultPathProvider[list.size()]);
 			CustomRuntimeClasspathModel.saveFilesets(rt, arr);
+			clearRuntimeTypeCachedClasspathEntries(rt);
+			IProject[] projectsTargeting = findProjectsTargeting(rt);
+			projectsNeedRefresh.addAll(Arrays.asList(projectsTargeting));
 		}
 		
 		// Save the recently selected
@@ -70,10 +96,71 @@ public class CustomClasspathPreferencePage extends ServerTypePreferencePage {
 			prefs.flush();
 		} catch(BackingStoreException e) {
 		}
-
+		
+		MessageDialog dialog= new MessageDialog(getShell(), 
+				Messages.CustomClasspathsSettingsChanged, null, 
+				Messages.CustomClasspathsRequiresRebuild,
+				MessageDialog.QUESTION, new String[] { IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL, IDialogConstants.CANCEL_LABEL }, 2);
+		
+		int res= dialog.open();
+		if (res == 0) {
+			Job j = new WorkspaceJob(Messages.CustomClasspathsWorkspaceJob) {
+				public IStatus runInWorkspace(IProgressMonitor monitor) {
+					Iterator<IProject> i = projectsNeedRefresh.iterator();
+					monitor.beginTask(Messages.CustomClasspathsWorkspaceJob, projectsNeedRefresh.size());
+					while(i.hasNext()) {
+						IJavaProject jp = JavaCore.create(i.next());
+						try {
+							// Must reset the classpath to actually force both views and models to refresh
+							// A full build is not enough
+							jp.setRawClasspath(jp.getRawClasspath(), new NullProgressMonitor());
+						} catch( JavaModelException jme ) {
+							// TODO 
+						}
+						CoreUtility.getBuildJob(jp.getProject()).schedule();
+					}
+					monitor.done();
+					return Status.OK_STATUS;
+				}
+			};
+			j.setRule(ResourcesPlugin.getWorkspace().getRoot());
+			j.schedule();
+		}
 		rootComp.clearChanged();
 	    return true;
 	} 
+	
+	/* Clear the cached entries for this runtime */
+	private void clearRuntimeTypeCachedClasspathEntries(IRuntimeType rt) {
+		IRuntime[] allRuntimes = ServerCore.getRuntimes();
+		for( int i = 0; i < allRuntimes.length; i++ ) {
+			if( allRuntimes[i].getRuntimeType().getId().equals(rt.getId())) {
+				RuntimeKey key = ClasspathCorePlugin.getRuntimeKey(allRuntimes[i]);
+				ClasspathCorePlugin.getRuntimeClasspaths().put(key, null);
+			}
+		}
+	}
+	
+	private IProject[] findProjectsTargeting(IRuntimeType rt) {
+		ArrayList<IProject> matching = new ArrayList<IProject>();
+		IProject[] allProjs = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+		for( int i = 0; i < allProjs.length; i++ ) {
+			try {
+				if(FacetedProjectFramework.isFacetedProject(allProjs[i])) {
+					IFacetedProject fp = ProjectFacetsManager.create(allProjs[i]);
+					org.eclipse.wst.common.project.facet.core.runtime.IRuntime primary = fp.getPrimaryRuntime();
+					if( primary != null ) {
+						IRuntime wstRuntime = ServerCore.findRuntime(primary.getName());
+						if( wstRuntime.getRuntimeType().getId().equals(rt.getId()))
+							matching.add(allProjs[i]);
+					}
+				}
+			} catch(CoreException ce) {
+				// Exception thrown if project does not exist or is closed, can ignore safely	
+			}
+		}
+		return matching.toArray(new IProject[matching.size()]);
+	}
 	
 	public class CustomClasspathPreferenceComposite extends AbstractComboDataPreferenceComposite {
 		public CustomClasspathPreferenceComposite(Composite parent, int style) {

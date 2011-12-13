@@ -41,6 +41,11 @@ public class Messages  extends NLS {
 	public static String JBossEJB3LibrariesPage_ConfigurationDoesNotContainEJB3Libraries;
 	public static String JBossSelectionPage_ButtonText;
 	public static String JBossSelectionPage_Name;
+	public static String CustomClasspathsWorkspaceJob;
+	public static String CustomClasspathsSettingsChanged;
+	public static String CustomClasspathsRequiresRebuild;
+
+	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}
