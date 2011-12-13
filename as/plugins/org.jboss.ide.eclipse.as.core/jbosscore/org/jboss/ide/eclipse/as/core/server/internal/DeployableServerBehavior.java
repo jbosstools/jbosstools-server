@@ -60,6 +60,17 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		method.publishStart(this, monitor);
 	}
 
+	/**
+	 * Get the current publish method if one exists, or, create one and return it. 
+	 * Any created publish method will be cached and stored. 
+	 * 
+	 * This method should NOT be called except as part of the publishing process. 
+	 * Clients that need a disposable single-use publish method should call
+	 * createPublishMethod() instead. 
+	 * 
+	 * @return
+	 * @throws CoreException
+	 */
 	protected IJBossServerPublishMethod getOrCreatePublishMethod() throws CoreException {
 		if( method == null )
 			method = createPublishMethod();
@@ -103,11 +114,16 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	}
 	
 	/**
-	 * This should only be called once per overall publish. 
-	 * publishStart() should call this, cache the method, and use it 
-	 * until after publishFinish() is called. 
+	 * This method creates a disposable publishMethod for use in publishing modules and projects, 
+	 * touching files, copying files, or any other task relevent to publish methods. 
 	 * 
-	 * @return
+	 * This method will also be called once during a "publish cycle" 
+	 * between publishStart and publishFinish, with the 
+	 * IJBossServerPublishMethod cached for the duration. 
+	 * 
+	 * Other clients can use this API to have a disposable publish method to use.
+	 * 
+	 * @return The publish method
 	 */
 	public IJBossServerPublishMethod createPublishMethod() {
 		IJBossServerPublishMethodType type = DeploymentPreferenceLoader.getCurrentDeploymentMethodType(getServer());

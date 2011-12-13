@@ -101,7 +101,7 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 		}
 		List<IPath> paths = getMarkedDoDeploy();
 		monitor.beginTask("Completing Publishes", paths.size() + 1); //$NON-NLS-1$
-		createDoDeployMarker(paths, monitor);
+		createDoDeployMarker(getOrCreatePublishMethod(), paths, monitor);
 	}
 	
 	@Override
@@ -110,9 +110,9 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 		if( ds == null ) 
 			return;
 
-		IJBossServerPublishMethod method = getOrCreatePublishMethod();
+		IJBossServerPublishMethod method = createPublishMethod();
 		IPath depPath = PublishUtil.getDeployPath(method, module, ds);
-		createDoDeployMarker(new IPath[]{depPath}, monitor);
+		createDoDeployMarker(method, new IPath[]{depPath}, monitor);
 	}
 
 	@Override
@@ -180,12 +180,14 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 		}
 		return (List<IPath>) o;
 	}
-	private void createDoDeployMarker(IPath[] paths, IProgressMonitor monitor) throws CoreException {
+	private void createDoDeployMarker(IJBossServerPublishMethod method, IPath[] paths, IProgressMonitor monitor) throws CoreException {
 		List<IPath> allPaths = Arrays.asList(paths);
-		createDoDeployMarker(allPaths, monitor);
+		createDoDeployMarker(method, allPaths, monitor);
 	}
-	private void createDoDeployMarker(List<IPath> paths, IProgressMonitor monitor) throws CoreException {
-		DeploymentMarkerUtils.addDoDeployMarker(getOrCreatePublishMethod(), getServer(), paths, monitor);
+	private void createDoDeployMarker(IJBossServerPublishMethod method, List<IPath> paths, IProgressMonitor monitor) throws CoreException {
+		if( method == null )
+			method = createPublishMethod();
+		DeploymentMarkerUtils.addDoDeployMarker(method, getServer(), paths, monitor);
 	}
 	
 	@Override
