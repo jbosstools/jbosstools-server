@@ -18,6 +18,7 @@ import java.util.zip.ZipFile;
 
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
 
 public class JBossServerType implements IJBossToolingConstants {
 	
@@ -75,6 +76,17 @@ public class JBossServerType implements IJBossToolingConstants {
 			"Enterprise Application Platform",//$NON-NLS-1$
 			JBOSS_AS_PATH + File.separatorChar + BIN_PATH+ File.separatorChar + TWIDDLE_JAR_NAME, 
 			new String[]{V4_2,V4_3,V5_0,V5_1}, new EAPServerTypeCondition());
+	
+	public static final JBossServerType EAP6 = new JBossServerType(
+			"EAP", //$NON-NLS-1$
+			"Enterprise Application Platform", //$NON-NLS-1$
+				"modules" + File.separatorChar +  //$NON-NLS-1$
+				"org" + File.separatorChar + //$NON-NLS-1$
+				"jboss" + File.separatorChar + //$NON-NLS-1$
+				"as" + File.separatorChar + //$NON-NLS-1$
+				"server" + File.separatorChar + //$NON-NLS-1$
+				"main", //$NON-NLS-1$
+			new String[]{V6_0}, new EAP6ServerTypeCondition());
 	
 	public static final JBossServerType SOAP = new JBossServerType(
 			"SOA-P",//$NON-NLS-1$
@@ -144,7 +156,22 @@ public class JBossServerType implements IJBossToolingConstants {
 		return this.condition.isServerRoot(location);
 	}
 	
+	private static final String IMPLEMENTATION_TITLE = "Implementation-Title"; //$NON-NLS-1$
+	private static final String JBEAP_RELEASE_VERSION = "JBossEAP-Release-Version"; //$NON-NLS-1$
+	
 	public static boolean isEAP(File systemJarFile) {
+		String title = getJarProperty(systemJarFile, IMPLEMENTATION_TITLE);
+		return title != null && title.contains("EAP"); //$NON-NLS-1$
+	}
+	
+	public static boolean isEAP6(File systemJarFile) {
+		String value = getJarProperty(systemJarFile, JBEAP_RELEASE_VERSION);
+		if( value != null && value.trim().startsWith("6.")) //$NON-NLS-1$
+				return true;
+		return false;
+	}
+	
+	public static String getJarProperty(File systemJarFile, String propertyName) {
 		if (systemJarFile.canRead()) {
 			ZipFile jar = null;
 			try {
@@ -152,8 +179,8 @@ public class JBossServerType implements IJBossToolingConstants {
 				ZipEntry manifest = jar.getEntry("META-INF/MANIFEST.MF");//$NON-NLS-1$
 				Properties props = new Properties();
 				props.load(jar.getInputStream(manifest));
-				String title = (String) props.get("Implementation-Title");//$NON-NLS-1$
-				return title != null && title.contains("EAP"); //$NON-NLS-1$
+				String value = (String) props.get(propertyName);
+				return value;
 			} catch (IOException e) {
 				// ignore
 			} finally {
@@ -166,7 +193,7 @@ public class JBossServerType implements IJBossToolingConstants {
 				}
 			}
 		}
-		return false;
+		return null;
 	}
 	
 	public static final JBossServerType[] KNOWN_TYPES = {AS, EAP, SOAP, SOAP_STD, EWP, EPP};
@@ -183,6 +210,30 @@ public class JBossServerType implements IJBossToolingConstants {
 		}
 	}
 	
+	public static class EAP6ServerTypeCondition implements Condition {
+		public boolean isServerRoot(File location) {
+			String mainFolder = new StringBuilder(location.getAbsolutePath())
+			.append(File.separator)
+			.append("modules").append(File.separator) //$NON-NLS-1$
+			.append("org").append(File.separator) //$NON-NLS-1$
+			.append("jboss").append(File.separator) //$NON-NLS-1$
+			.append("as").append(File.separator) //$NON-NLS-1$
+			.append("server").append(File.separator) //$NON-NLS-1$
+			.append("main").append(File.separator) //$NON-NLS-1$
+			.toString();
+			File f = new File(mainFolder);
+			if( f.exists() ) {
+				File[] children = f.listFiles();
+				for( int i = 0; i < children.length; i++ ) {
+					if( children[i].getName().endsWith(IWTPConstants.EXT_JAR)) {
+						return isEAP6(children[i]);
+					}
+				}
+			}
+			return false;
+		}
+	}
+
 	public static class EAPStandaloneServerTypeCondition implements Condition {
 		public boolean isServerRoot(File location) {
 			File asSystemJar = new File(location, JBossServerType.EAP_STD.getSystemJarPath());

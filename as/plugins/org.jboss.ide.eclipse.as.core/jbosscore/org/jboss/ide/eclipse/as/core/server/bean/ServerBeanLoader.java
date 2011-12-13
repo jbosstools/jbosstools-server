@@ -46,6 +46,8 @@ public class ServerBeanLoader {
 	public JBossServerType getServerType(File location) {
 		if(JBossServerType.AS.isServerRoot(location)) {
 			return JBossServerType.AS;
+		} else if(JBossServerType.EAP6.isServerRoot(location)) {
+			return JBossServerType.EAP6;
 		} else if(JBossServerType.AS7.isServerRoot(location)) {
 			return JBossServerType.AS7; 
 		} else if(JBossServerType.EAP_STD.isServerRoot(location)) {
