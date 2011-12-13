@@ -50,11 +50,6 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 	private PollThread pollThread;
 
 	@Override
-	public boolean shouldSuspendScanner() {
-		return false;
-	}
-
-	@Override
 	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy launchConfig, IProgressMonitor monitor)
 			throws CoreException {
 		// TODO: implement setup for RSE launch delegate too

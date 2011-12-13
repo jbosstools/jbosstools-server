@@ -114,7 +114,7 @@ public abstract class AbstractArchiveWizard extends WizardWithNotification imple
 						try {
 							if( create )
 								parent.addChild(pkg);
-							ArchivesModel.instance().save(project.getLocation(), monitor);
+							ArchivesModel.instance().getRoot(project.getLocation()).save( monitor);
 						} catch( ArchivesModelException ame ) {
 							IStatus status = new Status(IStatus.ERROR, PackagesUIPlugin.PLUGIN_ID, ArchivesUIMessages.ErrorCompletingWizard, ame);
 							PackagesUIPlugin.getDefault().getLog().log(status);

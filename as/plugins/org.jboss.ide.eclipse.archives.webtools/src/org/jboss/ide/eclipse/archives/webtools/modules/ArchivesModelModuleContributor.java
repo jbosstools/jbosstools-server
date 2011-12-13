@@ -91,7 +91,7 @@ public class ArchivesModelModuleContributor {
 			projectToModules.put(project.getLocation(), mods);
 			if( requiresSave ) {
 				try {
-					ArchivesModel.instance().save(project.getLocation(), 
+					ArchivesModel.instance().getRoot(project.getLocation()).save( 
 							new NullProgressMonitor());
 				} catch( ArchivesModelException ame ) {
 				}

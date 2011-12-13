@@ -159,21 +159,6 @@ public class RSEHostShellModel {
 		
 	}
 	
-	/**
-	 * @deprecated moved to {@link ThreadUtils#sleepFor(int)}
-	 */
-	@Deprecated
-	public static void delay(int delay /* in ms */) {
-		int x = 0;
-		while( x < delay) {
-			x+=200;
-			try {
-				Thread.sleep(200);
-			} catch(InterruptedException ie) {
-			}
-		}
-	}
-	
 	public static IShellService findShellService(DelegatingServerBehavior behaviour) throws CoreException {
 		return findShellService(behaviour.getServer());
 	}

@@ -60,14 +60,7 @@ public class ServerUtil {
 	public static IJBossBehaviourDelegate checkedGetBehaviorDelegate(IServer server) throws CoreException {
 		return checkedGetServerAdapter(server, DelegatingServerBehavior.class).getDelegate();
 	}
-	
-	@Deprecated
-	public static IPath makeRelative(IJBossServerRuntime rt, IPath p) {
-		if( rt != null && rt.getRuntime() != null )
-			return makeRelative(rt.getRuntime(), p);
-		return p;
-	}
-	
+
 	public static IPath makeRelative(IRuntime rt, IPath p) {
 		if( p.isAbsolute() && rt != null) {
 			if(rt.getLocation().isPrefixOf(p)) {
@@ -75,13 +68,6 @@ public class ServerUtil {
 				return new Path(p.toOSString().substring(size)).makeRelative();
 			}
 		}
-		return p;
-	}
-	
-	@Deprecated
-	public static IPath makeGlobal(IJBossServerRuntime rt, IPath p) {
-		if( rt != null && rt.getRuntime() != null )
-			return makeGlobal(rt.getRuntime(), p);
 		return p;
 	}
 	
@@ -128,7 +114,7 @@ public class ServerUtil {
 				IPath newTemp = new Path(IJBossRuntimeResourceConstants.SERVER).append(config)
 					.append(IJBossToolingConstants.TMP)
 					.append(IJBossToolingConstants.JBOSSTOOLS_TMP).makeRelative();
-				IPath newTempAsGlobal = ServerUtil.makeGlobal(jbsrt, newTemp);
+				IPath newTempAsGlobal = makeGlobal(jbsrt.getRuntime(), newTemp);
 				newTempAsGlobal.toFile().mkdirs();
 			}
 		}

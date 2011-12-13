@@ -43,7 +43,7 @@ public class SaveArchivesJob extends Job {
 			}
 		}
 		try {
-			ArchivesModel.instance().save(projectPath, new NullProgressMonitor());
+			ArchivesModel.instance().getRoot(projectPath).save(new NullProgressMonitor());
 		} catch( ArchivesModelException ame ) {
 			IStatus status = new Status(IStatus.ERROR, ArchivesCorePlugin.PLUGIN_ID, ArchivesCoreMessages.ErrorUpdatingModel, ame);
 			return status;

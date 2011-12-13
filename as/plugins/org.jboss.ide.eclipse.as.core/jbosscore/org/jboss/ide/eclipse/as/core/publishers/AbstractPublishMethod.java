@@ -20,18 +20,12 @@ import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 
 public abstract class AbstractPublishMethod implements IJBossServerPublishMethod {
 	public abstract String getPublishMethodId();
 
-//	@Deprecated
-//	public IJBossServerPublishMethodType getPublishMethodType() {
-//		return ExtensionManager.getDefault().getPublishMethod(getPublishMethodId());
-//	}
-	
 	public void publishStart(DeployableServerBehavior behaviour,
 			IProgressMonitor monitor) throws CoreException {
 	}

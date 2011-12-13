@@ -49,7 +49,6 @@ import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.ModuleFactory;
 import org.eclipse.wst.server.core.internal.PublishServerJob;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
-import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.model.ModuleFactoryDelegate;
@@ -184,39 +183,6 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 		}
 	}
 
-	/**
-	 * Saves the deployable list for ALL files.
-	 * Should not be used
-	 * @deprecated
-	 */
-	public void saveDeployableList() {
-		HashMap<String, String> map = new HashMap<String, String>();
-		IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-		for( int i = 0; i < allProjects.length; i++) 
-			map.put(allProjects[i].getName(), ""); //$NON-NLS-1$
-		
-		Set<IPath> allPaths = moduleIdToModule.keySet();
-		Iterator<IPath> j = allPaths.iterator();
-		IPath tmp;
-		while(j.hasNext()) {
-			tmp = j.next();
-			map.put(tmp.segment(0), map.get(tmp.segment(0)) + tmp.removeFirstSegments(1).makeRelative() + "\n"); //$NON-NLS-1$
-		}
-		
-		String qualifier = JBossServerCorePlugin.getDefault().getDescriptor().getUniqueIdentifier();
-		for( int k = 0; k < allProjects.length; k++ ) {
-			IScopeContext context = new ProjectScope(allProjects[k]);
-			IEclipsePreferences node = context.getNode(qualifier);
-			if (node != null)
-				node.put(PREFERENCE_KEY, map.get(allProjects[k].getName()));
-			try {
-				node.flush();
-			} catch (BackingStoreException e) {
-				// TODO Log
-			}
-		}
-	}
-	
 	public void saveDeployableList(String projectName) {
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		String list = ""; //$NON-NLS-1$

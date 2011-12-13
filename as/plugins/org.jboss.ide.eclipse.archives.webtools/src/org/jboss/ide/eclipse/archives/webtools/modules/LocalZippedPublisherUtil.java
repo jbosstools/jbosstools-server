@@ -229,7 +229,7 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 			IPath path = getOutputFilePath(combine(parent, last));
 			path = path.removeLastSegments(1);
 			de.schlichtherle.io.File root = TrueZipUtil.getFile(path, TrueZipUtil.getJarArchiveDetector());
-			IModuleResource[] resources = getResources(last);
+			IModuleResource[] resources = getResources(last, new NullProgressMonitor());
 			results.addAll(Arrays.asList(copy(root, resources)));
 			TrueZipUtil.umount();
 			return (IStatus[]) results.toArray(new IStatus[results.size()]);

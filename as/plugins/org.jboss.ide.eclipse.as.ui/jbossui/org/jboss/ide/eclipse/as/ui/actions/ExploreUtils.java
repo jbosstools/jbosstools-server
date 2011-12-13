@@ -25,6 +25,7 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
+import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
 /**
  * @author snjeza
@@ -169,7 +170,7 @@ public class ExploreUtils {
 		if (Platform.getOS().equals(Platform.OS_WIN32)) {
 			return fullPath;
 		}
-		if( !PublishUtil.isBinaryObject(moduleTree)) {
+		if( !ServerModelUtilities.isBinaryModule(moduleTree)) {
 			return fullPath;
 		}
 		return fullPath.removeLastSegments(1);

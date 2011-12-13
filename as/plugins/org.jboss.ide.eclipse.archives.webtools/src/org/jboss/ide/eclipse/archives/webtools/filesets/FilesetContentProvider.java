@@ -144,29 +144,10 @@ public class FilesetContentProvider implements ITreeContentProvider {
 		private Fileset[] loadFilesets() {
 			if( FilesetUtil.getFile(server).exists()) {
 				return FilesetUtil.loadFilesets(server);
-			} else {
-				return loadFilesets_LEGACY();
-			}
+			} 
+			return new Fileset[0];
 		}
 		
-		@Deprecated
-		private Fileset[] loadFilesets_LEGACY() {
-			Fileset[] filesets = new Fileset[0];
-			if (server != null) {
-				ServerAttributeHelper helper = ServerAttributeHelper
-						.createHelper(server);
-				List<String> tmp = (ArrayList<String>)helper.getAttribute(FILESET_KEY, new ArrayList<String>());
-				String[] asStrings = (String[]) tmp.toArray(new String[tmp
-						.size()]);
-				filesets = new Fileset[asStrings.length];
-				for (int i = 0; i < asStrings.length; i++) {
-					filesets[i] = new Fileset(asStrings[i]);
-					filesets[i].setServer(server);
-				}
-			}
-			return filesets;
-		}
-
 		public void saveFilesets() {
 			FilesetUtil.saveFilesets(server, children);
 		}

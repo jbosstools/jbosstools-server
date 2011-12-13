@@ -10,13 +10,9 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.extensions.descriptors;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
-import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.internal.IMemento;
 
 /**
@@ -26,46 +22,20 @@ import org.jboss.ide.eclipse.as.core.util.internal.IMemento;
  *
  */
 public class XPathCategory {
-	@Deprecated private static final String DELIMITER = ","; //$NON-NLS-1$
-	@Deprecated private static final String QUERY_LIST = 
-		"org.jboss.ide.eclipse.as.core.model.descriptor.QueryList";	 //$NON-NLS-1$
-	@Deprecated private static final String QUERY = 
-		"org.jboss.ide.eclipse.as.core.model.descriptor.Query";	 //$NON-NLS-1$
-
-	
 	protected String name; // cannot include delimiter from the model, comma
 	protected IServer server;
 	protected IMemento memento;
 	protected HashMap<String, XPathQuery> children;
 	
-	@Deprecated
+	/**
+	 * Create a stub empty category
+	 * @param name
+	 * @param server
+	 */
 	public XPathCategory(String name, IServer server) {
 		this.name = name;
 		this.server = server;
 		children = new HashMap<String, XPathQuery>();
-		XPathQuery[] queries = loadQueries_LEGACY(this, server);
-		for( int i = 0; i < queries.length; i++ ) {
-			children.put(queries[i].getName(), queries[i]);
-		}
-	}
-	
-	private static XPathQuery[] loadQueries_LEGACY(XPathCategory category, IServer server) {
-		ServerAttributeHelper helper = ServerAttributeHelper.createHelper(server);
-		String list = helper.getAttribute(QUERY_LIST + '.' + category.getName().replace(' ', '_'), (String)null);
-		if( list == null )
-			return new XPathQuery[] {};
-		String[] queriesByName = list.split(DELIMITER);
-		List<String> queryAsStringValues;
-		ArrayList<XPathQuery> returnList = new ArrayList<XPathQuery>();
-		for( int i = 0; i < queriesByName.length; i++ ) {
-			queryAsStringValues = helper.getAttribute(QUERY + '.' + queriesByName[i].replace(' ', '_'), (List)null);
-			if( queryAsStringValues != null ) {
-				XPathQuery q =new XPathQuery(queriesByName[i].substring(queriesByName[i].indexOf(Path.SEPARATOR)+1), queryAsStringValues); 
-				q.setCategory(category);
-				returnList.add(q);
-			}
-		}
-		return (XPathQuery[]) returnList.toArray(new XPathQuery[returnList.size()]);
 	}
 	
 	public XPathCategory(IServer server, IMemento memento) {

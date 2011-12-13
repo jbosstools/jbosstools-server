@@ -36,7 +36,7 @@ import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
@@ -89,7 +89,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 
 	protected boolean isEAP() {
 		IRuntime rt = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
-		return LocalJBossServerRuntime.isEAP(rt);
+		return RuntimeUtils.isEAP(rt);
 	}
 	
 	public ImageDescriptor getImageDescriptor() {

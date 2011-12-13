@@ -191,14 +191,4 @@ public class ServerConverter {
 		servers.toArray(ret);
 		return ret;
 	}
-
-	@Deprecated
-	public static IJBossServerRuntime getJBossRuntime(IServer server) throws CoreException {
-		return RuntimeUtils.checkedGetJBossServerRuntime(server);
-	}
-
-	@Deprecated
-	public static IJBossServerRuntime getJBossRuntime(IServerAttributes server) {
-		return RuntimeUtils.getJBossServerRuntime(server);
-	}
 }

@@ -22,7 +22,6 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractPublishMethod;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
-import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
 
 public class MockPublishMethod extends AbstractPublishMethod {
@@ -94,7 +93,7 @@ public class MockPublishMethod extends AbstractPublishMethod {
 				IProgressMonitor monitor) throws CoreException {
 //			System.out.println("copying to " + root.append(path));
 			File file = PublishUtil.getFile(mf);
-			shouldRestartModule |= PublishCopyUtil.checkRestartModule(file);
+			shouldRestartModule |= checkRestartModule(file);
 			IPath path2 = root.append(path);
 			if( !changed.contains(path2.makeRelative()))
 				changed.add(path2.makeRelative());
@@ -114,5 +113,11 @@ public class MockPublishMethod extends AbstractPublishMethod {
 			IPath path2 = root.append(path);
 			return path2.toFile().exists() && path2.toFile().isFile();
 		}
+		public boolean checkRestartModule(File file) {
+			if( file.getName().toLowerCase().endsWith(".jar")) //$NON-NLS-1$
+				return true;
+			return false;
+		}
+
 	}
 }

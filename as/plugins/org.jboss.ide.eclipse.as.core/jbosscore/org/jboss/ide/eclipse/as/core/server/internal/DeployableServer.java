@@ -104,21 +104,19 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	
 	
 	public String getDeployFolder() {
-		IJBossServerRuntime jbsrt = getRuntime();
-		return ServerUtil.makeGlobal(jbsrt, new Path(getAttribute(DEPLOY_DIRECTORY, ""))).toString(); //$NON-NLS-1$
+		return ServerUtil.makeGlobal(getServer().getRuntime(), new Path(getAttribute(DEPLOY_DIRECTORY, ""))).toString(); //$NON-NLS-1$
 	}
 	
 	public void setDeployFolder(String folder) {
-		setAttribute(DEPLOY_DIRECTORY, ServerUtil.makeRelative(getRuntime(), new Path(folder)).toString());
+		setAttribute(DEPLOY_DIRECTORY, ServerUtil.makeRelative(getServer().getRuntime(), new Path(folder)).toString());
 	}
 	
 	public String getTempDeployFolder() {
-		IJBossServerRuntime jbsrt = getRuntime();
-		return ServerUtil.makeGlobal(jbsrt, new Path(getAttribute(TEMP_DEPLOY_DIRECTORY, ""))).toString(); //$NON-NLS-1$
+		return ServerUtil.makeGlobal(getServer().getRuntime(), new Path(getAttribute(TEMP_DEPLOY_DIRECTORY, ""))).toString(); //$NON-NLS-1$
 	} 
 	
 	public void setTempDeployFolder(String folder) {
-		setAttribute(TEMP_DEPLOY_DIRECTORY, ServerUtil.makeRelative(getRuntime(), new Path(folder)).toString());
+		setAttribute(TEMP_DEPLOY_DIRECTORY, ServerUtil.makeRelative(getServer().getRuntime(), new Path(folder)).toString());
 	}
 	
 	public void setDeployLocationType(String type) {
@@ -158,20 +156,6 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 		return RuntimeUtils.getJBossServerRuntime(getServer());
 	}
 	
-	/**
-	 * @Deprecated
-	 * @see RuntimeUtils.getJBossServerRuntime(getServer())
-	 */
-	public static IJBossServerRuntime getRuntime(IServer server) {
-		IJBossServerRuntime  ajbsrt = null;
-		if( server.getRuntime() != null ) {
-			ajbsrt = (IJBossServerRuntime) server.getRuntime()
-					.loadAdapter(IJBossServerRuntime.class,
-							new NullProgressMonitor());
-		}
-		return ajbsrt;
-	}
-
 	public boolean hasJMXProvider() {
 		return false;
 	}

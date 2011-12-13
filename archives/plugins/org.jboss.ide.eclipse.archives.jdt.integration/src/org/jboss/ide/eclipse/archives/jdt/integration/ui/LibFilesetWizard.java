@@ -54,7 +54,7 @@ public class LibFilesetWizard extends Wizard {
 					if (createFileset)
 						parentNode.addChild(fileset);
 					try {
-						ArchivesModel.instance().save(fileset.getProjectPath(), monitor);
+						ArchivesModel.instance().getRoot(fileset.getProjectPath()).save(monitor);
 					}  catch( ArchivesModelException ame ) {
 						IStatus status = new Status(IStatus.ERROR, PackagesUIPlugin.PLUGIN_ID, ArchivesUIMessages.ErrorCompletingWizard, ame);
 						PackagesUIPlugin.getDefault().getLog().log(status);

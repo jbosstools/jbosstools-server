@@ -71,11 +71,6 @@ public class XPathQuery implements Serializable {
 		setEffectiveBaseDir();
 	}
 	
-	@Deprecated
-	public XPathQuery(IMemento memento) {
-		this(memento, null);
-	}
-	
 	public XPathQuery(String name, List list) {
 		this.name = name;
 		this.baseDir = list.get(0).equals(XPathModel.EMPTY_STRING) ? null : (String)list.get(0);
@@ -95,11 +90,6 @@ public class XPathQuery implements Serializable {
 		this.attribute = attribute;
 		this.results = null;
 		setEffectiveBaseDir();
-	}
-	
-	@Deprecated
-	public XPathQuery(String name, String baseDir, String filePattern, String xpathPattern, String attribute) {
-		this(null, name, baseDir, filePattern, xpathPattern, attribute);
 	}
 	
 	private void setEffectiveBaseDir() {

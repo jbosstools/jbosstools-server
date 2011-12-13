@@ -142,7 +142,8 @@ public class XPathActionProvider extends CommonActionProvider {
 								categoryItem = categoryList[i];
 						}
 						if (categoryItem != null) {
-							XPathQuery query = new XPathQuery(d.getName(),
+							XPathQuery query = new XPathQuery(
+									null, d.getName(),
 									"server/${config}", // TODO  externalize this in a constant
 									null, d.getXpath(), d.getAttribute());
 							categoryItem.addQuery(query);

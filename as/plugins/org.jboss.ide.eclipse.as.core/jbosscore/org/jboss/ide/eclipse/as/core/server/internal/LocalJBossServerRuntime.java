@@ -78,14 +78,6 @@ public class LocalJBossServerRuntime extends AbstractLocalJBossServerRuntime imp
 		return getNextRuntimeName(base);
 	}
 	
-	/**
-	 * @deprecated replaced by {@link #isEAP()} and {@link RuntimeUtils#isEAP(IRuntime)}
-	 */
-	@Deprecated
-	public static boolean isEAP(IRuntime rt) {
-		return rt.getRuntimeType().getId().startsWith("org.jboss.ide.eclipse.as.runtime.eap."); //$NON-NLS-1$
-	}
-	
 	public boolean isEAP() {
 		return getRuntime() != null
 				&& getRuntime().getRuntimeType() != null

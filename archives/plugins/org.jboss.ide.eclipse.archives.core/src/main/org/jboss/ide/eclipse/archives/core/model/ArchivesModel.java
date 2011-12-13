@@ -23,8 +23,8 @@ import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages;
 import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveModelNode;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XMLBinding;
-import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbPackages;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XMLBinding.XbException;
+import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbPackages;
 import org.jboss.ide.eclipse.archives.core.util.ModelUtil;
 
 /**
@@ -133,16 +133,6 @@ public class ArchivesModel implements IArchiveModel {
 
 	public IArchiveModelRootNode getRoot(IPath project) {
 		return (archivesRoot.get(project));
-	}
-
-	@Deprecated
-	public void save(IPath projectPath, IProgressMonitor monitor) throws ArchivesModelException {
-		save(getRoot(projectPath), monitor);
-	}
-
-	@Deprecated
-	public void save(IArchiveModelRootNode modelNode, IProgressMonitor monitor) throws ArchivesModelException {
-		modelNode.save(monitor);
 	}
 
 	public boolean isProjectRegistered(IPath projectPath) {

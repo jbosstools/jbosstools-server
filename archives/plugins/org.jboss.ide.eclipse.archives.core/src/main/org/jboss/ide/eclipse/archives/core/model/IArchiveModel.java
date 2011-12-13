@@ -25,8 +25,6 @@ public interface IArchiveModel {
 	public static final String DEFAULT_PACKAGES_FILE = ".packages"; //$NON-NLS-1$
 
 	public boolean isProjectRegistered(IPath projectPath);
-	public void save(IPath projectPath, IProgressMonitor monitor) throws ArchivesModelException;
-	public void save(IArchiveModelRootNode modelNode, IProgressMonitor monitor) throws ArchivesModelException;
 	public IArchiveModelRootNode registerProject(IPath projectPath, IProgressMonitor monitor) throws ArchivesModelException;
 	public IArchiveModelRootNode registerProject(IPath projectPath, String file, IProgressMonitor monitor) throws ArchivesModelException;
 	public void registerProject(IArchiveModelRootNode modelNode, IProgressMonitor monitor);

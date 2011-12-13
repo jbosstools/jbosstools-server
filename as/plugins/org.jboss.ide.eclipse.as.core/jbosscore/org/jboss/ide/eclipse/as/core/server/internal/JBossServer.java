@@ -38,7 +38,6 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.server.core.IModule;
-import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IURLProvider;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
@@ -46,10 +45,10 @@ import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 /**
@@ -104,17 +103,17 @@ public class JBossServer extends DeployableServer
 	}
 	
 	/**
-	 * No changes will be made to this API and new server
-	 * types are expected to override the getDeployFolder() api's
+	 * Legacy method used by some (such as UI) who want to 
+	 * deeply introspect the value for specific deployment location
+	 * constants. 
 	 * 
 	 * @param jbs
 	 * @param type
 	 * @return
 	 */
-	@Deprecated
 	public static String getDeployFolder(JBossServer jbs, String type) {
 		IServer server = jbs.getServer();
-		IJBossServerRuntime jbsrt = getRuntime(server);
+		IJBossServerRuntime jbsrt = RuntimeUtils.getJBossServerRuntime(server);
 		if( type.equals(DEPLOY_CUSTOM)) {
 			String val = jbs.getAttribute(DEPLOY_DIRECTORY, (String)null);
 			if( val != null ) {
@@ -141,10 +140,18 @@ public class JBossServer extends DeployableServer
 		return getTempDeployFolder(this, getDeployLocationType());
 	}
 	
-	@Deprecated
+	/**
+	 * Legacy method used by some (such as UI) who want to 
+	 * deeply introspect the value for specific deployment location
+	 * constants. 
+	 * 
+	 * @param jbs
+	 * @param type
+	 * @return
+	 */
 	public static String getTempDeployFolder(JBossServer jbs, String type) {
 		IServer server = jbs.getServer();
-		IJBossServerRuntime jbsrt = getRuntime(server);
+		IJBossServerRuntime jbsrt =RuntimeUtils.getJBossServerRuntime(server);
 		if( type.equals(DEPLOY_CUSTOM))
 			return ServerUtil.makeGlobal(jbsrt.getRuntime(), 
 					new Path(server.getAttribute(TEMP_DEPLOY_DIRECTORY, ""))).toString(); //$NON-NLS-1$

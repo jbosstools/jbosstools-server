@@ -66,6 +66,10 @@ public class ServerModelUtilities {
 		return new IModule[0];
 	}
 	
+	public static boolean isBinaryModule(IModule[] moduleTree) {
+		return moduleTree == null ? false : isBinaryModule(moduleTree[moduleTree.length - 1]);
+	}
+	
 	public static boolean isBinaryModule(IModule module) {
 		IJ2EEModule jee = (IJ2EEModule) module.loadAdapter(IJ2EEModule.class, null);
 		if( jee != null )

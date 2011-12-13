@@ -176,27 +176,15 @@ public class PublishUtil {
 		return root;
 	}
 	
-	/**
+	/*
 	 * This method is deprecated. Please use the following:
 	 * @see getDeployPath(IModule[] module, String folder, IDeployableServer server)
 	 * @param moduleTree
 	 * @param deployFolder
 	 * @return
 	 */
-	@Deprecated
-	public static IPath getDeployPath(IModule[] moduleTree, String deployFolder) {
-		IPath root = new Path( deployFolder );
-		String type, modName, name, uri, suffixedName;
-		for( int i = 0; i < moduleTree.length; i++ ) {	
-			type = moduleTree[i].getModuleType().getId();
-			modName = moduleTree[i].getName();
-			name = new Path(modName).lastSegment();
-			suffixedName = name + getSuffix(type);
-			uri = getParentRelativeURI(moduleTree, i, suffixedName);
-			root = root.append(uri);
-		}
-		return root;
-	}
+	// @Deprecated 
+	//public static IPath getDeployPath(IModule[] moduleTree, String deployFolder);
 	
 	private static String getParentRelativeURI(IModule[] tree, int index, String defaultName) {
 		if( index != 0 ) {
@@ -268,17 +256,6 @@ public class PublishUtil {
 		return suffix;
 	}
 	
-	@Deprecated 
-	public static boolean isBinaryObject(IModule[] moduleTree) {
-		IModule lastMod = moduleTree[moduleTree.length-1];
-		return ServerModelUtilities.isBinaryModule(lastMod);
-	}
-	
-	@Deprecated
-	public static IModuleResource[] getResources(IModule module) throws CoreException {
-		return getResources(module, new NullProgressMonitor());
-	}
-	
 	public static IModuleResource[] getResources(IModule module, IProgressMonitor monitor) throws CoreException {
 		monitor.beginTask("Fetching Module Resources", 100); //$NON-NLS-1$
 		ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, ProgressMonitorUtil.submon(monitor, 100));
@@ -292,7 +269,7 @@ public class PublishUtil {
 	}
 	
 	public static IModuleResource[] getResources(IModule[] tree) throws CoreException {
-		return getResources(tree[tree.length-1]);
+		return getResources(tree[tree.length-1], new NullProgressMonitor());
 	}
 	
 	public static File getFile(IModuleResource resource) {

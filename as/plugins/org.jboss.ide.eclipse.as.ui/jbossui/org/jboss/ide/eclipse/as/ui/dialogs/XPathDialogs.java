@@ -64,11 +64,10 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XMLDocumentRepository;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathCategory;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult;
+import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
-import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
-import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 
@@ -391,7 +390,7 @@ public class XPathDialogs {
 			final String directory2 = directory;
 			IRunnableWithProgress op = new IRunnableWithProgress() {
 				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-					XPathQuery tmp = new XPathQuery("", directory2, filePattern, xpText, attText); //$NON-NLS-1$
+					XPathQuery tmp = new XPathQuery(null, "", directory2, filePattern, xpText, attText); //$NON-NLS-1$
 					tmp.setRepository(repository);
 					final ArrayList<XPathFileResult> list = new ArrayList<XPathFileResult>();
 					list.addAll(Arrays.asList(tmp.getResults()));
@@ -637,7 +636,7 @@ public class XPathDialogs {
 				ArrayList list = xpathCache.get(xpath);
 				return (XPathResultNode[]) list.toArray(new XPathResultNode[list.size()]);
 			}
-			XPathQuery tmp = new XPathQuery("", path, "**/*.xml", xpath, null); //$NON-NLS-1$ //$NON-NLS-2$
+			XPathQuery tmp = new XPathQuery(null, "", path, "**/*.xml", xpath, null); //$NON-NLS-1$ //$NON-NLS-2$
 			tmp.setRepository(repository);
 			ArrayList<XPathResultNode> list = new ArrayList<XPathResultNode>();
 			XPathFileResult[] items = tmp.getResults();

@@ -283,12 +283,5 @@ public final class PublishCopyUtil {
 		for (int i = 0; i < size; i++)
 			list.add(a[i]);
 	}
-	
-	@Deprecated
-	public static boolean checkRestartModule(File file) {
-		if( file.getName().toLowerCase().endsWith(".jar")) //$NON-NLS-1$
-			return true;
-		return false;
-	}
 
 }

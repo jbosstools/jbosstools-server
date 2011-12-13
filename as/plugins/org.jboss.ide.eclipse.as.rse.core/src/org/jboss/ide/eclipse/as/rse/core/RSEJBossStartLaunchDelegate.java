@@ -14,19 +14,12 @@ package org.jboss.ide.eclipse.as.rse.core;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.Messages;
-import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.IJBossBehaviourDelegate;
@@ -37,10 +30,8 @@ import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
-import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
-import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 
 public class RSEJBossStartLaunchDelegate extends AbstractRSELaunchDelegate {
 
@@ -56,51 +47,6 @@ public class RSEJBossStartLaunchDelegate extends AbstractRSELaunchDelegate {
 		launchPingThread(beh);
 	}
 	
-	/**
-	 * 
-	 * @deprecated
-	 * This was called from {@link RSEBehaviourDelegate#stop(boolean)
-	 * WTP keeps launching in launch configs and stopping in
-	 * the server behavior. We should not change that and offer
-	 * stopping-functionalities in launch delegates.
-	 * 
-	 * @param behaviour
-	 */
-	@Deprecated
-	public static void launchStopServerCommand(DelegatingServerBehavior behaviour) {
-		if (LaunchCommandPreferences.isIgnoreLaunchCommand(behaviour.getServer())) {
-			behaviour.setServerStopping();
-			behaviour.setServerStopped();
-			return;
-		}
-		ILaunchConfiguration config = null;
-		String command2 = "";
-		try {
-			config = behaviour.getServer().getLaunchConfiguration(false, new NullProgressMonitor());
-			/*	
-			 * 		ATTENTION: this was commented since #getDefaultStopCommand is not static any more
-			 * 		String defaultCmd = getDefaultStopCommand(behaviour.getServer(), true);
-			 */
-
-			/*
-			 * This was added to make it compile
-			 */
-			String defaultCmd = ""; 
-			
-			
-			command2 = config == null ? defaultCmd :
-					RSELaunchConfigProperties.getShutdownCommand(config, defaultCmd);
-			behaviour.setServerStopping();
-			ServerShellModel model = RSEHostShellModel.getInstance().getModel(behaviour.getServer());
-			model.executeRemoteCommand("/", command2, new String[] {}, new NullProgressMonitor(), 10000, true);
-			if (model.getStartupShell() != null && model.getStartupShell().isActive())
-				model.getStartupShell().writeToShell("exit");
-			behaviour.setServerStopped();
-		} catch (CoreException ce) {
-			behaviour.setServerStarted();
-			ServerLogger.getDefault().log(behaviour.getServer(), ce.getStatus());
-		}
-	}
 
 	@Override
 	public boolean preLaunchCheck(ILaunchConfiguration configuration,
@@ -148,17 +94,6 @@ public class RSEJBossStartLaunchDelegate extends AbstractRSELaunchDelegate {
 		IJBossBehaviourDelegate delegate = ServerUtil.checkedGetBehaviorDelegate(server);
 		stop += delegate.getDefaultStopArguments();
 		return stop;
-	}
-
-	@Deprecated
-	public static IServer findServer(ILaunchConfiguration config) throws CoreException {
-		String serverId = config.getAttribute("server-id", (String) null);
-		JBossServer jbs = ServerConverter.findJBossServer(serverId);
-		if (jbs == null) {
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
-					NLS.bind(Messages.ServerNotFound, serverId)));
-		}
-		return jbs.getServer();
 	}
 
 	private String getDefaultLaunchCommand(ILaunchConfiguration config) throws CoreException {

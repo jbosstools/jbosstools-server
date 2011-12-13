@@ -127,13 +127,6 @@ public class DelegatingServerBehavior extends DeployableServerBehavior {
 		}
 	}
 
-	@Deprecated
-	protected boolean shouldSuspendScanner() {
-		if( getServer().getServerState() != IServer.STATE_STARTED)
-			return false;
-		return true;
-	}
-	
 	// Can start / stop / restart etc
 	@Override
 	public IStatus canStart(String launchMode) {

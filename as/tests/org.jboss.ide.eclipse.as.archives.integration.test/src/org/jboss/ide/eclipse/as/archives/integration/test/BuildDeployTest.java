@@ -273,7 +273,7 @@ public class BuildDeployTest extends TestCase {
 		rootArchive.setProperty(ArchivesModuleModelListener.DEPLOY_SERVERS, servers);
 		rootArchive.setProperty(ArchivesModuleModelListener.DEPLOY_AFTER_BUILD, new Boolean(alwaysPublish).toString());
 		final IPath projectPath = rootArchive.getProjectPath();
-		ArchivesModel.instance().save(projectPath, new NullProgressMonitor());
+		ArchivesModel.instance().getRoot(projectPath).save( new NullProgressMonitor());
 	}
 	
 	protected void buildArchive()  {
