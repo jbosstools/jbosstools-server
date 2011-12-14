@@ -11,8 +11,10 @@
 package org.jboss.ide.eclipse.as.ui.views.server.extensions;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
@@ -24,6 +26,12 @@ public class ShowInWebManagementActionProvider extends AbstractOpenBrowserServer
 	protected String getActionText() {
 		return  Messages.ShowInWebManagementConsole_Action_Text;
 	}
+	
+	protected boolean shouldAddForSelection(IStructuredSelection sel) {
+		IServer server = getSingleServer(sel);
+		return accepts(server);
+	}
+
 	protected boolean accepts(IServer server) {
 		return (ServerUtil.isJBoss7(server)
 				&& 	server.getServerState() == IServer.STATE_STARTED);

@@ -31,6 +31,7 @@ public interface IJBossToolingConstants {
 	public static final String EAP_60 = "org.jboss.ide.eclipse.as.runtime.eap.60"; //$NON-NLS-1$
 	// NEW_SERVER_ADAPTER Add the new runtime constant above this line
 	
+	public static final String SERVER_AS_PREFIX = "org.jboss.ide.eclipse.as."; //$NON-NLS-1$
 	public static final String SERVER_AS_32 = "org.jboss.ide.eclipse.as.32"; //$NON-NLS-1$
 	public static final String SERVER_AS_40 = "org.jboss.ide.eclipse.as.40"; //$NON-NLS-1$
 	public static final String SERVER_AS_42 = "org.jboss.ide.eclipse.as.42"; //$NON-NLS-1$

@@ -102,8 +102,7 @@ public class JBossLaunchConfigProperties {
 				String programArguments = getProgramArguments(launchConfig);
 				programArguments = ArgsUtil.setArg(programArguments,
 						IJBossRuntimeConstants.STARTUP_ARG_HOST_SHORT,
-						IJBossRuntimeConstants.STARTUP_ARG_HOST_LONG,
-						host);
+						null, host);
 				setProgramArguments(programArguments, launchConfig);
 			}
 		}

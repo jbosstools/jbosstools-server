@@ -32,7 +32,7 @@ public class ShowInJMXConsoleActionProvider extends AbstractOpenBrowserServerAct
 			if( jbs != null ) {
 				// TODO fix this so anything BELOW 7 works
 				// need new util methods
-				return !ServerUtil.isJBoss7(server);
+				return ServerUtil.isJBossServerType(server.getServerType()) && !ServerUtil.isJBoss7(server);
 			}
 		}
 		return false;

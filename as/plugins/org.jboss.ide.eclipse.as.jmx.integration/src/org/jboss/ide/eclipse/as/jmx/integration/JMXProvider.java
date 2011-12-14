@@ -87,7 +87,7 @@ public class JMXProvider {
 			if( quick != null && selection != null && selection.toArray().length == 1 ) {
 				if( selection.getFirstElement() instanceof IServer ) {
 					IServer server = (IServer)selection.getFirstElement();
-					if( ServerConverter.getJBossServer(server) != null && !ServerUtil.isJBoss7(server)) {
+					if( ServerUtil.isJBossServerType(server.getServerType()) && !ServerUtil.isJBoss7(server)) {
 						if( menu instanceof MenuManager ) {
 							((MenuManager)quick).add(showInJMXViewAction);
 						}

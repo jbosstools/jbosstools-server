@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.as.ui.views.server.extensions;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
@@ -25,6 +26,11 @@ public class ShowInWelcomePageActionProvider extends AbstractOpenBrowserServerAc
 		return Messages.ShowInWelcomePage_Action_Text;
 	}
 	
+	protected boolean shouldAddForSelection(IStructuredSelection sel) {
+		IServer server = getSingleServer(sel);
+		return ServerUtil.isJBossServerType(server.getServerType()) && accepts(server);
+	}
+
 	protected boolean accepts(IServer server) {
 		return server.getServerState() == IServer.STATE_STARTED;
 	}

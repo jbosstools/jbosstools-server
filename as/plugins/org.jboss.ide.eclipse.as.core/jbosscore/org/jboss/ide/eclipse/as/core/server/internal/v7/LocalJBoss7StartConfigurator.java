@@ -100,8 +100,7 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 
 	@Override
 	protected String getHost(JBossServer server, IJBossServerRuntime runtime) {
-		// not needed
-		return null;
+		return server.getHost(); 
 	}
 
 	@Override

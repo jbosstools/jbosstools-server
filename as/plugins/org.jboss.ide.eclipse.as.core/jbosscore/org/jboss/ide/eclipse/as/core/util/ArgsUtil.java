@@ -148,8 +148,12 @@ public class ArgsUtil {
 		}
 		
 		// turn this to a retval;
-		if( !found )
-			retVal = retVal + longOpt + EQ + value;
+		if( !found ) {
+			if( longOpt != null ) 
+				retVal = retVal + longOpt + EQ + value;
+			else
+				retVal = retVal + shortOpt + SPACE + value;
+		} 
 		return retVal;
 	}
 	
