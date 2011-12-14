@@ -99,7 +99,7 @@ public class CustomRuntimeClasspathModel implements IJBossToolingConstants, IJBo
 		if(AS_70.equals(type.getId()))
 			return getDefaultAS70Entries();
 		if(AS_71.equals(type.getId()))
-			return getDefaultAS70Entries();
+			return getDefaultAS71Entries();
 		
 		// NEW_SERVER_ADAPTER add logic for new adapter here
 		return new IDefaultPathProvider[]{};
@@ -183,6 +183,13 @@ public class CustomRuntimeClasspathModel implements IJBossToolingConstants, IJBo
 		sets.add(new PathProviderFileset("modules/org/jboss/resteasy/resteasy-jaxrs/main"));
 		sets.add(new PathProviderFileset("modules/org/jboss/resteasy/resteasy-multipart-provider/main"));
 		
+		return (IDefaultPathProvider[]) sets.toArray(new IDefaultPathProvider[sets.size()]);
+	}
+	
+	public IDefaultPathProvider[] getDefaultAS71Entries() {
+		ArrayList<IDefaultPathProvider> sets = new ArrayList<IDefaultPathProvider>();
+		sets.addAll(Arrays.asList(getDefaultAS70Entries()));
+		sets.add(new PathProviderFileset("modules/org/jboss/ejb3/main"));
 		return (IDefaultPathProvider[]) sets.toArray(new IDefaultPathProvider[sets.size()]);
 	}
 	
