@@ -255,6 +255,11 @@
 				</imageobject>
 			</mediaobject>
 		</figure>
+		<note>
+			<para>
+				It is now possible to deploy OSGI (Open Services Gateway initiative framework) projects to the JBoss Enterprise Application Platform 6 or JBoss Application Server 7.
+			</para>
+		</note>
 	</section>
 	
 	<section id="publishing">
