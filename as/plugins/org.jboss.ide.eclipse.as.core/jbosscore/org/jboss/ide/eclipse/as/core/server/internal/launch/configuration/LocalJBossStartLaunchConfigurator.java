@@ -28,6 +28,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.RunJarContainerWrapper;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
@@ -88,7 +89,9 @@ public class LocalJBossStartLaunchConfigurator extends AbstractStartLaunchConfig
 
 	@Override
 	protected String getHost(JBossServer server, IJBossServerRuntime runtime) {
-		return server.getServer().getHost();
+		if( LaunchCommandPreferences.listensOnAllHosts(server.getServer()))
+			return "0.0.0.0"; //$NON-NLS-1$
+		return server.getHost(); 
 	}
 
 	@Override

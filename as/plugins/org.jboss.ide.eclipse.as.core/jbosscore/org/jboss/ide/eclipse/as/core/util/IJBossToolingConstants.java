@@ -120,6 +120,7 @@ public interface IJBossToolingConstants {
 	public static final int    AS7_MANAGEMENT_PORT_DEFAULT_PORT = 9999;
 	
 	public static final String IGNORE_LAUNCH_COMMANDS = "org.jboss.ide.eclipse.as.core.server.IGNORE_LAUNCH_COMMANDS"; //$NON-NLS-1$
+	public static final String LISTEN_ALL_HOSTS = "org.jboss.ide.eclipse.as.core.server.LISTEN_ON_ALL_HOSTS"; //$NON-NLS-1$
 	
 	public static final String LOCAL_DEPLOYMENT_NAME = "name";  //$NON-NLS-1$
 	public static final String LOCAL_DEPLOYMENT_LOC = "location";  //$NON-NLS-1$

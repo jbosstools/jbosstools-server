@@ -50,6 +50,7 @@ public class ServerModeSectionComposite extends Composite {
 	private ScrolledPageBook preferencePageBook;
 	private IServerModeUICallback callback;
 	private Button executeShellScripts; // may be null;
+	private Button listenOnAllHosts; // may be null
 
 	public ServerModeSectionComposite(Composite parent, int style, IServerModeUICallback callback) {
 		super(parent, style);
@@ -75,7 +76,23 @@ public class ServerModeSectionComposite extends Composite {
 				}}
 			);
 		}
-		
+
+		if( showListenOnAllHostsCheckbox()) {
+			listenOnAllHosts = new Button(this, SWT.CHECK);
+			listenOnAllHosts.setText(Messages.EditorListenOnAllHosts);
+			FormData fd = UIUtil.createFormData2(top == null ? 0 : top, 5, null, 0, 0, 5, null, 0);
+			listenOnAllHosts.setLayoutData(fd);
+			top = listenOnAllHosts;
+			listenOnAllHosts.setSelection(LaunchCommandPreferences.listensOnAllHosts(callback.getServer()));
+			listenOnAllHosts.addSelectionListener(new SelectionListener(){
+				public void widgetSelected(SelectionEvent e) {
+					listenOnAllHostsToggled();
+				}
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}}
+			);
+		}
+
 		deployTypeCombo = new Combo(this, SWT.READ_ONLY);
 		FormData fd = UIUtil.createFormData2(top, 5, null, 0, 0, 5, 50, -5);
 		deployTypeCombo.setLayoutData(fd);
@@ -139,6 +156,9 @@ public class ServerModeSectionComposite extends Composite {
 	protected boolean showExecuteShellCheckbox() {
 		return true;
 	}
+	protected boolean showListenOnAllHostsCheckbox() {
+		return true;
+	}
 
 	protected void executeShellToggled() {
 		callback.execute(new ChangeServerPropertyCommand(
@@ -146,6 +166,12 @@ public class ServerModeSectionComposite extends Composite {
 				new Boolean(executeShellScripts.getSelection()).toString(), Messages.EditorDoNotLaunchCommand));
 	}
 	
+	protected void listenOnAllHostsToggled() {
+		callback.execute(new ChangeServerPropertyCommand(
+				callback.getServer(), IJBossToolingConstants.LISTEN_ALL_HOSTS, 
+				new Boolean(listenOnAllHosts.getSelection()).toString(), Messages.EditorListenOnAllHostsCommand));
+	}
+
 	private class DeployUIAdditions {
 		private String behaviourName;
 		private String behaviourId;

@@ -25,6 +25,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.AbstractStartLaunchConfigurator;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
 
 public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurator {
@@ -100,6 +101,8 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 
 	@Override
 	protected String getHost(JBossServer server, IJBossServerRuntime runtime) {
+		if( LaunchCommandPreferences.listensOnAllHosts(server.getServer()))
+			return "0.0.0.0"; //$NON-NLS-1$
 		return server.getHost(); 
 	}
 

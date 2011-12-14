@@ -188,6 +188,8 @@ public class Messages extends NLS {
 	public static String EditorModule;
 	public static String EditorDoNotLaunch;
 	public static String EditorDoNotLaunchCommand;
+	public static String EditorListenOnAllHosts;
+	public static String EditorListenOnAllHostsCommand;
 	public static String EditorChangeServerMode;
 	public static String EditorZipDeployments;
 	public static String EditorSetRadioClicked;

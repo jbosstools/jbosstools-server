@@ -23,11 +23,23 @@ public class LaunchCommandPreferences {
 	}
 	
 	public static boolean isIgnoreLaunchCommand(IServerAttributes server, boolean defaultValue) {
+		return checkBooleanAttribute(server, IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, defaultValue );
+	}
+
+	public static boolean listensOnAllHosts(IServerAttributes server) {
+		return listensOnAllHosts(server, false);
+	}
+	
+	public static boolean listensOnAllHosts(IServerAttributes server, boolean defaultValue) {
+		return checkBooleanAttribute(server, IJBossToolingConstants.LISTEN_ALL_HOSTS, defaultValue );
+	}
+
+	private static boolean checkBooleanAttribute(IServerAttributes server, String key, boolean defaultValue) {
 		if (server == null) {
 			return false;
 		}
-		String ignoreCommand = server.getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, Boolean.toString(defaultValue));
+		String ignoreCommand = server.getAttribute(key, Boolean.toString(defaultValue));
 		return Boolean.valueOf(ignoreCommand);
 	}
-	
+
 }
