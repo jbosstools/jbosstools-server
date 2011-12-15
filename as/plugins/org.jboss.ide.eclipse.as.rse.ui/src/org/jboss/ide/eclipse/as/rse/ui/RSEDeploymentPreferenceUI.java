@@ -64,6 +64,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
@@ -124,15 +125,14 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 		JBossServer jbs = cServer.getOriginal() == null ? 
 				ServerConverter.getJBossServer(cServer) :
 					ServerConverter.getJBossServer(cServer.getOriginal());
-		if( jbs != null && !cServer.getServerType().getId().equals(IJBossToolingConstants.SERVER_AS_70) ) {
-			composite = new JBossRSEDeploymentPrefComposite(parent, SWT.NONE, callback);
-		} else if( cServer.getServerType().getId().equals(IJBossToolingConstants.SERVER_AS_70) ){
-			composite = new JBoss7RSEDeploymentPrefComposite(parent, SWT.NONE, callback);
-			// TODO add for jboss 7
-		} else {
+		if( jbs == null )
 			composite = new DeployOnlyRSEPrefComposite(parent, SWT.NONE, callback);
+		else if( !ServerUtil.isJBoss7(cServer.getServerType()))
+			composite = new JBossRSEDeploymentPrefComposite(parent, SWT.NONE, callback);
+		else if( ServerUtil.isJBoss7(cServer.getServerType())){
+			composite = new JBoss7RSEDeploymentPrefComposite(parent, SWT.NONE, callback);
 		}
-		//return composite;
+		// NEW_SERVER_ADAPTER potential location for new server details
 	}
 	
 	public static abstract class RSEDeploymentPreferenceComposite extends Composite implements PropertyChangeListener {
