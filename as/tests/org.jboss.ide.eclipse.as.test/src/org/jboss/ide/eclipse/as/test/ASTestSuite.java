@@ -36,16 +36,18 @@ import org.jboss.ide.eclipse.as.test.publishing.JBIDE4184Test;
 import org.jboss.ide.eclipse.as.test.publishing.v2.JSTDeployBinaryChildModuleTest;
 import org.jboss.ide.eclipse.as.test.publishing.v2.JSTDeploymentTester;
 import org.jboss.ide.eclipse.as.test.publishing.v2.JSTDeploymentWarUpdateXML;
+import org.jboss.ide.eclipse.as.test.publishing.v2.MockJSTPublisherTest;
 import org.jboss.ide.eclipse.as.test.publishing.v2.MockJSTPublisherTestDynUtil;
 import org.jboss.ide.eclipse.as.test.publishing.v2.SingleFileDeployableMockDeploymentTester;
-import org.jboss.ide.eclipse.as.test.publishing.v2.MockJSTPublisherTest;
 import org.jboss.ide.eclipse.as.test.publishing.v2.SingleFileDeploymentTester;
 import org.jboss.ide.eclipse.as.test.server.JBossServerAPITest;
+import org.jboss.ide.eclipse.as.test.util.ArgsUtilTest;
 
 public class ASTestSuite extends TestSuite {
     public static Test suite() { 
         ValidationFramework.getDefault().suspendAllValidation(true);
         TestSuite suite = new TestSuite("ASTools Test Suite");
+        suite.addTestSuite(ArgsUtilTest.class);
         suite.addTestSuite(PreReqTest.class);
         suite.addTestSuite(RuntimeServerModelTest.class);
         suite.addTestSuite(JEEClasspathContainerTest.class);
