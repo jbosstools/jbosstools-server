@@ -158,6 +158,7 @@ public class JBossServerType implements IJBossToolingConstants {
 	
 	private static final String IMPLEMENTATION_TITLE = "Implementation-Title"; //$NON-NLS-1$
 	private static final String JBEAP_RELEASE_VERSION = "JBossEAP-Release-Version"; //$NON-NLS-1$
+	private static final String JBAS7_RELEASE_VERSION = "JBossAS-Release-Version"; //$NON-NLS-1$
 	
 	public static boolean isEAP(File systemJarFile) {
 		String title = getJarProperty(systemJarFile, IMPLEMENTATION_TITLE);
@@ -212,25 +213,7 @@ public class JBossServerType implements IJBossToolingConstants {
 	
 	public static class EAP6ServerTypeCondition implements Condition {
 		public boolean isServerRoot(File location) {
-			String mainFolder = new StringBuilder(location.getAbsolutePath())
-			.append(File.separator)
-			.append("modules").append(File.separator) //$NON-NLS-1$
-			.append("org").append(File.separator) //$NON-NLS-1$
-			.append("jboss").append(File.separator) //$NON-NLS-1$
-			.append("as").append(File.separator) //$NON-NLS-1$
-			.append("server").append(File.separator) //$NON-NLS-1$
-			.append("main").append(File.separator) //$NON-NLS-1$
-			.toString();
-			File f = new File(mainFolder);
-			if( f.exists() ) {
-				File[] children = f.listFiles();
-				for( int i = 0; i < children.length; i++ ) {
-					if( children[i].getName().endsWith(IWTPConstants.EXT_JAR)) {
-						return isEAP6(children[i]);
-					}
-				}
-			}
-			return false;
+			return checkAS7EAP6Version(location, JBEAP_RELEASE_VERSION, "6."); //$NON-NLS-1$
 		}
 	}
 
@@ -256,18 +239,36 @@ public class JBossServerType implements IJBossToolingConstants {
 	}
 	
 	public static class AS7ServerTypeCondition implements Condition {
-		
 		public boolean isServerRoot(File location) {
-			String standaloneScriptPath = new StringBuilder(location.getAbsolutePath())
-			.append(File.separator)
-			.append("bin") //$NON-NLS-1$
-			.append(File.separator)
-			.append("standalone.sh") //$NON-NLS-1$
-			.toString();
-			return new File(standaloneScriptPath).exists();
+			return checkAS7EAP6Version(location, JBAS7_RELEASE_VERSION, "7."); //$NON-NLS-1$
 		}
 	}
 	
+	protected static boolean checkAS7EAP6Version(File location, String property, String propPrefix) {
+		String mainFolder = new StringBuilder(location.getAbsolutePath())
+		.append(File.separator)
+		.append("modules").append(File.separator) //$NON-NLS-1$
+		.append("org").append(File.separator) //$NON-NLS-1$
+		.append("jboss").append(File.separator) //$NON-NLS-1$
+		.append("as").append(File.separator) //$NON-NLS-1$
+		.append("server").append(File.separator) //$NON-NLS-1$
+		.append("main").append(File.separator) //$NON-NLS-1$
+		.toString();
+		File f = new File(mainFolder);
+		if( f.exists() ) {
+			File[] children = f.listFiles();
+			for( int i = 0; i < children.length; i++ ) {
+				if( children[i].getName().endsWith(IWTPConstants.EXT_JAR)) {
+					String value = getJarProperty(children[i], property);
+					if( value != null && value.trim().startsWith(propPrefix))
+							return true;
+					return false;
+				}
+			}
+		}
+		return false;
+	}
+
 	public static class SOAPServerTypeCondition extends EAPServerTypeCondition{
 		
 		public boolean isServerRoot(File location) {

@@ -68,8 +68,10 @@ public class ServerRuntimeUtils extends TestCase {
 	public static final String twiddle_5_1_0 = "5.1.0" + twiddle_suffix;
 	public static final String twiddle_6_0_0 = "6.0.0" + twiddle_suffix;
 	public static final String as_server_7_0_jar = "7.0.0.mf.jboss-as-server.jar";
+	public static final String as_server_7_1_jar = "7.1.0.mf.jboss-as-server.jar";
 	public static final String twiddle_eap_4_3 = "eap4.3" + twiddle_suffix;
 	public static final String twiddle_eap_5_0 = "eap5.0" + twiddle_suffix;
+	public static final String eap_server_6_0_jar = "eap6.0.0.mf.jboss-as-server.jar";
 	public static final String run_jar = "run.jar";
 	public static final String service_xml = "service.xml";
 	public static final IPath mockedServers = ASTest.getDefault().getStateLocation().append("mockedServers");
@@ -84,8 +86,10 @@ public class ServerRuntimeUtils extends TestCase {
 		asSystemJar.put(IJBossToolingConstants.SERVER_AS_51, twiddle_5_1_0);
 		asSystemJar.put(IJBossToolingConstants.SERVER_AS_60, twiddle_6_0_0);
 		asSystemJar.put(IJBossToolingConstants.SERVER_AS_70, as_server_7_0_jar);
+		asSystemJar.put(IJBossToolingConstants.SERVER_AS_71, as_server_7_1_jar);
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_43, twiddle_eap_4_3);
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_50, twiddle_eap_5_0);
+		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_60, eap_server_6_0_jar);
 
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_AS_32, IJBossToolingConstants.AS_32);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_AS_40, IJBossToolingConstants.AS_40);
@@ -96,7 +100,9 @@ public class ServerRuntimeUtils extends TestCase {
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_AS_70, IJBossToolingConstants.AS_70);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_43, IJBossToolingConstants.EAP_43);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_50, IJBossToolingConstants.EAP_50);
+		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_60, IJBossToolingConstants.EAP_60);
 	}
+	
 	public static IServer createMockDeployOnlyServer() throws CoreException {
 		return ServerRuntimeUtils.createMockDeployOnlyServer(getDeployFolder(), getTmpDeployFolder());
 	}
@@ -218,13 +224,8 @@ public class ServerRuntimeUtils extends TestCase {
 	}
 
 	public static void deleteAllRuntimes() throws CoreException {
-		// FIXME It doesn't harm to be commented, but location is null should be fixed
 		IRuntime[] runtimes = ServerCore.getRuntimes();
 		for( int i = 0; i < runtimes.length; i++ ) {
-//			assertNotNull("runtime " + runtimes[i].getName() + " has a null location", runtimes[i].getLocation());
-//			if( mockedServers.isPrefixOf(runtimes[i].getLocation())) {
-//				FileUtil.completeDelete(runtimes[i].getLocation().toFile());
-//			}
 			runtimes[i].delete();
 		}
 	}
@@ -253,6 +254,22 @@ public class ServerRuntimeUtils extends TestCase {
 		}
 	}
 
+	public static IPath createAS7StyleMockServerDirectory(String name, String serverTypeId, String serverJar) {
+		IPath loc = mockedServers.append(name);
+		try {
+			loc.toFile().mkdirs();
+			IPath serverJarBelongs = loc.append("modules/org/jboss/as/server/main");
+			serverJarBelongs.toFile().mkdirs();
+			File serverJarLoc = getFileLocation("serverMock/" + serverJar);
+			FileUtil.fileSafeCopy(serverJarLoc, serverJarBelongs.append("anything.jar").toFile());
+		} catch(CoreException ce) {
+			FileUtil.completeDelete(loc.toFile());
+			return null;
+		}
+		return loc;
+	}
+
+	
 	// Find a file in our bundle
 	protected static File getFileLocation(String path) throws CoreException {
 		Bundle bundle = Platform.getBundle(AbstractDeploymentTest.BUNDLE_NAME);

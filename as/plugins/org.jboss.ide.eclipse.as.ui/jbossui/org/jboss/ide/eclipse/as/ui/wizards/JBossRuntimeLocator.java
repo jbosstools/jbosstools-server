@@ -110,7 +110,13 @@ public class JBossRuntimeLocator extends RuntimeLocatorDelegate {
 	}
 	
 	private static IRuntimeWorkingCopy createAS7Runtime(IPath path, ServerBeanLoader loader) {
-		String runtimeTypeId = IJBossToolingConstants.AS_70;
+		String version = new ServerBeanLoader().getFullServerVersion(new File(path.toFile(), JBossServerType.AS7.getSystemJarPath()));
+		String runtimeTypeId;
+		if( version.startsWith(IJBossToolingConstants.V7_0))
+			runtimeTypeId = IJBossToolingConstants.AS_70;
+		else 
+			runtimeTypeId = IJBossToolingConstants.AS_71;
+		
 		try {
 			IRuntimeWorkingCopy wc = createRuntimeWorkingCopy(runtimeTypeId, path.toOSString(), IJBossRuntimeResourceConstants.DEFAULT_CONFIGURATION);
 			return launchRuntimeWizard(wc);

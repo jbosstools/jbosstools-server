@@ -41,6 +41,7 @@ import org.jboss.ide.eclipse.as.test.publishing.v2.MockJSTPublisherTestDynUtil;
 import org.jboss.ide.eclipse.as.test.publishing.v2.SingleFileDeployableMockDeploymentTester;
 import org.jboss.ide.eclipse.as.test.publishing.v2.SingleFileDeploymentTester;
 import org.jboss.ide.eclipse.as.test.server.JBossServerAPITest;
+import org.jboss.ide.eclipse.as.test.server.ServerBeanLoaderTest;
 import org.jboss.ide.eclipse.as.test.util.ArgsUtilTest;
 
 public class ASTestSuite extends TestSuite {
@@ -49,6 +50,7 @@ public class ASTestSuite extends TestSuite {
         TestSuite suite = new TestSuite("ASTools Test Suite");
         suite.addTestSuite(ArgsUtilTest.class);
         suite.addTestSuite(PreReqTest.class);
+        suite.addTestSuite(ServerBeanLoaderTest.class);
         suite.addTestSuite(RuntimeServerModelTest.class);
         suite.addTestSuite(JEEClasspathContainerTest.class);
         suite.addTestSuite(ProjectRuntimeTest.class);
