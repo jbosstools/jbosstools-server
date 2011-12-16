@@ -164,9 +164,11 @@ public class JBossRuntimeLocator extends RuntimeLocatorDelegate {
 		String runtimeTypeId = null;
 		if( version.compareTo("5.0") < 0 ) //$NON-NLS-1$
 			runtimeTypeId=IJBossToolingConstants.EAP_43;
-		else 
+		else if( version.compareTo("6.0") < 0 ) //$NON-NLS-1$
 			runtimeTypeId=IJBossToolingConstants.EAP_50;
-		
+		else
+			runtimeTypeId=IJBossToolingConstants.EAP_60
+			;
 		IPath path2 = path.append(IJBossRuntimeResourceConstants.JBOSS_AS_EAP_DIRECTORY);
 		if( runtimeTypeId != null ) {
 			try {

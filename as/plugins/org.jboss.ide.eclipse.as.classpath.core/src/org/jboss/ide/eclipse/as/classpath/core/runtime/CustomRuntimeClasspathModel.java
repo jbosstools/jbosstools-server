@@ -100,6 +100,8 @@ public class CustomRuntimeClasspathModel implements IJBossToolingConstants, IJBo
 			return getDefaultAS70Entries();
 		if(AS_71.equals(type.getId()))
 			return getDefaultAS71Entries();
+		if(EAP_60.equals(type.getId()))
+			return getDefaultAS71Entries();
 		
 		// NEW_SERVER_ADAPTER add logic for new adapter here
 		return new IDefaultPathProvider[]{};

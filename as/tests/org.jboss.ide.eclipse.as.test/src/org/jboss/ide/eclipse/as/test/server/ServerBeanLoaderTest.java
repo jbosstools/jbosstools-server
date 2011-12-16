@@ -40,11 +40,7 @@ public class ServerBeanLoaderTest extends TestCase {
 		serverBeanLoaderTestAS6AndBelow("serverEAP5/jbossas", IJBossToolingConstants.SERVER_EAP_50, JBossServerType.EAP_STD,IJBossToolingConstants.V5_0);
 	}
 	public void testEAP60() {
-		try {
 			serverBeanLoaderTestAS7Style("serverEap6", IJBossToolingConstants.SERVER_EAP_60, JBossServerType.EAP6,IJBossToolingConstants.V6_0);
-		} catch(AssertionError e) {
-			// TODO  FIX THIS SITUATION!!!  NOT expected failure, but, this test cannot run correctly.
-		}
 	}
 	
 	private void serverBeanLoaderTestAS6AndBelow(String name, String serverTypeId, 

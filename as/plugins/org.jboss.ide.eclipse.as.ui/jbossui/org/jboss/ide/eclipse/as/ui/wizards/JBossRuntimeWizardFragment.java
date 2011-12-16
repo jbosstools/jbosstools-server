@@ -683,7 +683,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		if( !isEAP() && v.startsWith("7."))
 			v = "7.";
 		if( isEAP() && v.startsWith("6."))
-			v = "7.";
+			v = "6.";
 		if( !isEAP() && v.startsWith("7."))
 			v = "7.";
 

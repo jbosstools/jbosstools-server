@@ -91,6 +91,10 @@ public class ServerBeanLoader {
 				ZipEntry manifest = jar.getEntry("META-INF/MANIFEST.MF");//$NON-NLS-1$
 				Properties props = new Properties();
 				props.load(jar.getInputStream(manifest));
+				version = props.getProperty("JBossEAP-Release-Version"); //$NON-NLS-1$
+				if (version != null) {
+					return version;
+				}
 				version = (String)props.get("Specification-Version");//$NON-NLS-1$
 			} catch (IOException e) {
 				// version = ""

@@ -220,11 +220,11 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 				TaskModel.TASK_RUNTIME);
 		String adapterVersion = rt.getRuntimeType().getVersion();
 		
-		if(!isEAP() && (adapterVersion.equals("7.0") && !version.startsWith("7.0."))
-				|| (adapterVersion.equals("7.1") && version.startsWith("7.0."))) {
+		if(!isEAP() && ((adapterVersion.equals("7.0") && !version.startsWith("7.0."))
+				|| (adapterVersion.equals("7.1") && version.startsWith("7.0."))) ) {
 			return NLS.bind(Messages.rwf_homeIncorrectVersionError, adapterVersion, version);
 		}
-		if( isEAP() && (adapterVersion.equals("6.0") && !version.startsWith("7.")))
+		if( isEAP() && !adapterVersion.equals("6.0") )
 				return NLS.bind(Messages.rwf_homeIncorrectVersionError, adapterVersion, version);
 		
 		return null;
