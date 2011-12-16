@@ -54,6 +54,7 @@ import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.core.server.IJBoss6Server;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.core.util.ExpressionResolverUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -409,6 +410,7 @@ public class PortSection extends ServerEditorSection {
 				query.refresh();
 				result = query.getFirstResult();
 				result = result == null ? "" : result; //$NON-NLS-1$
+				result = ExpressionResolverUtil.safeReplaceProperties(result);
 				return new Integer(Integer.parseInt(result)).toString();
 			} catch(NumberFormatException nfe) {
 			} catch( IllegalStateException ise ) {

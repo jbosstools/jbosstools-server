@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.server.core.IRuntime;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.util.ExpressionResolverUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
@@ -49,6 +50,12 @@ public class JBoss7Server extends JBossServer implements IJBoss7Deployment {
 		return findPort(AS7_MANAGEMENT_PORT, AS7_MANAGEMENT_PORT_DETECT, AS7_MANAGEMENT_PORT_DETECT_XPATH, 
 				AS7_MANAGEMENT_PORT_DEFAULT_XPATH, AS7_MANAGEMENT_PORT_DEFAULT_PORT);
 	}
+	
+	@Override
+	protected String resolveXPathResult(String result) {
+		return ExpressionResolverUtil.safeReplaceProperties(result);
+	}
+
 	
 	@Override
 	public String getDeployLocationType() {
