@@ -20,15 +20,13 @@ import org.eclipse.debug.ui.ILaunchConfigurationTab;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 import org.jboss.ide.eclipse.as.rse.core.RSELaunchConfigProperties;
-import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.launch.JBossLaunchConfigurationTabGroup.IJBossLaunchTabProvider;
 
 /**
@@ -57,40 +55,33 @@ public class RSELaunchTabProvider implements IJBossLaunchTabProvider {
 		}
 		
 		public void createUI(Composite parent) {
-			Composite comp = SWTFactory.createComposite(parent, 1, 1, GridData.FILL_HORIZONTAL| GridData.FILL_VERTICAL);
+			Composite comp = SWTFactory.createComposite(parent, parent.getFont(), 1, 1, GridData.FILL_BOTH);
+			((GridLayout)comp.getLayout()).verticalSpacing = 0;
 			setControl(comp);
-			comp.setLayout(new FormLayout());
-			Group startGroup = new Group(comp, SWT.NONE);
-			startGroup.setText(RSEUIMessages.RSE_START_COMMAND);
-			FormData data = UIUtil.createFormData2(0, 5, 0, 150, 0, 5, 100, -5);
-			startGroup.setLayoutData(data);
-			startGroup.setLayout(new FormLayout());
 			
+			// begin start group
+			Group startGroup = SWTFactory.createGroup(comp, RSEUIMessages.RSE_START_COMMAND, 2, 1, GridData.FILL_HORIZONTAL);
+			startGroup.setLayout(new GridLayout(1,true));
 			autoStartArgs = new Button(startGroup, SWT.CHECK);
 			autoStartArgs.setText(RSEUIMessages.RSE_AUTOMATICALLY_CALCULATE);
-			data = UIUtil.createFormData2(null, 0, 100, -5, 0, 5, 100, -5);
-			autoStartArgs.setLayoutData(data);
+			startText = new Text(startGroup, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+			GridData gd = new GridData(GridData.FILL_BOTH);
+			gd.heightHint = 75;
+			gd.widthHint = 100;
+			startText.setLayoutData(gd);
 
-			startText = new Text(startGroup, SWT.BORDER | SWT.MULTI | SWT.WRAP);
-			data = UIUtil.createFormData2(0, 5, autoStartArgs, -5, 0, 5, 100, -5);
-			startText.setLayoutData(data);
 			
-			// start stop group
-			Group stopGroup = new Group(comp, SWT.NONE);
-			stopGroup.setText(RSEUIMessages.RSE_STOP_COMMAND);
-			data = UIUtil.createFormData2(startGroup, 5, startGroup, 300, 0, 5, 100, -5);
-			stopGroup.setLayoutData(data);
-			stopGroup.setLayout(new FormLayout());
+			// begin stop group
+			Group stopGroup = SWTFactory.createGroup(comp, RSEUIMessages.RSE_STOP_COMMAND, 2, 1, GridData.FILL_HORIZONTAL);
+			stopGroup.setLayout(new GridLayout(1, true));
 			
 			autoStopArgs = new Button(stopGroup, SWT.CHECK);
 			autoStopArgs.setText(RSEUIMessages.RSE_AUTOMATICALLY_CALCULATE);
-			data = UIUtil.createFormData2(null, 0, 100, -5, 0, 5, 100, -5);
-			autoStopArgs.setLayoutData(data);
-
-			
-			stopText = new Text(stopGroup, SWT.BORDER | SWT.MULTI | SWT.WRAP);
-			data = UIUtil.createFormData2(0, 5, autoStopArgs, -5, 0, 5, 100, -5);
-			stopText.setLayoutData(data);
+			stopText = new Text(stopGroup, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+			gd = new GridData(GridData.FILL_BOTH);
+			gd.heightHint = 75;
+			gd.widthHint = 100;
+			stopText.setLayoutData(gd);
 		}
 		
 		protected void addListeners() {
@@ -101,7 +92,6 @@ public class RSELaunchTabProvider implements IJBossLaunchTabProvider {
 					if( autoStartArgs.getSelection()) {
 						String command = null;
 						try {
-//							command = RSEJBossStartLaunchDelegate.getDefaultLaunchCommand(initialConfig);
 							command = RSELaunchConfigProperties.getDefaultStartupCommand(initialConfig, "");
 							startText.setText(command);
 						} catch(CoreException ce) {
@@ -115,6 +105,15 @@ public class RSELaunchTabProvider implements IJBossLaunchTabProvider {
 				public void widgetSelected(SelectionEvent e) {
 					stopText.setEditable(!autoStopArgs.getSelection());
 					stopText.setEnabled(!autoStopArgs.getSelection());
+					if( autoStopArgs.getSelection()) {
+						String command = null;
+						try {
+							command = RSELaunchConfigProperties.getDefaultShutdownCommand(initialConfig, "");
+							stopText.setText(command);
+						} catch(CoreException ce) {
+							// TODO
+						}
+					}
 				}
 				public void widgetDefaultSelected(SelectionEvent e) {
 				}});
