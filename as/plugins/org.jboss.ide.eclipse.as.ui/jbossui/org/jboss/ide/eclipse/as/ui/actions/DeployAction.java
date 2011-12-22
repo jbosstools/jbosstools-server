@@ -169,7 +169,7 @@ public class DeployAction implements IObjectActionDelegate {
 			projs += i.next().getName() + ", "; //$NON-NLS-1$
 		projs = projs.substring(0, projs.length() - 2);
 		
-		int style = SWT.APPLICATION_MODAL | SWT.OK | SWT.CANCEL;
+		int style = SWT.OK | SWT.CANCEL;
 		MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), style);
 		messageBox.setText(ServerActionMessages.DeployActionMessageBoxTitle);
 		messageBox.setMessage(ServerActionMessages.DeployActionMessageBoxMsg);
