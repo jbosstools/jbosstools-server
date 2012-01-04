@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.as.rse.core;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
@@ -42,6 +43,18 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 		if( detectStartupCommand || !isSet(currentStartupCmd)) {
 			RSELaunchConfigProperties.setStartupCommand(getLaunchCommand(jbossServer, jbossRuntime), launchConfig);
 		}
+
+		boolean detectShutdownCommand = RSELaunchConfigProperties.isDetectShutdownCommand(launchConfig, true);
+		String currentShutdownCmd = RSELaunchConfigProperties.getShutdownCommand(launchConfig);
+		if( detectShutdownCommand || !isSet(currentShutdownCmd)) {
+			RSELaunchConfigProperties.setShutdownCommand(getShutdownCommand(jbossServer, jbossRuntime), launchConfig);
+		}
+	}
+
+	protected String getShutdownCommand(JBossServer jbossServer, IJBossServerRuntime jbossRuntime) throws CoreException {
+		String rseHome = RSEUtils.getRSEHomeDir(jbossServer.getServer());
+		IPath p = new Path(rseHome).append(IJBossRuntimeResourceConstants.BIN);
+		return p.toString() + "/jboss-admin.sh --connect command=:shutdown";
 	}
 
 	protected String getLaunchCommand(JBossServer jbossServer, IJBossServerRuntime jbossRuntime) throws CoreException {

@@ -14,21 +14,36 @@ package org.jboss.ide.eclipse.as.rse.core;
 
 import java.text.MessageFormat;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
 import org.jboss.ide.eclipse.as.core.server.v7.management.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ManagerUtil;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 public class RSEJBoss7BehaviourDelegate extends RSEBehaviourDelegate {
 
 	private IJBoss7ManagerService service;
 	
 	@Override
+	protected String getShutdownCommand(IServer server) throws CoreException {
+		String defaultCommand = getDefaultStopArguments();
+		ILaunchConfiguration config = getServer().getLaunchConfiguration(false, new NullProgressMonitor());
+		return RSELaunchConfigProperties.getShutdownCommand(config, defaultCommand);
+	}
+
+	@Override
 	protected IStatus gracefullStop() {
+		return super.gracefullStop();
+	}
+	
+	protected IStatus gracefullStopViaManagement() {
 		IServer server = getServer();
 		try {
 			getService().stop(new AS7ManagementDetails(server));
