@@ -25,7 +25,7 @@ import java.net.UnknownHostException;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
-import org.jboss.ide.eclipse.as.internal.management.as7.AS7Manager;
+import org.jboss.ide.eclipse.as.internal.management.as71.AS71Manager;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 import org.osgi.framework.Bundle;
@@ -62,11 +62,11 @@ public class AS7ManagerTestUtils {
 		return getResponse(name, host, port);
 	}
 
-	public static void quietlyUndeploy(File file, AS7Manager manager) {
+	public static void quietlyUndeploy(File file, AS71Manager manager) {
 		quietlyUndeploy(file.getName(), manager);
 	}
 
-	public static void quietlyUndeploy(String name, AS7Manager manager) {
+	public static void quietlyUndeploy(String name, AS71Manager manager) {
 		try {
 			// DetypedDeployer.undeploy(name, AS7ManagerTestUtils.LOCALHOST,
 			// AS7ManagerTestUtils.MGMT_PORT);
@@ -76,7 +76,7 @@ public class AS7ManagerTestUtils {
 		}
 	}
 
-	public static void quietlyRemove(String name, AS7Manager manager) {
+	public static void quietlyRemove(String name, AS71Manager manager) {
 		try {
 			// DetypedDeployer.remove(name, AS7ManagerTestUtils.LOCALHOST,
 			// AS7ManagerTestUtils.MGMT_PORT);

@@ -23,8 +23,8 @@ import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.concurrent.ExecutionException;
 
-import org.jboss.ide.eclipse.as.internal.management.as7.AS7Manager;
 import org.jboss.ide.eclipse.as.internal.management.as7.tests.utils.AS7ManagerTestUtils;
+import org.jboss.ide.eclipse.as.internal.management.as71.AS71Manager;
 import org.jboss.ide.eclipse.as.management.core.JBoss7DeploymentState;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
@@ -40,15 +40,15 @@ import org.junit.Test;
  */
 public class AS7ManagerIntegrationTest {
 
-	private AS7Manager manager;
+	private AS71Manager manager;
 
 	@Before
 	public void setUp() throws IOException {
 		assertTrue("There is no server at " + AS7ManagerTestUtils.LOCALHOST +
-				" that listens on port " + AS7Manager.MGMT_PORT,
-				AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.LOCALHOST, AS7Manager.MGMT_PORT));
-		this.manager = new AS7Manager( new MockAS7ManagementDetails(
-				AS7ManagerTestUtils.LOCALHOST, AS7Manager.MGMT_PORT));
+				" that listens on port " + AS71Manager.MGMT_PORT,
+				AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.LOCALHOST, AS71Manager.MGMT_PORT));
+		this.manager = new AS71Manager( new MockAS7ManagementDetails(
+				AS7ManagerTestUtils.LOCALHOST, AS71Manager.MGMT_PORT));
 	}
 
 	@After
@@ -189,7 +189,7 @@ public class AS7ManagerIntegrationTest {
 	public void canStopServer() throws JBoss7ManangerException, UnknownHostException, IOException {
 		manager.stopServer();
 		assertFalse(
-				AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.LOCALHOST, AS7Manager.MGMT_PORT));
+				AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.LOCALHOST, AS71Manager.MGMT_PORT));
 	}
 
 	private String getRandomDeploymentName() {
