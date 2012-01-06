@@ -27,11 +27,10 @@ import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
-import org.jboss.ide.eclipse.as.core.server.v7.management.IJBoss7ManagerService;
-import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ManagerUtil;
-import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ManagerUtil.IServiceAware;
-import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ManangerConnectException;
-import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ServerState;
+import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
+import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
+import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerConnectException;
+import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
 import org.osgi.framework.InvalidSyntaxException;
 
 /**
@@ -198,7 +197,7 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 	private boolean callbacksCalled = false;
 	public IStatus getCurrentStateSynchronous(final IServer server) {
 		try {
-			Boolean result = JBoss7ManagerUtil.executeWithService(new IServiceAware<Boolean>() {
+			Boolean result = JBoss7ManagerUtil.executeWithService(new JBoss7ManagerUtil.IServiceAware<Boolean>() {
 				@Override
 				public Boolean execute(IJBoss7ManagerService service) throws Exception {
 					try {

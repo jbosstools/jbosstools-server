@@ -39,7 +39,6 @@ import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.sasl.RealmCallback;
-import javax.security.sasl.RealmChoiceCallback;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.osgi.util.NLS;
@@ -50,12 +49,12 @@ import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentManager
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentPlanResult;
 import org.jboss.as.protocol.StreamUtils;
 import org.jboss.dmr.ModelNode;
-import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
-import org.jboss.ide.eclipse.as.core.server.v7.management.IJBoss7DeploymentResult;
-import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7DeploymentState;
-import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ManangerException;
-import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ServerState;
 import org.jboss.ide.eclipse.as.internal.management.as71.util.AS7ManagerUtil;
+import org.jboss.ide.eclipse.as.management.core.IAS7ManagementDetails;
+import org.jboss.ide.eclipse.as.management.core.IJBoss7DeploymentResult;
+import org.jboss.ide.eclipse.as.management.core.JBoss7DeploymentState;
+import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
+import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
 
 /**
  * @author André Dietisheim
@@ -66,9 +65,9 @@ public class AS71Manager {
 
 	private ModelControllerClient client;
 	private ServerDeploymentManager manager;
-	private AS7ManagementDetails details;
+	private IAS7ManagementDetails details;
 
-	public AS71Manager(AS7ManagementDetails details) throws UnknownHostException {
+	public AS71Manager(IAS7ManagementDetails details) throws UnknownHostException {
 		this.details = details;
 		this.client = ModelControllerClient.Factory.create(details.getHost(), details.getManagementPort(),
 				getCallbackHandler());

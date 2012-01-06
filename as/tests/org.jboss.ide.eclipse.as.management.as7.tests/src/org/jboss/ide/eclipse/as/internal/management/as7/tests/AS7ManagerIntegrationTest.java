@@ -23,11 +23,11 @@ import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.concurrent.ExecutionException;
 
-import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7DeploymentState;
-import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ManangerException;
-import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ServerState;
 import org.jboss.ide.eclipse.as.internal.management.as7.AS7Manager;
 import org.jboss.ide.eclipse.as.internal.management.as7.tests.utils.AS7ManagerTestUtils;
+import org.jboss.ide.eclipse.as.management.core.JBoss7DeploymentState;
+import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
+import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
 import org.jboss.ide.eclipse.as.test.server.JBossManagerTest.MockAS7ManagementDetails;
 import org.junit.After;
 import org.junit.Before;

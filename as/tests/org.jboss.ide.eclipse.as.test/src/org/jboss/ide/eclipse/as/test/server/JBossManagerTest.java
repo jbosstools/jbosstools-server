@@ -18,12 +18,13 @@ import java.util.Hashtable;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
-import org.jboss.ide.eclipse.as.core.server.v7.management.IJBoss7DeploymentResult;
-import org.jboss.ide.eclipse.as.core.server.v7.management.IJBoss7ManagerService;
-import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7DeploymentState;
-import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ManagerServiceProxy;
-import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ManangerException;
-import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ServerState;
+import org.jboss.ide.eclipse.as.management.core.IAS7ManagementDetails;
+import org.jboss.ide.eclipse.as.management.core.IJBoss7DeploymentResult;
+import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
+import org.jboss.ide.eclipse.as.management.core.JBoss7DeploymentState;
+import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerServiceProxy;
+import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
+import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
 import org.jboss.ide.eclipse.as.test.ASTest;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
@@ -73,40 +74,40 @@ public class JBossManagerTest {
 
 	private static class JBoss71Manager implements IJBoss7ManagerService {
 
-		public IJBoss7DeploymentResult deployAsync(AS7ManagementDetails details, String deploymentName, File file,
+		public IJBoss7DeploymentResult deployAsync(IAS7ManagementDetails details, String deploymentName, File file,
 				IProgressMonitor monitor) throws JBoss7ManangerException {
 			throw new UnsupportedOperationException();
 		}
 
-		public IJBoss7DeploymentResult deploySync(AS7ManagementDetails details, String deploymentName, File file,
+		public IJBoss7DeploymentResult deploySync(IAS7ManagementDetails details, String deploymentName, File file,
 				IProgressMonitor monitor) throws JBoss7ManangerException {
 			throw new UnsupportedOperationException();
 		}
 
-		public IJBoss7DeploymentResult undeployAsync(AS7ManagementDetails details, String deploymentName, boolean removeFile,
+		public IJBoss7DeploymentResult undeployAsync(IAS7ManagementDetails details, String deploymentName, boolean removeFile,
 				IProgressMonitor monitor) throws JBoss7ManangerException {
 			throw new UnsupportedOperationException();
 		}
 
-		public IJBoss7DeploymentResult syncUndeploy(AS7ManagementDetails details, String deploymentName, boolean removeFile,
+		public IJBoss7DeploymentResult syncUndeploy(IAS7ManagementDetails details, String deploymentName, boolean removeFile,
 				IProgressMonitor monitor) throws JBoss7ManangerException {
 			throw new UnsupportedOperationException();
 		}
 
-		public JBoss7DeploymentState getDeploymentState(AS7ManagementDetails details, String deploymentName)
+		public JBoss7DeploymentState getDeploymentState(IAS7ManagementDetails details, String deploymentName)
 				throws JBoss7ManangerException {
 			throw new UnsupportedOperationException();
 		}
 		
-		public JBoss7ServerState getServerState(AS7ManagementDetails details) throws Exception {
+		public JBoss7ServerState getServerState(IAS7ManagementDetails details) throws Exception {
 			throw new UnsupportedOperationException();
 		}
 
-		public boolean isRunning(AS7ManagementDetails details) {
+		public boolean isRunning(IAS7ManagementDetails details) {
 			throw new UnsupportedOperationException();
 		}
 
-		public void stop(AS7ManagementDetails details) throws JBoss7ManangerException {
+		public void stop(IAS7ManagementDetails details) throws JBoss7ManangerException {
 		}
 
 		public void dispose() {

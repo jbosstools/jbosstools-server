@@ -9,7 +9,8 @@ Require-Bundle: org.jboss.ide.eclipse.as.core;bundle-version="[2.2.0,3.0.0)",
  org.junit;bundle-version="[4.8.1,5.0.0)",
  org.eclipse.core.runtime;bundle-version="[3.7.0,4.0.0)",
  org.hamcrest;bundle-version="[1.1.0,2.0.0)",
- org.jboss.ide.eclipse.as.test
+ org.jboss.ide.eclipse.as.test,
+ org.jboss.ide.eclipse.as.management.core;bundle-version="1.0.0"
 Bundle-ClassPath: .,
  wars/
 Bundle-ActivationPolicy: lazy

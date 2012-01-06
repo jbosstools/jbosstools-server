@@ -8,16 +8,12 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.core.server.v7.management;
+package org.jboss.ide.eclipse.as.management.core;
 
+import org.eclipse.core.runtime.IStatus;
 
-/**
- * An enum that reflects the state of a deployment.
- * 
- * @author André Dietisheim
- */
-public enum JBoss7DeploymentState {
-	STARTED ,
-	STOPPED,
-	NOT_FOUND;
+public interface IJBoss7DeploymentResult {
+
+	public abstract IStatus getStatus() throws JBoss7ManangerException;
+
 }

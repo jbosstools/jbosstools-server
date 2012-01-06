@@ -8,12 +8,25 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.core.server.v7.management;
+package org.jboss.ide.eclipse.as.management.core;
 
-import org.eclipse.core.runtime.IStatus;
+/**
+ * @author André Dietisheim
+ */
+public class JBoss7ManangerException extends Exception {
 
-public interface IJBoss7DeploymentResult {
+	private static final long serialVersionUID = 1L;
 
-	public abstract IStatus getStatus() throws JBoss7ManangerException;
+	public JBoss7ManangerException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public JBoss7ManangerException(Throwable cause) {
+		super(cause);
+	}
+
+	public JBoss7ManangerException(String message) {
+		super(message);
+	}
 
 }

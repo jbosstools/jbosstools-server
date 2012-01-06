@@ -42,12 +42,12 @@ import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentManager
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentPlanResult;
 import org.jboss.as.protocol.old.StreamUtils;
 import org.jboss.dmr.ModelNode;
-import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
-import org.jboss.ide.eclipse.as.core.server.v7.management.IJBoss7DeploymentResult;
-import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7DeploymentState;
-import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ManangerException;
-import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ServerState;
 import org.jboss.ide.eclipse.as.internal.management.as7.util.AS7ManagerUtil;
+import org.jboss.ide.eclipse.as.management.core.IAS7ManagementDetails;
+import org.jboss.ide.eclipse.as.management.core.IJBoss7DeploymentResult;
+import org.jboss.ide.eclipse.as.management.core.JBoss7DeploymentState;
+import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
+import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
 
 /**
  * @author André Dietisheim
@@ -58,9 +58,9 @@ public class AS7Manager {
 
 	private ModelControllerClient client;
 	private ServerDeploymentManager manager;
-	private AS7ManagementDetails details;
+	private IAS7ManagementDetails details;
 
-	public AS7Manager(AS7ManagementDetails details) throws UnknownHostException {
+	public AS7Manager(IAS7ManagementDetails details) throws UnknownHostException {
 		this.details = details;
 		this.client = ModelControllerClient.Factory.create(details.getHost(), details.getManagementPort());
 		this.manager = ServerDeploymentManager.Factory.create(client);

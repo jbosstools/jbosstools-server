@@ -51,11 +51,11 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossLaunchAdapter.JBTCusto
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server;
 import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
-import org.jboss.ide.eclipse.as.core.server.v7.management.IJBoss7ManagerService;
-import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7DeploymentState;
-import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ManagerUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
+import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
+import org.jboss.ide.eclipse.as.management.core.JBoss7DeploymentState;
+import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 
 public class JBTWebLaunchableClient extends ClientDelegate {

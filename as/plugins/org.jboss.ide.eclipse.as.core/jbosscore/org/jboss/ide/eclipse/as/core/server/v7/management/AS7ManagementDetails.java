@@ -21,8 +21,10 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.management.core.IAS7ManagementDetails;
+import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 
-public class AS7ManagementDetails implements IServerProvider {
+public class AS7ManagementDetails implements IServerProvider, IAS7ManagementDetails {
 	private IServer server;
 	public AS7ManagementDetails(IServer server) {
 		this.server = server;

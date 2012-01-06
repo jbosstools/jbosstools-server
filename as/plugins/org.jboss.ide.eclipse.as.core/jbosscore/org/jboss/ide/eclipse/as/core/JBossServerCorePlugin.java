@@ -70,13 +70,6 @@ public class JBossServerCorePlugin extends Plugin  {
 		Job job = new Job("Adding JBoss4xEarFacetInstallListener") { //$NON-NLS-1$
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
-				while (Platform.getInstanceLocation() == null || !Platform.getInstanceLocation().isSet()) {
-					try {
-						Thread.sleep(500);
-					} catch (InterruptedException e) {
-						// ignore
-					}
-				}
 				// Start the array of models that need to be started
 				UnitedServerListenerManager.getDefault();
 				UnitedServerListenerManager.getDefault().addListener(XPathModel.getDefault());

@@ -8,17 +8,16 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.core.server.v7.management;
+package org.jboss.ide.eclipse.as.management.core;
+
 
 /**
+ * An enum that reflects the state of a deployment.
+ * 
  * @author André Dietisheim
  */
-public class JBoss7ManangerConnectException extends JBoss7ManangerException {
-
-	private static final long serialVersionUID = 1L;
-
-	public JBoss7ManangerConnectException(Throwable cause) {
-		super(cause);
-	}
-
+public enum JBoss7DeploymentState {
+	STARTED ,
+	STOPPED,
+	NOT_FOUND;
 }
