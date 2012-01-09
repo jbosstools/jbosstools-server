@@ -93,17 +93,12 @@ public class XPathQuery implements Serializable {
 	}
 	
 	private void setEffectiveBaseDir() {
-		IPath dir = baseDir == null ? null : new Path(baseDir);
-		if( dir == null && category != null) {
-			dir = getCategory().getServer().getRuntime().getLocation();
-		}
-		if( dir != null && !dir.isAbsolute() && category != null)
-			dir = getCategory().getServer().getRuntime().getLocation().append(dir);
+		String serverName = server == null ? "" : server.getName(); //$NON-NLS-1$
+		String dir1 = baseDir == null ? null : baseDir;
 		
 		String dir2 = null;
-		String serverName = server == null ? "" : server.getName(); //$NON-NLS-1$
-		if( dir != null ) {
-			dir2 = dir.toString().replace("${jboss_config_dir}",  //$NON-NLS-1$
+		if( dir1 != null ) {
+			dir2 = dir1.replace("${jboss_config_dir}",  //$NON-NLS-1$
 				"${jboss_config_dir:" + serverName + "}"); //$NON-NLS-1$ //$NON-NLS-2$
 			dir2 = dir2.replace("${jboss_config}",  //$NON-NLS-1$
 				"${jboss_config:" + serverName + "}"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -114,7 +109,16 @@ public class XPathQuery implements Serializable {
 						true, StringVariableManager.getDefault());
 			} catch( CoreException ce ) {}
 		}
-		effectiveBaseDir = dir2 == null ? null : dir2.toString();
+
+		
+		IPath dir = dir2 == null ? null : new Path(dir2);
+		if( dir == null && category != null) {
+			dir = getCategory().getServer().getRuntime().getLocation();
+		}
+		if( dir != null && !dir.isAbsolute() && category != null)
+			dir = getCategory().getServer().getRuntime().getLocation().append(dir);
+		
+		effectiveBaseDir = dir == null ? null : dir.toString();
 	}
 	
 	protected AntFileFilter getFilter() {
