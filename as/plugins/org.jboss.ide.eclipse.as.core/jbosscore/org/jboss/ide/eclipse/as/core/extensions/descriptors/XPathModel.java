@@ -97,7 +97,7 @@ public class XPathModel extends UnitedServerListener {
 		LocalJBossServerRuntime ajbsr = (LocalJBossServerRuntime)
 		server2.getRuntime().loadAdapter(LocalJBossServerRuntime.class, null);
 		if(ajbsr != null ) {
-			String configFolder = "server/${jboss_config}"; //ajbsr.getConfigurationFullPath(); //$NON-NLS-1$
+			String configFolder = "${jboss_config_dir}"; //ajbsr.getConfigurationFullPath(); //$NON-NLS-1$
 			if( configFolder != null ) {
 				ArrayList<XPathCategory> defaults = loadDefaults(server2, configFolder);
 				serverToCategories.put(server2.getId(), defaults);
