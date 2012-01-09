@@ -69,7 +69,6 @@ public class ExpressionResolverUtil {
         String resolvedValue = null;
         for (int i = 0; i < len; i = value.offsetByCodePoints(i, 1)) {
             final int ch = value.codePointAt(i);
-        	System.out.print((char)ch);
             switch (state) {
                 case INITIAL: {
                     switch (ch) {
