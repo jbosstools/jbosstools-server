@@ -30,7 +30,7 @@ import org.osgi.framework.ServiceReference;
 public class JBossManagementServiceTest {
 
 	private static final String DS_BUNDLEID = "org.eclipse.equinox.ds";
-	private static final String AS7MANAGER_PLUGINID = "org.jboss.ide.eclipse.as.management.as7";
+	private static final String AS7MANAGER_PLUGINID = "org.jboss.ide.eclipse.as.management.as71";
 
 	@Before
 	public void setUp() throws UnknownHostException {
