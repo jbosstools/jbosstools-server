@@ -34,7 +34,7 @@ public class ExportedClassFolderReferenceResolver implements IReferenceResolver 
 			ReferencedComponent referencedComponent) {
 		URI handle = referencedComponent.getHandle();
 		String s = handle.toString();
-		if(s.startsWith(OUTPUT_FOLDER_PROTOCOL))
+		if(s != null && s.startsWith(OUTPUT_FOLDER_PROTOCOL))
 			return true;
 		return false;
 	}
