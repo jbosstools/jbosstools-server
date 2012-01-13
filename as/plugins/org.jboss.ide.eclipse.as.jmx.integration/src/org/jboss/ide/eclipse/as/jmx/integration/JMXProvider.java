@@ -23,9 +23,7 @@ import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonActionProvider;
@@ -38,9 +36,9 @@ import org.eclipse.ui.views.IViewRegistry;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.ui.internal.view.servers.AbstractServerAction;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
+import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.ui.internal.views.navigator.JMXNavigator;
@@ -113,36 +111,30 @@ public class JMXProvider {
 			}
 
 			public void perform(final IServer server) {
-				IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow() ;
-				if (window != null) {
-					IWorkbenchPage page = window.getActivePage();
-					if (page != null) {
-						IWorkbenchPart part = page.findView(JMXNavigator.VIEW_ID);
-						if (part == null) {
-							try {
-								part = page.showView(JMXNavigator.VIEW_ID);
-							} catch (PartInitException e) {
+				IWorkbenchPart part = null;
+				try {
+					part = UIUtil.bringViewToFront(JMXNavigator.VIEW_ID);
+				} catch(PartInitException pie) {
+					// TODO trace or error
+				}
+				
+				if( part != null ) {
+					final JMXNavigator view = (JMXNavigator) part.getAdapter(JMXNavigator.class);
+					if (view != null) {
+						Display.getDefault().asyncExec(new Runnable() { 
+							public void run() {
+								JBossServerConnectionProvider provider = 
+										(JBossServerConnectionProvider)ExtensionManager.getProvider(
+												JBossServerConnectionProvider.PROVIDER_ID);
+								IConnectionWrapper connection = provider.getConnection(server);
+								if( connection != null ) {
+									view.getCommonViewer().collapseAll();
+									ISelection sel = new StructuredSelection(new Object[] { connection });
+									view.getCommonViewer().setSelection(sel, true);
+									view.getCommonViewer().expandToLevel(connection, 2);
+								}
 							}
-						} else /* if( part != null ) */ {
-							final JMXNavigator view = (JMXNavigator) part.getAdapter(JMXNavigator.class);
-							if (view != null) {
-								view.setFocus();
-								Display.getDefault().asyncExec(new Runnable() { 
-									public void run() {
-										JBossServerConnectionProvider provider = 
-											(JBossServerConnectionProvider)ExtensionManager.getProvider(
-													JBossServerConnectionProvider.PROVIDER_ID);
-										IConnectionWrapper connection = provider.getConnection(server);
-										if( connection != null ) {
-											view.getCommonViewer().collapseAll();
-											ISelection sel = new StructuredSelection(new Object[] { connection });
-											view.getCommonViewer().setSelection(sel, true);
-											view.getCommonViewer().expandToLevel(connection, 2);
-										}
-									}
-								});
-							}
-						}
+						});
 					}
 				}
 			}

@@ -374,9 +374,6 @@ public class XPathDialogs {
 			final String attText = attributeText.getText();
 			final String filePattern = filesetText.getText();
 			String directory = baseDirText.getText();
-			if( !new Path(directory).isAbsolute()) {
-				directory = server.getRuntime().getLocation().append(directory).toString();
-			}
 			directory = directory.replace("${jboss_config_dir}",  //$NON-NLS-1$
 					"${jboss_config_dir:" + server.getName() + "}"); //$NON-NLS-1$ //$NON-NLS-2$
 			directory = directory.replace("${jboss_config}",  //$NON-NLS-1$
@@ -386,6 +383,9 @@ public class XPathDialogs {
 				directory = engine.performStringSubstitution(directory, true,
 						true, StringVariableManager.getDefault());
 			} catch( CoreException ce ) {}
+			if( !new Path(directory).isAbsolute()) {
+				directory = server.getRuntime().getLocation().append(directory).toString();
+			}
 
 			final String directory2 = directory;
 			IRunnableWithProgress op = new IRunnableWithProgress() {

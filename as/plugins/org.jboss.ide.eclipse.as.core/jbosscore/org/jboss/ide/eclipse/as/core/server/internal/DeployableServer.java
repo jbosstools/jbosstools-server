@@ -10,17 +10,13 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
-import java.util.ArrayList;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerPort;
 import org.eclipse.wst.server.core.model.ServerDelegate;
@@ -66,8 +62,8 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
     public IModule[] getRootModules(IModule module) throws CoreException {
         IStatus status = canModifyModules(new IModule[] { module }, null);
         if (status != null && !status.isOK())
-            throw  new CoreException(status);;
-        IModule[] parents = doGetParentModules(module);
+            throw  new CoreException(status);
+        IModule[] parents = ServerModelUtilities.getParentModules(getServer(), module);
         if(parents.length>0)
         	return parents;
         return new IModule[] { module };
@@ -75,23 +71,6 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 
 	public IModule[] getChildModules(IModule[] module) {
 		return ServerModelUtilities.getChildModules(module);
-	}
-
-	private IModule[] doGetParentModules(IModule module) {
-		// get all supported modules
-		IModule[] supported = 
-			org.eclipse.wst.server.core.ServerUtil.getModules(
-					getServer().getServerType().getRuntimeType().getModuleTypes());
-		ArrayList<IModule> list = new ArrayList<IModule>();
-		
-		for( int i = 0; i < supported.length; i++ ) {
-			IModule[] childs = ServerModelUtilities.getChildModules(supported[i]);
-			for (int j = 0; j < childs.length; j++) {
-				if(childs[j].equals(module))
-					list.add(supported[i]);
-			}
-		}
-		return list.toArray(new IModule[list.size()]);
 	}
 
 	public ServerPort[] getServerPorts() {

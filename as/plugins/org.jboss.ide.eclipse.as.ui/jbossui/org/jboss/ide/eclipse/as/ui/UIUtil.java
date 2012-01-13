@@ -13,6 +13,11 @@ package org.jboss.ide.eclipse.as.ui;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 
 public class UIUtil {
 
@@ -45,5 +50,25 @@ public class UIUtil {
 	public FormData createFormData(Object topStart, int topOffset, Object bottomStart, int bottomOffset, 
 			Object leftStart, int leftOffset, Object rightStart, int rightOffset) {
 		return createFormData2(topStart, topOffset, bottomStart, bottomOffset, leftStart, leftOffset, rightStart, rightOffset);
+	}
+	
+	public static final IWorkbenchPart bringViewToFront(String viewId) throws PartInitException {
+		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow() ;
+		IWorkbenchPart part = null;
+		if (window != null) {
+			IWorkbenchPage page = window.getActivePage();
+			if (page != null) {
+				part = page.findView(viewId);
+				if (part == null) {
+					part = page.showView(viewId);
+				} else /* if( part != null ) */ {
+					if (part != null) {
+						page.activate(part);
+						part.setFocus();
+					}
+				}
+			}
+		}
+		return part;
 	}
 }

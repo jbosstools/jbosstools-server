@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2010 Red Hat, Inc. 
+ * Copyright (c) 2012 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -21,6 +21,24 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
 
 public class ServerModelUtilities {
+	
+	public static IModule[] getParentModules(IServer server, IModule module) {
+		// get all supported modules
+		IModule[] supported = 
+			org.eclipse.wst.server.core.ServerUtil.getModules(
+					server.getServerType().getRuntimeType().getModuleTypes());
+		ArrayList<IModule> list = new ArrayList<IModule>();
+		
+		for( int i = 0; i < supported.length; i++ ) {
+			IModule[] childs = ServerModelUtilities.getChildModules(supported[i]);
+			for (int j = 0; j < childs.length; j++) {
+				if(childs[j].equals(module))
+					list.add(supported[i]);
+			}
+		}
+		return list.toArray(new IModule[list.size()]);
+	}
+
 
 	public static ArrayList<IModule[]> getShallowChildren(IServer server, IModule[] root) {
 		ArrayList<IModule[]> list = new ArrayList<IModule[]>();

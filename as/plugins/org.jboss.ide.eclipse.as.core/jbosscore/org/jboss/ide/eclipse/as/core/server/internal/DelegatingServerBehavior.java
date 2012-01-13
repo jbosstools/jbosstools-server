@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
@@ -26,11 +27,11 @@ import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
+import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel.Behaviour;
 import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel.BehaviourImpl;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
-import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
@@ -54,12 +55,16 @@ public class DelegatingServerBehavior extends DeployableServerBehavior {
 		if( id.equals(lastModeId) && delegate != null && delegate.getBehaviourTypeId().equals(id))
 			return delegate;
 		
-		BehaviourImpl impl = BehaviourModel.getModel().getBehaviour(getServer().getServerType().getId()).getImpl(id);
-		IJBossBehaviourDelegate d = impl.createBehaviourDelegate();
-		d.setActualBehaviour(this);
-		lastModeId = id;
-		delegate = d;
-		return delegate;
+		Behaviour b = BehaviourModel.getModel().getBehaviour(getServer().getServerType().getId());
+		BehaviourImpl impl = b.getImpl(id);
+		if( impl != null ) {
+			IJBossBehaviourDelegate d = impl.createBehaviourDelegate();
+			d.setActualBehaviour(this);
+			lastModeId = id;
+			delegate = d;
+			return delegate;
+		}
+		return null;
 	}
 	
 	public void stop(boolean force) {
@@ -148,7 +153,9 @@ public class DelegatingServerBehavior extends DeployableServerBehavior {
 	}
 
 	protected IStatus canChangeState(String launchMode) {
-		return getDelegate().canChangeState(launchMode);
+		if( getDelegate() != null )
+			return getDelegate().canChangeState(launchMode);
+		return Status.CANCEL_STATUS;
 	}
 	
 	public boolean canRestartModule(IModule[] module){
@@ -176,6 +183,7 @@ public class DelegatingServerBehavior extends DeployableServerBehavior {
 
 	@Override
 	public void dispose() {
-		getDelegate().dispose();
+		if( getDelegate() != null )
+			getDelegate().dispose();
 	}
 }
