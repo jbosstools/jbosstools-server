@@ -76,8 +76,8 @@ public class JBossLaunchAdapter extends LaunchableAdapterDelegate {
 	public Object getLaunchable(IServer server, IModuleArtifact moduleObject) {
 		if (server != null) {
 			ServerDelegate delegate = (ServerDelegate)server.loadAdapter(ServerDelegate.class,null);
-			if (!(delegate instanceof JBossServer ))
-				return null;
+//			if (!(delegate instanceof JBossServer ))
+//				return null;
 			if ((moduleObject instanceof Servlet) ||(moduleObject instanceof WebResource))
 	            return prepareHttpLaunchable(moduleObject, delegate, server);
 			
