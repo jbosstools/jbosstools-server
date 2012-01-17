@@ -28,14 +28,20 @@ import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.WEB_PORT
 import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.WEB_PORT_DETECT;
 import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.WEB_PORT_DETECT_XPATH;
 
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Date;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.equinox.security.storage.EncodingUtils;
+import org.eclipse.equinox.security.storage.ISecurePreferences;
+import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
+import org.eclipse.equinox.security.storage.StorageException;
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
@@ -47,7 +53,6 @@ import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
-import org.jboss.ide.eclipse.as.core.util.ExpressionResolverUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
@@ -67,7 +72,6 @@ public class JBossServer extends DeployableServer
 		setAttribute("auto-publish-time", 1); //$NON-NLS-1$
 		setAttribute("id", getAttribute("id", (String)"") + new Date().getTime()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		setUsername("admin"); //$NON-NLS-1$
-		setPassword("admin"); //$NON-NLS-1$
 		boolean defaultServerDeployment = isAS50() || isEAP(getServer());
 		setDeployLocationType(defaultServerDeployment ? IDeployableServer.DEPLOY_SERVER : IDeployableServer.DEPLOY_METADATA);
 	}
@@ -248,11 +252,15 @@ public class JBossServer extends DeployableServer
 	}
 
 	public String getPassword() {
-		return getAttribute(SERVER_PASSWORD, ""); //$NON-NLS-1$
+		String s = ServerUtil.getFromSecureStorage(getServer(), SERVER_PASSWORD);
+		if( s == null )
+			return getAttribute(SERVER_PASSWORD, "admin"); //$NON-NLS-1$
+		return s;
 	}
 	public void setPassword(String pass) {
-		setAttribute(SERVER_PASSWORD, pass);
+		ServerUtil.storeInSecureStorage(getServer(), SERVER_PASSWORD, pass);
 	}
+	
 	
 	public boolean hasJMXProvider() {
 		DeployableServerBehavior beh = (DeployableServerBehavior)getServer().loadAdapter(

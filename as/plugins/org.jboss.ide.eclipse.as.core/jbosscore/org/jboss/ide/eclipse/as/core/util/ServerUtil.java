@@ -11,6 +11,11 @@
 package org.jboss.ide.eclipse.as.core.util;
 
 import java.io.File;
+import java.io.IOError;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLEncoder;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -18,6 +23,10 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.equinox.security.storage.EncodingUtils;
+import org.eclipse.equinox.security.storage.ISecurePreferences;
+import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
+import org.eclipse.equinox.security.storage.StorageException;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
@@ -167,4 +176,53 @@ public class ServerUtil {
 		return new Path(checkedGetServerHome(jbs));
 	}
 	
+	
+    private static final String SECURE = "secure";  //$NON-NLS-1$
+    /**
+	 * @since 2.3
+	 */
+    public static String getFromSecureStorage(IServer server, String key) {
+        try {
+        	ISecurePreferences node = getNode(server);
+            String val = node.get(key, null);
+            if (val == null) {
+            	return null;
+            }
+            return new String(EncodingUtils.decodeBase64(val));
+        } catch(IOException e) {
+        	return null;
+        } catch (StorageException e) {
+        	return null;
+		}
+    }
+    
+    /**
+	 * @since 2.3
+	 */
+    public static void storeInSecureStorage(IServer server, String key, String val ) {
+        try {
+            ISecurePreferences node = getNode(server);
+            if( val == null )
+            	node.put(key, val, true);
+            else
+            	node.put(key, EncodingUtils.encodeBase64(val.getBytes()), true /* encrypt */); 
+        } catch (StorageException e) {
+        } catch (UnsupportedEncodingException e) {
+		}
+    }
+
+    private static ISecurePreferences getNode(IServer server) throws UnsupportedEncodingException {
+    	try {
+    		IPath p = JBossServerCorePlugin.getServerStateLocation(server).append(SECURE);
+    		if( !p.toFile().exists())
+    			p.toFile().mkdirs();
+    		
+	        URL url = p.toFile().toURI().toURL();
+	    	ISecurePreferences root = SecurePreferencesFactory.open(url, null);
+	        return root;
+    	} catch(IOException ioe ) {
+    		return null;
+    	}
+    }
+
 }

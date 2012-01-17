@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.jboss.ide.eclipse.as.ui" version="2">
+    <resource path="jbossui/org/jboss/ide/eclipse/as/ui/editor/ServerPasswordSection.java" type="org.jboss.ide.eclipse.as.ui.editor.ServerPasswordSection">
+        <filter id="338886760">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.ui.editor.ServerPasswordSection.SetVarCommand"/>
+                <message_argument value="org.jboss.ide.eclipse.as.ui_2.3.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="jbossui/org/jboss/ide/eclipse/as/ui/editor/ServerPasswordSection.java" type="org.jboss.ide.eclipse.as.ui.editor.ServerPasswordSection$SetPassCommand">
+        <filter id="338849923">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.ui.editor.ServerPasswordSection.SetPassCommand"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="jbossui/org/jboss/ide/eclipse/as/ui/editor/ServerPasswordSection.java" type="org.jboss.ide.eclipse.as.ui.editor.ServerPasswordSection$SetUserCommand">
+        <filter id="338849923">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.ui.editor.ServerPasswordSection.SetUserCommand"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="jbossui/org/jboss/ide/eclipse/as/ui/editor/ServerPasswordSection.java" type="org.jboss.ide.eclipse.as.ui.editor.ServerPasswordSection$SetVarCommand">
+        <filter comment="Visibility error" id="337686583">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.ui.editor.ServerPasswordSection.SetVarCommand"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>

@@ -42,6 +42,7 @@ import org.jboss.ide.eclipse.as.test.publishing.v2.SingleFileDeployableMockDeplo
 import org.jboss.ide.eclipse.as.test.publishing.v2.SingleFileDeploymentTester;
 import org.jboss.ide.eclipse.as.test.server.JBossServerAPITest;
 import org.jboss.ide.eclipse.as.test.server.ServerBeanLoaderTest;
+import org.jboss.ide.eclipse.as.test.server.ServerSecureStorageTest;
 import org.jboss.ide.eclipse.as.test.util.ArgsUtilTest;
 import org.jboss.ide.eclipse.as.test.util.ExpressionResolverUtilTest;
 
@@ -53,6 +54,7 @@ public class ASTestSuite extends TestSuite {
         suite.addTestSuite(ExpressionResolverUtilTest.class);
         suite.addTestSuite(PreReqTest.class);
         suite.addTestSuite(ServerBeanLoaderTest.class);
+        suite.addTestSuite(ServerSecureStorageTest.class);
         suite.addTestSuite(RuntimeServerModelTest.class);
         suite.addTestSuite(JEEClasspathContainerTest.class);
         suite.addTestSuite(ProjectRuntimeTest.class);

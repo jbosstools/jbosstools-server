@@ -21,6 +21,7 @@
  */
 package org.jboss.ide.eclipse.as.ui.editor;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
@@ -52,6 +53,9 @@ public class ServerPasswordSection extends ServerEditorSection {
 	private ModifyListener nameModifyListener, passModifyListener;
 	private Text nameText, passText;
 	private ServerAttributeHelper helper;
+	
+	private String passwordString;
+	
 	public void init(IEditorSite site, IEditorInput input) {
 		super.init(site, input);
 		helper = new ServerAttributeHelper(server.getOriginal(), server);
@@ -80,6 +84,7 @@ public class ServerPasswordSection extends ServerEditorSection {
 		Label password = toolkit.createLabel(composite, Messages.swf_Password);
 		password.setForeground(toolkit.getColors().getColor(IFormColors.TITLE));
 		passText = toolkit.createText(composite, p);
+		passwordString = p;
 		
 		d = new GridData(); d.grabExcessHorizontalSpace = true; d.widthHint = 100;
 		nameText.setLayoutData(d);
@@ -105,47 +110,37 @@ public class ServerPasswordSection extends ServerEditorSection {
 	}
 
 	
-	public class SetUserCommand extends SetVarCommand {
+	public class SetUserCommand extends ServerWorkingCopyPropertyCommand {
 		public SetUserCommand(IServerWorkingCopy server) {
 			super(server, Messages.EditorChangeUsernameCommandName, nameText, nameText.getText(), 
 					IJBossToolingConstants.SERVER_USERNAME, nameModifyListener);
 		}
 	}
 
-	public class SetPassCommand extends SetVarCommand {
+	public class SetPassCommand extends ServerWorkingCopyPropertyCommand {
 		public SetPassCommand(IServerWorkingCopy server) {
 			super(server, Messages.EditorChangePasswordCommandName, passText, passText.getText(), 
 					IJBossToolingConstants.SERVER_PASSWORD, passModifyListener);
 		}
-	}
-
-	public class SetVarCommand extends ServerCommand {
-		private String oldVal;
-		private String newVal;
-		private String key;
-		private Text text;
-		private ModifyListener listener;
-		
-		public SetVarCommand(IServerWorkingCopy wc, String name, 
-				Text text, String newVal, String attributeKey,
-				ModifyListener listener) {
-			super(wc, name);
-			this.text = text;
-			this.key = attributeKey;
-			this.newVal = newVal;
-			this.listener = listener;
-			this.oldVal = helper.getAttribute(attributeKey, ""); //$NON-NLS-1$
-		}
 		
 		public void execute() {
-			helper.setAttribute(key, newVal);
+			passwordString = newVal;
 		}
 		
 		public void undo() {
+			passwordString = oldVal;
 			text.removeModifyListener(listener);
-			helper.setAttribute(key, oldVal);
 			text.setText(oldVal);
 			text.addModifyListener(listener);
 		}
 	}
+
+	/**
+	 * Allow a section an opportunity to respond to a doSave request on the editor.
+	 * @param monitor the progress monitor for the save operation.
+	 */
+	public void doSave(IProgressMonitor monitor) {
+		monitor.worked(100);
+	}
+
 }
