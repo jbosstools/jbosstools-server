@@ -41,6 +41,7 @@ import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 /**
@@ -79,7 +80,7 @@ public class ServerPasswordSection extends ServerEditorSection {
 		Label username = toolkit.createLabel(composite, Messages.swf_Username);
 		username.setForeground(toolkit.getColors().getColor(IFormColors.TITLE));
 		String n = helper.getAttribute(IJBossToolingConstants.SERVER_USERNAME, ""); //$NON-NLS-1$
-		String p = helper.getAttribute(IJBossToolingConstants.SERVER_PASSWORD, ""); //$NON-NLS-1$
+		String p = ServerConverter.getJBossServer(server.getOriginal()).getPassword();
 		nameText = toolkit.createText(composite, n); 
 		Label password = toolkit.createLabel(composite, Messages.swf_Password);
 		password.setForeground(toolkit.getColors().getColor(IFormColors.TITLE));
@@ -140,6 +141,8 @@ public class ServerPasswordSection extends ServerEditorSection {
 	 * @param monitor the progress monitor for the save operation.
 	 */
 	public void doSave(IProgressMonitor monitor) {
+		JBossServer jbs = ServerConverter.getJBossServer(server.getOriginal());
+		jbs.setPassword(passwordString);
 		monitor.worked(100);
 	}
 
