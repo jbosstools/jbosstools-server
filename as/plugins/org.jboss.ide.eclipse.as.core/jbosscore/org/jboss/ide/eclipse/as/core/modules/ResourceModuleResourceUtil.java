@@ -12,21 +12,29 @@ package org.jboss.ide.eclipse.as.core.modules;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Properties;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
+import org.eclipse.wst.common.componentcore.ComponentCore;
+import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
+import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.util.ModuleFile;
 import org.eclipse.wst.server.core.util.ModuleFolder;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.publishers.patterns.IModulePathFilter;
+import org.jboss.ide.eclipse.as.core.publishers.patterns.ModuleDirectoryScannerPathFilter;
+import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
 public class ResourceModuleResourceUtil {
 	public static IModuleResource createResource(IResource resource) {
@@ -117,5 +125,70 @@ public class ResourceModuleResourceUtil {
 		return newResources;
 	}
 	
-
+	/**
+	 * Utility method for just quickly discovering the filtered member list
+	 * @since 2.3
+	 */
+	public static IModuleResource[] getFilteredMembers(IModule module, String inc, String exc) throws CoreException {
+		ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, null);
+		ModuleDirectoryScannerPathFilter filter = new ModuleDirectoryScannerPathFilter(md.members(), inc, exc);
+		return filter.getFilteredMembers();
+	}
+	
+	/**
+	 * Get a proper includes / excludes filter for this project if it exists
+	 * or null
+	 * @since 2.3
+	 */
+	public static IModulePathFilter findDefaultModuleFilter(IModule module) {
+		if( ServerModelUtilities.isBinaryModule(module) )
+			return null;
+		String[] incExc = getProjectIncludesExcludes(module);
+		if( incExc != null ) {
+			try {
+				ModuleDirectoryScannerPathFilter filter = 
+						new ModuleDirectoryScannerPathFilter(getMembers(module), 
+								incExc[0], incExc[1]);
+				return filter;
+			} catch( CoreException ce ) {
+				JBossServerCorePlugin.getDefault().getLog().log(ce.getStatus());
+			}
+		}
+		return null;
+	}
+	
+	private static IModuleResource[] getMembers(IModule module) throws CoreException {
+		ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, new NullProgressMonitor());
+		return md == null ? new IModuleResource[0] : md.members();
+	}
+	
+	
+	/**
+	 * @since 2.3
+	 */
+	public static final String COMPONENT_INCLUSIONS_PATTERN = "component.inclusion.patterns"; //$NON-NLS-1$
+	/**
+	 * @since 2.3
+	 */
+	public static final String COMPONENT_EXCLUSIONS_PATTERN = "component.exclusion.patterns"; //$NON-NLS-1$
+	
+	/**
+	 * Does this project have the proper settings that call for 
+	 * include and exclude patterns in the virtual component metadata?
+	 * 
+	 * Return the includes / excludes pattern if yes.
+	 * If no, return null
+	 * 
+	 * @param module
+	 * @return
+	 */
+	private static String[] getProjectIncludesExcludes(IModule module) {
+		IProject p = module.getProject();
+		IVirtualComponent vc = ComponentCore.createComponent(p);
+		Properties props = vc.getMetaProperties();
+		return new String[]{ 
+				(String) props.get(COMPONENT_INCLUSIONS_PATTERN),
+				(String) props.get(COMPONENT_EXCLUSIONS_PATTERN)
+			}; 
+	}
 }

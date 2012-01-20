@@ -26,6 +26,17 @@
    <extension
          point="org.jboss.ide.eclipse.as.core.behaviourExtension">
       <behaviour
+            behaviourDelegate="org.jboss.ide.eclipse.as.test.publishing.v2.Mock2BehaviourDelegate"
+            launchDelegate="org.jboss.ide.eclipse.as.core.server.internal.launch.LocalJBossStartLaunchDelegate"
+            name="mock2"
+            publishMethod="org.jboss.ide.eclipse.as.test.publishing.v2.MockPublishMethod"
+            serverTypes="%ServerTypesJBoss6OrLower"
+            typeId="mock2">
+      </behaviour>
+   </extension>
+   <extension
+         point="org.jboss.ide.eclipse.as.core.behaviourExtension">
+      <behaviour
             behaviourDelegate="org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7BehaviorDelegate"
             launchDelegate="org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7StartLaunchDelegate"
             name="mock"

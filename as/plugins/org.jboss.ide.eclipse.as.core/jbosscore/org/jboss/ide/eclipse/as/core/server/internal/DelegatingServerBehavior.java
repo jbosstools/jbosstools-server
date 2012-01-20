@@ -24,6 +24,7 @@ import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.JSTPublisherXMLToucher;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
+import org.jboss.ide.eclipse.as.core.publishers.patterns.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
@@ -63,6 +64,13 @@ public class DelegatingServerBehavior extends DeployableServerBehavior {
 			lastModeId = id;
 			delegate = d;
 			return delegate;
+		}
+		return null;
+	}
+	
+	public IModulePathFilter getPathFilter(IModule[] moduleTree) {
+		if( getDelegate() != null ) {
+			return getDelegate().getPathFilter(moduleTree);
 		}
 		return null;
 	}

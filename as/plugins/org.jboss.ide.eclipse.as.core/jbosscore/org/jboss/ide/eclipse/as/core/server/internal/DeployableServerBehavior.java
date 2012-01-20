@@ -27,6 +27,7 @@ import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
+import org.jboss.ide.eclipse.as.core.publishers.patterns.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
@@ -220,4 +221,15 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 			return true;
 		return false;
 	}
+	
+	/**
+	 * Some projects may request post-processing filtering on 
+	 * the servertools list of resources. 
+	 * 
+	 * @since 2.3
+	 */
+	public IModulePathFilter getPathFilter(IModule[] moduleTree) {
+		return null;
+	}
+
 }

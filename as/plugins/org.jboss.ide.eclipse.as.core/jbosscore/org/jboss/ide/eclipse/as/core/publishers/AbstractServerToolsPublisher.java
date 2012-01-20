@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2011 Red Hat, Inc. 
+* Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -36,9 +36,11 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.modules.ResourceModuleResourceUtil;
+import org.jboss.ide.eclipse.as.core.publishers.patterns.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
+import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -208,7 +210,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		
 		if( !forceZip && !isBinaryObject) {
 			PublishCopyUtil util = new PublishCopyUtil(callback);
-			list.addAll(Arrays.asList(util.initFullPublish(members, getSubMon(monitor, 700))));
+			list.addAll(Arrays.asList(util.initFullPublish(members, getPathFilter(moduleTree), getSubMon(monitor, 700))));
 			JSTPublisherXMLToucher.getInstance().touch(deployPath, module, callback);
 		} else if( isBinaryObject )
 			list.addAll(Arrays.asList(copyBinaryModule(moduleTree, getSubMon(monitor, 700))));
@@ -232,7 +234,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		try {
 			ProjectModule pm = (ProjectModule) module.loadAdapter(ProjectModule.class, null);
 			IModuleResource[] resources = pm.members();
-
+			
 			IModule[] children = server.getServer().getChildModules(moduleTree, new NullProgressMonitor());
 			for( int i = 0; i < children.length; i++ ) {
 				IPath path = new Path(pm.getPath(children[i]));
@@ -245,13 +247,26 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 			// Make output
 			temp = File.createTempFile(module.getName(), ".tmp", deployRoot.toFile()); //$NON-NLS-1$
 			IPath tempFile = new Path(temp.getAbsolutePath());
-			IStatus[] e2 = PublishUtil.packModuleIntoJar(moduleTree[moduleTree.length-1].getName(), resources, tempFile);
+			IStatus[] e2 = PublishUtil.packModuleIntoJar(moduleTree[moduleTree.length-1].getName(), 
+					resources, tempFile, getPathFilter(moduleTree));;
 			errors.addAll(Arrays.asList(e2));
 			return temp;
 		} catch( IOException ioe) {
 			errors.add( new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, ioe.getMessage(), ioe));
 			return null;
 		}
+	}
+	
+	
+	/**
+	 * Some projects may request post-processing filtering on 
+	 * the servertools list of resources. 
+	 * 
+	 * @since 2.3
+	 */
+	protected IModulePathFilter getPathFilter(IModule[] moduleTree) {
+		DeployableServerBehavior beh = ServerConverter.getDeployableServerBehavior(server.getServer());
+		return beh.getPathFilter(moduleTree);
 	}
 	
 	private boolean parentModuleIsForcedZip(IModule[] moduleTree) {
@@ -319,7 +334,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		IPublishCopyCallbackHandler  handler = null;
 		if( !forceZip && !isBinaryObject) {
 			handler = getCallbackHandler(deployPath);
-			results = new PublishCopyUtil(handler).publishDelta(delta, getSubMon(monitor, 100));
+			results = new PublishCopyUtil(handler).publishDelta(delta, getPathFilter(moduleTree), getSubMon(monitor, 100));
 		} else if( delta.length > 0 ) {
 			if( isBinaryObject)
 				results = copyBinaryModule(moduleTree, getSubMon(monitor, 100));

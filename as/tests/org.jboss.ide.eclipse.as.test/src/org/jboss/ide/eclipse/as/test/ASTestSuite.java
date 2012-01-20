@@ -36,8 +36,11 @@ import org.jboss.ide.eclipse.as.test.publishing.JBIDE4184Test;
 import org.jboss.ide.eclipse.as.test.publishing.v2.JSTDeployBinaryChildModuleTest;
 import org.jboss.ide.eclipse.as.test.publishing.v2.JSTDeploymentTester;
 import org.jboss.ide.eclipse.as.test.publishing.v2.JSTDeploymentWarUpdateXML;
+import org.jboss.ide.eclipse.as.test.publishing.v2.Mock2FilterTest;
 import org.jboss.ide.eclipse.as.test.publishing.v2.MockJSTPublisherTest;
 import org.jboss.ide.eclipse.as.test.publishing.v2.MockJSTPublisherTestDynUtil;
+import org.jboss.ide.eclipse.as.test.publishing.v2.PublishFilterDirectoryScannerTest;
+import org.jboss.ide.eclipse.as.test.publishing.v2.PublishingFilterTest;
 import org.jboss.ide.eclipse.as.test.publishing.v2.SingleFileDeployableMockDeploymentTester;
 import org.jboss.ide.eclipse.as.test.publishing.v2.SingleFileDeploymentTester;
 import org.jboss.ide.eclipse.as.test.server.JBossServerAPITest;
@@ -60,6 +63,8 @@ public class ASTestSuite extends TestSuite {
         suite.addTestSuite(ProjectRuntimeTest.class);
         suite.addTestSuite(JSTDeploymentWarUpdateXML.class);
         suite.addTestSuite(SingleFileDeployableMockDeploymentTester.class);
+        
+        // Publishing tests
         suite.addTestSuite(MockJSTPublisherTest.class);
         suite.addTestSuite(MockJSTPublisherTestDynUtil.class);
         suite.addTestSuite(JBIDE1657Test.class);
@@ -71,6 +76,10 @@ public class ASTestSuite extends TestSuite {
         suite.addTestSuite(JSTDeployBinaryChildModuleTest.class);
         suite.addTestSuite(SingleFileDeploymentTester.class);
         suite.addTestSuite(JBossServerAPITest.class);
+        suite.addTestSuite(Mock2FilterTest.class);
+        suite.addTestSuite(PublishFilterDirectoryScannerTest.class);
+        suite.addTestSuite(PublishingFilterTest.class);
+        
         return suite; 
    }
 

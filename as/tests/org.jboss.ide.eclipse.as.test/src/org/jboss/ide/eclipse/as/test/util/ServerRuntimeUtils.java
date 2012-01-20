@@ -142,7 +142,13 @@ public class ServerRuntimeUtils extends TestCase {
 		wc.setAttribute(IDeployableServer.SERVER_MODE, "mock");
 		return wc.save(true, new NullProgressMonitor());
 	}
-	
+
+	public static IServer useMock2PublishMethod(IServer server) throws CoreException {
+		IServerWorkingCopy wc = server.createWorkingCopy();
+		wc.setAttribute(IDeployableServer.SERVER_MODE, "mock2");
+		return wc.save(true, new NullProgressMonitor());
+	}
+
 	public static IServer createMockDeployOnlyServer(String deployLocation, String tempDeployLocation) throws CoreException {
 		return createMockDeployOnlyServer(deployLocation, tempDeployLocation, "testRuntime", "testServer");
 	}
@@ -312,11 +318,15 @@ public class ServerRuntimeUtils extends TestCase {
 	public static IStatus publish(IServer server) throws CoreException {
 		return publish(IServer.PUBLISH_INCREMENTAL, server);
 	}
-	
+
+	public static IStatus publishFull(IServer server) throws CoreException {
+		return publish(IServer.PUBLISH_FULL, server);
+	}
+
 	public static IStatus publish(int type, IServer server) throws CoreException {
 		return server.publish(type, new NullProgressMonitor());
 	}
-
+	
 	public static IServer setZipped(IServer server, boolean val) {
 		return ServerRuntimeUtils.setServerAttribute(server, IDeployableServer.ZIP_DEPLOYMENTS_PREF, val);
 	}

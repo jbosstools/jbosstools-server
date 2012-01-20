@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.jboss.ide.eclipse.as.core" version="2">
+    <resource path="jbosscore/org/jboss/ide/eclipse/as/core/server/internal/IJBossBehaviourDelegate.java" type="org.jboss.ide.eclipse.as.core.server.internal.IJBossBehaviourDelegate">
+        <filter id="403804204">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.core.server.internal.IJBossBehaviourDelegate"/>
+                <message_argument value="getPathFilter(IModule[])"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>

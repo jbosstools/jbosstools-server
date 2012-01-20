@@ -35,6 +35,7 @@ import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.util.ProjectModule;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
+import org.jboss.ide.eclipse.as.core.publishers.patterns.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.xpl.ModulePackager;
@@ -44,7 +45,6 @@ import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentP
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentTypePrefs;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
-import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
 public class PublishUtil {
 	public static int countChanges(IModuleResourceDelta[] deltas) {
@@ -314,14 +314,23 @@ public class PublishUtil {
 		return packModuleIntoJar(module.getName(), resources, destination);
 	}
 	
-	public static IStatus[] packModuleIntoJar(String moduleName, IModuleResource[] resources, IPath destination)throws CoreException {
+	public static IStatus[] packModuleIntoJar(String moduleName, IModuleResource[] resources, IPath destination) throws CoreException {
+		return packModuleIntoJar(moduleName, resources, destination, null);
+	}
+	
+	/**
+	 * @since 2.3
+	 */
+	public static IStatus[] packModuleIntoJar(String moduleName, IModuleResource[] resources, 
+			IPath destination, IModulePathFilter filter) throws CoreException {
 	
 		String dest = destination.toOSString();
 		ModulePackager packager = null;
 		try {
 			packager = new ModulePackager(dest, false);
 			for (int i = 0; i < resources.length; i++) {
-				doPackModule(resources[i], packager);
+				if( filter == null || filter.shouldInclude(resources[i]))
+					doPackModule(resources[i], packager, filter);
 			}
 		} catch (IOException e) {
 			IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_ASSEMBLE_FAIL,
@@ -345,6 +354,13 @@ public class PublishUtil {
 	
 	/* Add one file or folder to a jar */
 	public static void doPackModule(IModuleResource resource, ModulePackager packager) throws CoreException, IOException{
+		doPackModule(resource, packager, null);
+	}
+	
+	/**
+	 * @since 2.3
+	 */
+	public static void doPackModule(IModuleResource resource, ModulePackager packager, IModulePathFilter filter) throws CoreException, IOException{
 		if (resource instanceof IModuleFolder) {
 			IModuleFolder mFolder = (IModuleFolder)resource;
 			IModuleResource[] resources = mFolder.members();
@@ -352,16 +368,18 @@ public class PublishUtil {
 			packager.writeFolder(resource.getModuleRelativePath().append(resource.getName()).toPortableString());
 
 			for (int i = 0; resources!= null && i < resources.length; i++) {
-				doPackModule(resources[i], packager);
+				doPackModule(resources[i], packager, filter);
 			}
 		} else {
-			String destination = resource.getModuleRelativePath().append(resource.getName()).toPortableString();
-			IFile file = (IFile) resource.getAdapter(IFile.class);
-			if (file != null)
-				packager.write(file, destination);
-			else {
-				File file2 = (File) resource.getAdapter(File.class);
-				packager.write(file2, destination);
+			if( filter == null || filter.shouldInclude(resource)) {
+				String destination = resource.getModuleRelativePath().append(resource.getName()).toPortableString();
+				IFile file = (IFile) resource.getAdapter(IFile.class);
+				if (file != null)
+					packager.write(file, destination);
+				else {
+					File file2 = (File) resource.getAdapter(File.class);
+					packager.write(file2, destination);
+				}
 			}
 		}
 	}

@@ -14,6 +14,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.wst.server.core.IModule;
+import org.jboss.ide.eclipse.as.core.modules.ResourceModuleResourceUtil;
+import org.jboss.ide.eclipse.as.core.publishers.patterns.IModulePathFilter;
 
 /**
  * A complete stub implementation of the interface
@@ -87,10 +90,16 @@ public abstract class AbstractBehaviourDelegate implements IJBossBehaviourDelega
 		return null;
 	}
 
+	/**
+	 * @since 2.3
+	 */
+	public IModulePathFilter getPathFilter(IModule[] moduleTree) {
+		return ResourceModuleResourceUtil.findDefaultModuleFilter(moduleTree[moduleTree.length-1]);
+	}
+	
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
 
 	}
-
 }

@@ -14,6 +14,8 @@ package org.jboss.ide.eclipse.as.core.server.internal;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.wst.server.core.IModule;
+import org.jboss.ide.eclipse.as.core.publishers.patterns.IModulePathFilter;
 
 public interface IJBossBehaviourDelegate {
 
@@ -38,6 +40,11 @@ public interface IJBossBehaviourDelegate {
 	public IStatus canChangeState(String launchMode);
 
 	public String getDefaultStopArguments() throws CoreException;
+	
+	/**
+	 * @since 2.3
+	 */
+	public IModulePathFilter getPathFilter(IModule[] moduleTree);
 	
 	public void dispose();
 }

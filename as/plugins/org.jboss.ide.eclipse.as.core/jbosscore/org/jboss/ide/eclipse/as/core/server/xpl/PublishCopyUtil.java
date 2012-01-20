@@ -10,7 +10,6 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.xpl;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +32,7 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
+import org.jboss.ide.eclipse.as.core.publishers.patterns.IModulePathFilter;
 /**
  * Utility class with an assortment of useful file methods.
  * <p>
@@ -132,23 +132,12 @@ public final class PublishCopyUtil {
 	 * @param monitor a progress monitor, or <code>null</code> if progress
 	 *    reporting and cancellation are not desired
 	 * @return a possibly-empty array of error and warning status
+	 * @deprecated
 	 */
 	public IStatus[] publishDelta(IModuleResourceDelta[] delta, IProgressMonitor monitor) throws CoreException {
-		if (delta == null)
-			return EMPTY_STATUS;
-		
-		monitor = ProgressUtil.getMonitorFor(monitor);
-		
-		List<IStatus> status = new ArrayList<IStatus>(2);
-		int size2 = delta.length;
-		for (int i = 0; i < size2; i++) {
-			IStatus[] stat = publishDelta(delta[i], new Path("/"), monitor); //$NON-NLS-1$
-			addArrayToList(status, stat);
-		}
-		
-		return status.toArray(new IStatus[status.size()]);
-	}
-
+		return publishDelta(delta, null, monitor);
+	} 
+	
 	/**
 	 * Handle a delta publish.
 	 * 
@@ -157,8 +146,43 @@ public final class PublishCopyUtil {
 	 * @param monitor a progress monitor, or <code>null</code> if progress
 	 *    reporting and cancellation are not desired
 	 * @return a possibly-empty array of error and warning status
+	 * @since 2.3
 	 */
+	public IStatus[] publishDelta(IModuleResourceDelta[] delta, IModulePathFilter filter, 
+			IProgressMonitor monitor) throws CoreException {
+
+		if (delta == null)
+			return EMPTY_STATUS;
+		
+		monitor = ProgressUtil.getMonitorFor(monitor);
+		
+		List<IStatus> status = new ArrayList<IStatus>(2);
+		int size2 = delta.length;
+		for (int i = 0; i < size2; i++) {
+			IStatus[] stat = publishDelta(delta[i], new Path("/"), filter, monitor); //$NON-NLS-1$
+			addArrayToList(status, stat);
+		}
+		
+		return status.toArray(new IStatus[status.size()]);
+	}
+
+	@Deprecated
 	public IStatus[] publishDelta(IModuleResourceDelta delta, IPath path, IProgressMonitor monitor) throws CoreException {
+		return publishDelta(delta, path, null, monitor);
+	}
+	
+	/**
+	 * Handle a delta publish.
+	 * 
+	 * @param delta a module resource delta
+	 * @param path the path to publish to
+	 * @param monitor a progress monitor, or <code>null</code> if progress
+	 *    reporting and cancellation are not desired
+	 * @return a possibly-empty array of error and warning status
+	 * @since 2.3
+	 */
+	public IStatus[] publishDelta(IModuleResourceDelta delta, IPath path, 
+			IModulePathFilter filter, IProgressMonitor monitor) throws CoreException {
 		List<IStatus> status = new ArrayList<IStatus>(2);
 		if( monitor.isCanceled())
 			return canceledStatus();
@@ -172,7 +196,7 @@ public final class PublishCopyUtil {
 				IPath path2 = path.append(file.getModuleRelativePath()).append(file.getName());
 				handler.deleteResource(path2, monitor);
 			}
-			else {
+			else if( filter == null || filter.shouldInclude(resource)){
 				IPath path2 = path.append(file.getModuleRelativePath()).append(file.getName());
 				handler.makeDirectoryIfRequired(path2.removeLastSegments(1), monitor);
 				handler.copyFile(file, path2, monitor);
@@ -193,7 +217,7 @@ public final class PublishCopyUtil {
 		for (int i = 0; i < size; i++) {
 			if( monitor.isCanceled())
 				return canceledStatus();
-			IStatus[] stat = publishDelta(childDeltas[i], path, monitor);
+			IStatus[] stat = publishDelta(childDeltas[i], path, filter, monitor);
 			addArrayToList(status, stat);
 		}
 		
@@ -212,6 +236,13 @@ public final class PublishCopyUtil {
 
 
 	/**
+	 * @deprecated
+	 */
+	public IStatus[] initFullPublish(IModuleResource[] resources, IProgressMonitor monitor) throws CoreException  {
+		return initFullPublish(resources, null, monitor);
+	}
+	
+	/**
 	 * Publish the given module resources to the given path.
 	 * 
 	 * @param resources an array of module resources
@@ -219,8 +250,9 @@ public final class PublishCopyUtil {
 	 * @param monitor a progress monitor, or <code>null</code> if progress
 	 *    reporting and cancellation are not desired
 	 * @return a possibly-empty array of error and warning status
+	 * @since 2.3
 	 */
-	public IStatus[] initFullPublish(IModuleResource[] resources, IProgressMonitor monitor) throws CoreException  {
+	public IStatus[] initFullPublish(IModuleResource[] resources, IModulePathFilter filter, IProgressMonitor monitor) throws CoreException  {
 		int count = PublishUtil.countMembers(resources);
 		monitor = ProgressUtil.getMonitorFor(monitor);
 		monitor.beginTask("Publishing " + count + " resources", //$NON-NLS-1$ //$NON-NLS-2$ 
@@ -229,12 +261,13 @@ public final class PublishCopyUtil {
 				AbstractServerToolsPublisher.getSubMon(monitor, 100)); 
 		if( monitor.isCanceled())
 			return canceledStatus();
-		IStatus[] results = publishFull(resources, new Path("/"), monitor); //$NON-NLS-1$
+		IStatus[] results = publishFull(resources, new Path("/"), filter, monitor); //$NON-NLS-1$
 		monitor.done();
 		return results;
 	}
 	
-	protected IStatus[] publishFull(IModuleResource[] resources, IPath relative, IProgressMonitor monitor) throws CoreException {
+	protected IStatus[] publishFull(IModuleResource[] resources, IPath relative,
+			IModulePathFilter filter, IProgressMonitor monitor) throws CoreException {
 		if (resources == null)
 			return EMPTY_STATUS;
 		List<IStatus> status = new ArrayList<IStatus>(2);
@@ -242,13 +275,22 @@ public final class PublishCopyUtil {
 		for (int i = 0; i < size; i++) {
 			if( monitor.isCanceled())
 				return canceledStatus();
-			IStatus[] stat = copy(resources[i], relative, monitor); 
-			addArrayToList(status, stat);
+			if( filter == null || filter.shouldInclude(resources[i])) {
+				IStatus[] stat = copy(resources[i], relative, filter, monitor); 
+				addArrayToList(status, stat);
+			}
 		}
 		return status.toArray(new IStatus[status.size()]);
 	}
 
-	private IStatus[] copy(IModuleResource resource, IPath path, IProgressMonitor monitor) throws CoreException {
+	
+	@Deprecated
+	protected IStatus[] publishFull(IModuleResource[] resources, IPath relative, 
+			IProgressMonitor monitor) throws CoreException {
+		return publishFull(resources, relative, null, monitor);
+	}
+
+	private IStatus[] copy(IModuleResource resource, IPath path, IModulePathFilter filter, IProgressMonitor monitor) throws CoreException {
 		String name = resource.getName();
 		//Trace.trace(Trace.PUBLISHING, "Copying: " + name + " to " + path.toString());
 		List<IStatus> status = new ArrayList<IStatus>(2);
@@ -259,18 +301,19 @@ public final class PublishCopyUtil {
 				handler.makeDirectoryIfRequired(folder.getModuleRelativePath().append(folder.getName()), 
 						AbstractServerToolsPublisher.getSubMon(monitor, 5));
 			else {
-				IStatus[] stat = publishFull(children, path, monitor);
+				IStatus[] stat = publishFull(children, path, filter, monitor);
 				addArrayToList(status, stat);
 			}
 		} else {
 			IModuleFile mf = (IModuleFile) resource;
-			path = path.append(mf.getModuleRelativePath()).append(name);
-			IStatus[] stats = handler.makeDirectoryIfRequired(path.removeLastSegments(1), new NullProgressMonitor());
-			if( stats != null && stats.length > 0 && !stats[0].isOK())
-				addArrayToList(status, stats);
-
-			addArrayToList(status, handler.copyFile(mf, path, 
-					AbstractServerToolsPublisher.getSubMon(monitor, 100)));
+			if( filter == null || filter.shouldInclude(resource)) {
+				path = path.append(mf.getModuleRelativePath()).append(name);
+				IStatus[] stats = handler.makeDirectoryIfRequired(path.removeLastSegments(1), new NullProgressMonitor());
+				if( stats != null && stats.length > 0 && !stats[0].isOK())
+					addArrayToList(status, stats);
+				addArrayToList(status, handler.copyFile(mf, path, 
+						AbstractServerToolsPublisher.getSubMon(monitor, 100)));
+			}
 		}
 		return status.toArray(new IStatus[status.size()]);
 	}
