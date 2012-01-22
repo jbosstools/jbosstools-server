@@ -144,15 +144,20 @@ public class ResourceModuleResourceUtil {
 		if( ServerModelUtilities.isBinaryModule(module) )
 			return null;
 		String[] incExc = getProjectIncludesExcludes(module);
-		if( incExc != null ) {
-			try {
-				ModuleDirectoryScannerPathFilter filter = 
-						new ModuleDirectoryScannerPathFilter(getMembers(module), 
-								incExc[0], incExc[1]);
-				return filter;
-			} catch( CoreException ce ) {
-				JBossServerCorePlugin.getDefault().getLog().log(ce.getStatus());
-			}
+		String inclusionPatterns = incExc[0];
+		String exclusionPatterns = incExc[1];
+		if (exclusionPatterns == null 
+		    && (inclusionPatterns == null || ALL_RESOURCES_PATTERN.equals(inclusionPatterns))) {
+		  //No filtering necessary, everything is included. That way we avoid unnecessary scans
+		  return null;
+		}
+		try {
+			ModuleDirectoryScannerPathFilter filter = 
+					new ModuleDirectoryScannerPathFilter(getMembers(module), 
+					    inclusionPatterns, exclusionPatterns);
+			return filter;
+		} catch( CoreException ce ) {
+			JBossServerCorePlugin.getDefault().getLog().log(ce.getStatus());
 		}
 		return null;
 	}
@@ -172,6 +177,7 @@ public class ResourceModuleResourceUtil {
 	 */
 	public static final String COMPONENT_EXCLUSIONS_PATTERN = "component.exclusion.patterns"; //$NON-NLS-1$
 	
+	private static final String ALL_RESOURCES_PATTERN = "**"; //$NON-NLS-1$
 	/**
 	 * Does this project have the proper settings that call for 
 	 * include and exclude patterns in the virtual component metadata?
@@ -186,9 +192,26 @@ public class ResourceModuleResourceUtil {
 		IProject p = module.getProject();
 		IVirtualComponent vc = ComponentCore.createComponent(p);
 		Properties props = vc.getMetaProperties();
+		String exclusionPatterns = getPatternValue(props, COMPONENT_EXCLUSIONS_PATTERN);
+		String inclusionPatterns = getPatternValue(props, COMPONENT_INCLUSIONS_PATTERN);
+
 		return new String[]{ 
-				(String) props.get(COMPONENT_INCLUSIONS_PATTERN),
-				(String) props.get(COMPONENT_EXCLUSIONS_PATTERN)
+				inclusionPatterns,
+				exclusionPatterns
 			}; 
 	}
+
+	/**
+	 * Returns the trimmed property value if it exists and is not empty, or null otherwise
+	 */
+  private static String getPatternValue(Properties props,  String propertyName) {
+    String value = props.getProperty(propertyName);
+    if (value != null) {
+      value = value.trim();
+      if (value.length() == 0) {
+        value = null;
+      }
+    }
+    return value;
+  }
 }

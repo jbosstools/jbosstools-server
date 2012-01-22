@@ -17,15 +17,10 @@ import org.eclipse.wst.server.core.model.IModuleResource;
  */
 public class ModuleDirectoryScannerPathFilter implements IModulePathFilter {
 
-	private IModuleResource[] members;
-	private String includes, excludes;
 	private PublishFilterDirectoryScanner scanner;
 	private boolean scanned = false;
 	public ModuleDirectoryScannerPathFilter(IModuleResource[] members, 
 			String includes, String excludes) {
-		this.members = members;
-		this.includes = includes;
-		this.excludes = excludes;
 		scanner = new PublishFilterDirectoryScanner(members);
 		scanner.setIncludes(includes);
 		scanner.setExcludes(excludes);

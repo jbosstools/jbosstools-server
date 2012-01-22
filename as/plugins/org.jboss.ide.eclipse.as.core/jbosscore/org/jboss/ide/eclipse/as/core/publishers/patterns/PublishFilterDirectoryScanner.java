@@ -886,12 +886,16 @@ public class PublishFilterDirectoryScanner {
             : al.toArray(new String[al.size()]);
     }
     
+    /**
+     * Returns the platform-dependent resource path.
+     */
+    private String getResourcePath(IModuleResource resource) {
+    	return resource.getModuleRelativePath().append(resource.getName()).makeRelative().toOSString();
+    }
+
     /*
      * Public accessors
      */    
-    private String getResourcePath(IModuleResource resource) {
-    	return resource.getModuleRelativePath().append(resource.getName()).makeRelative().toString();
-    }
     public boolean isIncludedFile(IModuleFile resource) {
     	return isIncludedFile(getResourcePath(resource));
     }
@@ -902,13 +906,15 @@ public class PublishFilterDirectoryScanner {
     	return isNotIncludedButRequired(getResourcePath(resource));
     }
     public boolean isIncludedMember(IModuleResource resource) {
-    	return isIncludedFile(getResourcePath(resource)) 
-    			|| isIncludedDir(getResourcePath(resource));
+      String path = getResourcePath(resource);
+    	return isIncludedFile(path) 
+    			|| isIncludedDir(path);
     }
     public boolean isRequiredMember(IModuleResource resource) {
-    	return isIncludedFile(getResourcePath(resource)) 
-    			|| isIncludedDir(getResourcePath(resource))
-    			|| isNotIncludedButRequired(getResourcePath(resource));
+      String path = getResourcePath(resource);
+    	return isIncludedFile(path) 
+    			|| isIncludedDir(path)
+    			|| isNotIncludedButRequired(path);
     }
     public boolean isIncludedFile(String vpath) {
     	return filesIncluded.contains(vpath);
