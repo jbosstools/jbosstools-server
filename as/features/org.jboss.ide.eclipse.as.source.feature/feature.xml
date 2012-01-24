@@ -25,7 +25,7 @@ for a full listing of individual contributors.
 	<plugin id="org.jboss.ide.eclipse.as.core.source" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 	<plugin id="org.jboss.ide.eclipse.as.doc.user.source" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 	<plugin id="org.jboss.ide.eclipse.as.jmx.integration.source" download-size="0" install-size="0" version="0.0.0" unpack="false" />
-	<plugin id="org.jboss.ide.eclipse.as.management.as7.source" download-size="0" install-size="0" version="0.0.0" unpack="false" />
+	<plugin id="org.jboss.ide.eclipse.as.management.as71.source" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 	<plugin id="org.jboss.ide.eclipse.as.rse.core.source" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 	<plugin id="org.jboss.ide.eclipse.as.rse.ui.source" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 	<plugin id="org.jboss.ide.eclipse.as.ui.source" download-size="0" install-size="0" version="0.0.0" unpack="false" />
