@@ -28,6 +28,7 @@ import org.eclipse.equinox.security.storage.StorageException;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
@@ -178,7 +179,7 @@ public class ServerUtil {
     /**
 	 * @since 2.3
 	 */
-    public static String getFromSecureStorage(IServer server, String key) {
+    public static String getFromSecureStorage(IServerAttributes server, String key) {
         try {
         	ISecurePreferences node = getNode(server);
             String val = node.get(key, null);
@@ -210,7 +211,7 @@ public class ServerUtil {
 		}
     }
 
-    private static ISecurePreferences getNode(IServer server) throws UnsupportedEncodingException {
+    private static ISecurePreferences getNode(IServerAttributes server) throws UnsupportedEncodingException {
 		String secureKey = new StringBuilder(PREFERNCES_BASEKEY)
 			.append(server.getName())
 			.append(Path.SEPARATOR).toString();

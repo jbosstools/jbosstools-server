@@ -122,6 +122,7 @@ public class ServerPasswordSection extends ServerEditorSection {
 		public SetPassCommand(IServerWorkingCopy server) {
 			super(server, Messages.EditorChangePasswordCommandName, passText, passText.getText(), 
 					IJBossToolingConstants.SERVER_PASSWORD, passModifyListener);
+			oldVal = passText.getText();
 		}
 		
 		public void execute() {

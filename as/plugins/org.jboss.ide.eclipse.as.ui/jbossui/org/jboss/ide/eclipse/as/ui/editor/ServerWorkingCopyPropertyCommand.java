@@ -24,7 +24,8 @@ public class ServerWorkingCopyPropertyCommand extends ServerCommand {
 		this.key = attributeKey;
 		this.newVal = newVal;
 		this.listener = listener;
-		this.oldVal = wc.getAttribute(attributeKey, ""); //$NON-NLS-1$
+		if( key != null )
+			this.oldVal = wc.getAttribute(attributeKey, ""); //$NON-NLS-1$
 	}
 	
 	public void execute() {
