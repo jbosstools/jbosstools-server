@@ -38,6 +38,7 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
+import org.jboss.ide.eclipse.as.core.publishers.patterns.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
@@ -248,7 +249,10 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 			TrueZipUtil.createArchive(path);
 			de.schlichtherle.io.File root = TrueZipUtil.getFile(path, TrueZipUtil.getJarArchiveDetector());
 			IModuleResource[] resources = getResources(module);
-			IStatus[] copyResults = copy(root, resources);
+			DeployableServerBehavior beh = ServerConverter.getDeployableServerBehavior(server);
+			IModulePathFilter filter = beh.getPathFilter(module);
+			IModuleResource[] resources2 = filter == null ? resources : filter.getFilteredMembers();
+			IStatus[] copyResults = copy(root, resources2);
 			results.addAll(Arrays.asList(copyResults));
 			
 			IModule[] children = server.getChildModules(module, new NullProgressMonitor());
@@ -277,10 +281,17 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 		IPath path = getOutputFilePath(module);
 		de.schlichtherle.io.File root = TrueZipUtil.getFile(path, TrueZipUtil.getJarArchiveDetector());
 		IModuleResourceDelta[] deltas = ((Server)server).getPublishedResourceDelta(module);
-		return publishChanges(server, deltas, root);
+		DeployableServerBehavior beh = ServerConverter.getDeployableServerBehavior(server);
+		IModulePathFilter filter = beh.getPathFilter(module);
+
+		return publishChanges(server, deltas, root, filter);
 	}
 	
-	protected IStatus[] publishChanges(IServer server, IModuleResourceDelta[] deltas, de.schlichtherle.io.File root) {
+	/**
+	 * @since 2.3
+	 */
+	protected IStatus[] publishChanges(IServer server, IModuleResourceDelta[] deltas, 
+			de.schlichtherle.io.File root, IModulePathFilter filter) {
 		ArrayList<IStatus> results = new ArrayList<IStatus>();
 		if( deltas == null || deltas.length == 0 )
 			return new IStatus[]{};
@@ -290,11 +301,15 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 			dKind = deltas[i].getKind();
 			resource = deltas[i].getModuleResource();
 			if( dKind == IModuleResourceDelta.ADDED ) {
-				results.addAll(Arrays.asList(copy(root, new IModuleResource[]{resource})));
-			} else if( dKind == IModuleResourceDelta.CHANGED ) {
-				if( resource instanceof IModuleFile ) 
+				if( filter != null && filter.shouldInclude(resource)) {
 					results.addAll(Arrays.asList(copy(root, new IModuleResource[]{resource})));
-				results.addAll(Arrays.asList(publishChanges(server, deltas[i].getAffectedChildren(), root)));
+				}
+			} else if( dKind == IModuleResourceDelta.CHANGED ) {
+				if( filter != null && filter.shouldInclude(resource)) {
+					if( resource instanceof IModuleFile ) 
+						results.addAll(Arrays.asList(copy(root, new IModuleResource[]{resource})));
+					results.addAll(Arrays.asList(publishChanges(server, deltas[i].getAffectedChildren(), root, filter)));
+				}
 			} else if( dKind == IModuleResourceDelta.REMOVED) {
 				de.schlichtherle.io.File f = getFileInArchive(root, 
 						resource.getModuleRelativePath().append(
@@ -304,7 +319,7 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 					results.add(generateDeleteFailedStatus(f));
 				hasBeenChanged = true;
 			} else if( dKind == IModuleResourceDelta.NO_CHANGE  ) {
-				results.addAll(Arrays.asList(publishChanges(server, deltas[i].getAffectedChildren(), root)));
+				results.addAll(Arrays.asList(publishChanges(server, deltas[i].getAffectedChildren(), root, filter)));
 			}
 		}
 		

@@ -31,6 +31,7 @@ public class ASArchivesIntegrationTestSuite extends TestSuite {
         suite.addTestSuite(BuildDeployTest.class);
         suite.addTestSuite(SingleFileZippedDeploymentIntegrationTest.class);
         suite.addTestSuite(JSTEarWithNestedWebProjectIncrementalPublish.class);
+        suite.addTestSuite(ZippedFilterTest.class);
         return suite; 
    }
 

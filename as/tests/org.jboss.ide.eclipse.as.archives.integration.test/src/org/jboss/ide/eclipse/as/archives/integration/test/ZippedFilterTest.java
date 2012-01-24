@@ -1,7 +1,7 @@
-package org.jboss.ide.eclipse.as.test.publishing.v2;
+package org.jboss.ide.eclipse.as.archives.integration.test;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import junit.framework.TestCase;
 
@@ -19,14 +19,17 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.ServerPreferences;
+import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
-import org.jboss.ide.eclipse.as.core.modules.ResourceModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.publishers.patterns.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.publishers.patterns.PublishFilterDirectoryScanner;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.test.ASTest;
+import org.jboss.ide.eclipse.as.test.publishing.v2.Mock2BehaviourDelegate;
+import org.jboss.ide.eclipse.as.test.publishing.v2.MockPublishMethod;
+import org.jboss.ide.eclipse.as.test.publishing.v2.PublishFilterDirectoryScannerTest;
 import org.jboss.ide.eclipse.as.test.util.IOUtil;
 import org.jboss.ide.eclipse.as.test.util.ServerRuntimeUtils;
 import org.jboss.ide.eclipse.as.test.util.wtp.JavaEEFacetConstants;
@@ -34,28 +37,12 @@ import org.jboss.ide.eclipse.as.test.util.wtp.OperationTestCase;
 import org.jboss.ide.eclipse.as.test.util.wtp.ProjectCreationUtil;
 import org.jboss.ide.eclipse.as.test.util.wtp.ProjectUtility;
 
-/**
- *  Test the integration between components, filters, and servers
- */
-public class PublishingFilterTest extends TestCase {
+public class ZippedFilterTest extends TestCase {
 	public void tearDown() throws Exception {
 		ServerRuntimeUtils.deleteAllServers();
 		ServerRuntimeUtils.deleteAllRuntimes();
 		ProjectUtility.deleteAllProjects();
 		ASTest.clearStateLocation();
-	}
-
-	public void testPublishingFilter() throws Exception {
-		publishingFilterTest(createProject("module1"), "**/*", "**/DONTincludeme.txt", 1);
-	}
-	public void testPublishingFilter2() throws Exception {
-		publishingFilterTest(createProject("module1"), "**/*", "**/*.txt", 2);
-	}
-	public void testPublishingFilterChange() throws Exception {
-		// Make sure changes to an existing project also work
-		IProject p = createProject("module1");
-		publishingFilterTest(p, "**/*", "**/*.txt", 2);
-		publishingFilterTest(p, "**/*", "**/DON*.txt", 1);
 	}
 	
 	private IProject createProject(String name) throws Exception {
@@ -69,29 +56,14 @@ public class PublishingFilterTest extends TestCase {
 		IOUtil.setContents(f2, "leave me out");
 		return p;
 	}
-	private void publishingFilterTest(IProject p, String inc, String exc, int difference) throws Exception {
-		IVirtualComponent vc = ComponentCore.createComponent(p);
-		vc.setMetaProperty("component.inclusion.patterns", inc);
-		vc.setMetaProperty("component.exclusion.patterns", exc);
-		
-		IModule module = ServerUtil.getModule(p);
-		IModulePathFilter filter = ResourceModuleResourceUtil.findDefaultModuleFilter(module);
-		assertNotNull(filter);
-		ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, null);
-		IModuleResource[] originalMembers = md.members();
-		IModuleResource[] filteredMembers = filter.getFilteredMembers();
-		
-		int oCount = PublishFilterDirectoryScannerTest.countAllResources(originalMembers);
-		int fCount = PublishFilterDirectoryScannerTest.countAllResources(filteredMembers);
-		
-		assertEquals(oCount, fCount + difference);
-	}
-	
+
 	public void testServerIntegration() throws CoreException, IOException, Exception {
 		IServer server = ServerRuntimeUtils.createMockServerWithRuntime(IJBossToolingConstants.SERVER_AS_60, 
 				"name1", "default");
 		server = ServerRuntimeUtils.useMock2PublishMethod(server);
+		server = ServerRuntimeUtils.setZipped(server, true);
 		IProject project = createProject("module1");
+		MockPublishMethod.reset();
 		
 		ServerPreferences.getInstance().setAutoPublishing(false);
 		IModule mod = ServerUtil.getModule(project);
@@ -140,12 +112,18 @@ public class PublishingFilterTest extends TestCase {
 		assertNotNull(r);
 		assertTrue(filter.shouldInclude(r));
 		
-		// Test the actual publish
 		MockPublishMethod.reset();
 		server.publish(IServer.PUBLISH_FULL, new NullProgressMonitor());
-		ArrayList<IPath> changed = MockPublishMethod.changed;
-		assertEquals(changed.size(),fCount+1);  // addition of 'root' 
+	
+		IModuleFile[] copied = MockPublishMethod.getChangedFiles();
+		assertTrue(copied.length == 1);
+		IModuleFile f1 = copied[0];
+		File f2 = (File)f1.getAdapter(File.class);
 		
-		
+		IPath unzip3 = ASTest.getDefault().getStateLocation().append("unzip3");
+		IOUtil.unzipFile(new Path(f2.getAbsolutePath()),unzip3);
+		assertEquals(IOUtil.countAllResources(unzip3.toFile()), fCount+1);
+
 	}
+
 }

@@ -80,7 +80,7 @@ public class IOUtil {
 			return 1;
 		File[] children = root.listFiles();
 		for( int i = 0; i < children.length; i++ ) 
-			count += countFiles(children[i]);
+			count += countAllResources(children[i]);
 		return 1 + count;
 	}
 

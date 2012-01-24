@@ -24,6 +24,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.jboss.ide.eclipse.as.test;bundle-version="2.2.0",
  org.eclipse.wst.common.frameworks;bundle-version="1.2.100",
  org.eclipse.jst.common.project.facet.core;bundle-version="1.4.200",
- org.eclipse.wst.common.project.facet.core;bundle-version="1.4.200"
+ org.eclipse.wst.common.project.facet.core;bundle-version="1.4.200",
+ org.eclipse.wst.common.modulecore;bundle-version="1.2.103"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.jboss.ide.eclipse.as.archives.integration.test

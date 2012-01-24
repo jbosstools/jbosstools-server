@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.jboss.ide.eclipse.archives.webtools" version="2">
+    <resource path="src/org/jboss/ide/eclipse/archives/webtools/modules/LocalZippedPublisherUtil.java" type="org.jboss.ide.eclipse.archives.webtools.modules.LocalZippedPublisherUtil">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.archives.webtools.modules.LocalZippedPublisherUtil"/>
+                <message_argument value="publishChanges(IServer, IModuleResourceDelta[], File)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>

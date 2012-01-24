@@ -30,7 +30,8 @@ public class MockPublishMethod extends AbstractPublishMethod {
 	public static final String MOCK_ROOT = "mockRoot";
 	public static ArrayList<IPath> changed = new ArrayList<IPath>();
 	public static ArrayList<IPath> removed = new ArrayList<IPath>();
-
+	public static ArrayList<IModuleFile> copiedFiles = new ArrayList<IModuleFile>();
+	
 	public IPublishCopyCallbackHandler getCallbackHandler(IPath path,
 			IServer server) {
 		return new MockCopyCallbackHandler(path);
@@ -46,11 +47,15 @@ public class MockPublishMethod extends AbstractPublishMethod {
 	public static void reset() {
 		changed.clear();
 		removed.clear();
+		copiedFiles.clear();
 	}
 	public static IPath[] getRemoved() {
 		return (IPath[]) removed.toArray(new IPath[removed.size()]);
 	}
-
+	public static IModuleFile[] getChangedFiles() {
+		return copiedFiles.toArray(new IModuleFile[copiedFiles.size()]);
+	}
+	
 	public static IPath[] getChanged() {
 		return (IPath[]) changed.toArray(new IPath[changed.size()]);
 	}
@@ -97,6 +102,7 @@ public class MockPublishMethod extends AbstractPublishMethod {
 			IPath path2 = root.append(path);
 			if( !changed.contains(path2.makeRelative()))
 				changed.add(path2.makeRelative());
+			copiedFiles.add(mf);
 			return new IStatus[]{};
 		}
 		
