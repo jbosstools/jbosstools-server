@@ -11,10 +11,8 @@
 package org.jboss.ide.eclipse.as.core.util;
 
 import java.io.File;
-import java.io.IOError;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLEncoder;
 
 import org.eclipse.core.runtime.CoreException;
@@ -177,7 +175,6 @@ public class ServerUtil {
 	}
 	
 	
-    private static final String SECURE = "secure";  //$NON-NLS-1$
     /**
 	 * @since 2.3
 	 */
@@ -196,6 +193,8 @@ public class ServerUtil {
 		}
     }
     
+	private static final String PREFERNCES_BASEKEY = JBossServerCorePlugin.PLUGIN_ID.replace('.', Path.SEPARATOR);
+
     /**
 	 * @since 2.3
 	 */
@@ -212,17 +211,13 @@ public class ServerUtil {
     }
 
     private static ISecurePreferences getNode(IServer server) throws UnsupportedEncodingException {
-    	try {
-    		IPath p = JBossServerCorePlugin.getServerStateLocation(server).append(SECURE);
-    		if( !p.toFile().exists())
-    			p.toFile().mkdirs();
-    		
-	        URL url = p.toFile().toURI().toURL();
-	    	ISecurePreferences root = SecurePreferencesFactory.open(url, null);
-	        return root;
-    	} catch(IOException ioe ) {
-    		return null;
-    	}
+		String secureKey = new StringBuilder(PREFERNCES_BASEKEY)
+			.append(server.getName())
+			.append(Path.SEPARATOR).toString();
+
+		ISecurePreferences root = SecurePreferencesFactory.getDefault();
+		String encoded = URLEncoder.encode(secureKey, "UTF-8"); //$NON-NLS-1$
+		return root.node(encoded);
     }
 
 }
