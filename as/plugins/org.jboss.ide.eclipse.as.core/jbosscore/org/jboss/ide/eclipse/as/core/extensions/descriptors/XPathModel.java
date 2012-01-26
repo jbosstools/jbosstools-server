@@ -33,7 +33,6 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
-import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -77,33 +76,23 @@ public class XPathModel extends UnitedServerListener {
 					return Status.OK_STATUS; // server has no runtime so we can't set this up.
 				}
 				
-				if( ServerUtil.isJBoss7(server2)) {
-					return handleAddJBoss7XPaths(server2);
-				} else {
-					return handleAddJBossXPaths(server2);
-				}
+				return handleAddJBossXPaths(server2, getQueryBaseDir(server2));
 			}
 		}.schedule();
 	}
 	
-	private IStatus handleAddJBoss7XPaths(IServer server2) {
-		ArrayList<XPathCategory> defaults = loadDefaults(server2, ""); //$NON-NLS-1$
-		serverToCategories.put(server2.getId(), defaults);
-		save(server2);
-		return Status.OK_STATUS;
+	private String getQueryBaseDir(IServer server) {
+		// JBoss 6 and below have a default basedir of the config location
+		// while as7 has a basedir of the empty string
+//		if( ServerUtil.isJBoss7(server))
+//			return ""; //$NON-NLS-1$
+		return "${jboss_config_dir}"; //$NON-NLS-1$
 	}
 	
-	private IStatus handleAddJBossXPaths(IServer server2) {
-		LocalJBossServerRuntime ajbsr = (LocalJBossServerRuntime)
-		server2.getRuntime().loadAdapter(LocalJBossServerRuntime.class, null);
-		if(ajbsr != null ) {
-			String configFolder = "${jboss_config_dir}"; //ajbsr.getConfigurationFullPath(); //$NON-NLS-1$
-			if( configFolder != null ) {
-				ArrayList<XPathCategory> defaults = loadDefaults(server2, configFolder);
-				serverToCategories.put(server2.getId(), defaults);
-				save(server2);
-			} 
-		}
+	private IStatus handleAddJBossXPaths(IServer server2, String baseDir) {
+		ArrayList<XPathCategory> defaults = loadDefaultPortQueries(server2, baseDir);
+		serverToCategories.put(server2.getId(), defaults);
+		save(server2);
 		return Status.OK_STATUS;
 	}
 	
@@ -254,50 +243,57 @@ public class XPathModel extends UnitedServerListener {
 	 * Loading the defaults for the server
 	 * returns the category created
 	 */
-	private static HashMap<String, IPath> rtToPortsFile;
+	private static HashMap<String, URL> rtToPortsFile;
 	private static final String ATTRIBUTE_SUFFIX = "_ATTRIBUTE";//$NON-NLS-1$
 	private static final String FILE_SUFFIX = "_FILE";//$NON-NLS-1$
 	static {
 		IPath properties = new Path(IJBossToolingConstants.PROPERTIES);
-		rtToPortsFile = new HashMap<String, IPath>();
-		rtToPortsFile.put(IConstants.AS_32, properties.append(IJBossToolingConstants.DEFAULT_PROPS_32));
-		rtToPortsFile.put(IConstants.AS_40, properties.append(IJBossToolingConstants.DEFAULT_PROPS_40));
-		rtToPortsFile.put(IConstants.AS_42, properties.append(IJBossToolingConstants.DEFAULT_PROPS_42));
-		rtToPortsFile.put(IConstants.AS_50, properties.append(IJBossToolingConstants.DEFAULT_PROPS_50));
-		rtToPortsFile.put(IConstants.AS_51, properties.append(IJBossToolingConstants.DEFAULT_PROPS_51));
-		rtToPortsFile.put(IConstants.AS_60, properties.append(IJBossToolingConstants.DEFAULT_PROPS_60));
-		rtToPortsFile.put(IConstants.AS_70, properties.append(IJBossToolingConstants.DEFAULT_PROPS_70));
-		rtToPortsFile.put(IConstants.AS_71, properties.append(IJBossToolingConstants.DEFAULT_PROPS_71));
-		rtToPortsFile.put(IConstants.EAP_43, properties.append(IJBossToolingConstants.DEFAULT_PROPS_EAP_43));
-		rtToPortsFile.put(IConstants.EAP_50, properties.append(IJBossToolingConstants.DEFAULT_PROPS_EAP_50));
-		rtToPortsFile.put(IConstants.EAP_60, properties.append(IJBossToolingConstants.DEFAULT_PROPS_70));
+		rtToPortsFile = new HashMap<String, URL>();
+		rtToPortsFile.put(IConstants.AS_32, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_32));
+		rtToPortsFile.put(IConstants.AS_40, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_40));
+		rtToPortsFile.put(IConstants.AS_42, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_42));
+		rtToPortsFile.put(IConstants.AS_50, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_50));
+		rtToPortsFile.put(IConstants.AS_51, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_51));
+		rtToPortsFile.put(IConstants.AS_60, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_60));
+		rtToPortsFile.put(IConstants.AS_70, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_70));
+		rtToPortsFile.put(IConstants.AS_71, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_71));
+		rtToPortsFile.put(IConstants.EAP_43, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_EAP_43));
+		rtToPortsFile.put(IConstants.EAP_50, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_EAP_50));
+		rtToPortsFile.put(IConstants.EAP_60, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_70));
 		// TODO NEW_SERVER_ADAPTER Add the new server ID to port mapping file above this line 
 	}
+	
+	/**
+	 * @since 2.3
+	 */
+	public static void addServerTypeToURLMapping(String serverType, URL mapping) {
+		if( !rtToPortsFile.containsKey(serverType)) {
+			// ensure nobody tries to overwrite our values
+			rtToPortsFile.put(serverType, mapping);
+		}
+	}
+	
+	/**
+	 * @since 2.3
+	 */
+	public static URL getUrlFromServerType(String serverType) {
+		return rtToPortsFile.get(serverType);
+	}
+	
+	private static URL getURLFor(String props) {
+		IPath properties = new Path(IJBossToolingConstants.PROPERTIES).append(props);
+		URL url = FileLocator.find(JBossServerCorePlugin.getDefault().getBundle(), properties, null);
+		return url;
+	}
 
-	private static ArrayList<XPathCategory> loadDefaults(IServer server, String configFolder) {
+	public static ArrayList<XPathCategory> loadDefaultPortQueries(IServer server, String baseDir) {
 		ArrayList<XPathCategory> retVal = new ArrayList<XPathCategory>();
-		Path p = (Path)rtToPortsFile.get(server.getRuntime().getRuntimeType().getId());
-		if( p == null ) return retVal;
-		URL url = FileLocator.find(JBossServerCorePlugin.getDefault().getBundle(), p, null);
+		URL url = rtToPortsFile.get(server.getRuntime().getRuntimeType().getId());
 		if( url == null ) return retVal;
 
-		Properties pr = new Properties();
 		try {
-			pr.load(url.openStream());
 			XPathCategory ports = new XPathCategory(PORTS_CATEGORY_NAME, server);
-			Iterator i = pr.keySet().iterator();
-			String name, xpath, attributeName, file;
-			XPathQuery query;
-			while(i.hasNext()) {
-				name = (String)i.next();
-				if( !name.endsWith(ATTRIBUTE_SUFFIX) && !name.endsWith(FILE_SUFFIX)) {
-					xpath = pr.getProperty(name);
-					attributeName = pr.getProperty(name+ATTRIBUTE_SUFFIX);
-					file = pr.getProperty(name + FILE_SUFFIX);
-					query = new XPathQuery(server, name.replace('_', ' '), configFolder, file, xpath, attributeName);
-					ports.addQuery(query);
-				}
-			}
+			addQueriesToCategoryFromDefaultFile(server, ports, baseDir, url);
 			retVal.add(ports);
 		} catch (IOException e) {
 			JBossServerCorePlugin.getDefault().getLog().log(
@@ -307,6 +303,24 @@ public class XPathModel extends UnitedServerListener {
 		return retVal;
 	}
 	
+	public static void addQueriesToCategoryFromDefaultFile(IServer server, XPathCategory category, 
+			String baseDir, URL url) throws IOException {
+		Properties pr = new Properties();
+		pr.load(url.openStream());
+		Iterator i = pr.keySet().iterator();
+		String name, xpath, attributeName, file;
+		XPathQuery query;
+		while(i.hasNext()) {
+			name = (String)i.next();
+			if( !name.endsWith(ATTRIBUTE_SUFFIX) && !name.endsWith(FILE_SUFFIX)) {
+				xpath = pr.getProperty(name);
+				attributeName = pr.getProperty(name+ATTRIBUTE_SUFFIX);
+				file = pr.getProperty(name + FILE_SUFFIX);
+				query = new XPathQuery(server, name.replace('_', ' '), baseDir, file, xpath, attributeName);
+				category.addQuery(query);
+			}
+		}
+	}
 	
 	/*
 	 * Namespace map

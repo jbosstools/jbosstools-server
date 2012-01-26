@@ -11,8 +11,10 @@
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
@@ -21,7 +23,13 @@ public class LocalJBoss7ServerRuntime extends LocalJBossServerRuntime implements
 	public static final String CONFIG_FILE = "org.jboss.ide.eclipse.as.core.server.internal.v7.CONFIG_FILE"; //$NON-NLS-1$
 	public static final String CONFIG_FILE_DEFAULT = "standalone.xml"; //$NON-NLS-1$
 	
-	
+	@Override
+	public void setDefaults(IProgressMonitor monitor) {
+		super.setDefaults(monitor);
+		// clear as6 default property
+		setAttribute(IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, ""); //$NON-NLS-1$
+	}
+
 	@Override
 	public IStatus validate() {
 		return Status.OK_STATUS;
@@ -71,4 +79,16 @@ public class LocalJBoss7ServerRuntime extends LocalJBossServerRuntime implements
 	public void setConfigurationFile(String file) {
 		setAttribute(CONFIG_FILE, file);
 	}
+	
+	// Overrides of as6-and-below's notion of configuration
+	@Override
+	public String getConfigLocation() {
+		return ""; //$NON-NLS-1$
+	}
+	@Override
+	public String getJBossConfiguration() {
+		return ""; //$NON-NLS-1$
+	}
+
+	
 }

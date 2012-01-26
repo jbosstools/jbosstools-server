@@ -10,11 +10,7 @@
  *******************************************************************************/
 package org.jboss.ide.eclipse.archives.core.xpl;
 
-import java.util.ArrayList;
-import java.util.EmptyStackException;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Stack;
 
 import org.eclipse.core.runtime.CoreException;
