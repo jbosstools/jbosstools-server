@@ -84,8 +84,8 @@ public class XPathModel extends UnitedServerListener {
 	private String getQueryBaseDir(IServer server) {
 		// JBoss 6 and below have a default basedir of the config location
 		// while as7 has a basedir of the empty string
-//		if( ServerUtil.isJBoss7(server))
-//			return ""; //$NON-NLS-1$
+		if( ServerUtil.isJBoss7(server))
+			return ""; //$NON-NLS-1$
 		return "${jboss_config_dir}"; //$NON-NLS-1$
 	}
 	
