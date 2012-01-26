@@ -147,7 +147,7 @@ public class SingleFileDeployableMockDeploymentTester extends AbstractJSTDeploym
 		assertEquals(IOUtil.countAllResources(moduleDeployRoot.toFile()), 1);
 		ServerRuntimeUtils.publish(server);
 		assertEquals(IOUtil.countFiles(moduleDeployRoot.toFile()), 3);
-		assertEquals(IOUtil.countAllResources(moduleDeployRoot.toFile()), 4);
+		assertEquals(IOUtil.countAllResources(moduleDeployRoot.toFile()), 5);
 		File folder2 = moduleDeployRoot.toFile().listFiles()[0];
 		assertTrue(folder2.getName().equals(folderName));
 		File[] folderChildren = folder2.listFiles();
@@ -158,7 +158,7 @@ public class SingleFileDeployableMockDeploymentTester extends AbstractJSTDeploym
 		IOUtil.setContents(folder.getFile("3.txt"), "3a");
 		ServerRuntimeUtils.publish(server);
 		assertEquals(IOUtil.countFiles(moduleDeployRoot.toFile()), 3);
-		assertEquals(IOUtil.countAllResources(moduleDeployRoot.toFile()), 4);
+		assertEquals(IOUtil.countAllResources(moduleDeployRoot.toFile()), 5);
 		folder2 = moduleDeployRoot.toFile().listFiles()[0];
 		assertTrue(folder2.getName().equals(folderName));
 		folderChildren = folder2.listFiles();
