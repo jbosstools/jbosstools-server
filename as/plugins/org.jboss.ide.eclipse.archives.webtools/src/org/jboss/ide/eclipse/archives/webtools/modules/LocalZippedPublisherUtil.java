@@ -301,11 +301,11 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 			dKind = deltas[i].getKind();
 			resource = deltas[i].getModuleResource();
 			if( dKind == IModuleResourceDelta.ADDED ) {
-				if( filter != null && filter.shouldInclude(resource)) {
+				if( filter == null || filter.shouldInclude(resource)) {
 					results.addAll(Arrays.asList(copy(root, new IModuleResource[]{resource})));
 				}
 			} else if( dKind == IModuleResourceDelta.CHANGED ) {
-				if( filter != null && filter.shouldInclude(resource)) {
+				if( filter == null || filter.shouldInclude(resource)) {
 					if( resource instanceof IModuleFile ) 
 						results.addAll(Arrays.asList(copy(root, new IModuleResource[]{resource})));
 					results.addAll(Arrays.asList(publishChanges(server, deltas[i].getAffectedChildren(), root, filter)));
