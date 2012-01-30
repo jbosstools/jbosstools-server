@@ -650,7 +650,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	}
 	
 	protected String getVersionString(File loc) {
-		String version = new ServerBeanLoader().getFullServerVersion(loc);
+		String version = new ServerBeanLoader(loc).getFullServerVersion();
 		return version;
 	}
 	
@@ -659,7 +659,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	}
 	
 	protected String getHomeVersionWarning() {
-		File loc = new File(homeDir, getSystemJarPath() );
+		File loc = new File(homeDir);
 		String version = getVersionString(loc);
 		IRuntime rt = (IRuntime) getTaskModel().getObject(
 				TaskModel.TASK_RUNTIME);

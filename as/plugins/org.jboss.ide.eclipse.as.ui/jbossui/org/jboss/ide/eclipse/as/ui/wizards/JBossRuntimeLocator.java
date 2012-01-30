@@ -52,17 +52,16 @@ public class JBossRuntimeLocator extends RuntimeLocatorDelegate {
 	@Override
 	public void searchForRuntimes(IPath path, IRuntimeSearchListener listener,
 			IProgressMonitor monitor) {
-		ServerBeanLoader loader = new ServerBeanLoader();
-		IRuntimeWorkingCopy wc = searchForRuntimes(path, loader, monitor);
+		IRuntimeWorkingCopy wc = searchForRuntimes(path, monitor);
 		if( wc != null )
 			listener.runtimeFound(wc);
 	}
 	
-	public IRuntimeWorkingCopy searchForRuntimes(IPath path, ServerBeanLoader loader, IProgressMonitor monitor) {
+	public IRuntimeWorkingCopy searchForRuntimes(IPath path, IProgressMonitor monitor) {
 		if( monitor.isCanceled())
 			return null;
-		
-		if( loader.getServerType(path.toFile()) != JBossServerType.UNKNOWN) {
+		ServerBeanLoader loader = new ServerBeanLoader(path.toFile());
+		if( loader.getServerType() != JBossServerType.UNKNOWN) {
 			// return found
 			IRuntimeWorkingCopy wc = createRuntime(path, loader);
 			if( wc == null )
@@ -76,7 +75,7 @@ public class JBossRuntimeLocator extends RuntimeLocatorDelegate {
 			for( int i = 0; i < children.length; i++ ) {
 				if( children[i].isDirectory()) {
 					SubProgressMonitor newMon = new SubProgressMonitor(monitor, 1);
-					IRuntimeWorkingCopy wc = searchForRuntimes(path.append(children[i].getName()), loader, newMon);
+					IRuntimeWorkingCopy wc = searchForRuntimes(path.append(children[i].getName()), newMon);
 					if( wc != null ) {
 						monitor.done();
 						return wc;
@@ -91,11 +90,11 @@ public class JBossRuntimeLocator extends RuntimeLocatorDelegate {
 	}	
 
 	public static IRuntimeWorkingCopy createRuntime(IPath path) {
-		return createRuntime(path, new ServerBeanLoader());
+		return createRuntime(path, new ServerBeanLoader(path.toFile()));
 	}
 
 	public static IRuntimeWorkingCopy createRuntime(IPath path, ServerBeanLoader loader) {
-		JBossServerType type = loader.getServerType(path.toFile());
+		JBossServerType type = loader.getServerType();
 		if( type == JBossServerType.AS)
 			return createASRuntime(path, loader);
 		if( type == JBossServerType.AS7)
@@ -110,7 +109,7 @@ public class JBossRuntimeLocator extends RuntimeLocatorDelegate {
 	}
 	
 	private static IRuntimeWorkingCopy createAS7Runtime(IPath path, ServerBeanLoader loader) {
-		String version = new ServerBeanLoader().getFullServerVersion(new File(path.toFile(), JBossServerType.AS7.getSystemJarPath()));
+		String version = loader.getFullServerVersion();
 		String runtimeTypeId;
 		if( version.startsWith(IJBossToolingConstants.V7_0))
 			runtimeTypeId = IJBossToolingConstants.AS_70;
@@ -136,7 +135,7 @@ public class JBossRuntimeLocator extends RuntimeLocatorDelegate {
 	}
 
 	private static IRuntimeWorkingCopy createASRuntime(IPath path, ServerBeanLoader loader) {
-		String version = new ServerBeanLoader().getFullServerVersion(new File(path.toFile(), JBossServerType.AS.getSystemJarPath()));
+		String version = loader.getFullServerVersion();
 		String runtimeTypeId = null;
 		if( version.compareTo("4.0") < 0 ) //$NON-NLS-1$
 			runtimeTypeId=IJBossToolingConstants.AS_32;
@@ -160,7 +159,7 @@ public class JBossRuntimeLocator extends RuntimeLocatorDelegate {
 		return null;
 	}
 	private static IRuntimeWorkingCopy createEAPRuntime(IPath path, ServerBeanLoader loader) {
-		String version = new ServerBeanLoader().getFullServerVersion(new File(path.toFile(), JBossServerType.EAP.getSystemJarPath()));
+		String version = loader.getFullServerVersion();
 		String runtimeTypeId = null;
 		if( version.compareTo("5.0") < 0 ) //$NON-NLS-1$
 			runtimeTypeId=IJBossToolingConstants.EAP_43;

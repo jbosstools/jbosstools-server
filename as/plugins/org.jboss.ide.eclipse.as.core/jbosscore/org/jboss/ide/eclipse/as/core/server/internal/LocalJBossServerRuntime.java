@@ -14,8 +14,10 @@ import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.DEFAULT_
 import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.DEFAULT_MEM_ARGS_AS50;
 import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.ENDORSED_DIRS;
 import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.EQ;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.FILE_COLON;
 import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.JAVA_LIB_PATH;
 import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.JAVA_PREFER_IP4_ARG;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.LOGGING_CONFIG_PROP;
 import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.PROGRAM_NAME_ARG;
 import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.QUOTE;
 import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.SERVER_ARG;
@@ -27,13 +29,10 @@ import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.SYSPROP;
 import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.BIN;
 import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.ENDORSED;
 import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.LIB;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.LOGGING_PROPERTIES;
 import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.NATIVE;
 import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.SERVER;
-import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.LOGGING_PROPERTIES;
-import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.FILE_COLON;
-import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.LOGGING_CONFIG_PROP;
 
-import java.io.File;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.IPath;
@@ -43,16 +42,13 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 
 public class LocalJBossServerRuntime extends AbstractLocalJBossServerRuntime implements IJBossServerRuntime {
 
@@ -124,8 +120,7 @@ public class LocalJBossServerRuntime extends AbstractLocalJBossServerRuntime imp
 	
 	@Override
 	public String getDefaultRunVMArgs(IPath serverHome) {
-		File sysJar = new File(serverHome.toFile(), JBossServerType.AS.getSystemJarPath());
-		String version = new ServerBeanLoader().getFullServerVersion(sysJar);
+		String version = new ServerBeanLoader(serverHome.toFile()).getFullServerVersion();
 
 		String name = getRuntime().getName();
 		String ret = QUOTE + SYSPROP + PROGRAM_NAME_ARG + EQ +  

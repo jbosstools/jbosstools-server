@@ -1,7 +1,5 @@
 package org.jboss.ide.eclipse.as.test.server;
 
-import java.io.File;
-
 import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.IPath;
@@ -40,28 +38,43 @@ public class ServerBeanLoaderTest extends TestCase {
 		serverBeanLoaderTestAS6AndBelow("serverEAP5/jbossas", IJBossToolingConstants.SERVER_EAP_50, JBossServerType.EAP_STD,IJBossToolingConstants.V5_0);
 	}
 	public void testEAP60() {
-			serverBeanLoaderTestAS7Style("serverEap6", IJBossToolingConstants.SERVER_EAP_60, JBossServerType.EAP6,IJBossToolingConstants.V6_0);
+			serverBeanLoaderTestEAP6Style("serverEap6", IJBossToolingConstants.SERVER_EAP_60, JBossServerType.EAP6,IJBossToolingConstants.V6_0);
 	}
 	
 	private void serverBeanLoaderTestAS6AndBelow(String name, String serverTypeId, 
 			JBossServerType expected, String actualVersionPrefix) {
 		IPath serverDir = ServerRuntimeUtils.createAS6AndBelowMockServerDirectory(
 				name, ServerRuntimeUtils.asSystemJar.get(serverTypeId), "default");
-		ServerBeanLoader loader = new ServerBeanLoader();
-		JBossServerType type = loader.getServerType(serverDir.toFile());
+		ServerBeanLoader loader = new ServerBeanLoader(serverDir.toFile());
+		JBossServerType type = loader.getServerType();
 		assertTrue(type.equals(expected));
-		String fullVersion = loader.getFullServerVersion(new File(serverDir.toFile(), type.getSystemJarPath()));
+		String fullVersion = loader.getFullServerVersion();
 		assertTrue(fullVersion.startsWith(actualVersionPrefix));
+		assertEquals(loader.getServerAdapterId(), serverTypeId);
 	}
 
 	private void serverBeanLoaderTestAS7Style(String name, String serverTypeId, 
 			JBossServerType expected, String actualVersionPrefix) {
 		IPath serverDir = ServerRuntimeUtils.createAS7StyleMockServerDirectory(
 				name, serverTypeId, ServerRuntimeUtils.asSystemJar.get(serverTypeId));
-		ServerBeanLoader loader = new ServerBeanLoader();
-		JBossServerType type = loader.getServerType(serverDir.toFile());
+		ServerBeanLoader loader = new ServerBeanLoader(serverDir.toFile());
+		JBossServerType type = loader.getServerType();
 		assertTrue(type.equals(expected));
-		String fullVersion = loader.getFullServerVersion(new File(serverDir.toFile(), type.getSystemJarPath()));
+		String fullVersion = loader.getFullServerVersion();
 		assertTrue(fullVersion.startsWith(actualVersionPrefix));
+		assertEquals(loader.getServerAdapterId(), serverTypeId);
 	}
+	
+	private void serverBeanLoaderTestEAP6Style(String name, String serverTypeId, 
+			JBossServerType expected, String actualVersionPrefix) {
+		IPath serverDir = ServerRuntimeUtils.createEAP6StyleMockServerDirectory(
+				name, serverTypeId, ServerRuntimeUtils.asSystemJar.get(serverTypeId));
+		ServerBeanLoader loader = new ServerBeanLoader(serverDir.toFile());
+		JBossServerType type = loader.getServerType();
+		assertTrue(type.equals(expected));
+		String fullVersion = loader.getFullServerVersion();
+		assertTrue(fullVersion.startsWith(actualVersionPrefix));
+		assertEquals(loader.getServerAdapterId(), serverTypeId);
+	}
+
 }

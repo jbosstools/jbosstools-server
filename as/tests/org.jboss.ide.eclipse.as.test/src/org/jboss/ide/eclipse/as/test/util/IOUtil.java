@@ -18,6 +18,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -28,6 +29,25 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.jboss.tools.test.util.JobUtils;
 
 public class IOUtil {
+	
+	public static void setContents(File file, String contents) throws IOException, CoreException {
+		byte[] buffer = new byte[65536];
+		InputStream in = new ByteArrayInputStream(contents.getBytes());
+		OutputStream out = null;
+		try {
+			out = new BufferedOutputStream(new FileOutputStream(file));
+			int avail = in.read(buffer);
+			while (avail > 0) {
+				out.write(buffer, 0, avail);
+				avail = in.read(buffer);
+			}
+		} finally {
+			if (out != null) {
+				out.close();
+			}
+		}
+	}
+	
 	public static String getContents(IFile file) throws IOException, CoreException  {
 		return getContents(file.getLocation().toFile());
 	}

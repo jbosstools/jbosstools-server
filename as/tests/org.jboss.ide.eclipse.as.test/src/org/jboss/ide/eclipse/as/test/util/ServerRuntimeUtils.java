@@ -275,6 +275,27 @@ public class ServerRuntimeUtils extends TestCase {
 		return loc;
 	}
 
+	public static IPath createEAP6StyleMockServerDirectory(String name, String serverTypeId, String serverJar) {
+		IPath loc = mockedServers.append(name);
+		try {
+			loc.toFile().mkdirs();
+			IPath productConf = loc.append("bin/product.conf");
+			loc.append("bin").toFile().mkdirs();
+			IOUtil.setContents(productConf.toFile(), "slot=eap");
+			loc.append("modules/org/jboss/as/product/eap/dir/META-INF").toFile().mkdirs();
+			IPath manifest = loc.append("modules/org/jboss/as/product/eap/dir/META-INF/MANIFEST.MF");
+			String manString = "JBoss-Product-Release-Name: EAP\nJBoss-Product-Release-Version: 6.0.0.Alpha\nJBoss-Product-Console-Slot: eap";
+			IOUtil.setContents(manifest.toFile(), manString);
+		} catch(CoreException ce) {
+			FileUtil.completeDelete(loc.toFile());
+			return null;
+		} catch(IOException ioe) {
+			FileUtil.completeDelete(loc.toFile());
+			return null;
+		}
+		return loc;
+	}
+
 	
 	// Find a file in our bundle
 	protected static File getFileLocation(String path) throws CoreException {

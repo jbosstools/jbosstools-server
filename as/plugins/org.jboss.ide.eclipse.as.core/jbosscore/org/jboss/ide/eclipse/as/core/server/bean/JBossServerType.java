@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2007 Red Hat, Inc. 
+ * Copyright (c) 2012 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -11,11 +11,14 @@
 package org.jboss.ide.eclipse.as.core.server.bean;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
@@ -156,6 +159,16 @@ public class JBossServerType implements IJBossToolingConstants {
 		return this.condition.isServerRoot(location);
 	}
 	
+	public String getFullVersion(File root) {
+		if( this.condition == null )
+			return null;
+		return this.condition.getFullVersion(root, new File(root, getSystemJarPath()));
+	}
+	
+	public String getServerAdapterTypeId(String version) {
+		return this.condition.getServerTypeId(version);
+	}
+	
 	private static final String IMPLEMENTATION_TITLE = "Implementation-Title"; //$NON-NLS-1$
 	private static final String JBEAP_RELEASE_VERSION = "JBossEAP-Release-Version"; //$NON-NLS-1$
 	private static final String JBAS7_RELEASE_VERSION = "JBossAS-Release-Version"; //$NON-NLS-1$
@@ -200,24 +213,102 @@ public class JBossServerType implements IJBossToolingConstants {
 	public static final JBossServerType[] KNOWN_TYPES = {AS, EAP, SOAP, SOAP_STD, EWP, EPP};
 
 	static interface Condition {
+		/**
+		 * Is this location the root of an installation?
+		 * @param location
+		 * @return
+		 */
 		public boolean isServerRoot(File location);
+		
+		/**
+		 * Get the full version of this server. Provide the system jar / reference file 
+		 * as a hint. 
+		 * 
+		 * @param serverRoot
+		 * @param systemFile
+		 * @return
+		 */
+		public String getFullVersion(File serverRoot, File systemFile);
+		
+		/**
+		 * Get the ServerType id associated with this installation
+		 * 
+		 * @param serverRoot
+		 * @param systemFile
+		 * @return
+		 */
+		public String getServerTypeId(String version);
+
 	}
 	
+	public static abstract class AbstractCondition implements Condition {
+		public String getFullVersion(File location, File systemFile) {
+			return ServerBeanLoader.getFullServerVersionFromZip(systemFile);
+		}
+	}
+
+	public static abstract class AbstractEAPTypeCondition extends AbstractCondition {
+		public String getServerTypeId(String version) {
+			// V4_2,V4_3,V5_0,V5_1
+			if( V4_2.equals(version)) return IJBossToolingConstants.SERVER_EAP_43;
+			if( V4_3.equals(version)) return IJBossToolingConstants.SERVER_EAP_43;
+			if( V5_0.equals(version)) return IJBossToolingConstants.SERVER_EAP_50;
+			if( V5_1.equals(version)) return IJBossToolingConstants.SERVER_EAP_50;
+			if( V6_0.equals(version)) return IJBossToolingConstants.SERVER_EAP_60;
+			return null;
+		}
+	}
 	
-	public static class EAPServerTypeCondition implements Condition {
+	public static class EAPServerTypeCondition extends AbstractEAPTypeCondition {
 		public boolean isServerRoot(File location) {
 			File asSystemJar = new File(location, JBossServerType.EAP.getSystemJarPath());
 			return asSystemJar.exists() && asSystemJar.isFile();
 		}
 	}
 	
-	public static class EAP6ServerTypeCondition implements Condition {
+	public static class EAP6ServerTypeCondition extends AbstractEAPTypeCondition {
 		public boolean isServerRoot(File location) {
-			return checkAS7EAP6Version(location, JBEAP_RELEASE_VERSION, "6."); //$NON-NLS-1$
+			return getEAP6Version(location, "6.") != null; //$NON-NLS-1$
+		}
+		public String getFullVersion(File location, File systemJarFile) {
+			return getEAP6Version(location, "6."); //$NON-NLS-1$
 		}
 	}
+	
+	/**
+	 * Get the eap6-style version string, or null if not found
+	 * @param location
+	 * @param versionPrefix
+	 * @return
+	 */
+	protected static String getEAP6Version(File location,  String versionPrefix) {
+		IPath rootPath = new Path(location.getAbsolutePath());
+		IPath productConf = rootPath.append("bin/product.conf"); //$NON-NLS-1$
+		if( productConf.toFile().exists()) {
+			try {
+				Properties p = new Properties();
+				p.load(new FileInputStream(productConf.toFile()));
+				String product = (String) p.get("slot"); //$NON-NLS-1$
+				if("eap".equals(product)) { //$NON-NLS-1$
+					IPath eapDir = rootPath.append("modules/org/jboss/as/product/eap/dir/META-INF"); //$NON-NLS-1$
+					if( eapDir.toFile().exists()) {
+						IPath manifest = eapDir.append("MANIFEST.MF"); //$NON-NLS-1$
+						Properties p2 = new Properties();
+						p2.load(new FileInputStream(manifest.toFile()));
+						String type = p2.getProperty("JBoss-Product-Release-Name"); //$NON-NLS-1$
+						String version = p2.getProperty("JBoss-Product-Release-Version"); //$NON-NLS-1$
+						if( "EAP".equals(type) && version.startsWith(versionPrefix)) //$NON-NLS-1$
+							return version;
+					}
+				}
+			} catch(IOException ioe) {
+				
+			}
+		}
+		return null;
+	}
 
-	public static class EAPStandaloneServerTypeCondition implements Condition {
+	public static class EAPStandaloneServerTypeCondition extends AbstractEAPTypeCondition {
 		public boolean isServerRoot(File location) {
 			File asSystemJar = new File(location, JBossServerType.EAP_STD.getSystemJarPath());
 			if (asSystemJar.exists() && asSystemJar.isFile()) {
@@ -227,8 +318,7 @@ public class JBossServerType implements IJBossToolingConstants {
 		}
 	}
 	
-	public static class ASServerTypeCondition implements Condition {
-		
+	public static class ASServerTypeCondition extends AbstractCondition {
 		public boolean isServerRoot(File location) {
 			File asSystemJar = new File(location, JBossServerType.AS.getSystemJarPath());
 			if (asSystemJar.exists() && asSystemJar.isFile()) {
@@ -236,25 +326,36 @@ public class JBossServerType implements IJBossToolingConstants {
 			}
 			return false;
 		}
-	}
-	
-	public static class AS7ServerTypeCondition implements Condition {
-		public boolean isServerRoot(File location) {
-			return checkAS7EAP6Version(location, JBAS7_RELEASE_VERSION, "7."); //$NON-NLS-1$
+
+		@Override
+		public String getServerTypeId(String version) {
+			// V6_0, V6_1, V5_1, V5_0, V4_2, V4_0, V3_2
+			if( version.equals(V3_2)) return IJBossToolingConstants.SERVER_AS_32;
+			if( version.equals(V4_0)) return IJBossToolingConstants.SERVER_AS_40;
+			if( version.equals(V4_2)) return IJBossToolingConstants.SERVER_AS_42;
+			if( version.equals(V5_0)) return IJBossToolingConstants.SERVER_AS_50;
+			if( version.equals(V5_1)) return IJBossToolingConstants.SERVER_AS_51;
+			if( version.equals(V6_0)) return IJBossToolingConstants.SERVER_AS_60;
+			if( version.equals(V6_1)) return IJBossToolingConstants.SERVER_AS_60;
+			return null;
 		}
 	}
 	
-	protected static boolean checkAS7EAP6Version(File location, String property, String propPrefix) {
-		String mainFolder = new StringBuilder(location.getAbsolutePath())
-		.append(File.separator)
-		.append("modules").append(File.separator) //$NON-NLS-1$
-		.append("org").append(File.separator) //$NON-NLS-1$
-		.append("jboss").append(File.separator) //$NON-NLS-1$
-		.append("as").append(File.separator) //$NON-NLS-1$
-		.append("server").append(File.separator) //$NON-NLS-1$
-		.append("main").append(File.separator) //$NON-NLS-1$
-		.toString();
-		File f = new File(mainFolder);
+	public static class AS7ServerTypeCondition extends AbstractCondition {
+		public boolean isServerRoot(File location) {
+			return checkAS7Version(location, JBAS7_RELEASE_VERSION, "7."); //$NON-NLS-1$
+		}
+
+		public String getServerTypeId(String version) {
+			if( version.equals(V7_0)) return IJBossToolingConstants.SERVER_AS_70;
+			if( version.equals(V7_1)) return IJBossToolingConstants.SERVER_AS_71;
+			return null;
+		}
+	}
+	
+	protected static boolean checkAS7Version(File location, String property, String propPrefix) {
+		String mainFolder = JBossServerType.AS7.jbossSystemJarPath;
+		File f = new File(location, mainFolder);
 		if( f.exists() ) {
 			File[] children = f.listFiles();
 			for( int i = 0; i < children.length; i++ ) {
@@ -275,9 +376,21 @@ public class JBossServerType implements IJBossToolingConstants {
 			File jbpmFolder = new File(location, SOAP_JBPM_JPDL_PATH);
 			return super.isServerRoot(location) && jbpmFolder.exists() && jbpmFolder.isDirectory();
 		}
+		
+		public String getFullVersion(File location, File systemFile) {
+			String fullVersion = ServerBeanLoader.getFullServerVersionFromZip(location);
+			if (fullVersion != null && fullVersion.startsWith("5.1.1")) { //$NON-NLS-1$
+				// SOA-P 5.2
+				String runJar = JBossServerType.JBOSS_AS_PATH + File.separatorChar + 
+						JBossServerType.BIN_PATH+ File.separatorChar + JBossServerType.RUN_JAR_NAME;
+				fullVersion = ServerBeanLoader.getFullServerVersionFromZip(new File(location, runJar));
+			}
+			return fullVersion;
+		}
+
 	}
 
-	public static class SOAPStandaloneServerTypeCondition implements Condition {
+	public static class SOAPStandaloneServerTypeCondition extends EAPServerTypeCondition {
 		
 		public boolean isServerRoot(File location) {
 			File jbpmFolder = new File(location, SOAP_JBPM_JPDL_PATH);
@@ -289,15 +402,18 @@ public class JBossServerType implements IJBossToolingConstants {
 		}
 	}
 	
-	public static class EWPTypeCondition implements Condition {
+	public static class EWPTypeCondition extends EAPServerTypeCondition {
 		public boolean isServerRoot(File location) {
 			File ewpSystemJar = new File(location,JBossServerType.EWP.getSystemJarPath());
 			return ewpSystemJar.exists() && ewpSystemJar.isFile();
 		}
 	}
 	
-	public static class EPPTypeCondition implements Condition {
+	public static class EPPTypeCondition extends EAPServerTypeCondition {
 		public boolean isServerRoot(File location) {
+			if( !super.isServerRoot(location))
+				return false;
+			
 			File portletBridgeFolder = new File(location, JBOSS_PORTLETBRIDGE_PATH);
 			IJBossRuntimeResourceConstants CONSTANTS = new IJBossRuntimeResourceConstants(){}; 
 			File portlalSarFolder = new File(location, JBOSS_AS_PATH + File.separatorChar + CONSTANTS.SERVER + File.separatorChar + CONSTANTS.DEFAULT_CONFIGURATION + File.separatorChar + CONSTANTS.DEPLOY + File.separatorChar + JBOSS_PORTAL_SAR );			

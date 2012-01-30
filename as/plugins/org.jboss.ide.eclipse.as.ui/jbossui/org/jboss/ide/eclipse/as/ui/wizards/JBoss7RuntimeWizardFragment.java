@@ -36,8 +36,8 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.TaskModel;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
+import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
@@ -214,8 +214,7 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 		}
 		
 		// Forced error strings for as7.0 and 7.1 incompatabilities. 
-		File loc = new File(homeDir, getSystemJarPath() );
-		String version = getVersionString(loc);
+		String version = getVersionString(new File(homeDir));
 		IRuntime rt = (IRuntime) getTaskModel().getObject(
 				TaskModel.TASK_RUNTIME);
 		String adapterVersion = rt.getRuntimeType().getVersion();
@@ -238,6 +237,8 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	}
 
 	private boolean standaloneScriptExists() {
+		ServerBeanLoader loader = new ServerBeanLoader(new File(homeDir));
+		String version = loader.getFullServerVersion();
 		String s = JBossServerType.AS7.getSystemJarPath();
 		IPath p = new Path(homeDir).append(s);
 		return p.toFile().exists();

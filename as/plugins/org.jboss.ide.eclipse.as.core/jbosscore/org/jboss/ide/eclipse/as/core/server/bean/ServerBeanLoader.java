@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2007 Red Hat, Inc. 
+ * Copyright (c) 2012 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -24,53 +24,68 @@ import java.util.zip.ZipFile;
  */
 public class ServerBeanLoader {
 	
-	public static final String SOAP_JBPM_JPDL_PATH = "jbpm-jpdl";//$NON-NLS-1$
+	private static JBossServerType[] typesInOrder = {
+		JBossServerType.AS, JBossServerType.EAP6, JBossServerType.AS7, JBossServerType.EAP_STD, 
+		JBossServerType.SOAP, JBossServerType.SOAP_STD, JBossServerType.EPP, JBossServerType.EAP, 
+		JBossServerType.EWP
+	};
 
-	public ServerBean loadFromLocation(File location) {
-		JBossServerType type = getServerType(location);
-		String version = null;
-		if (!JBossServerType.UNKNOWN.equals(type)) {
-			String fullVersion = getFullServerVersion(new File(location,type.getSystemJarPath()));
-			if (fullVersion != null && fullVersion.startsWith("5.1.1") && JBossServerType.SOAP.equals(type)) { //$NON-NLS-1$
-				// SOA-P 5.2
-				String runJar = JBossServerType.JBOSS_AS_PATH + File.separatorChar + 
-						JBossServerType.BIN_PATH+ File.separatorChar + JBossServerType.RUN_JAR_NAME;
-				fullVersion = getFullServerVersion(new File(location, runJar));
-			}
-			version = getServerVersion(fullVersion);
-		} 
-		ServerBean server = new ServerBean(location.getPath(),getName(location),type,version);
-		return server;
+	private ServerBean bean = null;
+	private File rootLocation = null;
+
+	public ServerBeanLoader(File location) {
+		rootLocation = location;
 	}
 	
-	public JBossServerType getServerType(File location) {
-		if(JBossServerType.AS.isServerRoot(location)) {
-			return JBossServerType.AS;
-		} else if(JBossServerType.EAP6.isServerRoot(location)) {
-			return JBossServerType.EAP6;
-		} else if(JBossServerType.AS7.isServerRoot(location)) {
-			return JBossServerType.AS7; 
-		} else if(JBossServerType.EAP_STD.isServerRoot(location)) {
-				return JBossServerType.EAP_STD;
-		} else if(JBossServerType.EAP.isServerRoot(location) && JBossServerType.SOAP.isServerRoot(location)) {
-			return JBossServerType.SOAP;
-		} else if(JBossServerType.SOAP_STD.isServerRoot(location)) {
-			return JBossServerType.SOAP_STD;
-		} else if(JBossServerType.EAP.isServerRoot(location) && JBossServerType.EPP.isServerRoot(location)) {
-			return JBossServerType.EPP;
-		} else if(JBossServerType.EAP.isServerRoot(location)) {
-			return JBossServerType.EAP;
-		} else if(JBossServerType.EWP.isServerRoot(location)) {
-			return JBossServerType.EWP;
+	public ServerBean getServerBean() {
+		if( bean == null )
+			loadBeanInternal();
+		return bean;
+	}
+
+	public JBossServerType getServerType() {
+		if( bean == null )
+			loadBeanInternal();
+		return bean == null ? JBossServerType.UNKNOWN : bean.getType();
+	}
+	
+	private void loadBeanInternal() {
+		JBossServerType type = loadTypeInternal(rootLocation);
+		String version = null;
+		if (!JBossServerType.UNKNOWN.equals(type)) {
+			String fullVersion = type.getFullVersion(rootLocation);
+			version = getServerVersion(fullVersion);
+		} 
+		ServerBean server = new ServerBean(rootLocation.getPath(),getName(rootLocation),type,version);
+		this.bean = server;
+	}
+	
+	private JBossServerType loadTypeInternal(File location) {
+		for( int i = 0; i < typesInOrder.length; i++ ) {
+			if( typesInOrder[i].isServerRoot(location))
+				return typesInOrder[i];
 		}
 		return JBossServerType.UNKNOWN;
+		
 	}
 	
 	public String getName(File location) {
 		return location.getName();
 	}
 	
-	public String getFullServerVersion(File systemJarFile) {
+	public String getFullServerVersion() {
+		if( bean == null )
+			loadBeanInternal();
+		return bean.getType().getFullVersion(rootLocation);
+	}
+	
+	public String getServerAdapterId() {
+		if( bean == null )
+			loadBeanInternal();
+		return bean.getType().getServerAdapterTypeId(bean.getVersion());
+	}
+	
+	public static String getFullServerVersionFromZip(File systemJarFile) {
 		if (systemJarFile.isDirectory()) {
 			File[] files = systemJarFile.listFiles(new FilenameFilter() {
 				
@@ -111,7 +126,7 @@ public class ServerBeanLoader {
 		return version;
 	}
 	
-	public String getServerVersion(String version) {
+	public static String getServerVersion(String version) {
 		if(version==null) return "";//$NON-NLS-1$
 		String[] versions = JBossServerType.UNKNOWN.getVersions();
 		String adapterVersion = "";//$NON-NLS-1$
@@ -137,7 +152,7 @@ public class ServerBeanLoader {
 		return adapterVersion;
 	}
 	
-	public String getAdapterVersion(String version) {
+	public static String getAdapterVersion(String version) {
 		String[] versions = JBossServerType.UNKNOWN.getVersions();
 		String adapterVersion = "";//$NON-NLS-1$
 		//  trying to match adapter version by X.X version
