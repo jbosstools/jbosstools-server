@@ -74,7 +74,8 @@ public abstract class AbstractLaunchConfigurator implements ILaunchConfigConfigu
 	}
 
 	private boolean areDefaultsSet(ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
-		return launchConfig.hasAttribute(DEFAULTS_SET);
+		boolean b = launchConfig.hasAttribute(DEFAULTS_SET);
+		return b;
 	}
 
 	private boolean shouldUpdateLaunch(ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {

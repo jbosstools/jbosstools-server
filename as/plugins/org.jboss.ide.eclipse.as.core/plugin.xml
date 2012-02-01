@@ -363,7 +363,7 @@
 
       <runtimeType
              vendor="%providerName"
-             class="org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime"
+             class="org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss71ServerRuntime"
              description="%jboss.version.71.description"
              name="%jboss.version.71.runtime.name"
              id="org.jboss.ide.eclipse.as.runtime.71"
