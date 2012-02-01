@@ -33,9 +33,11 @@ public class BehaviourModel {
 		loadModel();
 	}
 	
-	public static IJBossServerPublishMethodType getPublishMethodType(IServer server) {
+	public static IJBossServerPublishMethodType getPublishMethodType(IServer server, String defaultType) {
 		String serverType = server.getServerType().getId();
 		String behaviourType = DeploymentPreferenceLoader.getCurrentDeploymentMethodTypeId(server);
+		if( behaviourType == null )
+			behaviourType = defaultType;
 		return BehaviourModel.getModel().getBehaviour(serverType).getImpl(behaviourType);
 	}
 	
@@ -159,7 +161,14 @@ public class BehaviourModel {
 			return null;
 		}
 		
+		private boolean isEmpty(String s) {
+			return s == null || "".equals(s); //$NON-NLS-1$
+		}
+		
 		public IJBossLaunchDelegate createLaunchDelegate() {
+			if( isEmpty(element.getAttribute("launchDelegate"))) //$NON-NLS-1$
+				return null;
+			
 			try {
 				return (IJBossLaunchDelegate) element.createExecutableExtension("launchDelegate"); //$NON-NLS-1$
 			} catch( CoreException ce ) {
@@ -169,6 +178,9 @@ public class BehaviourModel {
 		}
 		
 		public IJBossBehaviourDelegate createBehaviourDelegate() {
+			if( isEmpty(element.getAttribute("behaviourDelegate"))) //$NON-NLS-1$
+				return null;
+			
 			try {
 				return (IJBossBehaviourDelegate)element.createExecutableExtension("behaviourDelegate"); //$NON-NLS-1$
 			} catch(CoreException ce) {

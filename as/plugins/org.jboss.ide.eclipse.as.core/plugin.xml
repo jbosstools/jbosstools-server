@@ -1125,20 +1125,16 @@
       </variable>
    </extension>
    
-   <!--
-   <extension
-         point="org.jboss.ide.eclipse.as.core.publishMethod">
-      <publishMethod
-      		id="local"
-            name="Local"
-            class="org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod"
-            serverTypes="%AllJBTServerTypes">
-      </publishMethod>
-   </extension>
-   -->
-   
    <extension
          point="org.jboss.ide.eclipse.as.core.behaviourExtension">
+      <behaviour
+            behaviourDelegate=""
+            launchDelegate=""
+            name="Local"
+            publishMethod="org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod"
+            serverTypes="org.jboss.ide.eclipse.as.systemCopyServer"
+            typeId="local">
+      </behaviour>
       <behaviour
             behaviourDelegate="org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate"
             launchDelegate="org.jboss.ide.eclipse.as.core.server.internal.launch.LocalJBossStartLaunchDelegate"
@@ -1147,9 +1143,6 @@
             serverTypes="%ServerTypesJBoss6OrLower"
             typeId="local">
       </behaviour>
-   </extension>
-   <extension
-         point="org.jboss.ide.eclipse.as.core.behaviourExtension">
       <behaviour
             behaviourDelegate="org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7BehaviorDelegate"
             launchDelegate="org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7StartLaunchDelegate"

@@ -33,6 +33,7 @@ import org.jboss.ide.eclipse.as.test.projectcreation.TestEar5WithJBossRuntime;
 import org.jboss.ide.eclipse.as.test.publishing.JBIDE2512aTest;
 import org.jboss.ide.eclipse.as.test.publishing.JBIDE2512bTest;
 import org.jboss.ide.eclipse.as.test.publishing.JBIDE4184Test;
+import org.jboss.ide.eclipse.as.test.publishing.v2.BehaviourModelDefectTest;
 import org.jboss.ide.eclipse.as.test.publishing.v2.JSTDeployBinaryChildModuleTest;
 import org.jboss.ide.eclipse.as.test.publishing.v2.JSTDeploymentTester;
 import org.jboss.ide.eclipse.as.test.publishing.v2.JSTDeploymentWarUpdateXML;
@@ -66,6 +67,7 @@ public class ASTestSuite extends TestSuite {
         suite.addTestSuite(SingleFileDeployableMockDeploymentTester.class);
         
         // Publishing tests
+        suite.addTestSuite(BehaviourModelDefectTest.class);
         suite.addTestSuite(MockJSTPublisherTest.class);
         suite.addTestSuite(MockJSTPublisherTestDynUtil.class);
         suite.addTestSuite(JBIDE1657Test.class);

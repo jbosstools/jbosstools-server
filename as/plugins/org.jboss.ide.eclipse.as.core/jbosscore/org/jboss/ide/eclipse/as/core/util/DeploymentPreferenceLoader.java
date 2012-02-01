@@ -51,7 +51,7 @@ public class DeploymentPreferenceLoader {
 	}
 
 	public static IJBossServerPublishMethodType getCurrentDeploymentMethodType(IServer server, String defaultType) {
-		return BehaviourModel.getPublishMethodType(server);
+		return BehaviourModel.getPublishMethodType(server, defaultType);
 	}
 
 	public static String getCurrentDeploymentMethodTypeId(IServer server) {

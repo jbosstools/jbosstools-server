@@ -227,7 +227,6 @@ public class ExtensionManager {
 		}
 	}
 	
-	
 	public IJBossServerPublisher[] getZippedPublishers() {
 		if( publishers == null ) 
 			loadPublishers();
@@ -241,47 +240,6 @@ public class ExtensionManager {
 		}
 		return list.toArray(new IJBossServerPublisher[list.size()]);
 	}
-	
-
-//	
-//	private ServerPublishMethodType[] publishMethodTypes;
-//	public ServerPublishMethodType[] getPublishMethodTypes() {
-//		if(publishMethodTypes == null ) 
-//			publishMethodTypes = loadPublishMethodTypes();
-//		return publishMethodTypes;
-//	}
-//	
-//	public ServerPublishMethodType[] loadPublishMethodTypes() {
-//		ArrayList<ServerPublishMethodType> types = new ArrayList<ServerPublishMethodType>();
-//		IExtensionRegistry registry = Platform.getExtensionRegistry();
-//		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerCorePlugin.PLUGIN_ID, "publishMethod"); //$NON-NLS-1$
-//		for( int i = 0; i < cf.length; i++ ) {
-//			types.add(new ServerPublishMethodType(cf[i]));
-//		}
-//		return types.toArray(new ServerPublishMethodType[types.size()]);
-//	}
-//	
-//	public IJBossServerPublishMethodType getPublishMethod(String id) {
-//		ServerPublishMethodType[] publishMethods = getPublishMethodTypes();
-//		for( int i = 0; i < publishMethods.length; i++ ) 
-//			if( publishMethods[i].getId().equals(id))
-//				return publishMethods[i];
-//		return null;
-//	}
-//	public IJBossServerPublishMethodType[] findPossiblePublishMethods(IServerType type) {
-//		ArrayList<IJBossServerPublishMethodType> list = new ArrayList<IJBossServerPublishMethodType>();
-//		list.addAll(Arrays.asList(getPublishMethodTypes()));
-//		Iterator<IJBossServerPublishMethodType> i = list.iterator();
-//		while(i.hasNext()) {
-//			if( !i.next().accepts(type.getId()))
-//				i.remove();
-//		}
-//		return list.toArray(new IJBossServerPublishMethodType[list.size()]);
-//	}
-//	
-//	public IJBossServerPublishMethodType[] findPossiblePublishMethods(IServer server) {
-//		return findPossiblePublishMethods(server.getServerType());
-//	}
 	
 	// API extension
 	public static interface IServerJMXRunnable {
@@ -328,40 +286,4 @@ public class ExtensionManager {
 	public void setAlreadyStartedHandler(IServerAlreadyStartedHandler handler) {
 		defaultAlreadyStartedHandler = handler;
 	}
-	
-	
-//	/**
-//	 * Temporary home for start launch setup participants and launch configs
-//	 * Should eventually be replaced by an extension point of some type
-//	 * 
-//	 * TODO Convert this into a suitable fixed API
-//	 */
-//	public static HashMap<String, IStartLaunchDelegate> JBoss7launchDelegates;
-//	public static ArrayList<IStartLaunchSetupParticipant> JBoss7setupParticipants;
-//	public static HashMap<String, IStartLaunchDelegate> JBossLaunchDelegates;
-//	public static ArrayList<IStartLaunchSetupParticipant> JBossSetupParticipants;
-//	static {
-//		JBoss7setupParticipants = new ArrayList<IStartLaunchSetupParticipant>();
-//		JBoss7launchDelegates = new HashMap<String, IStartLaunchDelegate>();
-//		JBoss7setupParticipants.add(new LocalJBoss7StartLaunchDelegate());
-//		JBoss7launchDelegates.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new LocalJBoss7StartLaunchDelegate());
-//
-//		JBossSetupParticipants = new ArrayList<IStartLaunchSetupParticipant>();
-//		JBossLaunchDelegates = new HashMap<String, IStartLaunchDelegate>();
-//		JBossSetupParticipants.add(new LocalJBossStartLaunchDelegate());
-//		JBossLaunchDelegates.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new LocalJBossStartLaunchDelegate());
-//	}
-//	public HashMap<String, IStartLaunchDelegate> getLaunchDelegates(IServer server) {
-//		if( server.getServerType().getId().equals(IJBossToolingConstants.SERVER_AS_70)) {
-//			return JBoss7launchDelegates;
-//		}
-//		return JBossLaunchDelegates;
-//	}
-//	public ArrayList<IStartLaunchSetupParticipant> getSetupParticipants(IServer server) {
-//		if( ServerUtil.isJBoss7(server)) {
-//			return JBoss7setupParticipants;
-//		}
-//		return JBossSetupParticipants;
-//	}
-//	
 }

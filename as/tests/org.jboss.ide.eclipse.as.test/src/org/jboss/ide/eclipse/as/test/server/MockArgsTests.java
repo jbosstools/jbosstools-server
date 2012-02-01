@@ -27,7 +27,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.test.util.ServerRuntimeUtils;
 
-public class MockTests extends TestCase {
+public class MockArgsTests extends TestCase {
 	public void setUp() {
 	}
 	public void tearDown() {
@@ -156,5 +156,8 @@ public class MockTests extends TestCase {
 	}	
 	public void testEap50Mock() {
 		serverTestImpl(IJBossToolingConstants.SERVER_EAP_50);
+	}
+	public void testEap60Mock() {
+		serverTestImpl(IJBossToolingConstants.SERVER_EAP_60);
 	}
 }
