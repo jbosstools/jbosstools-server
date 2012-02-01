@@ -32,6 +32,7 @@ public class ServerCreationUtils {
 		runtimeServerTypeMap.put(IJBossToolingConstants.AS_51, IJBossToolingConstants.SERVER_AS_51);
 		runtimeServerTypeMap.put(IJBossToolingConstants.AS_60, IJBossToolingConstants.SERVER_AS_60);
 		runtimeServerTypeMap.put(IJBossToolingConstants.AS_70, IJBossToolingConstants.SERVER_AS_70);
+		runtimeServerTypeMap.put(IJBossToolingConstants.AS_71, IJBossToolingConstants.SERVER_AS_71);
 		runtimeServerTypeMap.put(IJBossToolingConstants.EAP_43, IJBossToolingConstants.SERVER_EAP_43);
 		runtimeServerTypeMap.put(IJBossToolingConstants.EAP_50, IJBossToolingConstants.SERVER_EAP_50);
 		runtimeServerTypeMap.put(IJBossToolingConstants.EAP_60, IJBossToolingConstants.SERVER_EAP_60);
@@ -41,10 +42,10 @@ public class ServerCreationUtils {
 	
 	public static IServer createDeployOnlyServer(String deployLocation, String tempDeployLocation, 
 			String rtName, String serverName) throws CoreException {
-		IRuntimeType rt = ServerCore.findRuntimeType("org.jboss.ide.eclipse.as.runtime.stripped"); //$NON-NLS-1$
+		IRuntimeType rt = ServerCore.findRuntimeType(IJBossToolingConstants.DEPLOY_ONLY_RUNTIME);
 		IRuntimeWorkingCopy wc = rt.createRuntime(rtName, null);
 		IRuntime runtime = wc.save(true, null);
-		IServerType st = ServerCore.findServerType("org.jboss.ide.eclipse.as.systemCopyServer"); //$NON-NLS-1$
+		IServerType st = ServerCore.findServerType(IJBossToolingConstants.DEPLOY_ONLY_SERVER);
 		ServerWorkingCopy swc = (ServerWorkingCopy) st.createServer(serverName, null, null);
 		swc.setServerConfiguration(null);
 		swc.setName(serverName);

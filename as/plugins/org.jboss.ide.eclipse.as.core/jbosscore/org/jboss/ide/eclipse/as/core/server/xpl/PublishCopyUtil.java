@@ -30,8 +30,8 @@ import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
+import org.jboss.ide.eclipse.as.core.modules.ResourceModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
-import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.publishers.patterns.IModulePathFilter;
 /**
  * Utility class with an assortment of useful file methods.
@@ -253,7 +253,7 @@ public final class PublishCopyUtil {
 	 * @since 2.3
 	 */
 	public IStatus[] initFullPublish(IModuleResource[] resources, IModulePathFilter filter, IProgressMonitor monitor) throws CoreException  {
-		int count = PublishUtil.countMembers(resources);
+		int count = ResourceModuleResourceUtil.countMembers(resources);
 		monitor = ProgressUtil.getMonitorFor(monitor);
 		monitor.beginTask("Publishing " + count + " resources", //$NON-NLS-1$ //$NON-NLS-2$ 
 				(100 * (count)) + 200);

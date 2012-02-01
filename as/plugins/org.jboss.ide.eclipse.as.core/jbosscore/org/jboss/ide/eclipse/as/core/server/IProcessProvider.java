@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2007 Red Hat, Inc. 
+ * Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -8,11 +8,11 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.core.extensions.events;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.wst.server.core.IServer;
+package org.jboss.ide.eclipse.as.core.server;
 
-public interface IServerLogListener {
-	public void logging(IStatus status, IServer server);
+import org.eclipse.debug.core.model.IProcess;
+
+public interface IProcessProvider {
+	public IProcess getProcess();
 }

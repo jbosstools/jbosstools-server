@@ -70,8 +70,8 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
-import org.jboss.ide.eclipse.as.core.extensions.events.IServerLogListener;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
+import org.jboss.ide.eclipse.as.core.server.IServerLogListener;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 
 public class ServerLogView extends ViewPart implements IServerLogListener, ISelectionListener {

@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
-package org.jboss.ide.eclipse.as.core.util.internal;
+package org.jboss.ide.eclipse.as.core.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -41,9 +41,13 @@ import org.xml.sax.InputSource;
 
 /**
  * Stolen from webtools wst.server.core
+ * Moved from org.jboss.ide.eclipse.as.core.util.internal 
+ *    to org.jboss.ide.eclipse.as.core.util
+ *    
+ * May later move to COMMON
  *
  */
-public final class XMLMemento implements IMemento {
+public class XMLMemento implements IMemento {
 	private Document factory;
 	private Element element;
 

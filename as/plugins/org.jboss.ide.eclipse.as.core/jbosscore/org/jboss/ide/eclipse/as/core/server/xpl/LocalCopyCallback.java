@@ -27,9 +27,9 @@ import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
+import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.StreamUtils;
-import org.jboss.ide.eclipse.as.core.util.internal.FileUtils;
 
 public class LocalCopyCallback implements IPublishCopyCallbackHandler {
 
@@ -82,7 +82,7 @@ public class LocalCopyCallback implements IPublishCopyCallbackHandler {
 	 */
 	private IStatus copyFile(InputStream in, String to) {
 		try {
-			FileUtils.writeTo(in, to);
+			FileUtil.writeTo(in, to);
 			return Status.OK_STATUS;
 		} catch (IOException e) {
 			//Trace.trace(Trace.SEVERE, "Error copying file", e);
@@ -130,7 +130,7 @@ public class LocalCopyCallback implements IPublishCopyCallbackHandler {
 	private File writeToTempFile(InputStream in, IPath filePath) throws IOException {			
 		// Change from original PublishUtil, will require 
 		File tempFile = File.createTempFile(TEMPFILE_PREFIX, "." + filePath.getFileExtension(), getTempFolder()); //$NON-NLS-1$
-		FileUtils.writeTo(in, tempFile);				
+		FileUtil.writeTo(in, tempFile);				
 		return tempFile;
 	}
 	

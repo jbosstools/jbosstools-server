@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.core.server.internal;
+package org.jboss.ide.eclipse.as.core.server;
 
 public interface IPollResultListener {
 

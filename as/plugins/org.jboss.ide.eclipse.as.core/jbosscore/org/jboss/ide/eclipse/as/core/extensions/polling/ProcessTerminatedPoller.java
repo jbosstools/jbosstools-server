@@ -15,9 +15,9 @@ import java.util.Properties;
 
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.server.IProcessProvider;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.internal.IProcessProvider;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 
 /**

@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.server.IServerLogListener;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.osgi.service.prefs.BackingStoreException;
 

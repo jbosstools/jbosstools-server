@@ -36,9 +36,9 @@ import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.IMemento;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
-import org.jboss.ide.eclipse.as.core.util.internal.IMemento;
-import org.jboss.ide.eclipse.as.core.util.internal.XMLMemento;
+import org.jboss.ide.eclipse.as.core.util.XMLMemento;
 
 /**
  * The class representing the model for all xpath storage and searching

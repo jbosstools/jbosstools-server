@@ -28,7 +28,7 @@ import org.jaxen.SimpleNamespaceContext;
 import org.jaxen.XPath;
 import org.jaxen.dom4j.Dom4jXPath;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
-import org.jboss.ide.eclipse.as.core.util.internal.IMemento;
+import org.jboss.ide.eclipse.as.core.util.IMemento;
 
 /**
  * A simple value object to hold the XPath query data

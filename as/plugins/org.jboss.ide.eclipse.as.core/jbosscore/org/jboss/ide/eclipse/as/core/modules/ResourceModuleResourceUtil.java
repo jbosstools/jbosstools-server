@@ -125,6 +125,29 @@ public class ResourceModuleResourceUtil {
 		return newResources;
 	}
 	
+	public static int countMembers(IModule module) {
+		try {
+			ModuleDelegate delegate = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, new NullProgressMonitor());
+			return delegate == null ? 0 : countMembers(delegate.members());
+		} catch( CoreException ce ) {}
+		return 0;
+	}
+	
+	public static int countMembers(IModuleResource[] resources) {
+		int count = 0;
+		if( resources == null ) return 0;
+		for( int i = 0; i < resources.length; i++ ) {
+			if( resources[i] instanceof IModuleFile ) {
+				count++;
+			} else if( resources[i] instanceof IModuleFolder ) {
+				count += countMembers(((IModuleFolder)resources[i]).members());
+			}
+		}
+		return count;
+	}
+
+
+	
 	/**
 	 * Utility method for just quickly discovering the filtered member list
 	 * @since 2.3

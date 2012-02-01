@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
-package org.jboss.ide.eclipse.as.core.util.internal;
+package org.jboss.ide.eclipse.as.core.util;
 
 import java.util.List;
 
@@ -13,6 +13,11 @@ import java.util.List;
  * Stolen from webtools wst.server.core,
  * represents a savable memento to be
  * translated into xml
+ * 
+ * Moved from org.jboss.ide.eclipse.as.core.util.internal 
+ *    to org.jboss.ide.eclipse.as.core.util
+ *    
+ * May later move to COMMON
  *
  */
 public interface IMemento {
