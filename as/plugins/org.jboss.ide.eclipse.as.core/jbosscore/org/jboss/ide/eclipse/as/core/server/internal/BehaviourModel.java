@@ -12,9 +12,9 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IJBossBehaviourDelegate;
+import org.jboss.ide.eclipse.as.core.server.IJBossLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.IJBossLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 
 public class BehaviourModel {

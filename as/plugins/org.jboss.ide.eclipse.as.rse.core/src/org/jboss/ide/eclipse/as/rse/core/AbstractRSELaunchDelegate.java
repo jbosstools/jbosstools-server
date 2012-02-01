@@ -23,10 +23,10 @@ import org.eclipse.rse.services.shells.IHostOutput;
 import org.eclipse.rse.services.shells.IHostShell;
 import org.eclipse.rse.services.shells.IHostShellChangeEvent;
 import org.eclipse.rse.services.shells.IHostShellOutputListener;
+import org.jboss.ide.eclipse.as.core.server.IJBossLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.AbstractJBossStartLaunchConfiguration;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.IJBossLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.util.ThreadUtils;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 
