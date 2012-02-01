@@ -17,7 +17,7 @@ import java.util.HashMap;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
-import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
+import org.jboss.ide.eclipse.as.core.server.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;

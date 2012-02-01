@@ -22,7 +22,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractPublishMethod;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
-import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
+import org.jboss.ide.eclipse.as.core.server.IPublishCopyCallbackHandler;
 
 public class MockPublishMethod extends AbstractPublishMethod {
 

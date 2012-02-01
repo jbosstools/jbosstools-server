@@ -12,7 +12,7 @@ package org.jboss.ide.eclipse.as.rse.core;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.ILaunchConfigConfigurator;
+import org.jboss.ide.eclipse.as.core.server.ILaunchConfigConfigurator;
 
 /**
  * @author André Dietisheim
