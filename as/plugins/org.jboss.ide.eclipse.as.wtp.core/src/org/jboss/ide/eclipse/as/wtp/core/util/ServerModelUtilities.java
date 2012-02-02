@@ -13,11 +13,14 @@ package org.jboss.ide.eclipse.as.wtp.core.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jst.server.core.IEnterpriseApplication;
 import org.eclipse.jst.server.core.IJ2EEModule;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.ServerCore;
+import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
 
 public class ServerModelUtilities {
@@ -109,4 +112,32 @@ public class ServerModelUtilities {
 		return deleted;
 	}
 
+	
+	public static IServer[] findServersFor(IProject p, IServerFilter filter) {
+		ArrayList<IServer> match = new ArrayList<IServer>();
+		IServer[] allServers = ServerCore.getServers();
+		IModule[] mods = ServerUtil.getModules(p);
+		for( int i = 0; i < allServers.length; i++ ) {
+			if( filter == null || filter.accepts(allServers[i])) {
+				IModule[] serversMods = allServers[i].getModules();
+				for( int j = 0; j < mods.length; j++ ) {
+					if( !isBinaryModule(mods[j]) && moduleListContainsMod(serversMods, mods[j])) {
+						if( !match.contains(allServers[i])) {
+							match.add(allServers[i]);
+						}
+					}
+				}
+			}
+		}
+		return (IServer[]) match.toArray(new IServer[match.size()]);
+	}
+	
+	public static boolean moduleListContainsMod(IModule[] list, IModule module) {
+		for( int i = 0; i < list.length; i++ ) {
+			if( list[i].equals(module))
+				return true;
+		}
+		return false;
+	}
+	
 }
