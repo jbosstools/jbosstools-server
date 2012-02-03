@@ -218,7 +218,10 @@ public class JBossServer extends DeployableServer
 	}
 	
 	public static URL getModuleRootURL(IModule module, String host, int port) {
-
+		return getModuleRootURL(module, host, port, false);
+	}
+	
+	public static URL getModuleRootURL(IModule module, String host, int port, boolean ignoreContextRoot) {
         if (module == null || module.loadAdapter(IWebModule.class,null)==null )
 			return null;
         
@@ -230,10 +233,11 @@ public class JBossServer extends DeployableServer
 		if (port != 80)
 			url += ":" + port; //$NON-NLS-1$
 
-		String cxRoot = webModule.getContextRoot();
-		if( !cxRoot.equals("/") && !cxRoot.equals("./")) //$NON-NLS-1$ //$NON-NLS-2$
-			url += "/"+webModule.getContextRoot(); //$NON-NLS-1$
-
+		if( !ignoreContextRoot ) {
+			String cxRoot = webModule.getContextRoot();
+			if( !cxRoot.equals("/") && !cxRoot.equals("./")) //$NON-NLS-1$ //$NON-NLS-2$
+				url += "/"+webModule.getContextRoot(); //$NON-NLS-1$
+		}
 		if (!url.endsWith("/")) //$NON-NLS-1$
 			url += "/"; //$NON-NLS-1$
 
