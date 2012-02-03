@@ -286,6 +286,9 @@ public class XPathModel extends UnitedServerListener {
 		return url;
 	}
 
+	/**
+	 * @since 2.3
+	 */
 	public static ArrayList<XPathCategory> loadDefaultPortQueries(IServer server, String baseDir) {
 		ArrayList<XPathCategory> retVal = new ArrayList<XPathCategory>();
 		URL url = rtToPortsFile.get(server.getRuntime().getRuntimeType().getId());
@@ -303,6 +306,9 @@ public class XPathModel extends UnitedServerListener {
 		return retVal;
 	}
 	
+	/**
+	 * @since 2.3
+	 */
 	public static void addQueriesToCategoryFromDefaultFile(IServer server, XPathCategory category, 
 			String baseDir, URL url) throws IOException {
 		Properties pr = new Properties();
