@@ -16,8 +16,7 @@ public class ServerWorkingCopyPropertyCommand extends ServerCommand {
 	protected IServerWorkingCopy wc;
 	
 	public ServerWorkingCopyPropertyCommand(IServerWorkingCopy wc, String commandName, 
-			Text text, String newVal, String attributeKey,
-			ModifyListener listener) {
+			Text text, String newVal, String attributeKey, ModifyListener listener) {
 		super(wc, commandName);
 		this.wc = wc;
 		this.text = text;

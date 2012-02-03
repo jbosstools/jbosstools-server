@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2010 Red Hat, Inc. 
+ * Copyright (c) 2012 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -52,6 +52,8 @@ public class ServerModeSectionComposite extends Composite {
 	private Button executeShellScripts; // may be null;
 	private Button listenOnAllHosts; // may be null
 
+	private DeployUIAdditions currentUIAddition;
+	
 	public ServerModeSectionComposite(Composite parent, int style, IServerModeUICallback callback) {
 		super(parent, style);
 		this.callback = callback;
@@ -99,8 +101,9 @@ public class ServerModeSectionComposite extends Composite {
 		
 
 	    preferencePageBook = toolkit.createPageBook(this, SWT.FLAT|SWT.TOP);
+	    
 	    preferencePageBook.setLayoutData(UIUtil.createFormData2(
-	    		deployTypeCombo, 5, 0, 200, 0, 5, 100, -5));
+	    		deployTypeCombo, 5, 0, 300, 0, 5, 100, -5));
 
 	    // fill widgets
 	    String[] nameList = new String[deployAdditions.size()];
@@ -114,10 +117,10 @@ public class ServerModeSectionComposite extends Composite {
 			Behaviour b = BehaviourModel.getModel().getBehaviour(callback.getServer().getOriginal().getServerType().getId());
 			String behaviourType = DeploymentPreferenceLoader.getCurrentDeploymentMethodTypeId(
 					callback.getServer().getOriginal(), getDefaultServerMode());
-			current = b.getImpl(behaviourType).getName();
+			if( b.getImpl(behaviourType) != null )
+				current = b.getImpl(behaviourType).getName();
 		} else {
 			String host = callback.getServer().getHost();
-//			IJBossServerPublishMethodType behType = null;
 			BehaviourImpl impl = null;
 			String serverTypeId = callback.getServer().getServerType().getId();
 			if( SocketUtil.isLocalhost(host)) {
@@ -141,6 +144,10 @@ public class ServerModeSectionComposite extends Composite {
 				deployTypeChanged(true);
 			}});
 	    deployTypeChanged(false);
+	}
+	
+	public IDeploymentTypeUI getCurrentBehaviourUI() {
+		return currentUIAddition.getUI();
 	}
 	
 	protected String getDefaultServerMode() {
@@ -184,7 +191,9 @@ public class ServerModeSectionComposite extends Composite {
 			this.behaviourId = id;
 			this.ui = ui;
 		}
-		
+		public IDeploymentTypeUI getUI() {
+			return ui;
+		}
 		public boolean isRegistered() {
 			return registered;
 		}
@@ -216,6 +225,7 @@ public class ServerModeSectionComposite extends Composite {
 		int index = deployTypeCombo.getSelectionIndex();
 		if( index != -1 ) {
 			DeployUIAdditions ui = deployAdditions.get(index);
+			currentUIAddition = ui;
 			if( !ui.isRegistered()) {
 				Composite newRoot = preferencePageBook.createPage(ui);
 				ui.createComposite(newRoot);

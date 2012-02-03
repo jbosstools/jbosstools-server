@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2011 Red Hat, Inc. 
+ * Copyright (c) 2012 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -11,8 +11,6 @@
 package org.jboss.ide.eclipse.as.ui.wizards;
 
 
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -40,7 +38,9 @@ import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
-import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI.IServerModeUICallback;
+import org.jboss.ide.eclipse.as.ui.editor.DeploymentTypeUIUtil;
+import org.jboss.ide.eclipse.as.ui.editor.DeploymentTypeUIUtil.ICompletable;
+import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI;
 import org.jboss.ide.eclipse.as.ui.editor.ServerModeSectionComposite;
 
 /**
@@ -48,7 +48,7 @@ import org.jboss.ide.eclipse.as.ui.editor.ServerModeSectionComposite;
  * @author Rob Stryker <rob.stryker@redhat.com>
  *
  */
-public class JBossServerWizardFragment extends WizardFragment {
+public class JBossServerWizardFragment extends WizardFragment implements ICompletable {
 	private IWizardHandle handle;
 	private Label serverExplanationLabel, 
 					runtimeExplanationLabel; 
@@ -56,11 +56,14 @@ public class JBossServerWizardFragment extends WizardFragment {
 	private Label homeValLabel, execEnvironmentValLabel, jreValLabel, configValLabel, configLocValLabel;
 	
 	private Group runtimeGroup;
+	private ServerModeSectionComposite modeComposite;
 	
 	public JBossServerWizardFragment() {
 		super();
 	}
-	
+	public void setComplete(boolean complete) {
+		super.setComplete(complete);
+	}
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
 		this.handle = handle;
 		// make modifications to parent
@@ -173,24 +176,10 @@ public class JBossServerWizardFragment extends WizardFragment {
 		g.setLayoutData(groupData);
 		
 		g.setLayout(new FillLayout());
-		new ServerModeSectionComposite(g, SWT.NONE, new NewServerWizardBehaviourCallback());
+		modeComposite = new ServerModeSectionComposite(g, SWT.NONE, 
+				DeploymentTypeUIUtil.getCallback(getTaskModel(), handle, this));
 	}
 	
-	private class NewServerWizardBehaviourCallback implements IServerModeUICallback {
-		public IRuntime getRuntime() {
-			return (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
-		}
-		public IServerWorkingCopy getServer() {
-			return (IServerWorkingCopy) getTaskModel().getObject(TaskModel.TASK_SERVER);
-		}
-		public void execute(IUndoableOperation operation) {
-			try {
-				operation.execute(new NullProgressMonitor(), null);
-			} catch(ExecutionException  ee) {
-				// TODO
-			}
-		}
-	}
 	
 	private void updateErrorMessage() {
 		String error = getErrorString();
@@ -231,6 +220,9 @@ public class JBossServerWizardFragment extends WizardFragment {
 		IServerWorkingCopy serverWC = (IServerWorkingCopy) getTaskModel().getObject(TaskModel.TASK_SERVER);
 		serverWC.setRuntime((IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME));
 		serverWC.setServerConfiguration(null); // no inside jboss folder
+		IDeploymentTypeUI ui = modeComposite.getCurrentBehaviourUI();
+		if( ui != null )
+			ui.performFinish(monitor);
 	}
 	
 	private IJBossServerRuntime getRuntime() {
@@ -246,7 +238,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 	}
 
 	public boolean isComplete() {
-		return getErrorString() == null ? true : false;
+		return super.isComplete();
 	}
 
 	public boolean hasComposite() {

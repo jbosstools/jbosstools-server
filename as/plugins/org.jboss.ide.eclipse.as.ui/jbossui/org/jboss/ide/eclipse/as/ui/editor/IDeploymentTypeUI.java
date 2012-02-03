@@ -11,6 +11,9 @@
 package org.jboss.ide.eclipse.as.ui.editor;
 
 import org.eclipse.core.commands.operations.IUndoableOperation;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
@@ -21,6 +24,8 @@ public interface IDeploymentTypeUI {
 		public IServerWorkingCopy getServer();
 		public IRuntime getRuntime();
 		public void execute(IUndoableOperation operation);
+		public void executeLongRunning(Job j);
+		public void setErrorMessage(String msg);
 	}
 	
 	/**
@@ -37,4 +42,10 @@ public interface IDeploymentTypeUI {
 	 * @param modeSection
 	 */
 	public void fillComposite(Composite parent, IServerModeUICallback callback);
+	
+	/**
+	 * Allow the mode composite to take some action on finish
+	 * @since 2.3
+	 */
+	public void performFinish(IProgressMonitor monitor) throws CoreException;
 }

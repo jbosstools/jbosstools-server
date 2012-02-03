@@ -4,6 +4,12 @@
    <extension
          point="org.jboss.ide.eclipse.as.core.behaviourExtension">
       <behaviour
+            name="%RSEMethodName"
+            publishMethod="org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod"
+            serverTypes="org.jboss.ide.eclipse.as.systemCopyServer"
+            typeId="rse">
+      </behaviour>
+      <behaviour
             behaviourDelegate="org.jboss.ide.eclipse.as.rse.core.RSEBehaviourDelegate"
             launchDelegate="org.jboss.ide.eclipse.as.rse.core.RSEJBossStartLaunchDelegate"
             name="%RSEMethodName"
@@ -11,9 +17,6 @@
             serverTypes="%ServerTypesJBoss6OrLower"
             typeId="rse">
       </behaviour>
-   </extension>
-   <extension
-         point="org.jboss.ide.eclipse.as.core.behaviourExtension">
       <behaviour
             behaviourDelegate="org.jboss.ide.eclipse.as.rse.core.RSEJBoss7BehaviourDelegate"
             launchDelegate="org.jboss.ide.eclipse.as.rse.core.RSEJBoss7StartLaunchDelegate"

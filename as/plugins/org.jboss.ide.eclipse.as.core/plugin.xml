@@ -1129,7 +1129,6 @@
          point="org.jboss.ide.eclipse.as.core.behaviourExtension">
       <behaviour
             behaviourDelegate=""
-            launchDelegate=""
             name="Local"
             publishMethod="org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod"
             serverTypes="org.jboss.ide.eclipse.as.systemCopyServer"

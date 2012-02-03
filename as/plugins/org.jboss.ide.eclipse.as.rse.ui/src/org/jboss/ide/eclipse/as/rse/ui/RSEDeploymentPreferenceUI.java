@@ -13,7 +13,9 @@ package org.jboss.ide.eclipse.as.rse.ui;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -444,5 +446,11 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public void performFinish(IProgressMonitor monitor) throws CoreException {
+		// TODO Auto-generated method stub
+		
 	}
 }

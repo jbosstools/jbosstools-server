@@ -199,7 +199,7 @@ public class ServerUtil {
     /**
 	 * @since 2.3
 	 */
-    public static void storeInSecureStorage(IServer server, String key, String val ) {
+    public static void storeInSecureStorage(IServerAttributes server, String key, String val ) {
         try {
             ISecurePreferences node = getNode(server);
             if( val == null )
