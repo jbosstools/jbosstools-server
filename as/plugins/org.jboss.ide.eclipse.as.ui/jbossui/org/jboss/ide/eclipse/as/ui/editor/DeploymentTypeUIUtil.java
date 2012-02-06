@@ -90,7 +90,6 @@ public class DeploymentTypeUIUtil {
 //			}
 			j.schedule();
 		}
-		@Override
 		public void setErrorMessage(String msg) {
 			if( completable != null )
 				completable.setComplete(msg == null);
