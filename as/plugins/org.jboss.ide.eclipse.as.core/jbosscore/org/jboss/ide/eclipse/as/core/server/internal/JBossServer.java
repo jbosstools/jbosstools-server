@@ -53,6 +53,7 @@ import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
+import org.jboss.ide.eclipse.as.core.util.ExpressionResolverUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
@@ -210,7 +211,7 @@ public class JBossServer extends DeployableServer
 	}
 	
 	protected String resolveXPathResult(String result) {
-		return result;
+		return ExpressionResolverUtil.safeReplaceProperties(result);
 	}
 	
 	public URL getModuleRootURL(IModule module) {
