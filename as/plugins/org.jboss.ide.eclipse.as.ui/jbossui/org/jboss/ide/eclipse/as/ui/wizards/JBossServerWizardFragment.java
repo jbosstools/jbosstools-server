@@ -220,9 +220,11 @@ public class JBossServerWizardFragment extends WizardFragment implements IComple
 		IServerWorkingCopy serverWC = (IServerWorkingCopy) getTaskModel().getObject(TaskModel.TASK_SERVER);
 		serverWC.setRuntime((IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME));
 		serverWC.setServerConfiguration(null); // no inside jboss folder
-		IDeploymentTypeUI ui = modeComposite.getCurrentBehaviourUI();
-		if( ui != null )
-			ui.performFinish(monitor);
+		if( modeComposite != null ) {
+			IDeploymentTypeUI ui = modeComposite.getCurrentBehaviourUI();
+			if( ui != null )
+				ui.performFinish(monitor);
+		}
 	}
 	
 	private IJBossServerRuntime getRuntime() {
