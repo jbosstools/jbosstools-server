@@ -124,6 +124,17 @@ public interface IJBoss7ManagerService {
 	 * @throws Exception 
 	 */
 	public void stop(IAS7ManagementDetails details) throws Exception;
+	
+    /**
+     * Execute a management command. Note, this method returns the "result" node
+     * from the execution.
+     * 
+     * @param details connection details.
+     * @param request a JSON request to process.
+     * @return the JSON response from the server.
+     * @throws Exception
+     */
+	public String execute(IAS7ManagementDetails details, String request) throws Exception;
 
 	public void dispose();
 }

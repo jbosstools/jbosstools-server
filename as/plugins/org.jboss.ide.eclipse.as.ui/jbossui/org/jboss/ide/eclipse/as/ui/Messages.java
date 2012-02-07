@@ -270,6 +270,23 @@ public class Messages extends NLS {
 	public static String ServerJavaArgsSyncText;
 	public static String ServerJavaArgsSyncDesc;
 	
+	public static String ServerContent_Type_root;
+	public static String ServerContent_Type_attributes;
+	public static String ServerContent_Type_core_service;
+	public static String ServerContent_Type_deployment;
+	public static String ServerContent_Type_extension;
+	public static String ServerContent_Type_interface;
+	public static String ServerContent_Type_path;
+	public static String ServerContent_Type_socket_binding_group;
+	public static String ServerContent_Type_subsystem;
+	public static String ServerContent_Type_system_property;
+	public static String ServerContent_Value_undefined;
+	public static String ServerContent_Label_Attribute_Value;
+    public static String ServerContent_Label_Loading;
+    public static String ServerContent_Label_Not_Connected;
+    public static String ServerContent_Label_Retrieval_Error;
+    public static String ServerContent_Job_Title;
+
 	static {
 		NLS.initializeMessages(BUNDLE_NAME,
 				Messages.class);

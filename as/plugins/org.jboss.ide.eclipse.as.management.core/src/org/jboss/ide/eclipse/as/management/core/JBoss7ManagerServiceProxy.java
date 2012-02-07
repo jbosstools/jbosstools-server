@@ -75,7 +75,11 @@ public class JBoss7ManagerServiceProxy extends ServiceTracker<IJBoss7ManagerServ
 		checkedGetService().stop(details);
 	}
 
-	private IJBoss7ManagerService checkedGetService() throws JBoss7ManangerException {
+    public String execute(IAS7ManagementDetails details, String request) throws Exception {
+        return checkedGetService().execute(details, request);
+    }
+
+    private IJBoss7ManagerService checkedGetService() throws JBoss7ManangerException {
 		IJBoss7ManagerService service = getService();
 		if (service == null) {
 			throw new JBoss7ManangerException("Could not acquire JBoss Management service"); //$NON-NLS-1$

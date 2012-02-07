@@ -13,6 +13,7 @@ package org.jboss.ide.eclipse.as.internal.management.as71;
 import java.io.File;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.jboss.dmr.ModelNode;
 import org.jboss.ide.eclipse.as.management.core.IAS7ManagementDetails;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
@@ -110,7 +111,16 @@ public class JBoss71ManagerService implements IJBoss7ManagerService {
 		}
 	}
 
-	@Override
+    public String execute(IAS7ManagementDetails details, String request) throws Exception {
+        AS71Manager manager = new AS71Manager(details);
+        try {
+            return manager.execute(ModelNode.fromJSONString(request)).toJSONString(true);
+        } finally {
+            manager.dispose();
+        }
+    }
+
+    @Override
 	public void dispose() {
 	}
 

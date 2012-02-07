@@ -267,7 +267,7 @@ public class AS71Manager {
 		StreamUtils.safeClose(client);
 	}
 
-	private ModelNode execute(ModelNode node) throws JBoss7ManangerException {
+	/*package*/ ModelNode execute(ModelNode node) throws JBoss7ManangerException {
 		try {
 			ModelNode response = client.execute(node);
 			if (!AS7ManagerUtil.isSuccess(response)) {

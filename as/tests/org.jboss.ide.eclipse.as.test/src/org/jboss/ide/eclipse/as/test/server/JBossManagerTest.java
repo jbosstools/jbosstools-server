@@ -74,6 +74,9 @@ public class JBossManagerTest {
 
 	private static class JBoss71Manager implements IJBoss7ManagerService {
 
+		public String execute(IAS7ManagementDetails details, String request) throws Exception {
+			throw new UnsupportedOperationException();
+		}
 		public IJBoss7DeploymentResult deployAsync(IAS7ManagementDetails details, String deploymentName, File file,
 				IProgressMonitor monitor) throws JBoss7ManangerException {
 			throw new UnsupportedOperationException();
