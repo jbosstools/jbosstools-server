@@ -90,4 +90,6 @@ Raleigh NC 27606 USA.
 	<plugin id="org.jboss.ide.eclipse.as.classpath.ui" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 	<plugin id="org.jboss.ide.eclipse.as.wtp.core" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 	<plugin id="org.jboss.ide.eclipse.as.wtp.ui" download-size="0" install-size="0" version="0.0.0" unpack="false" />
+	<plugin id="org.jboss.ide.eclipse.as.dmr" download-size="0" install-size="0" version="0.0.0" unpack="false" />
+
 </feature>

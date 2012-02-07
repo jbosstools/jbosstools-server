@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JBoss AS Server Adapter Dynamic Model Representation
+Bundle-SymbolicName: org.jboss.ide.eclipse.as.dmr;singleton:=true
+Bundle-Version: 2.3.0.qualifier
+Bundle-Activator: org.jboss.ide.eclipse.as.dmr.Activator
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: JBoss by Red Hat
+Bundle-ClassPath: jboss-dmr-1.1.1.Final.jar,
+ .
+Export-Package: org.jboss.dmr
+Require-Bundle: org.eclipse.core.runtime
