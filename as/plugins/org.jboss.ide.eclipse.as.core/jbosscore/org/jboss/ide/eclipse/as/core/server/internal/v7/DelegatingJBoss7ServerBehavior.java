@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -184,11 +183,4 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 			method = createPublishMethod();
 		DeploymentMarkerUtils.addDoDeployMarker(method, getServer(), paths, monitor);
 	}
-	
-	@Override
-	public boolean changedFileRequiresModuleRestart(File file) {
-		return super.changedFileRequiresModuleRestart(file);
-		//return true; 
-	}
-
 }

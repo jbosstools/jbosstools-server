@@ -49,7 +49,7 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 	public IStatus[] copyFile(final IModuleFile mf, final IPath path,
 			final IProgressMonitor monitor) throws CoreException {
 		final File file = PublishUtil.getFile(mf);
-		shouldRestartModule |= method.getBehaviour().changedFileRequiresModuleRestart(file);
+		shouldRestartModule |= method.getBehaviour().changedFileRequiresModuleRestart(mf);
 		final IPath remotePath = root.append(path);
 		
 		final CoreException[] coreEx = new CoreException[1];

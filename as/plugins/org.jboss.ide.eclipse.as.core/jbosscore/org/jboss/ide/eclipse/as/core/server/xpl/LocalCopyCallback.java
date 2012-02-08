@@ -55,7 +55,7 @@ public class LocalCopyCallback implements IPublishCopyCallbackHandler {
 		monitor.beginTask("Copying " + relativePath.toString(), 100); //$NON-NLS-1$
 		File file = PublishUtil.getFile(mf);
 		DeployableServerBehavior beh = ServerConverter.getDeployableServerBehavior(server);
-		shouldRestartModule |= beh.changedFileRequiresModuleRestart(file);
+		shouldRestartModule |= beh.changedFileRequiresModuleRestart(mf);
 		if( file != null ) {
 			InputStream in = null;
 			try {

@@ -10,9 +10,10 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -23,6 +24,7 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerListener;
 import org.eclipse.wst.server.core.ServerEvent;
+import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
@@ -39,8 +41,31 @@ import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
  */
 public class DeployableServerBehavior extends ServerBehaviourDelegate {
 
+	public static final String ORG_JBOSS_TOOLS_AS_RESTART_FILE_PATTERN = "org.jboss.tools.as.restartFilePattern"; //$NON-NLS-1$
+
+	// kept static to avoid overhead of pattern compilation
+	final private static Pattern defaultFilePattern = Pattern.compile("\\.jar$", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$
+	
+	// contains the pattern to use to recognize if files deployed needs to result in restart
+	// can be set via system property "org.jboss.tools.as.restartFilePattern" but should eventually be made
+	// available via server settings.
+	private Pattern restartFilePattern = null;
+	
 	public DeployableServerBehavior() {
+		String systemPattern = System.getProperty(ORG_JBOSS_TOOLS_AS_RESTART_FILE_PATTERN,null); 
+		
+		if(systemPattern == null) {
+			restartFilePattern = defaultFilePattern;
+		}  else {
+			try {
+				setRestartFilePattern(systemPattern);
+			} catch(PatternSyntaxException pse) {
+				JBossServerCorePlugin.getDefault();
+				JBossServerCorePlugin.log("Could not set restart file pattern to: " + systemPattern, pse); //$NON-NLS-1$
+			}
+		}
 	}
+	
 
 	public void stop(boolean force) {
 		setServerStopped(); // simple enough
@@ -178,6 +203,7 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	 * Much of this can be changed once eclipse bug 231956 is fixed
 	 */
 	protected int serverStateVal;
+	
 	protected int getServerStateVal() {
 		return serverStateVal;
 	}
@@ -216,11 +242,21 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		} );
 	}
 	
-	public boolean changedFileRequiresModuleRestart(File file) {
-		if( file.getName().toLowerCase().endsWith(".jar")) //$NON-NLS-1$
-			return true;
-		return false;
+	public boolean changedFileRequiresModuleRestart(IModuleFile file) {
+		if (restartFilePattern != null) {
+			// using find over matches to make it a substring search by default and avoid having to specify .*.class$ instead of just .class$
+			return restartFilePattern.matcher(file.getName()).find(); 
+		} else {
+			if (file.getName().toLowerCase().endsWith(".jar")) //$NON-NLS-1$ 
+				return true;
+			return false;
+		}
 	}
+		
+	public void setRestartFilePattern(String filepattern) {
+		this.restartFilePattern = Pattern.compile(filepattern, Pattern.CASE_INSENSITIVE);
+ 	}
+
 	
 	/**
 	 * Some projects may request post-processing filtering on 
