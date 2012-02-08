@@ -117,9 +117,17 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 		return getAttribute(ZIP_DEPLOYMENTS_PREF, false);
 	}
 
-	// kept static to avoid overhead of pattern compilation
-	final private static Pattern defaultFilePattern = Pattern.compile("\\.jar$", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$
+	// cannot be static, as different servers may have different defaults
 	private Pattern restartFilePattern = null;
+	protected Pattern defaultFilePattern = Pattern.compile(
+			getDefaultModuleRestartPattern(),
+			Pattern.CASE_INSENSITIVE);
+	
+	/* Needs to be public so UI can access this */
+	public String getDefaultModuleRestartPattern() {
+		return IDeployableServer.ORG_JBOSS_TOOLS_AS_RESTART_DEFAULT_FILE_PATTERN;
+	}
+	
 	public void setRestartFilePattern(String filepattern) {
 		setAttribute(ORG_JBOSS_TOOLS_AS_RESTART_FILE_PATTERN, filepattern);
 		this.restartFilePattern = null;
@@ -127,19 +135,24 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	
 	public Pattern getRestartFilePattern() {
 		if( this.restartFilePattern == null ) {
-			// ensure it's set properly from the saved attribute
-			String currentPattern = getAttribute(ORG_JBOSS_TOOLS_AS_RESTART_FILE_PATTERN, (String)null);
-			try {
-				this.restartFilePattern = currentPattern == null ? defaultFilePattern :  
-					Pattern.compile(currentPattern, Pattern.CASE_INSENSITIVE);
-			} catch(PatternSyntaxException pse) {
-				JBossServerCorePlugin.log("Could not set restart file pattern to: " + currentPattern, pse); //$NON-NLS-1$
-				// avoid errors over and over
-				this.restartFilePattern = defaultFilePattern;
-			}
+			compileRestartPattern();
 		}
 		return this.restartFilePattern;
 	}
+	
+	private void compileRestartPattern() {
+		// ensure it's set properly from the saved attribute
+		String currentPattern = getAttribute(ORG_JBOSS_TOOLS_AS_RESTART_FILE_PATTERN, (String)null);
+		try {
+			this.restartFilePattern = currentPattern == null ? defaultFilePattern :  
+				Pattern.compile(currentPattern, Pattern.CASE_INSENSITIVE);
+		} catch(PatternSyntaxException pse) {
+			JBossServerCorePlugin.log("Could not set restart file pattern to: " + currentPattern, pse); //$NON-NLS-1$
+			// avoid errors over and over
+			this.restartFilePattern = defaultFilePattern;
+		}
+	}
+	
 	
 	/*
 	 * (non-Javadoc)

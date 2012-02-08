@@ -27,7 +27,8 @@ public interface IDeployableServer {
 	public static final String DEPLOY_DIRECTORY_TYPE = "org.jboss.ide.eclipse.as.core.server.deployDirectoryType"; //$NON-NLS-1$
 	public static final String ZIP_DEPLOYMENTS_PREF = "org.jboss.ide.eclipse.as.core.server.zipDeploymentsPreference"; //$NON-NLS-1$
 	public static final String ORG_JBOSS_TOOLS_AS_RESTART_FILE_PATTERN = "org.jboss.tools.as.restartFilePattern"; //$NON-NLS-1$
-
+	public static final String ORG_JBOSS_TOOLS_AS_RESTART_DEFAULT_FILE_PATTERN = "\\.jar$"; //$NON-NLS-1$
+	
 	public static final String DEPLOY_METADATA = "metadata"; //$NON-NLS-1$
 	public static final String DEPLOY_CUSTOM = "custom"; //$NON-NLS-1$
 	public static final String DEPLOY_SERVER = "server"; //$NON-NLS-1$

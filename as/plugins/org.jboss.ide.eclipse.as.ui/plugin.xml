@@ -165,6 +165,12 @@
       -->
       
       <section
+            class="org.jboss.ide.eclipse.as.ui.editor.ModuleRestartSection"
+            id="org.jboss.ide.eclipse.as.ui.editor.moduleRestartSection"
+            insertionId="org.eclipse.wst.server.editor.overview.right"
+            order="9"
+            typeIds="%AllJBossServerTypes"/>
+      <section
             class="org.jboss.ide.eclipse.as.ui.editor.PollerSection"
             id="org.jboss.ide.eclipse.as.ui.editor.pollerSection"
             insertionId="org.eclipse.wst.server.editor.overview.right"
