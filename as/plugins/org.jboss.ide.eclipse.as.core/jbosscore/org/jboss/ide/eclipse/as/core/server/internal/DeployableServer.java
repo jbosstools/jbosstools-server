@@ -10,6 +10,9 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -20,6 +23,7 @@ import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerPort;
 import org.eclipse.wst.server.core.model.ServerDelegate;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
@@ -113,6 +117,29 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 		return getAttribute(ZIP_DEPLOYMENTS_PREF, false);
 	}
 
+	// kept static to avoid overhead of pattern compilation
+	final private static Pattern defaultFilePattern = Pattern.compile("\\.jar$", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$
+	private Pattern restartFilePattern = null;
+	public void setRestartFilePattern(String filepattern) {
+		setAttribute(ORG_JBOSS_TOOLS_AS_RESTART_FILE_PATTERN, filepattern);
+		this.restartFilePattern = null;
+	}
+	
+	public Pattern getRestartFilePattern() {
+		if( this.restartFilePattern == null ) {
+			// ensure it's set properly from the saved attribute
+			String currentPattern = getAttribute(ORG_JBOSS_TOOLS_AS_RESTART_FILE_PATTERN, (String)null);
+			try {
+				this.restartFilePattern = currentPattern == null ? defaultFilePattern :  
+					Pattern.compile(currentPattern, Pattern.CASE_INSENSITIVE);
+			} catch(PatternSyntaxException pse) {
+				JBossServerCorePlugin.log("Could not set restart file pattern to: " + currentPattern, pse); //$NON-NLS-1$
+				// avoid errors over and over
+				this.restartFilePattern = defaultFilePattern;
+			}
+		}
+		return this.restartFilePattern;
+	}
 	
 	/*
 	 * (non-Javadoc)

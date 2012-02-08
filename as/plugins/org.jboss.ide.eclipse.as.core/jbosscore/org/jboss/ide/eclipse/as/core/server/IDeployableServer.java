@@ -11,6 +11,8 @@
 
 package org.jboss.ide.eclipse.as.core.server;
 
+import java.util.regex.Pattern;
+
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 
@@ -24,6 +26,7 @@ public interface IDeployableServer {
 	public static final String TEMP_DEPLOY_DIRECTORY = "org.jboss.ide.eclipse.as.core.server.tempDeployDirectory"; //$NON-NLS-1$
 	public static final String DEPLOY_DIRECTORY_TYPE = "org.jboss.ide.eclipse.as.core.server.deployDirectoryType"; //$NON-NLS-1$
 	public static final String ZIP_DEPLOYMENTS_PREF = "org.jboss.ide.eclipse.as.core.server.zipDeploymentsPreference"; //$NON-NLS-1$
+	public static final String ORG_JBOSS_TOOLS_AS_RESTART_FILE_PATTERN = "org.jboss.tools.as.restartFilePattern"; //$NON-NLS-1$
 
 	public static final String DEPLOY_METADATA = "metadata"; //$NON-NLS-1$
 	public static final String DEPLOY_CUSTOM = "custom"; //$NON-NLS-1$
@@ -42,6 +45,9 @@ public interface IDeployableServer {
 	public String getConfigDirectory();
 	public ServerAttributeHelper getAttributeHelper();
 	public IServer getServer();
+	
+	public void setRestartFilePattern(String filepattern);
+	public Pattern getRestartFilePattern();
 	
 	public boolean hasJMXProvider();
 }
