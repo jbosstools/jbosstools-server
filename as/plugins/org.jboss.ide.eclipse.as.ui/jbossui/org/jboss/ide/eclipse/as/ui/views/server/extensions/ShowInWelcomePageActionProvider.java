@@ -28,7 +28,9 @@ public class ShowInWelcomePageActionProvider extends AbstractOpenBrowserServerAc
 	
 	protected boolean shouldAddForSelection(IStructuredSelection sel) {
 		IServer server = getSingleServer(sel);
-		return ServerUtil.isJBossServerType(server.getServerType()) && accepts(server);
+		if( server != null )
+			return ServerUtil.isJBossServerType(server.getServerType()) && accepts(server);
+		return false;
 	}
 
 	protected boolean accepts(IServer server) {
