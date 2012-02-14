@@ -53,13 +53,13 @@ public class ModuleRestartSection extends ServerEditorSection {
 	public void createSection(Composite parent) {
 		super.createSection(parent);
 		createUI(parent);
-		addListeners();
 		DeployableServer ds = (DeployableServer)ServerConverter.getDeployableServer(server.getOriginal());
 		String defaultPattern = ds.getDefaultModuleRestartPattern();
 		String pattern = server.getAttribute(IDeployableServer.ORG_JBOSS_TOOLS_AS_RESTART_FILE_PATTERN, defaultPattern);
 		customizePattern.setSelection(!defaultPattern.equals(pattern));
 		restartPatternText.setEnabled(!defaultPattern.equals(pattern));
 		restartPatternText.setText(pattern == null ? defaultPattern : pattern);
+		addListeners();
 	}
 	
 	protected void createUI(Composite parent) {
