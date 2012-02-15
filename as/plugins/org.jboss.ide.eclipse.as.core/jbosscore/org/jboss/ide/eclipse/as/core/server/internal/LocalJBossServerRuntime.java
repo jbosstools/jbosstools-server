@@ -157,7 +157,7 @@ public class LocalJBossServerRuntime extends AbstractLocalJBossServerRuntime imp
 	@Override
 	public HashMap<String, String> getDefaultRunEnvVars(){
 		HashMap<String, String> envVars = new HashMap<String, String>(1);
-		envVars.put("Path", NATIVE); //$NON-NLS-1$
+		envVars.put("PATH", NATIVE + ":${env_var:PATH}"); //$NON-NLS-1$ //$NON-NLS-2$
 		return envVars;
 	}
 
