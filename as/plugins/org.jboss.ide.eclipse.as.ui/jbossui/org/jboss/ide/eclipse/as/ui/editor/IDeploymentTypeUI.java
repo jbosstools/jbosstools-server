@@ -26,6 +26,7 @@ public interface IDeploymentTypeUI {
 		public void execute(IUndoableOperation operation);
 		public void executeLongRunning(Job j);
 		public void setErrorMessage(String msg);
+		public Object getAttribute(String key);
 	}
 	
 	/**

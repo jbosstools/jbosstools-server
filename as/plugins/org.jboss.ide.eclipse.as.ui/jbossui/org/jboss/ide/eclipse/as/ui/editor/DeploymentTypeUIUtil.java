@@ -96,6 +96,9 @@ public class DeploymentTypeUIUtil {
 			handle.setMessage(msg, IMessageProvider.ERROR);
 			handle.update();
 		}
+		public Object getAttribute(String key) {
+			return tm.getObject(key);
+		}
 	}
 
 	
@@ -134,6 +137,9 @@ public class DeploymentTypeUIUtil {
 				part.setErrorMessage(msg);
 			else
 				section.setErrorMessage(msg);
+		}
+		public Object getAttribute(String key) {
+			return null;
 		}
 	}
 
