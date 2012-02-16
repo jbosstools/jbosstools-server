@@ -30,6 +30,7 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
+import org.jboss.ide.eclipse.as.core.util.PortalUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 public class LocalJBossStartLaunchConfigurator extends AbstractStartLaunchConfigurator {
@@ -118,9 +119,20 @@ public class LocalJBossStartLaunchConfigurator extends AbstractStartLaunchConfig
 
 	@Override
 	protected String getDefaultProgramArguments(JBossServer server, IJBossServerRuntime runtime) {
-		return runtime.getDefaultRunArgs() +
-				IJBossRuntimeConstants.SPACE + IJBossRuntimeConstants.STARTUP_ARG_HOST_SHORT +
-				IJBossRuntimeConstants.SPACE + server.getServer().getHost();
+		StringBuffer sb = new StringBuffer();
+		sb.append(runtime.getDefaultRunArgs());
+		sb.append(IJBossRuntimeConstants.SPACE);
+		sb.append(IJBossRuntimeConstants.STARTUP_ARG_HOST_SHORT);
+		sb.append(IJBossRuntimeConstants.SPACE);
+		sb.append(server.getServer().getHost());
+		
+		// Gate-in 
+		if( PortalUtil.getServerPortalType(runtime) == PortalUtil.TYPE_GATE_IN) {
+			sb.append(IJBossRuntimeConstants.SPACE);
+			sb.append("-Dexo.conf.dir.name=gatein"); //$NON-NLS-1$
+		}
+		
+		return sb.toString();
 	}
 
 	@Override

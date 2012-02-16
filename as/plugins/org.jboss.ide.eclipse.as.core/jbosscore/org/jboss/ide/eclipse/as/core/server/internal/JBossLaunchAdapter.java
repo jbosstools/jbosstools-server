@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2007 Red Hat, Inc. 
+ * Copyright (c) 2012 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -10,19 +10,16 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jst.server.core.EJBBean;
 import org.eclipse.jst.server.core.JndiLaunchable;
 import org.eclipse.jst.server.core.JndiObject;
@@ -40,6 +37,7 @@ import org.eclipse.wst.server.core.util.WebResource;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.PortalUtil;
 
 /**
  * 
@@ -48,23 +46,9 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
  */
 public class JBossLaunchAdapter extends LaunchableAdapterDelegate {
 
-	private static final String SIMPLE_PORTAL_PATH = "simple-portal"; //$NON-NLS-1$
-	private static final String JBOSS_PORTLET = "jboss.portlet"; //$NON-NLS-1$
-	private static final String PORTAL_PATH = "portal"; //$NON-NLS-1$
-	
 	private static final String JAVA_NAMING_PROVIDER_URL_PROPKEY = IJBossRuntimeConstants.NAMING_FACTORY_PROVIDER_URL;
 	private static final String JAVA_NAMING_FACTORY_INITIAL_PROPKEY = IJBossRuntimeConstants.NAMING_FACTORY_KEY;
-	
-	private static final String SERVER_DEFAULT_DEPLOY_JBOSS_PORTAL_SAR = "deploy/jboss-portal.sar"; //$NON-NLS-1$
-	
-	private static final String SERVER_DEFAULT_DEPLOY_JBOSS_PORTAL_HA_SAR = "deploy/jboss-portal-ha.sar"; //$NON-NLS-1$
-
-	private static final String SERVER_DEFAULT_DEPLOY_SIMPLE_PORTAL = "deploy/simple-portal"; //$NON-NLS-1$
-	
-	private static final String SERVER_DEFAULT_DEPLOY_SIMPLE_PORTAL_SAR = "deploy/simple-portal.sar"; //$NON-NLS-1$
-	
-	private static final String SERVER_DEFAULT_DEPLOY_GATEIN = "deploy/gatein.ear"; //$NON-NLS-1$
-
+	private static final String JBOSS_PORTLET = "jboss.portlet"; //$NON-NLS-1$
 	
 	public JBossLaunchAdapter() {
 		
@@ -153,68 +137,35 @@ public class JBossLaunchAdapter extends LaunchableAdapterDelegate {
     }
 
 	private URL getPortletURL(IModuleArtifact moduleObject, ServerDelegate delegate, IServer server) {
+		// null checks all over the place
+		IRuntime runtime = server.getRuntime();
 		IModule module = moduleObject.getModule();
-		if (module != null && server != null) { 
-			IProject project = module.getProject();
-			if (project != null) {
-				try {
-					if (FacetedProjectFramework.hasProjectFacet(project, JBOSS_PORTLET)) {
-						IRuntime runtime = server.getRuntime();
-						if (runtime == null || runtime.getLocation() == null) {
-							return null;
-						}
-						IJBossServerRuntime jbossRuntime = (IJBossServerRuntime)runtime.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
-						if (jbossRuntime != null) {
-							String urlString = "http://" + server.getHost(); //$NON-NLS-1$
-							if (delegate instanceof JBossServer) {
-								JBossServer jBossServer = (JBossServer) delegate;
-								urlString = urlString + ":" + jBossServer.getJBossWebPort() + "/"; //$NON-NLS-1$ //$NON-NLS-2$
-							} else {
-								return null;
-							}
-							URL url = new URL(urlString);
-							IPath jbossLocation = runtime.getLocation();
-							IPath configPath = jbossLocation.append(IJBossRuntimeResourceConstants.SERVER).append(jbossRuntime.getJBossConfiguration());
-							File configFile = configPath.toFile();
-							// JBoss Portal server
-							if (exists(configFile, SERVER_DEFAULT_DEPLOY_JBOSS_PORTAL_SAR)) {
-								return new URL(url,PORTAL_PATH);
-							}
-							// JBoss Portal clustering server
-							if (exists(configFile,
-									SERVER_DEFAULT_DEPLOY_JBOSS_PORTAL_HA_SAR)) {
-								return new URL(url,PORTAL_PATH);
-							}
-							// JBoss portletcontainer
-							if (exists(configFile,SERVER_DEFAULT_DEPLOY_SIMPLE_PORTAL) ||
-									exists(configFile,SERVER_DEFAULT_DEPLOY_SIMPLE_PORTAL_SAR)) {
-								return new URL(url,SIMPLE_PORTAL_PATH);
-							}
-							// GateIn Portal Server
-							if (exists(configFile, SERVER_DEFAULT_DEPLOY_GATEIN)) {
-								return new URL(url,PORTAL_PATH);
-							}
-						}
-					}
-				} catch (MalformedURLException e) {
-					// ignore
-				} catch (CoreException e) {
-					// ignore
+		if (runtime == null || runtime.getLocation() == null || 
+				module == null || server == null || module.getProject() == null) 
+			return null;
+		
+		IJBossServerRuntime jbossRuntime = (IJBossServerRuntime)runtime.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
+		if( jbossRuntime== null || !(delegate instanceof JBossServer))
+			return null;
+		
+		try {
+			if (FacetedProjectFramework.hasProjectFacet(module.getProject(), JBOSS_PORTLET)) {
+				// We are a portal project. Is the runtime also a portal runtime?
+				String suffix = PortalUtil.getPortalSuffix(jbossRuntime);
+				if( suffix != null ) {
+					String urlString = "http://" + server.getHost(); //$NON-NLS-1$
+					urlString = urlString + ":" + ((JBossServer)delegate).getJBossWebPort() + "/"; //$NON-NLS-1$ //$NON-NLS-2$
+					URL url = new URL(urlString);
+					return new URL(url, suffix);
 				}
 			}
+		} catch (MalformedURLException e) {
+		} catch (CoreException e) {
 		}
+		// No launchable found
 		return null;
 	}
 
-	private static boolean exists(final File location,String portalDir) {
-		if (Platform.getOS().equals(Platform.OS_WIN32)) {
-			portalDir = portalDir.replace("/", "\\"); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-		File file = new File(location,portalDir);
-		return file.exists();
-	}
-	
-	
 	public static class JBTCustomHttpLaunchable {
 		private IURLProvider2 urlProvider;
 		private IModuleArtifact artifact;
