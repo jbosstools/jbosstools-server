@@ -11,8 +11,14 @@
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
+import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
@@ -70,7 +76,22 @@ public class JBoss7LaunchConfigProperties extends JBossLaunchConfigProperties {
 		}
 	}
 	
+	private boolean supportsBindingFlag(ILaunchConfigurationWorkingCopy launchConfig ) throws CoreException {
+		ServerBeanLoader loader = getBeanLoader(launchConfig);
+		if( loader.getServerBean().getType().equals(JBossServerType.AS7)){
+			String v = loader.getFullServerVersion();
+			if( "7.0.2".compareTo(v) >= 0 ) { //$NON-NLS-1$
+				// this is jboss 7.0 or 7.1
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	public void setHost(String host, ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
+		if( !supportsBindingFlag(launchConfig)) 
+			return;
+		
 		if (isSet(host)) {
 			String currentHost = getHost(launchConfig);
 			if (currentHost == null

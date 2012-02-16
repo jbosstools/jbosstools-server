@@ -15,11 +15,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
+import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 
@@ -262,4 +267,18 @@ public class JBossLaunchConfigProperties {
 		return map != null;
 	}
 
+	protected ServerBeanLoader getBeanLoader(ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
+		String serverId = getServerId(launchConfig);
+		if( serverId != null ) {
+			IServer s = ServerCore.findServer(serverId);
+			if( s != null ) {
+				IRuntime rt = s.getRuntime();
+				if( rt != null ) {
+					IPath location = rt.getLocation();
+					return new ServerBeanLoader(location.toFile());
+				}
+			}
+		}
+		return null;
+	}
 }

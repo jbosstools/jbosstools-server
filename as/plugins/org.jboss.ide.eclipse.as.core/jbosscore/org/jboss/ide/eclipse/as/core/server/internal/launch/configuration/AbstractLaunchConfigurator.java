@@ -40,7 +40,8 @@ public abstract class AbstractLaunchConfigurator implements ILaunchConfigConfigu
 		if (!areDefaultsSet(launchConfig)) {
 			doConfigure(launchConfig, jbossServer, jbossRuntime);
 			setDefaultsSet(launchConfig);
-		} else if( shouldUpdateLaunch(launchConfig)){
+		} 
+		if( shouldUpdateLaunch(launchConfig)){
 			doOverrides(launchConfig, jbossServer, jbossRuntime);
 		}
 	}
