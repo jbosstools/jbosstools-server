@@ -25,7 +25,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 
@@ -37,17 +36,27 @@ public class RequiredCredentialsDialog extends Dialog {
 	public static final int IGNORE_ID = IDialogConstants.CLIENT_ID | 3;
 	private String user, pass;
 	private boolean save;
-	private JBossServer jbs;
-	
-	public RequiredCredentialsDialog(Shell parentShell, JBossServer jbs) {
+	private boolean canModifyUser = true;
+	private String description;
+	public RequiredCredentialsDialog(Shell parentShell, String initialUser, String initialPass) {
 		super(parentShell);
 		setShellStyle(getShellStyle() | SWT.RESIZE);
-		this.jbs = jbs;
+		this.user = initialUser;
+		this.pass = initialPass;
+		this.description = Messages.credentials_warning;
 	}
 
+	public void setCanModifyUser(boolean val) {
+		canModifyUser = val;
+	}
+	
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
 		newShell.setText(Messages.RequiredCredentialsDialog_ShellText);
+	}
+	
+	public void setDescription(String desc) {
+		this.description = desc;
 	}
 
 	protected Control createDialogArea(Composite parent) {
@@ -74,7 +83,7 @@ public class RequiredCredentialsDialog extends Dialog {
 		passText.setLayoutData(u.createFormData(passLabel, 5, null, 0, 0,5, 100, -5));
 		saveCredentials.setLayoutData(u.createFormData(passText, 10, null, 0, 0,5, 100, -5));
 		
-		top.setText(Messages.credentials_warning);
+		top.setText(description);
 		userLabel.setText(Messages.swf_Username);
 		passLabel.setText(Messages.swf_Password);
 		saveCredentials.setText(Messages.credentials_save);
@@ -101,11 +110,13 @@ public class RequiredCredentialsDialog extends Dialog {
 		saveCredentials.addSelectionListener(listener2);
 		
 		// defaults
-		userText.setText(jbs.getUsername());
-		userText.setSelection(0, jbs.getUsername() == null ? 0 : jbs.getUsername().length());
-		passText.setText(jbs.getPassword());
+		userText.setText(user);
+		userText.setSelection(0, user == null ? 0 : user.length());
+		passText.setText(pass);
 		// save by default
 		saveCredentials.setSelection(true);
+		
+		userText.setEnabled(canModifyUser);
 		return c;
 	}
 	

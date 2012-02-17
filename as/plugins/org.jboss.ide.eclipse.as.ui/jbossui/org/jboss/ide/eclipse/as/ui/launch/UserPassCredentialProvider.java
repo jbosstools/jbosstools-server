@@ -56,7 +56,10 @@ public class UserPassCredentialProvider implements IProvideCredentials {
 				IServer server = inNeed.getServer();
 				IServerWorkingCopy copy = server.createWorkingCopy();
 				JBossServer jbs = ServerConverter.getJBossServer(copy);
-				RequiredCredentialsDialog d = new RequiredCredentialsDialog(new Shell(), jbs);
+				String initialUser = jbs.getUsername();
+				String initialPass = jbs.getPassword();
+				RequiredCredentialsDialog d = new RequiredCredentialsDialog(
+						new Shell(), initialUser, initialPass);
 				if( d.open() == Window.OK) {
 					if( d.getSave() ) {
 						jbs.setPassword(d.getPass());
