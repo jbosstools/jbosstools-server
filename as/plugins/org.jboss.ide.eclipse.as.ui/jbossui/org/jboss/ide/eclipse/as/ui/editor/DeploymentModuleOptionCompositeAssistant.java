@@ -13,6 +13,7 @@ package org.jboss.ide.eclipse.as.ui.editor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -38,6 +39,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
@@ -72,6 +74,7 @@ import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.Messages;
+import org.jboss.ide.eclipse.as.ui.UIUtil;
 
 public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeListener {
 	public static interface IDeploymentPageCallback {
@@ -132,6 +135,11 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		return beh.openBrowseDialog(page, original);
 	}
 
+	// Combo strings - TODO extract to messages
+	private static final String ALL = "All";
+	private static final String DEPLOYED = "Deployed";
+	private static final String BY_MODNAME = "By Module Name";
+	private static final String BY_MODTYPE = "By Module Type";
 	
 	
 	protected static final String COLUMN_NAME = IJBossToolingConstants.LOCAL_DEPLOYMENT_NAME;
@@ -149,6 +157,11 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 	private SelectionListener radioListener, zipListener;
 	private Button zipDeployWTPProjects;
 	private String lastCustomDeploy, lastCustomTemp;
+	
+	private Combo filterCombo; 
+	private Text filterText;
+	
+
 	
 	private IServerWorkingCopy lastWC;
 	
@@ -735,21 +748,36 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
-		FormData linkData = new FormData();
-		linkData.bottom = new FormAttachment(100,-5);
-		linkData.left = new FormAttachment(0, 5);
+		
+		FormData linkData = UIUtil.createFormData2(null, 0, 100,-10, 0,5,null,0);
 		link.setLayoutData(linkData);
 		
-		FormData treeData = new FormData();
-		treeData.top = new FormAttachment(0, 5);
-		treeData.bottom = new FormAttachment(link, -5);
-		treeData.left = new FormAttachment(0, 5);
-		treeData.right = new FormAttachment(100, -5);
+		FormData treeData = UIUtil.createFormData2(0, 5, link,-5, 0,5,100,-5);
 		viewer.getTree().setLayoutData(treeData);
 
+		// Newer stuff
+		Label comboLabel = new Label(root, SWT.NULL);
+		comboLabel.setText("Filter by:");
+		filterCombo = new Combo(root, SWT.READ_ONLY);
+		filterCombo.setItems(new String[]{ALL, DEPLOYED, BY_MODNAME});
+		filterCombo.select(0);
+		
+		filterText = new Text(root, SWT.SINGLE |SWT.BORDER);
+		
+		comboLabel.setLayoutData(UIUtil.createFormData2(null,0,100,-8,link,5,null,0));
+		filterCombo.setLayoutData(UIUtil.createFormData2(null,0,100,-3,comboLabel,5,null,0));
+		filterText.setLayoutData(UIUtil.createFormData2(null,0,100,-3,filterCombo,5,100,-5));
+		
+		ModifyListener ml =new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				viewer.setInput("");
+			}
+		};
+		filterCombo.addModifyListener(ml);
+		filterText.addModifyListener(ml);
 		return root;
 	}
-
+	
 	private void refreshViewer() {
 		page.refreshPossibleModules();
 		viewer.setInput("");  //$NON-NLS-1$
@@ -811,7 +839,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		}
 
 		public Object[] getElements(Object inputElement) {
-			return page.getPossibleModules();
+			return getFilteredModules();
 		}
 
 		public boolean hasChildren(Object element) {
@@ -827,6 +855,27 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		}
 	}
 
+	private Object[] getFilteredModules(){
+		if( filterCombo == null )
+			return page.getPossibleModules();
+		if( filterCombo.getItem(filterCombo.getSelectionIndex()).equals(ALL))
+			return page.getPossibleModules();
+		if( filterCombo.getItem(filterCombo.getSelectionIndex()).equals(DEPLOYED))
+			return page.getServer().getModules();
+		if( filterCombo.getItem(filterCombo.getSelectionIndex()).equals(BY_MODNAME)) {
+			IModule[] mods = page.getPossibleModules();
+			String txt = filterText.getText();
+			ArrayList<IModule> result = new ArrayList<IModule>();
+			for( int i = 0; i < mods.length; i++) {
+				if( mods[i].getName().startsWith(txt)) {
+					result.add(mods[i]);
+				}
+			}
+			return result.toArray(new IModule[result.size()]);
+		}
+		return new Object[]{};
+	}
+	
 	private class ModulePageLabelProvider implements ITableLabelProvider {
 		public Image getColumnImage(Object element, int columnIndex) {
 			if (element instanceof IModule && columnIndex == 0) {
