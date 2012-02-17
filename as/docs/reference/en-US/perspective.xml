@@ -673,10 +673,10 @@
 				</mediaobject>
 			</figure>
 			<para>
-				If you created a remote server then you will see that the checkbox, <guilabel>Server is externally managed. Assume server is started</guilabel> is checked and the combo-box displays <guilabel>Remote System Deployment</guilabel>. Also populated will be the <guilabel>Host</guilabel>, <guilabel>Remote Server Home</guilabel> and <guilabel>Remote Server Configuration</guilabel> fields.
+				If you created a remote server then you will see that the combo-box displays <guilabel>Remote System Deployment</guilabel>. Also populated will be the <guilabel>Host</guilabel> and <guilabel>Remote Server Home</guilabel> settings.
 			</para>
 			<para>
-				You are also able to change a servers behaviour from <guilabel>Local</guilabel> to <guilabel>Remote System Deployment</guilabel> through this settings tab. In doing so you will see that the <guilabel>Host</guilabel> is not set by default, but the other fields contain default values. Once your remote server behaviour is configured, click the <guibutton>Test</guibutton> button to confirm the settings are correct. 
+				You are also able to change a servers behaviour from <guilabel>Local</guilabel> to <guilabel>Remote System Deployment</guilabel> through this settings tab. In doing so you will see that the <guilabel>Host</guilabel> is not set by default, but the other fields contain default values. <!-- Once your remote server behaviour is configured, click the <guibutton>Test</guibutton> button to confirm the settings are correct.  -->
 			</para>
 			<figure>
 				<title>Server Behaviour - Remote</title>
