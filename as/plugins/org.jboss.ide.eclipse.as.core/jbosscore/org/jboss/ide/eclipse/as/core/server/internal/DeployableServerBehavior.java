@@ -84,10 +84,13 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	protected void publishFinish(IProgressMonitor monitor) throws CoreException {
 		if( method == null )
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Not publishing")); //$NON-NLS-1$
-		int result = method.publishFinish(this, monitor);
-		setServerPublishState(result);
-		publishTaskModel = null;
-		method = null;
+		try {
+			int result = method.publishFinish(this, monitor);
+			setServerPublishState(result);
+		} finally {
+			publishTaskModel = null;
+			method = null;
+		}
 	}
 
 	protected void setPublishData(String key, Object val) {
