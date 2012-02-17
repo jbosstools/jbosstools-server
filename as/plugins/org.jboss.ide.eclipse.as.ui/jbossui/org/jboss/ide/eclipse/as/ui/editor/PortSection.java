@@ -11,17 +11,17 @@
 package org.jboss.ide.eclipse.as.ui.editor;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.fieldassist.ControlDecoration;
+import org.eclipse.jface.fieldassist.FieldDecoration;
+import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
@@ -121,6 +121,7 @@ public class PortSection extends ServerEditorSection {
 					IJBossServerConstants.JNDI_PORT_DETECT,
 					IJBossServerConstants.JNDI_PORT,
 					IJBossServerConstants.JNDI_PORT_DEFAULT_XPATH,
+					IJBossToolingConstants.JNDI_DEFAULT_PORT,
 					Messages.EditorChangeJNDICommandName);
 		}
 	}
@@ -132,6 +133,7 @@ public class PortSection extends ServerEditorSection {
 					IJBossServerConstants.WEB_PORT_DETECT,
 					IJBossServerConstants.WEB_PORT,
 					IJBossServerConstants.WEB_PORT_DEFAULT_XPATH, 
+					IJBossToolingConstants.JBOSS_WEB_DEFAULT_PORT,
 					Messages.EditorChangeWebCommandName);
 		}
 	}
@@ -143,6 +145,7 @@ public class PortSection extends ServerEditorSection {
 					IJBoss6Server.JMX_RMI_PORT_DETECT,
 					IJBoss6Server.JMX_RMI_PORT,
 					IJBoss6Server.JMX_RMI_PORT_DEFAULT_XPATH,
+					IJBoss6Server.JMX_RMI_DEFAULT_PORT,
 					Messages.EditorChangeJMXRMICommandName);
 		}
 	}
@@ -154,6 +157,7 @@ public class PortSection extends ServerEditorSection {
 					IJBossToolingConstants.AS7_MANAGEMENT_PORT_DETECT,
 					IJBossToolingConstants.AS7_MANAGEMENT_PORT,
 					IJBossToolingConstants.AS7_MANAGEMENT_PORT_DEFAULT_XPATH,
+					IJBossToolingConstants.AS7_MANAGEMENT_PORT_DEFAULT_PORT,
 					Messages.EditorChangeAS7ManagementCommandName);
 		}
 	}
@@ -169,8 +173,12 @@ public class PortSection extends ServerEditorSection {
 		protected ServerAttributeHelper helper;
 		protected Listener listener;
 		protected PortSection section;
+		protected int defaultValue;
+		private ControlDecoration decoration;
+		
 		public PortEditorExtension(String labelText, String currentXPathKey, 
 				String detectXPathKey, String overrideValueKey, String defaultXPath,
+				int defaultValue,
 				String changeValueCommandName) {
 			this.labelText = labelText;
 			this.currentXPathKey = currentXPathKey;
@@ -178,6 +186,7 @@ public class PortSection extends ServerEditorSection {
 			this.overrideValueKey = overrideValueKey;
 			this.defaultXPath = defaultXPath;
 			this.changeValueCommandName = changeValueCommandName;
+			this.defaultValue = defaultValue;
 		}
 		public void setServerAttributeHelper(ServerAttributeHelper helper) {
 			this.helper = helper;
@@ -189,6 +198,13 @@ public class PortSection extends ServerEditorSection {
 			createUI(parent);
 			initialize();
 			addListeners();
+			
+			decoration = new ControlDecoration(text,
+					SWT.LEFT | SWT.TOP);
+			FieldDecoration fieldDecoration = FieldDecorationRegistry.getDefault()
+					.getFieldDecoration(FieldDecorationRegistry.DEC_WARNING);
+			decoration.setImage(fieldDecoration.getImage());
+			validate();
 		}
 
 		protected void createUI(Composite parent) {
@@ -228,9 +244,9 @@ public class PortSection extends ServerEditorSection {
 			text.setEnabled(!shouldDetect);
 			text.setEditable(!shouldDetect);
 			currentXPath = helper.getAttribute(currentXPathKey, defaultXPath);
-			if( shouldDetect )
-				text.setText(findPort(helper.getServer(), new Path(currentXPath)));
-			else
+			if( shouldDetect ) {
+				text.setText(findPortWithDefault(helper.getServer(), new Path(currentXPath), defaultValue));
+			} else
 				text.setText(helper.getAttribute(overrideValueKey, "")); //$NON-NLS-1$
 		}
 		protected void addListeners() {
@@ -275,10 +291,25 @@ public class PortSection extends ServerEditorSection {
 		public String getValue() {
 			return text.getText();
 		}
+		public void validate() {
+			decoration.hide();
+			String v = null;
+			String errorText;
+			if( detect.getSelection()) {
+				v = findPort(helper.getServer(), new Path(defaultXPath));
+				errorText = "This port cannot be automatically located. A default value is being displayed";
+			} else {
+				v = text.getText();
+				errorText = "The empty string is not a valid port.";
+			}
+			if( "".equals(v)) {
+				decoration.setDescriptionText(errorText);
+				decoration.show();
+			}
+		}
 	}
 
 	protected void createUI(Composite parent) {
-
 		FormToolkit toolkit = new FormToolkit(parent.getDisplay());
 		Section section = toolkit.createSection(parent, ExpandableComposite.TWISTIE|ExpandableComposite.EXPANDED|ExpandableComposite.TITLE_BAR);
 		section.setText(Messages.EditorServerPorts);
@@ -296,14 +327,12 @@ public class PortSection extends ServerEditorSection {
 		addUIAdditions(composite, description);
 		toolkit.paintBordersFor(composite);
 		section.setClient(composite);
-		getSaveStatus();
 	}
 
 	private void addUIAdditions(Composite parent, Control top) {
 		IPortEditorExtension[] extensions = (IPortEditorExtension[]) sectionList.toArray(new IPortEditorExtension[sectionList.size()]);
 
 		FormData data;
-		Control c;
 		Composite wrapper = new Composite(parent, SWT.NONE);
 		GridLayoutFactory.fillDefaults().margins(6, 10).numColumns(4).applyTo(wrapper);
 		data = new FormData();
@@ -342,6 +371,8 @@ public class PortSection extends ServerEditorSection {
 		String xpath;
 		Link link;
 		PortSection pSection;
+		int defVal;
+		PortEditorExtension ext;
 		public SetPortCommand(IServerWorkingCopy server, ServerAttributeHelper helper, String name,
 				String textAttribute, String overrideAttribute, String overridePathAttribute,
 				String pathDefault, PortEditorExtension ext) { //Text text, Button button, String xpath, Listener listener) {
@@ -356,13 +387,15 @@ public class PortSection extends ServerEditorSection {
 			this.listener = ext.listener;
 			this.xpath = ext.currentXPath;
 			this.link = ext.link;
-			pSection = ext.section;
+			this.pSection = ext.section;
+			this.defVal = ext.defaultValue;
+			this.ext = ext;
 		}
 
 		public void execute() {
 			preText = helper.getAttribute(textAttribute, (String)null);
 			if( preText == null )
-				preText = findPort(helper.getServer(), new Path(defaultPath));
+				preText = text.getText();
 			prePath = helper.getAttribute(overridePathAttribute, (String)defaultPath);
 			preOverride = helper.getAttribute(overrideAttribute, true);
 			helper.setAttribute(textAttribute, text.getText());
@@ -374,10 +407,10 @@ public class PortSection extends ServerEditorSection {
 			text.setEditable(!button.getSelection());
 			if( button.getSelection() ) {
 				text.removeListener(SWT.Modify, listener);
-				text.setText(findPort(helper.getServer(), new Path(xpath)));
+				text.setText(findPortWithDefault(helper.getServer(), new Path(xpath), this.defVal));
 				text.addListener(SWT.Modify, listener);
 			}
-			pSection.getSaveStatus();
+			validate();
 		}
 
 		public void undo() {
@@ -397,11 +430,22 @@ public class PortSection extends ServerEditorSection {
 			text.setEditable(!preOverride);
 			button.addListener(SWT.Selection, listener);
 			text.addListener(SWT.Modify, listener);
-
-			pSection.getSaveStatus();
+			validate();
+		}
+		
+		private void validate() {
+			ext.validate();
 		}
 	}
 
+	protected static String findPortWithDefault(IServer server, IPath path, int defaultValue) {
+		String s = findPort(server, path);
+		if( s.equals("")) { //$NON-NLS-1$
+			s = new Integer(defaultValue).toString();
+		} 
+		return s;
+	}
+	
 	protected static String findPort(IServer server, IPath path) {
 		XPathQuery query = XPathModel.getDefault().getQuery(server, path);
 		String result = ""; //$NON-NLS-1$
@@ -418,26 +462,4 @@ public class PortSection extends ServerEditorSection {
 		}
 		return result;
 	}
-	
-	public IStatus[] getSaveStatus() {
-		Iterator<IPortEditorExtension> i = sectionList.iterator();
-		IPortEditorExtension ext1;
-		int temp;
-		boolean errorFound = false;
-		while(i.hasNext()) {
-			ext1 = i.next();
-			try {
-				temp = Integer.parseInt(ext1.getValue());
-				if( temp < 0 )
-					errorFound = true;
-			} catch(NumberFormatException nfe) {
-				errorFound = true;
-			}
-		}
-		setErrorMessage(errorFound ? Messages.EditorPortInvalid : null);
-		return errorFound ? 
-				new IStatus[] { new Status(IStatus.WARNING, JBossServerUIPlugin.PLUGIN_ID, Messages.EditorPortInvalid)} 
-				: new IStatus[]{};
-	}
-
 }
