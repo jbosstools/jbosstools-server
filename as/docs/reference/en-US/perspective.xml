@@ -678,6 +678,9 @@
 			<para>
 				You are also able to change a servers behaviour from <guilabel>Local</guilabel> to <guilabel>Remote System Deployment</guilabel> through this settings tab. In doing so you will see that the <guilabel>Host</guilabel> is not set by default, but the other fields contain default values. <!-- Once your remote server behaviour is configured, click the <guibutton>Test</guibutton> button to confirm the settings are correct.  -->
 			</para>
+			<para>
+				You can select the <guilabel>Listen on all interfaces to allow remote web connections</guilabel> when using JBoss Application Server 3 to 7 or JBoss Enterprise Application Platform 4 to 6. This option will force the server to launch with the option <option>-b 0.0.0.0</option>. This option will change the host address to 0.0.0.0, useful for testing web applications on your local machine. JMX commands and web browser activities will still use the host set in the <guilabel>General Information</guilabel> section.
+			</para>
 			<figure>
 				<title>Server Behaviour - Remote</title>
 				<mediaobject>
