@@ -48,6 +48,8 @@ import org.jboss.ide.eclipse.as.ui.dialogs.XPathDialogs.XPathDialog;
 
 public class ChangePortDialog extends TitleAreaDialog {
 	private static final int RESTORE_DEFAULT = 35;
+	private boolean modified = false;
+	
 	public static class ChangePortDialogInfo {
 		public String port;
 		public String defaultValue;
@@ -165,8 +167,11 @@ public class ChangePortDialog extends TitleAreaDialog {
 				currentQuery.setAttribute(d.getAttribute());
 				currentQuery.setXpathPattern(d.getXpath());
 				currentQuery.setName(d.getName());
+				currentQuery.clearCache();
+				this.modified = true;
 				category.save();
 				fillWidgets();
+				selectionChanged();
 			}
 		}
 	}
@@ -254,5 +259,9 @@ public class ChangePortDialog extends TitleAreaDialog {
 					return;
 				}
 		}
+	}
+	
+	public boolean isModified() {
+		return modified;
 	}
 }

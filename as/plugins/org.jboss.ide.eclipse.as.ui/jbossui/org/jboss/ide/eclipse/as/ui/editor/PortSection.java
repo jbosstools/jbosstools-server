@@ -268,8 +268,12 @@ public class PortSection extends ServerEditorSection {
 					if( result == Dialog.OK) {
 						currentXPath = dialog.getSelection();
 						section.execute(getCommand());
-						text.setFocus();
 					}
+					if( dialog.isModified() ) {
+						initialize();
+						validate();
+					}
+					text.setFocus();
 				}
 			};
 		}
