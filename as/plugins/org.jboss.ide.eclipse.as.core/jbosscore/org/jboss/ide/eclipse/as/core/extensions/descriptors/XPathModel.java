@@ -259,7 +259,7 @@ public class XPathModel extends UnitedServerListener {
 		rtToPortsFile.put(IConstants.AS_71, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_71));
 		rtToPortsFile.put(IConstants.EAP_43, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_EAP_43));
 		rtToPortsFile.put(IConstants.EAP_50, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_EAP_50));
-		rtToPortsFile.put(IConstants.EAP_60, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_70));
+		rtToPortsFile.put(IConstants.EAP_60, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_71));
 		// TODO NEW_SERVER_ADAPTER Add the new server ID to port mapping file above this line 
 	}
 	
