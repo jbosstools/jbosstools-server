@@ -46,10 +46,27 @@ Raleigh NC 27606 USA.
 		<import plugin="org.jboss.ide.eclipse.as.ui" />
 		<import plugin="org.eclipse.rse.files.ui" version="3.2.0" match="greaterOrEqual" />
 		<import plugin="org.eclipse.rse.ui" version="3.2.0" match="greaterOrEqual" />
-		<import plugin="org.eclipse.rse.subsystems.shells.dstore" version="2.1.300" match="greaterOrEqual" />
 		<import plugin="org.eclipse.rse.subsystems.shells.local" version="2.1.300" match="greaterOrEqual" />
 		<import plugin="org.eclipse.rse.subsystems.shells.ssh" version="2.1.300" match="greaterOrEqual" />
 		<import plugin="org.eclipse.rse.subsystems.shells.telnet" version="1.2.200" match="greaterOrEqual" />
+		
+		<!-- 
+		   The following plugins are required for completeness and usability of product only. 
+		   We have no compilation requirements against them, nor any critical outstanding bugs
+		   that require a specific version or API. 
+		-->
+		<import plugin="org.eclipse.rse.connectorservice.local"/>
+		<import plugin="org.eclipse.rse.connectorservice.ssh"/>
+		<import plugin="org.eclipse.rse.processes.ui"/>
+		<import plugin="org.eclipse.rse.shells.ui"/>
+		<import plugin="org.eclipse.rse.subsystems.files.local"/>
+		<import plugin="org.eclipse.rse.subsystems.files.ssh"/>
+		<import plugin="org.eclipse.rse.subsystems.processes.core"/>
+		<import plugin="org.eclipse.rse.subsystems.processes.local"/>
+		<import plugin="org.eclipse.rse.subsystems.processes.shell.linux"/>
+		<import plugin="org.eclipse.rse.subsystems.terminals.core"/>
+		<import plugin="org.eclipse.rse.subsystems.terminals.ssh"/>
+		<import plugin="org.eclipse.rse.terminals.ui"/>
 	</requires>
 
 	<plugin id="org.jboss.ide.eclipse.as.rse.core" download-size="0" install-size="0" version="0.0.0" unpack="false" />
