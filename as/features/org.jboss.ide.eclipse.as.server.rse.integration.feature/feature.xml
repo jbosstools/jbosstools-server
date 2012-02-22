@@ -53,7 +53,10 @@ Raleigh NC 27606 USA.
 		<!-- 
 		   The following plugins are required for completeness and usability of product only. 
 		   We have no compilation requirements against them, nor any critical outstanding bugs
-		   that require a specific version or API. 
+		   that require a specific version or API. Functionality this forces to be included
+		   are things such as terminal support, process support, shell support, 
+		   the sending and receiving of remote commands, the sending and receiving of remote files, 
+		   and support for the connector service.  
 		-->
 		<import plugin="org.eclipse.rse.connectorservice.local"/>
 		<import plugin="org.eclipse.rse.connectorservice.ssh"/>
