@@ -16,6 +16,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServerConnection;
@@ -134,16 +135,36 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 		server.removeServerListener(listener);
 	}
 	
+	private IModule findRootModule(IServer server, IModule module) {
+		IModule[] rootMods = null;
+		try {
+			rootMods = server.getRootModules(module, new NullProgressMonitor());
+		} catch( CoreException ce ) {
+			return module; // No need to log this
+		}
+		if( rootMods == null || rootMods.length == 0 )
+			return module;
+		List<IModule> serverHas = Arrays.asList(server.getModules());
+		for( int i = 0; i < rootMods.length; i++ ) {
+			if( serverHas.contains(rootMods[i]))
+				// Grab the first parent module that's already on the server
+				return rootMods[i];
+		}
+		return module;
+	}
+	
 	//TODO: the waiting/timeout logic in here should be done for waitJMX too.
 	//TODO: should return true for succss or false if timeout so upper layer can report it.
-	protected void waitJBoss7(final IServer server, final IModule module) {
+	protected void waitJBoss7(final IServer server, final IModule module2) {
+		IModule rootModule = findRootModule(server, module2);
 		try {
 			JBoss7Server jbossServer = ServerConverter.checkedGetJBossServer(server, JBoss7Server.class);
 			IJBoss7ManagerService service = JBoss7ManagerUtil.getService(server);
-			IPath deployPath = PublishUtil.getDeployPath(new IModule[]{module}, jbossServer);
+			IPath deployPath = PublishUtil.getDeployPath(new IModule[]{rootModule}, jbossServer);
 			long time = new Date().getTime();
 			long endTime = time + getMaxDelay();
 			boolean waitedOnce = false;
+			
 			while (new Date().getTime() < endTime) { // no need to keep doing this if timed out or server stopping/stopped but not sure how to avoid race condition.
 				AS7ManagementDetails details = new AS7ManagementDetails(server);
 				boolean done = false;
@@ -157,7 +178,9 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 				}
 				try {
 					if(!waitedOnce) {
-						JBossServerUIPlugin.log(new Status(IStatus.INFO, JBossServerUIPlugin.PLUGIN_ID, "Module " + module.getName() + " on " + server.getName() + " not ready to be shown in web browser. Waiting...", null));
+						JBossServerUIPlugin.log(new Status(
+							IStatus.INFO, JBossServerUIPlugin.PLUGIN_ID, 
+							"Module " + rootModule.getName() + " on " + server.getName() + " not ready to be shown in web browser. Waiting...", null));
 					}
 					waitedOnce = true;
 					Thread.sleep(2000);
@@ -169,7 +192,7 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 					IStatus.WARNING,
 					JBossServerCorePlugin.PLUGIN_ID,
 					NLS.bind(
-							"Error occurred while waiting for " + module.getName() + " to start on " + server.getName(),
+							"Error occurred while waiting for " + rootModule.getName() + " to start on " + server.getName(),
 							server.getName()), e);
 			JBossServerUIPlugin.log(s.getMessage(), e);
 		}
