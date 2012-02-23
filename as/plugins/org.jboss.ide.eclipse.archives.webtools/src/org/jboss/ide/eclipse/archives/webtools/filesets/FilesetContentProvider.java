@@ -13,7 +13,6 @@ package org.jboss.ide.eclipse.archives.webtools.filesets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 import org.apache.tools.ant.BuildException;
 import org.eclipse.core.runtime.IPath;
@@ -21,7 +20,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 
 public class FilesetContentProvider implements ITreeContentProvider {
 	private static final String FILESET_KEY = "org.jboss.ide.eclipse.as.ui.views.server.providers.FilesetViewProvider.PropertyKey"; //$NON-NLS-1$
@@ -84,19 +82,18 @@ public class FilesetContentProvider implements ITreeContentProvider {
 
 		private void addPath(ArrayList<PathWrapper> children,
 				HashMap<String, FolderWrapper> folders, IPath path, IPath folder) {
-			try {
-				FolderWrapper fw = null;
-				if (!folders.containsKey(path.segment(0))) {
-					fw = new FolderWrapper(path.removeLastSegments(path
-							.segmentCount() - 1), folder);
-					folders.put(path.segment(0), fw);
+			FolderWrapper fw = null;
+			if (path.segmentCount() > 0) {
+				String seg1 = path.segment(0);
+				if( !folders.containsKey(seg1)) {
+					fw = new FolderWrapper(path.removeLastSegments(
+							path.segmentCount() - 1), folder);
+					folders.put(seg1, fw);
 					children.add(fw);
 				} else {
-					fw = folders.get(path.segment(0));
+					fw = folders.get(seg1);
 				}
 				fw.addChild(path.removeFirstSegments(1));
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
 		}
 	}

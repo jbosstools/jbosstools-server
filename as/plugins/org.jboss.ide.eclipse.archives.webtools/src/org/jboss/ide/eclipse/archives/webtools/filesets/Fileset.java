@@ -16,11 +16,14 @@ import org.eclipse.core.internal.variables.StringSubstitutionEngine;
 import org.eclipse.core.internal.variables.StringVariableManager;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.archives.core.asf.DirectoryScanner;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
+import org.jboss.ide.eclipse.archives.webtools.IntegrationPlugin;
 
 
 public class Fileset implements Cloneable {
@@ -33,14 +36,12 @@ public class Fileset implements Cloneable {
 	public Fileset() {
 	}
 	public Fileset(String string) {
-		try {
-			name = folder = includesPattern =excludesPattern = ""; //$NON-NLS-1$
-			String[] parts = string.split(SEP);
-			name = parts[0];
-			folder = parts[1];
-			includesPattern = parts[2];
-			excludesPattern = parts[3];
-		} catch( ArrayIndexOutOfBoundsException aioobe) {}
+		name = folder = includesPattern =excludesPattern = ""; //$NON-NLS-1$
+		String[] parts = string.split(SEP);
+		name = parts.length <= 0 ? null : parts[0];
+		folder = parts.length <= 1 ? null : parts[1];
+		includesPattern = parts.length <= 2 ? null : parts[2];
+		excludesPattern = parts.length <= 3 ? null : parts[3];
 	}
 
 	public Fileset(String name, String folder, String inc, String exc) {
@@ -72,6 +73,10 @@ public class Fileset implements Cloneable {
 	}
 	
 	public static String getFolder(String folder, IRuntime runtime) {
+		return getFolder(folder, runtime, true);
+	}
+	public static String getFolder(String folder, IRuntime runtime, boolean ignoreError) {
+
 		String tmp = folder == null ? "" : folder;  //$NON-NLS-1$
 		if( runtime != null ) {
 			tmp = tmp.replace(JBOSS_CONFIG_DIR_ARG, getConfigDirSubstitute(runtime));
@@ -81,7 +86,12 @@ public class Fileset implements Cloneable {
 			StringSubstitutionEngine engine = new StringSubstitutionEngine();
 			tmp = engine.performStringSubstitution(tmp, true,
 					true, StringVariableManager.getDefault());
-		} catch( CoreException ce ) {}
+		} catch( CoreException ce ) {
+			if( !ignoreError ) {
+				IntegrationPlugin.getDefault().getLog().log(
+						new Status(IStatus.WARNING, IntegrationPlugin.PLUGIN_ID, ce.getMessage(), ce));
+			}
+		}
 
 		IPath p = new Path(tmp);
 		if( !p.isAbsolute() && runtime != null ) {
@@ -158,10 +168,10 @@ public class Fileset implements Cloneable {
 	}
 	
 	public Object clone() {
-		try {
-			return super.clone();
-		} catch( Exception e ) {}
-		return null;
+		Fileset fs = new Fileset(name, folder, includesPattern, excludesPattern);
+		fs.setServer(server);
+		fs.setRuntime(runtime);
+		return fs;
 	}
 
 	public boolean equals(Object other) {
@@ -181,8 +191,18 @@ public class Fileset implements Cloneable {
 		String excludes = getExcludesPattern();
 		return findPaths(dir, includes, excludes);
 	}
+	
+	/**
+	 * This method intentionally will not log any exceptions. It will only
+	 * return an empty array if the scanner is incapable of scanning
+	 * with the given parameters. 
+	 * 
+	 * @param dir
+	 * @param includes
+	 * @param excludes
+	 * @return
+	 */
 	public static IPath[] findPaths(String dir, String includes, String excludes) {
-		IPath[] paths = new IPath[0];
 		try {
 			if (dir != null && new File(dir).exists()) {
 				DirectoryScanner scanner = DirectoryScannerFactory
@@ -190,15 +210,17 @@ public class Fileset implements Cloneable {
 								null, false, 1, true);
 				if (scanner != null) {
 					String[] files = scanner.getIncludedFiles();
-					paths = new IPath[files.length];
+					IPath[] paths = new IPath[files.length];
 					for (int i = 0; i < files.length; i++) {
 						paths[i] = new Path(files[i]);
 					}
+					return paths;
 				}
 			}
 		} catch (IllegalStateException ise) {
+			return new IPath[0];
 		}
-		return paths;
+		return new IPath[0];
 	}
 
 	

@@ -18,7 +18,10 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.archives.webtools.IntegrationPlugin;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.tools.jmx.core.IMemento;
 import org.jboss.tools.jmx.core.util.XMLMemento;
@@ -38,12 +41,13 @@ public class FilesetUtil {
 	 * @return
 	 */
 	public static Fileset[] loadFilesets(File file, IServer server) {
-		if( file != null && file.exists()) {
-			try {
-				return loadFilesets(new FileInputStream(file), server);
-			} catch( FileNotFoundException fnfe) {}
+		if( file == null || !file.exists()) 
+			return new Fileset[0];
+		try {
+			return loadFilesets(new FileInputStream(file), server);
+		} catch( FileNotFoundException fnfe) {
+			return new Fileset[0];
 		}
-		return new Fileset[]{};
 	}
 	
 	/**
@@ -101,7 +105,9 @@ public class FilesetUtil {
 			try {
 				memento.save(new FileOutputStream(file));
 			} catch( IOException ioe) {
-				// TODO LOG
+				IntegrationPlugin.getDefault().getLog().log(
+						new Status(IStatus.ERROR, IntegrationPlugin.PLUGIN_ID, ioe.getMessage(), ioe)
+				);
 			}
 		}
 	}

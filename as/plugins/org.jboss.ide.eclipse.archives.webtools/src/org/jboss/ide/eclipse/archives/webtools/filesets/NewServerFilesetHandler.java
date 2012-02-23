@@ -8,13 +8,13 @@ import java.util.Arrays;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.archives.webtools.IntegrationPlugin;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 
 public class NewServerFilesetHandler extends UnitedServerListener {
@@ -28,20 +28,23 @@ public class NewServerFilesetHandler extends UnitedServerListener {
 	protected NewServerFilesetHandler() {
 		IServerType[] types = ServerCore.getServerTypes();
 		for( int i = 0; i < types.length; i++ ) {
-			try {
-				IPath fileToWrite = FilesetUtil.DEFAULT_FS_ROOT.append(types[i].getId());
-				if( !fileToWrite.toFile().exists()) {
-					IPath p = new Path("filesetdata").append(types[i].getId()); //$NON-NLS-1$
-					URL url = FileLocator.find(IntegrationPlugin.getDefault().getBundle(), p, null);
-					if( url != null ) {
+			IPath fileToWrite = FilesetUtil.DEFAULT_FS_ROOT.append(types[i].getId());
+			if( !fileToWrite.toFile().exists()) {
+				IPath p = new Path("filesetdata").append(types[i].getId()); //$NON-NLS-1$
+				URL url = FileLocator.find(IntegrationPlugin.getDefault().getBundle(), p, null);
+				if( url != null ) {
+					try {
 					    InputStream fis  = url.openStream();
 					    Fileset[] sets = FilesetUtil.loadFilesets(fis, null);
 					    if( sets != null && sets.length != 0 ) {
 							FilesetUtil.saveFilesets(fileToWrite.toFile(), sets);
 					    }
+					} catch(IOException ioe) {
+						IntegrationPlugin.getDefault().getLog().log(
+								new Status(IStatus.ERROR, IntegrationPlugin.PLUGIN_ID, ioe.getMessage(), ioe));
 					}
 				}
-			} catch(IOException ioe) {}
+			}
 		}
 	}
 	
