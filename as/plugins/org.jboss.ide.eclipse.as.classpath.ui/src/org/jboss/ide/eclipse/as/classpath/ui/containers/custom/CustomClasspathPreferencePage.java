@@ -54,6 +54,7 @@ import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.classpath.core.RuntimeKey;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel.IDefaultPathProvider;
+import org.jboss.ide.eclipse.as.classpath.ui.ClasspathUIPlugin;
 import org.jboss.ide.eclipse.as.classpath.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.preferences.ServerTypePreferencePage;
@@ -95,6 +96,8 @@ public class CustomClasspathPreferencePage extends ServerTypePreferencePage {
 		try {
 			prefs.flush();
 		} catch(BackingStoreException e) {
+			// IGNORE this since it is only a setting to remember what was the last selected
+			// runtime. This is extremely not necessary to log or inform the user about. 
 		}
 		
 		MessageDialog dialog= new MessageDialog(getShell(), 
@@ -115,7 +118,7 @@ public class CustomClasspathPreferencePage extends ServerTypePreferencePage {
 							// A full build is not enough
 							jp.setRawClasspath(jp.getRawClasspath(), new NullProgressMonitor());
 						} catch( JavaModelException jme ) {
-							// TODO 
+							return jme.getStatus();
 						}
 						CoreUtility.getBuildJob(jp.getProject()).schedule();
 					}
@@ -146,6 +149,8 @@ public class CustomClasspathPreferencePage extends ServerTypePreferencePage {
 		IProject[] allProjs = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 		for( int i = 0; i < allProjs.length; i++ ) {
 			try {
+				if( !allProjs[i].exists() || !allProjs[i].isOpen())
+					continue;
 				if(FacetedProjectFramework.isFacetedProject(allProjs[i])) {
 					IFacetedProject fp = ProjectFacetsManager.create(allProjs[i]);
 					org.eclipse.wst.common.project.facet.core.runtime.IRuntime primary = fp.getPrimaryRuntime();
@@ -156,7 +161,10 @@ public class CustomClasspathPreferencePage extends ServerTypePreferencePage {
 					}
 				}
 			} catch(CoreException ce) {
-				// Exception thrown if project does not exist or is closed, can ignore safely	
+				// Exception thrown if project does not exist or is closed,
+				// can ignore safely because we checked that, and also, 
+				// if this project is erroring, we do not want to error every time
+				// this is checked. Simply recognize this project is not suitable 
 			}
 		}
 		return matching.toArray(new IProject[matching.size()]);

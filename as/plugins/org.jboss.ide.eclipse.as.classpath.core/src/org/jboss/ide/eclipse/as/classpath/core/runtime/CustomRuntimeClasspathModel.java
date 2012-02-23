@@ -225,11 +225,19 @@ public class CustomRuntimeClasspathModel implements IJBossToolingConstants, IJBo
 		}
 		return null;
 	}
+	
+	/**
+	 * Return a list of filesets, or null if none are found
+	 * @param file
+	 * @param server
+	 * @return
+	 */
 	public static Fileset[] loadFilesets(File file, IServer server) {
-		if( file != null && file.exists()) {
-			try {
+		try {
+			if( file != null && file.exists())
 				return FilesetUtil.loadFilesets(new FileInputStream(file), server);
-			} catch( FileNotFoundException fnfe) {}
+		} catch( FileNotFoundException fnfe) {
+			return null;
 		}
 		return null;
 	}

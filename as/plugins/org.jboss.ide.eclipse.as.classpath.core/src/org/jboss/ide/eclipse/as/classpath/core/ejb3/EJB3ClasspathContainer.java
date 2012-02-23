@@ -14,6 +14,8 @@ package org.jboss.ide.eclipse.as.classpath.core.ejb3;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
@@ -55,36 +57,38 @@ public class EJB3ClasspathContainer implements IClasspathContainer, ClasspathCon
    public EJB3ClasspathContainer(IPath path, IJavaProject project) {
 	  this.path = path;
 	  this.javaProject = project;
-
-      try {
-         String configName = path.segment(1);
-         IServer servers[] = ServerCore.getServers();
-
-         if (configName == null) {
-            // old classpath container, try finding the persisten property
-            configName = project.getProject().getPersistentProperty(JBOSS_EJB3_CONFIGURATION);
-            if (configName != null) {
-               // go ahead and remove the persistent property
-               project.getProject().setPersistentProperty(JBOSS_EJB3_CONFIGURATION, null);
-            }
-         }
-
-         for (int i = 0; i < servers.length; i++) {
-            if (servers[i].getName().equals(configName))  {
-            	jbossServer = (JBossServer) servers[i].loadAdapter(JBossServer.class, new NullProgressMonitor());
-            	try {
-            	homePath = jbossServer.getServer().getRuntime().getLocation();
-            	configPath = new Path(jbossServer.getConfigDirectory());
-            	} catch( Exception e ) { 
-    				IStatus status = new Status(IStatus.ERROR, ClasspathCorePlugin.PLUGIN_ID,Messages.EJB3ClasspathContainer_could_not_determine_home, e);
-    				ClasspathCorePlugin.getDefault().getLog().log(status);
-            	}
-            	break;
-            }
-         }
-      } catch (CoreException e) {
+      String configName = path.segment(1);
+      IServer servers[] = ServerCore.getServers();
+      IProject p = project.getProject();
+      if( p.exists() && p.isOpen() /* &&  Deprecated : p.isLocal(IResource.DEPTH_INFINITE)*/) {
+    	  try {
+    		  if (configName == null) {
+    			  // old classpath container, try finding the persisten property
+    			  configName = project.getProject().getPersistentProperty(JBOSS_EJB3_CONFIGURATION);
+    			  if (configName != null) {
+    				  // go ahead and remove the persistent property
+    				  project.getProject().setPersistentProperty(JBOSS_EJB3_CONFIGURATION, null);
+    			  }
+    		  }
+    	  } catch( CoreException ce ) {
+    		  // This should never occur. If it does, it regards legacy situations. 
+    		  // The project is opened and accessible. There are no reasons for this 
+    		  // to ever occur. 
+    	  }
+      }         
+      for (int i = 0; i < servers.length; i++) {
+    	  if (servers[i].getName().equals(configName))  {
+    		  jbossServer = (JBossServer) servers[i].loadAdapter(JBossServer.class, new NullProgressMonitor());
+    		  try {
+    			  homePath = jbossServer.getServer().getRuntime().getLocation();
+    			  configPath = new Path(jbossServer.getConfigDirectory());
+    		  } catch( Exception e ) { 
+    			  IStatus status = new Status(IStatus.ERROR, ClasspathCorePlugin.PLUGIN_ID,Messages.EJB3ClasspathContainer_could_not_determine_home, e);
+    			  ClasspathCorePlugin.getDefault().getLog().log(status);
+    		  }
+    		  break;
+    	  }
       }
-
    }
 
    public String getDescription() {
