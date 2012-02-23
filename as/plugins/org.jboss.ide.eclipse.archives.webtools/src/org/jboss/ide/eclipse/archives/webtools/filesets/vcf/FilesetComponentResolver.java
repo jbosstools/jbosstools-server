@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2012 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.ide.eclipse.archives.webtools.filesets.vcf;
 
 import java.io.UnsupportedEncodingException;
@@ -46,7 +56,6 @@ public class FilesetComponentResolver implements IReferenceResolver {
 		path = includes = excludes = null;
 		try {
 			for( int i = 0; i < split.length; i++ ) {
-				boolean hasEquals = split[i].contains("="); //$NON-NLS-1$
 				String pre = split[i].substring(0, split[i].indexOf("=")); //$NON-NLS-1$
 				String post = split[i].substring(split[i].indexOf("=") + 1); //$NON-NLS-1$
 				post = URLDecoder.decode(post, "UTF-8"); //$NON-NLS-1$
@@ -57,15 +66,18 @@ public class FilesetComponentResolver implements IReferenceResolver {
 				else if( "excludes".equals(pre)) //$NON-NLS-1$
 					excludes = post;
 			}
-		} catch( UnsupportedEncodingException uee) {}
-		WorkspaceFilesetVirtualComponent comp = new WorkspaceFilesetVirtualComponent(p, context, path);
-		comp.setIncludes(includes);
-		comp.setExcludes(excludes);
-		IVirtualReference ref = ComponentCore.createReference(context, comp);
-		ref.setArchiveName(referencedComponent.getArchiveName());
-		ref.setRuntimePath(referencedComponent.getRuntimePath());
-		ref.setDependencyType(referencedComponent.getDependencyType().getValue());
-		return ref;
+			WorkspaceFilesetVirtualComponent comp = new WorkspaceFilesetVirtualComponent(p, context, path);
+			comp.setIncludes(includes);
+			comp.setExcludes(excludes);
+			IVirtualReference ref = ComponentCore.createReference(context, comp);
+			ref.setArchiveName(referencedComponent.getArchiveName());
+			ref.setRuntimePath(referencedComponent.getRuntimePath());
+			ref.setDependencyType(referencedComponent.getDependencyType().getValue());
+			return ref;
+		} catch( UnsupportedEncodingException uee) {
+			// Impossible, since I've hard-coded UTF-8 here. 
+			return null;
+		}
 	}
 
 	public ReferencedComponent resolve(IVirtualReference reference) {
@@ -86,10 +98,10 @@ public class FilesetComponentResolver implements IReferenceResolver {
 			rc.setHandle(URI.createURI(fsvc.getId() + url));
 			rc.setDependencyType(DependencyType.CONSUMES_LITERAL);
 			return rc;
-
-		} catch( UnsupportedEncodingException uee) {}
-		int x = 5;
-		return null;
+		} catch( UnsupportedEncodingException uee) {
+			// This should never happen, since I am hard-coding in UTF-8.
+			return null;
+		}
 	}
 
 }

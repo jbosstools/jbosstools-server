@@ -94,6 +94,9 @@ public class ArchivesModelModuleContributor {
 					ArchivesModel.instance().getRoot(project.getLocation()).save( 
 							new NullProgressMonitor());
 				} catch( ArchivesModelException ame ) {
+					// I have no idea how often this will happen, and I am not willing
+					// to currently log an error which may be very common and is curentl
+					// ignored since it will not affect users in this specific case. 
 				}
 			}
 		}
