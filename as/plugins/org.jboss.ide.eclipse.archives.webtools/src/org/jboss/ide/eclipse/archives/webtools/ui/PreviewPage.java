@@ -51,7 +51,6 @@ import org.jboss.ide.eclipse.archives.ui.providers.ArchivesLabelProvider;
 import org.jboss.ide.eclipse.archives.ui.wizards.AbstractArchiveWizard;
 import org.jboss.ide.eclipse.archives.ui.wizards.WizardPageWithNotification;
 import org.jboss.ide.eclipse.archives.webtools.Messages;
-import org.jboss.ide.eclipse.archives.webtools.archivetypes.WarArchiveType;
 
 public abstract class PreviewPage extends WizardPageWithNotification {
 
