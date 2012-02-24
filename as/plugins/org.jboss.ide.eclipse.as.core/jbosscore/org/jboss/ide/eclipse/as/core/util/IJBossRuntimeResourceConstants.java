@@ -117,4 +117,7 @@ public interface IJBossRuntimeResourceConstants {
 	public static final String DESCRIPTOR_CONNECTOR = "META-INF/ra.xml"; //$NON-NLS-1$
 	public static final String JBOSS_AS = "JBOSS_AS";  //$NON-NLS-1$
 	public static final String JBOSS_AS_EAP_DIRECTORY = "jboss-as";  //$NON-NLS-1$
+	
+	public static final String AS_70_MANAGEMENT_SCRIPT = "jboss-admin.sh"; //$NON-NLS-1$
+	public static final String AS_71_MANAGEMENT_SCRIPT = "jboss-cli.sh"; //$NON-NLS-1$
 }

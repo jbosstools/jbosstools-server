@@ -15,12 +15,14 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.ILaunchConfigConfigurator;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
@@ -56,7 +58,15 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 	protected String getShutdownCommand(JBossServer jbossServer, IJBossServerRuntime jbossRuntime) throws CoreException {
 		String rseHome = RSEUtils.getRSEHomeDir(jbossServer.getServer());
 		IPath p = new Path(rseHome).append(IJBossRuntimeResourceConstants.BIN);
-		return p.toString() + "/jboss-admin.sh --connect command=:shutdown";
+		return p.toString() + "/" + getManagementScript(jbossServer) + " --connect command=:shutdown";
+	}
+	
+	protected String getManagementScript(JBossServer server) {
+		IServerType type = server.getServer().getServerType();
+		if( type.getId().equals(IJBossToolingConstants.SERVER_AS_71) || type.getId().equals(IJBossToolingConstants.SERVER_EAP_60)) {
+			return IJBossRuntimeResourceConstants.AS_71_MANAGEMENT_SCRIPT;
+		}
+		return IJBossRuntimeResourceConstants.AS_70_MANAGEMENT_SCRIPT;
 	}
 
 	protected String getLaunchCommand(JBossServer jbossServer, IJBossServerRuntime jbossRuntime) throws CoreException {
