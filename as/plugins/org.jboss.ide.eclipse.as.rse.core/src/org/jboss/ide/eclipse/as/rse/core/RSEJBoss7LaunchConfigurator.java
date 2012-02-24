@@ -18,8 +18,10 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.ILaunchConfigConfigurator;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 /**
@@ -59,6 +61,12 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 
 	protected String getLaunchCommand(JBossServer jbossServer, IJBossServerRuntime jbossRuntime) throws CoreException {
 		String programArguments = getDefaultProgramArguments(jbossServer, jbossRuntime);
+		if( LaunchCommandPreferences.listensOnAllHosts(jbossServer.getServer())) {
+			programArguments = ArgsUtil.setArg(programArguments,
+					IJBossRuntimeConstants.STARTUP_ARG_HOST_SHORT,
+					null, "0.0.0.0");
+		}
+		
 		String vmArguments = getDefaultVMArguments(jbossServer, jbossRuntime);
 		String jar = getJar(jbossServer, jbossRuntime);
 

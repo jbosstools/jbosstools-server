@@ -160,7 +160,13 @@ public class JBossLaunchAdapter extends LaunchableAdapterDelegate {
 				}
 			}
 		} catch (MalformedURLException e) {
+			// It's not malformed. I know it. I would let it fall through, but hudson doesn't like that
+			return null;
 		} catch (CoreException e) {
+			// The project is not faceted. Even if I check, I cannot prevent this catch. 
+			// I'd let it fall through to the return null 2 lines down, but, hudson doesn't like it
+			// I wonder if I'll get cited for my coding style having multiple returns next.
+			return null;
 		}
 		// No launchable found
 		return null;

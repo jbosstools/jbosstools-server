@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTabGroup;
 import org.eclipse.debug.ui.CommonTab;
@@ -34,6 +36,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
+import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.xpl.JavaMainTabClone;
 
@@ -152,7 +155,13 @@ public class JBossLaunchConfigurationTabGroup extends
 				String startArgs = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, (String)null);
 				originalHost = ArgsUtil.getValue(startArgs, "-b", "--host"); //$NON-NLS-1$ //$NON-NLS-2$
 				originalConf = ArgsUtil.getValue(startArgs, "-c", "--configuration"); //$NON-NLS-1$ //$NON-NLS-2$
-			} catch( CoreException ce ) { }
+			} catch( CoreException ce ) {
+				// This can only happen if loading properties from a launch config is f'd, 
+				// in which case it's a big eclipse issue
+				JBossServerUIPlugin.getDefault().getLog().log(
+						new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, 
+						"Error loading details from launch configuration", ce));
+			}
 		}
 		public boolean isValid(ILaunchConfiguration config) {
 			if( !super.isValid(config)) 
@@ -165,7 +174,13 @@ public class JBossLaunchConfigurationTabGroup extends
 					return false;
 				if( newHost == null || !newHost.equals(originalHost)) 
 					return false;
-			} catch( CoreException ce ) {}
+			} catch( CoreException ce ) {
+				// This can only happen if loading properties from a launch config is f'd, 
+				// in which case it's a big eclipse issue
+				JBossServerUIPlugin.getDefault().getLog().log(
+						new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, 
+						"Error loading details from launch configuration", ce));
+			}
 			return true;
 		}
 		public String getErrorMessage() {

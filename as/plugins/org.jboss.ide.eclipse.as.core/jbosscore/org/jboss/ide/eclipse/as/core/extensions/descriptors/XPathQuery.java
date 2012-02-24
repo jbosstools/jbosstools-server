@@ -27,6 +27,7 @@ import org.jaxen.JaxenException;
 import org.jaxen.SimpleNamespaceContext;
 import org.jaxen.XPath;
 import org.jaxen.dom4j.Dom4jXPath;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
 import org.jboss.ide.eclipse.as.core.util.IMemento;
 
@@ -107,7 +108,9 @@ public class XPathQuery implements Serializable {
 				StringSubstitutionEngine engine = new StringSubstitutionEngine();
 				dir2 = engine.performStringSubstitution(dir2, true,
 						true, StringVariableManager.getDefault());
-			} catch( CoreException ce ) {}
+			} catch( CoreException ce ) {
+				JBossServerCorePlugin.log(ce.getStatus());
+			}
 		}
 
 		

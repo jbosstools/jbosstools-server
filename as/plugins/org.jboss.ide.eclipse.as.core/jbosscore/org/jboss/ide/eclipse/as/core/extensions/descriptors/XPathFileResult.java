@@ -112,16 +112,14 @@ public class XPathFileResult {
 		}
 		
 		public String getText() {
-			try {
-			if( node instanceof DefaultElement ) {
+			if( node != null && node instanceof DefaultElement ) {
 				if( !hasAttribute()) {
 					return ((DefaultElement)node).getText();
 				} else {
 					Attribute att = ((DefaultElement)node).attribute(attribute);
-					return att.getValue();
+					if( att != null )
+						return att.getValue();
 				}
-			}
-			} catch( NullPointerException npe ) {
 			}
 			return "";//$NON-NLS-1$
 		}

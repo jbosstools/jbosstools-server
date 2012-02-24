@@ -36,8 +36,10 @@ import java.util.Date;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.equinox.security.storage.EncodingUtils;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
 import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
@@ -263,7 +265,13 @@ public class JBossServer extends DeployableServer
 		return s;
 	}
 	public void setPassword(String pass) {
-		ServerUtil.storeInSecureStorage(getServer(), SERVER_PASSWORD, pass);
+		try {
+			ServerUtil.storeInSecureStorage(getServer(), SERVER_PASSWORD, pass);
+        } catch (StorageException e) {
+        	JBossServerCorePlugin.log(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Could not save password for server in secure storage.", e)); //$NON-NLS-1$
+        } catch (UnsupportedEncodingException e) {
+        	JBossServerCorePlugin.log(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Could not save password for server in secure storage.", e)); //$NON-NLS-1$	
+        }
 	}
 	
 	

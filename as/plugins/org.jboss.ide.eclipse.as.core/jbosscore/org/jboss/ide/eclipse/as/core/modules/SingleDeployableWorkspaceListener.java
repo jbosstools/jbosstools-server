@@ -127,7 +127,7 @@ public class SingleDeployableWorkspaceListener implements
 							new NullProgressMonitor());
 					wc.save(true, new NullProgressMonitor());
 				} catch( CoreException ce) {
-					// TODO log
+					JBossServerCorePlugin.log(ce.getStatus());
 				}
 			}
 		}

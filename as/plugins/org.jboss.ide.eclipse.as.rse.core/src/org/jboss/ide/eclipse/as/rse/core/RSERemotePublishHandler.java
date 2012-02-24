@@ -77,7 +77,9 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 		while(!monitor.isCanceled() && t.isAlive()) {
 			try {
 				Thread.sleep(500);
-			} catch(InterruptedException ie) {}
+			} catch(InterruptedException ie) {
+				// IGNORE INTENTIONALLY
+			}
 		}
 		
 		if( monitor.isCanceled()) {

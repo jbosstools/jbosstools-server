@@ -130,20 +130,25 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 		return behaviour.getServer();
 	}
 	
-	public void ensureConnection(IProgressMonitor monitor) {
+	public boolean ensureConnection(IProgressMonitor monitor) {
 		if (fileSubSystem != null && !fileSubSystem.isConnected()) {
 		    try {
 		    	fileSubSystem.connect(monitor, false);
 		    } catch (Exception e) {
+		    	// I'd rather not catch Exception, but that's all they throw
+		    	return false;
 		    }
 		}
+		return fileSubSystem != null && fileSubSystem.isConnected();
 	}
+	
 	public IPath getRemoteRootFolder() {
 		if( remoteRootFolder == null )
 			try {
 				loadRemoteDeploymentDetails();
 			} catch(CoreException ce) {
-				// TODO
+				IStatus status = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, "Could not load remote deployment details", ce);
+				org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.getLog().log(status);
 			}
 		return remoteRootFolder;
 	}
@@ -156,7 +161,8 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 			try {
 				loadRemoteDeploymentDetails();
 			} catch(CoreException ce) {
-				// TODO log
+				IStatus status = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, "Could not load remote deployment details", ce);
+				org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.getLog().log(status);
 			}
 		}
 		return fileSubSystem.getFileService();

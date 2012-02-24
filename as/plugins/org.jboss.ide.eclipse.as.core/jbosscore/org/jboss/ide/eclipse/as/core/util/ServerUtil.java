@@ -199,16 +199,12 @@ public class ServerUtil {
     /**
 	 * @since 2.3
 	 */
-    public static void storeInSecureStorage(IServerAttributes server, String key, String val ) {
-        try {
-            ISecurePreferences node = getNode(server);
-            if( val == null )
-            	node.put(key, val, true);
-            else
-            	node.put(key, EncodingUtils.encodeBase64(val.getBytes()), true /* encrypt */); 
-        } catch (StorageException e) {
-        } catch (UnsupportedEncodingException e) {
-		}
+    public static void storeInSecureStorage(IServerAttributes server, String key, String val ) throws StorageException, UnsupportedEncodingException {
+        ISecurePreferences node = getNode(server);
+        if( val == null )
+        	node.put(key, val, true);
+        else
+        	node.put(key, EncodingUtils.encodeBase64(val.getBytes()), true /* encrypt */); 
     }
 
     private static ISecurePreferences getNode(IServerAttributes server) throws UnsupportedEncodingException {

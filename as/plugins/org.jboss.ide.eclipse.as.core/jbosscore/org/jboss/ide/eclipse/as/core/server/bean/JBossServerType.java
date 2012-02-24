@@ -185,6 +185,16 @@ public class JBossServerType implements IJBossToolingConstants {
 		return false;
 	}
 	
+	/**
+	 * This method will check a jar file for a manifest, and, if it has it, 
+	 * find the value for the given property. 
+	 * 
+	 * If either the manifest or the property are not found, return null
+	 * 
+	 * @param systemJarFile
+	 * @param propertyName
+	 * @return
+	 */
 	public static String getJarProperty(File systemJarFile, String propertyName) {
 		if (systemJarFile.canRead()) {
 			ZipFile jar = null;
@@ -196,17 +206,19 @@ public class JBossServerType implements IJBossToolingConstants {
 				String value = (String) props.get(propertyName);
 				return value;
 			} catch (IOException e) {
-				// ignore
+				// I would let it fall through, but hudson doesn't like empty catch blocks
+				return null; 
 			} finally {
 				if (jar != null) {
 					try {
 						jar.close();
 					} catch (IOException e) {
-						// ignore
+						// I would let it fall through, but hudson doesn't like empty catch blocks
+						return null;
 					}
 				}
 			}
-		}
+		} 
 		return null;
 	}
 	
@@ -276,7 +288,7 @@ public class JBossServerType implements IJBossToolingConstants {
 	}
 	
 	/**
-	 * Get the eap6-style version string, or null if not found
+	 * Get the eap6-style version string, or null if not found 
 	 * @param location
 	 * @param versionPrefix
 	 * @return
@@ -302,7 +314,8 @@ public class JBossServerType implements IJBossToolingConstants {
 					}
 				}
 			} catch(IOException ioe) {
-				
+				// I would let it fall through, but hudson doesn't like empty catch blocks
+				return null;
 			}
 		}
 		return null;

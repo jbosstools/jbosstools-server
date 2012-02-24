@@ -11,6 +11,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.rse.ui;
 
+import org.eclipse.core.runtime.ILog;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel;
 import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
 import org.jboss.ide.eclipse.as.ui.console.JBASConsoleWriter;
@@ -23,7 +24,9 @@ import org.osgi.framework.BundleContext;
 public class RSEUIPlugin implements BundleActivator {
 	public static final String PLUGIN_ID = "org.jboss.ide.eclipse.as.rse.ui";
 	private static BundleContext context;
+	private static RSEUIPlugin plugin;
 	private JBASConsoleWriter consoleWriter;
+	
 	
 	static BundleContext getContext() {
 		return context;
@@ -34,7 +37,9 @@ public class RSEUIPlugin implements BundleActivator {
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
-		RSEUIPlugin.context = bundleContext;
+		
+		context = bundleContext;
+		plugin = this;
 		DeploymentModuleOptionCompositeAssistant.addMapping(RSEPublishMethod.RSE_ID, new RSEDeploymentPageCallback());
 		JBossLaunchConfigurationTabGroup.addTabProvider(new RSELaunchTabProvider());
 		JBoss7LaunchConfigurationTabGroup.addTabProvider(new RSELaunchTabProvider());
@@ -48,7 +53,11 @@ public class RSEUIPlugin implements BundleActivator {
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
 		RSEUIPlugin.context = null;
+		plugin = null;
 		RSEHostShellModel.getInstance().removeHostShellListener(consoleWriter);
 	}
 
+	public static ILog getLog() {
+		return plugin.getLog();
+	}
 }

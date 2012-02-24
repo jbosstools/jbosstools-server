@@ -150,12 +150,11 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 		IJBossRuntimeResourceConstants c = new IJBossRuntimeResourceConstants() {};
 		IPath serverHome = runtime.getRuntime().getLocation();
 		IPath logConfigPath = serverHome.append(c.AS7_STANDALONE).append(c.CONFIGURATION).append(c.LOGGING_PROPERTIES);
-		String logConfigString = null;
 		try {
-			logConfigString = logConfigPath.toFile().toURL().toString();
+			return logConfigPath.toFile().toURI().toURL().toString();
 		} catch (MalformedURLException murle) {
+			return null;
 		}
-		return logConfigString;
 	}
 
 

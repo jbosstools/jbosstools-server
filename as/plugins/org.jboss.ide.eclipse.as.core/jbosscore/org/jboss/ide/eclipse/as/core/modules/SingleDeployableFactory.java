@@ -203,7 +203,7 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 			try {
 				node.flush();
 			} catch (BackingStoreException e) {
-				// TODO Log
+				JBossServerCorePlugin.log(e);
 			}
 		}
 	}
@@ -379,12 +379,13 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 					}
 				}
 			} catch( CoreException ce ) {
+				// Safely ignore, since this class is also the visitor, and this class
+				// throws no exceptions in teh visit method
 			}
 		}
 
-		public boolean visit(IResourceDelta delta) throws CoreException {
+		public boolean visit(IResourceDelta delta) {
 			if( ((delta.getKind() & IResourceDelta.REMOVED) != 0) && delta.getResource() != null && delta.getResource().getFullPath() != null ) {
-				IModule module = getModule(delta.getResource().getFullPath());
 				if( getModule(delta.getResource().getFullPath()) != null && !list.contains(delta.getResource().getFullPath())) {
 					list.add(delta.getResource().getFullPath());
 				}

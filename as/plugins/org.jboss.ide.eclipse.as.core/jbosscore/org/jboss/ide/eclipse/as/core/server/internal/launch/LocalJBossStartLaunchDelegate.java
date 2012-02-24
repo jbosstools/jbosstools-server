@@ -25,6 +25,7 @@ import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.StandardClasspathProvider;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IJBossLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractLocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
@@ -57,24 +58,19 @@ public class LocalJBossStartLaunchDelegate extends AbstractJBossStartLaunchConfi
 
 	public void preLaunch(ILaunchConfiguration configuration,
 			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		try {
-			DelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
+		DelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
+		if( jbsBehavior != null ) {
 			jbsBehavior.setRunMode(mode);
 			jbsBehavior.setServerStarting();
-		} catch (CoreException ce) {
-			// report it
 		}
 	}
 
 	public void postLaunch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		try {
-			IProcess[] processes = launch.getProcesses();
-			DelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
+		IProcess[] processes = launch.getProcesses();
+		DelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
+		if( jbsBehavior != null )
 			((LocalJBossBehaviorDelegate) (jbsBehavior.getDelegate())).setProcess(processes[0]);
-		} catch (CoreException ce) {
-			// report
-		}
 	}
 	
 	public static class JBossServerDefaultClasspathProvider extends StandardClasspathProvider {
@@ -99,13 +95,13 @@ public class LocalJBossStartLaunchDelegate extends AbstractJBossStartLaunchConfi
 				return (IRuntimeClasspathEntry[]) list
 						.toArray(new IRuntimeClasspathEntry[list.size()]);
 			} catch (CoreException ce) {
-				// ignore
+				JBossServerCorePlugin.log(ce.getStatus());
 			}
 
 			try {
 				return super.computeUnresolvedClasspath(config);
 			} catch (CoreException ce) {
-				// ignore
+				JBossServerCorePlugin.log(ce.getStatus());
 			}
 			return new IRuntimeClasspathEntry[] {};
 		}

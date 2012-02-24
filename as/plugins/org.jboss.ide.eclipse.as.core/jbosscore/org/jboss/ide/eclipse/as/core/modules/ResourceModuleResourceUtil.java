@@ -126,11 +126,14 @@ public class ResourceModuleResourceUtil {
 	}
 	
 	public static int countMembers(IModule module) {
+		ModuleDelegate delegate = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, new NullProgressMonitor());
+		IModuleResource[] resources;
 		try {
-			ModuleDelegate delegate = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, new NullProgressMonitor());
-			return delegate == null ? 0 : countMembers(delegate.members());
-		} catch( CoreException ce ) {}
-		return 0;
+			resources = delegate.members();
+		} catch(CoreException ce) {
+			resources = new IModuleResource[0];
+		}
+		return delegate == null ? 0 : countMembers(resources);
 	}
 	
 	public static int countMembers(IModuleResource[] resources) {

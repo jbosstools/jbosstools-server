@@ -84,6 +84,7 @@ public class JBossServerConnectionProvider implements IConnectionProvider, IServ
 	}
 	
 	protected IConnectionWrapper createDefaultServerConnection(IServer server) {
+		// This situation is not even fully supported and requires revisiting
 		String SIMPLE_PREFIX = "service:jmx:rmi:///jndi/rmi://"; //$NON-NLS-1$  constants are in jmx.ui feh
 		String SIMPLE_SUFFIX = "/jmxrmi"; //$NON-NLS-1$
 		String host = server.getHost();
@@ -95,7 +96,7 @@ public class JBossServerConnectionProvider implements IConnectionProvider, IServ
 		try {
 			return new ExtendedDefaultConnectionWrapper(desc, server);
 		} catch( MalformedURLException murle) {
-			// TODO log
+			// TODO log  
 			return null;
 		}
 	}
@@ -122,7 +123,10 @@ public class JBossServerConnectionProvider implements IConnectionProvider, IServ
 						else
 							disconnect();
 					} catch( IOException ioe) {
-						// TODO log
+						if( started ) 
+							JBossServerCorePlugin.log(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Error connecting to this server's JMX service: " + event.getServer().getName(), ioe));
+						else
+							JBossServerCorePlugin.log(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Error disconnecting from this server's JMX service: " + event.getServer().getName(), ioe));
 					}
 				}
 			}
@@ -227,21 +231,27 @@ public class JBossServerConnectionProvider implements IConnectionProvider, IServ
 		for(Iterator<IConnectionProviderListener> i = listeners.iterator(); i.hasNext();)
 			try {
 				i.next().connectionAdded(wrapper);
-			} catch(RuntimeException re) {}
+			} catch(RuntimeException re) {
+				// Intentionally ignore. This is just to protect against a bad implementer blowing away the stack
+			}
 	}
 
 	void fireChanged(IConnectionWrapper wrapper) {
 		for(Iterator<IConnectionProviderListener> i = listeners.iterator(); i.hasNext();)
 			try {
 				i.next().connectionChanged(wrapper);
-			} catch(RuntimeException re) {}
+			} catch(RuntimeException re) {
+				// Intentionally ignore. This is just to protect against a bad implementer blowing away the stack
+			}
 	}
 
 	void fireRemoved(IConnectionWrapper wrapper) {
 		for(Iterator<IConnectionProviderListener> i = listeners.iterator(); i.hasNext();)
 			try {
 				i.next().connectionRemoved(wrapper);
-			} catch(RuntimeException re) {}
+			} catch(RuntimeException re) {
+				// Intentionally ignore. This is just to protect against a bad implementer blowing away the stack
+			}
 	}
 	public boolean canCreate() {
 		return false;

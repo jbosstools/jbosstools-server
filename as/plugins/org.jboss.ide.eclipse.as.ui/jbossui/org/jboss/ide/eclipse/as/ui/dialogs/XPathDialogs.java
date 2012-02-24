@@ -382,7 +382,9 @@ public class XPathDialogs {
 				StringSubstitutionEngine engine = new StringSubstitutionEngine();
 				directory = engine.performStringSubstitution(directory, true,
 						true, StringVariableManager.getDefault());
-			} catch( CoreException ce ) {}
+			} catch( CoreException ce ) {
+				//use the non-substituted string instead
+			}
 			if( !new Path(directory).isAbsolute()) {
 				directory = server.getRuntime().getLocation().append(directory).toString();
 			}
@@ -413,7 +415,9 @@ public class XPathDialogs {
 			try {
 				new ProgressMonitorDialog(new Shell()).run(true, true, op);
 			} catch (InvocationTargetException e) {
+				//Do not need to do anything
 			} catch (InterruptedException e) {
+				//Do not need to do anything
 			}
 		}
 		protected void layoutWidgets(Composite c) {

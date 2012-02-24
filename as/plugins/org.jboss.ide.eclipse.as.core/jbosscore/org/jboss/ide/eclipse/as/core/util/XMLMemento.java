@@ -290,12 +290,7 @@ public class XMLMemento implements IMemento {
 			in = new BufferedInputStream(new FileInputStream(filename));
 			return XMLMemento.createReadRoot(in);
 		} finally {
-			try {
-				if (in != null)
-					in.close();
-			} catch (Exception e) {
-				// ignore
-			}
+			StreamUtils.safeClose(in);
 		}
 	}
 
@@ -351,13 +346,7 @@ public class XMLMemento implements IMemento {
 		} catch (Exception e) {
 			throw new IOException(e.getLocalizedMessage());
 		} finally {
-			if (w != null) {
-				try {
-					w.close();
-				} catch (Exception e) {
-					// ignore
-				}
-			}
+			StreamUtils.safeClose(w);
 		}
 	}
 

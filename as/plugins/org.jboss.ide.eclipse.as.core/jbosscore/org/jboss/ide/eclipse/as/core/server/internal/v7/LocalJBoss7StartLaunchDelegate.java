@@ -40,27 +40,23 @@ public class LocalJBoss7StartLaunchDelegate extends LocalJBossStartLaunchDelegat
 
 	public void preLaunch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
 			throws CoreException {
-		try {
-			DelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
+		DelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
+		if( jbsBehavior != null ) {
 			jbsBehavior.setRunMode(mode);
 			jbsBehavior.setServerStarting();
-		} catch (CoreException ce) {
-			// report it
 		}
 	}
 
 	public void postLaunch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
 			throws CoreException {
-		try {
-			DelegatingJBoss7ServerBehavior behavior = JBossServerBehaviorUtils.getJBoss7ServerBehavior(configuration);
+		DelegatingJBoss7ServerBehavior behavior = JBossServerBehaviorUtils.getJBoss7ServerBehavior(configuration);
+		if( behavior != null ) {
 			IProcess[] processes = launch.getProcesses();
 			if (processes != null && processes.length >= 1) {
 				behavior.setProcess(processes[0]);
 				((LocalJBossBehaviorDelegate) (behavior.getDelegate())).setProcess(processes[0]);
 			}
 			behavior.setRunMode(mode);
-		} catch (CoreException ce) {
-			// report it
 		}
 	}
 	

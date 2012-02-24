@@ -69,7 +69,9 @@ public class JBoss4xEarFacetInstallListener implements IFacetedProjectListener {
 						try {
 							op.execute(new NullProgressMonitor(), null);
 						} catch (ExecutionException e1) {
-							// Ignore
+							// Almost impossible, since EarCreateDeploymentFilesOperation and 
+							// CreateDeploymentFilesDataModelOperation do not throw any exceptions
+							JBossServerCorePlugin.log(e1);
 						}
 					}
 				}

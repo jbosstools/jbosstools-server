@@ -12,19 +12,30 @@ package org.jboss.ide.eclipse.as.core.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * @author André Dietisheim
  */
 public class StreamUtils {
 
+	public static void safeClose(OutputStream out) {
+		try {
+			if (out != null) {
+				out.close();
+			}
+		} catch (IOException e) {
+			// ignore THIS IS INTENTIONAL
+		}
+	}
+	
 	public static void safeClose(InputStream in) {
 		try {
 			if (in != null) {
 				in.close();
 			}
 		} catch (IOException e) {
-			// ignore
+			// ignore THIS IS INTENTIONAL
 		}
 	}
 

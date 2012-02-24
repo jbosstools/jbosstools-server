@@ -176,15 +176,16 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 				if (done) {
 					return;
 				}
+				if(!waitedOnce) {
+					JBossServerUIPlugin.log(new Status(
+						IStatus.INFO, JBossServerUIPlugin.PLUGIN_ID, 
+						"Module " + rootModule.getName() + " on " + server.getName() + " not ready to be shown in web browser. Waiting...", null));
+				}
+				waitedOnce = true;
 				try {
-					if(!waitedOnce) {
-						JBossServerUIPlugin.log(new Status(
-							IStatus.INFO, JBossServerUIPlugin.PLUGIN_ID, 
-							"Module " + rootModule.getName() + " on " + server.getName() + " not ready to be shown in web browser. Waiting...", null));
-					}
-					waitedOnce = true;
 					Thread.sleep(2000);
 				} catch (InterruptedException ie) {
+					// Ignore, intentional
 				}
 			}
 		} catch (Exception e) {
@@ -229,7 +230,9 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 			}
 			try {
 				Thread.sleep(1000);
-			} catch(InterruptedException ie) {}
+			} catch(InterruptedException ie) {
+				// Intentional ignore
+			}
 		}
 	}
 	
@@ -274,6 +277,7 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 		}
 	}
 	
+	/* TODO  Unify findEarParent with findRootModule */
 	private IModule findEarParent(IServer server, IModule module) {
 		try {
 			IModule[] deployed = server.getModules();
@@ -285,6 +289,7 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 					return possibleParents[i];
 			}
 		} catch(CoreException ce) {
+			// Should never be reached 
 		}
 		return null;
 	}

@@ -58,7 +58,7 @@ public class RSEJBoss7BehaviourDelegate extends RSEBehaviourDelegate {
 		try {
 			JBoss7ManagerUtil.dispose(getService());
 		} catch(Exception e) {
-			// ignore
+			// ignore intentionally
 		}
 	}
 	

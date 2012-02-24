@@ -10,7 +10,9 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.jmx.integration;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -115,7 +117,7 @@ public class JMXProvider {
 				try {
 					part = UIUtil.bringViewToFront(JMXNavigator.VIEW_ID);
 				} catch(PartInitException pie) {
-					// TODO trace or error
+					Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error loading MBean Explorer", pie));
 				}
 				
 				if( part != null ) {

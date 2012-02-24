@@ -176,10 +176,13 @@ public class XPathModel extends UnitedServerListener {
 			XMLMemento child = (XMLMemento)memento.createChild("category");//$NON-NLS-1$
 			saveCategory(categories[i], server, child);
 		}
-		try {
-			memento.save(new FileOutputStream(getFile(server)));
-		} catch( IOException ioe) {
-			// TODO LOG
+		File f = getFile(server);
+		if( f != null && f.exists()) {
+			try {
+				memento.save(new FileOutputStream(f));
+			} catch( IOException ioe) {
+				JBossServerCorePlugin.log(ioe);
+			}
 		}
 	}
 
@@ -213,14 +216,17 @@ public class XPathModel extends UnitedServerListener {
 		XPathCategory[] categories = null;
 		try {
 			File file = getFile(server);
-			XMLMemento memento = XMLMemento.createReadRoot(new FileInputStream(file));
-			IMemento[] categoryMementos = memento.getChildren("category");//$NON-NLS-1$
-			categories = new XPathCategory[categoryMementos.length];
-			for( int i = 0; i < categoryMementos.length; i++ ) {
-				categories[i] = new XPathCategory(server, categoryMementos[i]);
+			if( file != null && file.exists() && file.isFile()) {
+				XMLMemento memento = XMLMemento.createReadRoot(new FileInputStream(file));
+				IMemento[] categoryMementos = memento.getChildren("category");//$NON-NLS-1$
+				categories = new XPathCategory[categoryMementos.length];
+				for( int i = 0; i < categoryMementos.length; i++ ) {
+					categories[i] = new XPathCategory(server, categoryMementos[i]);
+				}
 			}
 		} catch( IOException ioe) {
-			// TODO LOG
+			// Should never happen. We've verified it exists
+			JBossServerCorePlugin.log(ioe);
 		}
 		return categories == null ? new XPathCategory[] { } : categories;
 	}
@@ -338,7 +344,6 @@ public class XPathModel extends UnitedServerListener {
 		return (Properties)namespaceMap.clone();
 	}
 	protected void loadNamespaceMap() {
-		// TODO load from preferenes. 
 		//If nothing's there, load from default
 		IPath p = new Path("properties").append("namespaceMap.properties");//$NON-NLS-1$//$NON-NLS-2$
 		if( p != null ) {
@@ -350,6 +355,8 @@ public class XPathModel extends UnitedServerListener {
 					namespaceMap = pr;
 					return;
 				} catch(IOException ioe) {
+					// This should never happen, since the file is verified to be in the installation
+					JBossServerCorePlugin.log(ioe);
 				}
 			}
 		}

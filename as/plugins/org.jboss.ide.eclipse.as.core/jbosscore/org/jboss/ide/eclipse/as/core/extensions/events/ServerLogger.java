@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.wst.server.core.IServer;
@@ -85,6 +86,7 @@ public class ServerLogger {
 		try {
 			prefs.flush();
 		} catch( BackingStoreException bse) {
+			JBossServerCorePlugin.log(new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, bse.getMessage(), bse));
 		}
 	}
 	

@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerType;
@@ -132,9 +133,7 @@ public class ExtensionManager {
 				credentialProviders.put(cf[i].getAttribute("id"),  //$NON-NLS-1$
 						(IProvideCredentials)cf[i].createExecutableExtension("class")); //$NON-NLS-1$
 			} catch( CoreException e ) {
-				// TODO ERROR LOG
-			} catch( ClassCastException cce ) {
-				// TODO ERROR LOG
+				JBossServerCorePlugin.log(e.getStatus());
 			}
 		}
 	}
@@ -183,7 +182,11 @@ public class ExtensionManager {
 				int p = -1; 
 				try {
 					p = Integer.parseInt(priority);
-				} catch( NumberFormatException nfe) {}
+				} catch( NumberFormatException nfe) {
+					// Should never ever happen since these are our extensions
+					JBossServerCorePlugin.log(new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, 
+							"Publisher id " + cf[i].getAttribute("class") + " has non-integer priority: " + priority));   //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+				}
 				publishers.add(new PublisherWrapper(p, zipDelegate, (IJBossServerPublisher)clazz, cf[i]));
 			} catch( CoreException e ) {
 				IStatus status = new MultiStatus(
@@ -191,7 +194,6 @@ public class ExtensionManager {
 						new IStatus[] { e.getStatus() },
 						Messages.ExtensionManager_could_not_load_publishers, e);
 				JBossServerCorePlugin.getDefault().getLog().log(status);
-			} catch( ClassCastException cce ) {
 			}
 		}
 		this.publishers = publishers;
@@ -219,6 +221,7 @@ public class ExtensionManager {
 				Object clazz = element.createExecutableExtension("class"); //$NON-NLS-1$
 				return (IJBossServerPublisher)clazz;
 			} catch( CoreException ce ) {
+				JBossServerCorePlugin.log(ce.getStatus());
 			}
 			return publisher;
 		}
@@ -268,7 +271,8 @@ public class ExtensionManager {
 				Object o = cf[i].createExecutableExtension("class"); //$NON-NLS-1$
 				if( o != null && (o instanceof IServerJMXRunner))
 					return ((IServerJMXRunner)o);
-			} catch(Exception e) {
+			} catch(CoreException e) {
+				JBossServerCorePlugin.log(e.getStatus());
 			}
 		}
 		JMX_RUNNER_NOT_FOUND = new Object();

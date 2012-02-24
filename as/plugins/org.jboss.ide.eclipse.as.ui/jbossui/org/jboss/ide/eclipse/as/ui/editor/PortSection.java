@@ -16,8 +16,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecoration;
@@ -86,7 +88,8 @@ public class PortSection extends ServerEditorSection {
 						if (o != null && o instanceof IPortEditorExtension)
 							sectionList.add((IPortEditorExtension) o);
 					}
-				} catch (CoreException ce) { /* ignore */
+				} catch (CoreException ce) { 
+					/* silently ignore */
 				}
 			}
 		}
@@ -461,7 +464,11 @@ public class PortSection extends ServerEditorSection {
 				result = ExpressionResolverUtil.safeReplaceProperties(result);
 				return new Integer(Integer.parseInt(result)).toString();
 			} catch(NumberFormatException nfe) {
+				/* Intentionally fall through, return non-replaced string */
 			} catch( IllegalStateException ise ) {
+				/* This will occur of the xpath is malformed. 
+				 * Fall through and return the empty string
+				 */
 			}
 		}
 		return result;

@@ -98,11 +98,15 @@ public class AS7ManagerUtil {
 		return list;
 	}
 
-	public static boolean isDeployed(String name, ModelControllerClient client) {
-		return getDeployments(client).contains(name);
+	public static boolean isDeployed(String name, ModelControllerClient client)  {
+		try {
+			return getDeployments(client).contains(name);
+		} catch(IOException ioe) {
+			return false;
+		}
 	}
-
-	public static List<String> getDeployments(ModelControllerClient client) {
+	
+	public static List<String> getDeployments(ModelControllerClient client) throws IOException {
 
 		DefaultOperationRequestBuilder builder = new DefaultOperationRequestBuilder();
 		final ModelNode request;
@@ -114,12 +118,9 @@ public class AS7ManagerUtil {
 			throw new IllegalStateException(AS7Messages.FailedToBuildOperation, e);
 		}
 
-		try {
-			ModelNode outcome = client.execute(request);
-			if (isSuccess(outcome)) {
-				return getList(outcome);
-			}
-		} catch (Exception e) {
+		ModelNode outcome = client.execute(request);
+		if (isSuccess(outcome)) {
+			return getList(outcome);
 		}
 
 		return Collections.emptyList();

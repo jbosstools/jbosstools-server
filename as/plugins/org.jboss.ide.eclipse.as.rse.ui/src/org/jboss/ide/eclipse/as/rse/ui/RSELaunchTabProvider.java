@@ -12,6 +12,8 @@
 package org.jboss.ide.eclipse.as.rse.ui;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.internal.ui.SWTFactory;
@@ -95,7 +97,9 @@ public class RSELaunchTabProvider implements IJBossLaunchTabProvider {
 							command = RSELaunchConfigProperties.getDefaultStartupCommand(initialConfig, "");
 							startText.setText(command);
 						} catch(CoreException ce) {
-							// TODO
+							// This can only happen if loading properties from a launch config is f'd, 
+							// in which case it's a big eclipse issue
+							RSEUIPlugin.getLog().log(new Status(IStatus.ERROR, RSEUIPlugin.PLUGIN_ID, "Error loading details from launch configuration", ce));
 						}
 					}
 				}
@@ -111,7 +115,9 @@ public class RSELaunchTabProvider implements IJBossLaunchTabProvider {
 							command = RSELaunchConfigProperties.getDefaultShutdownCommand(initialConfig, "");
 							stopText.setText(command);
 						} catch(CoreException ce) {
-							// TODO
+							// This can only happen if loading properties from a launch config is f'd, 
+							// in which case it's a big eclipse issue
+							RSEUIPlugin.getLog().log(new Status(IStatus.ERROR, RSEUIPlugin.PLUGIN_ID, "Error loading details from launch configuration", ce));
 						}
 					}
 				}
@@ -141,7 +147,9 @@ public class RSELaunchTabProvider implements IJBossLaunchTabProvider {
 				stopText.setEnabled(!detectStopCommand);
 				
 			} catch( CoreException ce) {
-				// TODO
+				// This can only happen if loading properties from a launch config is f'd, 
+				// in which case it's a big eclipse issue
+				RSEUIPlugin.getLog().log(new Status(IStatus.ERROR, RSEUIPlugin.PLUGIN_ID, "Error loading details from launch configuration", ce));
 			}
 		}
 		public void performApply(ILaunchConfigurationWorkingCopy configuration) {

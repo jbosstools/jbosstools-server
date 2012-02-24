@@ -110,6 +110,7 @@ public class PollThread extends Thread {
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException ie) {
+					// I have no idea what I'm supposed to do here to make this 'not empty'
 				}
 	
 				try {

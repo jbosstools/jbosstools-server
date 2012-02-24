@@ -15,6 +15,7 @@ import java.util.Arrays;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IContributor;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 
@@ -65,6 +66,8 @@ public class ServerPublishMethodType implements IJBossServerPublishMethodType {
 		try {
 			return (IJBossServerPublishMethod) element.createExecutableExtension(publisherClassAttribute);
 		} catch( CoreException ce ) {
+			// Will never happen unless an adopter / extender has a typo. 
+			JBossServerCorePlugin.log(ce.getStatus());
 		}
 		return null;
 	}

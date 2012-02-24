@@ -103,8 +103,11 @@ public class JMXPoller implements IServerStatePoller2 {
 					handleException(ce.getCause());
 				} 
 
-				try { Thread.sleep(500);} 
-				catch (InterruptedException e) {}
+				try { 
+					Thread.sleep(500);} 
+				catch (InterruptedException e) {
+					// Intentionally ignore
+				}
 			}
 			JMXClassLoaderRepository.getDefault().removeConcerned(server, this);
 		}
@@ -260,6 +263,7 @@ public class JMXPoller implements IServerStatePoller2 {
 				return s;
 			}
 		} catch(CoreException ce) {
+			// No need to return the specifics of the exception. Just note we could not connect. 
 		} finally {
 			JMXClassLoaderRepository.getDefault().removeConcerned(server, this);
 		}

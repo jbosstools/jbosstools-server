@@ -121,7 +121,7 @@ public class LocalCopyCallback implements IPublishCopyCallbackHandler {
 				if (in != null)
 					in.close();
 			} catch (Exception ex) {
-				// ignore
+				// ignore. We do not return warning statuses. 
 			}
 		}
 		return null;
@@ -153,7 +153,8 @@ public class LocalCopyCallback implements IPublishCopyCallbackHandler {
 					throwOnErrorStatus(file, status);
 					return;
 				} catch (FileNotFoundException e) {
-					// shouldn't occur
+					// shouldn't occur. Either wya, do nothing, since this isn't worth
+					// an exception blowing away the stack, and we return voids
 				} finally {
 					tempFile.delete();
 				}
@@ -198,8 +199,8 @@ public class LocalCopyCallback implements IPublishCopyCallbackHandler {
 			if (count < retrys) {
 				try {
 					Thread.sleep(100);
-				} catch (Exception e) {
-					// ignore
+				} catch (InterruptedException e) {
+					// ignore COPIED FROM WTP
 				}
 			}
 		}
@@ -309,7 +310,7 @@ public class LocalCopyCallback implements IPublishCopyCallbackHandler {
 			if (count < retrys) {
 				try {
 					Thread.sleep(100);
-				} catch (Exception e) {
+				} catch (InterruptedException e) {
 					// ignore
 				}
 			}

@@ -21,9 +21,12 @@ import java.util.HashMap;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.Server;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
@@ -62,12 +65,15 @@ public class DeploymentPreferenceLoader {
 
 	public static DeploymentPreferences loadPreferencesFromFile(IServer server) {
 		File f = getFile(server);
-		InputStream is = null;
-		try {
-			if( f.exists())
-				is = new FileInputStream(f);
-		} catch( IOException ioe) {}
-		return new DeploymentPreferences(is);
+		if( f.exists()) {
+			try {
+				InputStream is = new FileInputStream(f);
+				return new DeploymentPreferences(is);
+			} catch(IOException ioe) {
+				// Intentionally fall through and return null
+			}
+		} 
+		return null;
 	}
 	
 	public static DeploymentPreferences loadPreferencesFromServer(IServer server) {
@@ -84,10 +90,8 @@ public class DeploymentPreferenceLoader {
 		prefs.getMemento().saveToFile(f.getAbsolutePath());
 	}
 
-	public static void savePreferences(OutputStream os, DeploymentPreferences prefs) {
-		try {
-			prefs.getMemento().save(os);
-		} catch(IOException ioe) {}
+	public static void savePreferences(OutputStream os, DeploymentPreferences prefs) throws IOException {
+		prefs.getMemento().save(os);
 	}
 	
 	protected static File getFile(IServer server) {
@@ -257,10 +261,16 @@ public class DeploymentPreferenceLoader {
 	}
 	
 	public static void savePreferencesToServerWorkingCopy(ServerAttributeHelper helper, DeploymentPreferences prefs) {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		DeploymentPreferenceLoader.savePreferences(bos, prefs);
-		String asXML = new String(bos.toByteArray());
-		helper.setAttribute(DeploymentPreferenceLoader.DEPLOYMENT_PREFERENCES_KEY, asXML);
+		try {
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			DeploymentPreferenceLoader.savePreferences(bos, prefs);
+			String asXML = new String(bos.toByteArray());
+			helper.setAttribute(DeploymentPreferenceLoader.DEPLOYMENT_PREFERENCES_KEY, asXML);
+		} catch(IOException ioe) {
+			// Should never happen since this is a simple byte array output stream
+			JBossServerCorePlugin.log(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+				"Could not save module deployment preferences to server " + helper.getServer().getName(), ioe)); //$NON-NLS-1$
+		}
 	}
 
 }

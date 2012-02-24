@@ -97,12 +97,11 @@ public class LocalJBossStartLaunchConfigurator extends AbstractStartLaunchConfig
 
 	@Override
 	protected String getServerHome(IJBossServerRuntime runtime) {
-		String serverHome = null;
 		try {
-			serverHome = runtime.getConfigLocationFullPath().toFile().toURL().toString();
+			return runtime.getConfigLocationFullPath().toFile().toURI().toURL().toString();
 		} catch (MalformedURLException murle) {
+			return null;
 		}
-		return serverHome;
 	}
 
 	@Override

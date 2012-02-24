@@ -12,6 +12,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.rse.core;
 
+import org.eclipse.core.runtime.ILog;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -19,7 +20,7 @@ public class RSECorePlugin implements BundleActivator {
 
 	private static BundleContext context;
 	public static final String PLUGIN_ID = "org.jboss.ide.eclipse.as.rse.core";
-
+	public static RSECorePlugin plugin;
 	static BundleContext getContext() {
 		return context;
 	}
@@ -30,6 +31,7 @@ public class RSECorePlugin implements BundleActivator {
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
 		RSECorePlugin.context = bundleContext;
+		plugin = this;
 	}
 
 	/*
@@ -38,6 +40,10 @@ public class RSECorePlugin implements BundleActivator {
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
 		RSECorePlugin.context = null;
+	}
+	
+	public static ILog getLog() {
+		return plugin.getLog();
 	}
 
 }

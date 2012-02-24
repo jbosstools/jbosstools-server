@@ -53,7 +53,7 @@ public class EditorExtensionManager {
 					publishMethodUIMap.put(cf[i].getAttribute("deployMethodId"), ui); //$NON-NLS-1$
 				}
 			} catch(CoreException ce ) {
-				// TODO log
+				JBossServerUIPlugin.log(ce.getStatus());
 			}
 		}
 	}

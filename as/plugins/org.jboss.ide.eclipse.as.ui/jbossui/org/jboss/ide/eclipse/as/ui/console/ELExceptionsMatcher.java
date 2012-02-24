@@ -113,7 +113,7 @@ public class ELExceptionsMatcher implements IPatternMatchListenerDelegate {
 				console.addHyperlink(customFileLink, event.getOffset()+resourceStart, columnEnd
 						- resourceStart);
 			} catch (BadLocationException e) {
-				// Can't do anything
+				// Can't do anything (INTENTIONAL)
 				return;
 			}
 		}
@@ -187,8 +187,7 @@ public class ELExceptionsMatcher implements IPatternMatchListenerDelegate {
 				try {
 					project.accept(new IResourceProxyVisitor() {
 
-						public boolean visit(IResourceProxy proxy)
-								throws CoreException {
+						public boolean visit(IResourceProxy proxy) {
 							if (proxy.requestResource().getType() != IResource.FILE) {
 								return true;
 							}
@@ -206,8 +205,7 @@ public class ELExceptionsMatcher implements IPatternMatchListenerDelegate {
 
 					}, 0);
 				} catch (CoreException e1) {
-					//
-
+					// Our visitor does not throw any exceptions. This won't happen. 
 				}
 			}
 
