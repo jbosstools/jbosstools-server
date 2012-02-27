@@ -14,7 +14,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
@@ -22,7 +21,7 @@ import com.ibm.icu.text.MessageFormat;
 
 public class ShowInWebManagementActionProvider extends AbstractOpenBrowserServerAction {
 
-	private static final String CONSOLE_URL_PATTERN = "http://{0}:{1}/console";
+	private static final String CONSOLE_URL_PATTERN = "http://{0}:{1}/console"; //$NON-NLS-1$
 	protected String getActionText() {
 		return  Messages.ShowInWebManagementConsole_Action_Text;
 	}
