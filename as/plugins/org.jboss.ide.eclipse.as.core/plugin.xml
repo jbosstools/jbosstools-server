@@ -429,7 +429,7 @@
 
       <runtimeType
              vendor="%enterpriseProviderName"
-             class="org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime"
+             class="org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss71ServerRuntime"
              description="%jboss.eap.version.60.description"
              name="%jboss.eap.version.60.runtime.name"
              id="org.jboss.ide.eclipse.as.runtime.eap.60"
