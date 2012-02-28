@@ -67,6 +67,7 @@ import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
+import org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
@@ -372,27 +373,23 @@ public class XPathDialogs {
 
 			final String xpText = xpathText.getText();
 			final String attText = attributeText.getText();
-			final String filePattern = filesetText.getText();
+			String filePattern = filesetText.getText();
 			String directory = baseDirText.getText();
-			directory = directory.replace("${jboss_config_dir}",  //$NON-NLS-1$
-					"${jboss_config_dir:" + server.getName() + "}"); //$NON-NLS-1$ //$NON-NLS-2$
-			directory = directory.replace("${jboss_config}",  //$NON-NLS-1$
-				"${jboss_config:" + server.getName() + "}"); //$NON-NLS-1$ //$NON-NLS-2$
-			try {
-				StringSubstitutionEngine engine = new StringSubstitutionEngine();
-				directory = engine.performStringSubstitution(directory, true,
-						true, StringVariableManager.getDefault());
-			} catch( CoreException ce ) {
-				//use the non-substituted string instead
-			}
+			
+			// substitute in basedir
+			directory = new ConfigNameResolver().performSubstitutions(directory, server.getName());
 			if( !new Path(directory).isAbsolute()) {
 				directory = server.getRuntime().getLocation().append(directory).toString();
 			}
-
 			final String directory2 = directory;
+			
+			// substitute in filePattern
+			filePattern = new ConfigNameResolver().performSubstitutions(filePattern, server.getName());
+			final String filePattern2 = filePattern;
+			
 			IRunnableWithProgress op = new IRunnableWithProgress() {
 				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-					XPathQuery tmp = new XPathQuery(null, "", directory2, filePattern, xpText, attText); //$NON-NLS-1$
+					XPathQuery tmp = new XPathQuery(null, "", directory2, filePattern2, xpText, attText); //$NON-NLS-1$
 					tmp.setRepository(repository);
 					final ArrayList<XPathFileResult> list = new ArrayList<XPathFileResult>();
 					list.addAll(Arrays.asList(tmp.getResults()));

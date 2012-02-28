@@ -46,7 +46,7 @@ import org.jboss.ide.eclipse.as.test.publishing.v2.SingleFileDeployableMockDeplo
 import org.jboss.ide.eclipse.as.test.publishing.v2.SingleFileDeploymentTester;
 import org.jboss.ide.eclipse.as.test.server.JBossServerAPITest;
 import org.jboss.ide.eclipse.as.test.server.ServerBeanLoaderTest;
-import org.jboss.ide.eclipse.as.test.server.ServerSecureStorageTest;
+import org.jboss.ide.eclipse.as.test.server.StringSubstitutionTest;
 import org.jboss.ide.eclipse.as.test.server.XPathModelTest;
 import org.jboss.ide.eclipse.as.test.util.ArgsUtilTest;
 import org.jboss.ide.eclipse.as.test.util.ExpressionResolverUtilTest;
@@ -60,6 +60,7 @@ public class ASTestSuite extends TestSuite {
         suite.addTestSuite(PreReqTest.class);
         suite.addTestSuite(ServerBeanLoaderTest.class);
         
+        
         // Cannot find a way to run this test and pre-load the credentials for the keystore
         //suite.addTestSuite(ServerSecureStorageTest.class);
         suite.addTestSuite(RuntimeServerModelTest.class);
@@ -68,6 +69,7 @@ public class ASTestSuite extends TestSuite {
         suite.addTestSuite(JSTDeploymentWarUpdateXML.class);
         suite.addTestSuite(SingleFileDeployableMockDeploymentTester.class);
         suite.addTestSuite(XPathModelTest.class);
+        suite.addTestSuite(StringSubstitutionTest.class);
         
         // Publishing tests
         suite.addTestSuite(BehaviourModelDefectTest.class);

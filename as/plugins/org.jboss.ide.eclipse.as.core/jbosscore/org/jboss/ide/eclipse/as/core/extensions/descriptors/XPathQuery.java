@@ -29,6 +29,7 @@ import org.jaxen.XPath;
 import org.jaxen.dom4j.Dom4jXPath;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
+import org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver;
 import org.jboss.ide.eclipse.as.core.util.IMemento;
 
 /**
@@ -46,6 +47,7 @@ public class XPathQuery implements Serializable {
 	protected String baseDir;
 	protected volatile String effectiveBaseDir;
 	protected String filePattern;
+	protected volatile String effectiveFilePattern;
 	protected String xpathPattern;
 	protected String attribute;
 	
@@ -70,6 +72,7 @@ public class XPathQuery implements Serializable {
 		this.xpathPattern = memento.getString("xpathPattern"); //$NON-NLS-1$
 		this.attribute = memento.getString("attribute"); //$NON-NLS-1$
 		setEffectiveBaseDir();
+		setEffectiveFilePattern();
 	}
 	
 	public XPathQuery(String name, List list) {
@@ -79,6 +82,7 @@ public class XPathQuery implements Serializable {
 		this.xpathPattern = list.get(2).equals(XPathModel.EMPTY_STRING) ? null : (String)list.get(2);
 		this.attribute = list.size() < 3 || list.get(3).equals(XPathModel.EMPTY_STRING) ? null : (String)list.get(3);			
 		setEffectiveBaseDir();
+		setEffectiveFilePattern();
 	}
 	
 	public XPathQuery(IServer server, String name, String baseDir, 
@@ -91,42 +95,33 @@ public class XPathQuery implements Serializable {
 		this.attribute = attribute;
 		this.results = null;
 		setEffectiveBaseDir();
+		setEffectiveFilePattern();
 	}
 	
 	private void setEffectiveBaseDir() {
 		String serverName = server == null ? "" : server.getName(); //$NON-NLS-1$
 		String dir1 = baseDir == null ? null : baseDir;
-		
-		String dir2 = null;
-		if( dir1 != null ) {
-			dir2 = dir1.replace("${jboss_config_dir}",  //$NON-NLS-1$
-				"${jboss_config_dir:" + serverName + "}"); //$NON-NLS-1$ //$NON-NLS-2$
-			dir2 = dir2.replace("${jboss_config}",  //$NON-NLS-1$
-				"${jboss_config:" + serverName + "}"); //$NON-NLS-1$ //$NON-NLS-2$
-			
-			try {
-				StringSubstitutionEngine engine = new StringSubstitutionEngine();
-				dir2 = engine.performStringSubstitution(dir2, true,
-						true, StringVariableManager.getDefault());
-			} catch( CoreException ce ) {
-				JBossServerCorePlugin.log(ce.getStatus());
-			}
-		}
-
-		
+		String dir2 = new ConfigNameResolver().performSubstitutions(dir1, serverName);
 		IPath dir = dir2 == null ? null : new Path(dir2);
 		if( dir == null && category != null) {
 			dir = getCategory().getServer().getRuntime().getLocation();
 		}
 		if( dir != null && !dir.isAbsolute() && category != null)
 			dir = getCategory().getServer().getRuntime().getLocation().append(dir);
-		
 		effectiveBaseDir = dir == null ? null : dir.toString();
 	}
 	
+	private void setEffectiveFilePattern() {
+		String serverName = server == null ? "" : server.getName(); //$NON-NLS-1$
+		String pattern = filePattern == null ? null : filePattern;
+		String pattern2 = new ConfigNameResolver().performSubstitutions(pattern, serverName);
+		effectiveFilePattern = pattern2;
+	}
+	
+	
 	protected AntFileFilter getFilter() {
 		if( filter == null ) {
-			filter = new AntFileFilter(effectiveBaseDir, filePattern);
+			filter = new AntFileFilter(effectiveBaseDir, effectiveFilePattern);
 		}
 		return filter;
 	}

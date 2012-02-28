@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.IServer.IOperationListener;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
@@ -51,6 +52,7 @@ import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerCreationUtils;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.test.ASTest;
 import org.jboss.ide.eclipse.as.test.publishing.AbstractDeploymentTest;
 import org.osgi.framework.Bundle;
@@ -159,9 +161,9 @@ public class ServerRuntimeUtils extends TestCase {
 
 	public static IServer createMockServerWithRuntime(String serverType, String name, String config) {
 		try {
-			if( serverType.equals(IJBossToolingConstants.SERVER_AS_70)) 
+			IServerType type = ServerCore.findServerType(serverType);
+			if( ServerUtil.isJBoss7(type))
 				return createMockJBoss7Server();
-			
 			IPath serverDir = createAS6AndBelowMockServerDirectory(name, asSystemJar.get(serverType), config);
 			return createServer(serverRuntimeMap.get(serverType), serverType, serverDir.toOSString(), config);
 		} catch( CoreException ce ) {
