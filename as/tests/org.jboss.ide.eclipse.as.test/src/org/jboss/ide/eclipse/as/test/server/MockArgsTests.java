@@ -27,19 +27,9 @@ import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.test.util.ServerRuntimeUtils;
 
-public class MockArgsTests extends TestCase {
-	public void setUp() {
-	}
-	public void tearDown() {
-		try {
-			ServerRuntimeUtils.deleteAllServers();
-			ServerRuntimeUtils.deleteAllRuntimes();
-		} catch(CoreException ce) {}
-	}
-	
-	
+public class MockArgsTests extends SimpleServerImplTest {
 	public void testRemoveCriticalVMArgs() {
-		IServer server = serverTestImpl(IJBossToolingConstants.SERVER_AS_50);
+		IServer server = serverTestImpl2(IJBossToolingConstants.SERVER_AS_50);
 		try {
 			ILaunchConfiguration config = server.getLaunchConfiguration(true, new NullProgressMonitor());
 			ILaunchConfigurationWorkingCopy wc = config.getWorkingCopy();
@@ -63,7 +53,7 @@ public class MockArgsTests extends TestCase {
 	
 	public void testChangeArgs() {
 		// should still match the defaults since the defaults are extremely all required
-		IServer server = serverTestImpl(IJBossToolingConstants.SERVER_AS_50);
+		IServer server = serverTestImpl2(IJBossToolingConstants.SERVER_AS_50);
 		try {
 			ILaunchConfiguration config = server.getLaunchConfiguration(true, new NullProgressMonitor());
 			ILaunchConfigurationWorkingCopy wc = config.getWorkingCopy();
@@ -79,7 +69,11 @@ public class MockArgsTests extends TestCase {
 		}
 	}
 	
-	protected IServer serverTestImpl(String type) {
+	protected void serverTestImpl(String type) {
+		serverTestImpl2(type);
+	}
+	
+	protected IServer serverTestImpl2(String type) {
 		IServer server = ServerRuntimeUtils.createMockServerWithRuntime(type, "server1", "default");
 		IServer fixed = setMockDetails(server);
 		String command = runAndGetCommand(fixed);
@@ -128,36 +122,5 @@ public class MockArgsTests extends TestCase {
 		} catch( CoreException ce ) {
 		}
 		return null;
-	}
-	
-	public void test32Mock() {
-		serverTestImpl(IJBossToolingConstants.SERVER_AS_32);
-	}
-
-	public void test40Mock() {
-		serverTestImpl(IJBossToolingConstants.SERVER_AS_40);
-	}
-
-	public void test42Mock() {
-		serverTestImpl(IJBossToolingConstants.SERVER_AS_42);
-	}
-	
-	public void test50Mock() {
-		serverTestImpl(IJBossToolingConstants.SERVER_AS_50);
-	}
-	public void test51Mock() {
-		serverTestImpl(IJBossToolingConstants.SERVER_AS_51);
-	}
-	public void test60Mock() {
-		serverTestImpl(IJBossToolingConstants.SERVER_AS_60);
-	}
-	public void testEap43Mock() {
-		serverTestImpl(IJBossToolingConstants.SERVER_EAP_43);
-	}	
-	public void testEap50Mock() {
-		serverTestImpl(IJBossToolingConstants.SERVER_EAP_50);
-	}
-	public void testEap60Mock() {
-		serverTestImpl(IJBossToolingConstants.SERVER_EAP_60);
 	}
 }
