@@ -34,7 +34,7 @@ public class ConfigNameResolver implements IDynamicVariableResolver {
 
 	public static final String JBOSS_CONFIG = "jboss_config"; //$NON-NLS-1$
 	public static final String JBOSS_CONFIG_DIR = "jboss_config_dir"; //$NON-NLS-1$
-	public static final String JBOSS_AS7_CONFIG_FILE = "jboss_as7_config_file"; //$NON-NLS-1$
+	public static final String JBOSS_AS7_CONFIG_FILE = "jboss_config_file"; //$NON-NLS-1$
 	
 	/*
 	 * entry points to fill out the server name in these variable substitutions
