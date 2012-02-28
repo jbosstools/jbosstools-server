@@ -12,18 +12,13 @@ package org.jboss.ide.eclipse.archives.webtools.filesets;
 
 import java.io.File;
 
-import org.eclipse.core.internal.variables.StringSubstitutionEngine;
-import org.eclipse.core.internal.variables.StringVariableManager;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.archives.core.asf.DirectoryScanner;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
-import org.jboss.ide.eclipse.archives.webtools.IntegrationPlugin;
+import org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver;
 
 
 public class Fileset implements Cloneable {
@@ -54,17 +49,6 @@ public class Fileset implements Cloneable {
 		return name + SEP + folder + SEP + includesPattern + SEP + excludesPattern;
 	}
 	
-	public static final String JBOSS_CONFIG_DIR_ARG = "${jboss_config_dir}"; //$NON-NLS-1$
-	public static final String JBOSS_SERVER_ARG = "${jboss_config}"; //$NON-NLS-1$
-	
-	public static final String getConfigDirSubstitute(IRuntime rt) {
-		return "${jboss_config_dir:" + rt.getName() + "}"; //$NON-NLS-1$ //$NON-NLS-2$
-	}
-
-	public static final String getServerSubstitute(IRuntime rt) {
-		return "${jboss_config:" + rt.getName() + "}"; //$NON-NLS-1$ //$NON-NLS-2$
-	}
-	
     /**
 	 * @return the folder
 	 */
@@ -76,23 +60,7 @@ public class Fileset implements Cloneable {
 		return getFolder(folder, runtime, true);
 	}
 	public static String getFolder(String folder, IRuntime runtime, boolean ignoreError) {
-
-		String tmp = folder == null ? "" : folder;  //$NON-NLS-1$
-		if( runtime != null ) {
-			tmp = tmp.replace(JBOSS_CONFIG_DIR_ARG, getConfigDirSubstitute(runtime));
-			tmp = tmp.replace(JBOSS_SERVER_ARG, getServerSubstitute(runtime));
-		}
-		try {
-			StringSubstitutionEngine engine = new StringSubstitutionEngine();
-			tmp = engine.performStringSubstitution(tmp, true,
-					true, StringVariableManager.getDefault());
-		} catch( CoreException ce ) {
-			if( !ignoreError ) {
-				IntegrationPlugin.getDefault().getLog().log(
-						new Status(IStatus.WARNING, IntegrationPlugin.PLUGIN_ID, ce.getMessage(), ce));
-			}
-		}
-
+		String tmp = new ConfigNameResolver().performSubstitutions(folder, runtime.getName(), ignoreError);
 		IPath p = new Path(tmp);
 		if( !p.isAbsolute() && runtime != null ) {
 			p = runtime.getLocation().append(p);

@@ -45,30 +45,35 @@ public class ConfigNameResolver implements IDynamicVariableResolver {
 	 * server-related replacements (adding variables) beforehand. 
 	 * 
 	 * @param dir1
-	 * @param serverName
+	 * @param serverOrRuntimeName
 	 * @return
 	 */
-	public String performSubstitutions(String dir1, String serverName) {
+	public String performSubstitutions(String dir1, String serverOrRuntimeName) {
+		return performSubstitutions(dir1, serverOrRuntimeName, false);
+	}
+	public String performSubstitutions(String dir1, String serverOrRuntimeName, boolean ignoreError) {
+
 		String dir2 = null;
 		if( dir1 != null ) {
-			dir2 = replace(dir1, ConfigNameResolver.JBOSS_CONFIG, serverName);
-			dir2 = replace(dir2, ConfigNameResolver.JBOSS_CONFIG_DIR, serverName);
-			dir2 = replace(dir2, ConfigNameResolver.JBOSS_AS7_CONFIG_FILE, serverName);
+			dir2 = replace(dir1, ConfigNameResolver.JBOSS_CONFIG, serverOrRuntimeName);
+			dir2 = replace(dir2, ConfigNameResolver.JBOSS_CONFIG_DIR, serverOrRuntimeName);
+			dir2 = replace(dir2, ConfigNameResolver.JBOSS_AS7_CONFIG_FILE, serverOrRuntimeName);
 			
 			try {
 				StringSubstitutionEngine engine = new StringSubstitutionEngine();
 				dir2 = engine.performStringSubstitution(dir2, true,
 						true, StringVariableManager.getDefault());
 			} catch( CoreException ce ) {
-				JBossServerCorePlugin.log(ce.getStatus());
+				if( !ignoreError)
+					JBossServerCorePlugin.log(ce.getStatus());
 			}
 		}
 		return dir2;
 	}
 	
-	private String replace(String original, String variable, String serverName) {
+	private String replace(String original, String variable, String serverOrRuntimeName) {
 		if( original != null ) {
-			return original.replace(getVariablePattern(variable), getVariablePattern(variable, serverName));
+			return original.replace(getVariablePattern(variable), getVariablePattern(variable, serverOrRuntimeName));
 		}
 		return null;
 	}
@@ -77,8 +82,8 @@ public class ConfigNameResolver implements IDynamicVariableResolver {
 		return "${" + var + "}"; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
-	private String getVariablePattern(String var, String serverName) {
-		return "${" + var + ":" + serverName + "}"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	private String getVariablePattern(String var, String serverOrRuntimeName) {
+		return "${" + var + ":" + serverOrRuntimeName + "}"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 
 	
@@ -128,17 +133,22 @@ public class ConfigNameResolver implements IDynamicVariableResolver {
 		return null;
 	}
 	
-	private IJBossServerRuntime findJBossServerRuntime(String serverName) {
+	/**
+	 * Return either a server by this name, or a runtime by this name
+	 * @param serverOrRuntimeName
+	 * @return
+	 */
+	private IJBossServerRuntime findJBossServerRuntime(String serverOrRuntimeName) {
 		IServer[] servers = ServerCore.getServers();
 		for( int i = 0; i < servers.length; i++ ) {
-			if( servers[i].getName().equals(serverName)) {
+			if( servers[i].getName().equals(serverOrRuntimeName)) {
 				return  (IJBossServerRuntime) servers[i].getRuntime()
 						.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
 			}
 		}
 		IRuntime[] runtimes = ServerCore.getRuntimes();
 		for( int i = 0; i < runtimes.length; i++ ) {
-			if( runtimes[i].getName().equals(serverName)) {
+			if( runtimes[i].getName().equals(serverOrRuntimeName)) {
 				return (IJBossServerRuntime) runtimes[i]
 						.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
 			}
