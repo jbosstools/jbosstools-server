@@ -177,12 +177,10 @@ public class XPathModel extends UnitedServerListener {
 			saveCategory(categories[i], server, child);
 		}
 		File f = getFile(server);
-		if( f != null && f.exists()) {
-			try {
-				memento.save(new FileOutputStream(f));
-			} catch( IOException ioe) {
-				JBossServerCorePlugin.log(ioe);
-			}
+		try {
+			memento.save(new FileOutputStream(f));
+		} catch( IOException ioe) {
+			JBossServerCorePlugin.log("The XPath Model could not be saved", ioe); //$NON-NLS-1$
 		}
 	}
 
