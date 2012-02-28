@@ -29,6 +29,7 @@ import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 /* 
  * Some of this code will need to be abstracted out from JBossServer
@@ -100,7 +101,7 @@ public class RSEUtils {
 			// Cannot move this code to JBossServer because this requires an
 			// RSE-specific key!! Damn!
 
-			if (server.getServerType().getId().equals(IJBossToolingConstants.SERVER_AS_70)) {
+			if (ServerUtil.isJBoss7(server.getServerType())) {
 				IPath p = new Path("standalone/deployments/");
 				return makeGlobal(server, p).toString();
 			} else {
