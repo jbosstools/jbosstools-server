@@ -69,8 +69,8 @@ public class RequiredCredentialsDialog extends Dialog {
 		Label top = new Label(main, SWT.NONE);
 		Label userLabel = new Label(main, SWT.NONE);
 		Label passLabel = new Label(main, SWT.NONE);
-		final Text userText = new Text(main, SWT.DEFAULT);
-		final Text passText = new Text(main, SWT.DEFAULT);
+		final Text userText = new Text(main, SWT.SINGLE | SWT.BORDER);
+		final Text passText = new Text(main, SWT.SINGLE | SWT.BORDER | SWT.PASSWORD);
 		userText.setEditable(true);
 		passText.setEditable(true);
 		final Button saveCredentials = new Button(main, SWT.CHECK);

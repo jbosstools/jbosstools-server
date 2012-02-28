@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.as.ui.editor;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
@@ -68,12 +69,12 @@ public class ServerPasswordSection extends ServerEditorSection {
 		
 		Label username = toolkit.createLabel(composite, Messages.swf_Username);
 		username.setForeground(toolkit.getColors().getColor(IFormColors.TITLE));
-		String n = helper.getAttribute(IJBossToolingConstants.SERVER_USERNAME, ""); //$NON-NLS-1$
+		String n = ServerConverter.getJBossServer(server.getOriginal()).getUsername();
 		String p = ServerConverter.getJBossServer(server.getOriginal()).getPassword();
 		nameText = toolkit.createText(composite, n); 
 		Label password = toolkit.createLabel(composite, Messages.swf_Password);
 		password.setForeground(toolkit.getColors().getColor(IFormColors.TITLE));
-		passText = toolkit.createText(composite, p);
+		passText = toolkit.createText(composite, p, SWT.SINGLE | SWT.PASSWORD);
 		passwordString = p;
 		
 		d = new GridData(); d.grabExcessHorizontalSpace = true; d.widthHint = 100;
