@@ -1124,7 +1124,7 @@
             supportsArgument="true">
       </variable>
       <variable
-            name="jboss_as7_config_file"
+            name="jboss_config_file"
             description="Returns the full path of the configuration file for the server who&apos;s name matches the variable, or, if none, the runtime who&apos;s name matches the variable"
             resolver="org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver"
             supportsArgument="true">
@@ -1189,6 +1189,16 @@
                 </adapt>
              </with></enablement>
        </moduleArtifactAdapter>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="org.eclipse.wst.server.core.IServer"
+            class="org.jboss.ide.eclipse.as.core.server.internal.ExtendedPropertiesServerAdapterFactory">
+         <adapter
+               type="org.jboss.ide.eclipse.as.core.Adapter1">
+         </adapter>
+      </factory>
    </extension>
    
 </plugin>
