@@ -79,7 +79,7 @@ public class JMXServerLifecycleListener extends UnitedServerListener {
 		JBossServer ds = ServerConverter.getJBossServer(server);
 		ArrayList<String> folders = new ArrayList<String>();
 		// add the server folder deploy loc. first
-		String insideServer = JBossServer.getDeployFolder(ds, JBossServer.DEPLOY_SERVER);
+		String insideServer = ds.getDeployFolder(JBossServer.DEPLOY_SERVER);
 		String metadata = JBossServer.getDeployFolder(ds, JBossServer.DEPLOY_METADATA);
 		String custom = JBossServer.getDeployFolder(ds, JBossServer.DEPLOY_CUSTOM);
 		String type = ds.getDeployLocationType();

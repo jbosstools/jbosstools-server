@@ -50,6 +50,7 @@ import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.ExpressionResolverUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -103,6 +104,9 @@ public class JBossServer extends DeployableServer
 	}
 	
 	public String getDeployFolder(String type) {
+		if( type.equals(DEPLOY_SERVER)) {
+			return getExtendedProperties().getServerDeployLocation();
+		}
 		return getDeployFolder(this, type);
 	}
 	
@@ -111,33 +115,39 @@ public class JBossServer extends DeployableServer
 	 * deeply introspect the value for specific deployment location
 	 * constants. 
 	 * 
+	 * Only Custom and Metadata are supported for this method
+	 * Server paths will not be returned here (server/default/deploy etc)
+	 * 
 	 * @param jbs
 	 * @param type
 	 * @return
 	 */
 	public static String getDeployFolder(JBossServer jbs, String type) {
-		IServer server = jbs.getServer();
-		IJBossServerRuntime jbsrt = RuntimeUtils.getJBossServerRuntime(server);
+		String ret = null;
 		if( type.equals(DEPLOY_CUSTOM)) {
-			String val = jbs.getAttribute(DEPLOY_DIRECTORY, (String)null);
-			if( val != null ) {
-				IPath val2 = new Path(val);
-				return ServerUtil.makeGlobal(jbsrt.getRuntime(), val2).toString();
-			}
-			// if no value is set, default to metadata
-			type = DEPLOY_METADATA;
+			ret = getCustomDeployLocationFromSettings(jbs.getServer(), DEPLOY_DIRECTORY);
 		}
-		if( type.equals(DEPLOY_METADATA)) {
-			return JBossServerCorePlugin.getServerStateLocation(server).
-				append(DEPLOY).makeAbsolute().toString();
-		} else if( type.equals(DEPLOY_SERVER)) {
-			String loc = jbsrt.getConfigLocation();
-			String config = jbsrt.getJBossConfiguration();
-			IPath p = new Path(loc).append(config)
-				.append(DEPLOY);
-			return ServerUtil.makeGlobal(jbsrt.getRuntime(), p).toString();
+		if( ret == null || type.equals(DEPLOY_METADATA)) {
+			return getMetadataDeployLocation(jbs.getServer());
+		} 
+		return null;
+	}
+	
+	public static String getCustomDeployLocationFromSettings(IServer server, String attribute) {
+		String val = server.getAttribute(attribute, (String)null);
+		if( val != null ) {
+			IPath val2 = new Path(val);
+			return ServerUtil.makeGlobal(server.getRuntime(), val2).toString();
 		}
 		return null;
+	}
+	
+	public static String getMetadataDeployLocation(IServer server) {
+		return JBossServerCorePlugin.getServerStateLocation(server).append(DEPLOY).makeAbsolute().toString();
+	}
+	
+	public JBossExtendedProperties getExtendedProperties() {
+		return (JBossExtendedProperties)getServer().loadAdapter(JBossExtendedProperties.class, null);
 	}
 	
 	public String getTempDeployFolder() {

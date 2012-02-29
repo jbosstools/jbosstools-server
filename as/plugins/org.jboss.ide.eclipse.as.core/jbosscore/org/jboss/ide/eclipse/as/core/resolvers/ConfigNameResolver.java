@@ -78,11 +78,11 @@ public class ConfigNameResolver implements IDynamicVariableResolver {
 		return null;
 	}
 	
-	private String getVariablePattern(String var) {
+	public static String getVariablePattern(String var) {
 		return "${" + var + "}"; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
-	private String getVariablePattern(String var, String serverOrRuntimeName) {
+	public static String getVariablePattern(String var, String serverOrRuntimeName) {
 		return "${" + var + ":" + serverOrRuntimeName + "}"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 

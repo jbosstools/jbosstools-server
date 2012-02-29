@@ -17,7 +17,6 @@ import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -51,9 +50,8 @@ import org.jboss.ide.eclipse.archives.webtools.Messages;
 import org.jboss.ide.eclipse.archives.webtools.filesets.FilesetContentProvider.PathWrapper;
 import org.jboss.ide.eclipse.archives.webtools.filesets.FilesetContentProvider.ServerWrapper;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
-import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 
 public class FilesetActionProvider extends CommonActionProvider implements IDoubleClickListener {
@@ -196,23 +194,11 @@ public class FilesetActionProvider extends CommonActionProvider implements IDoub
 				IDeployableServer server = (IDeployableServer) iserver
 						.loadAdapter(IDeployableServer.class,
 								new NullProgressMonitor());
-				String location = null;
-				if (server != null && server.getServer().getRuntime() != null ) {
-					IJBossServerRuntime runtime = (IJBossServerRuntime)
-						server.getServer().getRuntime().loadAdapter(IJBossServerRuntime.class, null);
-					if( runtime != null ) {
-						location = IConstants.SERVER + IPath.SEPARATOR + runtime.getJBossConfiguration();
-					}
-				}
-				if( location == null && iserver.getRuntime() != null)
-					location = iserver.getRuntime().getLocation().toOSString();
-				else if( location == null && iserver.getRuntime() == null ) {
-					// use workspace location as default if no runtime
-					location = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
-				}
+				JBossExtendedProperties o = (JBossExtendedProperties)iserver.loadAdapter(JBossExtendedProperties.class, new NullProgressMonitor());
+				String defaultFolder = o == null ? "" : o.getNewFilesetDefaultRootFolder(); //$NON-NLS-1$
 
-				if (location != null) {
-					FilesetDialog d = new FilesetDialog(new Shell(), location, iserver);
+				if (defaultFolder != null) {
+					FilesetDialog d = new FilesetDialog(new Shell(), defaultFolder, iserver);
 					if (d.open() == Window.OK) {
 						Fileset fs = d.getFileset();
 						wrapper.addFileset(fs);

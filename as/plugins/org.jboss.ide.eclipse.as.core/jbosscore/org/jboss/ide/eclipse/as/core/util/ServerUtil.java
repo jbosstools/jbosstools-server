@@ -80,9 +80,13 @@ public class ServerUtil {
 	}
 	
 	public static IPath makeGlobal(IRuntime rt, IPath p) {
+		return rt == null ? p : makeGlobal(rt.getLocation(), p);
+	}
+	
+	public static IPath makeGlobal(IPath rtLocation, IPath p) {
 		if( !p.isAbsolute() ) {
-			if( rt != null && rt.getLocation() != null ) {
-				return rt.getLocation().append(p).makeAbsolute();
+			if( rtLocation != null && rtLocation != null ) {
+				return rtLocation.append(p).makeAbsolute();
 			}
 			return p.makeAbsolute();
 		}
