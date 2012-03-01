@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledPageBook;
-import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.util.SocketUtil;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
@@ -167,8 +167,9 @@ public class ServerModeSectionComposite extends Composite {
 		return true;
 	}
 	protected boolean showListenOnAllHostsCheckbox() {
-		IServer server = callback.getServer().getOriginal();
-		JBossExtendedProperties props = (JBossExtendedProperties)server
+		
+		IRuntime rt = callback.getRuntime();
+		JBossExtendedProperties props = (JBossExtendedProperties)rt
 				.loadAdapter(JBossExtendedProperties.class, 
 							 new NullProgressMonitor());
 		return props == null ? false : props.runtimeSupportsBindingToAllInterfaces();
