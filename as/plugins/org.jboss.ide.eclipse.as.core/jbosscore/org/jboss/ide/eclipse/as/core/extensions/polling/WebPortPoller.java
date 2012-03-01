@@ -22,8 +22,10 @@ import java.util.Properties;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
@@ -147,13 +149,14 @@ public class WebPortPoller implements IServerStatePoller2 {
 	public IStatus getCurrentStateSynchronous(IServer server) {
 		String url = getURL(server);
 		boolean b = onePing(url);
+		Status s;
 		if( b ) {
-			Status s = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, 
-					"Web Poller find a running server at url " + url); //$NON-NLS-1$
-			return s;
+			s = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, 
+					NLS.bind(Messages.WebPollerServerFound, url));
+		} else {
+			s = new Status(IStatus.INFO, JBossServerCorePlugin.PLUGIN_ID, 
+				NLS.bind(Messages.WebPollerServerNotFound, url));
 		}
-		Status s = new Status(IStatus.INFO, JBossServerCorePlugin.PLUGIN_ID, 
-				"Web Poller did not find a running server at url " + url); //$NON-NLS-1$
 		return s;
 	}
 }

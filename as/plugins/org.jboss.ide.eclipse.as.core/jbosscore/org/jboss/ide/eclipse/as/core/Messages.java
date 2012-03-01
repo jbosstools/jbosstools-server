@@ -72,6 +72,9 @@ public class Messages extends NLS {
 	public static String PollerFailure;
 	public static String PollerAborted;
 	public static String ServerPollerThreadName;
+	public static String WebPollerServerFound;
+	public static String WebPollerServerNotFound;
+	
 	public static String ServerTypeDiscovererFail;
 	public static String TerminateTwiddleFailed;
 	public static String CannotSetUpImproperServer;
