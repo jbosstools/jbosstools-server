@@ -27,8 +27,10 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerEvent;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionProviderListener;
@@ -72,15 +74,23 @@ public class JBossServerConnectionProvider implements IConnectionProvider, IServ
 	}
 	
 	protected boolean requiresDefaultProvider(IServer server) {
-		if(server.getServerType().getId().equals(IJBossToolingConstants.SERVER_AS_70))
-				return true;
+		if(ServerUtil.isJBoss7(server))
+			return true;
 		return false;
 	}
 	
 	protected IConnectionWrapper createConnection(IServer server) {
-		if( !requiresDefaultProvider(server))
+		JBossExtendedProperties props = ExtendedServerPropertiesAdapterFactory.getExtendedProperties(server);
+		int type = props == null ? -1 : props.getJMXProviderType();
+		switch(type) {
+		case JBossExtendedProperties.JMX_AS_3_TO_6_PROVIDER:
 			return new JBossServerConnection(server);
-		return createDefaultServerConnection(server);
+		case JBossExtendedProperties.JMX_DEFAULT_PROVIDER:
+			return createDefaultServerConnection(server);
+		// TODO add as7.1 logic here when we figure it out
+		default:
+			return null;
+		}
 	}
 	
 	protected IConnectionWrapper createDefaultServerConnection(IServer server) {
@@ -147,19 +157,19 @@ public class JBossServerConnectionProvider implements IConnectionProvider, IServ
 			if( !idToConnection.containsKey(server.getId())) {
 				IConnectionWrapper connection = createConnection(server);
 				idToConnection.put(server.getId(), connection);
+				if( connection != null )
+					fireAdded(idToConnection.get(server.getId()));
 			}
-			fireAdded(idToConnection.get(server.getId()));
 		}
 	}
 
 	public void serverChanged(IServer server) {
 		if( belongsHere(server)) {
 			getConnections();
-			if( !idToConnection.containsKey(server.getId())) {
-				IConnectionWrapper connection = createConnection(server);
-				idToConnection.put(server.getId(), connection);
-			}
-			fireAdded(idToConnection.get(server.getId()));
+			IConnectionWrapper connection = createConnection(server);
+			idToConnection.put(server.getId(), connection);
+			if( connection != null )
+				fireAdded(idToConnection.get(server.getId()));
 		}
 	}
 
@@ -177,7 +187,11 @@ public class JBossServerConnectionProvider implements IConnectionProvider, IServ
 				getConnections();
 				
 				// but now its missing from the collection, so make one up
-				fireRemoved(createConnection(server));
+				IConnectionWrapper dummy = createConnection(server);
+				
+				// Make sure we don't fire a removal for a connection that doesn't exist
+				if( dummy != null )
+					fireRemoved(dummy);
 			}
 		}
 	}

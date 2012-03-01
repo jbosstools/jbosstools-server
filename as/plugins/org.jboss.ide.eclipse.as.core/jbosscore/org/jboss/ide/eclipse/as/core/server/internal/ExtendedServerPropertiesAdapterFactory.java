@@ -12,15 +12,20 @@ package org.jboss.ide.eclipse.as.core.server.internal;
 
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossAS710ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossAS7ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
 public class ExtendedServerPropertiesAdapterFactory implements IAdapterFactory {
 	
+	public static JBossExtendedProperties getExtendedProperties(IServer server) {
+		return (JBossExtendedProperties) new ExtendedServerPropertiesAdapterFactory().getAdapter(server, JBossExtendedProperties.class);
+	}
+	
 	@Override
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
-		if( adaptableObject instanceof IServer ) {
+		if( adaptableObject instanceof IServer && adapterType == JBossExtendedProperties.class) {
 			String typeId = ((IServer)adaptableObject).getServerType().getId();
 			if( IJBossToolingConstants.SERVER_AS_32.equals(typeId))
 				return new JBossExtendedProperties((IServer)adaptableObject);
@@ -42,9 +47,9 @@ public class ExtendedServerPropertiesAdapterFactory implements IAdapterFactory {
 			if( IJBossToolingConstants.SERVER_AS_70.equals(typeId))
 				return new JBossAS7ExtendedProperties((IServer)adaptableObject);
 			if( IJBossToolingConstants.SERVER_AS_71.equals(typeId))
-				return new JBossAS7ExtendedProperties((IServer)adaptableObject);
+				return new JBossAS710ExtendedProperties((IServer)adaptableObject);
 			if( IJBossToolingConstants.SERVER_EAP_60.equals(typeId))
-				return new JBossAS7ExtendedProperties((IServer)adaptableObject);
+				return new JBossAS710ExtendedProperties((IServer)adaptableObject);
 			
 			// NEW_SERVER_ADAPTER
 		}

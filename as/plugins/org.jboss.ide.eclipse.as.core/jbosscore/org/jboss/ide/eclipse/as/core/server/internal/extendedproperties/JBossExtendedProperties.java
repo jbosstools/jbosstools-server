@@ -28,4 +28,12 @@ public class JBossExtendedProperties {
 		return new ConfigNameResolver().performSubstitutions(
 				original, server.getName());
 	}
+	
+	
+	public static final int JMX_DEFAULT_PROVIDER = 0;
+	public static final int JMX_AS_3_TO_6_PROVIDER = 1;
+	public static final int JMX_AS_710_PROVIDER = 2;
+	public int getJMXProviderType() {
+		return JMX_AS_3_TO_6_PROVIDER;
+	}
 }

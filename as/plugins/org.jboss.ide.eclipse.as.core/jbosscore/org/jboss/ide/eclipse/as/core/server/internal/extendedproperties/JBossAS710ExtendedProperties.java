@@ -15,17 +15,13 @@ import org.eclipse.wst.server.core.IServer;
 /**
  *
  */
-public class JBossAS7ExtendedProperties extends JBossExtendedProperties {
-	public JBossAS7ExtendedProperties(IServer server) {
+public class JBossAS710ExtendedProperties extends JBossAS7ExtendedProperties {
+
+	public JBossAS710ExtendedProperties(IServer server) {
 		super(server);
 	}
 
-	public String getNewFilesetDefaultRootFolder() {
-		return "standalone/configuration"; //$NON-NLS-1$
-	}
-	
 	public int getJMXProviderType() {
-		return JMX_DEFAULT_PROVIDER;
+		return JMX_AS_710_PROVIDER;
 	}
-
 }
