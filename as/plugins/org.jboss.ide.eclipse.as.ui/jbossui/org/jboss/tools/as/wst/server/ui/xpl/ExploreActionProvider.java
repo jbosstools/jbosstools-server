@@ -119,7 +119,7 @@ public class ExploreActionProvider extends CommonActionProvider {
 	public void fillContextMenu(IMenuManager menu) {
 		if( getModuleServer() != null )
 			menu.insertBefore(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR, exploreAction);
-		else
+		else if( getServer() != null )
 			menu.insertBefore(ServerActionProvider.SERVER_ETC_SECTION_END_SEPARATOR, exploreAction);
 		exploreAction.setEnabled(true);
 	}
@@ -147,8 +147,8 @@ public class ExploreActionProvider extends CommonActionProvider {
 			ICommonViewerWorkbenchSite wsSite = (ICommonViewerWorkbenchSite) site;
 			selection = (IStructuredSelection) wsSite.getSelectionProvider()
 					.getSelection();
-			Object first = selection.getFirstElement();
-			return first;
+			if( selection.size() == 1 )
+				return selection.getFirstElement();
 		}
 		return null;
 	}	
