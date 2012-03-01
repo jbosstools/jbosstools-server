@@ -10,15 +10,15 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
-import org.eclipse.wst.server.core.IServer;
+import org.eclipse.core.runtime.IAdaptable;
 
 /**
  *
  */
 public class JBossAS710ExtendedProperties extends JBossAS7ExtendedProperties {
 
-	public JBossAS710ExtendedProperties(IServer server) {
-		super(server);
+	public JBossAS710ExtendedProperties(IAdaptable obj) {
+		super(obj);
 	}
 
 	public int getJMXProviderType() {

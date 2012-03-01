@@ -10,14 +10,14 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
-import org.eclipse.wst.server.core.IServer;
+import org.eclipse.core.runtime.IAdaptable;
 
 /**
  *
  */
 public class JBossAS7ExtendedProperties extends JBossExtendedProperties {
-	public JBossAS7ExtendedProperties(IServer server) {
-		super(server);
+	public JBossAS7ExtendedProperties(IAdaptable obj) {
+		super(obj);
 	}
 
 	public String getNewFilesetDefaultRootFolder() {
@@ -26,6 +26,13 @@ public class JBossAS7ExtendedProperties extends JBossExtendedProperties {
 	
 	public int getJMXProviderType() {
 		return JMX_DEFAULT_PROVIDER;
+	}
+
+	public boolean runtimeSupportsBindingToAllInterfaces() {
+		String version = getServerBeanLoader().getFullServerVersion();
+		if( version.startsWith("7.0.1") || version.startsWith("7.0.0"))  //$NON-NLS-1$//$NON-NLS-2$
+			return false;
+		return true;
 	}
 
 }

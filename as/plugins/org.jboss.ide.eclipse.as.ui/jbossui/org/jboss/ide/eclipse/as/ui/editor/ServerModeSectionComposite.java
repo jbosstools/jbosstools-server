@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.ui.editor;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -26,6 +27,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledPageBook;
+import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.util.SocketUtil;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
@@ -35,6 +37,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel;
 import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel.Behaviour;
 import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel.BehaviourImpl;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
@@ -164,7 +167,11 @@ public class ServerModeSectionComposite extends Composite {
 		return true;
 	}
 	protected boolean showListenOnAllHostsCheckbox() {
-		return true;
+		IServer server = callback.getServer().getOriginal();
+		JBossExtendedProperties props = (JBossExtendedProperties)server
+				.loadAdapter(JBossExtendedProperties.class, 
+							 new NullProgressMonitor());
+		return props == null ? false : props.runtimeSupportsBindingToAllInterfaces();
 	}
 
 	protected void executeShellToggled() {

@@ -1,7 +1,10 @@
 package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver;
+import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 
 /**
@@ -12,9 +15,16 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
  */
 public class JBossExtendedProperties {
 	private IServer server;
-	public JBossExtendedProperties(IServer server) {
-		this.server = server;
+	private IRuntime runtime;
+	public JBossExtendedProperties(IAdaptable adaptable) {
+		if( adaptable instanceof IServer) {
+			this.server = (IServer)adaptable;
+			this.runtime = server.getRuntime();
+		} else if( adaptable instanceof IRuntime){
+			this.runtime = (IRuntime)adaptable;
+		}
 	}
+
 	public String getNewFilesetDefaultRootFolder() {
 		return "servers/${jboss_config}"; //$NON-NLS-1$
 	}
@@ -35,5 +45,14 @@ public class JBossExtendedProperties {
 	public static final int JMX_AS_710_PROVIDER = 2;
 	public int getJMXProviderType() {
 		return JMX_AS_3_TO_6_PROVIDER;
+	}
+	
+	
+	public boolean runtimeSupportsBindingToAllInterfaces() {
+		return true;
+	}
+	
+	protected ServerBeanLoader getServerBeanLoader() {
+		return new ServerBeanLoader(runtime.getLocation().toFile());
 	}
 }
