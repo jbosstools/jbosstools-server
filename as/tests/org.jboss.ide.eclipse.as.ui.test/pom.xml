@@ -12,7 +12,7 @@
 	
 	<properties>
 		<systemProperties>-Djbosstools.test.jboss.home.4.2=${requirement.build.root}/jboss-4.2.3.GA</systemProperties>
-		<emma.filter>org.jboss.ide.eclipse.as.ui*</emma.filter>
+		<coverage.filter>org.jboss.ide.eclipse.as.ui*</coverage.filter>
 		<emma.instrument.bundles>org.jboss.ide.eclipse.as.ui</emma.instrument.bundles>
 	</properties>
 
