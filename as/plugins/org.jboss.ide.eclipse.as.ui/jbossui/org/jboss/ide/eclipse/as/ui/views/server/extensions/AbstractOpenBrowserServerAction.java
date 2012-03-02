@@ -91,6 +91,7 @@ public abstract class AbstractOpenBrowserServerAction extends CommonActionProvid
 	private class OpenBrowserAction extends AbstractServerAction {
 		public OpenBrowserAction(ISelectionProvider sp) {
 			super(sp, getActionText());
+			selectionChanged(getStructuredSelection());
 		}
 
 		public boolean accept(IServer server) {
