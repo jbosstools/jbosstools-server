@@ -128,9 +128,9 @@ public class JBossServer extends DeployableServer
 			ret = getCustomDeployLocationFromSettings(jbs.getServer(), DEPLOY_DIRECTORY);
 		}
 		if( ret == null || type.equals(DEPLOY_METADATA)) {
-			return getMetadataDeployLocation(jbs.getServer());
+			ret = getMetadataDeployLocation(jbs.getServer());
 		} 
-		return null;
+		return ret;
 	}
 	
 	public static String getCustomDeployLocationFromSettings(IServer server, String attribute) {
