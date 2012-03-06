@@ -117,11 +117,15 @@ public class ExploreActionProvider extends CommonActionProvider {
 	}
 	
 	public void fillContextMenu(IMenuManager menu) {
-		if( getModuleServer() != null )
-			menu.insertBefore(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR, exploreAction);
-		else if( getServer() != null )
-			menu.insertBefore(ServerActionProvider.SERVER_ETC_SECTION_END_SEPARATOR, exploreAction);
-		exploreAction.setEnabled(true);
+		String mode = getServer().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
+		IExploreBehavior beh = exploreBehaviorMap.get(mode);
+		if( beh != null ) {
+			if( getModuleServer() != null )
+				menu.insertBefore(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR, exploreAction);
+			else if( getServer() != null )
+				menu.insertBefore(ServerActionProvider.SERVER_ETC_SECTION_END_SEPARATOR, exploreAction);
+			exploreAction.setEnabled(true);
+		}
 	}
 	
 	public IServer getServer() {
