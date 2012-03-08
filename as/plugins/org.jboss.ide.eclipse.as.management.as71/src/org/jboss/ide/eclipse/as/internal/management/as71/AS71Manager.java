@@ -31,6 +31,7 @@ import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import javax.security.auth.callback.Callback;
@@ -284,10 +285,12 @@ public class AS71Manager {
 		}
 	}
 
-	public void quietlyExecute(ModelNode node) throws JBoss7ManangerException {
+	// this should only be used when doing shutdown and restart operations.
+	private void quietlyExecute(ModelNode node) throws JBoss7ManangerException {
 		try {
 			client.execute(node);
 		} catch (Exception e) {
+			// AS 7.0 servers fails in finishing the client calls thus we will see IOException when calling shutdown that we should ignore.
 			if (!isConnectionCloseException(e)) {
 				throw new JBoss7ManangerException(e);
 			}
@@ -295,9 +298,10 @@ public class AS71Manager {
 	}
 
 	private boolean isConnectionCloseException(Exception e) {
-		return e instanceof IOException
+		return (e instanceof IOException
 				&& e.getMessage() != null
-				&& e.getMessage().indexOf("Channel closed") > -1;
+				&& (e.getMessage().indexOf("Channel closed") > -1) // pre-AS 7.1 client lib 
+				|| e.getMessage().indexOf("Operation failed") > -1); // AS 7.1 client lib 
 	}
 
 	private IJBoss7DeploymentResult execute(DeploymentPlanBuilder builder) throws JBoss7ManangerException {
