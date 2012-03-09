@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IPublishListener;
 import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IRuntimeLifecycleListener;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerLifecycleListener;
 import org.eclipse.wst.server.core.IServerListener;
@@ -34,7 +35,7 @@ import org.eclipse.wst.server.core.ServerEvent;
  *
  */
 public class UnitedServerListenerManager implements 
-	IServerLifecycleListener, IServerListener, IPublishListener {
+	IServerLifecycleListener, IServerListener, IPublishListener, IRuntimeLifecycleListener {
 	protected static UnitedServerListenerManager instance;
 	public static UnitedServerListenerManager getDefault() {
 		if( instance == null )
@@ -46,6 +47,7 @@ public class UnitedServerListenerManager implements
 	protected UnitedServerListenerManager() {
 		list = new ArrayList<UnitedServerListener>();
 		ServerCore.addServerLifecycleListener(this);
+		ServerCore.addRuntimeLifecycleListener(this);
 		IServer[] allServers = ServerCore.getServers();
 		for( int i = 0; i < allServers.length; i++ ) {
 			allServers[i].addServerListener(this);
@@ -142,6 +144,28 @@ public class UnitedServerListenerManager implements
 		for( int i = 0; i < listeners.length; i++) {
 			if( listeners[i].canHandleServer(server))
 				listeners[i].publishFinished(server, status);
+		}
+	}
+
+	public void runtimeAdded(IRuntime runtime) {
+		UnitedServerListener[] listeners = getListeners();
+		for( int i = 0; i < listeners.length; i++) {
+			if( listeners[i].canHandleRuntime(runtime))
+				listeners[i].runtimeAdded(runtime);
+		}
+	}
+	public void runtimeChanged(IRuntime runtime) {
+		UnitedServerListener[] listeners = getListeners();
+		for( int i = 0; i < listeners.length; i++) {
+			if( listeners[i].canHandleRuntime(runtime))
+				listeners[i].runtimeChanged(runtime);
+		}
+	}
+	public void runtimeRemoved(IRuntime runtime) {
+		UnitedServerListener[] listeners = getListeners();
+		for( int i = 0; i < listeners.length; i++) {
+			if( listeners[i].canHandleRuntime(runtime))
+				listeners[i].runtimeRemoved(runtime);
 		}
 	}
 }

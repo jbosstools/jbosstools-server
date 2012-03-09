@@ -28,11 +28,14 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
+import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -398,4 +401,46 @@ public class XPathModel extends UnitedServerListener {
 		}
 		return l.toArray(new XPathResultNode[l.size()]);
 	}
+	
+	
+	
+	
+	public boolean canHandleServer(IServer server) {
+		if (!UnitedServerListenerManager.isJBossServer(server))
+			return false;
+		return true;
+	}
+	public boolean canHandleRuntime(IRuntime runtime) {
+		return findAllServersForRuntime(runtime).length > 0;
+	}
+	
+	public void serverChanged(IServer server) {
+		clearCache(server);
+	}
+	public void runtimeChanged(IRuntime runtime) {
+		IServer[] relevent = findAllServersForRuntime(runtime);
+		for( int i = 0; i < relevent.length; i++ )
+			clearCache(relevent[i]);
+	}
+	
+	protected IServer[] findAllServersForRuntime(IRuntime rt) {
+		if( rt == null )
+			return new IServer[] {};
+		ArrayList<IServer> ret = new ArrayList<IServer>();
+		IServer[] all = ServerCore.getServers();
+		for( int i = 0; i < all.length; i++ ) {
+			if( rt.equals(all[i].getRuntime())) {
+				ret.add(all[i]);
+			}
+		}
+		return (IServer[]) ret.toArray(new IServer[ret.size()]);
+	}
+
+	public void clearCache(IServer server) {
+		XPathCategory[] cats = getCategories(server);
+		for( int i = 0; i < cats.length; i++ ) {
+			cats[i].clearCache();
+		}
+	}
+	
 }

@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.as.core.server;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerEvent;
 
@@ -35,5 +36,14 @@ public class UnitedServerListener {
 		if (!UnitedServerListenerManager.isJBossServer(server))
 			return false;
 		return true;
+	}
+	public boolean canHandleRuntime(IRuntime server) {
+		return false;
+	}
+	public void runtimeAdded(IRuntime runtime) {
+	}
+	public void runtimeChanged(IRuntime runtime) {
+	}
+	public void runtimeRemoved(IRuntime runtime) {
 	}
 }

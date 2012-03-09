@@ -153,7 +153,10 @@ public class XPathQuery implements Serializable {
 	
 	public void clearCache() {
 		results = null;
+		filter = null;
 		setEffectiveBaseDir();
+		setEffectiveFilePattern();
+		refresh();
 	}
 	
 	public boolean resultsLoaded() {
