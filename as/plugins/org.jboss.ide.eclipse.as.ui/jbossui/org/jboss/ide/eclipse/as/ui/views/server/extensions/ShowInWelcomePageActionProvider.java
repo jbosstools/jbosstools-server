@@ -11,9 +11,11 @@
 package org.jboss.ide.eclipse.as.ui.views.server.extensions;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
@@ -28,8 +30,12 @@ public class ShowInWelcomePageActionProvider extends AbstractOpenBrowserServerAc
 	
 	protected boolean shouldAddForSelection(IStructuredSelection sel) {
 		IServer server = getSingleServer(sel);
-		if( server != null )
-			return ServerUtil.isJBossServerType(server.getServerType()) && accepts(server);
+		if( server != null ) {
+			ServerExtendedProperties props = (ServerExtendedProperties)
+					server.loadAdapter(ServerExtendedProperties.class, new NullProgressMonitor());
+			if( props != null && props.hasWelcomePage())
+				return true;
+		}
 		return false;
 	}
 
@@ -38,11 +44,8 @@ public class ShowInWelcomePageActionProvider extends AbstractOpenBrowserServerAc
 	}
 	
 	protected String getURL(IServer server) throws CoreException {
-		JBossServer jbossServer = ServerUtil.checkedGetServerAdapter(server, JBossServer.class);
-		String host = jbossServer.getHost();
-		int webPort = jbossServer.getJBossWebPort();
-		String consoleUrl = MessageFormat.format(WELCOME_PAGE_URL_PATTERN, host, String.valueOf(webPort));
-		return consoleUrl;
+		ServerExtendedProperties props = (ServerExtendedProperties)
+				server.loadAdapter(ServerExtendedProperties.class, new NullProgressMonitor());
+		return props.getWelcomePageUrl();
 	}
-
 }

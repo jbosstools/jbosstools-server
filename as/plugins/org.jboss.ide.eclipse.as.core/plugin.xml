@@ -1196,7 +1196,7 @@
             adaptableType="org.eclipse.wst.server.core.IServer"
             class="org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory">
          <adapter
-               type="org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties">
+               type="org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties">
          </adapter>
       </factory>
    </extension>
