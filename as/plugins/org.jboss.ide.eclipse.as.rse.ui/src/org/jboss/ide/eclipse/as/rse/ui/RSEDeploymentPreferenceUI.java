@@ -111,6 +111,11 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 					e.printStackTrace();
 				}
 			}
+
+			@Override
+			public boolean canExplore(IServer server, IModule[] module) {
+				return true;
+			}
 		});
 	}
 	

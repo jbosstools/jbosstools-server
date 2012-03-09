@@ -36,11 +36,18 @@ import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.actions.ExploreUtils;
 public class ExploreActionProvider extends CommonActionProvider {
 	public static interface IExploreBehavior {
+		public boolean canExplore(IServer server, IModule[] module);
 		public void openExplorer(IServer server, IModule[] module);
 	}
 	public static HashMap<String, IExploreBehavior> exploreBehaviorMap = new HashMap<String, IExploreBehavior>();
 	static {
 		exploreBehaviorMap.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new IExploreBehavior() {
+			@Override
+			public boolean canExplore(IServer server, IModule[] module) {
+				if( module != null )
+					return ExploreUtils.canExplore(server, module);
+				return ExploreUtils.canExplore(server);
+			}
 			public void openExplorer(IServer server, IModule[] module) {
 				if( module != null ) 
 					runExploreModuleServer(server, module);
@@ -119,13 +126,13 @@ public class ExploreActionProvider extends CommonActionProvider {
 	public void fillContextMenu(IMenuManager menu) {
 		String mode = getServer().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
 		IExploreBehavior beh = exploreBehaviorMap.get(mode);
-		if( beh != null ) {
-			if( getModuleServer() != null )
-				menu.insertBefore(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR, exploreAction);
-			else if( getServer() != null )
-				menu.insertBefore(ServerActionProvider.SERVER_ETC_SECTION_END_SEPARATOR, exploreAction);
-			exploreAction.setEnabled(true);
-		}
+		if( beh == null || !beh.canExplore(getServer(), getModuleServer() == null ? null : getModuleServer().module))
+			return;
+		if( getModuleServer() != null )
+			menu.insertBefore(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR, exploreAction);
+		else if( getServer() != null )
+			menu.insertBefore(ServerActionProvider.SERVER_ETC_SECTION_END_SEPARATOR, exploreAction);
+		exploreAction.setEnabled(true);
 	}
 	
 	public IServer getServer() {

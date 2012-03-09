@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
@@ -102,7 +103,17 @@ public class ExploreUtils {
 		if (server != null && deployableServer != null) {
 			return deployableServer.getDeployFolder();
 		}
-		return server.getAttribute(IDeployableServer.DEPLOY_DIRECTORY, "").trim(); //$NON-NLS-1$
+		String ret = server.getAttribute(IDeployableServer.DEPLOY_DIRECTORY,(String) null); //$NON-NLS-1$
+		if( ret != null )
+			return ret.trim();
+		
+		// Other runtimes like tomcat / default behavior (?)
+		IRuntime rt = server.getRuntime();
+		if( rt != null ) {
+			return rt.getLocation().toString();
+		}
+		
+		return null; // No idea
 	}
 	
 	public static boolean canExplore(IServer server) {
@@ -117,10 +128,13 @@ public class ExploreUtils {
 	}
 	public static boolean canExplore(IServer server, IModule[] modules) {
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
-		IPath p = PublishUtil.getDeployRootFolder(modules, ds);
-		if (p == null || !p.toFile().exists() || ExploreUtils.getExploreCommand() == null)
-			return false;
-		return true;
+		if( ds != null ) {
+			IPath p = PublishUtil.getDeployRootFolder(modules, ds);
+			if (p == null || !p.toFile().exists() || ExploreUtils.getExploreCommand() == null)
+				return false;
+			return true;
+		}
+		return false;
 	}
 	
 	public static void explore(String name) {
