@@ -14,7 +14,7 @@ public class XbFileSet extends XbPackageNodeWithProperties {
 
 	private String dir, includes, excludes;
 	private boolean inWorkspace;
-	private boolean flattened = false;
+	private boolean flatten = false;
 	
 	public XbFileSet () {
 		super("fileset"); //$NON-NLS-1$
@@ -31,7 +31,7 @@ public class XbFileSet extends XbPackageNodeWithProperties {
 		this.includes = fileset.includes == null ? null : new String(fileset.includes);
 		this.excludes = fileset.excludes == null ? null : new String(fileset.excludes);
 		this.inWorkspace = fileset.inWorkspace;
-		this.flattened = fileset.flattened;
+		this.flatten = fileset.flatten;
 	}
 	
 	protected Object clone() throws CloneNotSupportedException {
@@ -71,10 +71,18 @@ public class XbFileSet extends XbPackageNodeWithProperties {
 	}
 
 	public boolean isFlattened() {
-		return flattened;
+		return flatten;
 	}
 
 	public void setFlattened(boolean flatten) {
-		this.flattened = flatten;
+		this.flatten = flatten;
+	}
+
+	public boolean isFlatten() {
+		return flatten;
+	}
+
+	public void setFlatten(boolean flatten) {
+		this.flatten = flatten;
 	}
 }
