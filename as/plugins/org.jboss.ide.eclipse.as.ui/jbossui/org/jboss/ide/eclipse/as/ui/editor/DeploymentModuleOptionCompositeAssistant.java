@@ -775,6 +775,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		};
 		filterCombo.addModifyListener(ml);
 		filterText.addModifyListener(ml);
+		filterCombo.select(1); // select DEPLOYED
 		return root;
 	}
 	
