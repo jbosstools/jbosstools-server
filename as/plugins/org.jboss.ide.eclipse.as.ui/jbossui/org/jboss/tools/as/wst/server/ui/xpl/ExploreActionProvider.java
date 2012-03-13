@@ -42,7 +42,6 @@ public class ExploreActionProvider extends CommonActionProvider {
 	public static HashMap<String, IExploreBehavior> exploreBehaviorMap = new HashMap<String, IExploreBehavior>();
 	static {
 		exploreBehaviorMap.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new IExploreBehavior() {
-			@Override
 			public boolean canExplore(IServer server, IModule[] module) {
 				if( module != null )
 					return ExploreUtils.canExplore(server, module);
