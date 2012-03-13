@@ -27,6 +27,10 @@ public class ServerWorkingCopyPropertyCommand extends ServerCommand {
 	
 	public ServerWorkingCopyPropertyCommand(IServerWorkingCopy wc, String commandName, 
 			Text text, String newVal, String attributeKey, ModifyListener listener) {
+		this(wc, commandName, text, newVal, attributeKey, listener, "");
+	}
+	public ServerWorkingCopyPropertyCommand(IServerWorkingCopy wc, String commandName, 
+				Text text, String newVal, String attributeKey, ModifyListener listener, String defaultVal) {
 		super(wc, commandName);
 		this.wc = wc;
 		this.text = text;
@@ -34,7 +38,7 @@ public class ServerWorkingCopyPropertyCommand extends ServerCommand {
 		this.newVal = newVal;
 		this.listener = listener;
 		if( key != null )
-			this.oldVal = wc.getAttribute(attributeKey, ""); //$NON-NLS-1$
+			this.oldVal = wc.getAttribute(attributeKey, defaultVal);
 	}
 	
 	public void execute() {
