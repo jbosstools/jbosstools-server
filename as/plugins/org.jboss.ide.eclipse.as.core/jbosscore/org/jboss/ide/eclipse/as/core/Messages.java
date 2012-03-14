@@ -101,6 +101,11 @@ public class Messages extends NLS {
 	public static String ServerStatePollerUnexpectedError;
 	public static String ServerArgsParseError;
 
+	public static String ServerMissingRuntime;
+	public static String RuntimeFolderDoesNotExist;
+	public static String JBossConfigurationFolderDoesNotExist;
+	public static String JBossAS7ConfigurationFileDoesNotExist;
+	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}

@@ -261,8 +261,7 @@ public class ServerModeSectionComposite extends Composite {
 	}
 
 	private boolean shouldChangeDefaultDeployType(IServerWorkingCopy server) {
-		return !server.getServerType().getId().equals(IJBossToolingConstants.DEPLOY_ONLY_SERVER) &&
-				!server.getServerType().getId().equals(IJBossToolingConstants.SERVER_AS_70);
+		return !server.getServerType().getId().equals(IJBossToolingConstants.DEPLOY_ONLY_SERVER);
 	}
 	
 	public static class ChangeServerPropertyCommand extends ServerCommand {

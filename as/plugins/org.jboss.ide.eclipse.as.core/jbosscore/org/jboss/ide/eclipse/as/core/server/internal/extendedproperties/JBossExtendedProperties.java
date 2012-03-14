@@ -10,10 +10,16 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
+import java.io.File;
 import java.text.MessageFormat;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
@@ -72,6 +78,28 @@ public class JBossExtendedProperties extends ServerExtendedProperties {
 
 	public int getMultipleDeployFolderSupport() {
 		return DEPLOYMENT_SCANNER_JMX_SUPPORT;
+	}
+
+	public IStatus verifyServerStructure() {
+		try {
+			String e = getVerifyStructureErrorMessage();
+			if( e != null )
+				return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, e);
+		} catch(CoreException ce ) {
+			return ce.getStatus();
+		}
+		return Status.OK_STATUS;
+	}
+	
+	protected String getVerifyStructureErrorMessage() throws CoreException{
+		if( server.getRuntime() == null ) 
+			return NLS.bind(Messages.ServerMissingRuntime, server.getName());
+		if( !server.getRuntime().getLocation().toFile().exists())
+			return NLS.bind(Messages.RuntimeFolderDoesNotExist, server.getRuntime().getLocation().toOSString());
+		JBossServer jbossServer = ServerUtil.checkedGetServerAdapter(server, JBossServer.class);
+		if( !new File(jbossServer.getConfigDirectory()).exists()) 
+			return NLS.bind(Messages.JBossConfigurationFolderDoesNotExist, jbossServer.getConfigDirectory());
+		return null;
 	}
 
 }

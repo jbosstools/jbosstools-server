@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerAttributes;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossAS710ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossAS7ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
@@ -23,11 +24,16 @@ import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
 public class ExtendedServerPropertiesAdapterFactory implements IAdapterFactory, IJBossToolingConstants {
 	
-	public static JBossExtendedProperties getJBossExtendedProperties(IServer server) {
+	public static JBossExtendedProperties getJBossExtendedProperties(IServerAttributes server) {
 		Object ret = new ExtendedServerPropertiesAdapterFactory().getAdapter(server, ServerExtendedProperties.class);
 		return ret instanceof JBossExtendedProperties ? (JBossExtendedProperties)ret : null;
 	}
-	
+
+	public static ServerExtendedProperties getServerExtendedProperties(IServerAttributes server) {
+		Object ret = new ExtendedServerPropertiesAdapterFactory().getAdapter(server, ServerExtendedProperties.class);
+		return (ServerExtendedProperties)ret;
+	}
+
 	@Override
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
 		if( adapterType != ServerExtendedProperties.class )
@@ -35,8 +41,8 @@ public class ExtendedServerPropertiesAdapterFactory implements IAdapterFactory, 
 		String typeId = null;
 		IServer s = null;
 		IRuntime r = null;
-		if( adaptableObject instanceof IServer ) {
-			typeId = ((IServer)adaptableObject).getServerType().getId();
+		if( adaptableObject instanceof IServerAttributes ) {
+			typeId = ((IServerAttributes)adaptableObject).getServerType().getId();
 			s = (IServer)adaptableObject;
 		} else if( adaptableObject instanceof IRuntime ) {
 			typeId = ((IRuntime)adaptableObject).getRuntimeType().getId();

@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.internal.Server;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
@@ -55,11 +56,11 @@ public class DeploymentPreferenceLoader {
 		return BehaviourModel.getPublishMethodType(server, defaultType);
 	}
 
-	public static String getCurrentDeploymentMethodTypeId(IServer server) {
+	public static String getCurrentDeploymentMethodTypeId(IServerAttributes server) {
 		return getCurrentDeploymentMethodTypeId(server, null);
 	}
 	
-	public static String getCurrentDeploymentMethodTypeId(IServer server, String defaultType) {
+	public static String getCurrentDeploymentMethodTypeId(IServerAttributes server, String defaultType) {
 		return 	server.getAttribute(IDeployableServer.SERVER_MODE, defaultType);
 	}
 

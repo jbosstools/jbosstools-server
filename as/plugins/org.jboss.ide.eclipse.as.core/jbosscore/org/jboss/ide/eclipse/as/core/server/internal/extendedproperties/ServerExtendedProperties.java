@@ -1,14 +1,17 @@
 package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerAttributes;
 
 public class ServerExtendedProperties {
-	protected IServer server;
+	protected IServerAttributes server;
 	protected IRuntime runtime;
 	public ServerExtendedProperties(IAdaptable adaptable) {
-		if( adaptable instanceof IServer) {
+		if( adaptable instanceof IServerAttributes) {
 			this.server = (IServer)adaptable;
 			this.runtime = server.getRuntime();
 		} else if( adaptable instanceof IRuntime){
@@ -42,5 +45,9 @@ public class ServerExtendedProperties {
 	
 	public int getMultipleDeployFolderSupport() {
 		return DEPLOYMENT_SCANNER_NO_SUPPORT;
+	}
+	
+	public IStatus verifyServerStructure() {
+		return Status.OK_STATUS;
 	}
 }

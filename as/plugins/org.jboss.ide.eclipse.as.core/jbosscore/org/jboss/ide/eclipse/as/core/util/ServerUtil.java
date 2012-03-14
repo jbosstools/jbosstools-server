@@ -55,7 +55,7 @@ public class ServerUtil {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <ADAPTER> ADAPTER checkedGetServerAdapter(IServer server, Class<ADAPTER> behaviorClass) throws CoreException {
+	public static <ADAPTER> ADAPTER checkedGetServerAdapter(IServerAttributes server, Class<ADAPTER> behaviorClass) throws CoreException {
 		ADAPTER adapter = (ADAPTER) server.loadAdapter(behaviorClass, new NullProgressMonitor());
 		if (adapter == null) {
 			throw new CoreException(					

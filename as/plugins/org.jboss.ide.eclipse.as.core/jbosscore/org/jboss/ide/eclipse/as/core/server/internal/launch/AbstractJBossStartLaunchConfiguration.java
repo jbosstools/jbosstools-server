@@ -36,6 +36,8 @@ import org.jboss.ide.eclipse.as.core.server.IServerAlreadyStartedHandler;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
@@ -62,11 +64,11 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 			return false;
 		}
 		
-		if( jbsBehavior.getServer().getRuntime() == null || jbsBehavior.getServer().getRuntime().getLocation() == null 
-				||  !jbsBehavior.getServer().getRuntime().getLocation().toFile().exists()) {
+		JBossExtendedProperties props = ExtendedServerPropertiesAdapterFactory.getJBossExtendedProperties(jbsBehavior.getServer());
+		IStatus status = props.verifyServerStructure();
+		if( !status.isOK() ) {
 			jbsBehavior.setServerStopped();
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
-					"The server's runtime folder does not exist: " + jbsBehavior.getServer().getRuntime().getLocation())); //$NON-NLS-1$
+			throw new CoreException(status);
 		}
 		
 		Trace.trace(Trace.STRING_FINEST, "Checking if similar server is already up on the same ports."); //$NON-NLS-1$
