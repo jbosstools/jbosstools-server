@@ -29,6 +29,7 @@ import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
@@ -81,6 +82,7 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 
 	@Override
 	protected void publishFinish(IProgressMonitor monitor) throws CoreException {
+		Trace.trace(Trace.STRING_FINER, "PublishFinish in DelegatingJBoss7ServerBehavior"); //$NON-NLS-1$
 		// Handle the dodeploy
 		try {
 			createDoDeployMarkers(monitor);
@@ -94,6 +96,7 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 			return;
 		}
 		List<IPath> paths = getMarkedDoDeploy();
+		Trace.trace(Trace.STRING_FINER, "Marking " + paths.size() + " dodeploy files.");  //$NON-NLS-1$//$NON-NLS-2$
 		monitor.beginTask("Completing Publishes", paths.size() + 1); //$NON-NLS-1$
 		createDoDeployMarker(getOrCreatePublishMethod(), paths, monitor);
 	}

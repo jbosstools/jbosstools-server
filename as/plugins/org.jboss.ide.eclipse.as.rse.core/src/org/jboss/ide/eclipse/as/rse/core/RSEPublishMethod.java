@@ -26,6 +26,7 @@ import org.eclipse.rse.core.subsystems.ISubSystem;
 import org.eclipse.rse.services.files.IFileService;
 import org.eclipse.rse.subsystems.files.core.servicesubsystem.IFileServiceSubSystem;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
@@ -63,6 +64,7 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 	
 	public void publishStart(DeployableServerBehavior behaviour,
 			IProgressMonitor monitor) throws CoreException {
+		super.publishStart(behaviour, monitor);
 		this.behaviour = behaviour;
 		loadRemoteDeploymentDetails();
 		ensureConnection(monitor);
@@ -71,11 +73,12 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 		if( b != null && getServer().getServerState() == IServer.STATE_STARTED ) {
 			stopDeploymentScanner();
 		}
-		super.publishStart(behaviour, monitor);
+		Trace.trace(Trace.STRING_FINER, "Finished publish start for server " + getServer().getName());
 	}
 	
 	public int publishFinish(DeployableServerBehavior behaviour,
 			IProgressMonitor monitor) throws CoreException {
+		Trace.trace(Trace.STRING_FINER, "Beginning publishFinish for server " + getServer().getName());
 		DelegatingServerBehavior b = (DelegatingServerBehavior) behaviour.getServer().loadAdapter(DelegatingServerBehavior.class, new NullProgressMonitor());
 		if( b != null && getServer().getServerState() == IServer.STATE_STARTED ) {
 			startDeploymentScanner();
@@ -84,12 +87,14 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 	}
 	
 	protected void startDeploymentScanner() {
+		Trace.trace(Trace.STRING_FINER, "Starting remote deployment scanner for server " + getServer().getName());
 		String cmd = getDeploymentScannerCommand(new NullProgressMonitor(), true);
 		if( cmd != null )
 			launchCommandNoResult((DelegatingServerBehavior)behaviour, 3000, cmd);
 	}
 
 	protected void stopDeploymentScanner() {
+		Trace.trace(Trace.STRING_FINER, "Stopping remote deployment scanner for server " + getServer().getName());
 		String cmd = getDeploymentScannerCommand(new NullProgressMonitor(), false);
 		if( cmd != null )
 			launchCommandNoResult((DelegatingServerBehavior)behaviour, 3000, cmd);
@@ -131,10 +136,12 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 	}
 	
 	public boolean ensureConnection(IProgressMonitor monitor) {
+		Trace.trace(Trace.STRING_FINER, "Ensuring connection to remote server for server " + getServer().getName());
 		if (fileSubSystem != null && !fileSubSystem.isConnected()) {
 		    try {
 		    	fileSubSystem.connect(monitor, false);
 		    } catch (Exception e) {
+				Trace.trace(Trace.STRING_FINER, "Exception connecting to remote server: " + e.getMessage());
 		    	// I'd rather not catch Exception, but that's all they throw
 		    	return false;
 		    }
@@ -169,7 +176,9 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 	}
 	
 	protected void loadRemoteDeploymentDetails() throws CoreException{
+		Trace.trace(Trace.STRING_FINER, "Ensuring RSE is initialized");
 		RSEUtils.waitForFullInit();
+		Trace.trace(Trace.STRING_FINER, "Loading remote deployment details for server " + getServer().getName());
 		String connectionName = RSEUtils.getRSEConnectionName(behaviour.getServer());
 		IDeployableServer ds = ServerConverter.getDeployableServer(behaviour.getServer());
 		this.remoteRootFolder = new Path(RSEUtils.getDeployRootFolder(ds));
@@ -207,13 +216,13 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 	}
 	
 	private void launchCommandNoResult(DelegatingServerBehavior behaviour, int delay, String command) {
+		Trace.trace(Trace.STRING_FINER, "Launching remote command: " + command);
 		try {
 			ServerShellModel model = RSEHostShellModel.getInstance().getModel(behaviour.getServer());
 			model.executeRemoteCommand("/", command, new String[]{}, new NullProgressMonitor(), delay, true);
 		} catch( CoreException ce ) {
+			Trace.trace(Trace.STRING_FINER, "Exception launching remote command (command="+command+"): " + ce.getMessage());
 			ServerLogger.getDefault().log(behaviour.getServer(), ce.getStatus());
 		}
 	}
-
-
 }

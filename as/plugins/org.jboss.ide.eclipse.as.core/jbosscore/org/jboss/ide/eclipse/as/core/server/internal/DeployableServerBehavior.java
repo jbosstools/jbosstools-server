@@ -27,6 +27,7 @@ import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.publishers.patterns.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
@@ -59,6 +60,7 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	protected void publishStart(IProgressMonitor monitor) throws CoreException {
 		if( method != null )
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Already publishing")); //$NON-NLS-1$
+		Trace.trace(Trace.STRING_FINER, "Publish Start in DeployableServerBehavior"); //$NON-NLS-1$
 		method = getOrCreatePublishMethod();
 		publishTaskModel = new HashMap<String, Object>();
 		method.publishStart(this, monitor);
@@ -76,12 +78,16 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	 * @throws CoreException
 	 */
 	protected IJBossServerPublishMethod getOrCreatePublishMethod() throws CoreException {
-		if( method == null )
+		if( method == null ) {
 			method = createPublishMethod();
+			Trace.trace(Trace.STRING_FINER, "Creating publish method " + (method == null ? null : method.getClass().getName())); //$NON-NLS-1$
+		}
 		return method;
 	}
 	
 	protected void publishFinish(IProgressMonitor monitor) throws CoreException {
+		Trace.trace(Trace.STRING_FINER, "PublishFinish in DeployableServerBehavior"); //$NON-NLS-1$
+		
 		if( method == null )
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Not publishing")); //$NON-NLS-1$
 		try {
@@ -105,6 +111,8 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	}
 	
 	protected void publishModule(int kind, int deltaKind, IModule[] module, IProgressMonitor monitor) throws CoreException {
+		Trace.trace(Trace.STRING_FINER, "Beginning to publish module " + module[module.length-1].getName() + " in DeployableServerBehavior"); //$NON-NLS-1$ //$NON-NLS-2$
+
 		if( method == null )
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Not publishing")); //$NON-NLS-1$
 		try { 
@@ -114,6 +122,7 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 				setModuleState(module, IServer.STATE_STARTED );
 			}
 		} catch(CoreException ce) {
+			Trace.trace(Trace.STRING_FINER, "Error publishing module " + module[module.length-1].getName() + " in DeployableServerBehavior. " + ce.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
 			setModulePublishState(module, IServer.PUBLISH_STATE_FULL);
 			setModuleState(module, IServer.STATE_UNKNOWN );
 			throw ce;
@@ -214,6 +223,7 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		getServer().addServerListener(new IServerListener() {
 			public void serverChanged(ServerEvent event) {
 				if( event.getState() != serverStateVal ) {
+					Trace.trace(Trace.STRING_FINER, "Framework has changed server state from starting to stopped. Ensuring server has stopped."); //$NON-NLS-1$
 					// something's been changed by the framework and NOT by us. 
 					if( serverStateVal == IServer.STATE_STARTING && event.getState() == IServer.STATE_STOPPED) {
 						stop(true);

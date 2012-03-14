@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.JSTPublisherXMLToucher;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
@@ -54,19 +55,22 @@ public class DelegatingServerBehavior extends DeployableServerBehavior {
 	public synchronized IJBossBehaviourDelegate getDelegate() {
 		IJBossServerPublishMethodType type = DeploymentPreferenceLoader.getCurrentDeploymentMethodType(getServer());
 		String id = type == null ? LocalPublishMethod.LOCAL_PUBLISH_METHOD : type.getId();
+		IJBossBehaviourDelegate ret = null;
 		if( id.equals(lastModeId) && delegate != null && delegate.getBehaviourTypeId().equals(id))
-			return delegate;
-		
-		Behaviour b = BehaviourModel.getModel().getBehaviour(getServer().getServerType().getId());
-		BehaviourImpl impl = b.getImpl(id);
-		if( impl != null ) {
-			IJBossBehaviourDelegate d = impl.createBehaviourDelegate();
-			d.setActualBehaviour(this);
-			lastModeId = id;
-			delegate = d;
-			return delegate;
+			ret = delegate;
+		else {
+			Behaviour b = BehaviourModel.getModel().getBehaviour(getServer().getServerType().getId());
+			BehaviourImpl impl = b.getImpl(id);
+			if( impl != null ) {
+				IJBossBehaviourDelegate d = impl.createBehaviourDelegate();
+				d.setActualBehaviour(this);
+				lastModeId = id;
+				ret = d;
+			}
 		}
-		return null;
+		delegate = ret;
+		//Trace.trace(Trace.STRING_FINEST, "Finding DelegatingServerBehavior's delegate for server " + getServer().getName() +". Class=" + (ret == null ? null : ret.getClass().getName()));  //$NON-NLS-1$//$NON-NLS-2$
+		return ret;
 	}
 	
 	public IModulePathFilter getPathFilter(IModule[] moduleTree) {
@@ -77,6 +81,7 @@ public class DelegatingServerBehavior extends DeployableServerBehavior {
 	}
 	
 	public void stop(boolean force) {
+		Trace.trace(Trace.STRING_FINER, "DelegatingServerBehavior initiating stop for server " + getServer().getName()); //$NON-NLS-1$
 		getDelegate().stop(force);
 	}
 	
@@ -134,6 +139,7 @@ public class DelegatingServerBehavior extends DeployableServerBehavior {
 	}
 	
 	protected void publishFinish(final IProgressMonitor monitor) throws CoreException {
+		Trace.trace(Trace.STRING_FINER, "PublishFinish in DelegatingServerBehavior"); //$NON-NLS-1$
 		try {
 			getDelegate().publishFinish(monitor);
 		} finally {

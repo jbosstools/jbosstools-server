@@ -30,6 +30,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.util.ModuleFile;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
@@ -85,7 +86,9 @@ public class DeploymentMarkerUtils {
 			IPath depPath, IProgressMonitor monitor) throws CoreException {
 		IPath folder = depPath.removeLastSegments(1);
 		IPublishCopyCallbackHandler callback = method.getCallbackHandler(folder, server);
-		callback.copyFile(createBlankModule(), new Path(depPath.lastSegment() + DO_DEPLOY), monitor);
+		IPath lastSegment = new Path(depPath.lastSegment() + DO_DEPLOY);
+		callback.copyFile(createBlankModule(), lastSegment, monitor);
+		Trace.trace(Trace.STRING_FINER, "Creating dodeploy file: " + folder.append(lastSegment)); //$NON-NLS-1$
 		return Status.OK_STATUS;
 	}
 
@@ -170,6 +173,8 @@ public class DeploymentMarkerUtils {
 	 */
 	public static IStatus removeDeployedMarkerIfExists(IJBossServerPublishMethod method, IServer server, IPath depPath, 
 			IProgressMonitor monitor) throws CoreException {
+		Trace.trace(Trace.STRING_FINER, "Removing deployment marker file on path " + depPath); //$NON-NLS-1$
+
 		try {
 			return removeFile(DEPLOYED, server, depPath, method, monitor);
 		} catch (CoreException e) {

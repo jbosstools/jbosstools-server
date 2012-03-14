@@ -18,6 +18,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
+import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
@@ -28,17 +29,15 @@ public abstract class AbstractPublishMethod implements IJBossServerPublishMethod
 
 	public void publishStart(DeployableServerBehavior behaviour,
 			IProgressMonitor monitor) throws CoreException {
+		Trace.trace(Trace.STRING_FINER, "Publish start in " + getClass().getName()); //$NON-NLS-1$
 	}
 
 	public int publishFinish(DeployableServerBehavior behaviour,
 			IProgressMonitor monitor) throws CoreException {
-        IModule[] modules = behaviour.getServer().getModules();
-        boolean allpublished= true;
-        for (int i = 0; i < modules.length; i++) {
-        	if(behaviour.getServer().getModulePublishState(new IModule[]{modules[i]})!=IServer.PUBLISH_STATE_NONE)
-                allpublished=false;
-        }
-        return allpublished ? IServer.PUBLISH_STATE_NONE : IServer.PUBLISH_STATE_INCREMENTAL;
+		Trace.trace(Trace.STRING_FINER, "Beginning publishFinish in " + getClass().getName()); //$NON-NLS-1$
+        int result = getServerPublishState(behaviour);
+		Trace.trace(Trace.STRING_FINER, "Ending publishFinish with server restart state of " + result); //$NON-NLS-1$
+        return result;
 	}
 	
 	public int getServerPublishState(DeployableServerBehavior behaviour) {
@@ -56,6 +55,8 @@ public abstract class AbstractPublishMethod implements IJBossServerPublishMethod
 	public int publishModule(DeployableServerBehavior behaviour, int kind,
 			int deltaKind, IModule[] module, IProgressMonitor monitor)
 			throws CoreException {
+		Trace.trace(Trace.STRING_FINER, "Beginning to publish module " + module[module.length-1].getName()); //$NON-NLS-1$
+
 		// kind = [incremental, full, auto, clean] = [1,2,3,4]
 		// delta = [no_change, added, changed, removed] = [0,1,2,3]
 		if( module.length == 0 ) return IServer.PUBLISH_STATE_NONE;
@@ -68,6 +69,7 @@ public abstract class AbstractPublishMethod implements IJBossServerPublishMethod
 			IModuleResourceDelta[] deltas = new IModuleResourceDelta[]{};
 			if( deltaKind != ServerBehaviourDelegate.REMOVED)
 				deltas = behaviour.getPublishedResourceDelta(module);
+			Trace.trace(Trace.STRING_FINER, "Publisher for module " + module[module.length-1].getName() + " is " + publisher.getClass().getName());  //$NON-NLS-1$//$NON-NLS-2$
 			if( publisher != null ) {
 				try {
 					IStatus result = publisher.publishModule(
@@ -78,6 +80,7 @@ public abstract class AbstractPublishMethod implements IJBossServerPublishMethod
 				        ServerLogger.getDefault().log(behaviour.getServer(), result);
 				} catch( CoreException ce) {
 					// Let the user know
+					Trace.trace(Trace.STRING_FINER, "Exception publishing module: " + ce.getMessage()); //$NON-NLS-1$
 			        ServerLogger.getDefault().log(behaviour.getServer(), ce.getStatus());
 			        throw ce;
 				}

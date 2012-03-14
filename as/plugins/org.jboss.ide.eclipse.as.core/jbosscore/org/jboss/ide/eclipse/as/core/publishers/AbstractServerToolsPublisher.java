@@ -34,6 +34,7 @@ import org.eclipse.wst.server.core.util.ModuleFile;
 import org.eclipse.wst.server.core.util.ProjectModule;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.modules.ResourceModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.publishers.patterns.IModulePathFilter;
@@ -109,6 +110,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 			status = unpublish(this.server, module, subMon);
 		} else {
 			if( ServerModelUtilities.isAnyDeleted(module) ) {
+				Trace.trace(Trace.STRING_FINER, "Handling a wtp 'deleted module' (aka missing). No Action Taken. Returning state=unknown "); //$NON-NLS-1$
 				publishState = IServer.PUBLISH_STATE_UNKNOWN;
 			} else {
 				if (publishType == FULL_PUBLISH ) {
@@ -186,7 +188,8 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 	
 	protected IStatus fullPublish(IModule[] moduleTree, IModule module, IProgressMonitor monitor) throws CoreException {
 		monitor.beginTask("Full Publish: " + moduleTree[moduleTree.length-1].getName(), 1000); //$NON-NLS-1$
-		
+		Trace.trace(Trace.STRING_FINER, "Begin Handling a full publish for module " + module.getName()); //$NON-NLS-1$
+
 		IPath deployPath = getDeployPath(moduleTree, server);
 		IPublishCopyCallbackHandler callback = getCallbackHandler(getRootPath(deployPath).append(deployPath));
 		IModuleResource[] members = PublishUtil.getResources(module, getSubMon(monitor, 200));
@@ -200,9 +203,11 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		//if( !ServerModelUtilities.isBinaryModule(module))
 			callback.deleteResource(new Path("/"), getSubMon(monitor, 100)); //$NON-NLS-1$
 
-		if( monitor.isCanceled())
+		if( monitor.isCanceled()) {
+			Trace.trace(Trace.STRING_FINER, "Monitor canceled during full publish for module " + module.getName()); //$NON-NLS-1$
 			return canceledStatus();
-
+		}
+		
 		List<IStatus> list = new ArrayList<IStatus>();
 
 		boolean isBinaryObject = ServerModelUtilities.isBinaryModule(module);
@@ -218,6 +223,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 			list.addAll(Arrays.asList(transferForceZippedChild(deployPath, module, moduleTree, monitor)));
 		}
 		
+		Trace.trace(Trace.STRING_FINER, "full publish completed for module " + module.getName()); //$NON-NLS-1$
 		monitor.done();
 		if( list.size() > 0 ) 
 			return createMultiStatus(list, module);
@@ -319,11 +325,13 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 
 	
 	protected IStatus incrementalPublish(IModule[] moduleTree, IModule module, IProgressMonitor monitor) throws CoreException {
+		Trace.trace(Trace.STRING_FINER, "Begin Handling an incremental publish"); //$NON-NLS-1$
 		IStatus[] results = new IStatus[] {};
 		IPath deployPath = getDeployPath(moduleTree, server);
 		IPublishCopyCallbackHandler h1 = getCallbackHandler(deployPath);
 		// quick switch to full publish for JBIDE-9112, recent switch from zip to unzipped requires full publish
 		if( h1.isFile(new Path("/"), new NullProgressMonitor())) { //$NON-NLS-1$
+			Trace.trace(Trace.STRING_FINER, "Incremental Publish forced to become full publish, see JBIDE-9112"); //$NON-NLS-1$
 			return fullPublish(moduleTree, module, monitor);
 		}
 
@@ -362,6 +370,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 
 		IStatus ret = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FULL_SUCCESS, 
 				NLS.bind(Messages.CountModifiedMembers, PublishUtil.countChanges(delta), module.getName()), null);
+		Trace.trace(Trace.STRING_FINER, "End Handling an incremental publish. The copying of files has been completed. "); //$NON-NLS-1$
 		return ret;
 	}
 	
@@ -408,11 +417,13 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 	
 	protected IStatus unpublish(IDeployableServer jbServer, IModule[] module,
 			IProgressMonitor monitor) throws CoreException {
+		Trace.trace(Trace.STRING_FINER, "Handling an unpublish"); //$NON-NLS-1$
 		monitor.beginTask("Removing Module: " + module[module.length-1].getName(), 100); //$NON-NLS-1$
 		IPath remotePath = getDeployPath(module, server);
 		IPublishCopyCallbackHandler handler = getCallbackHandler(getRootPath(remotePath).append(remotePath));
 		handler.deleteResource(new Path("/"), getSubMon(monitor, 100)); //$NON-NLS-1$
 		monitor.done();
+		Trace.trace(Trace.STRING_FINER, "Deleted deployment resource: " + remotePath); //$NON-NLS-1$
 		return Status.OK_STATUS;
 	}
 }

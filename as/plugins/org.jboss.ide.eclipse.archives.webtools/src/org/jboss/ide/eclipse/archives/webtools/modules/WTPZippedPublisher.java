@@ -24,6 +24,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.util.ModuleFile;
+import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
@@ -66,11 +67,12 @@ public class WTPZippedPublisher implements IJBossServerPublisher {
 		if( DeploymentMarkerUtils.supportsJBoss7MarkerDeployment(server)) {
 			status = handleJBoss7Deployment(method, server, module, publishType, delta, monitor);
 		} else {		
+			Trace.trace(Trace.STRING_FINER, "Using as<=6 publishModule logic in WTPZippedPublisher for module " + module[module.length-1].getName() ); //$NON-NLS-1$
 			IDeployableServer ds = ServerConverter.getDeployableServer(server);
 			String deployRoot = getDeployRoot(module, ds); 
 			LocalZippedPublisherUtil util = new LocalZippedPublisherUtil();
 			status = util.publishModule(server, deployRoot, module, publishType, delta, monitor);
-			monitor.done();
+			Trace.trace(Trace.STRING_FINER, "Zipping complete for module " + module[module.length-1].getName() ); //$NON-NLS-1$			monitor.done();
 		}
 		return status;
 	}
@@ -83,12 +85,16 @@ public class WTPZippedPublisher implements IJBossServerPublisher {
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
 		String deployRoot = getDeployRoot(module, ds);
 		if( publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
+			Trace.trace(Trace.STRING_FINER, "Removing .dodeploy marker in WTPZippedPublisher to undeploy module " + module[module.length-1].getName() ); //$NON-NLS-1$
 			DeploymentMarkerUtils.removeDeployedMarkerIfExists(method, ds, module, monitor);
 		} else {
+			Trace.trace(Trace.STRING_FINER, "Zipping module in WTPZippedPublisher for module " + module[module.length-1].getName() ); //$NON-NLS-1$
 			LocalZippedPublisherUtil util = new LocalZippedPublisherUtil();
 			IStatus s = util.publishModule(server, deployRoot, module, publishType, delta, monitor);
 			IPath outPath = util.getOutputFilePath();
 			if( util.hasBeenChanged()) {
+				Trace.trace(Trace.STRING_FINER, "Output zip changed. Copying file to destination. WTPZippedPublisher for module " + module[module.length-1].getName() ); //$NON-NLS-1$
+
 				// Copy out file
 				IPath depPath = PublishUtil.getDeployPath(method, module, ds);
 				IPath folder = depPath.removeLastSegments(1);
