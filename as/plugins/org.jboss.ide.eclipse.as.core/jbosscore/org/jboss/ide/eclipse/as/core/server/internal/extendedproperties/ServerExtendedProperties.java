@@ -35,4 +35,12 @@ public class ServerExtendedProperties {
 	public String getWelcomePageUrl() {
 		return null;
 	}
+	
+	public static final int DEPLOYMENT_SCANNER_NO_SUPPORT = 1;
+	public static final int DEPLOYMENT_SCANNER_JMX_SUPPORT = 2;
+	public static final int DEPLOYMENT_SCANNER_AS7_MANAGEMENT_SUPPORT = 3;
+	
+	public int getMultipleDeployFolderSupport() {
+		return DEPLOYMENT_SCANNER_NO_SUPPORT;
+	}
 }

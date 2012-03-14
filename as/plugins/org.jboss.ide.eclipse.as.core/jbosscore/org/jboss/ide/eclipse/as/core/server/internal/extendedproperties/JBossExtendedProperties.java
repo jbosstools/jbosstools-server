@@ -70,4 +70,8 @@ public class JBossExtendedProperties extends ServerExtendedProperties {
 		}
 	}
 
+	public int getMultipleDeployFolderSupport() {
+		return DEPLOYMENT_SCANNER_JMX_SUPPORT;
+	}
+
 }

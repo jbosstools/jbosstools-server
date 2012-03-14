@@ -34,5 +34,8 @@ public class JBossAS7ExtendedProperties extends JBossExtendedProperties {
 			return false;
 		return true;
 	}
+	public int getMultipleDeployFolderSupport() {
+		return DEPLOYMENT_SCANNER_AS7_MANAGEMENT_SUPPORT;
+	}
 
 }

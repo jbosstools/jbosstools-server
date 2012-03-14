@@ -55,6 +55,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.ui.ServerUICore;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
@@ -67,6 +68,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
@@ -214,11 +216,13 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 
 	public boolean enableMetadataRadio() {
 		String mode = getHelper().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
-		if(mode.equals("rse"))
+		if(!LocalPublishMethod.LOCAL_PUBLISH_METHOD.equals(mode))
 			return false;
-		if( ServerUtil.isJBoss7(page.getServer().getServerType()))
-			return false;
-		return true;
+		IServer s = page.getServer().getOriginal();
+		ServerExtendedProperties props = (ServerExtendedProperties)s.loadAdapter(ServerExtendedProperties.class, null);
+		if( props == null )
+			return true;
+		return props.getMultipleDeployFolderSupport() != ServerExtendedProperties.DEPLOYMENT_SCANNER_NO_SUPPORT;
 	}
 	
 	public boolean showTempAndDeployTexts() {

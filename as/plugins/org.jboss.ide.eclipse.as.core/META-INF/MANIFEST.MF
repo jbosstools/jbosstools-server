@@ -25,7 +25,8 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="3.7.0",
  org.eclipse.pde.core;bundle-version="3.7.0",
  org.eclipse.jst.j2ee.web;bundle-version="1.1.500",
  org.jboss.ide.eclipse.as.management.core,
- org.eclipse.equinox.security;bundle-version="1.1.1"
+ org.eclipse.equinox.security;bundle-version="1.1.1",
+ org.jboss.ide.eclipse.as.dmr;bundle-version="2.3.0"
 Bundle-ActivationPolicy: lazy
 Export-Package: org.jboss.ide.eclipse.as.core,
  org.jboss.ide.eclipse.as.core.extensions.descriptors,
