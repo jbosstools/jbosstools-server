@@ -453,7 +453,8 @@
             id="org.jboss.ide.eclipse.as.ui.extensions.xml.decorator"
             label="JBoss Server XML Configuration Decorator"
             lightweight="true"
-            location="BOTTOM_RIGHT">
+            location="BOTTOM_RIGHT"
+            state="true">
          <enablement>
             <or>
                <objectClass name="org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery"/>
