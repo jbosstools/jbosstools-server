@@ -11,5 +11,5 @@
 	<artifactId>jmx.site</artifactId>
 	<name>jmx.site</name>
 	<version>1.2.0-SNAPSHOT</version>
-	<packaging>eclipse-update-site</packaging>
+	<packaging>eclipse-repository</packaging>
 </project>

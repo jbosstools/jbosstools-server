@@ -9,5 +9,5 @@
 	<groupId>org.jboss.tools.archives</groupId>
 	<artifactId>site</artifactId>
 	<name>archives.site</name>
-	<packaging>eclipse-update-site</packaging>
+	<packaging>eclipse-repository</packaging>
 </project>
