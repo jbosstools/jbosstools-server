@@ -89,13 +89,14 @@ public class LocalJBoss7DeploymentScannerAdditions extends UnitedServerListener 
 			}
 		}
 
+		AS7DeploymentScannerUtility util = new AS7DeploymentScannerUtility(); 
 		 
 		 // Do the removes
 		Iterator<String> i = removed.iterator();
 		String scannerName = null;
 		while(i.hasNext()) {
 			scannerName = i.next();
-			IStatus s = removeOneFolder(server, scannerName);
+			IStatus s = util.removeDeploymentScanner(server, scannerName);
 			if( s.isOK()) {
 				props.remove(scannerName);
 			}
@@ -108,7 +109,7 @@ public class LocalJBoss7DeploymentScannerAdditions extends UnitedServerListener 
 		while(i.hasNext()) {
 			path = i.next();
 			newScannerName = findNextScannerName(props);
-			IStatus s = addOneFolder(server, newScannerName, path);
+			IStatus s = util.addDeploymentScanner(server, newScannerName, path);
 			if( s.isOK()){
 				props.put(newScannerName, path);
 			}
@@ -135,55 +136,9 @@ public class LocalJBoss7DeploymentScannerAdditions extends UnitedServerListener 
 		return SCANNER_PREFIX + i;
 	}
 	
-	protected IStatus addOneFolder(final IServer server, String scannerName, final String folder) {
-		ModelNode op = new ModelNode();
-		op.get("operation").set("add"); //$NON-NLS-1$ //$NON-NLS-2$
-		ModelNode addr = op.get("address"); //$NON-NLS-1$
-		addr.add("subsystem", "deployment-scanner");  //$NON-NLS-1$//$NON-NLS-2$
-		addr.add("scanner", scannerName); //$NON-NLS-1$
-		op.get("path").set(folder); //$NON-NLS-1$
-		final String request = op.toJSONString(true);
-		return execute(server, request);
-	}
-
-	protected IStatus removeOneFolder(final IServer server, String scannerName) {
-		ModelNode op = new ModelNode();
-		op.get("operation").set("remove"); //$NON-NLS-1$ //$NON-NLS-2$
-		ModelNode addr = op.get("address"); //$NON-NLS-1$
-		addr.add("subsystem", "deployment-scanner");  //$NON-NLS-1$//$NON-NLS-2$
-		addr.add("scanner", scannerName); //$NON-NLS-1$
-		final String request = op.toJSONString(true);
-		return execute(server, request);
-	}
-
-	protected IStatus execute(final IServer server, final String request) {
-		try {
-	        String resultJSON = JBoss7ManagerUtil.executeWithService(new JBoss7ManagerUtil.IServiceAware<String>() {
-	            public String execute(IJBoss7ManagerService service) throws Exception {
-	                return service.execute(new AS7ManagementDetails(server), request);
-	            }
-	        }, server);
-	        ModelNode result = ModelNode.fromJSONString(resultJSON);
-	        return Status.OK_STATUS;
-		} catch( Exception e ) {
-			// TODO Throw new checked exception
-			return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, e.getMessage(), e);
-		}
-	}
-
-	
 	public void serverChanged(ServerEvent event) {
-		IServer server = event.getServer();
-		if( accepts(server)) {
-			int eventKind = event.getKind();
-			if ((eventKind & ServerEvent.SERVER_CHANGE) != 0) {
-				// server change event
-				if ((eventKind & ServerEvent.STATE_CHANGE) != 0) {
-					if( event.getServer().getServerState() == IServer.STATE_STARTED ) {
-						modifyDeploymentScanners(event);
-					}
-				}
-			}
+		if( accepts(event.getServer()) && serverSwitchesToState(event, IServer.STATE_STARTED)){
+			modifyDeploymentScanners(event);
 		}
 	}
 	

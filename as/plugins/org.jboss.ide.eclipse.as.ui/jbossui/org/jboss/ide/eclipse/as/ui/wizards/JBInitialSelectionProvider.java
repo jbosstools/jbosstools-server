@@ -10,6 +10,9 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.ui.wizards;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.wst.server.core.IServer;
@@ -32,36 +35,36 @@ public class JBInitialSelectionProvider extends InitialSelectionProvider impleme
 	}
 	
 	public IServerType getInitialSelection(IServerType[] serverTypes) {
-		
-		if (serverTypes == null)
-			return null;
+		ArrayList<IServerType> types = new ArrayList<IServerType>();
+		types.addAll(Arrays.asList(serverTypes));
 		
 		// Find the last-selected one
-		IEclipsePreferences prefs = new InstanceScope().getNode(JBossServerUIPlugin.PLUGIN_ID);
+		IEclipsePreferences prefs =  InstanceScope.INSTANCE.getNode(JBossServerUIPlugin.PLUGIN_ID);
 		String last = prefs.get(LAST_SERVER_CREATED_KEY, null);
-		if( last != null ) {
-			IServer s = ServerCore.findServer(last);
-			if( s != null ) {
-				for( int i = 0; i < serverTypes.length; i++ )
-					if( serverTypes[i].getId().equals(s.getServerType().getId()))
-						return serverTypes[i];
-			}
-		}
+		IServer lastServer = last == null ? null : ServerCore.findServer(last);
+		IServerType lastType = lastServer == null ? null : lastServer.getServerType();
+		if( lastType != null && types.contains(lastType))
+			return lastType;
 		
-		// return default
-		int size = serverTypes.length;
-		for (int i = 0; i < size; i++) {
-			if( serverTypes[i].getId().equals(IJBossToolingConstants.SERVER_AS_51))
-				return serverTypes[i];
-		}
+		// return default server type
+		IServerType defaultType = getDefaultServerType();
+		if( types.contains(defaultType))
+			return defaultType;
+		
+		// Else, just choose whatever they give us
 		return serverTypes[0];
+	}
+	
+	public IServerType getDefaultServerType() {
+		String newestJBoss = IJBossToolingConstants.SERVER_AS_71;
+		return ServerCore.findServerType(newestJBoss);
 	}
 
 	private static String LAST_SERVER_CREATED_KEY = "org.jboss.ide.eclipse.as.ui.wizards.LAST_SERVER_CREATED"; //$NON-NLS-1$
 
 	public void serverAdded(IServer server) {
 		if( server != null ) {
-			IEclipsePreferences prefs = new InstanceScope().getNode(JBossServerUIPlugin.PLUGIN_ID);
+			IEclipsePreferences prefs =  InstanceScope.INSTANCE.getNode(JBossServerUIPlugin.PLUGIN_ID);
 			prefs.put(LAST_SERVER_CREATED_KEY, server.getId());
 			try {
 				prefs.flush();

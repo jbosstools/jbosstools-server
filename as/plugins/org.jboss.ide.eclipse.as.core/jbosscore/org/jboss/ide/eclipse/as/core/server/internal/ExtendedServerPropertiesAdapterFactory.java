@@ -34,10 +34,14 @@ public class ExtendedServerPropertiesAdapterFactory implements IAdapterFactory, 
 		return (ServerExtendedProperties)ret;
 	}
 
-	@Override
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
-		if( adapterType != ServerExtendedProperties.class )
-			return null;
+		ServerExtendedProperties props = getExtendedProperties(adaptableObject);
+		if( adapterType.isAssignableFrom(props.getClass()))
+			return props;
+		return null;
+	}
+	
+	public ServerExtendedProperties getExtendedProperties(Object adaptableObject) {
 		String typeId = null;
 		IServer s = null;
 		IRuntime r = null;
@@ -87,10 +91,12 @@ public class ExtendedServerPropertiesAdapterFactory implements IAdapterFactory, 
 		}
 		return null;
 	}
-
-	@Override
+	
 	public Class[] getAdapterList() {
-		return new Class[]{ ServerExtendedProperties.class};
+		return new Class[]{ ServerExtendedProperties.class, 
+				JBossExtendedProperties.class,
+				JBossAS7ExtendedProperties.class,
+				JBossAS710ExtendedProperties.class};
 	}
 
 }

@@ -12,7 +12,10 @@ package org.jboss.ide.eclipse.as.core.server;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IRuntimeLifecycleListener;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerLifecycleListener;
+import org.eclipse.wst.server.core.IServerListener;
 import org.eclipse.wst.server.core.ServerEvent;
 
 /**
@@ -22,7 +25,8 @@ import org.eclipse.wst.server.core.ServerEvent;
  * @author Rob Stryker
  *
  */
-public class UnitedServerListener {
+public class UnitedServerListener implements 
+	IServerLifecycleListener, IServerListener, IRuntimeLifecycleListener {
 
 	public void init(IServer server) {}
 	public void serverAdded(IServer server) {}
@@ -45,5 +49,19 @@ public class UnitedServerListener {
 	public void runtimeChanged(IRuntime runtime) {
 	}
 	public void runtimeRemoved(IRuntime runtime) {
+	}
+	
+	// Utility method
+	public boolean serverSwitchesToState(ServerEvent event, int state) {
+		int eventKind = event.getKind();
+		if ((eventKind & ServerEvent.SERVER_CHANGE) != 0) {
+			// server change event
+			if ((eventKind & ServerEvent.STATE_CHANGE) != 0) {
+				if( event.getServer().getServerState() == state ) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

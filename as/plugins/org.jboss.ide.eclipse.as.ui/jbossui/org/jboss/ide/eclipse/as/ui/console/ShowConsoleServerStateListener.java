@@ -34,35 +34,26 @@ public class ShowConsoleServerStateListener extends UnitedServerListener {
 	public void serverChanged(ServerEvent event) {
 		final IServer server = event.getServer();
 		JBossServer jbs = (JBossServer)server.loadAdapter(JBossServer.class, new NullProgressMonitor());
-		if( jbs != null ) {
-			int eventKind = event.getKind();
-			if ((eventKind & ServerEvent.SERVER_CHANGE) != 0) {
-				// server change event
-				if ((eventKind & ServerEvent.STATE_CHANGE) != 0) {
-					if( event.getServer().getServerState() == IServer.STATE_STARTING ) {
-						// do not launch console for remotes, for now
-						String type = DeploymentPreferenceLoader.getCurrentDeploymentMethodTypeId(server, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
-						if( !type.equals(LocalPublishMethod.LOCAL_PUBLISH_METHOD))
-							return;
-						
-						new Thread() {
-							public void run() {
-								try {
-									// delay to insure the server gets a chance to actually launch
-									Thread.sleep(3000);
-								} catch(InterruptedException ie) {}
-								Display.getDefault().asyncExec(new Runnable() { 
-									public void run() {
-										ILaunch launch = server.getLaunch();
-										if( launch != null && launch.getProcesses().length > 0)
-											new ShowInConsoleAction(getNullSelectionProvider()).perform(server);
-									}
-								});
-							}
-						}.start();
-					}
+		if( jbs != null && serverSwitchesToState(event, IServer.STATE_STARTING)) {
+			// do not launch console for remotes, for now
+			String type = DeploymentPreferenceLoader.getCurrentDeploymentMethodTypeId(server, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
+			if( !type.equals(LocalPublishMethod.LOCAL_PUBLISH_METHOD))
+				return;
+			new Thread() {
+				public void run() {
+					try {
+						// delay to insure the server gets a chance to actually launch
+						Thread.sleep(3000);
+					} catch(InterruptedException ie) {}
+					Display.getDefault().asyncExec(new Runnable() { 
+						public void run() {
+							ILaunch launch = server.getLaunch();
+							if( launch != null && launch.getProcesses().length > 0)
+								new ShowInConsoleAction(getNullSelectionProvider()).perform(server);
+						}
+					});
 				}
-			}
+			}.start();
 		}
 	}
 	

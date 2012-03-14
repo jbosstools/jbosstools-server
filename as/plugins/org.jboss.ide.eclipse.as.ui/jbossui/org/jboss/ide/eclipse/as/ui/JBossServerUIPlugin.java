@@ -1,24 +1,13 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2006, JBoss Inc., and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+/******************************************************************************* 
+ * Copyright (c) 2012 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.ui;
 
 import java.util.MissingResourceException;
@@ -37,6 +26,7 @@ import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.jboss.ide.eclipse.as.ui.console.ShowConsoleServerStateListener;
+import org.jboss.ide.eclipse.as.ui.dialogs.ModifyDeploymentScannerIntervalDialog.DeploymentScannerUIServerStartedListener;
 import org.jboss.ide.eclipse.as.ui.dialogs.ServerAlreadyStartedDialog.ServerAlreadyStartedHandler;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.XPathRuntimeListener;
 import org.jboss.ide.eclipse.as.ui.wizards.JBInitialSelectionProvider;
@@ -66,12 +56,14 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 	}
 
 	private static JBInitialSelectionProvider selectionProvider;
+	private static DeploymentScannerUIServerStartedListener as7ScannerAssist;
 	/**
 	 * This method is called upon plug-in activation
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		selectionProvider = new JBInitialSelectionProvider();
+		as7ScannerAssist = new DeploymentScannerUIServerStartedListener();
 		Preferences prefs = getPluginPreferences();
 
 		if( !prefs.getBoolean(IPreferenceKeys.ENABLED_DECORATORS)) {
@@ -87,6 +79,7 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 		}
 		savePluginPreferences();
 		UnitedServerListenerManager.getDefault().addListener(ShowConsoleServerStateListener.getDefault());
+		UnitedServerListenerManager.getDefault().addListener(as7ScannerAssist);
 		ServerCore.addServerLifecycleListener(selectionProvider);
 		ServerCore.addRuntimeLifecycleListener(XPathRuntimeListener.getDefault()); 
 		ExtensionManager.getDefault().setAlreadyStartedHandler(new ServerAlreadyStartedHandler());
@@ -100,6 +93,7 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 		ServerCore.removeRuntimeLifecycleListener(XPathRuntimeListener.getDefault()); 
 		ServerCore.removeServerLifecycleListener(selectionProvider);
 		UnitedServerListenerManager.getDefault().removeListener(ShowConsoleServerStateListener.getDefault());
+		UnitedServerListenerManager.getDefault().removeListener(as7ScannerAssist);
 		JBossServerUISharedImages.instance().cleanup();
 		super.stop(context);
 	}

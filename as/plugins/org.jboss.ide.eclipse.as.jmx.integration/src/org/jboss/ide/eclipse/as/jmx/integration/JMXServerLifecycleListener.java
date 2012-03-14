@@ -42,6 +42,10 @@ public class JMXServerLifecycleListener extends LocalJBoss7DeploymentScannerAddi
 		return false;
 	}
 	
+	protected void verifyPrimaryScannerEnablement() {
+		// Do Nothing
+	}
+
 	protected void modifyDeploymentScanners(ServerEvent event){
 		String[] folders = getDeployLocationFolders(event.getServer());
 		if( folders.length > 0 ) 

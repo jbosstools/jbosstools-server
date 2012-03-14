@@ -19,8 +19,9 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathCategory;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
+import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 
-public class XPathRuntimeListener implements IRuntimeLifecycleListener {
+public class XPathRuntimeListener extends UnitedServerListener {
 	public static XPathRuntimeListener instance;
 	public static XPathRuntimeListener getDefault() {
 		if( instance == null )
@@ -28,14 +29,6 @@ public class XPathRuntimeListener implements IRuntimeLifecycleListener {
 		return instance;
 	}
 	
-	protected XPathRuntimeListener() {
-		
-	}
-	
-	public void runtimeAdded(IRuntime runtime) {
-	}
-	public void runtimeRemoved(IRuntime runtime) {
-	}
 	public void runtimeChanged(IRuntime runtime) {
 		IViewPart part = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findView("org.eclipse.wst.server.ui.ServersView");
 		IServer[] allServers = ServerCore.getServers();
