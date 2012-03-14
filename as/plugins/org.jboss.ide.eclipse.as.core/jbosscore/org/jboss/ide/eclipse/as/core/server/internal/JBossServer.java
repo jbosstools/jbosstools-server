@@ -43,6 +43,8 @@ import org.eclipse.equinox.security.storage.StorageException;
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.model.IURLProvider;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
@@ -51,6 +53,7 @@ import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.ExpressionResolverUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -147,7 +150,7 @@ public class JBossServer extends DeployableServer
 	}
 	
 	public JBossExtendedProperties getExtendedProperties() {
-		return (JBossExtendedProperties)getServer().loadAdapter(JBossExtendedProperties.class, null);
+		return (JBossExtendedProperties)getServer().loadAdapter(ServerExtendedProperties.class, null);
 	}
 	
 	public String getTempDeployFolder() {

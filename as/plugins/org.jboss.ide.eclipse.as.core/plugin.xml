@@ -1198,6 +1198,9 @@
          <adapter
                type="org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties">
          </adapter>
+         <adapter
+               type="org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties">
+         </adapter>
       </factory>
    </extension>
    

@@ -23,8 +23,9 @@ import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
 public class ExtendedServerPropertiesAdapterFactory implements IAdapterFactory, IJBossToolingConstants {
 	
-	public static JBossExtendedProperties getExtendedProperties(IServer server) {
-		return (JBossExtendedProperties) new ExtendedServerPropertiesAdapterFactory().getAdapter(server, JBossExtendedProperties.class);
+	public static JBossExtendedProperties getJBossExtendedProperties(IServer server) {
+		Object ret = new ExtendedServerPropertiesAdapterFactory().getAdapter(server, JBossExtendedProperties.class);
+		return ret instanceof JBossExtendedProperties ? (JBossExtendedProperties)ret : null;
 	}
 	
 	@Override

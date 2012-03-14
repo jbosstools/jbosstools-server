@@ -80,7 +80,7 @@ public class JBossServerConnectionProvider implements IConnectionProvider, IServ
 	}
 	
 	protected IConnectionWrapper createConnection(IServer server) {
-		JBossExtendedProperties props = ExtendedServerPropertiesAdapterFactory.getExtendedProperties(server);
+		JBossExtendedProperties props = ExtendedServerPropertiesAdapterFactory.getJBossExtendedProperties(server);
 		int type = props == null ? -1 : props.getJMXProviderType();
 		switch(type) {
 		case JBossExtendedProperties.JMX_AS_3_TO_6_PROVIDER:
