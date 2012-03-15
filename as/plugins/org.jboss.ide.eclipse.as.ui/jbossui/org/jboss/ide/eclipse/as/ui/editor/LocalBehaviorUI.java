@@ -29,6 +29,7 @@ public class LocalBehaviorUI implements IDeploymentTypeUI {
 	public void fillComposite(Composite parent, final IServerModeUICallback callback) {
 		//Do Nothing, just verify
 		this.callback = callback;
+		callback.setErrorMessage(null);
 		if( callback.getCallbackType() == callback.EDITOR)
 			verify();
 		callback.getServer().addPropertyChangeListener(new PropertyChangeListener(){
@@ -38,7 +39,6 @@ public class LocalBehaviorUI implements IDeploymentTypeUI {
 			}});
 		parent.setLayout(new FillLayout());
 		Composite child = new Composite(parent, SWT.None);
-
 	}
 	
 	private void verify() {
