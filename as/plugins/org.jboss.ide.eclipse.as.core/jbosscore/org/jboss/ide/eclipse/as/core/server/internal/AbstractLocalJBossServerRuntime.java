@@ -124,11 +124,10 @@ public abstract class AbstractLocalJBossServerRuntime extends RuntimeDelegate {
 	}
 	
 	public static IExecutionEnvironment getDefaultExecutionEnvironment(IRuntimeType rtType) {
+		// NEW_SERVER_ADAPTER  Subclasses override this
 		String typeId = rtType.getId();
 		if( typeId.equals(IConstants.EAP_50) 
-				|| typeId.equals(IConstants.AS_60)
-				|| typeId.equals(IConstants.EAP_60)
-				|| typeId.equals(IConstants.AS_70)) {
+				|| typeId.equals(IConstants.AS_60)) {
 			return EnvironmentsManager.getDefault().getEnvironment("JavaSE-1.6"); //$NON-NLS-1$
 		}
 		return EnvironmentsManager.getDefault().getEnvironment("J2SE-1.4"); //$NON-NLS-1$

@@ -14,6 +14,9 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jdt.internal.launching.environments.EnvironmentsManager;
+import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
+import org.eclipse.wst.server.core.IRuntimeType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
@@ -89,6 +92,8 @@ public class LocalJBoss7ServerRuntime extends LocalJBossServerRuntime implements
 	public String getJBossConfiguration() {
 		return ""; //$NON-NLS-1$
 	}
-
 	
+	public static IExecutionEnvironment getDefaultExecutionEnvironment(IRuntimeType rtType) {
+		return EnvironmentsManager.getDefault().getEnvironment("JavaSE-1.6"); //$NON-NLS-1$
+	}	
 }
