@@ -268,8 +268,6 @@ public class ModifyDeploymentScannerIntervalDialog extends TitleAreaDialog {
 	}
 	
 	private class ScannerCellModifier implements ICellModifier {
-
-		@Override
 		public boolean canModify(Object element, String property) {
 			return property.equals(headings[1]);
 		}
