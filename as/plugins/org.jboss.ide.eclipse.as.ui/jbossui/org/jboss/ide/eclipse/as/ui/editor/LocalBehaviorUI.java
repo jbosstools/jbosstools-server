@@ -16,6 +16,8 @@ import java.beans.PropertyChangeListener;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
@@ -24,14 +26,19 @@ import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 
 public class LocalBehaviorUI implements IDeploymentTypeUI {
 	private IServerModeUICallback callback;
-	public void fillComposite(Composite parent, IServerModeUICallback callback) {
+	public void fillComposite(Composite parent, final IServerModeUICallback callback) {
 		//Do Nothing, just verify
 		this.callback = callback;
-		verify();
+		if( callback.getCallbackType() == callback.EDITOR)
+			verify();
 		callback.getServer().addPropertyChangeListener(new PropertyChangeListener(){
 			public void propertyChange(PropertyChangeEvent evt) {
-				verify();
+				if( callback.getCallbackType() == callback.EDITOR)
+					verify();
 			}});
+		parent.setLayout(new FillLayout());
+		Composite child = new Composite(parent, SWT.None);
+
 	}
 	
 	private void verify() {

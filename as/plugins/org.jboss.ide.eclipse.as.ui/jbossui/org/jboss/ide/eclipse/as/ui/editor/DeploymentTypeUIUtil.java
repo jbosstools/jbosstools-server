@@ -99,6 +99,9 @@ public class DeploymentTypeUIUtil {
 		public Object getAttribute(String key) {
 			return tm.getObject(key);
 		}
+		public int getCallbackType() {
+			return WIZARD;
+		}
 	}
 
 	
@@ -141,6 +144,10 @@ public class DeploymentTypeUIUtil {
 		public Object getAttribute(String key) {
 			return null;
 		}
+		public int getCallbackType() {
+			return EDITOR;
+		}
 	}
+	
 
 }

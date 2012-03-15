@@ -21,12 +21,15 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 public interface IDeploymentTypeUI {
 	
 	public interface IServerModeUICallback {
+		public static final int WIZARD = 1;
+		public static final int EDITOR = 2;
 		public IServerWorkingCopy getServer();
 		public IRuntime getRuntime();
 		public void execute(IUndoableOperation operation);
 		public void executeLongRunning(Job j);
 		public void setErrorMessage(String msg);
 		public Object getAttribute(String key);
+		public int getCallbackType();
 	}
 	
 	/**
