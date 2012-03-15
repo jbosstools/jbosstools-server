@@ -20,7 +20,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Preferences;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -70,6 +71,7 @@ import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
+import org.jboss.ide.eclipse.as.core.server.internal.AbstractLocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
@@ -80,6 +82,7 @@ import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
+import org.osgi.service.prefs.BackingStoreException;
 
 /**
  * @author Stryker
@@ -179,9 +182,9 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	protected void fillHomeDir(IRuntime rt) {
 		if( rt.getLocation() == null ) {
 			// new runtime creation
-			Preferences prefs = JBossServerUIPlugin.getDefault().getPluginPreferences();
-			String value = prefs.getString(IPreferenceKeys.RUNTIME_HOME_PREF_KEY_PREFIX + rt.getRuntimeType().getId());
-			
+			IEclipsePreferences prefs2 = InstanceScope.INSTANCE.getNode(JBossServerUIPlugin.PLUGIN_ID);
+			String value = prefs2.get(IPreferenceKeys.RUNTIME_HOME_PREF_KEY_PREFIX + rt.getRuntimeType().getId(), null);
+
 			String locationDefault = Platform.getOS().equals(Platform.WS_WIN32) 
 			? "c:/program files/jboss-" : "/usr/bin/jboss-"; //$NON-NLS-1$ //$NON-NLS-2$
 			if( isEAP() )
@@ -762,7 +765,9 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	
 	
 	protected List<IVMInstall> getValidJREs() {
-		return Arrays.asList(LocalJBossServerRuntime.getValidJREs(getRuntimeType()));
+		IRuntime r = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		AbstractLocalJBossServerRuntime jbsrt = (AbstractLocalJBossServerRuntime)r.loadAdapter(AbstractLocalJBossServerRuntime.class, null);
+		return Arrays.asList(jbsrt.getValidJREs(getRuntimeType()));
 	}
 	
 	// WST API methods
@@ -792,9 +797,18 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		if( rt instanceof IRuntimeWorkingCopy ) {
 			IRuntimeWorkingCopy r = (IRuntimeWorkingCopy) rt;
 			IRuntime saved = r.save(false, new NullProgressMonitor());
-			Preferences prefs = JBossServerUIPlugin.getDefault().getPluginPreferences();
-			prefs.setValue(IPreferenceKeys.RUNTIME_HOME_PREF_KEY_PREFIX + saved.getRuntimeType().getId(), homeDir);
 			getTaskModel().putObject(TaskModel.TASK_RUNTIME, saved);
+			saveRuntimeLocationInPreferences(saved);
+		}
+	}
+	
+	protected void saveRuntimeLocationInPreferences(IRuntime runtime) {
+		IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(JBossServerUIPlugin.PLUGIN_ID);
+		prefs.put(IPreferenceKeys.RUNTIME_HOME_PREF_KEY_PREFIX + runtime.getRuntimeType().getId(), homeDir);
+		try {
+			prefs.flush();
+		} catch(BackingStoreException e) {
+			// TODO when adding tracing. This is not important enough for an error log entry
 		}
 	}
 

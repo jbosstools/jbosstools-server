@@ -18,6 +18,7 @@ import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
+import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.model.RuntimeDelegate;
 import org.jboss.ide.eclipse.as.core.Messages;
@@ -112,7 +113,7 @@ public abstract class AbstractLocalJBossServerRuntime extends RuntimeDelegate {
 		return getExecutionEnvironment().getDefaultVM();
 	}
 	
-	public static IVMInstall[] getValidJREs(IRuntimeType type) {
+	public IVMInstall[] getValidJREs(IRuntimeType type) {
 		return getDefaultExecutionEnvironment(type) == null ? new IVMInstall[0] 
 				: getDefaultExecutionEnvironment(type).getCompatibleVMs();
 	}
@@ -123,7 +124,7 @@ public abstract class AbstractLocalJBossServerRuntime extends RuntimeDelegate {
 			EnvironmentsManager.getDefault().getEnvironment(id);
 	}
 	
-	public static IExecutionEnvironment getDefaultExecutionEnvironment(IRuntimeType rtType) {
+	public IExecutionEnvironment getDefaultExecutionEnvironment(IRuntimeType rtType) {
 		// NEW_SERVER_ADAPTER  Subclasses override this
 		String typeId = rtType.getId();
 		if( typeId.equals(IConstants.EAP_50) 

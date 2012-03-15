@@ -254,6 +254,7 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 		exit();
 		IRuntime rt = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
 		((IRuntimeWorkingCopy) rt).setLocation(new Path(homeDir));
+		saveRuntimeLocationInPreferences(rt);
 	}
 
 	@Override
