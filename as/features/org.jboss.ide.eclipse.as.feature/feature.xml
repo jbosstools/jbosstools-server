@@ -68,7 +68,6 @@ Raleigh NC 27606 USA.
 	<includes id="org.jboss.ide.eclipse.as.server.rse.integration.feature" version="0.0.0" />
 	<includes id="org.jboss.ide.eclipse.as.serverAdapter.wtp.feature" version="0.0.0" />
 	<includes id="org.jboss.tools.jmx.feature" version="0.0.0" />
-	<includes id="org.jboss.ide.eclipse.archives.feature" version="0.0.0" />
 
    <plugin
          id="org.jboss.ide.eclipse.as.ui.mbeans"
