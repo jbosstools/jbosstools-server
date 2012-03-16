@@ -18,9 +18,7 @@
 		<module>org.jboss.ide.eclipse.as.server.rse.integration.feature</module>
 
 		<module>org.jboss.ide.eclipse.as.feature</module>
-		<module>org.jboss.ide.eclipse.as.source.feature</module>
 		<module>org.jboss.ide.eclipse.as.test.feature</module>
-		<module>org.jboss.ide.eclipse.as.test.source.feature</module>
 
 	</modules>
 </project>
