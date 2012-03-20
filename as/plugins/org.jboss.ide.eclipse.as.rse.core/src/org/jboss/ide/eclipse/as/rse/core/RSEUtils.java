@@ -72,7 +72,8 @@ public class RSEUtils {
 
 	public static String getRSEConfigName(IServerAttributes server) {
 		IJBossServerRuntime runtime = RuntimeUtils.getJBossServerRuntime(server);
-		return server.getAttribute(RSEUtils.RSE_SERVER_CONFIG, runtime.getJBossConfiguration());
+		return server.getAttribute(RSEUtils.RSE_SERVER_CONFIG, 
+				runtime == null ? null : runtime.getJBossConfiguration());
 	}
 
 	public static String getDeployRootFolder(IDeployableServer server) {
@@ -107,6 +108,8 @@ public class RSEUtils {
 			} else {
 				String loc = IConstants.SERVER;
 				String config = getRSEConfigName(server);
+				if( loc == null || config == null )
+					return null;
 				IPath p = new Path(loc).append(config)
 						.append(IJBossRuntimeResourceConstants.DEPLOY);
 				return makeGlobal(server, p).toString();

@@ -89,7 +89,8 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 		ExploreActionProvider.exploreBehaviorMap.put("rse", new ExploreActionProvider.IExploreBehavior() {
 			public void openExplorer(IServer server, IModule[] module) {
 				IDeployableServer ds = ServerConverter.getDeployableServer(server);
-				IPath remoteFolder = new Path(RSEUtils.getDeployRootFolder(ds));
+				String remote = RSEUtils.getDeployRootFolder(ds);
+				IPath remoteFolder = new Path(remote == null ? "/" : remote);
 				IJBossServerPublishMethodType type = DeploymentPreferenceLoader.getCurrentDeploymentMethodType(server);
 				RSEPublishMethod method = (RSEPublishMethod)type.createPublishMethod();
 				method.setBehaviour(ServerConverter.getDeployableServerBehavior(server));

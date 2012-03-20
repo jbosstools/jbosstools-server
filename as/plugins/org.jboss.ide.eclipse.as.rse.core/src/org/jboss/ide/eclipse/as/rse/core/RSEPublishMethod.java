@@ -181,14 +181,15 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 		Trace.trace(Trace.STRING_FINER, "Loading remote deployment details for server " + getServer().getName());
 		String connectionName = RSEUtils.getRSEConnectionName(behaviour.getServer());
 		IDeployableServer ds = ServerConverter.getDeployableServer(behaviour.getServer());
-		this.remoteRootFolder = new Path(RSEUtils.getDeployRootFolder(ds));
+		String deployRoot = RSEUtils.getDeployRootFolder(ds);
+		if( deployRoot == null )
+			throw new CoreException(new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, "Server has null deploy root folder. This may be caused by a missing runtime, or improperly configured server adapter"));
+		this.remoteRootFolder = new Path(deployRoot);
 		
 		IHost host = RSEUtils.findHost(connectionName);
-		if( host != null ) {
-			fileSubSystem = findFileTransferSubSystem(host);
-		} else {
+		if( host == null )
 			throw new CoreException(new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, "RSE Host Not Found."));
-		}
+		fileSubSystem = findFileTransferSubSystem(host);
 	}
 	
 	/*  approved files subsystems *
