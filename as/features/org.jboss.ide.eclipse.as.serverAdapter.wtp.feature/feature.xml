@@ -83,7 +83,7 @@ Raleigh NC 27606 USA.
 	</requires>
 
 	<plugin id="org.jboss.ide.eclipse.as.core" download-size="0" install-size="0" version="0.0.0" unpack="false" />
-        <plugin id="org.jboss.ide.eclipse.as.management.core" download-size="0" install-size="0" version="0.0.0" unpack="false" />
+    <plugin id="org.jboss.ide.eclipse.as.management.core" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 	<plugin id="org.jboss.ide.eclipse.as.management.as71" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 	<plugin id="org.jboss.ide.eclipse.as.ui" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 	<plugin id="org.jboss.ide.eclipse.as.classpath.core" download-size="0" install-size="0" version="0.0.0" unpack="false" />

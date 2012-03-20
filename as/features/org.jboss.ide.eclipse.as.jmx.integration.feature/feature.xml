@@ -50,10 +50,9 @@ Raleigh NC 27606 USA.
 		<import plugin="org.eclipse.rse.subsystems.shells.local" version="2.1.300" match="greaterOrEqual" />
 		<import plugin="org.eclipse.rse.subsystems.shells.ssh" version="2.1.300" match="greaterOrEqual" />
 		<import plugin="org.eclipse.rse.subsystems.shells.telnet" version="1.2.200" match="greaterOrEqual" />
+		<import feature="org.jboss.ide.eclipse.as.serverAdapter.wtp.feature"/>
+		<import feature="org.jboss.tools.jmx.feature"/>
 	</requires>
-
-	<includes id="org.jboss.ide.eclipse.as.serverAdapter.wtp.feature" version="0.0.0" />
-	<includes id="org.jboss.tools.jmx.feature" version="0.0.0" />
 
 	<plugin id="org.jboss.ide.eclipse.as.jmx.integration" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 </feature>
