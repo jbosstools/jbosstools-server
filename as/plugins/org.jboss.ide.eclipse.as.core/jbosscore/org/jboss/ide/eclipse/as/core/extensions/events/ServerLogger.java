@@ -75,6 +75,13 @@ public class ServerLogger {
 		}
 	}
 	
+	public IStatus[] getLog(IServer server) {
+		ServerLog log = map.get(server.getId());
+		if( log == null )
+			return new IStatus[]{};
+		return log.getLogStatusObjects();
+	}
+	
 	public static boolean shouldDoubleLogErrors() {
 		IEclipsePreferences prefs = new InstanceScope().getNode(JBossServerCorePlugin.PLUGIN_ID);
 		return prefs.getBoolean(RELOG_ERROR_PREF_KEY, true);

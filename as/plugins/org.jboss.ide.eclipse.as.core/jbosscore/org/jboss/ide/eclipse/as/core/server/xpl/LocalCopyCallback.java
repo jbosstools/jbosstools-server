@@ -57,6 +57,10 @@ public class LocalCopyCallback implements IPublishCopyCallbackHandler {
 		DeployableServerBehavior beh = ServerConverter.getDeployableServerBehavior(server);
 		shouldRestartModule |= beh.changedFileRequiresModuleRestart(mf);
 		if( file != null ) {
+			if( !file.exists()) {
+				return new IStatus[] {new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL, 
+						NLS.bind(Messages.errorReading, file.getAbsolutePath()), null)};
+			}
 			InputStream in = null;
 			try {
 				in = new FileInputStream(file);

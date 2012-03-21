@@ -469,6 +469,22 @@
       </decorator>
    </extension>
 	
+   <extension point="org.eclipse.ui.decorators">
+      <decorator
+            class="org.jboss.ide.eclipse.as.ui.views.server.extensions.ModulePublishDecorator"
+            id="org.jboss.ide.eclipse.as.ui.module.publish.decorator"
+            label="Module Publish Error Decorator"
+            lightweight="true"
+            location="BOTTOM_LEFT"
+            state="true">
+         <enablement>
+            <objectClass
+                  name="org.eclipse.wst.server.ui.IServerModule">
+            </objectClass>
+         </enablement>
+      </decorator>
+   </extension>
+	
 	<!-- JMX Stuff 
 	   <extension
          point="org.jboss.tools.jmx.ui.providerUI">

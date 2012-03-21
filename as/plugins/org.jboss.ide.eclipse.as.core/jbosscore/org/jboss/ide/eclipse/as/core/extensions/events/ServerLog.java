@@ -18,12 +18,19 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.osgi.framework.log.FrameworkLogEntry;
 
 public class ServerLog extends DeprecatedEclipseLog {
+	private ArrayList<IStatus> log;
 	public ServerLog(File file) {
 		super(file);
+		log = new ArrayList<IStatus>();
 	}
 	
 	public void log(IStatus status) {
+		log.add(status);
 		log(getLog(status));
+	}
+	
+	public IStatus[] getLogStatusObjects() {
+		return (IStatus[]) log.toArray(new IStatus[log.size()]);
 	}
 	
 	// Hard Copied from PlatformLogWriter. You'd think 
