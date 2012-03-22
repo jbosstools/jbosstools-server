@@ -61,12 +61,13 @@ Raleigh NC 27606 USA.
       <import plugin="org.eclipse.jst.j2ee.ui" version="1.1.500" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jst.common.frameworks" version="1.1.500" match="greaterOrEqual"/>
       <import feature="org.jboss.ide.eclipse.archives.feature"/>
-	  <import feature="org.jboss.ide.eclipse.as.archives.integration.feature"/>
-	  <import feature="org.jboss.ide.eclipse.as.jmx.integration.feature"/>
-	  <import feature="org.jboss.ide.eclipse.as.server.rse.integration.feature"/>
-	  <import feature="org.jboss.ide.eclipse.as.serverAdapter.wtp.feature"/>
 	  <import feature="org.jboss.tools.jmx.feature"/>
    </requires>
+
+	<includes id="org.jboss.ide.eclipse.as.archives.integration.feature" version="0.0.0" />
+	<includes id="org.jboss.ide.eclipse.as.jmx.integration.feature" version="0.0.0" />
+	<includes id="org.jboss.ide.eclipse.as.server.rse.integration.feature" version="0.0.0" />
+	<includes id="org.jboss.ide.eclipse.as.serverAdapter.wtp.feature" version="0.0.0" />
 
    <plugin
          id="org.jboss.ide.eclipse.as.ui.mbeans"
