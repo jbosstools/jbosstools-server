@@ -168,8 +168,8 @@ public class ServerModeSectionComposite extends Composite {
 	}
 	protected boolean showListenOnAllHostsCheckbox() {
 		
-		IRuntime rt = callback.getRuntime();
-		JBossExtendedProperties props = (JBossExtendedProperties)rt
+		IServerWorkingCopy wc = callback.getServer();
+		JBossExtendedProperties props = (JBossExtendedProperties)wc
 				.loadAdapter(JBossExtendedProperties.class, 
 							 new NullProgressMonitor());
 		return props == null ? false : props.runtimeSupportsBindingToAllInterfaces();
