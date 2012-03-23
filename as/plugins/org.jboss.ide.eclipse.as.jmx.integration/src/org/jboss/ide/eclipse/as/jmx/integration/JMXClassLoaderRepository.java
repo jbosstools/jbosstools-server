@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2011 Red Hat, Inc. 
+ * Copyright (c) 2012 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -24,7 +24,7 @@ import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 
 /**
  * A repository for classloaders that relate to servers, 
@@ -35,14 +35,6 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
  *
  */
 public class JMXClassLoaderRepository {
-	protected static JMXClassLoaderRepository instance;
-	public static JMXClassLoaderRepository getDefault() {
-		if( instance == null ) {
-			instance = new JMXClassLoaderRepository();
-		}
-		return instance;
-	}
-	
 	protected HashMap<String, ClassLoader> idToLoader;
 	protected HashMap<String, ArrayList<Object>> idToConcerned;
 	protected JMXClassLoaderRepository() {
@@ -107,12 +99,7 @@ public class JMXClassLoaderRepository {
 	 */
 	protected void loadClassLoader(IServer s) {
 		try {
-			IRuntime rt = s.getRuntime();
-			IPath loc = rt.getLocation();
-			URL url = loc.append(IJBossServerConstants.CLIENT).append(IJBossServerConstants.JBOSSALL_CLIENT_JAR)
-					.toFile().toURI().toURL();
-			URLClassLoader loader = new URLClassLoader(new URL[] { url, }, 
-					Thread.currentThread().getContextClassLoader());
+			URLClassLoader loader = createClassLoader(s);
 			idToLoader.put(s.getId(), loader);
 		} catch (MalformedURLException murle) {
 			JBossServerCorePlugin.getDefault().getLog().log(
@@ -121,6 +108,17 @@ public class JMXClassLoaderRepository {
 		}
 	}
 
+	protected URLClassLoader createClassLoader(IServer s) throws MalformedURLException {
+		IRuntime rt = s.getRuntime();
+		IPath loc = rt.getLocation();
+		URL url = loc.append(IJBossRuntimeResourceConstants.CLIENT)
+				.append(IJBossRuntimeResourceConstants.JBOSSALL_CLIENT_JAR)
+				.toFile().toURI().toURL();
+		URLClassLoader loader = new URLClassLoader(new URL[] { url, }, 
+				Thread.currentThread().getContextClassLoader());
+		return loader;
+	}
+	
 	/**
 	 * Are there any concerned citizens for this server?
 	 * @param server

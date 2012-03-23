@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2011 Red Hat, Inc. 
+ * Copyright (c) 2012 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.ExtensionManager.IServerJMXRunnable;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
@@ -64,16 +65,13 @@ public class JMXPoller implements IServerStatePoller2 {
 	private RequiresInfoException requiresInfoException = null;
 	private Properties requiredPropertiesReturned = null;
 
-	private JMXPollerRunnable runnable;
-	private JMXSafeRunner runner;
-	
 	public void beginPolling(IServer server, boolean expectedState) throws PollingException {
 		ceFound = nnfeFound = startingFound = canceled = done = false;
 		this.server = server;
 		launchJMXPoller();
 	}
 
-	private static class JMXPollerRunnable implements IJMXRunnable {
+	private static class JMXPollerRunnable implements IJMXRunnable,IServerJMXRunnable {
 		private boolean result;
 		public void run(MBeanServerConnection connection) throws Exception {
 			Object attInfo = connection.getAttribute(
@@ -85,9 +83,11 @@ public class JMXPoller implements IServerStatePoller2 {
 	
 	private class PollerRunnable implements Runnable {
 		public void run() {
-			JMXClassLoaderRepository.getDefault().addConcerned(server, this);
-			runnable = new JMXPollerRunnable();
-			runner = new JMXSafeRunner(server);
+			JBossServerJMXRunner runner2 = new JBossServerJMXRunner();
+			runner2.beginTransaction(server, this);
+
+			JMXPollerRunnable runnable = new JMXPollerRunnable();
+			JMXSafeRunner runner = new JMXSafeRunner(server);
 			while( !done && !canceled) {
 				try {
 					runner.run(runnable);
@@ -100,7 +100,7 @@ public class JMXPoller implements IServerStatePoller2 {
 						log(s);
 					}
 				} catch(CoreException ce) {
-					handleException(ce.getCause());
+					handleException(ce.getCause(), runner);
 				} 
 
 				try { 
@@ -109,10 +109,10 @@ public class JMXPoller implements IServerStatePoller2 {
 					// Intentionally ignore
 				}
 			}
-			JMXClassLoaderRepository.getDefault().removeConcerned(server, this);
+			runner2.endTransaction(server, this);
 		}
 		
-		protected void handleException(Throwable t) {
+		protected void handleException(Throwable t, final JMXSafeRunner runner) {
 			if( t instanceof SecurityException ) {
 				synchronized(this) {
 					if( !waitingForCredentials ) {
@@ -251,11 +251,12 @@ public class JMXPoller implements IServerStatePoller2 {
 	}
 
 	public IStatus getCurrentStateSynchronous(IServer server) {
-		JMXClassLoaderRepository.getDefault().addConcerned(server, this);
+		JBossServerJMXRunner runner = new JBossServerJMXRunner();
+		runner.beginTransaction(server, this);
 		JMXPollerRunnable runnable2 = new JMXPollerRunnable();
-		JMXSafeRunner runner2 = new JMXSafeRunner(server);
+
 		try {
-			runner2.run(runnable);
+			runner.run(server, runnable2);
 			int started2 = runnable2.result ? STATE_STARTED : STATE_TRANSITION;
 			if( started2 == STATE_STARTED ) {
 				Status s = new Status(IStatus.OK, Activator.PLUGIN_ID, 
@@ -265,7 +266,7 @@ public class JMXPoller implements IServerStatePoller2 {
 		} catch(CoreException ce) {
 			// No need to return the specifics of the exception. Just note we could not connect. 
 		} finally {
-			JMXClassLoaderRepository.getDefault().removeConcerned(server, this);
+			runner.endTransaction(server, this);
 		}
 		Status s = new Status(IStatus.INFO, Activator.PLUGIN_ID, 
 				"JMX Poller did not find a running server on " + server.getHost());

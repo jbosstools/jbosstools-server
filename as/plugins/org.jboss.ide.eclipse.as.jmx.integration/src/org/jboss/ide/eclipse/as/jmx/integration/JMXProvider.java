@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2011 Red Hat, Inc. 
+ * Copyright (c) 2012 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -41,7 +41,6 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
-import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.ui.internal.views.navigator.JMXNavigator;
 import org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorerContentProvider;
@@ -125,10 +124,7 @@ public class JMXProvider {
 					if (view != null) {
 						Display.getDefault().asyncExec(new Runnable() { 
 							public void run() {
-								JBossServerConnectionProvider provider = 
-										(JBossServerConnectionProvider)ExtensionManager.getProvider(
-												JBossServerConnectionProvider.PROVIDER_ID);
-								IConnectionWrapper connection = provider.getConnection(server);
+								IConnectionWrapper connection = JBossJMXConnectionProviderModel.getDefault().getConnection(server);
 								if( connection != null ) {
 									view.getCommonViewer().collapseAll();
 									ISelection sel = new StructuredSelection(new Object[] { connection });
@@ -150,7 +146,7 @@ public class JMXProvider {
 		}
 		public Object[] getChildren(Object parentElement) {
 			if( parentElement instanceof IServer ) {
-				Object sel = JBossServerConnectionProvider.getConnection((IServer)parentElement);
+				Object sel = JBossJMXConnectionProviderModel.getDefault().getConnection((IServer)parentElement);
 				if( sel != null )
 					return new Object[] { sel };
 			}

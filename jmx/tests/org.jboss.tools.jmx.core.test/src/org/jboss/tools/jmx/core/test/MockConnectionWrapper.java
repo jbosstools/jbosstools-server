@@ -11,6 +11,7 @@
 package org.jboss.tools.jmx.core.test;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -49,6 +50,10 @@ public class MockConnectionWrapper implements IConnectionWrapper {
     }
 
 	public void loadRoot(IProgressMonitor monitor) {
+	}
+
+	public void run(IJMXRunnable runnable, HashMap<String, String> prefs)
+			throws JMXException {
 	}
 
 }

@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2011 Red Hat, Inc. 
+ * Copyright (c) 2012 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -30,7 +30,7 @@ public class JBossServerJMXRunner implements IServerJMXRunner {
 			}
 		};
 		try {
-			JBossServerConnectionProvider.run(server, runnable2);
+			JBossJMXConnectionProviderModel.getDefault().run(server, runnable2);
 		} catch(JMXException jmxe) {
 			// TODO wrap and log
 			throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, jmxe.getMessage(), jmxe));
@@ -38,10 +38,14 @@ public class JBossServerJMXRunner implements IServerJMXRunner {
 	}
 
 	public void beginTransaction(IServer server, Object lock) {
-		JMXClassLoaderRepository.getDefault().addConcerned(server, lock);
+		AbstractJBossJMXConnectionProvider provider = JBossJMXConnectionProviderModel.getDefault().getProvider(server);
+		if( provider != null && provider.hasClassloaderRepository())
+			provider.getClassloaderRepository().addConcerned(server, lock);
 	}
 
 	public void endTransaction(IServer server, Object lock) {
-		JMXClassLoaderRepository.getDefault().removeConcerned(server, lock);
+		AbstractJBossJMXConnectionProvider provider = JBossJMXConnectionProviderModel.getDefault().getProvider(server);
+		if( provider != null && provider.hasClassloaderRepository())
+			provider.getClassloaderRepository().removeConcerned(server, lock);
 	}
 }

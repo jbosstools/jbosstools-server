@@ -11,6 +11,7 @@
 package org.jboss.tools.jmx.core;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -38,5 +39,22 @@ public interface IConnectionWrapper {
 	 * @return
 	 */
 	public Root getRoot();
+	
+	/**
+	 * Run this runnable 
+	 * @param runnable
+	 * @throws JMXException
+	 */
 	public void run(IJMXRunnable runnable) throws JMXException;
+	
+	/**
+	 * Run this runnable, but pass in a map full of preferences 
+	 * that may contribute to the setup 
+	 * 
+	 * @param runnable
+	 * @param prefs
+	 * @throws JMXException
+	 */
+	 public void run(IJMXRunnable runnable, HashMap<String, String> prefs) throws JMXException;
+	
 }

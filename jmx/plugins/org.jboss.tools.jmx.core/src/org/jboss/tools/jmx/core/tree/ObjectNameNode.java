@@ -39,6 +39,30 @@ public class ObjectNameNode extends PropertyNode {
     	}
     	wrapper = array[0];
     }
+    
+    public ObjectNameNode(Node parent, String key, String value, ObjectName on, MBeanServerConnection mbsc) {
+        super(parent, key, value);
+        Root root = getRoot(parent);
+        IConnectionWrapper connectionWrapper = root.getConnection();
+        this.on = on;
+    	final MBeanInfoWrapper[] array = new MBeanInfoWrapper[1];
+    	final ObjectName on2 = on;
+    	try {
+        	if( mbsc != null ) 
+        		wrapper = new MBeanInfoWrapper(on2, mbsc.getMBeanInfo(on2), mbsc, ObjectNameNode.this);
+        	else {
+		    	connectionWrapper.run(new IJMXRunnable() {
+		    		public void run(MBeanServerConnection mbsc) throws Exception {
+						array[0] = new MBeanInfoWrapper(on2, mbsc.getMBeanInfo(on2), mbsc, ObjectNameNode.this);
+		    		}
+		    	});
+        	}
+    	} catch( Exception e ) {
+    		// TODO FIX THIS
+    	}
+    	wrapper = array[0];
+    }
+
 
     public ObjectName getObjectName() {
         return on;

@@ -59,7 +59,7 @@ public class JMXServerLifecycleListener extends LocalJBoss7DeploymentScannerAddi
 			}
 		};
 		try {
-			JBossServerConnectionProvider.run(server, r);
+			JBossJMXConnectionProviderModel.getDefault().run(server, r);
 		} catch( JMXException jmxe ) {
 			IStatus s = jmxe.getStatus();
 			IStatus newStatus = new Status(s.getSeverity(), s.getPlugin(), IEventCodes.ADD_DEPLOYMENT_FOLDER_FAIL, 

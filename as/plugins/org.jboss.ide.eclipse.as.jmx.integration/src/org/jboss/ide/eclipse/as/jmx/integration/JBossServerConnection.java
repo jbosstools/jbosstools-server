@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2011 Red Hat, Inc. 
+ * Copyright (c) 2012 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -11,8 +11,12 @@
 package org.jboss.ide.eclipse.as.jmx.integration;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Properties;
 
 import javax.management.MBeanServerConnection;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -24,7 +28,9 @@ import org.eclipse.wst.server.core.IServerListener;
 import org.eclipse.wst.server.core.ServerEvent;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.jmx.integration.JMXUtil.CredentialException;
 import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionProviderListener;
@@ -45,7 +51,7 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 		this.isConnected = false;
 		this.isLoading = false;
 		checkState(); // prime the state
-		((JBossServerConnectionProvider)getProvider()).addListener(this);
+		((AbstractJBossJMXConnectionProvider)getProvider()).addListener(this);
 		server.addServerListener(this);
 	}
 	
@@ -58,7 +64,11 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 	}
 
 	public IConnectionProvider getProvider() {
-		return ExtensionManager.getProvider(JBossServerConnectionProvider.PROVIDER_ID);
+		return ExtensionManager.getProvider(JBoss3To6ConnectionProvider.PROVIDER_ID);
+	}
+	
+	protected AbstractJBossJMXConnectionProvider getProvider2() {
+		return (AbstractJBossJMXConnectionProvider)getProvider();
 	}
 
 	public Root getRoot() {
@@ -70,7 +80,7 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 			isLoading = true;
 			// saferunner just adds itself as a concern and then removes, after each call.
 			// This will ensure the classloader does not need to make multiple loads
-			JMXClassLoaderRepository.getDefault().addConcerned(server, this);
+			getProvider2().getClassloaderRepository().addConcerned(server, this);
 			try {
 				if( root == null ) {
 					root = NodeUtils.createObjectNameTree(this, monitor);
@@ -80,7 +90,7 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 				JBossServerCorePlugin.getDefault().getLog().log(status);
 				root = new ErrorRoot();
 			} finally {
-				JMXClassLoaderRepository.getDefault().removeConcerned(server, this);
+				getProvider2().getClassloaderRepository().removeConcerned(server, this);
 				isLoading = false;
 			}
 		}
@@ -91,10 +101,64 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 	}
 
 	public void run(IJMXRunnable runnable) throws JMXException {
-		// do nothing if the server is down.
-		if( server.getServerState() != IServer.STATE_STARTED ) 
-			return;
-		JMXSafeRunner.run(server, runnable);
+		run(runnable, new HashMap<String, String>());
+	}
+	
+	protected void run(IJMXRunnable runnable, boolean force) throws JMXException {
+		HashMap<String, String> map = new HashMap<String,String>();
+		map.put("force", "true");
+		run(runnable, map);
+	}
+	
+	// Potential api upstream in jmx ?
+	public void run(IJMXRunnable runnable, HashMap<String, String> prefs) throws JMXException {
+		boolean force = prefs.get("force") == null ? false : Boolean.parseBoolean(prefs.get("force"));
+		if( force || server.getServerState() == IServer.STATE_STARTED) {
+			String defaultUser = ServerConverter.getJBossServer(server).getUsername();
+			String defaultPass = ServerConverter.getJBossServer(server).getPassword();
+			String user = prefs.get("user") == null ? defaultUser : prefs.get("user");
+			String pass = prefs.get("pass") == null ? defaultPass : prefs.get("pass");
+			run(server, runnable, user, pass);
+		}
+	}
+	
+	public void run(IServer s, IJMXRunnable r, String user, String pass) throws JMXException {
+		// Mark the event
+		getProvider2().getClassloaderRepository().addConcerned(s, r);
+		
+		// Set the classloader
+		ClassLoader currentLoader = Thread.currentThread()
+				.getContextClassLoader();
+		ClassLoader newLoader = getProvider2().getClassloaderRepository().getClassLoader(s);
+		Thread.currentThread().setContextClassLoader(newLoader);
+		try {
+			initializeEnvironment(s, user, pass);
+			MBeanServerConnection connection = createConnection(s);
+			if( connection != null ) {
+				r.run(connection);
+			}
+		} catch( Exception e ) {  
+			throw new JMXException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+					e.getMessage() == null ? e.getClass().getName() : e.getMessage(), e));
+		} finally {
+			getProvider2().getClassloaderRepository().removeConcerned(s, r);
+			Thread.currentThread().setContextClassLoader(currentLoader);
+		}
+	}
+
+	protected MBeanServerConnection createConnection(IServer s) throws Exception {
+		Properties p = JMXUtil.getDefaultProperties(s);
+		InitialContext ic = new InitialContext(p);
+		Object obj = ic.lookup(IJBossRuntimeConstants.RMIAdaptor);
+		ic.close();
+		if (obj instanceof MBeanServerConnection) {
+			return (MBeanServerConnection)obj;
+		}
+		return null;
+	}
+	
+	protected void initializeEnvironment(IServer s, String user, String pass) throws CredentialException {
+		JMXUtil.setCredentials(s,user,pass);
 	}
 	
 	public String getName() {
@@ -127,21 +191,21 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 		IDeployableServer jbs = ServerConverter.getDeployableServer(server);
 		if( server.getServerState() == IServer.STATE_STARTED && jbs != null && jbs.hasJMXProvider()) {
 			try {
-				JMXSafeRunner.run(server, new IJMXRunnable() {
+				run(new IJMXRunnable() {
 					public void run(MBeanServerConnection connection)
 							throws Exception {
 						// Do nothing, just see if the connection worked
 					} 
-				});
+				}, true);
 				if( !isConnected ) {
 					isConnected = true;
-					((JBossServerConnectionProvider)getProvider()).fireChanged(JBossServerConnection.this);
+					((AbstractJBossJMXConnectionProvider)getProvider()).fireChanged(JBossServerConnection.this);
 				}
 			} catch( Exception jmxe ) {
 				// I thought i was connected but I'm not. 
 				if( isConnected ) {
 					isConnected = false;
-					((JBossServerConnectionProvider)getProvider()).fireChanged(JBossServerConnection.this);
+					((AbstractJBossJMXConnectionProvider)getProvider()).fireChanged(JBossServerConnection.this);
 				}
 			}
 		} else {
@@ -149,7 +213,7 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 			if( isConnected ) {
 				// server is not in STATE_STARTED, but thinks its connected
 				isConnected = false;
-				((JBossServerConnectionProvider)getProvider()).fireChanged(JBossServerConnection.this);
+				((AbstractJBossJMXConnectionProvider)getProvider()).fireChanged(JBossServerConnection.this);
 			}
 		}
 	}

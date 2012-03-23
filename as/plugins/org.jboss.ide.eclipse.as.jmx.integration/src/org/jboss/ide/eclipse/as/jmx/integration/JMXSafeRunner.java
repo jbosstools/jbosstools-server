@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2011 Red Hat, Inc. 
+ * Copyright (c) 2012 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -10,18 +10,13 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.jmx.integration;
 
-import java.util.Properties;
-
-import javax.management.MBeanServerConnection;
-import javax.naming.InitialContext;
+import java.util.HashMap;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.tools.jmx.core.ExtensionManager;
+import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.IJMXRunnable;
 import org.jboss.tools.jmx.core.JMXException;
 
@@ -42,7 +37,7 @@ public class JMXSafeRunner {
 		this.pass = pass;
 	}
 	
-	public  void run(IJMXRunnable r) throws CoreException {
+	public void run(IJMXRunnable r) throws CoreException {
 		run(server,r,user,pass);
 	}
 	
@@ -53,29 +48,14 @@ public class JMXSafeRunner {
 	}
 	
 	public static void run(IServer s, IJMXRunnable r, String user, String pass) throws JMXException {
-		JMXClassLoaderRepository.getDefault().addConcerned(s, r);
-		ClassLoader currentLoader = Thread.currentThread()
-				.getContextClassLoader();
-		ClassLoader newLoader = JMXClassLoaderRepository.getDefault()
-				.getClassLoader(s);
-		Thread.currentThread().setContextClassLoader(newLoader);
-		InitialContext ic = null;
-		try {
-			JMXUtil.setCredentials(s,user,pass);
-			Properties p = JMXUtil.getDefaultProperties(s);
-			ic = new InitialContext(p);
-			Object obj = ic.lookup(IJBossRuntimeConstants.RMIAdaptor);
-			ic.close();
-			if (obj instanceof MBeanServerConnection) {
-				MBeanServerConnection connection = (MBeanServerConnection) obj;
-				r.run(connection);
-			}
-		} catch( Exception e ) {  
-			throw new JMXException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
-					e.getMessage() == null ? e.getClass().getName() : e.getMessage(), e));
-		} finally {
-			JMXClassLoaderRepository.getDefault().removeConcerned(s, r);
-			Thread.currentThread().setContextClassLoader(currentLoader);
+		ExtensionManager.getProviders(); // todo clean up, this is here to ensure it's initialized 
+		IConnectionWrapper c = JBossJMXConnectionProviderModel.getDefault().getConnection(s);
+		if( c != null ) {
+			HashMap<String, String> prefs = new HashMap<String, String>();
+			prefs.put("force", "true");
+			prefs.put("user", user);
+			prefs.put("pass", pass);
+			c.run(r, prefs);
 		}
 	}
 

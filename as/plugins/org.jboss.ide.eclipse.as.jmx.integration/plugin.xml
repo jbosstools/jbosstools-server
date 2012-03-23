@@ -10,7 +10,13 @@
    <extension
          point="org.jboss.tools.jmx.core.MBeanServerConnectionProvider">
       <connectionProvider
-            class="org.jboss.ide.eclipse.as.jmx.integration.JBossServerConnectionProvider">
+            class="org.jboss.ide.eclipse.as.jmx.integration.JBoss3To6ConnectionProvider">
+      </connectionProvider>
+      <connectionProvider
+            class="org.jboss.ide.eclipse.as.jmx.integration.JBoss70ConnectionProvider">
+      </connectionProvider>
+      <connectionProvider
+            class="org.jboss.ide.eclipse.as.jmx.integration.JBoss71ConnectionProvider">
       </connectionProvider>
    </extension>
 

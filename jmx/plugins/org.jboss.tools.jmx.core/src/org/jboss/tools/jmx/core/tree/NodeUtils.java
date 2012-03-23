@@ -59,7 +59,7 @@ public class NodeUtils {
 		        Iterator iter = beanInfo.iterator();
 		        while (iter.hasNext()) {
 		            ObjectName on = (ObjectName) iter.next();
-		            NodeBuilder.addToTree(_root[0], on);
+		            NodeBuilder.addToTree(_root[0], on, connection);
 		        	subMon.worked(100);
 		        }
 		        subMon.done();
