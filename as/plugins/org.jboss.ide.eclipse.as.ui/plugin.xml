@@ -485,16 +485,7 @@
       </decorator>
    </extension>
 	
-	<!-- JMX Stuff 
-	   <extension
-         point="org.jboss.tools.jmx.ui.providerUI">
-      <providerUI
-            icon="$nl$/icons/jboss.png"
-            id="org.jboss.ide.eclipse.as.core.extensions.jmx.JBossServerConnectionProvider"
-            name="JBoss Server">
-      </providerUI>
-   </extension>-->
-    <extension
+   <extension
           point="org.eclipse.debug.ui.launchConfigurationTypeImages">
        <launchConfigurationTypeImage
              configTypeID="org.jboss.ide.eclipse.as.core.server.startupConfiguration"

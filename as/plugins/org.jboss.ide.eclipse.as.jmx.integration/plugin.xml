@@ -19,6 +19,23 @@
             class="org.jboss.ide.eclipse.as.jmx.integration.JBoss71ConnectionProvider">
       </connectionProvider>
    </extension>
+   
+	<!-- JMX Stuff -->
+	<extension
+         point="org.jboss.tools.jmx.ui.providerUI">
+      <providerUI
+            icon="$nl$/icons/jboss.png"
+            id="org.jboss.ide.eclipse.as.core.extensions.jmx.JBossServerConnectionProvider"
+            name="JBoss Server"/>
+      <providerUI
+            icon="$nl$/icons/jboss.png"
+            id="org.jboss.ide.eclipse.as.core.extensions.jmx.JBoss70ConnectionProvider"
+            name="JBoss Server"/>
+      <providerUI
+            icon="$nl$/icons/jboss.png"
+            id="org.jboss.ide.eclipse.as.core.extensions.jmx.JBoss71ServerConnectionProvider"
+            name="JBoss Server"/>
+   </extension>
 
    <extension
          point="org.jboss.ide.eclipse.as.core.pollers">
@@ -104,4 +121,5 @@
        </includes>
     </viewerActionBinding>
 	</extension>
+	
 </plugin>

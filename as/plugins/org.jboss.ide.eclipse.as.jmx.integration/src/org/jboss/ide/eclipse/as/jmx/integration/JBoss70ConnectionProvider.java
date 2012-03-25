@@ -22,8 +22,11 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
+import org.jboss.tools.jmx.core.ExtensionManager;
+import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionProviderListener;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
+import org.jboss.tools.jmx.core.providers.DefaultConnectionProvider;
 import org.jboss.tools.jmx.core.providers.DefaultConnectionWrapper;
 import org.jboss.tools.jmx.core.providers.MBeanServerConnectionDescriptor;
 
@@ -36,8 +39,11 @@ public class JBoss70ConnectionProvider extends AbstractJBossJMXConnectionProvide
 	}
 
 	public String getName(IConnectionWrapper wrapper) {
-		if( wrapper instanceof JBossServerConnection) {
-			return ((JBossServerConnection)wrapper).getName();
+		if( wrapper instanceof ExtendedDefaultConnectionWrapper) {
+			MBeanServerConnectionDescriptor desc =
+					((ExtendedDefaultConnectionWrapper)wrapper).getDescriptor();
+				if( desc != null )
+					return desc.getID();
 		}
 		return null;
 	}
@@ -108,10 +114,13 @@ public class JBoss70ConnectionProvider extends AbstractJBossJMXConnectionProvide
 		}
 		public void connectionChanged(IConnectionWrapper connection) {
 		}
+		
+		public IConnectionProvider getProvider() {
+			return ExtensionManager.getProvider(PROVIDER_ID);
+		}
 	}
 
 	public String getId() {
 		return PROVIDER_ID;
 	}
-	
 }
