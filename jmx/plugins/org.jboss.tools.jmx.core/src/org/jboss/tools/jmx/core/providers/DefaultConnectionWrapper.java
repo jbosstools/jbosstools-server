@@ -121,7 +121,6 @@ public class DefaultConnectionWrapper implements IConnectionWrapper {
 		}
 	}
 
-	@Override
 	public void run(IJMXRunnable runnable, HashMap<String, String> prefs)
 			throws JMXException {
 		run(runnable);
