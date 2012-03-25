@@ -678,9 +678,6 @@
 			<para>
 				You are also able to change a servers behaviour from <guilabel>Local</guilabel> to <guilabel>Remote System Deployment</guilabel> through this settings tab. In doing so you will see that the <guilabel>Host</guilabel> is not set by default, but the other fields contain default values. <!-- Once your remote server behaviour is configured, click the <guibutton>Test</guibutton> button to confirm the settings are correct.  -->
 			</para>
-			<para>
-				You can select the <guilabel>Listen on all interfaces to allow remote web connections</guilabel> when using JBoss Application Server 3 to 7 or JBoss Enterprise Application Platform 4 to 6. This option will force the server to launch with the option <option>-b 0.0.0.0</option>. This option will change the host address to 0.0.0.0, useful for testing web applications on your local machine. JMX commands and web browser activities will still use the host set in the <guilabel>General Information</guilabel> section.
-			</para>
 			<figure>
 				<title>Server Behaviour - Remote</title>
 				<mediaobject>
@@ -690,9 +687,64 @@
 				</mediaobject>
 			</figure>
 			<para>
+				You can select the <guilabel>Listen on all interfaces to allow remote web connections</guilabel> when using JBoss Application Server 3 to 7 or JBoss Enterprise Application Platform 4 to 6. This option will force the server to launch with the option <option>-b 0.0.0.0</option>. This option will change the host address to 0.0.0.0, useful for testing web applications on your local machine. JMX commands and web browser activities will still use the host set in the <guilabel>General Information</guilabel> section.
+			</para>
+			<para>
 				Under the <guilabel>Publishing</guilabel> section it is possible to disable or enable the automatic publishing of the changes in the workspace.
 			</para>
 
+   <para>In the <guilabel>Server editor</guilabel> you are able to edit the timeouts, reload behaviour and the server pollers.</para>
+   
+   <formalpara>
+	   <title>Timeouts</title>
+	   <para>
+		   The <guilabel>Timeouts</guilabel> section allows you to specify a time limit for the server to complete operations within. If an operation does not start or fails to finish before the times you specify, that operation will be cancelled to avoid server failure.
+	   </para>
+   </formalpara>
+   <figure>
+	   <title>Timeouts</title>
+	   <mediaobject>
+		   <imageobject>
+			   <imagedata fileref="images/perspective/perspective_6b.png"/>
+		   </imageobject>
+	   </mediaobject>
+   </figure>
+   
+   <formalpara>
+	   <title>Application Reload Behavior</title>
+	   <para>
+		  This section of the Server settings allows you to customize the reload behavior of your application, depending on server and module changes.
+	   </para>
+   </formalpara>
+   <figure>
+	   <title>Application Reload Behavior</title>
+	   <mediaobject>
+		   <imageobject>
+			   <imagedata fileref="images/perspective/perspective_6c.png"/>
+		   </imageobject>
+	   </mediaobject>
+   </figure>
+   
+   <formalpara>
+	   <title>Server Pollers</title>
+   <para>
+	   Server pollers are set under the <guilabel>Server State Detectors</guilabel> section. Both <guilabel>Startup</guilabel> and <guilabel>Shutdown</guilabel> pollers can be set individually.
+   </para>
+   </formalpara>
+   <note>
+	   <para>
+		   By default, the Startup poller is set to Web Port. If you change the Startup poller to Timeout Poller (which may be required if you are using the minimal configuration for your server), this will do no polling at all and will only set the server state to <guilabel>&quot;Started&quot;</guilabel> after your startup timeout is reached.
+	   </para>
+   </note>
+   <figure>
+	   <title>Server Pollers</title>
+	   <mediaobject>
+		   <imageobject>
+			   <imagedata fileref="images/perspective/perspective_6a.png"/>
+		   </imageobject>
+	   </mediaobject>
+   </figure>
+			
 			<para>
 				It should be pointed out that the server adapter tries to automatically detect the ports it needs for integrating with a <property>JBoss Server</property> by default. Sometimes it is necessary to override this automatic detection if you are using a custom configuration. The <guilabel>Server Ports</guilabel> section in the <guilabel>Server editor</guilabel> provides fields to customize port settings. Click the <guilabel>Configure...</guilabel> link to bring up the wizard for adjusting the settings for the ports.
 			</para>
@@ -716,16 +768,7 @@
 					</imageobject>
 				</mediaobject>
 			</figure>
-
-			<para>In the <guilabel>Server editor</guilabel> you are able to edit the timeouts and the server pollers to use.</para>
-
-			<note>
-				<title>Note:</title>
-				<para>
-					By default, the Startup poller is set to JMX Poller. If you change the Startup poller to Timeout Poller (which may be required if you are using the minimal configuration for your server), this will do no polling at all and will only set the server state to <guilabel>&quot;Started&quot;</guilabel> after your startup timeout is reached.
-				</para>
-			</note>
-
+			
 			<para id="com_line_arg">
 				The <guilabel>Server editor</guilabel> window also allows you to modify the server&apos;s launch configuration. The settings is available by clicking the the <guilabel>Open launch configuration</guilabel> link. The resulting window provides tabs for setting command line arguments, main, classpaths and other things that are relevant to launching the server.
 			</para>
