@@ -37,6 +37,8 @@ public class ModulePublishDecorator implements ILightweightLabelDecorator {
 			IServer s = ((IServerModule)element).getServer();
 			IModule[] m = ((IServerModule)element).getModule();
 			String name = m[m.length-1].getName();
+			if( s == null )
+				return false;
 			IStatus[] all = ServerLogger.getDefault().getLog(s);
 			
 			// This really isn't the best. But I need string comparisons to know it's the same module
