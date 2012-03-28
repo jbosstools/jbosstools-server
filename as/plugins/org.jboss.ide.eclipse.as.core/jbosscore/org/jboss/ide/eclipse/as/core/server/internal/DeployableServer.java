@@ -10,6 +10,8 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -18,10 +20,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerPort;
+import org.eclipse.wst.server.core.model.IURLProvider;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
@@ -30,7 +34,7 @@ import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
-public class DeployableServer extends ServerDelegate implements IDeployableServer {
+public class DeployableServer extends ServerDelegate implements IDeployableServer, IURLProvider {
 
 	public DeployableServer() {
 	}
@@ -178,5 +182,39 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	public boolean hasJMXProvider() {
 		return false;
 	}
+	
+	public URL getModuleRootURL(IModule module) {
+		return getModuleRootURL(module, getServer().getHost(), 80);
+	}
+	
+	public static URL getModuleRootURL(IModule module, String host, int port) {
+		return getModuleRootURL(module, host, port, false);
+	}
+	
+	public static URL getModuleRootURL(IModule module, String host, int port, boolean ignoreContextRoot) {
+        if (module == null || module.loadAdapter(IWebModule.class,null)==null )
+			return null;
+        
+        IWebModule webModule =(IWebModule)module.loadAdapter(IWebModule.class,null);
+		String url = host;
+		if( !url.startsWith("http://") && !url.startsWith("https://") ) { //$NON-NLS-1$ //$NON-NLS-2$
+			url = "http://"+host; //$NON-NLS-1$
+		}
+		if (port != 80)
+			url += ":" + port; //$NON-NLS-1$
+
+		if( !ignoreContextRoot ) {
+			String cxRoot = webModule.getContextRoot();
+			if( !cxRoot.equals("/") && !cxRoot.equals("./")) //$NON-NLS-1$ //$NON-NLS-2$
+				url += "/"+webModule.getContextRoot(); //$NON-NLS-1$
+		}
+		if (!url.endsWith("/")) //$NON-NLS-1$
+			url += "/"; //$NON-NLS-1$
+
+		try {
+			return new URL(url);
+		} catch( MalformedURLException murle) { return null; }
+	}
+
 
 }

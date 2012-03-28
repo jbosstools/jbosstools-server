@@ -119,11 +119,14 @@ public class JBossLaunchAdapter extends LaunchableAdapterDelegate {
 			} else if (moduleObject instanceof WebResource) {
 				WebResource resource = (WebResource) moduleObject;
 				String path = resource.getPath().toString();
-				if (path != null && path.startsWith("/")) //$NON-NLS-1$
-					path = path.substring(1);
-				if (path != null && path.length() > 0) {
-					//path = getServlet30Mapping(resource, path);
-					url = new URL(url, path);
+				// If this is a java file, just stick with the root url
+				if( !path.endsWith(".java")) { //$NON-NLS-1$
+					if (path != null && path.startsWith("/")) //$NON-NLS-1$
+						path = path.substring(1);
+					if (path != null && path.length() > 0) {
+						//path = getServlet30Mapping(resource, path);
+						url = new URL(url, path);
+					}
 				}
 			}
 			URL portletURL = getPortletURL(moduleObject, delegate, server);
