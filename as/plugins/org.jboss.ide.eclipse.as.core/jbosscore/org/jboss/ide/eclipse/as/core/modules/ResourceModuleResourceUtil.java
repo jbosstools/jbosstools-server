@@ -216,6 +216,9 @@ public class ResourceModuleResourceUtil {
 	 */
 	private static String[] getProjectIncludesExcludes(IModule module) {
 		IProject p = module.getProject();
+		if( p == null )
+			return new String[]{null, null};
+		
 		IVirtualComponent vc = ComponentCore.createComponent(p);
 		Properties props = vc.getMetaProperties();
 		String exclusionPatterns = getPatternValue(props, COMPONENT_EXCLUSIONS_PATTERN);
