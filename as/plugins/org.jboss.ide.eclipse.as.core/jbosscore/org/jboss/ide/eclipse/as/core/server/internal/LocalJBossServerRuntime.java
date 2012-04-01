@@ -54,6 +54,9 @@ public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossSe
 		if( isEAP(getRuntime()) && version.equals(IConstants.V5_0))
 			version = "5.x"; //$NON-NLS-1$
 		
+		if (version.equals(IConstants.V6_0) || version.equals(IConstants.V6_1)) {
+			version = "6.x"; //$NON-NLS-1$
+		}
 		if( getRuntime().getRuntimeType().getId().startsWith("org.jboss.ide.eclipse.as.runtime.eap.")) { //$NON-NLS-1$
 			base = Messages.jboss + " EAP " + version + " " + Messages.runtime; //$NON-NLS-1$ //$NON-NLS-2$
 		} else {
