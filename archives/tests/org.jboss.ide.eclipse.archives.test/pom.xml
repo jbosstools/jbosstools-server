@@ -13,19 +13,4 @@
 		<coverage.filter>org.jboss.ide.eclipse.archives.core*</coverage.filter>
 		<emma.instrument.bundles>org.jboss.ide.eclipse.archives.core</emma.instrument.bundles>
 	</properties>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-surefire-plugin</artifactId>
-				<configuration>
-					<explodedBundles>
-						<bundle>org.jboss.ide.eclipse.archives.core</bundle>
-						<bundle>org.jboss.ide.eclipse.archives.test</bundle>
-					</explodedBundles>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-	
 </project>
