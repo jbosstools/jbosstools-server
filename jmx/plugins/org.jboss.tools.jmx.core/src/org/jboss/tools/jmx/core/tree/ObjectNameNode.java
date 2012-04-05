@@ -12,7 +12,6 @@ import javax.management.ObjectName;
 
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.IJMXRunnable;
-import org.jboss.tools.jmx.core.JMXException;
 import org.jboss.tools.jmx.core.MBeanInfoWrapper;
 
 public class ObjectNameNode extends PropertyNode {
@@ -22,22 +21,7 @@ public class ObjectNameNode extends PropertyNode {
     private MBeanInfoWrapper wrapper;
 
     public ObjectNameNode(Node parent, String key, String value, ObjectName on) {
-        super(parent, key, value);
-        Root root = getRoot(parent);
-        IConnectionWrapper connectionWrapper = root.getConnection();
-        this.on = on;
-    	final MBeanInfoWrapper[] array = new MBeanInfoWrapper[1];
-    	final ObjectName on2 = on;
-    	try {
-	    	connectionWrapper.run(new IJMXRunnable() {
-	    		public void run(MBeanServerConnection mbsc) throws Exception {
-					array[0] = new MBeanInfoWrapper(on2, mbsc.getMBeanInfo(on2), mbsc, ObjectNameNode.this);
-	    		}
-	    	});
-    	} catch( JMXException ce ) {
-    		// TODO LOG
-    	}
-    	wrapper = array[0];
+    	this(parent, key, value, on, null);
     }
     
     public ObjectNameNode(Node parent, String key, String value, ObjectName on, MBeanServerConnection mbsc) {
@@ -49,7 +33,7 @@ public class ObjectNameNode extends PropertyNode {
     	final ObjectName on2 = on;
     	try {
         	if( mbsc != null ) 
-        		wrapper = new MBeanInfoWrapper(on2, mbsc.getMBeanInfo(on2), mbsc, ObjectNameNode.this);
+        		array[0] = new MBeanInfoWrapper(on2, mbsc.getMBeanInfo(on2), mbsc, ObjectNameNode.this);
         	else {
 		    	connectionWrapper.run(new IJMXRunnable() {
 		    		public void run(MBeanServerConnection mbsc) throws Exception {
