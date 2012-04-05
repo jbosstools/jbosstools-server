@@ -105,9 +105,13 @@ public class MBeanExplorerLabelProvider extends LabelProvider {
 			IConnectionProvider provider = ((IConnectionWrapper)obj).getProvider();
 			ConnectionProviderUI ui = UIExtensionManager.getConnectionProviderUI(provider.getId());
 			if( ui != null ) {
-				if(!images.containsKey(ui.getId()) || images.get(ui.getId()).isDisposed())
-					images.put(ui.getId(),
-							ui.getImageDescriptor().createImage());
+				if(!images.containsKey(ui.getId()) || images.get(ui.getId()).isDisposed()) {
+					Image i = null;
+					if( ui.getImageDescriptor() != null ) {
+						i = ui.getImageDescriptor().createImage();
+					}
+					images.put(ui.getId(), i);
+				}
 				return images.get(ui.getId());
 			}
 		}

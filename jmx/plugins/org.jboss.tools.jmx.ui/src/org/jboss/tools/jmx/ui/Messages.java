@@ -89,6 +89,8 @@ public class Messages extends NLS {
 	public static String Loading;
 	public static String UpdatingSelectionJob;
 
+	public static String JMXUIImageDescriptorNotFound;
+	
 	static {
 	    NLS.initializeMessages("org.jboss.tools.jmx.ui.Messages", //$NON-NLS-1$
 	                    Messages.class);

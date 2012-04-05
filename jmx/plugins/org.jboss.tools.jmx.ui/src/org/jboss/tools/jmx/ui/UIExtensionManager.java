@@ -18,10 +18,13 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.InvalidRegistryObjectException;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.IWizardPage;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /**
@@ -48,6 +51,11 @@ public class UIExtensionManager {
 			wizardPages = element.getChildren();
 			String pluginName = element.getDeclaringExtension().getContributor().getName();
 			imageDescriptor = AbstractUIPlugin.imageDescriptorFromPlugin(pluginName, icon);
+			if( imageDescriptor == null ) {
+				IStatus s = new Status(IStatus.WARNING, JMXUIActivator.PLUGIN_ID, 
+						NLS.bind(Messages.JMXUIImageDescriptorNotFound, icon, pluginName));
+				JMXUIActivator.getDefault().log(s);
+			}
 		}
 		public String getId() {
 			return id;
