@@ -122,7 +122,6 @@ public class TestProjectProvider {
 		ResourcesPlugin.getWorkspace().run(new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				IPath loc = project.getLocation();
-				project.close(new NullProgressMonitor());
 				project.delete(false, true, new NullProgressMonitor());
 				if(makeCopy) {
 					FileUtil.remove(loc.toFile());
