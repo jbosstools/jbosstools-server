@@ -49,7 +49,7 @@
 
    <element name="providerUI">
       <complexType>
-         <sequence minOccurs="1" maxOccurs="unbounded">
+         <sequence minOccurs="0" maxOccurs="unbounded">
             <element ref="wizardPage"/>
          </sequence>
          <attribute name="id" type="string" use="required">
