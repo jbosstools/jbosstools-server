@@ -52,6 +52,8 @@ public class MBeanUtils {
                 ret[i] = new Character(texti.charAt(0));
             } else if (param.getType().equals("boolean")) {//$NON-NLS-1$
                 ret[i] = new Boolean(texti);
+            } else if (param.getType().equals("java.lang.Boolean")) {//$NON-NLS-1$
+                ret[i] = new Boolean(texti);
             } else if (MBeanUtils.class
                     .getClassLoader()
                     .loadClass("java.lang.Number").isAssignableFrom(MBeanUtils.class.getClassLoader().loadClass(param.getType()))) {//$NON-NLS-1$
