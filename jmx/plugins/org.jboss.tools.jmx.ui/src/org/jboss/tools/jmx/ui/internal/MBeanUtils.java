@@ -96,6 +96,8 @@ public class MBeanUtils {
             return new Character(valueStr.charAt(0));
         if (type.equals("boolean")) //$NON-NLS-1$
             return new Boolean(valueStr);
+        if (type.equals("java.lang.Boolean")) //$NON-NLS-1$
+            return new Boolean(valueStr);
         if (MBeanUtils.class.getClassLoader().loadClass("java.lang.Number") //$NON-NLS-1$
                 .isAssignableFrom(
                         MBeanUtils.class.getClassLoader().loadClass(type)))
