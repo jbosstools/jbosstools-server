@@ -16,6 +16,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
 import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 
@@ -37,6 +39,8 @@ public class JBossAS7ExtendedProperties extends JBossExtendedProperties {
 
 	public boolean runtimeSupportsBindingToAllInterfaces() {
 		String version = getServerBeanLoader().getFullServerVersion();
+		if( version == null )
+			return true;
 		if( version.startsWith("7.0.1") || version.startsWith("7.0.0"))  //$NON-NLS-1$//$NON-NLS-2$
 			return false;
 		return true;
@@ -58,6 +62,14 @@ public class JBossAS7ExtendedProperties extends JBossExtendedProperties {
 		if( !cFilePath.toFile().exists())
 			return NLS.bind(Messages.JBossAS7ConfigurationFileDoesNotExist, cFilePath.toOSString());
 		return null;
+	}
+
+	public boolean canVerifyRemoteModuleState() {
+		return true;
+	}
+	
+	public IServerModuleStateVerifier getModuleStateVerifier() {
+		return new JBoss7ModuleStateVerifier();
 	}
 
 }

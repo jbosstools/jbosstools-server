@@ -19,6 +19,9 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.model.ServerDelegate;
+import org.jboss.ide.eclipse.as.core.server.IManagementPortProvider;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.jmx.integration.JMXUtil.CredentialException;
 import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.IConnectionProvider;
@@ -37,8 +40,15 @@ public class JBoss71ServerConnection extends JBossServerConnection {
 	}
 
 	protected MBeanServerConnection createConnection(IServer s) throws Exception  {
+		ServerDelegate sd = (ServerDelegate)s.loadAdapter(ServerDelegate.class, null);
+		int port = -1;
+		if( !(sd instanceof IManagementPortProvider))
+			port = IJBossToolingConstants.AS7_MANAGEMENT_PORT_DEFAULT_PORT;
+		else {
+			port = ((IManagementPortProvider)sd).getManagementPort();
+		}
 		try {
-			String url = "service:jmx:remoting-jmx://" + s.getHost() + ":9999";  // TODO externalize this? 
+			String url = "service:jmx:remoting-jmx://" + s.getHost() + ":" + port; 
 			Map<String, String[]> environment = new HashMap<String, String[]>();
 			JMXConnector connector = JMXConnectorFactory.connect(new JMXServiceURL(url), environment);
 			MBeanServerConnection connection = connector.getMBeanServerConnection();

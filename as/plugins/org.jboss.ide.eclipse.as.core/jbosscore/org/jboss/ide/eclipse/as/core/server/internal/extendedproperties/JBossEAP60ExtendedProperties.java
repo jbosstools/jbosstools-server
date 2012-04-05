@@ -15,16 +15,9 @@ import org.eclipse.core.runtime.IAdaptable;
 /**
  *
  */
-public class JBossAS710ExtendedProperties extends JBossAS7ExtendedProperties {
+public class JBossEAP60ExtendedProperties extends JBossAS710ExtendedProperties {
 
-	public JBossAS710ExtendedProperties(IAdaptable obj) {
+	public JBossEAP60ExtendedProperties(IAdaptable obj) {
 		super(obj);
-	}
-
-	public int getJMXProviderType() {
-		return JMX_OVER_AS_MANAGEMENT_PORT_PROVIDER;
-	}
-	public boolean runtimeSupportsBindingToAllInterfaces() {
-		return true;
 	}
 }

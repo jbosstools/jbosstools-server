@@ -12,16 +12,33 @@ package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
 import java.io.File;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.core.ExtensionManager.IServerJMXRunnable;
+import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
+import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver;
+import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossLT6ModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
@@ -56,7 +73,7 @@ public class JBossExtendedProperties extends ServerExtendedProperties {
 	}
 
 	public int getJMXProviderType() {
-		return JMX_AS_3_TO_6_PROVIDER;
+		return JMX_OVER_JNDI_PROVIDER;
 	}
 	
 	public boolean hasWelcomePage() {
@@ -100,6 +117,14 @@ public class JBossExtendedProperties extends ServerExtendedProperties {
 		if( !new File(jbossServer.getConfigDirectory()).exists()) 
 			return NLS.bind(Messages.JBossConfigurationFolderDoesNotExist, jbossServer.getConfigDirectory());
 		return null;
+	}
+
+	public boolean canVerifyRemoteModuleState() {
+		return true;
+	}
+	
+	public IServerModuleStateVerifier getModuleStateVerifier() {
+		return new JBossLT6ModuleStateVerifier();
 	}
 
 }

@@ -1202,6 +1202,16 @@
                type="org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties">
          </adapter>
       </factory>
+      <factory
+            adaptableType="org.eclipse.wst.server.core.IRuntime"
+            class="org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory">
+         <adapter
+               type="org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties">
+         </adapter>
+         <adapter
+               type="org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties">
+         </adapter>
+      </factory>
    </extension>
    
 </plugin>

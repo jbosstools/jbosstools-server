@@ -23,7 +23,7 @@ public class JBoss3To6ConnectionProvider extends AbstractJBossJMXConnectionProvi
 	public JBoss3To6ConnectionProvider() {
 		super();
 		repository = new JMXClassLoaderRepository();
-		JBossJMXConnectionProviderModel.getDefault().registerProvider(ServerExtendedProperties.JMX_AS_3_TO_6_PROVIDER, this);
+		JBossJMXConnectionProviderModel.getDefault().registerProvider(ServerExtendedProperties.JMX_OVER_JNDI_PROVIDER, this);
 	}
 	
 	public String getName(IConnectionWrapper wrapper) {
@@ -36,7 +36,7 @@ public class JBoss3To6ConnectionProvider extends AbstractJBossJMXConnectionProvi
 	protected boolean belongsHere(IServer server) {
 		JBossExtendedProperties props = ExtendedServerPropertiesAdapterFactory.getJBossExtendedProperties(server);
 		int type = props == null ? -1 : props.getJMXProviderType();
-		return type == JBossExtendedProperties.JMX_AS_3_TO_6_PROVIDER;
+		return type == JBossExtendedProperties.JMX_OVER_JNDI_PROVIDER;
 	}
 	
 	protected IConnectionWrapper createConnection(IServer server) {

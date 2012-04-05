@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
+import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 
 public class ServerExtendedProperties {
 	protected IServerAttributes server;
@@ -35,8 +36,15 @@ public class ServerExtendedProperties {
 	
 	public static final int JMX_NULL_PROVIDER = -1;
 	public static final int JMX_DEFAULT_PROVIDER = 0;
-	public static final int JMX_AS_3_TO_6_PROVIDER = 1;
-	public static final int JMX_AS_710_PROVIDER = 2;
+	public static final int JMX_OVER_JNDI_PROVIDER = 1;
+	
+	/**
+	 * Server types that have JMX_OVER_AS_MANAGEMENT_PORT as their jmx type
+	 * are expected to implement IManagementPortProvider, so the jmx
+	 * knows what port to check. Any servers that use JMX_OVER_AS_MANAGEMENT_PORT
+	 * but do not implement the interface will have a default port of 9999 used.
+	 */
+	public static final int JMX_OVER_AS_MANAGEMENT_PORT_PROVIDER = 2;
 	public int getJMXProviderType() {
 		return JMX_NULL_PROVIDER;
 	}
@@ -59,5 +67,13 @@ public class ServerExtendedProperties {
 	
 	public IStatus verifyServerStructure() {
 		return Status.OK_STATUS;
+	}
+	
+	public boolean canVerifyRemoteModuleState() {
+		return false;
+	}
+	
+	public IServerModuleStateVerifier getModuleStateVerifier() {
+		return null;
 	}
 }

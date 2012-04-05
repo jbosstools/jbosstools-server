@@ -23,7 +23,7 @@ public class JBoss71ConnectionProvider extends AbstractJBossJMXConnectionProvide
 	public JBoss71ConnectionProvider() {
 		super();
 		repository = new AS71JMXClassLoaderRepository();
-		JBossJMXConnectionProviderModel.getDefault().registerProvider(ServerExtendedProperties.JMX_AS_710_PROVIDER, this);
+		JBossJMXConnectionProviderModel.getDefault().registerProvider(ServerExtendedProperties.JMX_OVER_AS_MANAGEMENT_PORT_PROVIDER, this);
 	}
 
 	
@@ -37,7 +37,7 @@ public class JBoss71ConnectionProvider extends AbstractJBossJMXConnectionProvide
 	protected boolean belongsHere(IServer server) {
 		JBossExtendedProperties props = ExtendedServerPropertiesAdapterFactory.getJBossExtendedProperties(server);
 		int type = props == null ? -1 : props.getJMXProviderType();
-		return type == JBossExtendedProperties.JMX_AS_710_PROVIDER;
+		return type == JBossExtendedProperties.JMX_OVER_AS_MANAGEMENT_PORT_PROVIDER;
 	}
 	
 	protected IConnectionWrapper createConnection(IServer server) {

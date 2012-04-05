@@ -8,23 +8,11 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
-
-import org.eclipse.core.runtime.IAdaptable;
+package org.jboss.ide.eclipse.as.core.server;
 
 /**
- *
+ * An object that can provide an as7-style management port
  */
-public class JBossAS710ExtendedProperties extends JBossAS7ExtendedProperties {
-
-	public JBossAS710ExtendedProperties(IAdaptable obj) {
-		super(obj);
-	}
-
-	public int getJMXProviderType() {
-		return JMX_OVER_AS_MANAGEMENT_PORT_PROVIDER;
-	}
-	public boolean runtimeSupportsBindingToAllInterfaces() {
-		return true;
-	}
+public interface IManagementPortProvider {
+	public int getManagementPort();
 }

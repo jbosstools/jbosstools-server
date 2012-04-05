@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.debug.core.DebugEvent;
@@ -27,6 +28,7 @@ import org.eclipse.debug.core.IDebugEventSetListener;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.Trace;
@@ -35,8 +37,10 @@ import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
+import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
@@ -102,6 +106,22 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 	}
 	
 	@Override
+	public void stopModule(IModule[] module, IProgressMonitor monitor) throws CoreException  {
+		IDeployableServer ds = ServerConverter.getDeployableServer(getServer());
+		if( ds == null ) 
+			return;
+
+		IJBossServerPublishMethod method = createPublishMethod();
+		DeploymentMarkerUtils.removeDeployedMarkerIfExists(method, ds, module, monitor);
+		setModuleState(module, IServer.STATE_STOPPED );
+	}
+	
+	@Override
+	public void startModule(IModule[] module, IProgressMonitor monitor) throws CoreException {
+		restartModule(module, monitor);
+	}
+
+	@Override
 	public void restartModule(IModule[] module, IProgressMonitor monitor) throws CoreException {
 		IDeployableServer ds = ServerConverter.getDeployableServer(getServer());
 		if( ds == null ) 
@@ -109,7 +129,16 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 
 		IJBossServerPublishMethod method = createPublishMethod();
 		IPath depPath = PublishUtil.getDeployPath(method, module, ds);
-		createDoDeployMarker(method, new IPath[]{depPath}, monitor);
+		createDoDeployMarker(method, Arrays.asList(new IPath[]{depPath}), monitor);
+		setModuleState(module, IServer.STATE_STARTING);
+		ServerExtendedProperties props = (ServerExtendedProperties)getServer()
+				.loadAdapter(ServerExtendedProperties.class, new NullProgressMonitor());
+		if( props != null && props.canVerifyRemoteModuleState()) {
+			IServerModuleStateVerifier verifier = props.getModuleStateVerifier();
+			if( verifier != null ) {
+				verifier.waitModuleStarted(getServer(), module[module.length-1], 20000);
+			}
+		}
 	}
 
 	@Override
@@ -177,10 +206,7 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 		}
 		return (List<IPath>) o;
 	}
-	private void createDoDeployMarker(IJBossServerPublishMethod method, IPath[] paths, IProgressMonitor monitor) throws CoreException {
-		List<IPath> allPaths = Arrays.asList(paths);
-		createDoDeployMarker(method, allPaths, monitor);
-	}
+	
 	private void createDoDeployMarker(IJBossServerPublishMethod method, List<IPath> paths, IProgressMonitor monitor) throws CoreException {
 		if( method == null )
 			method = createPublishMethod();
