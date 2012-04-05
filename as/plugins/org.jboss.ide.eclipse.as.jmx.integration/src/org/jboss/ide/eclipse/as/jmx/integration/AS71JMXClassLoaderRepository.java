@@ -38,7 +38,7 @@ public class AS71JMXClassLoaderRepository extends JMXClassLoaderRepository {
 				.append(IJBossRuntimeResourceConstants.CLIENT);
 		String[] children = p2.toFile().list();
 		for( int i = 0; i < children.length; i++ ) {
-			if( children[i].endsWith(".jar") && children[i].startsWith("jboss-client-"))
+			if( children[i].endsWith(".jar") && children[i].startsWith("jboss-client"))
 				return p2.append(children[i]);
 		}
 		return null;
