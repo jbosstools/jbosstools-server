@@ -182,6 +182,7 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 			selectedVM = null;
 		configDirTextVal = configDirText.getText();
 		updateErrorMessage();
+		saveDetailsInRuntime();
 	}
 	protected String getWarningString() {
 		if( getHomeVersionWarning() != null )
@@ -258,19 +259,22 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	}
 
 	@Override
-	public void exit() {
+	protected void saveDetailsInRuntime() {
 		IRuntime r = (IRuntime) getTaskModel()
 				.getObject(TaskModel.TASK_RUNTIME);
 		IRuntimeWorkingCopy runtimeWC = r.isWorkingCopy() ? ((IRuntimeWorkingCopy) r)
 				: r.createWorkingCopy();
 
-		runtimeWC.setName(name);
-		runtimeWC.setLocation(new Path(homeDir));
+		if( name != null )
+			runtimeWC.setName(name);
+		if( homeDir != null )
+			runtimeWC.setLocation(new Path(homeDir));
 		LocalJBoss7ServerRuntime srt = (LocalJBoss7ServerRuntime) runtimeWC.loadAdapter(
 				LocalJBoss7ServerRuntime.class, new NullProgressMonitor());
-		srt.setVM(selectedVM);
-		srt.setConfigurationFile(configDirTextVal);
-
+		if( selectedVM != null )
+			srt.setVM(selectedVM);
+		if( configDirTextVal != null && !"".equals(configDirTextVal))
+			srt.setConfigurationFile(configDirTextVal);
 		getTaskModel().putObject(TaskModel.TASK_RUNTIME, runtimeWC);
 	}
 }

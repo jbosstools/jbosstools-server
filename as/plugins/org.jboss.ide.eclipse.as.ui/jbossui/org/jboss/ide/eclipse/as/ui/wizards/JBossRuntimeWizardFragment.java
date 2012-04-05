@@ -596,6 +596,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			selectedVM = null;
 		configDirTextVal = configDirText.getText();
 		updateErrorMessage();
+		saveDetailsInRuntime();
 	}
 
 	protected void updateErrorMessage() {
@@ -776,18 +777,27 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	}
 
 	public void exit() {
+		saveDetailsInRuntime();
+	}
+	
+	protected void saveDetailsInRuntime() {
 		IRuntime r = (IRuntime) getTaskModel()
 				.getObject(TaskModel.TASK_RUNTIME);
 		IRuntimeWorkingCopy runtimeWC = r.isWorkingCopy() ? ((IRuntimeWorkingCopy) r)
 				: r.createWorkingCopy();
 
-		runtimeWC.setName(name);
-		runtimeWC.setLocation(new Path(homeDir));
+		if( name != null )
+			runtimeWC.setName(name);
+		if( homeDir != null)
+			runtimeWC.setLocation(new Path(homeDir));
 		IJBossServerRuntime srt = (IJBossServerRuntime) runtimeWC.loadAdapter(
 				IJBossServerRuntime.class, new NullProgressMonitor());
-		srt.setVM(selectedVM);
-		srt.setJBossConfiguration(configurations.getSelectedConfiguration());
-		srt.setConfigLocation(configDirTextVal);
+		if( selectedVM != null )
+			srt.setVM(selectedVM);
+		if( configurations != null && configurations.getSelectedConfiguration() != null )
+			srt.setJBossConfiguration(configurations.getSelectedConfiguration());
+		if( configDirText != null )
+			srt.setConfigLocation(configDirTextVal);
 		getTaskModel().putObject(TaskModel.TASK_RUNTIME, runtimeWC);
 	}
 
