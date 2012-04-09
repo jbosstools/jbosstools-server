@@ -14,27 +14,32 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.bindings.TriggerSequence;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.keys.IBindingService;
 import org.eclipse.ui.navigator.CommonViewer;
 import org.eclipse.ui.navigator.ICommonActionExtensionSite;
 import org.eclipse.ui.navigator.ICommonViewerSite;
 import org.eclipse.ui.navigator.ICommonViewerWorkbenchSite;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.ui.internal.Messages;
+import org.eclipse.wst.server.ui.internal.cnf.ServerActionProvider;
 
 /**
  * @author André Dietisheim
  */
 public class CommonActionProviderUtils {
 	
-	private static final String SHOW_IN_QUICK_MENU_ID = "org.eclipse.ui.navigate.showInQuickMenu"; //$NON-NLS-1$
+	private static final String SHOW_IN_QUICK_MENU_ID = ServerActionProvider.SHOW_IN_MENU_ID;
 
 	public static ICommonViewerWorkbenchSite getCommonViewerWorkbenchSite(ICommonActionExtensionSite actionExtensionSite) {
 		ICommonViewerWorkbenchSite wsSite = null;
@@ -67,15 +72,32 @@ public class CommonActionProviderUtils {
 		return selection != null
 				&& selection.getFirstElement() instanceof IServer; 
 	}
-	
+
 	public static IContributionItem getShowInQuickMenu(IMenuManager menuManager) {
+		return getShowInQuickMenu(menuManager, false);
+	}
+
+	public static IContributionItem getShowInQuickMenu(IMenuManager menuManager, boolean createShowInMenu) {
 		IContributionItem item = null;
 		if (menuManager != null) {
 			item = menuManager.find(SHOW_IN_QUICK_MENU_ID);
+			if(item==null && createShowInMenu) {
+				String text = Messages.actionShowIn;
+				final IWorkbench workbench = PlatformUI.getWorkbench();
+				final IBindingService bindingService = (IBindingService) workbench
+						.getAdapter(IBindingService.class);
+				final TriggerSequence[] activeBindings = bindingService
+						.getActiveBindingsFor(SHOW_IN_QUICK_MENU_ID);
+				if (activeBindings.length > 0) {
+					text += "\t" + activeBindings[0].format();
+				}
+				item = new MenuManager(text, SHOW_IN_QUICK_MENU_ID);
+				menuManager.insertAfter(ServerActionProvider.TOP_SECTION_END_SEPARATOR, item);
+			}
 		}
 		return item;
 	}
-	
+
 	public static void addToShowInQuickSubMenu(IAction action, IMenuManager menu, ICommonActionExtensionSite actionSite) {
 		IStructuredSelection selection = CommonActionProviderUtils.getSelection(actionSite);
 		IContributionItem menuItem = CommonActionProviderUtils.getShowInQuickMenu(menu);

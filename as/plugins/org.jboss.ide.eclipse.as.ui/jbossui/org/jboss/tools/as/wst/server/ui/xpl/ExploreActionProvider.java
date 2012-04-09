@@ -15,7 +15,9 @@ import java.util.HashMap;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
@@ -27,13 +29,13 @@ import org.eclipse.ui.navigator.ICommonViewerSite;
 import org.eclipse.ui.navigator.ICommonViewerWorkbenchSite;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.ui.internal.cnf.ServerActionProvider;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.actions.ExploreUtils;
+import org.jboss.ide.eclipse.as.ui.views.server.extensions.CommonActionProviderUtils;
 public class ExploreActionProvider extends CommonActionProvider {
 	public static interface IExploreBehavior {
 		public boolean canExplore(IServer server, IModule[] module);
@@ -123,15 +125,24 @@ public class ExploreActionProvider extends CommonActionProvider {
 	}
 	
 	public void fillContextMenu(IMenuManager menu) {
-		String mode = getServer().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
-		IExploreBehavior beh = exploreBehaviorMap.get(mode);
-		if( beh == null || !beh.canExplore(getServer(), getModuleServer() == null ? null : getModuleServer().module))
-			return;
-		if( getModuleServer() != null )
-			menu.insertBefore(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR, exploreAction);
-		else if( getServer() != null )
-			menu.insertBefore(ServerActionProvider.SERVER_ETC_SECTION_END_SEPARATOR, exploreAction);
-		exploreAction.setEnabled(true);
+		IServer server = getServer();
+		if(server!=null) {
+			String mode = server.getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
+			IExploreBehavior beh = exploreBehaviorMap.get(mode);
+			if( beh == null || !beh.canExplore(getServer(), getModuleServer() == null ? null : getModuleServer().module))
+				return;
+			if( getModuleServer() != null || getServer() != null ) {
+				IContributionItem menuItem = CommonActionProviderUtils.getShowInQuickMenu(menu, true);
+				if (menuItem instanceof MenuManager) {
+					((MenuManager) menuItem).add(exploreAction);
+				}
+			}
+	//		if( getModuleServer() != null )
+	//			menu.insertBefore(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR, exploreAction);
+	//		else if( getServer() != null )
+	//			menu.insertBefore(ServerActionProvider.SERVER_ETC_SECTION_END_SEPARATOR, exploreAction);
+			exploreAction.setEnabled(true);
+		}
 	}
 	
 	public IServer getServer() {

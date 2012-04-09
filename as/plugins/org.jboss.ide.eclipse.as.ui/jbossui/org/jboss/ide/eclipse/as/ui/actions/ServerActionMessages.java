@@ -22,4 +22,6 @@ public class ServerActionMessages extends NLS {
 	public static String ChangeTimeStampActionDelegate_could_not_register_project;
 	public static String DeployActionMessageBoxTitle;
 	public static String DeployActionMessageBoxMsg;
+	public static String OpenWithBrowser;
+	public static String OpenWithBrowserDescription;
 }

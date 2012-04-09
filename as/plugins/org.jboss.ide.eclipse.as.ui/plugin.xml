@@ -398,9 +398,14 @@
           class="org.jboss.ide.eclipse.as.ui.views.server.extensions.ShowInWelcomePageActionProvider"
           id="org.jboss.ide.eclipse.as.ui.extensions.welcomePage">
        <enablement>
-          <instanceof
-                value="org.eclipse.wst.server.core.IServer">
-          </instanceof>
+             <or>
+                <instanceof
+                      value="org.eclipse.wst.server.core.IServer">
+                </instanceof>
+                <instanceof
+                      value="org.eclipse.wst.server.ui.internal.view.servers.ModuleServer">
+                </instanceof>
+             </or>
        </enablement>
     </actionProvider>
     <actionProvider
