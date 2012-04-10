@@ -209,10 +209,14 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	protected void fillConfigWidgets(IRuntime rt) {
 		IJBossServerRuntime jbsrt = getRuntime();
 		String dirText = jbsrt.getConfigLocation();
-		configDirText.setText(dirText == null ? IConstants.SERVER : dirText);
-		configurations.setConfiguration(jbsrt.getJBossConfiguration() == null 
+		configDirText.setText(isEmpty(dirText) ? IConstants.SERVER : dirText);
+		configurations.setConfiguration(isEmpty(jbsrt.getJBossConfiguration())
 				? IConstants.DEFAULT_CONFIGURATION : jbsrt.getJBossConfiguration());
 		configurations.getTable().setVisible(true);
+	}
+	
+	protected boolean isEmpty(String s) {
+		return s == null || s.length() == 0;
 	}
 	
 	protected void fillJREWidgets(IRuntime rt) {
