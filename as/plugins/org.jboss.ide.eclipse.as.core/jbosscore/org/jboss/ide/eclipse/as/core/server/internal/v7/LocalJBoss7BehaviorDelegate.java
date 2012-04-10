@@ -38,15 +38,22 @@ public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
 	public void stopImpl(boolean force) {
 		if (force || previousStopFailed) {
 			forceStop();
-			previousStopFailed = false;
 		} else {
 			setServerStopping();
 			IStatus result = gracefullStop();
 			if (!result.isOK()) {
 				previousStopFailed = true;
 				setServerStarted();
+			} else {
+				forceStop();
 			}
 		}
+	}
+	
+	@Override
+	protected synchronized void forceStop() {
+		super.forceStop();
+		previousStopFailed = false;
 	}
 
 	@Override
