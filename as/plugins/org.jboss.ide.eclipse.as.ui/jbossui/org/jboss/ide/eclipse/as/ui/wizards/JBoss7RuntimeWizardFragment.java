@@ -76,7 +76,7 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 		configDirLabel.setText("Configuration file: ");
 		configDirText = new Text(configComposite, SWT.BORDER);
 		
-		configBrowse = new Button(configComposite, SWT.DEFAULT);
+		configBrowse = new Button(configComposite, SWT.NONE);
 		configBrowse.setText(Messages.browse);
 		
 		// Organize them
