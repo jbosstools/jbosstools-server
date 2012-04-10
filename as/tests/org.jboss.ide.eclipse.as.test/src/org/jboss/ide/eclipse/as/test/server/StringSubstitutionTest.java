@@ -21,14 +21,14 @@ public class StringSubstitutionTest extends TestCase /* SimpleServerImplTest */ 
 		
 		String ret = new ConfigNameResolver().performSubstitutions("some/path", server.getName());
 		assertEquals("some/path", ret);
-		ret = new ConfigNameResolver().performSubstitutions("some/path/${jboss_as7_config_file}" , server.getName());
+		ret = new ConfigNameResolver().performSubstitutions("some/path/${jboss_config_file}" , server.getName());
 		assertEquals("some/path/standalone.xml", ret);
 
 		IRuntimeWorkingCopy rtwc = rt.createWorkingCopy();
 		LocalJBoss7ServerRuntime rtwc7 = (LocalJBoss7ServerRuntime)rtwc.loadAdapter(LocalJBoss7ServerRuntime.class, new NullProgressMonitor());
 		rtwc7.setConfigurationFile("someFile.xml");
 		rtwc.save(false, new NullProgressMonitor());
-		ret = new ConfigNameResolver().performSubstitutions("some/path/${jboss_as7_config_file}" , server.getName());
+		ret = new ConfigNameResolver().performSubstitutions("some/path/${jboss_config_file}" , server.getName());
 		assertEquals("some/path/someFile.xml", ret);
 	}
 	
