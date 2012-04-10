@@ -43,9 +43,6 @@ public class JBoss7ModuleStateVerifier implements IServerModuleStateVerifier {
 				} catch(InterruptedException ie) {
 					return;
 				}
-				synchronized(monitor) {
-					monitor.setCanceled(true);
-				}
 			}
 		};
 		t.start();
@@ -56,7 +53,7 @@ public class JBoss7ModuleStateVerifier implements IServerModuleStateVerifier {
 		// call is over, can notify the thread to go finish itself
 		synchronized(monitor) {
 			if( !monitor.isCanceled() )
-				t.notify();
+				t.interrupt();
 		}
 	}
 
