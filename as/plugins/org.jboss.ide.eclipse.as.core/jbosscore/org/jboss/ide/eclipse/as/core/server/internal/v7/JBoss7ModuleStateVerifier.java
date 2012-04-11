@@ -43,6 +43,9 @@ public class JBoss7ModuleStateVerifier implements IServerModuleStateVerifier {
 				} catch(InterruptedException ie) {
 					return;
 				}
+				synchronized(monitor) {
+					monitor.setCanceled(true);
+				}
 			}
 		};
 		t.start();

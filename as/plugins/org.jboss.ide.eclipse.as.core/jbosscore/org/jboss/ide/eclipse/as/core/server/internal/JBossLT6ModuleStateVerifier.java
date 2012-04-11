@@ -33,6 +33,9 @@ import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 
 public class JBossLT6ModuleStateVerifier implements IServerModuleStateVerifier {
+	public JBossLT6ModuleStateVerifier() {
+		// Nothing
+	}
 	public boolean isModuleStarted(final IServer server, final IModule module,
 			final IProgressMonitor monitor) {
 		final boolean[] result = new boolean[1];
@@ -75,7 +78,7 @@ public class JBossLT6ModuleStateVerifier implements IServerModuleStateVerifier {
 		// call is over, can notify the thread to go finish itself
 		synchronized(monitor) {
 			if( !monitor.isCanceled() )
-				t.notify();
+				t.interrupt();
 		}
 	}
 	public void waitModuleStarted(IServer server, IModule module,
@@ -119,33 +122,42 @@ public class JBossLT6ModuleStateVerifier implements IServerModuleStateVerifier {
 
 	protected boolean checkDeploymentStarted(final IServer server, final IModule module,
 			final MBeanServerConnection connection, IProgressMonitor monitor) throws Exception {
-		String typeId;
-		typeId = module.getModuleType().getId();
-		
+		String typeId = module.getModuleType().getId();
 		if( typeId.equals("wst.web") || typeId.equals("jst.web")) { //$NON-NLS-1$ //$NON-NLS-2$
-			String mbeanName = null;
-			IModule earParent = findEarParent(server, module);
-			String stateAttribute;
-			Object result;
-			if( earParent == null ) {
-				mbeanName = "jboss.web:J2EEApplication=none,J2EEServer=none,j2eeType=WebModule,name=//localhost/" + module.getName(); //$NON-NLS-1$
-				stateAttribute = "state"; //$NON-NLS-1$
-				result = getAttributeResult(connection, mbeanName, stateAttribute);
-				if(result == null || !(result instanceof Integer) || ((Integer)result).intValue() != 1 ) {
-					return false;
-				}
-			} else {
-				mbeanName = "jboss.deployment:id=\"jboss.web.deployment:war=/" + module.getName() + "\",type=Component";  //$NON-NLS-1$//$NON-NLS-2$
-				stateAttribute = "State"; //$NON-NLS-1$
-				result = getAttributeResult(connection, mbeanName, stateAttribute);
-				if( result == null || !result.toString().equals("DEPLOYED"))  //$NON-NLS-1$
-					return false;
-			}
+			return checkWebModuleStarted(server, module, connection);
 		}
 		return true;
 	}	
 	
-	private Object getAttributeResult(final MBeanServerConnection connection, String mbeanName, String stateAttribute) throws Exception {
+	protected boolean checkWebModuleStarted(IServer server, IModule module, MBeanServerConnection connection) throws Exception {
+		IModule earParent = findEarParent(server, module);
+		if( earParent == null ) {
+			return checkStandaloneWebModuleStarted(server, module, connection);
+		} else {
+			return checkNestedWebModuleStarted(server, module, connection);
+		}
+	}
+	
+	protected boolean checkNestedWebModuleStarted(IServer server, IModule module, MBeanServerConnection connection) throws Exception {
+		String mbeanName = "jboss.deployment:id=\"jboss.web.deployment:war=/" + module.getName() + "\",type=Component";  //$NON-NLS-1$//$NON-NLS-2$
+		String stateAttribute = "State"; //$NON-NLS-1$
+		Object result = getAttributeResult(connection, mbeanName, stateAttribute);
+		if( result == null || !result.toString().equals("DEPLOYED"))  //$NON-NLS-1$
+			return false;
+		return true;
+	}
+
+	protected boolean checkStandaloneWebModuleStarted(IServer server, IModule module, MBeanServerConnection connection) throws Exception {
+		String mbeanName = "jboss.web:J2EEApplication=none,J2EEServer=none,j2eeType=WebModule,name=//localhost/" + module.getName(); //$NON-NLS-1$
+		String stateAttribute = "state"; //$NON-NLS-1$
+		Object result = getAttributeResult(connection, mbeanName, stateAttribute);
+		if(result == null || !(result instanceof Integer) || ((Integer)result).intValue() != 1 ) {
+			return false;
+		}
+		return true;
+	}
+
+	protected Object getAttributeResult(final MBeanServerConnection connection, String mbeanName, String stateAttribute) throws Exception {
 		ObjectName on = new ObjectName(mbeanName);
 		try {
 			return connection.getAttribute(on, stateAttribute);
@@ -155,7 +167,7 @@ public class JBossLT6ModuleStateVerifier implements IServerModuleStateVerifier {
 	}
 	
 	/* TODO  Unify findEarParent with findRootModule */
-	private IModule findEarParent(IServer server, IModule module) {
+	protected IModule findEarParent(IServer server, IModule module) {
 		try {
 			IModule[] deployed = server.getModules();
 			ArrayList<IModule> deployedAsList = new ArrayList<IModule>();

@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossAS6ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossAS710ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossAS7ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossEAP60ExtendedProperties;
@@ -66,7 +67,7 @@ public class ExtendedServerPropertiesAdapterFactory implements IAdapterFactory, 
 			if( SERVER_AS_51.equals(typeId) || AS_51.equals(typeId))
 				return new JBossExtendedProperties(adaptable);
 			if( SERVER_AS_60.equals(typeId) || AS_60.equals(typeId))
-				return new JBossExtendedProperties(adaptable);
+				return new JBossAS6ExtendedProperties(adaptable);
 			if( SERVER_EAP_43.equals(typeId) || EAP_43.equals(typeId))
 				return new JBossExtendedProperties(adaptable);
 			if( SERVER_EAP_50.equals(typeId) || EAP_50.equals(typeId))
