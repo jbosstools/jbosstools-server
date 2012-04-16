@@ -27,6 +27,7 @@ import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.IConnectionProviderListener;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.MBeanFeatureInfoWrapper;
+import org.jboss.tools.jmx.core.tree.ErrorRoot;
 import org.jboss.tools.jmx.core.tree.Node;
 import org.jboss.tools.jmx.core.tree.ObjectNameNode;
 import org.jboss.tools.jmx.core.tree.Root;
@@ -85,6 +86,9 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
         if (parent instanceof ObjectNameNode) {
             ObjectNameNode node = (ObjectNameNode) parent;
             return node.getMbeanInfoWrapper().getMBeanFeatureInfos();
+        }
+        if( parent instanceof ErrorRoot ) {
+        	return new Object[0];
         }
         if (parent instanceof Node) {
             Node node = (Node) parent;

@@ -87,6 +87,7 @@ public class Messages extends NLS {
 	public static String TypeInAFilter;
 	public static String LoadingJMXNodes;
 	public static String Loading;
+	public static String ErrorLoading;
 	public static String UpdatingSelectionJob;
 
 	public static String JMXUIImageDescriptorNotFound;

@@ -47,16 +47,12 @@ public class JBoss71ServerConnection extends JBossServerConnection {
 		else {
 			port = ((IManagementPortProvider)sd).getManagementPort();
 		}
-		try {
-			String url = "service:jmx:remoting-jmx://" + s.getHost() + ":" + port; 
-			Map<String, String[]> environment = new HashMap<String, String[]>();
-			JMXConnector connector = JMXConnectorFactory.connect(new JMXServiceURL(url), environment);
-			MBeanServerConnection connection = connector.getMBeanServerConnection();
-			return connection;
-		} catch(Exception e ) {
-			e.printStackTrace();
-			return null;
-		}
+		
+		String url = "service:jmx:remoting-jmx://" + s.getHost() + ":" + port; 
+		Map<String, String[]> environment = new HashMap<String, String[]>();
+		JMXConnector connector = JMXConnectorFactory.connect(new JMXServiceURL(url), environment);
+		MBeanServerConnection connection = connector.getMBeanServerConnection();
+		return connection;
 	}
 
 }

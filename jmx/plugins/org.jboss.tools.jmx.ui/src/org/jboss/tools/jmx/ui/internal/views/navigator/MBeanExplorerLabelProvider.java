@@ -26,6 +26,7 @@ import org.jboss.tools.jmx.core.MBeanAttributeInfoWrapper;
 import org.jboss.tools.jmx.core.MBeanInfoWrapper;
 import org.jboss.tools.jmx.core.MBeanOperationInfoWrapper;
 import org.jboss.tools.jmx.core.tree.DomainNode;
+import org.jboss.tools.jmx.core.tree.ErrorRoot;
 import org.jboss.tools.jmx.core.tree.ObjectNameNode;
 import org.jboss.tools.jmx.core.tree.PropertyNode;
 import org.jboss.tools.jmx.ui.Messages;
@@ -75,6 +76,9 @@ public class MBeanExplorerLabelProvider extends LabelProvider {
 		if( obj instanceof DelayProxy ) {
 			return Messages.Loading;
 		}
+        if( obj instanceof ErrorRoot ) {
+        	return Messages.ErrorLoading;
+        }
 		
 		if (obj instanceof DomainNode) {
 			DomainNode node = (DomainNode) obj;
@@ -122,7 +126,10 @@ public class MBeanExplorerLabelProvider extends LabelProvider {
 		if( obj instanceof DelayProxy ) {
 			return null;
 		}
-		
+        if( obj instanceof ErrorRoot ) {
+        	return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
+        }
+
 		if (obj instanceof DomainNode) {
 			return JMXImages.get(JMXImages.IMG_OBJS_LIBRARY);
 		}
