@@ -198,18 +198,6 @@
       <!-- NEW_SERVER_ADAPTER  Add the server editor sections for a new server above this line -->
    </extension>
 
-
-
-
-
-   <extension
-         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
-      <launchConfigurationTypeImage
-            configTypeID="org.jboss.ide.eclipse.as.core.server.launchConfiguration"
-            icon="$nl$/icons/jboss.png"
-            id="org.jboss.ide.eclipse.as.ui.launchConfigurationImage1"/>
-   </extension>
-
    <extension
          point="org.eclipse.help.contexts">
       <contexts 
@@ -497,6 +485,14 @@
              icon="$nl$/icons/jboss.png"
              id="org.jboss.ide.eclipse.as.ui.launchConfigurationTypeImage1">
        </launchConfigurationTypeImage>
+       <launchConfigurationTypeImage
+            configTypeID="org.jboss.ide.eclipse.as.core.deployOnlyLaunchConfig"
+            icon="$nl$/icons/jboss.png"
+            id="org.jboss.ide.eclipse.as.ui.launchConfigurationImage1"/>
+      <launchConfigurationTypeImage
+            configTypeID="org.jboss.ide.eclipse.as.core.server.JBoss7StartupConfiguration"
+            icon="$nl$/icons/jboss.png"
+            id="org.jboss.ide.eclipse.as.ui.launchConfigurationImage2"/>
     </extension>
    <extension
          point="org.eclipse.wst.server.core.runtimeLocators">
