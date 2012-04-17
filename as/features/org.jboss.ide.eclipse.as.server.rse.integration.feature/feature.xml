@@ -23,49 +23,58 @@ source code, or contact Red Hat Legal Affairs, 1801 Varsity Drive,
 Raleigh NC 27606 USA.
    </license>
 
-   <requires>
-      <import plugin="org.eclipse.core.runtime" version="3.7.0" match="greaterOrEqual"/>
-      <import plugin="org.jboss.ide.eclipse.as.wtp.core" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.wst.server.core" version="1.1.302" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.wst.common.project.facet.core" version="1.4.200" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.core.resources" version="3.7.100" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.wst.common.modulecore" version="1.2.100" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.wst.common.emfworkbench.integration" version="1.2.100" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.jem.util" version="2.1.2" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.debug.core" version="3.7.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.jdt.launching" version="3.6.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ui" version="3.7.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.wst.server.ui" version="1.1.305" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.debug.ui" version="3.7.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.rse.core" version="3.1.200" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.rse.subsystems.files.core" version="3.2.100" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.rse.services" version="3.2.100" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.rse.services.files.ftp" version="3.0.300" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.rse.services.local" version="2.1.300" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.rse.services.ssh" version="3.1.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.rse.subsystems.shells.core" version="3.1.200" match="greaterOrEqual"/>
-      <import plugin="org.jboss.ide.eclipse.as.core"/>
-      <import plugin="org.jboss.ide.eclipse.archives.webtools"/>
-      <import plugin="org.eclipse.tm.terminal" version="3.1.0" match="greaterOrEqual"/>
-      <import plugin="org.jboss.ide.eclipse.as.ui"/>
-      <import plugin="org.eclipse.rse.files.ui" version="3.2.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.rse.ui" version="3.2.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.rse.subsystems.shells.local" version="2.1.300" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.rse.subsystems.shells.ssh" version="2.1.300" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.rse.subsystems.shells.telnet" version="1.2.200" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.rse.connectorservice.local"/>
-      <import plugin="org.eclipse.rse.connectorservice.ssh"/>
-      <import plugin="org.eclipse.rse.processes.ui"/>
-      <import plugin="org.eclipse.rse.shells.ui"/>
-      <import plugin="org.eclipse.rse.subsystems.files.local"/>
-      <import plugin="org.eclipse.rse.subsystems.files.ssh"/>
-      <import plugin="org.eclipse.rse.subsystems.processes.core"/>
-      <import plugin="org.eclipse.rse.subsystems.processes.local"/>
-      <import plugin="org.eclipse.rse.subsystems.processes.shell.linux"/>
-      <import plugin="org.eclipse.rse.subsystems.terminals.core"/>
-      <import plugin="org.eclipse.rse.subsystems.terminals.ssh"/>
-      <import plugin="org.eclipse.rse.terminals.ui"/>
-   </requires>
+	<requires>
+		<import plugin="org.eclipse.core.runtime" version="3.7.0" match="greaterOrEqual" />
+		<import plugin="org.jboss.ide.eclipse.as.wtp.core" version="1.0.0" match="greaterOrEqual" />
+		<import plugin="org.eclipse.wst.server.core" version="1.1.302" match="greaterOrEqual" />
+		<import plugin="org.eclipse.wst.common.project.facet.core" version="1.4.200" match="greaterOrEqual" />
+		<import plugin="org.eclipse.core.resources" version="3.7.100" match="greaterOrEqual" />
+		<import plugin="org.eclipse.wst.common.modulecore" version="1.2.100" match="greaterOrEqual" />
+		<import plugin="org.eclipse.wst.common.emfworkbench.integration" version="1.2.100" match="greaterOrEqual" />
+		<import plugin="org.eclipse.jem.util" version="2.1.2" match="greaterOrEqual" />
+		<import plugin="org.eclipse.debug.core" version="3.7.0" match="greaterOrEqual" />
+		<import plugin="org.eclipse.jdt.launching" version="3.6.0" match="greaterOrEqual" />
+		<import plugin="org.eclipse.ui" version="3.7.0" match="greaterOrEqual" />
+		<import plugin="org.eclipse.wst.server.ui" version="1.1.305" match="greaterOrEqual" />
+		<import plugin="org.eclipse.debug.ui" version="3.7.0" match="greaterOrEqual" />
+		<import plugin="org.eclipse.rse.core" version="3.1.200" match="greaterOrEqual" />
+		<import plugin="org.eclipse.rse.subsystems.files.core" version="3.2.100" match="greaterOrEqual" />
+		<import plugin="org.eclipse.rse.services" version="3.2.100" match="greaterOrEqual" />
+		<import plugin="org.eclipse.rse.services.files.ftp" version="3.0.300" match="greaterOrEqual" />
+		<import plugin="org.eclipse.rse.services.local" version="2.1.300" match="greaterOrEqual" />
+		<import plugin="org.eclipse.rse.services.ssh" version="3.1.0" match="greaterOrEqual" />
+		<import plugin="org.eclipse.rse.subsystems.shells.core" version="3.1.200" match="greaterOrEqual" />
+		<import plugin="org.jboss.ide.eclipse.as.core" />
+		<import plugin="org.jboss.ide.eclipse.archives.webtools" />
+		<import plugin="org.eclipse.tm.terminal" version="3.1.0" match="greaterOrEqual" />
+		<import plugin="org.jboss.ide.eclipse.as.ui" />
+		<import plugin="org.eclipse.rse.files.ui" version="3.2.0" match="greaterOrEqual" />
+		<import plugin="org.eclipse.rse.ui" version="3.2.0" match="greaterOrEqual" />
+		<import plugin="org.eclipse.rse.subsystems.shells.local" version="2.1.300" match="greaterOrEqual" />
+		<import plugin="org.eclipse.rse.subsystems.shells.ssh" version="2.1.300" match="greaterOrEqual" />
+		<import plugin="org.eclipse.rse.subsystems.shells.telnet" version="1.2.200" match="greaterOrEqual" />
+		
+		<!-- 
+		   The following plugins are required for completeness and usability of product only. 
+		   We have no compilation requirements against them, nor any critical outstanding bugs
+		   that require a specific version or API. Functionality this forces to be included
+		   are things such as terminal support, process support, shell support, 
+		   the sending and receiving of remote commands, the sending and receiving of remote files, 
+		   and support for the connector service.  
+		-->
+		<import plugin="org.eclipse.rse.connectorservice.local"/>
+		<import plugin="org.eclipse.rse.connectorservice.ssh"/>
+		<import plugin="org.eclipse.rse.processes.ui"/>
+		<import plugin="org.eclipse.rse.shells.ui"/>
+		<import plugin="org.eclipse.rse.subsystems.files.local"/>
+		<import plugin="org.eclipse.rse.subsystems.files.ssh"/>
+		<import plugin="org.eclipse.rse.subsystems.processes.core"/>
+		<import plugin="org.eclipse.rse.subsystems.processes.local"/>
+		<import plugin="org.eclipse.rse.subsystems.processes.shell.linux"/>
+		<import plugin="org.eclipse.rse.subsystems.terminals.core"/>
+		<import plugin="org.eclipse.rse.subsystems.terminals.ssh"/>
+		<import plugin="org.eclipse.rse.terminals.ui"/>
+	</requires>
 
    <plugin
          id="org.jboss.ide.eclipse.as.rse.core"
