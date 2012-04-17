@@ -3,7 +3,8 @@
       id="org.jboss.ide.eclipse.as.jmx.integration.feature"
       label="%featureName"
       version="2.3.0.qualifier"
-      provider-name="%providerName">
+      provider-name="%providerName"
+      plugin="org.jboss.ide.eclipse.as.jmx.integration">
 
    <description url="http://www.jboss.org/tools">
       %description
