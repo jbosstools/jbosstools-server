@@ -3,8 +3,7 @@
       id="org.jboss.ide.eclipse.as.archives.integration.feature"
       label="%featureName"
       version="2.3.0.qualifier"
-      provider-name="%providerName"
-      plugin="org.jboss.ide.eclipse.as.ui">
+      provider-name="%providerName">
 
    <description url="http://www.jboss.org/tools">
       %description
@@ -23,6 +22,10 @@ source licenses. For precise licensing details, consult the corresponding
 source code, or contact Red Hat Legal Affairs, 1801 Varsity Drive,
 Raleigh NC 27606 USA.
    </license>
+
+   <includes
+         id="org.jboss.ide.eclipse.as.serverAdapter.wtp.feature"
+         version="0.0.0"/>
 
    <requires>
       <import plugin="org.eclipse.ui" version="3.7.0" match="greaterOrEqual"/>
@@ -53,7 +56,6 @@ Raleigh NC 27606 USA.
       <import feature="org.jboss.ide.eclipse.archives.feature"/>
    </requires>
 
-   <includes id="org.jboss.ide.eclipse.as.serverAdapter.wtp.feature" version="0.0.0" />
    <plugin
          id="org.jboss.ide.eclipse.archives.webtools"
          download-size="0"
