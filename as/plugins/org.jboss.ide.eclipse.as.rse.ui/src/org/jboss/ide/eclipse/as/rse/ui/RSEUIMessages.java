@@ -4,6 +4,7 @@ import org.eclipse.osgi.util.NLS;
 
 public class RSEUIMessages {
 	private static final String BUNDLE_NAME = "org.jboss.ide.eclipse.as.rse.ui.RSEUIMessages"; //$NON-NLS-1$
+	public static String BROWSE;
 	public static String UNSET_REMOTE_SERVER_HOME;
 	public static String REMOTE_SERVER_CONFIG;
 	public static String TEST;
@@ -22,10 +23,15 @@ public class RSEUIMessages {
 	public static String CHANGE_HOSTNAME;
 	public static String CHANGE_REMOTE_SERVER_HOME;
 	public static String CHANGE_REMOTE_SERVER_CONFIG;
+	public static String CHANGE_REMOTE_CONFIG_FILE;
 	public static String RSE_REMOTE_LAUNCH;
 	public static String RSE_START_COMMAND;
 	public static String RSE_STOP_COMMAND;
 	public static String RSE_AUTOMATICALLY_CALCULATE;
+
+	public static String REMOTE_CONFIG_FILE_LABEL; 
+	public static String REMOTE_SERVER_HOME_LABEL; 
+
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, RSEUIMessages.class);

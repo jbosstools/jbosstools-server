@@ -28,8 +28,11 @@ import org.eclipse.rse.core.events.ISystemModelChangeEvent;
 import org.eclipse.rse.core.events.ISystemModelChangeListener;
 import org.eclipse.rse.core.model.IHost;
 import org.eclipse.rse.files.ui.dialogs.SystemRemoteFileDialog;
+import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
 import org.eclipse.rse.services.files.IHostFile;
+import org.eclipse.rse.subsystems.files.core.model.RemoteFileUtility;
 import org.eclipse.rse.subsystems.files.core.subsystems.IRemoteFile;
+import org.eclipse.rse.subsystems.files.core.subsystems.IRemoteFileSubSystem;
 import org.eclipse.rse.ui.wizards.newconnection.RSEMainNewConnectionWizard;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -64,7 +67,6 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
@@ -442,13 +444,25 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 	}
 
 	public static String browseClicked4(Shell s, IHost host) {
+		return browseClicked4(s,host,null);
+	}
+
+	public static String browseClicked4(Shell s, IHost host, String path) {
 		SystemRemoteFileDialog d = new SystemRemoteFileDialog(
 				s, RSEUIMessages.BROWSE_REMOTE_SYSTEM, host);
+		try {
+			IRemoteFileSubSystem ss  =	RemoteFileUtility.getFileSubSystem(host);
+			IRemoteFile rootFolder = ss.getRemoteFileObject(path, new NullProgressMonitor());
+			d.setPreSelection(rootFolder);
+		} catch(SystemMessageException sme) {
+			// Ignore
+		}
+		
 		if( d.open() == Dialog.OK) {
 			Object o = d.getOutputObject();
 			if( o instanceof IRemoteFile ) {
-				String path = ((IRemoteFile)o).getAbsolutePath();
-				return path;
+				String path2 = ((IRemoteFile)o).getAbsolutePath();
+				return path2;
 			}
 		}
 		return null;
