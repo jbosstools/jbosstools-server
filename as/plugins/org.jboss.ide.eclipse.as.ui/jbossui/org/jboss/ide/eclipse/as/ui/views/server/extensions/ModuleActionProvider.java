@@ -131,7 +131,17 @@ public class ModuleActionProvider extends CommonActionProvider {
 					s.setModulePublishState((IModule[])allChildren.get(j), type);
 				}
 			}
-			s.publish(IServer.PUBLISH_INCREMENTAL, null, getUserInitiatedAdaptable(), null);
+			final IServer s2 = s;
+			new Thread() {
+				public void run() {
+					try {
+						Thread.sleep(1000);
+					} catch(InterruptedException ie) {
+						// Ignore
+					}
+					s2.publish(IServer.PUBLISH_INCREMENTAL, null, getUserInitiatedAdaptable(), null);
+				}
+			}.start();
 		}
 	}
 
