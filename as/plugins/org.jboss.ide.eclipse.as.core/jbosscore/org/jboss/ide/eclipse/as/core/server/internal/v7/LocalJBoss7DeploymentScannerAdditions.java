@@ -24,16 +24,13 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerEvent;
-import org.jboss.dmr.ModelNode;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
-import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
-import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
-import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
 
 public class LocalJBoss7DeploymentScannerAdditions extends UnitedServerListener {
 	protected boolean accepts(IServer server) {
@@ -57,6 +54,7 @@ public class LocalJBoss7DeploymentScannerAdditions extends UnitedServerListener 
 	 * @param folders
 	 */
 	protected void ensureScannersAdded(final IServer server, final String[] folders) {
+		Trace.trace(Trace.STRING_FINER, "Adding AS7 Deployment Scanners"); //$NON-NLS-1$
 		ArrayList<String> asList = new ArrayList<String>();
 		asList.addAll(Arrays.asList(folders));
 		ArrayList<String> added = new ArrayList<String>(); // list of the paths
@@ -75,17 +73,19 @@ public class LocalJBoss7DeploymentScannerAdditions extends UnitedServerListener 
 				JBossServerCorePlugin.log(failStat);
 			}
 		}
-		 
-		Iterator<Object> i2 = props.keySet().iterator();
+		
+		// Properties file of format like:  JBossToolsScanner4=/some/folder
+		Iterator<Object> lastStartup = props.keySet().iterator();
 		String k = null;
 		String v = null;
-		while(i2.hasNext()) {
-			k = (String)i2.next();
+		while(lastStartup.hasNext()) {
+			k = (String)lastStartup.next();
 			v = (String)props.get(k);
 			if( !asList.contains(v)) 
 				removed.add(k);
 			else {
 				added.remove(v);
+				Trace.trace(Trace.STRING_FINEST, "Unchanged Deployment Scanner " + k + ":" + v); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 
@@ -100,6 +100,7 @@ public class LocalJBoss7DeploymentScannerAdditions extends UnitedServerListener 
 			if( s.isOK()) {
 				props.remove(scannerName);
 			}
+			Trace.trace(Trace.STRING_FINER, "Removed Deployment Scanner: success="+s.isOK() + ", " + scannerName + ":" + props.get(scannerName)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		 
 		// Do the adds
@@ -113,8 +114,9 @@ public class LocalJBoss7DeploymentScannerAdditions extends UnitedServerListener 
 			if( s.isOK()){
 				props.put(newScannerName, path);
 			}
+			Trace.trace(Trace.STRING_FINER, "Added Deployment Scanner: success="+s.isOK() + ", " + scannerName + ":" + props.get(scannerName)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
-		 
+		
 		 // Write the file out
 		if( added.size() != 0 || removed.size() != 0 ) {
 			try {
@@ -125,6 +127,7 @@ public class LocalJBoss7DeploymentScannerAdditions extends UnitedServerListener 
 				JBossServerCorePlugin.log(failStat);
 			}
 		}
+		Trace.trace(Trace.STRING_FINER, "Finished Adding AS7 Deployment Scanners"); //$NON-NLS-1$
 	}
 	
 	private static final String SCANNER_PREFIX = "JBossToolsScanner"; //$NON-NLS-1$

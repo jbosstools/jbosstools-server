@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerEvent;
 import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
@@ -48,8 +49,10 @@ public class JMXServerLifecycleListener extends LocalJBoss7DeploymentScannerAddi
 
 	protected void modifyDeploymentScanners(ServerEvent event){
 		String[] folders = getDeployLocationFolders(event.getServer());
+		Trace.trace(Trace.STRING_FINER, "Adding " + folders.length + " Deployment Scanners via JMX"); //$NON-NLS-1$
 		if( folders.length > 0 ) 
 			ensureScannersAdded(event.getServer(), folders);
+		Trace.trace(Trace.STRING_FINER, "Finished Adding Deployment Scanners via JMX"); //$NON-NLS-1$
 	}
 
 	protected void ensureScannersAdded(final IServer server, final String[] folders) {
@@ -72,6 +75,7 @@ public class JMXServerLifecycleListener extends LocalJBoss7DeploymentScannerAddi
 			MBeanServerConnection connection, String[] folders2) throws Exception {
 		for( int i = 0; i < folders2.length; i++ ) {
 			String asURL = encode(folders2[i]);
+			Trace.trace(Trace.STRING_FINER, "Adding Deployment Scanner: " + asURL);
 			ObjectName name = new ObjectName(IJBossRuntimeConstants.DEPLOYMENT_SCANNER_MBEAN_NAME);
 			connection.invoke(name, IJBossRuntimeConstants.addURL, new Object[] { asURL }, new String[] {String.class.getName()});
 		}
