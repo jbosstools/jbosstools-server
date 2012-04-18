@@ -191,26 +191,7 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 	protected void checkState() {
 		IDeployableServer jbs = ServerConverter.getDeployableServer(server);
 		if( server.getServerState() == IServer.STATE_STARTED && jbs != null && jbs.hasJMXProvider()) {
-			try {
-				run(new IJMXRunnable() {
-					public void run(MBeanServerConnection connection)
-							throws Exception {
-						// Do nothing, just see if the connection worked
-					} 
-				}, true);
-				if( !isConnected ) {
-					isConnected = true;
-					((AbstractJBossJMXConnectionProvider)getProvider()).fireChanged(JBossServerConnection.this);
-				}
-			} catch( Exception jmxe ) {
-				IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error connecting to jmx for server "+server.getName(), jmxe);
-				ServerLogger.getDefault().log(server, status);	
-				// I thought i was connected but I'm not. 
-				if( isConnected ) {
-					isConnected = false;
-					((AbstractJBossJMXConnectionProvider)getProvider()).fireChanged(JBossServerConnection.this);
-				}
-			}
+			connectToStartedServer();
 		} else {
 			root = null;
 			if( isConnected ) {
@@ -221,6 +202,28 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 		}
 	}
 
+	protected void connectToStartedServer() {
+		try {
+			run(new IJMXRunnable() {
+				public void run(MBeanServerConnection connection)
+						throws Exception {
+					// Do nothing, just see if the connection worked
+				} 
+			}, true);
+			if( !isConnected ) {
+				isConnected = true;
+				((AbstractJBossJMXConnectionProvider)getProvider()).fireChanged(JBossServerConnection.this);
+			}
+		} catch( Exception jmxe ) {
+			IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error connecting to jmx for server "+server.getName(), jmxe);
+			ServerLogger.getDefault().log(server, status);	
+			// I thought i was connected but I'm not. 
+			if( isConnected ) {
+				isConnected = false;
+				((AbstractJBossJMXConnectionProvider)getProvider()).fireChanged(JBossServerConnection.this);
+			}
+		}
+	}
 	
 	
 	/* *************

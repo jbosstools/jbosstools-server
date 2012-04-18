@@ -88,6 +88,9 @@ public class JBoss7ManagerServiceProxy extends ServiceTracker<IJBoss7ManagerServ
 	}
 
 	public void dispose() {
+		IJBoss7ManagerService service = getService();
+		if( service != null )
+			service.dispose();
 		close();
 	}
 

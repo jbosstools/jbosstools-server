@@ -10,6 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.jmx.integration;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,14 +32,17 @@ public class JBoss71ServerConnection extends JBossServerConnection {
 		super(server);
 	}
 
-	protected void initializeEnvironment(IServer s, String user, String pass) throws CredentialException {
-		// Do nothing
-	}
-	
 	public IConnectionProvider getProvider() {
 		return ExtensionManager.getProvider(JBoss71ConnectionProvider.PROVIDER_ID);
 	}
 
+	private String user;
+	private String pass;
+	protected void initializeEnvironment(IServer s, String user, String pass) throws CredentialException {
+		this.user = user;
+		this.pass = pass;
+	}
+	
 	protected MBeanServerConnection createConnection(IServer s) throws Exception  {
 		ServerDelegate sd = (ServerDelegate)s.loadAdapter(ServerDelegate.class, null);
 		int port = -1;
@@ -50,9 +54,20 @@ public class JBoss71ServerConnection extends JBossServerConnection {
 		
 		String url = "service:jmx:remoting-jmx://" + s.getHost() + ":" + port; 
 		Map<String, String[]> environment = new HashMap<String, String[]>();
-		JMXConnector connector = JMXConnectorFactory.connect(new JMXServiceURL(url), environment);
-		MBeanServerConnection connection = connector.getMBeanServerConnection();
-		return connection;
+        environment.put(JMXConnector.CREDENTIALS, new String[]{user,pass});
+        
+		JMXConnector connector = null;
+		try {
+			connector = JMXConnectorFactory.connect(new JMXServiceURL(url), environment);
+			MBeanServerConnection connection = connector.getMBeanServerConnection();
+			return connection;
+		} catch(IOException ioe) {
+			if( connector != null ) {
+				try {
+					connector.close();
+				} catch(Exception e) { /* Ignore */ }
+			}
+			return null;
+		}
 	}
-
 }
