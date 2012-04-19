@@ -21,12 +21,11 @@ public class RSELaunchConfigurator implements ILaunchConfigConfigurator {
 
 	private String defaultLaunchCommand;
 	private String defaultStopCommand;
-	private String rseHome;
+	private String rseHome; // TODO delete this line
 
 	public RSELaunchConfigurator(String defaultLaunchCommand, String defaultStopCommand) throws CoreException {
 		this.defaultLaunchCommand = defaultLaunchCommand;
 		this.defaultStopCommand = defaultStopCommand;
-		this.rseHome = rseHome;
 	}
 
 	@Override
@@ -43,7 +42,7 @@ public class RSELaunchConfigurator implements ILaunchConfigConfigurator {
 
 		boolean detectShutdownCommand = RSELaunchConfigProperties.isDetectShutdownCommand(launchConfig, true);
 		String currentStopCmd = RSELaunchConfigProperties.getShutdownCommand(launchConfig);
-		if( detectShutdownCommand || isSet(currentStopCmd)) {
+		if( detectShutdownCommand || !isSet(currentStopCmd)) {
 			RSELaunchConfigProperties.setShutdownCommand(defaultStopCommand, launchConfig);
 		}
 	}
