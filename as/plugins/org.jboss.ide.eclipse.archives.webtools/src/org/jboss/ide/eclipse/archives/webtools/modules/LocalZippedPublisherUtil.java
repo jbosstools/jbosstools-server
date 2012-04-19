@@ -269,6 +269,9 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 
 	private void publishChildren(IServer server, String deployRoot, IModule[] module, ArrayList<IStatus> results,
 			IModule[] children) {
+		if( children == null )
+			return;
+		
 		for( int i = 0; i < children.length; i++ ) {
 			if( ServerModelUtilities.isBinaryModule(children[i]))
 				results.addAll(Arrays.asList(fullBinaryPublish(server, deployRoot, module, children[i])));
