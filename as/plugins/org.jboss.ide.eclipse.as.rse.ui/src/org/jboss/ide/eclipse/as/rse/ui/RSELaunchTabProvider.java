@@ -20,6 +20,8 @@ import org.eclipse.debug.internal.ui.SWTFactory;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -53,7 +55,6 @@ public class RSELaunchTabProvider implements IJBossLaunchTabProvider {
 		
 		public void createControl(Composite parent) {
 			createUI(parent);
-			addListeners();
 		}
 		
 		public void createUI(Composite parent) {
@@ -68,7 +69,7 @@ public class RSELaunchTabProvider implements IJBossLaunchTabProvider {
 			autoStartArgs.setText(RSEUIMessages.RSE_AUTOMATICALLY_CALCULATE);
 			startText = new Text(startGroup, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
 			GridData gd = new GridData(GridData.FILL_BOTH);
-			gd.heightHint = 75;
+			gd.heightHint = 120;
 			gd.widthHint = 100;
 			startText.setLayoutData(gd);
 
@@ -102,6 +103,7 @@ public class RSELaunchTabProvider implements IJBossLaunchTabProvider {
 							RSEUIPlugin.getLog().log(new Status(IStatus.ERROR, RSEUIPlugin.PLUGIN_ID, "Error loading details from launch configuration", ce));
 						}
 					}
+					persistInWorkingCopy(((ILaunchConfigurationWorkingCopy)initialConfig), true);
 				}
 				public void widgetDefaultSelected(SelectionEvent e) {
 				}});
@@ -120,9 +122,17 @@ public class RSELaunchTabProvider implements IJBossLaunchTabProvider {
 							RSEUIPlugin.getLog().log(new Status(IStatus.ERROR, RSEUIPlugin.PLUGIN_ID, "Error loading details from launch configuration", ce));
 						}
 					}
+					persistInWorkingCopy(((ILaunchConfigurationWorkingCopy)initialConfig), true);
 				}
 				public void widgetDefaultSelected(SelectionEvent e) {
 				}});
+			
+			ModifyListener textListener = new ModifyListener(){
+				public void modifyText(ModifyEvent e) {
+					persistInWorkingCopy(((ILaunchConfigurationWorkingCopy)initialConfig), true);
+				}};
+			startText.addModifyListener(textListener);
+			stopText.addModifyListener(textListener);
 		}
 
 		public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
@@ -151,12 +161,19 @@ public class RSELaunchTabProvider implements IJBossLaunchTabProvider {
 				// in which case it's a big eclipse issue
 				RSEUIPlugin.getLog().log(new Status(IStatus.ERROR, RSEUIPlugin.PLUGIN_ID, "Error loading details from launch configuration", ce));
 			}
+			addListeners();
 		}
 		public void performApply(ILaunchConfigurationWorkingCopy configuration) {
+			persistInWorkingCopy(configuration, false);
+		}
+		
+		protected void persistInWorkingCopy(ILaunchConfigurationWorkingCopy configuration, boolean updateButtons) {
 			RSELaunchConfigProperties.setStartupCommand(startText.getText(), configuration);
 			RSELaunchConfigProperties.setShutdownCommand(stopText.getText(), configuration);
 			RSELaunchConfigProperties.setDetectStartupCommand(autoStartArgs.getSelection(), configuration);
 			RSELaunchConfigProperties.setDetectShutdownCommand(autoStopArgs.getSelection(), configuration);
+			if( updateButtons)
+				getLaunchConfigurationDialog().updateButtons();
 		}
 		public String getName() {
 			return RSEUIMessages.RSE_REMOTE_LAUNCH;

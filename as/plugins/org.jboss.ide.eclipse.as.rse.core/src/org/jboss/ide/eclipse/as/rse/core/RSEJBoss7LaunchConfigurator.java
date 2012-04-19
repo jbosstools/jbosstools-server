@@ -45,15 +45,19 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 
 		boolean detectStartupCommand = RSELaunchConfigProperties.isDetectStartupCommand(launchConfig, true);
 		String currentStartupCmd = RSELaunchConfigProperties.getStartupCommand(launchConfig);
+		String defaultStartup = getLaunchCommand(jbossServer, jbossRuntime);
 		if( detectStartupCommand || !isSet(currentStartupCmd)) {
-			RSELaunchConfigProperties.setStartupCommand(getLaunchCommand(jbossServer, jbossRuntime), launchConfig);
+			RSELaunchConfigProperties.setStartupCommand(defaultStartup, launchConfig);
 		}
-
+		RSELaunchConfigProperties.setDefaultStartupCommand(defaultStartup, launchConfig);
+		
 		boolean detectShutdownCommand = RSELaunchConfigProperties.isDetectShutdownCommand(launchConfig, true);
 		String currentShutdownCmd = RSELaunchConfigProperties.getShutdownCommand(launchConfig);
+		String defaultShutdownCommand = getShutdownCommand(jbossServer, jbossRuntime);
 		if( detectShutdownCommand || !isSet(currentShutdownCmd)) {
-			RSELaunchConfigProperties.setShutdownCommand(getShutdownCommand(jbossServer, jbossRuntime), launchConfig);
+			RSELaunchConfigProperties.setShutdownCommand(defaultShutdownCommand, launchConfig);
 		}
+		RSELaunchConfigProperties.setDefaultShutdownCommand(defaultShutdownCommand, launchConfig);
 	}
 
 	protected String getShutdownCommand(JBossServer jbossServer, IJBossServerRuntime jbossRuntime) throws CoreException {
