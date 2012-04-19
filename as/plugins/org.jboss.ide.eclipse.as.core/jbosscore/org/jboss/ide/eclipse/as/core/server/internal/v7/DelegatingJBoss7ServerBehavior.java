@@ -53,13 +53,6 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 	private IDebugEventSetListener serverProcessListener;
 	private PollThread pollThread;
 
-	@Override
-	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy launchConfig, IProgressMonitor monitor)
-			throws CoreException {
-		// TODO: implement setup for RSE launch delegate too
-		new DelegatingStartLaunchConfiguration().setupLaunchConfiguration(launchConfig, getServer());
-	}
-
 	public void setProcess(IProcess process) {
 		this.serverProcess = process;
 		initDebugListener(process);

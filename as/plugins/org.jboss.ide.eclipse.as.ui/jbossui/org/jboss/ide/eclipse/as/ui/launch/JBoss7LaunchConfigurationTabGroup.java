@@ -11,13 +11,14 @@
 package org.jboss.ide.eclipse.as.ui.launch;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.eclipse.debug.ui.CommonTab;
 import org.eclipse.debug.ui.EnvironmentTab;
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
 import org.eclipse.debug.ui.sourcelookup.SourceLookupTab;
-import org.eclipse.jdt.debug.ui.launchConfigurations.JavaArgumentsTab;
 import org.eclipse.jdt.debug.ui.launchConfigurations.JavaClasspathTab;
+import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 
 /**
  * 
@@ -26,13 +27,21 @@ import org.eclipse.jdt.debug.ui.launchConfigurations.JavaClasspathTab;
  */
 public class JBoss7LaunchConfigurationTabGroup extends JBossLaunchConfigurationTabGroup {
 
-	public static ArrayList<IJBossLaunchTabProvider> providers7 = 
-			new ArrayList<IJBossLaunchTabProvider>();
+	public static HashMap<String, ArrayList<IJBossLaunchTabProvider>> providers7 = 
+			new HashMap<String, ArrayList<IJBossLaunchTabProvider>>();
 	static {
-		providers7.add(new JBoss7StandardTabProvider());
+		ArrayList<IJBossLaunchTabProvider> l = new ArrayList<IJBossLaunchTabProvider>();
+		l.add(new JBoss7StandardTabProvider());
+		providers7.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, l);
 	}
-	public static void addTabProvider(IJBossLaunchTabProvider provider) {
-		providers7.add(provider);
+	
+	public static void addTabProvider(String behavior, IJBossLaunchTabProvider provider) {
+		ArrayList<IJBossLaunchTabProvider> l = providers7.get(behavior);
+		if( l == null ) {
+			l = l == null ? new ArrayList<IJBossLaunchTabProvider>() : l;
+			providers7.put(behavior, l);
+		}
+		l.add(provider);
 	}
 	
 	public static class JBoss7StandardTabProvider implements IJBossLaunchTabProvider {
@@ -49,7 +58,7 @@ public class JBoss7LaunchConfigurationTabGroup extends JBossLaunchConfigurationT
 		}
 	}
 	
-	public ArrayList<IJBossLaunchTabProvider> getProviderList() {
-		return providers7;
+	public ArrayList<IJBossLaunchTabProvider> getProvider(String type) {
+		return providers7.get(type) == null ? new ArrayList<IJBossLaunchTabProvider>() : providers7.get(type);
 	}
 }

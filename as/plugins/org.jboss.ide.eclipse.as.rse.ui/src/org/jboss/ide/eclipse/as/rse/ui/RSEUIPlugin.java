@@ -41,8 +41,8 @@ public class RSEUIPlugin implements BundleActivator {
 		context = bundleContext;
 		plugin = this;
 		DeploymentModuleOptionCompositeAssistant.addMapping(RSEPublishMethod.RSE_ID, new RSEDeploymentPageCallback());
-		JBossLaunchConfigurationTabGroup.addTabProvider(new RSELaunchTabProvider());
-		JBoss7LaunchConfigurationTabGroup.addTabProvider(new RSELaunchTabProvider());
+		JBossLaunchConfigurationTabGroup.addTabProvider(RSEPublishMethod.RSE_ID, new RSELaunchTabProvider());
+		JBoss7LaunchConfigurationTabGroup.addTabProvider(RSEPublishMethod.RSE_ID, new RSELaunchTabProvider());
 		consoleWriter = new JBASConsoleWriter();
 		RSEHostShellModel.getInstance().addHostShellListener(consoleWriter);
 	}

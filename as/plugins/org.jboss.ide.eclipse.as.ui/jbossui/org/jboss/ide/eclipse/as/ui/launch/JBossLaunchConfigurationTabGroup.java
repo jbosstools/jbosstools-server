@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.as.ui.launch;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import org.eclipse.core.runtime.CoreException;
@@ -35,7 +36,11 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
+import org.jboss.ide.eclipse.as.core.server.internal.RecentlyUpdatedServerLaunches;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
+import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.xpl.JavaMainTabClone;
@@ -60,13 +65,21 @@ public class JBossLaunchConfigurationTabGroup extends
 	public static interface IJBossLaunchTabProvider {
 		public ILaunchConfigurationTab[] createTabs();
 	}
-	public static ArrayList<IJBossLaunchTabProvider> providers = 
-			new ArrayList<IJBossLaunchTabProvider>();
+	public static HashMap<String, ArrayList<IJBossLaunchTabProvider>> providers = 
+			new HashMap<String, ArrayList<IJBossLaunchTabProvider>>();
 	static {
-		providers.add(new JBossStandardTabProvider());
+		ArrayList<IJBossLaunchTabProvider> l = new ArrayList<IJBossLaunchTabProvider>();
+		l.add(new JBossStandardTabProvider());
+		providers.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, l);
 	}
-	public static void addTabProvider(IJBossLaunchTabProvider provider) {
-		providers.add(provider);
+	
+	public static void addTabProvider(String behaviorType, IJBossLaunchTabProvider provider) {
+		ArrayList<IJBossLaunchTabProvider> l = providers.get(behaviorType);
+		if( l == null ) {
+			l = l == null ? new ArrayList<IJBossLaunchTabProvider>() : l;
+			providers.put(behaviorType, l);
+		}
+		l.add(provider);
 	}
 	
 	public static class JBossStandardTabProvider implements IJBossLaunchTabProvider {
@@ -83,12 +96,17 @@ public class JBossLaunchConfigurationTabGroup extends
 		}
 	}
 	
-	public ArrayList<IJBossLaunchTabProvider> getProviderList() {
-		return providers;
+	public ArrayList<IJBossLaunchTabProvider> getProvider(String type) {
+		return providers.get(type) == null ? new ArrayList<IJBossLaunchTabProvider>() : providers.get(type);
 	}
 	
 	public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
-		Iterator<IJBossLaunchTabProvider> i = getProviderList().iterator();
+		IServer s = RecentlyUpdatedServerLaunches.getDefault().getRecentServer();
+		String behaviorType = s == null ? LocalPublishMethod.LOCAL_PUBLISH_METHOD :
+			DeploymentPreferenceLoader.getCurrentDeploymentMethodType(s, LocalPublishMethod.LOCAL_PUBLISH_METHOD).getId();
+		ArrayList<IJBossLaunchTabProvider> p = getProvider(behaviorType);
+
+		Iterator<IJBossLaunchTabProvider> i = p.iterator();
 		ArrayList<ILaunchConfigurationTab> tabs = new ArrayList<ILaunchConfigurationTab>();
 		while(i.hasNext()) {
 			ILaunchConfigurationTab[] tabs2 = i.next().createTabs();
