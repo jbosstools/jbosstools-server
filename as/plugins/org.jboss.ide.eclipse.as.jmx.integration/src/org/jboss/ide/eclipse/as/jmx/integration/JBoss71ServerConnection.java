@@ -19,13 +19,17 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.ServerDelegate;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IManagementPortProvider;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.jmx.integration.JMXUtil.CredentialException;
 import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.IConnectionProvider;
+import org.jboss.tools.jmx.core.JMXException;
 
 public class JBoss71ServerConnection extends JBossServerConnection {
 	public JBoss71ServerConnection(IServer server) {
@@ -62,12 +66,17 @@ public class JBoss71ServerConnection extends JBossServerConnection {
 			MBeanServerConnection connection = connector.getMBeanServerConnection();
 			return connection;
 		} catch(IOException ioe) {
+			return null;
+		} catch( RuntimeException re) {
+			IStatus stat = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+					"Runtime Exception contacting JBoss instance. Please ensure your server is up and exposes its management ports via the -Djboss.bind.address.management=yourwebsite.com system property", re);
+			throw new JMXException(stat);
+		} finally {
 			if( connector != null ) {
 				try {
 					connector.close();
 				} catch(Exception e) { /* Ignore */ }
 			}
-			return null;
 		}
 	}
 }

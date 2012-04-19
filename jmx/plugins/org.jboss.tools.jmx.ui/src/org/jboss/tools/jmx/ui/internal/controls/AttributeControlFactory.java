@@ -94,6 +94,8 @@ public class AttributeControlFactory {
     }
     
     public static Control createControl(final Composite parent, final Object value) {
+    	if( value == null )
+    		return null;
         return createControl(parent, value, value.getClass().getSimpleName(), 
                 null, null, false, null, null);
     }

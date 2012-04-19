@@ -51,7 +51,7 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 		this.server = server;
 		this.isConnected = false;
 		this.isLoading = false;
-		checkState(); // prime the state
+		checkState(server); // prime the state
 		((AbstractJBossJMXConnectionProvider)getProvider()).addListener(this);
 		server.addServerListener(this);
 	}
@@ -138,9 +138,13 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 			if( connection != null ) {
 				r.run(connection);
 			}
+		} catch(JMXException jmxe) {
+			// rethrow
+			throw jmxe;
 		} catch( Exception e ) {  
+			// wrap all others
 			throw new JMXException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
-					e.getMessage() == null ? e.getClass().getName() : e.getMessage(), e));
+					"Error connecting to remote JMX. Please ensure your server is properly configured for JMX access.", e));
 		} finally {
 			getProvider2().getClassloaderRepository().removeConcerned(s, r);
 			Thread.currentThread().setContextClassLoader(currentLoader);
@@ -177,21 +181,15 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 		if ((eventKind & ServerEvent.SERVER_CHANGE) != 0) {
 			// server change event
 			if ((eventKind & ServerEvent.STATE_CHANGE) != 0) {
-				new Job("Connecting to " + event.getServer().getName() + " via JMX") { //$NON-NLS-1$ //$NON-NLS-2$
-					@Override
-					protected IStatus run(IProgressMonitor monitor) {
-						checkState();
-						return Status.OK_STATUS;
-					} 
-				}.schedule();
+				checkState(event.getServer());
 			}
 		}
 	}
 	
-	protected void checkState() {
+	protected void checkState(IServer server) {
 		IDeployableServer jbs = ServerConverter.getDeployableServer(server);
 		if( server.getServerState() == IServer.STATE_STARTED && jbs != null && jbs.hasJMXProvider()) {
-			connectToStartedServer();
+			launchConnectionJob(server);
 		} else {
 			root = null;
 			if( isConnected ) {
@@ -200,6 +198,16 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 				((AbstractJBossJMXConnectionProvider)getProvider()).fireChanged(JBossServerConnection.this);
 			}
 		}
+	}
+	
+	protected void launchConnectionJob(IServer server) {
+		new Job("Connecting to " + server.getName() + " via JMX") { //$NON-NLS-1$ //$NON-NLS-2$
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				connectToStartedServer();
+				return Status.OK_STATUS;
+			} 
+		}.schedule();
 	}
 
 	protected void connectToStartedServer() {
