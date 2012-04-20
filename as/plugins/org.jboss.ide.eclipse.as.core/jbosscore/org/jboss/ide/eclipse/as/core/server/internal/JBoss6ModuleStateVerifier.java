@@ -18,26 +18,6 @@ import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 
 public class JBoss6ModuleStateVerifier  extends JBossLT6ModuleStateVerifier implements IServerModuleStateVerifier {
 
-//	@Override
-//	public boolean isModuleStarted(IServer server, IModule module,
-//			IProgressMonitor monitor) {
-//		// NO IDEA
-//		return true;
-//	}
-//
-//	@Override
-//	public void waitModuleStarted(IServer server, IModule module,
-//			IProgressMonitor monitor) {
-//		return;
-//	}
-//
-//	@Override
-//	public void waitModuleStarted(IServer server, IModule module, int maxDelay) {
-//		return;	
-//	}
-	
-	// If proper mbeans are found, uncomment this and customize it
-	
 	protected boolean checkNestedWebModuleStarted(IServer server, IModule module, MBeanServerConnection connection) throws Exception {
 		boolean val = checkStandaloneWebModuleStarted(server, module, connection);
 		return val;
