@@ -13,6 +13,7 @@ package org.jboss.ide.eclipse.as.jmx.integration;
 import java.util.HashMap;
 
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.IJMXRunnable;
@@ -27,20 +28,24 @@ public class JBossJMXConnectionProviderModel {
 		return instance;
 	}
 	
-	private HashMap<Integer, AbstractJBossJMXConnectionProvider> providers;
+	private HashMap<Integer, AbstractJBossJMXConnectionProvider> providers = null;
 	public JBossJMXConnectionProviderModel() {
-		providers = new HashMap<Integer, AbstractJBossJMXConnectionProvider>();
-//		providers.put(ServerExtendedProperties.JMX_NULL_PROVIDER, null);
-//		providers.put(ServerExtendedProperties.JMX_AS_3_TO_6_PROVIDER, new JBoss3To6ConnectionProvider());
-//		providers.put(ServerExtendedProperties.JMX_DEFAULT_PROVIDER, new JBoss70ConnectionProvider());
-//		providers.put(ServerExtendedProperties.JMX_AS_710_PROVIDER, null);		
+	}
+	
+	private void initProviders() {
+		if( providers == null) {
+			providers = new HashMap<Integer, AbstractJBossJMXConnectionProvider>();
+			org.jboss.tools.jmx.core.ExtensionManager.getProviders();
+		}
 	}
 	
 	public void registerProvider(int type, AbstractJBossJMXConnectionProvider provider) {
+		initProviders();
 		providers.put(type, provider);
 	}
 	
 	public AbstractJBossJMXConnectionProvider getProvider(int type) {
+		initProviders();
 		return providers.get(type);
 	}
 
@@ -58,6 +63,7 @@ public class JBossJMXConnectionProviderModel {
 			return null;
 		
 		int i = properties.getJMXProviderType();
+		initProviders();
 		AbstractJBossJMXConnectionProvider provider = providers.get(i);
 		return provider;
 	}

@@ -10,50 +10,47 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
-import org.eclipse.core.runtime.IProgressMonitor;
+import javax.management.MBeanServerConnection;
+
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 
-public class JBoss6ModuleStateVerifier /* extends JBossLT6ModuleStateVerifier */ implements IServerModuleStateVerifier {
+public class JBoss6ModuleStateVerifier  extends JBossLT6ModuleStateVerifier implements IServerModuleStateVerifier {
 
-	@Override
-	public boolean isModuleStarted(IServer server, IModule module,
-			IProgressMonitor monitor) {
-		// NO IDEA
-		return true;
-	}
-
-	@Override
-	public void waitModuleStarted(IServer server, IModule module,
-			IProgressMonitor monitor) {
-		return;
-	}
-
-	@Override
-	public void waitModuleStarted(IServer server, IModule module, int maxDelay) {
-		return;	
-	}
-	
-	// If proper mbeans are found, uncomment this and customize it
-	
-//	protected boolean checkNestedWebModuleStarted(IServer server, IModule module, MBeanServerConnection connection) throws Exception {
-//		String mbeanName = "jboss.deployment:id=\"jboss.web.deployment:war=/" + module.getName() + "\",type=Component";  //$NON-NLS-1$//$NON-NLS-2$
-//		String stateAttribute = "State"; //$NON-NLS-1$
-//		Object result = getAttributeResult(connection, mbeanName, stateAttribute);
-//		if( result == null || !result.toString().equals("DEPLOYED"))  //$NON-NLS-1$
-//			return false;
+//	@Override
+//	public boolean isModuleStarted(IServer server, IModule module,
+//			IProgressMonitor monitor) {
+//		// NO IDEA
 //		return true;
 //	}
 //
-//	protected boolean checkStandaloneWebModuleStarted(IServer server, IModule module, MBeanServerConnection connection) throws Exception {
-//		String mbeanName = "jboss.web:J2EEApplication=none,J2EEServer=none,j2eeType=WebModule,name=//localhost/" + module.getName(); //$NON-NLS-1$
-//		String stateAttribute = "state"; //$NON-NLS-1$
-//		Object result = getAttributeResult(connection, mbeanName, stateAttribute);
-//		if(result == null || !(result instanceof Integer) || ((Integer)result).intValue() != 1 ) {
-//			return false;
-//		}
-//		return true;
+//	@Override
+//	public void waitModuleStarted(IServer server, IModule module,
+//			IProgressMonitor monitor) {
+//		return;
 //	}
+//
+//	@Override
+//	public void waitModuleStarted(IServer server, IModule module, int maxDelay) {
+//		return;	
+//	}
+	
+	// If proper mbeans are found, uncomment this and customize it
+	
+	protected boolean checkNestedWebModuleStarted(IServer server, IModule module, MBeanServerConnection connection) throws Exception {
+		boolean val = checkStandaloneWebModuleStarted(server, module, connection);
+		return val;
+	}
+
+	protected boolean checkStandaloneWebModuleStarted(IServer server, IModule module, MBeanServerConnection connection) throws Exception {
+		String mbeanName = "jboss.web:J2EEApplication=none,J2EEServer=none,j2eeType=WebModule,name=//localhost/" + module.getName(); //$NON-NLS-1$
+		String stateAttribute = "state"; //$NON-NLS-1$
+		Object result = getAttributeResult(connection, mbeanName, stateAttribute);
+		if(result == null || !(result instanceof Integer) || ((Integer)result).intValue() != 1 ) {
+			return false;
+		}
+		return true;
+	}
 
 }
