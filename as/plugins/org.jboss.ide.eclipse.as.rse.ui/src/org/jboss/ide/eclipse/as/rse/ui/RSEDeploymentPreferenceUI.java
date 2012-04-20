@@ -450,12 +450,14 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 	public static String browseClicked4(Shell s, IHost host, String path) {
 		SystemRemoteFileDialog d = new SystemRemoteFileDialog(
 				s, RSEUIMessages.BROWSE_REMOTE_SYSTEM, host);
-		try {
-			IRemoteFileSubSystem ss  =	RemoteFileUtility.getFileSubSystem(host);
-			IRemoteFile rootFolder = ss.getRemoteFileObject(path, new NullProgressMonitor());
-			d.setPreSelection(rootFolder);
-		} catch(SystemMessageException sme) {
-			// Ignore
+		if( path != null ) {
+			try {
+				IRemoteFileSubSystem ss  =	RemoteFileUtility.getFileSubSystem(host);
+				IRemoteFile rootFolder = ss.getRemoteFileObject(path, new NullProgressMonitor());
+				d.setPreSelection(rootFolder);
+			} catch(SystemMessageException sme) {
+				// Ignore
+			}
 		}
 		
 		if( d.open() == Dialog.OK) {
