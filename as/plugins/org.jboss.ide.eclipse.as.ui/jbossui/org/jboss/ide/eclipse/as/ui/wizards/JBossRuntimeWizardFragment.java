@@ -457,6 +457,16 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		configurations = new JBossConfigurationTableViewer(configGroup,
 		SWT.BORDER | SWT.SINGLE);
 		
+		IRuntime r = (IRuntime) getTaskModel()
+				.getObject(TaskModel.TASK_RUNTIME);
+		IRuntimeWorkingCopy runtimeWC = r.isWorkingCopy() ? ((IRuntimeWorkingCopy) r)
+				: r.createWorkingCopy();
+		IJBossServerRuntime srt = (IJBossServerRuntime) runtimeWC.loadAdapter(
+				IJBossServerRuntime.class, new NullProgressMonitor());
+
+		if( srt != null && !isEmpty(srt.getJBossConfiguration())) 
+			configurations.setConfiguration(srt.getJBossConfiguration());
+		
 		configBrowse = new Button(configGroup, SWT.DEFAULT);
 		configCopy = new Button(configGroup, SWT.DEFAULT);
 		configDelete = new Button(configGroup, SWT.DEFAULT);
@@ -590,7 +600,6 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		configurations.setFolder(folder);
 		File f = new File(folder);
 		configurations.getControl().setEnabled(f.exists() && f.isDirectory());
-		configurations.setConfiguration(IJBossRuntimeResourceConstants.DEFAULT_CONFIGURATION);
 
 		int sel = jreCombo.getSelectionIndex();
 		int offset = -1;
