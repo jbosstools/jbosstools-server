@@ -209,25 +209,23 @@ public class ResourceModuleResourceUtil {
 	 * include and exclude patterns in the virtual component metadata?
 	 * 
 	 * Return the includes / excludes pattern if yes.
-	 * If no, return null
+	 * If no, return a two-length array of null objects
 	 * 
 	 * @param module
 	 * @return
 	 */
 	private static String[] getProjectIncludesExcludes(IModule module) {
 		IProject p = module.getProject();
-		if( p == null )
-			return new String[]{null, null};
-		
-		IVirtualComponent vc = ComponentCore.createComponent(p);
-		Properties props = vc.getMetaProperties();
-		String exclusionPatterns = getPatternValue(props, COMPONENT_EXCLUSIONS_PATTERN);
-		String inclusionPatterns = getPatternValue(props, COMPONENT_INCLUSIONS_PATTERN);
-
-		return new String[]{ 
-				inclusionPatterns,
-				exclusionPatterns
-			}; 
+		if( p != null ) {
+			IVirtualComponent vc = ComponentCore.createComponent(p);
+			if( vc != null ) {
+				Properties props = vc.getMetaProperties();
+				String exclusionPatterns = getPatternValue(props, COMPONENT_EXCLUSIONS_PATTERN);
+				String inclusionPatterns = getPatternValue(props, COMPONENT_INCLUSIONS_PATTERN);
+				return new String[]{  inclusionPatterns, exclusionPatterns }; 
+			}
+		}
+		return new String[]{null, null};
 	}
 
 	/**
