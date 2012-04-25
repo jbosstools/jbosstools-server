@@ -51,6 +51,9 @@ public class JBossConfigurationTableViewer extends TableViewer {
 
 	public void setFolder(String folder) {
 		setInput(folder);
+		String t = getSelectedConfiguration();
+		if( t != null )
+			setSelection(new StructuredSelection(new Object[]{t}));
 	}
 
 	public String getSelectedConfiguration() {
