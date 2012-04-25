@@ -46,10 +46,25 @@ public class EarArtifactAdapter extends ModuleArtifactAdapterDelegate {
 			String typeId = children[i].getModuleType().getId();
 			if( typeId.equals(IModuleConstants.JST_WEB_MODULE) || typeId.equals(IModuleConstants.WST_WEB_MODULE))
 				tmp = WebDeployableArtifactUtil.getModuleObject(children[i].getProject());
-			if( tmp != null ) 
-				return tmp;
+			if( tmp != null )  {
+				return new EarModuleArtifact(ear, tmp);
+			}
 		}
 		return null;
 	}
 	
+	public static class EarModuleArtifact implements IModuleArtifact {
+		private IModule earModule;
+		private IModuleArtifact webArtifact;
+		public EarModuleArtifact(IModule ear, IModuleArtifact web) {
+			this.earModule = ear;
+			this.webArtifact = web;
+		}
+		public IModule getModule() {
+			return earModule;
+		}
+		public IModuleArtifact getWebArtifact() {
+			return webArtifact;
+		}
+	}
 }

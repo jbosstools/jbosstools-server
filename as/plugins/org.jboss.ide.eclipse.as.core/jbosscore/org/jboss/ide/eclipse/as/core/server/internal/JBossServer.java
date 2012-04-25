@@ -29,8 +29,6 @@ import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.WEB_PORT
 import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.WEB_PORT_DETECT_XPATH;
 
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Date;
 
 import org.eclipse.core.runtime.IPath;
@@ -40,11 +38,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.equinox.security.storage.StorageException;
-import org.eclipse.jst.server.core.IWebModule;
-import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.model.IURLProvider;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
@@ -191,6 +185,10 @@ public class JBossServer extends DeployableServer
 				JNDI_PORT_DEFAULT_XPATH, JNDI_DEFAULT_PORT);
 	}
 	
+	protected int getWebPort() {
+		return getJBossWebPort();
+	}
+
 	public int getJBossWebPort() {
 		return findPort(WEB_PORT, WEB_PORT_DETECT, WEB_PORT_DETECT_XPATH, 
 				WEB_PORT_DEFAULT_XPATH, JBOSS_WEB_DEFAULT_PORT);
@@ -224,10 +222,6 @@ public class JBossServer extends DeployableServer
 	protected String resolveXPathResult(String result) {
 		return ExpressionResolverUtil.safeReplaceProperties(result);
 	}
-	
-	public URL getModuleRootURL(IModule module) {
-		return getModuleRootURL(module, getHost(), getJBossWebPort());
-	}	
 	
 	// first class parameters
 	public String getUsername() {

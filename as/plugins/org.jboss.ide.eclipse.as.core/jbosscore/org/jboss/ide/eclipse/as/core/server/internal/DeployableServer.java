@@ -20,21 +20,22 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jst.j2ee.project.WebUtilities;
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerPort;
-import org.eclipse.wst.server.core.model.IURLProvider;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.IMultiModuleURLProvider;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
-public class DeployableServer extends ServerDelegate implements IDeployableServer, IURLProvider {
+public class DeployableServer extends ServerDelegate implements IDeployableServer, IMultiModuleURLProvider {
 
 	public DeployableServer() {
 	}
@@ -183,15 +184,26 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 		return false;
 	}
 	
+	protected int getWebPort() {
+		return 80;
+	}
 	public URL getModuleRootURL(IModule module) {
-		return getModuleRootURL(module, getServer().getHost(), 80);
+		return getModuleRootURL(module, getServer().getHost(), getWebPort(), null);
 	}
-	
-	public static URL getModuleRootURL(IModule module, String host, int port) {
-		return getModuleRootURL(module, host, port, false);
+	public URL getModuleRootURL(IModule[] module) {
+		if( module.length == 2) {
+			String contextRoot = WebUtilities.getServerContextRoot(module[1].getProject(),
+					module[0].getProject());
+			return getModuleRootURL(module[1], getServer().getHost(), getWebPort(), contextRoot);
+		} else {
+			return module.length > 0 ? getModuleRootURL(module[0]) : null;
+		}
 	}
-	
-	public static URL getModuleRootURL(IModule module, String host, int port, boolean ignoreContextRoot) {
+	public URL getModuleRootURL(IModule module, String contextRoot) {
+		return getModuleRootURL(module, getServer().getHost(), getWebPort(), contextRoot);
+	}
+
+	public static URL getModuleRootURL(IModule module, String host, int port, String contextRoot) {
         if (module == null || module.loadAdapter(IWebModule.class,null)==null )
 			return null;
         
@@ -203,11 +215,11 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 		if (port != 80)
 			url += ":" + port; //$NON-NLS-1$
 
-		if( !ignoreContextRoot ) {
-			String cxRoot = webModule.getContextRoot();
-			if( !cxRoot.equals("/") && !cxRoot.equals("./")) //$NON-NLS-1$ //$NON-NLS-2$
-				url += "/"+webModule.getContextRoot(); //$NON-NLS-1$
+		if( contextRoot == null ) {
+			contextRoot = webModule.getContextRoot();
 		}
+		if( !contextRoot.equals("/") && !contextRoot.equals("./")) //$NON-NLS-1$ //$NON-NLS-2$
+			url += "/"+contextRoot; //$NON-NLS-1$
 		if (!url.endsWith("/")) //$NON-NLS-1$
 			url += "/"; //$NON-NLS-1$
 
