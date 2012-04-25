@@ -113,8 +113,9 @@ public class LocalJBoss7DeploymentScannerAdditions extends UnitedServerListener 
 			IStatus s = util.addDeploymentScanner(server, newScannerName, path);
 			if( s.isOK()){
 				props.put(newScannerName, path);
+				util.updateDeploymentScannerInterval(server, newScannerName, 5000);
 			}
-			Trace.trace(Trace.STRING_FINER, "Added Deployment Scanner: success="+s.isOK() + ", " + scannerName + ":" + props.get(scannerName)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			Trace.trace(Trace.STRING_FINER, "Added Deployment Scanner: success="+s.isOK() + ", " + scannerName + ":" + props.get(newScannerName)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		
 		 // Write the file out

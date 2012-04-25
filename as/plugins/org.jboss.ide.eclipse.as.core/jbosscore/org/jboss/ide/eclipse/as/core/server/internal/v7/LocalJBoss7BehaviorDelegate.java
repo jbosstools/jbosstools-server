@@ -44,8 +44,6 @@ public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
 			if (!result.isOK()) {
 				previousStopFailed = true;
 				setServerStarted();
-			} else {
-				forceStop();
 			}
 		}
 	}
