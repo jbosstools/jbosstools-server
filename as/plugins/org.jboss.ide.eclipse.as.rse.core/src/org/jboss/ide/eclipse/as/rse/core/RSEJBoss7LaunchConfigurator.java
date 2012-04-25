@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerType;
+import org.eclipse.wst.server.core.internal.Base;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.ILaunchConfigConfigurator;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
@@ -81,9 +82,11 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 					IJBossRuntimeConstants.STARTUP_ARG_HOST_SHORT,
 					null, "0.0.0.0");
 		}
+		String rseConfigFile = ((Base)jbossServer.getServer()).getAttribute(
+				RSEUtils.RSE_SERVER_CONFIG, (String)null);
 		programArguments = ArgsUtil.setArg(programArguments, null,
-				IJBossRuntimeConstants.JB7_SERVER_CONFIG_ARG,
-				((LocalJBoss7ServerRuntime)jbossRuntime).getConfigurationFile());
+				IJBossRuntimeConstants.JB7_SERVER_CONFIG_ARG, rseConfigFile
+				);
 		
 		String vmArguments = getDefaultVMArguments(jbossServer, jbossRuntime);
 		String jar = getJar(jbossServer, jbossRuntime);
