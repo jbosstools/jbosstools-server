@@ -108,6 +108,10 @@ public class RSEJBossStartLaunchDelegate extends AbstractRSELaunchDelegate {
 				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JBOSS_SERVER_HOME_URL,
 				"file:" + new Path(rseHome).append(IJBossRuntimeResourceConstants.SERVER).toOSString());
 
+		currentArgs = ArgsUtil.setArg(currentArgs, null,
+				IJBossRuntimeConstants.STARTUP_ARG_CONFIG_LONG,
+				RSEUtils.getRSEConfigName(jbossServer.getServer()));
+
 		currentVMArgs = ArgsUtil.setArg(currentVMArgs, null,
 				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.ENDORSED_DIRS,
 				new Path(rseHome).append(
