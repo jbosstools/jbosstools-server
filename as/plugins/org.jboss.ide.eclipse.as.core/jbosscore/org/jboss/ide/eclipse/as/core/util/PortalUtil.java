@@ -48,7 +48,7 @@ public class PortalUtil {
 		
 		// JBoss Portal server
 		if (exists(configFile, SERVER_DEFAULT_DEPLOY_JBOSS_PORTAL_SAR)) {
-			return TYPE_PORTAL_UNKNOWN;
+			return TYPE_PORTAL;
 		}
 		// JBoss Portal clustering server
 		if (exists(configFile, SERVER_DEFAULT_DEPLOY_JBOSS_PORTAL_HA_SAR)) {
