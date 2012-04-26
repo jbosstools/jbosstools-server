@@ -112,7 +112,7 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 	
 	protected String getJar(JBossServer server, IJBossServerRuntime runtime) {
 		String rseHome = RSEUtils.getRSEHomeDir(server.getServer());
-		return new Path(rseHome).append(IJBossRuntimeResourceConstants.JBOSS7_MODULES_JAR).toOSString();
+		return new Path(rseHome).append(IJBossRuntimeResourceConstants.JBOSS7_MODULES_JAR).toString();
 	}
 	
 	protected String getMainType() {
