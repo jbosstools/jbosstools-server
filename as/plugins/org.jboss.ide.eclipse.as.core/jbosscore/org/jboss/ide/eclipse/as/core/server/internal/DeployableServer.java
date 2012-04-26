@@ -122,8 +122,6 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 		return getAttribute(ZIP_DEPLOYMENTS_PREF, false);
 	}
 
-	// cannot be static, as different servers may have different defaults
-	private Pattern restartFilePattern = null;
 	protected Pattern defaultFilePattern = Pattern.compile(
 			getDefaultModuleRestartPattern(),
 			Pattern.CASE_INSENSITIVE);
@@ -135,29 +133,24 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	
 	public void setRestartFilePattern(String filepattern) {
 		setAttribute(ORG_JBOSS_TOOLS_AS_RESTART_FILE_PATTERN, filepattern);
-		this.restartFilePattern = null;
 	}
 	
 	public Pattern getRestartFilePattern() {
-		if( this.restartFilePattern == null ) {
-			compileRestartPattern();
-		}
-		return this.restartFilePattern;
+		return getCompiledRestartPattern();
 	}
 	
-	private void compileRestartPattern() {
+	private Pattern getCompiledRestartPattern() {
 		// ensure it's set properly from the saved attribute
 		String currentPattern = getAttribute(ORG_JBOSS_TOOLS_AS_RESTART_FILE_PATTERN, (String)null);
 		try {
-			this.restartFilePattern = currentPattern == null ? defaultFilePattern :  
+			return currentPattern == null ? defaultFilePattern :  
 				Pattern.compile(currentPattern, Pattern.CASE_INSENSITIVE);
 		} catch(PatternSyntaxException pse) {
 			JBossServerCorePlugin.log("Could not set restart file pattern to: " + currentPattern, pse); //$NON-NLS-1$
 			// avoid errors over and over
-			this.restartFilePattern = defaultFilePattern;
+			return defaultFilePattern;
 		}
 	}
-	
 	
 	/*
 	 * (non-Javadoc)

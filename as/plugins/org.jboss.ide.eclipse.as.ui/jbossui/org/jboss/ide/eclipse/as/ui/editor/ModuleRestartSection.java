@@ -10,6 +10,9 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.ui.editor;
 
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -118,10 +121,26 @@ public class ModuleRestartSection extends ServerEditorSection {
 	
 	public class SetCustomPatternCommand extends ServerWorkingCopyPropertyCommand {
 		public SetCustomPatternCommand(IServerWorkingCopy server) {
-			super(server, Messages.EditorChangeStopPollerCommandName,  
+			super(server, "Modify Module Restart Pattern",  
 					restartPatternText, restartPatternText.getText(), 
 					IDeployableServer.ORG_JBOSS_TOOLS_AS_RESTART_FILE_PATTERN, 
 					textListener);
+		}
+		public void undo() {
+			super.undo();
+			validate();
+		}
+		public void execute() {
+			super.execute();
+			validate();
+		}
+		protected void validate() {
+			try {
+				Pattern.compile(restartPatternText.getText(), Pattern.CASE_INSENSITIVE);
+				setErrorMessage(null); 
+			} catch(PatternSyntaxException pse) {
+				setErrorMessage("Invalid Restart Pattern: " + restartPatternText.getText());
+			}
 		}
 	}
 }

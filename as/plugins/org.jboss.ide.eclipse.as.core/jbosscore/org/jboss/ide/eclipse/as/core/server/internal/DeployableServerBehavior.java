@@ -236,11 +236,12 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	public boolean changedFileRequiresModuleRestart(IModuleFile file) {
 		IDeployableServer ds = ServerConverter.getDeployableServer(getServer());
 		Pattern restartFilePattern = ds.getRestartFilePattern();
-		if (restartFilePattern != null) {
+		boolean result = false;
+		if (restartFilePattern != null) { 
 			// using find over matches to make it a substring search by default and avoid having to specify .*.class$ instead of just .class$
-			return restartFilePattern.matcher(file.getName()).find(); 
+			result = restartFilePattern.matcher(file.getName()).find(); 
 		}
-		return false;
+		return result;
 	}
 	
 	/**
