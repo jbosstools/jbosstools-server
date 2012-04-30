@@ -10,6 +10,8 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.ui.editor;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
@@ -18,6 +20,9 @@ import org.eclipse.wst.server.ui.internal.command.ServerCommand;
  * @since 2.3
  */
 public class ServerWorkingCopyPropertyComboCommand extends ServerCommand {
+	public static int POST_EXECUTE = 1;
+	public static int POST_UNDO = 2;
+	public static int POST_REDO = 3;
 	protected String oldVal;
 	protected String newVal;
 	protected String key;
@@ -39,6 +44,7 @@ public class ServerWorkingCopyPropertyComboCommand extends ServerCommand {
 	
 	public void execute() {
 		wc.setAttribute(key, newVal);
+		postOp(POST_EXECUTE);
 	}
 	
 	public void undo() {
@@ -49,5 +55,21 @@ public class ServerWorkingCopyPropertyComboCommand extends ServerCommand {
 			combo.setText(oldVal);
 		if( listener != null )
 			combo.addModifyListener(listener);
+		postOp(POST_UNDO);
+	}
+
+	public IStatus redo() {
+		if( listener != null )
+			combo.removeModifyListener(listener);
+		wc.setAttribute(key, newVal);
+		if( combo != null && !combo.isDisposed())
+			combo.setText(newVal);
+		if( listener != null )
+			combo.addModifyListener(listener);
+		postOp(POST_REDO);
+		return Status.OK_STATUS;
+	}
+	protected void postOp(int type) {
+		// Do Nothing
 	}
 }
