@@ -83,7 +83,7 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 					null, "0.0.0.0");
 		}
 		String rseConfigFile = ((Base)jbossServer.getServer()).getAttribute(
-				RSEUtils.RSE_SERVER_CONFIG, (String)null);
+				RSEUtils.RSE_SERVER_CONFIG, LocalJBoss7ServerRuntime.CONFIG_FILE_DEFAULT);
 		programArguments = ArgsUtil.setArg(programArguments, null,
 				IJBossRuntimeConstants.JB7_SERVER_CONFIG_ARG, rseConfigFile
 				);
