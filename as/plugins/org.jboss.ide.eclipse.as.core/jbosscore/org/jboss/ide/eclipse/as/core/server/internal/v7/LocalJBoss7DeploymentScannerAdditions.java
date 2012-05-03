@@ -10,21 +10,15 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.Properties;
+import java.util.Map;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerEvent;
-import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
@@ -61,21 +55,10 @@ public class LocalJBoss7DeploymentScannerAdditions extends UnitedServerListener 
 		added.addAll(Arrays.asList(folders));
 		ArrayList<String> removed = new ArrayList<String>(); // list of the scanner names
 		
-		IPath p = JBossServerCorePlugin.getServerStateLocation(server).append(SCANNER_PROP_FILE);
-		Properties props = new Properties();
-		if( p.toFile().exists()) {
-			try {
-				props.load(new FileInputStream(p.toFile()));
-			} catch( IOException ioe) {
-				// shouldnt happen. Log this
-				Status failStat = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
-						"Unable to read deployment scanner property file " + p.toFile().getAbsolutePath(), ioe); //$NON-NLS-1$
-				JBossServerCorePlugin.log(failStat);
-			}
-		}
+		Map<String, String> props = loadScannersFromServer(server);
 		
 		// Properties file of format like:  JBossToolsScanner4=/some/folder
-		Iterator<Object> lastStartup = props.keySet().iterator();
+		Iterator<String> lastStartup = props.keySet().iterator();
 		String k = null;
 		String v = null;
 		while(lastStartup.hasNext()) {
@@ -118,26 +101,19 @@ public class LocalJBoss7DeploymentScannerAdditions extends UnitedServerListener 
 			Trace.trace(Trace.STRING_FINER, "Added Deployment Scanner: success="+s.isOK() + ", " + scannerName + ":" + props.get(newScannerName)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		
-		 // Write the file out
-		if( added.size() != 0 || removed.size() != 0 ) {
-			try {
-				props.store(new FileOutputStream(p.toFile()), "Deployment scanners for the application server"); //$NON-NLS-1$
-			} catch( IOException ioe) {
-				Status failStat = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
-						 "Unable to save deployment scanner property file " + p.toFile().getAbsolutePath(), ioe); //$NON-NLS-1$
-				JBossServerCorePlugin.log(failStat);
-			}
-		}
 		Trace.trace(Trace.STRING_FINER, "Finished Adding AS7 Deployment Scanners"); //$NON-NLS-1$
 	}
 	
-	private static final String SCANNER_PREFIX = "JBossToolsScanner"; //$NON-NLS-1$
-	protected String findNextScannerName(Properties props) {
+	protected Map<String, String> loadScannersFromServer(IServer server) {
+		return new AS7DeploymentScannerUtility().getDeploymentScannersFromServer(server, false);
+	}
+	
+	protected String findNextScannerName(Map<String,String> props) {
 		int i = 1;
-		while( props.get(SCANNER_PREFIX + i) != null ) {
+		while( props.get(AS7DeploymentScannerUtility.SCANNER_PREFIX + i) != null ) {
 			i++;
 		}
-		return SCANNER_PREFIX + i;
+		return AS7DeploymentScannerUtility.SCANNER_PREFIX + i;
 	}
 	
 	public void serverChanged(ServerEvent event) {

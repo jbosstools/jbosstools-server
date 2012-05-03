@@ -23,6 +23,7 @@ import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
 
 public class AS7DeploymentScannerUtility {
+	public static final String SCANNER_PREFIX = "JBossToolsScanner"; //$NON-NLS-1$
 
 	public IStatus addDeploymentScanner(final IServer server, String scannerName, final String folder) {
 		ModelNode op = new ModelNode();
@@ -85,6 +86,35 @@ public class AS7DeploymentScannerUtility {
 			ModelNode intVal = list.get(i).get("result"); //$NON-NLS-1$
 			int intVal2 = intVal.asBigInteger().intValue();
 			retval.put(scannerName, new Integer(intVal2));
+		}
+		return retval;
+	}
+
+	
+	public HashMap<String, String> getDeploymentScannersFromServer(final IServer server, boolean all) {
+		ModelNode op = new ModelNode();
+		op.get("operation").set("read-resource"); //$NON-NLS-1$ //$NON-NLS-2$
+		ModelNode addr = op.get("address"); //$NON-NLS-1$
+		addr.add("subsystem", "deployment-scanner");  //$NON-NLS-1$//$NON-NLS-2$
+		addr.add("scanner", "*"); //$NON-NLS-1$ //$NON-NLS-2$
+		final String request = op.toJSONString(true);
+		ModelNode response = null;
+		try {
+			response = executeWithResult(server, request);
+		} catch(Exception e) {
+			return new HashMap<String, String>();
+		}
+		
+		HashMap<String, String> retval=new HashMap<String, String>();
+		List<ModelNode> list = response.asList();
+		for( int i = 0; i <list.size(); i++ ) {
+			ModelNode address = list.get(i).get("address"); //$NON-NLS-1$
+			String scannerName = address.asList().get(1).get("scanner").asString(); //$NON-NLS-1$
+			if( all || scannerName.startsWith(SCANNER_PREFIX)) {
+				ModelNode arr = list.get(i).get("result"); //$NON-NLS-1$
+				String loc = arr.get("path").toString(); //$NON-NLS-1$
+				retval.put(scannerName, loc);
+			}
 		}
 		return retval;
 	}
