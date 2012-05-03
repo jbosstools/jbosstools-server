@@ -26,6 +26,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
+import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 
 /**
@@ -52,6 +53,10 @@ public class JBossConfigurationTableViewer extends TableViewer {
 	public void setFolder(String folder) {
 		setInput(folder);
 		String t = getSelectedConfiguration();
+		if( t == null ) {
+			t = IConstants.DEFAULT_CONFIGURATION;
+			setConfiguration(t);
+		}
 		if( t != null )
 			setSelection(new StructuredSelection(new Object[]{t}));
 	}
@@ -61,8 +66,8 @@ public class JBossConfigurationTableViewer extends TableViewer {
 	}
 
 	public void setConfiguration(String defaultConfiguration) {
-		setSelection(new StructuredSelection(defaultConfiguration));
 		selectedConfiguration = defaultConfiguration;
+		setSelection(new StructuredSelection(defaultConfiguration));
 	}
 
 	private void init() {
