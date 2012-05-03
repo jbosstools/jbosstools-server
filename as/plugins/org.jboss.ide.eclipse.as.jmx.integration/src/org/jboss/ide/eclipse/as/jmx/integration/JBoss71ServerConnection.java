@@ -42,9 +42,11 @@ public class JBoss71ServerConnection extends JBossServerConnection {
 
 	private String user;
 	private String pass;
+	private Map<MBeanServerConnection, JMXConnector> connectionToConnector;
 	protected void initializeEnvironment(IServer s, String user, String pass) throws CredentialException {
 		this.user = user;
 		this.pass = pass;
+		this.connectionToConnector = new HashMap<MBeanServerConnection, JMXConnector>();
 	}
 	
 	protected MBeanServerConnection createConnection(IServer s) throws Exception  {
@@ -64,6 +66,7 @@ public class JBoss71ServerConnection extends JBossServerConnection {
 		try {
 			connector = JMXConnectorFactory.connect(new JMXServiceURL(url), environment);
 			MBeanServerConnection connection = connector.getMBeanServerConnection();
+			this.connectionToConnector.put(connection, connector);
 			return connection;
 		} catch(IOException ioe) {
 			return null;
@@ -71,12 +74,17 @@ public class JBoss71ServerConnection extends JBossServerConnection {
 			IStatus stat = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
 					"Runtime Exception contacting JBoss instance. Please ensure your server is up and exposes its management ports via the -Djboss.bind.address.management=yourwebsite.com system property", re);
 			throw new JMXException(stat);
-		} finally {
-			if( connector != null ) {
-				try {
-					connector.close();
-				} catch(Exception e) { /* Ignore */ }
-			}
 		}
 	}
+	
+	protected void cleanupConnection(IServer server, MBeanServerConnection connection) {
+		super.cleanupConnection(server, connection);
+		if( connectionToConnector.get(connection) != null ) {
+			try {
+				connectionToConnector.remove(connection);
+				connectionToConnector.get(connection).close();
+			} catch(Exception e) { /* Ignore */ }
+		}
+	}
+
 }

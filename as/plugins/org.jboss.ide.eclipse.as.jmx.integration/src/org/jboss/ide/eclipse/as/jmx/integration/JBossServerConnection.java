@@ -132,9 +132,10 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 				.getContextClassLoader();
 		ClassLoader newLoader = getProvider2().getClassloaderRepository().getClassLoader(s);
 		Thread.currentThread().setContextClassLoader(newLoader);
+		MBeanServerConnection connection = null;
 		try {
 			initializeEnvironment(s, user, pass);
-			MBeanServerConnection connection = createConnection(s);
+			connection = createConnection(s);
 			if( connection != null ) {
 				r.run(connection);
 			}
@@ -146,6 +147,7 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 			throw new JMXException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
 					"Error connecting to remote JMX. Please ensure your server is properly configured for JMX access.", e));
 		} finally {
+			cleanupConnection(s, connection);
 			getProvider2().getClassloaderRepository().removeConcerned(s, r);
 			Thread.currentThread().setContextClassLoader(currentLoader);
 		}
@@ -160,6 +162,10 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 			return (MBeanServerConnection)obj;
 		}
 		return null;
+	}
+	
+	protected void cleanupConnection(IServer server, MBeanServerConnection connection) {
+		// Do nothing, provide subclasses ability 
 	}
 	
 	protected void initializeEnvironment(IServer s, String user, String pass) throws CredentialException {
