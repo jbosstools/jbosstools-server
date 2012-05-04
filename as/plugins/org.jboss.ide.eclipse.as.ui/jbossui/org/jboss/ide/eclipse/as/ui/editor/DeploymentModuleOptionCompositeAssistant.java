@@ -774,13 +774,21 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		
 		ModifyListener ml =new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				viewer.setInput("");
+				resetFilterTextState();
+				viewer.setInput(""); //$NON-NLS-1$
 			}
 		};
 		filterCombo.addModifyListener(ml);
 		filterText.addModifyListener(ml);
 		filterCombo.select(1); // select DEPLOYED
 		return root;
+	}
+	
+	public void resetFilterTextState() {
+		int ind = filterCombo.getSelectionIndex();
+		boolean enabled = ind != -1 && 
+				filterCombo.getItem(ind).equals(BY_MODNAME);
+		filterText.setEnabled(enabled);
 	}
 	
 	private void refreshViewer() {
