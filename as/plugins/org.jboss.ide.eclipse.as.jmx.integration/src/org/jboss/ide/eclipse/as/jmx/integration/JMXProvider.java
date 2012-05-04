@@ -38,6 +38,7 @@ import org.eclipse.ui.views.IViewRegistry;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.ui.internal.view.servers.AbstractServerAction;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
@@ -86,9 +87,14 @@ public class JMXProvider {
 			if( quick != null && selection != null && selection.toArray().length == 1 ) {
 				if( selection.getFirstElement() instanceof IServer ) {
 					IServer server = (IServer)selection.getFirstElement();
-					if( ServerUtil.isJBossServerType(server.getServerType()) && !ServerUtil.isJBoss7(server)) {
-						if( menu instanceof MenuManager ) {
-							((MenuManager)quick).add(showInJMXViewAction);
+						
+					ServerExtendedProperties properties = (ServerExtendedProperties) server.loadAdapter(ServerExtendedProperties.class, null);
+					if( properties != null ) {
+						int i = properties.getJMXProviderType();
+						if( i != ServerExtendedProperties.JMX_NULL_PROVIDER ) {
+							if( menu instanceof MenuManager ) {
+								((MenuManager)quick).add(showInJMXViewAction);
+							}
 						}
 					}
 				}
