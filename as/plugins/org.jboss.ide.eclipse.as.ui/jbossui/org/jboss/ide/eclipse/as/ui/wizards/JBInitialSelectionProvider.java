@@ -42,9 +42,8 @@ public class JBInitialSelectionProvider extends InitialSelectionProvider impleme
 		types.addAll(Arrays.asList(serverTypes));
 		
 		// Find the last-selected one
-		IEclipsePreferences defaults = DefaultScope.INSTANCE.getNode(JBossServerUIPlugin.PLUGIN_ID);
 		IEclipsePreferences prefs =  InstanceScope.INSTANCE.getNode(JBossServerUIPlugin.PLUGIN_ID);
-		String last = prefs.get(LAST_SERVER_CREATED_KEY, defaults.get(DEFAULT_INITIAL_SERVER_TYPE, null));
+		String last = prefs.get(LAST_SERVER_CREATED_KEY, null);
 		
 		IServer lastServer = last == null ? null : ServerCore.findServer(last);
 		IServerType lastType = lastServer == null ? null : lastServer.getServerType();
@@ -61,7 +60,8 @@ public class JBInitialSelectionProvider extends InitialSelectionProvider impleme
 	}
 	
 	public IServerType getDefaultServerType() {
-		String newestJBoss = IJBossToolingConstants.SERVER_AS_71;
+		IEclipsePreferences defaults = DefaultScope.INSTANCE.getNode(JBossServerUIPlugin.PLUGIN_ID);
+		String newestJBoss = defaults.get(DEFAULT_INITIAL_SERVER_TYPE, IJBossToolingConstants.SERVER_AS_71);
 		return ServerCore.findServerType(newestJBoss);
 	}
 
