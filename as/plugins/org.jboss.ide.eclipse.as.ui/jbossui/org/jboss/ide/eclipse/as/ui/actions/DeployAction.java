@@ -51,7 +51,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.IObjectActionDelegate;
@@ -169,14 +168,10 @@ public class DeployAction implements IObjectActionDelegate {
 			projs += i.next().getName() + ", "; //$NON-NLS-1$
 		projs = projs.substring(0, projs.length() - 2);
 		
-		int style = SWT.OK | SWT.CANCEL;
-		MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), style);
-		messageBox.setText(ServerActionMessages.DeployActionMessageBoxTitle);
-		messageBox.setMessage(ServerActionMessages.DeployActionMessageBoxMsg);
-		if (messageBox.open() == SWT.OK) {
-			return true;
-		}
-		return false;
+		boolean ret = MessageDialog.openConfirm(Display.getCurrent().getActiveShell(),
+				ServerActionMessages.DeployActionMessageBoxTitle, 
+				ServerActionMessages.DeployActionMessageBoxMsg);
+		return ret;
 	}
 	
 	protected void makeUndeployable() {
