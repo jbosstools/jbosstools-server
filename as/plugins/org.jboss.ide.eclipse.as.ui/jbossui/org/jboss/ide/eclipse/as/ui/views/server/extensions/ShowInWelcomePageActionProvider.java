@@ -94,7 +94,8 @@ public class ShowInWelcomePageActionProvider extends CommonActionProvider {
 				}
 			} else {
 				ServerExtendedProperties props = (ServerExtendedProperties)server.loadAdapter(ServerExtendedProperties.class, new NullProgressMonitor());
-				urlString = props.getWelcomePageUrl();
+				if( props != null )
+					urlString = props.getWelcomePageUrl();
 			}
 		}
 		return urlString;
