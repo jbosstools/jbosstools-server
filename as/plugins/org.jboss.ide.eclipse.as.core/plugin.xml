@@ -511,7 +511,7 @@
             id="org.jboss.ide.eclipse.as.core.server.stopLaunchConfiguration"
             modes="run"
             name="Stop Server"
-            public="true">
+            public="false">
       </launchConfigurationType>
       <launchConfigurationType
             category="JBoss"
