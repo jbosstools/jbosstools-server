@@ -13,6 +13,7 @@ package org.jboss.ide.eclipse.as.ui.wizards;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.wst.server.core.IServer;
@@ -30,7 +31,9 @@ import org.osgi.service.prefs.BackingStoreException;
  *
  */
 public class JBInitialSelectionProvider extends InitialSelectionProvider implements IServerLifecycleListener {
-
+	private static String LAST_SERVER_CREATED_KEY = "org.jboss.ide.eclipse.as.ui.wizards.LAST_SERVER_CREATED"; //$NON-NLS-1$
+	private static String DEFAULT_INITIAL_SERVER_TYPE = "DEFAULT_SERVER_TYPE"; //$NON-NLS-1$
+	
 	public JBInitialSelectionProvider() {
 	}
 	
@@ -39,8 +42,10 @@ public class JBInitialSelectionProvider extends InitialSelectionProvider impleme
 		types.addAll(Arrays.asList(serverTypes));
 		
 		// Find the last-selected one
+		IEclipsePreferences defaults = DefaultScope.INSTANCE.getNode(JBossServerUIPlugin.PLUGIN_ID);
 		IEclipsePreferences prefs =  InstanceScope.INSTANCE.getNode(JBossServerUIPlugin.PLUGIN_ID);
-		String last = prefs.get(LAST_SERVER_CREATED_KEY, null);
+		String last = prefs.get(LAST_SERVER_CREATED_KEY, defaults.get(DEFAULT_INITIAL_SERVER_TYPE, null));
+		
 		IServer lastServer = last == null ? null : ServerCore.findServer(last);
 		IServerType lastType = lastServer == null ? null : lastServer.getServerType();
 		if( lastType != null && types.contains(lastType))
@@ -59,8 +64,6 @@ public class JBInitialSelectionProvider extends InitialSelectionProvider impleme
 		String newestJBoss = IJBossToolingConstants.SERVER_AS_71;
 		return ServerCore.findServerType(newestJBoss);
 	}
-
-	private static String LAST_SERVER_CREATED_KEY = "org.jboss.ide.eclipse.as.ui.wizards.LAST_SERVER_CREATED"; //$NON-NLS-1$
 
 	public void serverAdded(IServer server) {
 		if( server != null ) {
