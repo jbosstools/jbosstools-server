@@ -25,7 +25,6 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.IDebugEventSetListener;
-import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
@@ -41,7 +40,6 @@ import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
@@ -129,7 +127,7 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 		if( props != null && props.canVerifyRemoteModuleState()) {
 			IServerModuleStateVerifier verifier = props.getModuleStateVerifier();
 			if( verifier != null ) {
-				verifier.waitModuleStarted(getServer(), module[module.length-1], 20000);
+				verifier.waitModuleStarted(getServer(), module, 20000);
 			}
 		}
 	}

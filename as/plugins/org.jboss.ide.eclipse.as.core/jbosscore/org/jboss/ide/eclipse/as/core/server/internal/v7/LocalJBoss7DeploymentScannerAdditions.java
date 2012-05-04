@@ -15,7 +15,10 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerEvent;
@@ -116,9 +119,14 @@ public class LocalJBoss7DeploymentScannerAdditions extends UnitedServerListener 
 		return AS7DeploymentScannerUtility.SCANNER_PREFIX + i;
 	}
 	
-	public void serverChanged(ServerEvent event) {
+	public void serverChanged(final ServerEvent event) {
 		if( accepts(event.getServer()) && serverSwitchesToState(event, IServer.STATE_STARTED)){
-			modifyDeploymentScanners(event);
+			new Job("Update AS7 Deployment Scanners") { //$NON-NLS-1$
+				protected IStatus run(IProgressMonitor monitor) {
+					modifyDeploymentScanners(event);
+					return Status.OK_STATUS;
+				}
+			}.schedule();
 		}
 	}
 	

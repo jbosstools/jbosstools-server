@@ -20,7 +20,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.jst.j2ee.project.WebUtilities;
 import org.eclipse.jst.server.core.EJBBean;
 import org.eclipse.jst.server.core.JndiLaunchable;
 import org.eclipse.jst.server.core.JndiObject;
@@ -35,8 +34,8 @@ import org.eclipse.wst.server.core.model.IURLProvider2;
 import org.eclipse.wst.server.core.model.LaunchableAdapterDelegate;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.eclipse.wst.server.core.util.WebResource;
-import org.jboss.ide.eclipse.as.core.modules.EarArtifactAdapter.EarModuleArtifact;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.IModuleArtifact2;
 import org.jboss.ide.eclipse.as.core.server.IMultiModuleURLProvider;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
@@ -63,17 +62,16 @@ public class JBossLaunchAdapter extends LaunchableAdapterDelegate {
 	public Object getLaunchable(IServer server, IModuleArtifact moduleObject) {
 		if (server != null) {
 			ServerDelegate delegate = (ServerDelegate)server.loadAdapter(ServerDelegate.class,null);
-	        if( moduleObject instanceof EarModuleArtifact ) {
-	        	EarModuleArtifact earArt = ((EarModuleArtifact)moduleObject);
-	        	IModuleArtifact webArtifact = earArt.getWebArtifact();
+	        if( moduleObject instanceof IModuleArtifact2 ) {
+	        	IModuleArtifact2 rootArt = ((IModuleArtifact2)moduleObject);
+	        	IModuleArtifact childArt = rootArt.getChildArtifact();
+	        	IModule[] tree = rootArt.getModuleTree(server);
 	        	if( delegate instanceof IMultiModuleURLProvider) {
-	        		URL root = ((IMultiModuleURLProvider)delegate).getModuleRootURL(new IModule[]{
-	        				earArt.getModule(), webArtifact.getModule()
-	        		});
-					return prepareHttpLaunchable(moduleObject, delegate, server, root);
+	        		URL root = ((IMultiModuleURLProvider)delegate).getModuleRootURL(tree);
+					return prepareHttpLaunchable(rootArt, delegate, server, root);
 	        	} else {
 	        		// Cannot calculate root url from application.xml for this server type.
-	        		moduleObject = webArtifact;
+	        		moduleObject = childArt;
 	        	}
 	        }
 			if ((moduleObject instanceof Servlet) ||(moduleObject instanceof WebResource)) {
@@ -213,6 +211,14 @@ public class JBossLaunchAdapter extends LaunchableAdapterDelegate {
 		}
 		public IModule getModule() {
 			return artifact.getModule();
+		}
+		public IModuleArtifact getArtifact() {
+			return artifact;
+		}
+		public IModule[] getModuleTree(IServer server) {
+			return artifact instanceof IModuleArtifact2 ? 
+					((IModuleArtifact2)artifact).getModuleTree(server) : 
+						new IModule[]{getModule()};
 		}
 	}
 }

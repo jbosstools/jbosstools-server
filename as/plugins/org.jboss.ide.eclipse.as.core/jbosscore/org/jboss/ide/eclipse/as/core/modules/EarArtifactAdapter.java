@@ -15,9 +15,11 @@ import org.eclipse.jst.j2ee.internal.web.deployables.WebDeployableArtifactUtil;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IModuleArtifact;
+import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.model.ModuleArtifactAdapterDelegate;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
+import org.jboss.ide.eclipse.as.core.server.IModuleArtifact2;
 
 public class EarArtifactAdapter extends ModuleArtifactAdapterDelegate {
 
@@ -53,18 +55,21 @@ public class EarArtifactAdapter extends ModuleArtifactAdapterDelegate {
 		return null;
 	}
 	
-	public static class EarModuleArtifact implements IModuleArtifact {
+	public static class EarModuleArtifact implements IModuleArtifact2 {
 		private IModule earModule;
-		private IModuleArtifact webArtifact;
-		public EarModuleArtifact(IModule ear, IModuleArtifact web) {
+		private IModuleArtifact childArtifact;
+		public EarModuleArtifact(IModule ear, IModuleArtifact child) {
 			this.earModule = ear;
-			this.webArtifact = web;
+			this.childArtifact = child;
 		}
 		public IModule getModule() {
 			return earModule;
 		}
-		public IModuleArtifact getWebArtifact() {
-			return webArtifact;
+		public IModuleArtifact getChildArtifact() {
+			return childArtifact;
+		}
+		public IModule[] getModuleTree(IServer server) {
+			return new IModule[]{earModule, childArtifact.getModule()};
 		}
 	}
 }

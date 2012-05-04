@@ -57,7 +57,7 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 	
 	public IStatus launch2(IServer server, Object launchable, String launchMode, ILaunch launch) {
 		final JBTCustomHttpLaunchable http = (JBTCustomHttpLaunchable) launchable;
-		wait(server, http.getModule());
+		wait(server, http.getModuleTree(server));
 		
 		if(server.getServerState() == server.STATE_STARTED) {
 		Display.getDefault().asyncExec(new Runnable(){
@@ -73,7 +73,7 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 		return null;
 	}
 	
-	protected void wait(final IServer server, final IModule module) {
+	protected void wait(final IServer server, final IModule[] module) {
 		// Wait for the server to be started. No remote polling necessary. 
 		// Framework poller is handling that. Here just wait in the state event framework
 		waitServerStarted(server);

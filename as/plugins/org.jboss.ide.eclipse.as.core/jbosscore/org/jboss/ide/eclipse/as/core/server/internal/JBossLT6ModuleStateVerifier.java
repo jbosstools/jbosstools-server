@@ -10,9 +10,6 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
@@ -36,7 +33,7 @@ public class JBossLT6ModuleStateVerifier implements IServerModuleStateVerifier {
 	public JBossLT6ModuleStateVerifier() {
 		// Nothing
 	}
-	public boolean isModuleStarted(final IServer server, final IModule module,
+	public boolean isModuleStarted(final IServer server, final IModule[] module,
 			final IProgressMonitor monitor) {
 		final boolean[] result = new boolean[1];
 		result[0] = false;
@@ -56,7 +53,7 @@ public class JBossLT6ModuleStateVerifier implements IServerModuleStateVerifier {
 		return result[0];
 	}
 
-	public void waitModuleStarted(IServer server, IModule module, int maxDelay) {
+	public void waitModuleStarted(IServer server, IModule[] module, int maxDelay) {
 		final NullProgressMonitor monitor = new NullProgressMonitor();
 		Thread t = new Thread(){
 			public void run() {
@@ -81,12 +78,12 @@ public class JBossLT6ModuleStateVerifier implements IServerModuleStateVerifier {
 				t.interrupt();
 		}
 	}
-	public void waitModuleStarted(IServer server, IModule module,
+	public void waitModuleStarted(IServer server, IModule[] module,
 			IProgressMonitor monitor) {
 		waitJMX(server, module);
 	}
 	
-	protected void waitJMX(final IServer server, final IModule module) {
+	protected void waitJMX(final IServer server, final IModule[] module) {
 		IServerJMXRunnable r = new IServerJMXRunnable() {
 			public void run(MBeanServerConnection connection) throws Exception {
 				jmxWaitForDeploymentStarted(server, module, connection, null);
@@ -102,7 +99,7 @@ public class JBossLT6ModuleStateVerifier implements IServerModuleStateVerifier {
 		}
 	}
 
-	protected void jmxWaitForDeploymentStarted(final IServer server, final IModule module,
+	protected void jmxWaitForDeploymentStarted(final IServer server, final IModule[] module,
 			final MBeanServerConnection connection, IProgressMonitor monitor) throws Exception {
 		monitor = monitor == null ? new NullProgressMonitor() : monitor;
 		monitor.beginTask("Ensuring Deployments are Loaded", 10000); //$NON-NLS-1$
@@ -120,26 +117,26 @@ public class JBossLT6ModuleStateVerifier implements IServerModuleStateVerifier {
 		}
 	}
 
-	protected boolean checkDeploymentStarted(final IServer server, final IModule module,
+	protected boolean checkDeploymentStarted(final IServer server, final IModule[] module,
 			final MBeanServerConnection connection, IProgressMonitor monitor) throws Exception {
-		String typeId = module.getModuleType().getId();
+		String typeId = module[module.length-1].getModuleType().getId();
 		if( typeId.equals("wst.web") || typeId.equals("jst.web")) { //$NON-NLS-1$ //$NON-NLS-2$
 			return checkWebModuleStarted(server, module, connection);
 		}
 		return true;
 	}	
 	
-	protected boolean checkWebModuleStarted(IServer server, IModule module, MBeanServerConnection connection) throws Exception {
-		IModule earParent = findEarParent(server, module);
-		if( earParent == null ) {
-			return checkStandaloneWebModuleStarted(server, module, connection);
-		} else {
+	protected boolean checkWebModuleStarted(IServer server, IModule[] module, MBeanServerConnection connection) throws Exception {
+		if( module.length > 1) {
 			return checkNestedWebModuleStarted(server, module, connection);
+		} else {
+			return checkStandaloneWebModuleStarted(server, module, connection);
 		}
 	}
 	
-	protected boolean checkNestedWebModuleStarted(IServer server, IModule module, MBeanServerConnection connection) throws Exception {
-		String mbeanName = "jboss.deployment:id=\"jboss.web.deployment:war=/" + module.getName() + "\",type=Component";  //$NON-NLS-1$//$NON-NLS-2$
+	protected boolean checkNestedWebModuleStarted(IServer server, IModule[] module, MBeanServerConnection connection) throws Exception {
+		String n = module[module.length-1].getName();
+		String mbeanName = "jboss.deployment:id=\"jboss.web.deployment:war=/" + n + "\",type=Component";  //$NON-NLS-1$//$NON-NLS-2$
 		String stateAttribute = "State"; //$NON-NLS-1$
 		Object result = getAttributeResult(connection, mbeanName, stateAttribute);
 		if( result == null || !result.toString().equals("DEPLOYED"))  //$NON-NLS-1$
@@ -147,8 +144,9 @@ public class JBossLT6ModuleStateVerifier implements IServerModuleStateVerifier {
 		return true;
 	}
 
-	protected boolean checkStandaloneWebModuleStarted(IServer server, IModule module, MBeanServerConnection connection) throws Exception {
-		String mbeanName = "jboss.web:J2EEApplication=none,J2EEServer=none,j2eeType=WebModule,name=//localhost/" + module.getName(); //$NON-NLS-1$
+	protected boolean checkStandaloneWebModuleStarted(IServer server, IModule[] module, MBeanServerConnection connection) throws Exception {
+		String n = module[module.length-1].getName();
+		String mbeanName = "jboss.web:J2EEApplication=none,J2EEServer=none,j2eeType=WebModule,name=//localhost/" + n; //$NON-NLS-1$
 		String stateAttribute = "state"; //$NON-NLS-1$
 		Object result = getAttributeResult(connection, mbeanName, stateAttribute);
 		if(result == null || !(result instanceof Integer) || ((Integer)result).intValue() != 1 ) {
@@ -164,22 +162,5 @@ public class JBossLT6ModuleStateVerifier implements IServerModuleStateVerifier {
 		} catch(InstanceNotFoundException infe) {
 			return false;
 		}
-	}
-	
-	/* TODO  Unify findEarParent with findRootModule */
-	protected IModule findEarParent(IServer server, IModule module) {
-		try {
-			IModule[] deployed = server.getModules();
-			ArrayList<IModule> deployedAsList = new ArrayList<IModule>();
-			deployedAsList.addAll(Arrays.asList(deployed));
-			IModule[] possibleParents = server.getRootModules(module, new NullProgressMonitor());
-			for( int i = 0; i < possibleParents.length; i++ ) {
-				if( possibleParents[i].getModuleType().getId().equals("jst.ear") && deployedAsList.contains(possibleParents[i])) //$NON-NLS-1$
-					return possibleParents[i];
-			}
-		} catch(CoreException ce) {
-			// Should never be reached 
-		}
-		return null;
 	}
 }

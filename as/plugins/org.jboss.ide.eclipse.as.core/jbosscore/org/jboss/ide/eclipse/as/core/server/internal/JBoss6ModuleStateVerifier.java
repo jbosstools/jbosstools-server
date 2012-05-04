@@ -18,13 +18,16 @@ import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 
 public class JBoss6ModuleStateVerifier  extends JBossLT6ModuleStateVerifier implements IServerModuleStateVerifier {
 
-	protected boolean checkNestedWebModuleStarted(IServer server, IModule module, MBeanServerConnection connection) throws Exception {
+	@Override
+	protected boolean checkNestedWebModuleStarted(IServer server, IModule module[], MBeanServerConnection connection) throws Exception {
 		boolean val = checkStandaloneWebModuleStarted(server, module, connection);
 		return val;
 	}
 
-	protected boolean checkStandaloneWebModuleStarted(IServer server, IModule module, MBeanServerConnection connection) throws Exception {
-		String mbeanName = "jboss.web:J2EEApplication=none,J2EEServer=none,j2eeType=WebModule,name=//localhost/" + module.getName(); //$NON-NLS-1$
+	@Override
+	protected boolean checkStandaloneWebModuleStarted(IServer server, IModule[] module, MBeanServerConnection connection) throws Exception {
+		String name =module[module.length-1].getName();
+		String mbeanName = "jboss.web:J2EEApplication=none,J2EEServer=none,j2eeType=WebModule,name=//localhost/" + name; //$NON-NLS-1$
 		String stateAttribute = "state"; //$NON-NLS-1$
 		Object result = getAttributeResult(connection, mbeanName, stateAttribute);
 		if(result == null || !(result instanceof Integer) || ((Integer)result).intValue() != 1 ) {

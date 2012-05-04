@@ -11,10 +11,6 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -34,7 +30,7 @@ import org.jboss.ide.eclipse.as.management.core.JBoss7DeploymentState;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
 
 public class JBoss7ModuleStateVerifier implements IServerModuleStateVerifier {
-	public void waitModuleStarted(IServer server, IModule module, int maxDelay) {
+	public void waitModuleStarted(IServer server, IModule[] module, int maxDelay) {
 		final NullProgressMonitor monitor = new NullProgressMonitor();
 		Thread t = new Thread(){
 			public void run() {
@@ -60,16 +56,15 @@ public class JBoss7ModuleStateVerifier implements IServerModuleStateVerifier {
 		}
 	}
 
-	public boolean isModuleStarted(IServer server, IModule module,
+	public boolean isModuleStarted(IServer server, IModule[] module,
 			IProgressMonitor monitor) {
-		IModule rootModule = findRootModule(server, module);
 		try {
-			return isRootModuleStarted(server, rootModule, monitor);
+			return isRootModuleStarted(server, module[0], monitor);
 		} catch(Exception e ) {
 			String er = "Error occurred while checking module state for {0} on server {1}"; //$NON-NLS-1$
 			IStatus s = new Status(
 					IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID,
-					NLS.bind(er, rootModule.getName(), server.getName()), e);
+					NLS.bind(er, module[0].getName(), server.getName()), e);
 			ServerLogger.getDefault().log(server, s);
 			return false;
 		}
@@ -95,23 +90,22 @@ public class JBoss7ModuleStateVerifier implements IServerModuleStateVerifier {
 	}
 
 	
-	public void waitModuleStarted(IServer server, IModule module, IProgressMonitor monitor) {
-		IModule rootModule = findRootModule(server, module);
+	public void waitModuleStarted(IServer server, IModule[] module, IProgressMonitor monitor) {
 		try {
 			JBoss7Server jbossServer = ServerConverter.checkedGetJBossServer(server, JBoss7Server.class);
 			IJBoss7ManagerService service = JBoss7ManagerUtil.getService(server);
-			IPath deployPath = PublishUtil.getDeployPath(new IModule[]{rootModule}, jbossServer);
+			IPath deployPath = PublishUtil.getDeployPath(new IModule[]{module[0]}, jbossServer);
 			boolean waitedOnce = false;
 			
 			while (!monitor.isCanceled()) {
-				boolean done = isRootModuleStarted(server, rootModule, service, deployPath, monitor);
+				boolean done = isRootModuleStarted(server, module[0], service, deployPath, monitor);
 				if (done) {
 					return;
 				}
 				if(!waitedOnce) {
 					String info = "Module {0} on {1} not yet fully deployed. Waiting..."; //$NON-NLS-1$
 					IStatus s = new Status( IStatus.INFO, JBossServerCorePlugin.PLUGIN_ID, 
-						NLS.bind(info, rootModule.getName(), server.getName()),null);
+						NLS.bind(info, module[0].getName(), server.getName()),null);
 					ServerLogger.getDefault().log(server, s);
 				}
 				waitedOnce = true;
@@ -125,33 +119,14 @@ public class JBoss7ModuleStateVerifier implements IServerModuleStateVerifier {
 			String warning = "Module {0} on {1} still not ready to be shown in browser. Aborting delay."; //$NON-NLS-1$
 			IStatus s = new Status(
 					IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, 
-					NLS.bind(warning, rootModule.getName(), server.getName()), null);
+					NLS.bind(warning, module[0].getName(), server.getName()), null);
 			ServerLogger.getDefault().log(server, s);
 		} catch (Exception e) {
 			String er = "Error occurred while waiting for {0} to start on server {1}"; //$NON-NLS-1$
 			IStatus s = new Status(
 					IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID,
-					NLS.bind(er, rootModule.getName(), server.getName()), e);
+					NLS.bind(er, module[0].getName(), server.getName()), e);
 			ServerLogger.getDefault().log(server, s);
 		}
 	}
-	
-	private IModule findRootModule(IServer server, IModule module) {
-		IModule[] rootMods = null;
-		try {
-			rootMods = server.getRootModules(module, new NullProgressMonitor());
-		} catch( CoreException ce ) {
-			return module; // No need to log this
-		}
-		if( rootMods == null || rootMods.length == 0 )
-			return module;
-		List<IModule> serverHas = Arrays.asList(server.getModules());
-		for( int i = 0; i < rootMods.length; i++ ) {
-			if( serverHas.contains(rootMods[i]))
-				// Grab the first parent module that's already on the server
-				return rootMods[i];
-		}
-		return module;
-	}
-
 }

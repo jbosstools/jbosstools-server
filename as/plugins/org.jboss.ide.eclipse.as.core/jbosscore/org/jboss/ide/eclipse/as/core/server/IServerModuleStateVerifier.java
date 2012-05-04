@@ -23,17 +23,17 @@ public interface IServerModuleStateVerifier {
 	/**
 	 * Check to see if the module is started on the server
 	 */
-	public boolean isModuleStarted(IServer server, IModule module, IProgressMonitor monitor);
+	public boolean isModuleStarted(IServer server, IModule module[], IProgressMonitor monitor);
 	
 	/**
 	 * Wait until the module is started on the server
 	 */
-	public void waitModuleStarted(IServer server, IModule module, IProgressMonitor monitor);
+	public void waitModuleStarted(IServer server, IModule module[], IProgressMonitor monitor);
 	
 	/**
 	 * Wait until the module is started on the server with a max delay as provided
 	 */
-	public void waitModuleStarted(IServer server, IModule module, int maxDelay);
+	public void waitModuleStarted(IServer server, IModule module[], int maxDelay);
 	
 	
 }
