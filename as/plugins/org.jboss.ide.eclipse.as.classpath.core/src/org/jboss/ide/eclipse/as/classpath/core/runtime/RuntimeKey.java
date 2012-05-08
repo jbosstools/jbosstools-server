@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.classpath.core;
+package org.jboss.ide.eclipse.as.classpath.core.runtime;
 
 import org.eclipse.core.runtime.IPath;
 

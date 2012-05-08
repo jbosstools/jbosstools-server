@@ -10,20 +10,17 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.classpath.core;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.runtime.ILog;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.IRuntimeLifecycleListener;
 import org.eclipse.wst.server.core.ServerCore;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.RuntimeClasspathCache;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.RuntimeKey;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -37,32 +34,6 @@ public class ClasspathCorePlugin extends Plugin {
 	// The shared instance
 	private static ClasspathCorePlugin plugin;
 	
-	private static Map<RuntimeKey, IClasspathEntry[]> runtimeClasspaths;
-	
-	private IRuntimeLifecycleListener listener = new IRuntimeLifecycleListener() {
-		
-		public void runtimeRemoved(IRuntime runtime) {
-			removeRuntimeClasspath(runtime);
-		}
-		
-		public void runtimeChanged(IRuntime runtime) {
-			removeRuntimeClasspath(runtime);
-		}
-		
-		public void runtimeAdded(IRuntime runtime) {
-			
-		}
-		
-		private void removeRuntimeClasspath(IRuntime runtime) {
-			if (runtime == null) {
-				return;
-			}
-			RuntimeKey key = getRuntimeKey(runtime);
-			if (key != null) {
-				runtimeClasspaths.remove(key);
-			}
-		}
-	};
 	/**
 	 * The constructor
 	 */
@@ -76,8 +47,7 @@ public class ClasspathCorePlugin extends Plugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		runtimeClasspaths = new HashMap<RuntimeKey, IClasspathEntry[]>();
-		ServerCore.addRuntimeLifecycleListener(listener);
+		ServerCore.addRuntimeLifecycleListener(RuntimeClasspathCache.getInstance());
 	}
 
 	/*
@@ -87,8 +57,7 @@ public class ClasspathCorePlugin extends Plugin {
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		super.stop(context);
-		runtimeClasspaths = null;
-		ServerCore.removeRuntimeLifecycleListener(listener);
+		ServerCore.removeRuntimeLifecycleListener(RuntimeClasspathCache.getInstance());
 	}
 
 	/**
@@ -107,17 +76,11 @@ public class ClasspathCorePlugin extends Plugin {
 	}
 
 	public static Map<RuntimeKey, IClasspathEntry[]> getRuntimeClasspaths() {
-		return runtimeClasspaths;
+		return RuntimeClasspathCache.getInstance().getRuntimeClasspaths();
 	}
 	
 	public static RuntimeKey getRuntimeKey(IRuntime runtime) {
-		if( runtime == null ) 
-			return null;
-
-		IJBossServerRuntime jbsrt = (IJBossServerRuntime)runtime.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
-		IPath loc = runtime.getLocation();
-		String rtID  = runtime.getRuntimeType().getId();
-		IPath configPath = jbsrt == null ? null : jbsrt.getConfigurationFullPath();
-		return new RuntimeKey(loc, configPath, rtID);
+		return RuntimeClasspathCache.getRuntimeKey(runtime);
 	}
+	
 }

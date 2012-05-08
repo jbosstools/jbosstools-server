@@ -29,11 +29,10 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jst.server.core.RuntimeClasspathProviderDelegate;
 import org.eclipse.wst.server.core.IRuntime;
-import org.jboss.ide.eclipse.as.classpath.core.ClasspathConstants;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.classpath.core.Messages;
-import org.jboss.ide.eclipse.as.classpath.core.RuntimeKey;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel.IDefaultPathProvider;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 
 /**
  * This class uses the "throw everything you can find" strategy
@@ -45,7 +44,7 @@ import org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathMod
  */
 public class ClientAllRuntimeClasspathProvider 
 		extends RuntimeClasspathProviderDelegate
-		implements ClasspathConstants {
+		implements IJBossServerConstants {
 
 	public ClientAllRuntimeClasspathProvider() {
 		// TODO Auto-generated constructor stub
