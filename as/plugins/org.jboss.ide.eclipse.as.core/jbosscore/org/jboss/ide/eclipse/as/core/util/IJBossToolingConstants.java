@@ -29,6 +29,9 @@ public interface IJBossToolingConstants {
 	public static final String EAP_43 = "org.jboss.ide.eclipse.as.runtime.eap.43"; //$NON-NLS-1$
 	public static final String EAP_50 = "org.jboss.ide.eclipse.as.runtime.eap.50"; //$NON-NLS-1$
 	public static final String EAP_60 = "org.jboss.ide.eclipse.as.runtime.eap.60"; //$NON-NLS-1$
+	public static final String[] ALL_JBOSS_RUNTIMES = new String[] {
+		AS_32,AS_40,AS_42,AS_50,AS_51,AS_60,AS_70,AS_71,EAP_43,EAP_50,EAP_60
+	};
 	// NEW_SERVER_ADAPTER Add the new runtime constant above this line
 	
 	public static final String SERVER_AS_PREFIX = "org.jboss.ide.eclipse.as."; //$NON-NLS-1$
@@ -44,6 +47,10 @@ public interface IJBossToolingConstants {
 	public static final String SERVER_EAP_43 = "org.jboss.ide.eclipse.as.eap.43"; //$NON-NLS-1$
 	public static final String SERVER_EAP_50 = "org.jboss.ide.eclipse.as.eap.50"; //$NON-NLS-1$
 	public static final String SERVER_EAP_60 = "org.jboss.ide.eclipse.as.eap.60"; //$NON-NLS-1$
+	public static final String[] ALL_JBOSS_SERVERS = new String[] {
+		SERVER_AS_32,SERVER_AS_40,SERVER_AS_42,SERVER_AS_50,SERVER_AS_51,
+		SERVER_AS_60,SERVER_AS_70,SERVER_AS_71,SERVER_EAP_43,SERVER_EAP_50,SERVER_EAP_60
+	};
 	// NEW_SERVER_ADAPTER Add the new server id above this line
 	
 	public static final String DEPLOY_ONLY_RUNTIME = "org.jboss.ide.eclipse.as.runtime.stripped"; //$NON-NLS-1$
