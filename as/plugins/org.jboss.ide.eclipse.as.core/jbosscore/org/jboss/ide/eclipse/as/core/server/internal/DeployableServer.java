@@ -212,7 +212,7 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 			contextRoot = webModule.getContextRoot();
 		}
 		if( !contextRoot.equals("/") && !contextRoot.equals("./")) //$NON-NLS-1$ //$NON-NLS-2$
-			url += "/"+contextRoot; //$NON-NLS-1$
+			url += contextRoot.startsWith("/") ? contextRoot : "/"+contextRoot; //$NON-NLS-1$ //$NON-NLS-2$
 		if (!url.endsWith("/")) //$NON-NLS-1$
 			url += "/"; //$NON-NLS-1$
 
