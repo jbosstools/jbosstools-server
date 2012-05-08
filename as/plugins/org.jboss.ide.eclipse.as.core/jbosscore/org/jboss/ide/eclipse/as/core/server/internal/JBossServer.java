@@ -71,6 +71,7 @@ public class JBossServer extends DeployableServer
 		setUsername("admin"); //$NON-NLS-1$
 		boolean defaultServerDeployment = isAS50() || isEAP(getServer());
 		setDeployLocationType(defaultServerDeployment ? IDeployableServer.DEPLOY_SERVER : IDeployableServer.DEPLOY_METADATA);
+		setAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
 	}
 	
 	public static boolean isEAP(IServer server) {

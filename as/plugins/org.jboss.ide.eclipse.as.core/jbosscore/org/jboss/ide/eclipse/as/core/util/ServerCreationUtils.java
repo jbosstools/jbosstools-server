@@ -1,6 +1,14 @@
+/******************************************************************************* 
+ * Copyright (c) 2012 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/
 package org.jboss.ide.eclipse.as.core.util;
-
-import java.util.HashMap;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -22,24 +30,6 @@ import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 
 public class ServerCreationUtils {
 
-	public static HashMap<String, String> runtimeServerTypeMap = 
-		new HashMap<String, String>();
-	static {
-		runtimeServerTypeMap.put(IJBossToolingConstants.AS_32, IJBossToolingConstants.SERVER_AS_32);
-		runtimeServerTypeMap.put(IJBossToolingConstants.AS_40, IJBossToolingConstants.SERVER_AS_40);
-		runtimeServerTypeMap.put(IJBossToolingConstants.AS_42, IJBossToolingConstants.SERVER_AS_42);
-		runtimeServerTypeMap.put(IJBossToolingConstants.AS_50, IJBossToolingConstants.SERVER_AS_50);
-		runtimeServerTypeMap.put(IJBossToolingConstants.AS_51, IJBossToolingConstants.SERVER_AS_51);
-		runtimeServerTypeMap.put(IJBossToolingConstants.AS_60, IJBossToolingConstants.SERVER_AS_60);
-		runtimeServerTypeMap.put(IJBossToolingConstants.AS_70, IJBossToolingConstants.SERVER_AS_70);
-		runtimeServerTypeMap.put(IJBossToolingConstants.AS_71, IJBossToolingConstants.SERVER_AS_71);
-		runtimeServerTypeMap.put(IJBossToolingConstants.EAP_43, IJBossToolingConstants.SERVER_EAP_43);
-		runtimeServerTypeMap.put(IJBossToolingConstants.EAP_50, IJBossToolingConstants.SERVER_EAP_50);
-		runtimeServerTypeMap.put(IJBossToolingConstants.EAP_60, IJBossToolingConstants.SERVER_EAP_60);
-		// NEW_SERVER_ADAPTER Add the server / runtime mapping here 
-	}
-	
-	
 	public static IServer createDeployOnlyServer(String deployLocation, String tempDeployLocation, 
 			String rtName, String serverName) throws CoreException {
 		IRuntimeType rt = ServerCore.findRuntimeType(IJBossToolingConstants.DEPLOY_ONLY_RUNTIME);
@@ -54,10 +44,6 @@ public class ServerCreationUtils {
 		swc.setAttribute(DeployableServer.TEMP_DEPLOY_DIRECTORY, tempDeployLocation);
 		IServer server = swc.save(true, null);
 		return server;
-	}
-	
-	public static IServer createServer2(String name, IRuntime currentRuntime) throws CoreException {
-		return createServer2(currentRuntime, runtimeServerTypeMap.get(currentRuntime.getRuntimeType().getId()), name);
 	}
 	
 	public static IServer createServer2(IRuntime currentRuntime, String serverTypeId) throws CoreException {

@@ -130,7 +130,7 @@ public class ServerRuntimeUtils extends TestCase {
 	
 	public static IServer createMockJBoss7Server(String deployLocation, String tempDeployLocation) throws CoreException {
 		IRuntime runtime = RuntimeUtils.createRuntime(IJBossToolingConstants.AS_70, "/", "default");
-		IServer s = ServerCreationUtils.createServer2(IJBossToolingConstants.SERVER_AS_70, runtime);
+		IServer s = ServerCreationUtils.createServer2(runtime, IJBossToolingConstants.SERVER_AS_70);
 		IServerWorkingCopy swc = s.createWorkingCopy();
 		swc.setServerConfiguration(null);
 		swc.setAttribute(DeployableServer.DEPLOY_DIRECTORY, deployLocation);
