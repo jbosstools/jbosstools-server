@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
@@ -56,6 +57,8 @@ import org.jboss.ide.eclipse.as.classpath.core.runtime.RuntimeKey;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel.IDefaultPathProvider;
 import org.jboss.ide.eclipse.as.classpath.ui.ClasspathUIPlugin;
 import org.jboss.ide.eclipse.as.classpath.ui.Messages;
+import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.preferences.ServerTypePreferencePage;
 import org.osgi.service.prefs.BackingStoreException;
@@ -272,15 +275,35 @@ public class CustomClasspathPreferencePage extends ServerTypePreferencePage {
 			protected EntryFilesetDialog(Shell parentShell,
 					String defaultLocation, IServer server) {
 				super(parentShell, defaultLocation, server);
+				setRequiresName(false);
 			}
 			public Fileset getFileset() {
 				return new CustomRuntimeClasspathModel.PathProviderFileset(fileset);
+			}
+			protected void configureShell(Shell shell) {
+				super.configureShell(shell);
+				shell.setText("New Default Classpath Fileset Entry");
+			}
+
+			protected Control createDialogArea(Composite parent) {
+				Control c = super.createDialogArea(parent);
+				setTitle("New Default Classpath Fileset Entry");
+				setMessage("Create a new classpath fileset which can be added to all projects targeting this runtime-type");
+				return c;
+			}
+			protected String getDefaultIncludesPattern() {
+				return "**/*.jar"; //$NON-NLS-1$
 			}
 		}
 		
 		@Override
 		protected void addPressed() {
-			FilesetDialog d = new EntryFilesetDialog(addButton.getShell(), "", null); //$NON-NLS-1$
+			String id = getCurrentId();
+			IRuntimeType rtt = id == null ? null : ServerCore.findRuntimeType(id);
+			ServerExtendedProperties props = rtt == null ? null : 
+				(ServerExtendedProperties)Platform.getAdapterManager().getAdapter(rtt, ServerExtendedProperties.class);
+			String defaultLocation = props == null ? "" : props.getNewClasspathFilesetDefaultRootFolder();
+			FilesetDialog d = new EntryFilesetDialog(addButton.getShell(), defaultLocation, null);
 			d.setShowViewer(false);
 			if( d.open() == Window.OK) {
 				// For now, just add fileset

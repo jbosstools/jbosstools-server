@@ -44,12 +44,14 @@ public class FilesetDialog extends TitleAreaDialog {
 	private FilesetPreviewComposite preview;
 	private IServer server;
 	private boolean showViewer = true;
+	
+	private boolean requiresName = true;
 	protected FilesetDialog(Shell parentShell, String defaultLocation, IServer server) {
 		super(parentShell);
 		this.fileset = new Fileset();
 		this.fileset.setFolder(defaultLocation);
 		this.fileset.setServer(server);
-		this.fileset.setIncludesPattern("**/*.xml"); //$NON-NLS-1$
+		this.fileset.setIncludesPattern(getDefaultIncludesPattern());
 		this.server = server;
 	}
 	protected FilesetDialog(Shell parentShell, Fileset fileset) {
@@ -57,6 +59,15 @@ public class FilesetDialog extends TitleAreaDialog {
 		this.fileset = (Fileset)fileset.clone();
 		this.server = fileset.getServer();
 	}
+	
+	protected String getDefaultIncludesPattern() {
+		return "**/*.xml"; //$NON-NLS-1$
+	}
+	
+	public void setRequiresName(boolean required) {
+		requiresName = required;
+	}
+	
 	public void setShowViewer(boolean val) {
 		showViewer = val;
 	}
@@ -83,8 +94,9 @@ public class FilesetDialog extends TitleAreaDialog {
 		main.setLayout(new GridLayout(3, false));
 		main.setLayoutData(new GridData(GridData.FILL_BOTH));
 		fillArea(main);
-
-		nameText.setText(fileset.getName());
+		
+		if( requiresName )
+			nameText.setText(fileset.getName());
 		folderText.setText(fileset.getRawFolder());
 		includesText.setText(fileset.getIncludesPattern());
 		excludesText.setText(fileset.getExcludesPattern());
@@ -101,7 +113,8 @@ public class FilesetDialog extends TitleAreaDialog {
 				textModified();
 			}
 		};
-		nameText.addModifyListener(mListener);
+		if( requiresName )
+			nameText.addModifyListener(mListener);
 		folderText.addModifyListener(mListener);
 		includesText.addModifyListener(mListener);
 		excludesText.addModifyListener(mListener);
@@ -134,7 +147,8 @@ public class FilesetDialog extends TitleAreaDialog {
 	}
 	
 	protected void textModified() {
-		name = nameText.getText();
+		if( requiresName )
+			name = nameText.getText();
 		dir = folderText.getText();
 		includes = includesText.getText();
 		excludes = excludesText.getText();
@@ -148,7 +162,7 @@ public class FilesetDialog extends TitleAreaDialog {
 	
 	protected void validate() {
 		String error = null;
-		if( name.equals("")) //$NON-NLS-1$
+		if( requiresName && name.equals("")) //$NON-NLS-1$
 			error = Messages.FilesetsDialogEmptyName;
 		else if( dir.equals("")) //$NON-NLS-1$
 			error = Messages.FilesetsDialogEmptyFolder;
@@ -166,12 +180,14 @@ public class FilesetDialog extends TitleAreaDialog {
 	}
 	
 	protected void fillArea(Composite main) {
-		Label nameLabel = new Label(main, SWT.NONE);
-		nameLabel.setText(Messages.FilesetsNewName);
-
-		nameText = new Text(main, SWT.BORDER);
-		nameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-
+		
+		if( requiresName ) {
+			Label nameLabel = new Label(main, SWT.NONE);
+			nameLabel.setText(Messages.FilesetsNewName);
+			nameText = new Text(main, SWT.BORDER);
+			nameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+		}
+		
 		Label folderLabel = new Label(main, SWT.NONE);
 		folderLabel.setText(Messages.FilesetsNewRootDir);
 

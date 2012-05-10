@@ -60,7 +60,7 @@ public class Fileset implements Cloneable {
 		return getFolder(folder, runtime, true);
 	}
 	public static String getFolder(String folder, IRuntime runtime, boolean ignoreError) {
-		String tmp = new ConfigNameResolver().performSubstitutions(folder, runtime.getName(), ignoreError);
+		String tmp = new ConfigNameResolver().performSubstitutions(folder, runtime == null ? null : runtime.getName(), ignoreError);
 		IPath p = new Path(tmp);
 		if( !p.isAbsolute() && runtime != null ) {
 			p = runtime.getLocation().append(p);

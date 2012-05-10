@@ -33,6 +33,11 @@ public class JBossAS7ExtendedProperties extends JBossExtendedProperties {
 		return IJBossRuntimeResourceConstants.AS7_STANDALONE + "/" + IJBossRuntimeResourceConstants.CONFIGURATION; //$NON-NLS-1$
 	}
 	
+	public String getNewClasspathFilesetDefaultRootFolder() {
+		return IJBossRuntimeResourceConstants.AS7_MODULES + "/org"; //$NON-NLS-1$
+	}
+
+	
 	public int getJMXProviderType() {
 		return JMX_DEFAULT_PROVIDER;
 	}

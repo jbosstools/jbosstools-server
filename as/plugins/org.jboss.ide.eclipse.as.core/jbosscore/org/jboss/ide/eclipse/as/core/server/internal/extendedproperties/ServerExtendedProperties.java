@@ -31,7 +31,10 @@ public class ServerExtendedProperties {
 	}
 
 	public String getNewFilesetDefaultRootFolder() {
-		return "servers/${jboss_config}"; //$NON-NLS-1$
+		return "${jboss_config_dir}"; //$NON-NLS-1$
+	}
+	public String getNewClasspathFilesetDefaultRootFolder() {
+		return getNewFilesetDefaultRootFolder();
 	}
 	
 	public static final int JMX_NULL_PROVIDER = -1;

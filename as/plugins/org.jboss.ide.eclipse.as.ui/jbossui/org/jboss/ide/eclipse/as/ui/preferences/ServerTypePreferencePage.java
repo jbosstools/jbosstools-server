@@ -181,7 +181,7 @@ public abstract class ServerTypePreferencePage extends PreferencePage implements
 		}
 		
 		public String getDescriptionLabel() {
-			return "Desc label";
+			return "";
 		}
 		protected void createRightColumnButtons(Composite c) {
 			insertAddRemove(c);

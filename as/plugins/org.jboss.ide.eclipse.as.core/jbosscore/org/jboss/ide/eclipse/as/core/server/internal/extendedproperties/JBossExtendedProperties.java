@@ -59,7 +59,7 @@ public class JBossExtendedProperties extends ServerExtendedProperties {
 	}
 	
 	protected ServerBeanLoader getServerBeanLoader() {
-		return new ServerBeanLoader(runtime.getLocation().toFile());
+		return runtime == null ? null : new ServerBeanLoader(runtime.getLocation().toFile());
 	}
 	
 	/**

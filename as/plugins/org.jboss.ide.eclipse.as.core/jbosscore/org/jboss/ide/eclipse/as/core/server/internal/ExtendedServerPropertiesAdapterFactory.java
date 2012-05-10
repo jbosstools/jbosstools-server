@@ -14,8 +14,10 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
+import org.eclipse.wst.server.core.IServerType;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossAS6ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossAS710ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossAS7ExtendedProperties;
@@ -53,6 +55,10 @@ public class ExtendedServerPropertiesAdapterFactory implements IAdapterFactory, 
 		} else if( adaptableObject instanceof IRuntime ) {
 			typeId = ((IRuntime)adaptableObject).getRuntimeType().getId();
 			r = (IRuntime)adaptableObject;
+		} else if( adaptableObject instanceof IRuntimeType ) {
+			typeId = ((IRuntimeType)adaptableObject).getId();
+		} else if( adaptableObject instanceof IServerType ) {
+			typeId = ((IServerType)adaptableObject).getId();
 		}
 		IAdaptable adaptable = s == null ? r : s;
 		if( typeId != null ) {
