@@ -23,7 +23,7 @@ import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
 
 public class AS7DeploymentScannerUtility {
-	public static final String SCANNER_PREFIX = "JBossToolsScanner"; //$NON-NLS-1$
+	public static final String SCANNER_PREFIX = "jbosstoolsscanner"; //$NON-NLS-1$
 
 	public IStatus addDeploymentScanner(final IServer server, String scannerName, final String folder) {
 		ModelNode op = new ModelNode();
