@@ -327,7 +327,7 @@ public class LocalCopyCallback implements IPublishCopyCallbackHandler {
 		return new IStatus[] {Status.OK_STATUS};
 	}
 
-	public IStatus[] touchResource(IPath path) {
+	public IStatus[] touchResource(IPath path, IProgressMonitor monitor) {
 		File tmp = deployRootFolder.append(path).toFile();
 		if( !tmp.exists())
 			tmp = deployRootFolder.toFile();

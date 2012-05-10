@@ -15,6 +15,7 @@ import java.io.FileFilter;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.as.core.server.IPublishCopyCallbackHandler;
@@ -49,7 +50,7 @@ public class JSTPublisherXMLToucher {
 		}
 		public void touchDescriptors(IPath moduleRoot, IPublishCopyCallbackHandler handler) {
 			for( int i = 0; i < paths.length; i++ ) {
-				handler.touchResource(paths[i]);
+				handler.touchResource(paths[i], new NullProgressMonitor());
 			}
 		}
 	}

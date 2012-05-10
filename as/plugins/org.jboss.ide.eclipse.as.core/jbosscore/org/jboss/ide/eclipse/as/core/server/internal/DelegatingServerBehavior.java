@@ -189,7 +189,8 @@ public class DelegatingServerBehavior extends DeployableServerBehavior {
 		IPath depPath = PublishUtil.getDeployPath(method, module, ds);
 		if( ServerModelUtilities.isBinaryModule(module[module.length-1]) || ds.zipsWTPDeployments()) {
 			// touch the file
-			method.getCallbackHandler(depPath.removeLastSegments(1), getServer()).touchResource(new Path(depPath.lastSegment()));
+			method.getCallbackHandler(depPath.removeLastSegments(1), getServer())
+				.touchResource(new Path(depPath.lastSegment()), monitor);
 		} else {
 			// touch the descriptor
 			IPublishCopyCallbackHandler callback = method.getCallbackHandler(AbstractServerToolsPublisher.getRootPath(depPath).append(depPath), getServer());

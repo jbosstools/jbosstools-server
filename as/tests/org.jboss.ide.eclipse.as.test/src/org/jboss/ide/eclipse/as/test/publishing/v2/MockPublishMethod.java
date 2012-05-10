@@ -106,7 +106,7 @@ public class MockPublishMethod extends AbstractPublishMethod {
 			return new IStatus[]{};
 		}
 		
-		public IStatus[] touchResource(IPath path) {
+		public IStatus[] touchResource(IPath path, IProgressMonitor monitor) {
 //			System.out.println("touching " + root.append(path));
 			IPath path2 = root.append(path);
 			if( !changed.contains(path2.makeRelative()))
