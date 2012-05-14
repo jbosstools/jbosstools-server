@@ -62,6 +62,7 @@ public class ChangePortDialog extends TitleAreaDialog {
 	private ChangePortDialogInfo info;
 	private String selected;
 	private XPathQuery currentQuery;
+	private XPathQuery[] allQueries;
 	private boolean queriesLoaded = false;
 	private List listWidget;
 	private Label currentValue;
@@ -126,9 +127,9 @@ public class ChangePortDialog extends TitleAreaDialog {
 		ArrayList<String> list = new ArrayList<String>();
 		XPathCategory[] categories = XPathModel.getDefault().getCategories(info.server);
 		for( int i = 0; i < categories.length; i++ ) {
-			XPathQuery[] queries = categories[i].getQueries();
-			for( int j = 0; j < queries.length; j++ ) {
-				list.add(categories[i].getName() + IPath.SEPARATOR + queries[j].getName());
+			allQueries = categories[i].getQueries();
+			for( int j = 0; j < allQueries.length; j++ ) {
+				list.add(categories[i].getName() + IPath.SEPARATOR + allQueries[j].getName());
 			}
 		}
 		String[] stuff = (String[]) list.toArray(new String[list.size()]);
@@ -186,7 +187,7 @@ public class ChangePortDialog extends TitleAreaDialog {
 							throws InvocationTargetException, InterruptedException {
 						monitor.beginTask(Messages.ChangePortDialog_LoadingTaskName, items.length);
 						for( int i = 0; i < items.length; i++ ) {
-							countMatches(currentQuery);
+							countMatches(allQueries[i]);
 							monitor.worked(1);
 						}
 						monitor.done();
@@ -228,6 +229,7 @@ public class ChangePortDialog extends TitleAreaDialog {
 		if( query == null )
 			return String.valueOf(-1);
 
+		query.clearCache();
 		int count = 0;
 		XPathFileResult[] fResults = query.getResults();
 		for( int i = 0; i < fResults.length; i++ ) {

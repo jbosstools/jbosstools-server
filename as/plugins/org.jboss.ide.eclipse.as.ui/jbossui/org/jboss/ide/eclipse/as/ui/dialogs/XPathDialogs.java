@@ -186,7 +186,7 @@ public class XPathDialogs {
 			super(parentShell);
 			setShellStyle(getShellStyle() | SWT.RESIZE);
 			this.server = server;
-			repository = new XMLDocumentRepository(XMLDocumentRepository.getDefault());
+			repository = new XMLDocumentRepository(null);
 			if( original != null ) {
 				this.original = original;
 				this.originalName = this.name = original.getName();
