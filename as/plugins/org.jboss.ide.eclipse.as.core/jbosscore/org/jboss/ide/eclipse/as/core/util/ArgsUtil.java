@@ -31,7 +31,9 @@ public class ArgsUtil {
 	public static final String QUOTE="\""; //$NON-NLS-1$
 	
 	public static String[] parse(String s) {
-		s = s.trim();
+		if( s == null )
+			return new String[0];
+		
 		try {
 			ArrayList<String> l = new ArrayList<String>();
 			int length = s.length();
