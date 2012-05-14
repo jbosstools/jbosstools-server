@@ -98,10 +98,12 @@ public class JBoss70ConnectionProvider extends AbstractJBossJMXConnectionProvide
 						else
 							disconnect();
 					} catch( IOException ioe) {
+						Status s = null;
 						if( started ) 
-							JBossServerCorePlugin.log(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Error connecting to this server's JMX service: " + event.getServer().getName(), ioe));
+							s = (new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Unable to reach JBoss instance. Please ensure your server is up and exposes its management ports via the -Djboss.bind.address.management=yourwebsite.com system property."));
 						else
-							JBossServerCorePlugin.log(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Error disconnecting from this server's JMX service: " + event.getServer().getName(), ioe));
+							s = (new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Error disconnecting from this server's JMX service: " + event.getServer().getName(), ioe));
+						JBossServerCorePlugin.log(s);
 					}
 				}
 			}

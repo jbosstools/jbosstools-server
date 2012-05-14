@@ -72,7 +72,7 @@ public class JBoss71ServerConnection extends JBossServerConnection {
 			return null;
 		} catch( RuntimeException re) {
 			IStatus stat = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
-					"Runtime Exception contacting JBoss instance. Please ensure your server is up and exposes its management ports via the -Djboss.bind.address.management=yourwebsite.com system property", re);
+					"Unable to reach JBoss instance. Please ensure your server is up and exposes its management ports via the -Djboss.bind.address.management=yourwebsite.com system property", re);
 			throw new JMXException(stat);
 		}
 	}
