@@ -60,7 +60,7 @@ public class ModelTruezipBridge {
 	}
 	public static FileWrapperStatusPair fullFilesetBuild(final IArchiveFileSet fileset, IProgressMonitor monitor, boolean sync) {
 		FileWrapper[] files = fileset.findMatchingPaths();
-		IStatus[] s = copyFiles(fileset, files, monitor, false);
+		IStatus[] s = copyFiles(fileset, files, monitor, false, false);
 		if( sync )
 			TrueZipUtil.sync();
 		return new FileWrapperStatusPair( files, s );
@@ -130,14 +130,14 @@ public class ModelTruezipBridge {
 		return new FileWrapperStatusPair( files2, errorsArr);
 	}
 
-	public static IStatus[] copyFiles(IArchiveFileSet fileset, final FileWrapper[] files, IProgressMonitor monitor, boolean sync) {
+	public static IStatus[] copyFiles(IArchiveFileSet fileset, final FileWrapper[] files, IProgressMonitor monitor, boolean updateTimestamps, boolean sync) {
 		monitor.beginTask(ArchivesCore.bind(ArchivesCoreMessages.CopyingCountFiles,
 				new Integer(files.length).toString()), files.length * 100);
 		boolean b = true;
 		ArrayList<IStatus> list = new ArrayList<IStatus>();
 		final File[] destFiles = getFiles(files, fileset);
 		for( int i = 0; i < files.length; i++ ) {
-			b = TrueZipUtil.copyFile(files[i].getAbsolutePath(), destFiles[i]);
+			b = TrueZipUtil.copyFile(files[i].getAbsolutePath(), destFiles[i], updateTimestamps);
 			if( b == false ) {
 				list.add(new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID,
 						ArchivesCore.bind(ArchivesCoreMessages.FileCopyFailed,

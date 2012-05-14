@@ -52,13 +52,13 @@ public class TrueZipUtil {
 
 
 	public static boolean copyFile(String source, IPath dest) throws IOException {
-		return copyFile(source, getFile(dest));
+		return copyFile(source, getFile(dest), true);
 	}
 
-	public static boolean copyFile(String source, de.schlichtherle.io.File file) {
+	public static boolean copyFile(String source, de.schlichtherle.io.File file, boolean updateTimestamps) {
 		file.getParentFile().mkdirs();
 		boolean b = new de.schlichtherle.io.File(source, ArchiveDetector.NULL).archiveCopyAllTo(file);
-	    return b && updateParentTimestamps(file);
+		return  b && (updateTimestamps ? updateParentTimestamps(file) : true);
 	}
 
 	public static boolean touchFile(IPath path) {

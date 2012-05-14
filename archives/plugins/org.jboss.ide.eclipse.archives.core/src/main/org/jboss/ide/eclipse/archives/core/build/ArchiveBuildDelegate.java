@@ -343,7 +343,7 @@ public class ArchiveBuildDelegate {
 				}
 				IStatus[] errors2 = ModelTruezipBridge.copyFiles(matchingFilesets[j],
 						matchingFilesets[j].getMatches(globalPath),
-						new NullProgressMonitor(), true);
+						new NullProgressMonitor(), true, true);
 				errors.addAll(Arrays.asList(errors2));
 			}
 			EventManager.fileUpdated(path, matchingFilesets);
