@@ -57,10 +57,13 @@ public abstract class AbstractJBossJMXConnectionProvider implements IConnectionP
 	public void serverChanged(IServer server) {
 		if( belongsHere(server)) {
 			getConnections();
-			IConnectionWrapper connection = createConnection(server);
-			idToConnection.put(server.getId(), connection);
-			if( connection != null )
-				fireAdded(idToConnection.get(server.getId()));
+			Object o = idToConnection.get(server.getId());
+			if( o == null ) {
+				IConnectionWrapper connection = createConnection(server);
+				idToConnection.put(server.getId(), connection);
+				if( connection != null )
+					fireAdded(idToConnection.get(server.getId()));
+			}
 		}
 	}
 

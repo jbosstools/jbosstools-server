@@ -37,7 +37,6 @@ public class RSEJBoss7StartLaunchDelegate extends AbstractRSELaunchDelegate {
 		}
 		String command = RSELaunchConfigProperties.getStartupCommand(configuration);
 		executeRemoteCommand(command, beh);
-		launchPingThread(beh);
 	}
 
 	@Override

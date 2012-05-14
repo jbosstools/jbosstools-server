@@ -37,7 +37,6 @@ import org.osgi.framework.InvalidSyntaxException;
  * @author André Dietisheim
  */
 public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
-
 	public static final String POLLER_ID = "org.jboss.ide.eclipse.as.core.server.JBoss7ManagerServicePoller"; //$NON-NLS-1$
 	private IServer server;
 	private AS7ManagementDetails managementDetails;
@@ -71,27 +70,55 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 		};
 	}
 	
+	private synchronized void setRequiredProperties(List<String> props) {
+		this.requiredProperties = props;
+	}
+
+	private synchronized void setRequiredInfoException(RequiresInfoException e) {
+		this.requiresInfoException = e;
+	}
+
+	private synchronized void setPollingException(PollingException e) {
+		this.pollingException = e;
+	}
+
+	private synchronized Properties getRequiredPropertiesReturned() {
+		return requiredPropertiesReturned;
+	}
+
+	private synchronized boolean getDone() {
+		return done;
+	}
+
+	private synchronized void setDone(boolean done) {
+		this.done = done;
+	}
+
+	private synchronized boolean getCanceled() {
+		return canceled;
+	}
 
 	private String[] handleAsynchCallbacks(String[] prompts) {
 		List<String> tmp = new ArrayList<String>();
 		tmp.addAll(Arrays.asList(prompts));
-		requiredProperties = tmp;
-		requiresInfoException = new RequiresInfoException("Requires proper credentials"); //$NON-NLS-1$
-		while( !done && !canceled && requiredPropertiesReturned == null ) {
+		setRequiredProperties(tmp);
+		RequiresInfoException e2 = new RequiresInfoException("Requires proper credentials"); //$NON-NLS-1$
+		setRequiredInfoException(e2);
+		while( !getDone() && !getCanceled() && getRequiredPropertiesReturned() == null ) {
 			try {
 				Thread.sleep(500);
 			} catch(InterruptedException ie) {/* Do nothing */}
 		}
 		
-		if( done || canceled )
+		if( getDone() || getCanceled() )
 			return new String[0];
 		String[] retPrompts = new String[prompts.length];
 		for( int i = 0; i < retPrompts.length; i++) {
-			retPrompts[i] = (String)requiredPropertiesReturned.get(prompts[i]);
+			retPrompts[i] = (String)getRequiredPropertiesReturned().get(prompts[i]);
 		}
 		
 		// If not cleared then it will keep asking for username/password
-		requiresInfoException = null;
+		setRequiredInfoException(null);
 		
 		return retPrompts;
 	}
@@ -108,7 +135,7 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 		return server;
 	}
 	
-	public boolean isComplete() throws PollingException, RequiresInfoException {
+	public synchronized boolean isComplete() throws PollingException, RequiresInfoException {
 		if (pollingException != null)
 			throw pollingException;
 		if( requiresInfoException != null )
@@ -116,7 +143,7 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 		return done;
 	}
 
-	public boolean getState() throws PollingException, RequiresInfoException {
+	public synchronized boolean getState() throws PollingException, RequiresInfoException {
 		if( done ) 
 			return expectedState;
 		return !expectedState;
@@ -132,13 +159,13 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 	
 	public void runLoop() {
 		try {
-			while( !done && !canceled )  {
+			while( !getDone() && !getCanceled() )  {
 				if (expectedState == SERVER_DOWN) {
-					done = checkShutdown(service);
+					setDone(checkShutdown(service));
 				} else {
-					done = checkRunning(service);
+					setDone(checkRunning(service));
 				}
-				if( !done ) {
+				if( !getDone() ) {
 					try {
 						Thread.sleep(300);
 					} catch(InterruptedException ie) {
@@ -147,7 +174,7 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 				}
 			}
 		} catch (Exception e) {
-			pollingException = new PollingException(e.getMessage());
+			setPollingException(new PollingException(e.getMessage()));
 		}
 	}
 
@@ -176,15 +203,15 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 		JBoss7ManagerUtil.dispose(service);
 	}
 
-	public List<String> getRequiredProperties() {
+	public synchronized List<String> getRequiredProperties() {
 		return requiredProperties == null ? new ArrayList<String>() : requiredProperties;
 	}
 
-	public void provideCredentials(Properties properties) {
+	public synchronized void provideCredentials(Properties properties) {
 		requiredPropertiesReturned = properties;
 	}
 
-	public void cancel(int type) {
+	public synchronized void cancel(int type) {
 		canceled = true;
 	}
 

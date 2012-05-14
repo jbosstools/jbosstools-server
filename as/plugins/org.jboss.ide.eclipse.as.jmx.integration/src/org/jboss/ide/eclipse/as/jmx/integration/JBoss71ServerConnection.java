@@ -81,8 +81,8 @@ public class JBoss71ServerConnection extends JBossServerConnection {
 		super.cleanupConnection(server, connection);
 		if( connectionToConnector.get(connection) != null ) {
 			try {
-				connectionToConnector.remove(connection);
 				connectionToConnector.get(connection).close();
+				connectionToConnector.remove(connection);
 			} catch(Exception e) { /* Ignore */ }
 		}
 	}

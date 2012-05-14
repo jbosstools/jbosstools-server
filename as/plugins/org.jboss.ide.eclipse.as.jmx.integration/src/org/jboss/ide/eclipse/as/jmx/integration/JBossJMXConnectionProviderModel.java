@@ -40,7 +40,9 @@ public class JBossJMXConnectionProviderModel {
 	}
 	
 	public void registerProvider(int type, AbstractJBossJMXConnectionProvider provider) {
-		initProviders();
+		if( providers == null) {
+			providers = new HashMap<Integer, AbstractJBossJMXConnectionProvider>();
+		}
 		providers.put(type, provider);
 	}
 	

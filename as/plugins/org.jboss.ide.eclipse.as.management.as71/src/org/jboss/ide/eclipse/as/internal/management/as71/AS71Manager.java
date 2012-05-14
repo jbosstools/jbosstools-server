@@ -264,7 +264,11 @@ public class AS71Manager {
 	}
 
 	public void dispose() {
-		StreamUtils.safeClose(client);
+		new Thread("Closing AS7 Management Streams") {
+			public void run() {
+				StreamUtils.safeClose(client);
+			}
+		}.start();
 	}
 
 	/*package*/ ModelNode execute(ModelNode node) throws JBoss7ManangerException {

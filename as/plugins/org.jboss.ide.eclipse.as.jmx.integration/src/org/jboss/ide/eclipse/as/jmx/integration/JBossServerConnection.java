@@ -213,7 +213,7 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 				connectToStartedServer();
 				return Status.OK_STATUS;
 			} 
-		}.schedule();
+		}.schedule(5000);
 	}
 
 	protected void connectToStartedServer() {
