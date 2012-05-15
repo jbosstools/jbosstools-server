@@ -391,7 +391,7 @@ public class JBossServerType implements IJBossToolingConstants {
 		}
 		
 		public String getFullVersion(File location, File systemFile) {
-			String fullVersion = ServerBeanLoader.getFullServerVersionFromZip(location);
+			String fullVersion = ServerBeanLoader.getFullServerVersionFromZip(systemFile);
 			if (fullVersion != null && fullVersion.startsWith("5.1.1")) { //$NON-NLS-1$
 				// SOA-P 5.2
 				String runJar = JBossServerType.JBOSS_AS_PATH + File.separatorChar + 

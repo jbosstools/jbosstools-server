@@ -111,6 +111,9 @@ public class ServerBeanLoader {
 					return version;
 				}
 				version = (String)props.get("Specification-Version");//$NON-NLS-1$
+				if (version == null || version.trim().length() == 0 || !(version.charAt(0) >= '0' && version.charAt(0) <= '9')) {
+					version = (String)props.get("Implementation-Version");//$NON-NLS-1$
+				}
 			} catch (IOException e) {
 				// It's already null, and would fall through to return null,
 				// but hudson doesn't like empty catch blocks.
