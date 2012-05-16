@@ -9,9 +9,9 @@
 	<classpathentry exported="true" kind="lib" path="jboss-threads-2.0.0.GA.jar"/>
 	<classpathentry exported="true" kind="lib" path="xnio-api-3.0.3.GA.jar"/>
 	<classpathentry exported="true" kind="lib" path="xnio-nio-3.0.3.GA.jar"/>
+	<classpathentry exported="true" kind="lib" path="jboss-remoting-3.2.7.GA.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="jboss-remoting-3.2.7.GA.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
