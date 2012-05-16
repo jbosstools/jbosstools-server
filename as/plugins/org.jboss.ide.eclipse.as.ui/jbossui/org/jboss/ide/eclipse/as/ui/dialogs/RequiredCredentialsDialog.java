@@ -88,6 +88,12 @@ public class RequiredCredentialsDialog extends Dialog {
 		passLabel.setText(Messages.swf_Password);
 		saveCredentials.setText(Messages.credentials_save);
 		
+		// defaults
+		userText.setText(user);
+		userText.setSelection(0, user == null ? 0 : user.length());
+		passText.setText(pass);
+
+		
 		ModifyListener listener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				user = userText.getText();
@@ -109,10 +115,6 @@ public class RequiredCredentialsDialog extends Dialog {
 		passText.addModifyListener(listener);
 		saveCredentials.addSelectionListener(listener2);
 		
-		// defaults
-		userText.setText(user);
-		userText.setSelection(0, user == null ? 0 : user.length());
-		passText.setText(pass);
 		// save by default
 		saveCredentials.setSelection(true);
 		
