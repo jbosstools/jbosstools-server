@@ -264,11 +264,40 @@ public class AS71Manager {
 	}
 
 	public void dispose() {
-		new Thread("Closing AS7 Management Streams") {
+		if( client != null ) {
+			closeClient(client);
+		}
+	}
+	// Launch a thread to handle the close to ensure dispose() is immediate
+	private void closeClient(final ModelControllerClient client) {
+		Thread t = new Thread("Closing client") {
 			public void run() {
-				StreamUtils.safeClose(client);
+				closeClientJoin(client);
 			}
-		}.start();
+		};
+		t.start();
+	}
+	
+	// Launch a new thread with max duration 5s to handle the actual close
+	private void closeClientJoin(final ModelControllerClient client) {
+		Runnable r = new Runnable() {
+			  public void run() {
+			    try {
+			        client.close();
+			    } catch (Exception e) {
+			       // trace
+			    }
+			  }
+			};
+
+			Thread t = new Thread(r);
+			try {
+			  t.start();
+			  t.join(5000);
+			} catch (InterruptedException e) {
+			} finally {
+			  t.interrupt();
+			}
 	}
 
 	/*package*/ ModelNode execute(ModelNode node) throws JBoss7ManangerException {
