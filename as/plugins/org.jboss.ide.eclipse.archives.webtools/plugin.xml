@@ -8,22 +8,6 @@
             name="Project Package"/>
    </extension>
 
-   <extension
-         point="org.jboss.ide.eclipse.archives.core.archiveTypes">
-      <packageType
-            class="org.jboss.ide.eclipse.archives.webtools.archivetypes.WarArchiveType"
-            id="org.jboss.ide.eclipse.as.core.packages.warArchive"
-            label="WAR"/>
-      <packageType
-            class="org.jboss.ide.eclipse.archives.webtools.archivetypes.EjbArchiveType"
-            id="org.jboss.ide.eclipse.as.core.packages.ejbPackageType"
-            label="EJB JAR"/>
-      <packageType
-            class="org.jboss.ide.eclipse.archives.webtools.archivetypes.EarArchiveType"
-            id="org.jboss.ide.eclipse.as.core.packages.earPackageType"
-            label="EAR"/>
-   </extension>
-
    <!-- Adapters and clients to make stuff 'runnable' on server -->
    <extension
          point="org.eclipse.wst.server.core.moduleArtifactAdapters">
