@@ -142,8 +142,9 @@ public class ConfigNameResolver implements IDynamicVariableResolver {
 		IServer[] servers = ServerCore.getServers();
 		for( int i = 0; i < servers.length; i++ ) {
 			if( servers[i].getName().equals(serverOrRuntimeName)) {
-				return  (IJBossServerRuntime) servers[i].getRuntime()
-						.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
+				if( servers[i].getRuntime() != null )
+					return  (IJBossServerRuntime) servers[i].getRuntime()
+							.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
 			}
 		}
 		IRuntime[] runtimes = ServerCore.getRuntimes();

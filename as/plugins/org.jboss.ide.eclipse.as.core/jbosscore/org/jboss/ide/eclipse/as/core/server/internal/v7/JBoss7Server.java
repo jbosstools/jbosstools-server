@@ -68,6 +68,8 @@ public class JBoss7Server extends JBossServer implements IJBoss7Deployment, IMan
 		if( type.equals(DEPLOY_SERVER) ) {
 			// TODO make sure this is correct?! Upstream APIs have this wrong for as7
 			IRuntime rt = getServer().getRuntime();
+			if( rt == null )
+				return null;
 			IPath p = rt.getLocation().append(AS7_STANDALONE).append(AS7_DEPLOYMENTS);
 			return ServerUtil.makeGlobal(rt, p).toString();
 		}
