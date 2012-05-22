@@ -77,7 +77,7 @@ public class ExtendedServerPropertiesAdapterFactory implements IAdapterFactory, 
 			if( SERVER_EAP_43.equals(typeId) || EAP_43.equals(typeId))
 				return new JBossExtendedProperties(adaptable);
 			if( SERVER_EAP_50.equals(typeId) || EAP_50.equals(typeId))
-				return new JBossExtendedProperties(adaptable);
+				return new JBossAS6ExtendedProperties(adaptable);
 			
 			if( SERVER_AS_70.equals(typeId) || AS_70.equals(typeId))
 				return new JBossAS7ExtendedProperties(adaptable);
