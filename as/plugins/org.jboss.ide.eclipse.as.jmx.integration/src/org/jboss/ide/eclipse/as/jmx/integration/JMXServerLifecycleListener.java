@@ -77,7 +77,8 @@ public class JMXServerLifecycleListener extends LocalJBoss7DeploymentScannerAddi
 			String asURL = encode(folders2[i]);
 			Trace.trace(Trace.STRING_FINER, "Adding Deployment Scanner: " + asURL);
 			ObjectName name = new ObjectName(IJBossRuntimeConstants.DEPLOYMENT_SCANNER_MBEAN_NAME);
-			connection.invoke(name, IJBossRuntimeConstants.addURL, new Object[] { asURL }, new String[] {String.class.getName()});
+			Object o = connection.invoke(name, IJBossRuntimeConstants.addURL, new Object[] { asURL }, new String[] {String.class.getName()});
+			System.out.println(o);
 		}
 	}
 

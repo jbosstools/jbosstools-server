@@ -106,6 +106,8 @@ public class Messages extends NLS {
 	public static String JBossConfigurationFolderDoesNotExist;
 	public static String JBossAS7ConfigurationFileDoesNotExist;
 	
+	public static String UpdateDeploymentScannerJobName;
+	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}

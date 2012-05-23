@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerEvent;
+import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
@@ -121,13 +122,17 @@ public class LocalJBoss7DeploymentScannerAdditions extends UnitedServerListener 
 	
 	public void serverChanged(final ServerEvent event) {
 		if( accepts(event.getServer()) && serverSwitchesToState(event, IServer.STATE_STARTED)){
-			new Job("Update AS7 Deployment Scanners") { //$NON-NLS-1$
+			new Job(getJobName(event.getServer())) {
 				protected IStatus run(IProgressMonitor monitor) {
 					modifyDeploymentScanners(event);
 					return Status.OK_STATUS;
 				}
 			}.schedule();
 		}
+	}
+	
+	protected String getJobName(IServer server) {
+		return Messages.bind(Messages.UpdateDeploymentScannerJobName, server.getName() );
 	}
 	
 	protected void modifyDeploymentScanners(ServerEvent event){
