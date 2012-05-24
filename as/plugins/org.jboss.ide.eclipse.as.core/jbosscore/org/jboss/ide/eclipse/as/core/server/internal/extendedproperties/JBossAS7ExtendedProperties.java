@@ -37,6 +37,9 @@ public class JBossAS7ExtendedProperties extends JBossExtendedProperties {
 		return IJBossRuntimeResourceConstants.AS7_MODULES + "/org"; //$NON-NLS-1$
 	}
 
+	public boolean runtimeSupportsExposingManagement() {
+		return true;
+	}
 	
 	public int getJMXProviderType() {
 		return JMX_DEFAULT_PROVIDER;

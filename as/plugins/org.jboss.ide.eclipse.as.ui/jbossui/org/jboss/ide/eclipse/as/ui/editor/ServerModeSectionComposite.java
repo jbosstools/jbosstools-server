@@ -54,6 +54,7 @@ public class ServerModeSectionComposite extends Composite {
 	private IServerModeUICallback callback;
 	private Button executeShellScripts; // may be null;
 	private Button listenOnAllHosts; // may be null
+	private Button exposeManagement; // may be null
 
 	private DeployUIAdditions currentUIAddition;
 	
@@ -92,6 +93,22 @@ public class ServerModeSectionComposite extends Composite {
 			listenOnAllHosts.addSelectionListener(new SelectionListener(){
 				public void widgetSelected(SelectionEvent e) {
 					listenOnAllHostsToggled();
+				}
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}}
+			);
+		}
+
+		if( showExposeManagementCheckbox()) {
+			exposeManagement = new Button(this, SWT.CHECK);
+			exposeManagement.setText(Messages.EditorExposeManagement);
+			FormData fd = UIUtil.createFormData2(top == null ? 0 : top, 5, null, 0, 0, 5, null, 0);
+			exposeManagement.setLayoutData(fd);
+			top = exposeManagement;
+			exposeManagement.setSelection(LaunchCommandPreferences.exposesManagement(callback.getServer()));
+			exposeManagement.addSelectionListener(new SelectionListener(){
+				public void widgetSelected(SelectionEvent e) {
+					exposeManagementToggled();
 				}
 				public void widgetDefaultSelected(SelectionEvent e) {
 				}}
@@ -167,9 +184,19 @@ public class ServerModeSectionComposite extends Composite {
 		return true;
 	}
 	protected boolean showListenOnAllHostsCheckbox() {
+		JBossExtendedProperties props = getExtendedProperties();
+		return props == null ? false : props.runtimeSupportsBindingToAllInterfaces();
+	}
+
+	protected boolean showExposeManagementCheckbox() {
+		JBossExtendedProperties props = getExtendedProperties();
+		return props == null ? false : props.runtimeSupportsExposingManagement();
+	}
+
+	protected JBossExtendedProperties getExtendedProperties() {
 		IRuntime rt = callback.getRuntime();
 		if( rt == null )
-			return false;
+			return null;
 		
 		JBossExtendedProperties props2 = (JBossExtendedProperties)rt
 				.loadAdapter(JBossExtendedProperties.class, 
@@ -179,9 +206,9 @@ public class ServerModeSectionComposite extends Composite {
 		JBossExtendedProperties props = (JBossExtendedProperties)wc
 				.loadAdapter(JBossExtendedProperties.class, 
 							 new NullProgressMonitor());
-		return props == null ? false : props.runtimeSupportsBindingToAllInterfaces();
+		return props;
 	}
-
+	
 	protected void executeShellToggled() {
 		callback.execute(new ChangeServerPropertyCommand(
 				callback.getServer(), IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, 
@@ -192,6 +219,12 @@ public class ServerModeSectionComposite extends Composite {
 		callback.execute(new ChangeServerPropertyCommand(
 				callback.getServer(), IJBossToolingConstants.LISTEN_ALL_HOSTS, 
 				new Boolean(listenOnAllHosts.getSelection()).toString(), Messages.EditorListenOnAllHostsCommand));
+	}
+
+	protected void exposeManagementToggled() {
+		callback.execute(new ChangeServerPropertyCommand(
+				callback.getServer(), IJBossToolingConstants.EXPOSE_MANAGEMENT_SERVICE, 
+				new Boolean(exposeManagement.getSelection()).toString(), Messages.EditorExposeManagementCommand));
 	}
 
 	private class DeployUIAdditions {

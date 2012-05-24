@@ -11,11 +11,7 @@
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
@@ -103,6 +99,15 @@ public class JBoss7LaunchConfigProperties extends JBossLaunchConfigProperties {
 				setProgramArguments(programArguments, launchConfig);
 			}
 		}
+	}
+
+	public void setExposedManagement(String host, ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
+		String vmArguments = getVMArguments(launchConfig);
+		String arguments = ArgsUtil.setArg(vmArguments,
+				null,
+				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JB7_EXPOSE_MANAGEMENT,
+				host);
+		setVmArguments(arguments, launchConfig);
 	}
 
 }

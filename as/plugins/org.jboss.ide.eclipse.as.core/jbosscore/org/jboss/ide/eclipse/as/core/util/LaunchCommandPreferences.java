@@ -34,6 +34,14 @@ public class LaunchCommandPreferences {
 		return checkBooleanAttribute(server, IJBossToolingConstants.LISTEN_ALL_HOSTS, defaultValue );
 	}
 
+	public static boolean exposesManagement(IServerAttributes server) {
+		return exposesManagement(server, false);
+	}
+	
+	public static boolean exposesManagement(IServerAttributes server, boolean defaultValue) {
+		return checkBooleanAttribute(server, IJBossToolingConstants.EXPOSE_MANAGEMENT_SERVICE, defaultValue );
+	}
+
 	private static boolean checkBooleanAttribute(IServerAttributes server, String key, boolean defaultValue) {
 		if (server == null) {
 			return false;

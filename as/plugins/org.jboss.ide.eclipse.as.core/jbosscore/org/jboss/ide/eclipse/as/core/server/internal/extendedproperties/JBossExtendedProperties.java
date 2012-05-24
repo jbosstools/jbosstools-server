@@ -57,7 +57,11 @@ public class JBossExtendedProperties extends ServerExtendedProperties {
 	public boolean runtimeSupportsBindingToAllInterfaces() {
 		return true;
 	}
-	
+
+	public boolean runtimeSupportsExposingManagement() {
+		return false;
+	}
+
 	protected ServerBeanLoader getServerBeanLoader() {
 		return runtime == null ? null : new ServerBeanLoader(runtime.getLocation().toFile());
 	}

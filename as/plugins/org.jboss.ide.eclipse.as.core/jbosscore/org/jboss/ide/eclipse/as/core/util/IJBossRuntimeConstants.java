@@ -58,6 +58,8 @@ public interface IJBossRuntimeConstants {
 	public static final String JB7_STANDALONE_ARG = "org.jboss.as.standalone"; //$NON-NLS-1$
 	public static final String JB7_BOOT_LOG_ARG = "org.jboss.boot.log.file"; //$NON-NLS-1$
 	public static final String JB7_LOGGING_CONFIG_FILE = "logging.configuration"; //$NON-NLS-1$
+	public static final String JB7_EXPOSE_MANAGEMENT = "jboss.bind.address.management"; //$NON-NLS-1$
+	
 	
 	/* JBoss classes and methods for reflection */
 	public static final String TWIDDLE_MAIN_TYPE = "org.jboss.console.twiddle.Twiddle"; //$NON-NLS-1$

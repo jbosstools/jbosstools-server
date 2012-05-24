@@ -20,6 +20,7 @@ import org.eclipse.wst.server.core.internal.Base;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.ILaunchConfigConfigurator;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
@@ -64,7 +65,18 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 	protected String getShutdownCommand(JBossServer jbossServer, IJBossServerRuntime jbossRuntime) throws CoreException {
 		String rseHome = RSEUtils.getRSEHomeDir(jbossServer.getServer());
 		IPath p = new Path(rseHome).append(IJBossRuntimeResourceConstants.BIN);
-		return p.toString() + "/" + getManagementScript(jbossServer) + " --connect command=:shutdown";
+		String ret = p.toString() + "/" + getManagementScript(jbossServer);
+		
+		boolean exposeManagement = LaunchCommandPreferences.exposesManagement(jbossServer.getServer());
+		if( exposeManagement ) {
+			String host = jbossServer.getServer().getHost();
+			int defPort = IJBossToolingConstants.AS7_MANAGEMENT_PORT_DEFAULT_PORT;
+			int port = (jbossServer instanceof JBoss7Server) ? 
+					((JBoss7Server)jbossServer).getManagementPort() : defPort;
+			ret += " --controller=" + host + ":" + port;
+		}
+		ret += " --connect command=:shutdown";
+		return ret;
 	}
 	
 	protected String getManagementScript(JBossServer server) {
@@ -74,21 +86,43 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 		}
 		return IJBossRuntimeResourceConstants.AS_70_MANAGEMENT_SCRIPT;
 	}
-
-	protected String getLaunchCommand(JBossServer jbossServer, IJBossServerRuntime jbossRuntime) throws CoreException {
-		String programArguments = getDefaultProgramArguments(jbossServer, jbossRuntime);
+	
+	protected String getArgsOverrideHost(IServer server, String preArgs) {
+		// Overrides
 		if( LaunchCommandPreferences.listensOnAllHosts(jbossServer.getServer())) {
-			programArguments = ArgsUtil.setArg(programArguments,
+			return ArgsUtil.setArg(preArgs,
 					IJBossRuntimeConstants.STARTUP_ARG_HOST_SHORT,
 					null, "0.0.0.0");
 		}
+		return preArgs;
+	}
+	
+	protected String getArgsOverrideConfigFile(IServer server, String preArgs) {
 		String rseConfigFile = ((Base)jbossServer.getServer()).getAttribute(
 				RSEUtils.RSE_SERVER_CONFIG, LocalJBoss7ServerRuntime.CONFIG_FILE_DEFAULT);
-		programArguments = ArgsUtil.setArg(programArguments, null,
+		String programArguments = ArgsUtil.setArg(preArgs, null,
 				IJBossRuntimeConstants.JB7_SERVER_CONFIG_ARG, rseConfigFile
 				);
+		return programArguments;
+	}
+
+	protected String getArgsOverrideExposedManagement(IServer server, String preArgs) {
+		boolean overrides = LaunchCommandPreferences.exposesManagement(server);
+		String newVal = overrides ? server.getHost() : null;
+		String vmArguments = ArgsUtil.setArg(preArgs, null,
+				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JB7_EXPOSE_MANAGEMENT, newVal );
+		return vmArguments;
+	}
+	
+	
+	protected String getLaunchCommand(JBossServer jbossServer, IJBossServerRuntime jbossRuntime) throws CoreException {
+		String programArguments = getDefaultProgramArguments(jbossServer, jbossRuntime);
+		programArguments = getArgsOverrideHost(jbossServer.getServer(), programArguments);
+		programArguments = getArgsOverrideConfigFile(jbossServer.getServer(), programArguments);
 		
 		String vmArguments = getDefaultVMArguments(jbossServer, jbossRuntime);
+		vmArguments = getArgsOverrideExposedManagement(jbossServer.getServer(), vmArguments);
+		
 		String jar = getJar(jbossServer, jbossRuntime);
 
 		String command = "java "

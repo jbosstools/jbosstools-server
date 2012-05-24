@@ -56,6 +56,7 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 		getProperties().setJreContainer(getJreContainerPath(jbossRuntime), launchConfig);
 		getProperties().setEndorsedDir(getEndorsedDir(jbossRuntime), launchConfig);
 		getProperties().setJavaLibPath(getJavaLibraryPath(jbossRuntime), launchConfig);
+		getProperties().setExposedManagement(getExposedManagement(jbossServer), launchConfig);
 		getProperties().setWorkingDirectory(getWorkingDirectory(jbossServer, jbossRuntime), launchConfig);
 		getProperties().setClasspathProvider(getClasspathProvider(), launchConfig);
 		getProperties().setClasspath(getClasspath(jbossServer, jbossRuntime, getProperties().getClasspath(launchConfig)), launchConfig);
@@ -104,6 +105,12 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 		if( LaunchCommandPreferences.listensOnAllHosts(server.getServer()))
 			return "0.0.0.0"; //$NON-NLS-1$
 		return server.getHost(); 
+	}
+
+	protected String getExposedManagement(JBossServer server) {
+		if( LaunchCommandPreferences.exposesManagement(server.getServer()))
+			return server.getHost();
+		return null;
 	}
 
 	@Override

@@ -66,7 +66,9 @@ public class JBoss71ServerConnection extends JBossServerConnection {
 		try {
 			connector = JMXConnectorFactory.connect(new JMXServiceURL(url), environment);
 			MBeanServerConnection connection = connector.getMBeanServerConnection();
-			this.connectionToConnector.put(connection, connector);
+			synchronized(this) {
+				this.connectionToConnector.put(connection, connector);
+			}
 			return connection;
 		} catch(IOException ioe) {
 			return null;
@@ -79,12 +81,40 @@ public class JBoss71ServerConnection extends JBossServerConnection {
 	
 	protected void cleanupConnection(IServer server, MBeanServerConnection connection) {
 		super.cleanupConnection(server, connection);
-		if( connectionToConnector.get(connection) != null ) {
-			try {
-				connectionToConnector.get(connection).close();
+		JMXConnector connector = null;
+		synchronized(this) {
+			connector = connectionToConnector.get(connection);
+			if( connector != null ) {
 				connectionToConnector.remove(connection);
-			} catch(Exception e) { /* Ignore */ }
+			}
 		}
+		
+		// Same logic here as in AS71Manager, because the close can block for 10+ minutes
+		if( connector != null ) {
+			closeClientJoin(connector);
+		}
+	}
+
+	// Launch a new thread with max duration 5s to handle the actual close
+	private void closeClientJoin(final JMXConnector client) {
+		Runnable r = new Runnable() {
+			  public void run() {
+			    try {
+			        client.close();
+			    } catch (Exception e) {
+			       // trace
+			    }
+			  }
+			};
+	
+			Thread t = new Thread(r);
+			try {
+			  t.start();
+			  t.join(3000);
+			} catch (InterruptedException e) {
+			} finally {
+			  t.interrupt();
+			}
 	}
 
 }
