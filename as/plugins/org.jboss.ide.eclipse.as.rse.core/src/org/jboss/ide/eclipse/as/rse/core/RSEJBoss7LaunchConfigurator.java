@@ -108,10 +108,13 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 
 	protected String getArgsOverrideExposedManagement(IServer server, String preArgs) {
 		boolean overrides = LaunchCommandPreferences.exposesManagement(server);
-		String newVal = overrides ? server.getHost() : null;
-		String vmArguments = ArgsUtil.setArg(preArgs, null,
-				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JB7_EXPOSE_MANAGEMENT, newVal );
-		return vmArguments;
+		if( overrides ) {
+			String newVal = overrides ? server.getHost() : null;
+			String vmArguments = ArgsUtil.setArg(preArgs, null,
+					IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JB7_EXPOSE_MANAGEMENT, newVal );
+			return vmArguments;
+		}
+		return preArgs;
 	}
 	
 	
