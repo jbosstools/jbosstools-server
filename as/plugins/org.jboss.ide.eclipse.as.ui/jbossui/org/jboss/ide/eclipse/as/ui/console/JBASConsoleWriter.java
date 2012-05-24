@@ -25,7 +25,7 @@ public class JBASConsoleWriter implements IJBASHostShellListener {
 			out.println(lines[i]);
 	}
 	
-	private MessageConsole findConsole(String name) {
+	private synchronized MessageConsole findConsole(String name) {
 	      ConsolePlugin plugin = ConsolePlugin.getDefault();
 	      IConsoleManager conMan = plugin.getConsoleManager();
 	      IConsole[] existing = conMan.getConsoles();
