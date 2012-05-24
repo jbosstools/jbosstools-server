@@ -31,9 +31,9 @@
 		<para>
 			The JMX technology defines standard connectors (known as JMX connectors) that enable you to access JMX agents from remote management applications. JMX connectors using different protocols provide the same management interface. Consequently, a management application can manage resources transparently, regardless of the communication protocol used. JMX agents can also be used by systems or applications that are not compliant with the JMX specification, as long as those systems or applications support JMX agents. 
 		</para>
-		<para>
+	<!--	<para>
 			<ulink url="http://java.sun.com/docs/books/tutorial/jmx/overview/index.html">Read more about JMX</ulink>.
-		</para>
+		</para> -->
 	</section>
 
 	<section>
@@ -106,7 +106,7 @@
 		</table>
 	</section>
 
-	<section>
+<!--	<section>
 		<title>Requirements and Installation</title>
 		<section>
 			<title> Requirements</title>
@@ -136,5 +136,5 @@
 				You can find the <productname>JBoss Tools</productname> plugins over at the <ulink url="http://labs.jboss.com/tools/download.html">download pages</ulink>. The only package you will need to get is the JBoss JMX Tooling, however the <productname>AS Tools</productname> would give you a wider experience and more options when using JMX with JBoss Servers. You can find further download and installation instructions on the JBoss Wiki in the <ulink url="http://www.jboss.org/tools/download/installation">InstallingJBossTools</ulink> section.
 			</para>
 		</section>
-	</section>
+	</section> -->
 </chapter>

@@ -158,10 +158,10 @@ hello, world</screen>
 			Using SSL for authentication is not supported: you need to make sure that the System property <guilabel>com.sun.management.jmxremote.ssl</guilabel> is set to false.
 		</para>
 		<para>
-			More information to manage Tomcat can be found in the <ulink url="http://tomcat.apache.org/tomcat-6.0-doc/">Tomcat management documentation</ulink>.
+			More information to manage Tomcat can be found in the <ulink url="http://tomcat.apache.org/tomcat-7.0-doc/">Tomcat management documentation</ulink>.
 		</para>
 		<para>
-			Instructions to remotely manage Tomcat are available in <ulink url="http://tomcat.apache.org/tomcat-6.0-doc/monitoring.html">Tomcat&apos;s monitoring documentation</ulink>.
+			Instructions to remotely manage Tomcat are available in <ulink url="http://tomcat.apache.org/tomcat-7.0-doc/monitoring.html">Tomcat&apos;s monitoring documentation</ulink>.
 		</para>
         
 
@@ -223,10 +223,10 @@ hello, world</screen>
     
 
 	<section>
-		<title>Managing JBoss AS</title>
+		<title>Managing a JBoss application server</title>
 
 		<para>
-			Managing JBoss instances is not supported with the <guilabel>JMX Tools</guilabel> alone. You must also download and install the <guilabel>AS Tools</guilabel> portion of the <guilabel>JBoss Tools</guilabel> distribution. Even after installing the proper tooling, you cannot create a JBoss JMX connection yourself or through the Connection Wizard. The first step is to create a JBoss Server. The full instructions for this can be found in the AS Tools section, however, the short summary is: 
+			Managing JBoss instances is not supported with the <guilabel>JMX Tools</guilabel> alone. <!-- You must also download and install the <guilabel>AS Tools</guilabel> portion of the <guilabel>JBoss Tools</guilabel> distribution Even after installing the proper tooling, you cannot create a JBoss JMX connection yourself or through the Connection Wizard. --> The first step is to create a JBoss Server. The full instructions for this can be found in the application server Tools section; however, the short summary is: 
 		</para>
 		<orderedlist>
 			<listitem>
@@ -263,10 +263,10 @@ hello, world</screen>
 	</section>
 	
 	<section>
-		<title>Managing JBoss AS Remotely</title>
+		<title>Managing a JBoss application server Remotely</title>
 
 		<para>
-			The JBoss JMX Tools allow you to easily access and manage a JBoss AS server remotely. In order to connect to the instance of JBoss AS remotely you need to run the server or make sure the server is launched. 
+			The JBoss JMX Tools allow you to easily access and manage a JBoss AS server remotely. In order to connect to an instance of a JBoss server remotely, you need to run the server or make sure the server is launched. 
 		</para>
 		<orderedlist>
 			<listitem>
@@ -296,7 +296,7 @@ hello, world</screen>
 		<para>This section will outline how to contribute your own Server type with some default behavior.</para>
 
 		<section>
-			<title>Why we should do that?</title>
+			<title>Why you extend the framework</title>
 
 			<para>
 				You might be asking yourself why you would need to extend this framework if JMX is a standard. Perhaps you want a connection to be automatically created after some specific action, or perhaps you want your connection wizard to do more than simply set a host and port. JBoss, for example, requires setting some credentials on the client machine, but uses JBoss classes to do it. This requires that the connection has access to the JBoss JARs.
@@ -332,7 +332,6 @@ hello, world</screen>
 					<para>
 						<code>org.jboss.tools.jmx.ui.attribute.controls</code> - allows you to map class types to some Control to present them in the MBean Editor
 					</para>
-					<para>We hope this guide helped you to get started with the JBoss JMX Tools. For additional information you are welcome on the <ulink url="http://www.jboss.com/index.html?module=bb&amp;op=viewforum&amp;f=201">JBoss forum</ulink>.</para>
 				</listitem>
 			</itemizedlist>
 		</section>
@@ -364,7 +363,7 @@ hello, world</screen>
 				The simple method is to specify the host, port (and optionally user name and password) and click the <guibutton>OK</guibutton> button.
 			</para>
 			<para>
-				On the <guilabel>Advanced</guilabel> tab you can set the sever name (it will be displayed in <guilabel>MBean Explorer</guilabel>), and a URL to the remote server. For example, to connect to JBoss AS you need to set the <guilabel>JMX URL</guilabel> to 
+				On the <guilabel>Advanced</guilabel> tab you can set the server name (it will be displayed in <guilabel>MBean Explorer</guilabel>), and a URL to the remote server. For example, to connect to JBoss AS you need to set the <guilabel>JMX URL</guilabel> to 
 			</para>
 			<programlisting role="XML"><![CDATA[service:jmx:rmi://localhost/jndi/rmi://localhost:1090/jmxconnector]]></programlisting>
 			<para>If it is required you can enter user name and password for the server connection. </para>
