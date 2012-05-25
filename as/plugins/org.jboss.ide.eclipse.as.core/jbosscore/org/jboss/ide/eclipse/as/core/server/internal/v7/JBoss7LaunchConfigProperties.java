@@ -102,12 +102,14 @@ public class JBoss7LaunchConfigProperties extends JBossLaunchConfigProperties {
 	}
 
 	public void setExposedManagement(String host, ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
-		String vmArguments = getVMArguments(launchConfig);
-		String arguments = ArgsUtil.setArg(vmArguments,
-				null,
-				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JB7_EXPOSE_MANAGEMENT,
-				host);
-		setVmArguments(arguments, launchConfig);
+		if( isSet(host)) {
+			String vmArguments = getVMArguments(launchConfig);
+			String arguments = ArgsUtil.setArg(vmArguments,
+					null,
+					IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JB7_EXPOSE_MANAGEMENT,
+					host);
+			setVmArguments(arguments, launchConfig);
+		}
 	}
 
 }
