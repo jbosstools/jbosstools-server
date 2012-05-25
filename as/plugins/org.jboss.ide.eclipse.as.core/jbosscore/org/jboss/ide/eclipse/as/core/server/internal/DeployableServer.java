@@ -201,9 +201,10 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 			return null;
         
         IWebModule webModule =(IWebModule)module.loadAdapter(IWebModule.class,null);
-		String url = host;
+		String host2 = ServerUtil.formatPossibleIpv6Address(host); 
+        String url = host2;
 		if( !url.startsWith("http://") && !url.startsWith("https://") ) { //$NON-NLS-1$ //$NON-NLS-2$
-			url = "http://"+host; //$NON-NLS-1$
+			url = "http://"+host2; //$NON-NLS-1$
 		}
 		if (port != 80)
 			url += ":" + port; //$NON-NLS-1$

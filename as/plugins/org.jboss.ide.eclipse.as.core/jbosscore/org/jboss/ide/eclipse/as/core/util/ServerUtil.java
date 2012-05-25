@@ -220,5 +220,16 @@ public class ServerUtil {
 		String encoded = URLEncoder.encode(secureKey, "UTF-8"); //$NON-NLS-1$
 		return root.node(encoded);
     }
-
+    public static String formatPossibleIpv6Address(String address) {
+            if (address == null) {
+                return address;
+            }
+            if (!address.contains(":")) { //$NON-NLS-1$
+                return address;
+            }
+            if (address.startsWith("[") && address.endsWith("]")) { //$NON-NLS-1$  //$NON-NLS-2$
+                return address;
+            }
+            return "[" + address + "]"; //$NON-NLS-1$//$NON-NLS-2$
+        }
 }

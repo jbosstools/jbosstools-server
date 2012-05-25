@@ -30,6 +30,7 @@ import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 public class WebPortPoller implements IServerStatePoller2 {
 
@@ -73,7 +74,10 @@ public class WebPortPoller implements IServerStatePoller2 {
 	}
 	
 	private static String getURL(IServer server) {
-		String url = "http://"+server.getHost(); //$NON-NLS-1$
+		String host = server.getHost();
+		// v6_safe
+		String host2 = ServerUtil.formatPossibleIpv6Address(server.getHost());
+		String url = "http://"+host2; //$NON-NLS-1$
 		JBossServer jbs = ServerConverter.getJBossServer(server);
 		int port = jbs.getJBossWebPort();
 		url += ":" + port; //$NON-NLS-1$
