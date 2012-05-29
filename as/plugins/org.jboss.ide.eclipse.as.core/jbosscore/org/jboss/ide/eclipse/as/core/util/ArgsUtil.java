@@ -33,6 +33,7 @@ public class ArgsUtil {
 	public static String[] parse(String s) {
 		if( s == null )
 			return new String[0];
+		s = s.trim();
 		
 		try {
 			ArrayList<String> l = new ArrayList<String>();
