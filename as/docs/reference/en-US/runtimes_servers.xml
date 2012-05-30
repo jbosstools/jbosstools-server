@@ -84,7 +84,7 @@
 			
 			<note>
 				<title>Note:</title>
-				<para>Currently we recommend you to use a fully supported JBoss 5.0 server adapter.</para>
+				<para>We recommend you use a fully supported JBoss Enterprise 6.0 server adapter.</para>
 			</note>
 			
 			<para>
@@ -146,7 +146,7 @@
 							</entry>
 							<entry>
 								<para>
-									The proper Java Runtime Environment. Because of the open-source nature of JBoss, a user is likely to want to modify and repackage some of the configuration-specific JBoss JARs and create their own configuration. So rather than forcing you to copy your entire JBoss installation, the structure of the wizard allows to create a new configuration instead.
+									The Java Runtime Environment.
 								</para>
 							</entry>
 						</row>
@@ -363,7 +363,7 @@
 			WTP servers are Eclipse-representations of a back end server installation. They are used to start or stop servers, deploy to servers, or debug code that will run on the server. They keep track of the modules (JARs, WARs, etc) you deploy to the server and also allow you to undeploy those modules (see <xref linkend="run_on_server_wizard"/>). 
 		</para>
 		<para>
-			Servers can be started or stopped with different <link linkend="com_line_arg">command-line arguments</link>. They are often backed by a runtime object representing that server's location.
+			Servers can be started or stopped via the <guilabel>Servers</guilabel> view in your workbench. They are often backed by a runtime object representing that server's location.
 		</para>
 		
 		<section id="creating_a_new_server">

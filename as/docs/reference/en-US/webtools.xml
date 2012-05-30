@@ -29,7 +29,7 @@
 		</para>
 		
 		<para>
-			One way to configure the facets is doing it while organizing a new project. To demonstrate this let&apos;s create a new <guilabel>Dynamic Web Project</guilabel> by selecting <menuchoice><guimenuitem>File</guimenuitem><guimenuitem>New</guimenuitem><guimenuitem>Other...</guimenuitem><guimenuitem>Web</guimenuitem><guimenuitem>Dynamic Web Project</guimenuitem></menuchoice>.
+			One way to configure the facets is doing it while organizing a new project. To demonstrate this create a new <guilabel>Dynamic Web Project</guilabel> by clicking on the <guilabel>Dynamic Web Project</guilabel> option in the <guilabel>Create Projects</guilabel> section of <guilabel>JBoss Central</guilabel>. <!--<menuchoice><guimenuitem>File</guimenuitem><guimenuitem>New</guimenuitem><guimenuitem>Other...</guimenuitem><guimenuitem>Web</guimenuitem><guimenuitem>Dynamic Web Project</guimenuitem></menuchoice>. -->
 		</para>
 		<figure>
 			<title>New Dynamic Web Project</title>

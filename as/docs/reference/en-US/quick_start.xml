@@ -273,23 +273,4 @@
 			This section has provided some basic information that will allow you to use the common features provided by the JBoss server. However, JBoss server includes a great deal more functionality, which will be discussed in subsequent chapters.
 		</para>
 	</section>
-
-	<section>
-		<title>Other relevant resources on the topic</title>
-
-		<para>
-			All JBoss Developer Studio/JBoss Tools documentation can be found on the <ulink url="http://docs.jboss.org/tools/2.1.0.GA">on JBoss Tools release documentation page</ulink>.
-		</para>
-		<para>
-			The latest documentation builds are available from the <ulink url="http://download.jboss.org/jbosstools/nightly-docs/"> JBoss Tools nightly builds documentation page</ulink>.
-		</para>
-  	
-		<para>
-			Find answers to frequently asked questions about JBoss AS 5 usage in the <ulink url="http://community.jboss.org/wiki/JBossAS5FAQ">JBossAS5FAQ</ulink>.
-  	</para>
-  	
-		<para>
-			Information on how to monitor a remote JBoss Server from Eclipse can be found in this <ulink url="http://www.jboss.org/community/wiki/MonitorARemoteJbossServerFromEclipse">wiki article</ulink>.</para>
-	</section>
-
 </chapter>

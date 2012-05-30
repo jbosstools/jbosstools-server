@@ -11,12 +11,12 @@
 		</keywordset>
 	</chapterinfo>
 
-	<title>JBoss AS Perspective</title>
+	<title>JBoss Perspective</title>
 
-	<para>This chapter describes how to manage installed <productname>JBoss Servers</productname> via the <guilabel>JBoss AS</guilabel> perspective.</para>
+	<para>This chapter describes how to manage installed <productname>JBoss Servers</productname> via the <guilabel>JBoss Perspective</guilabel>. The Servers view will primarily be discussed.</para>
 
 	<para>
-		The <guilabel>JBoss AS</guilabel> perspective is similar to the <guilabel>Java</guilabel> perspective, but it contains a few additional views. The <guilabel>Console view</guilabel> and the <guilabel>Properties view</guilabel> are standard views. The other two views that are added are the <guilabel>Project archives</guilabel> view and the <guilabel>Servers</guilabel> view.
+		The view 
 	</para>
 
 	<section id="JBossServerView" role="updated">
@@ -181,13 +181,22 @@
 
 						<row>
 							<entry>
-								<para>Show in</para>
+								<para>Show In</para>
 							</entry>
 							<entry>
 								<para>This option provides easy access to the Console, Debug, Server Log or MBean Explorer views</para>
 							</entry>
 						</row>
-
+						<row>
+							<entry>
+								<para>Show In -> File Browser</para>
+							</entry>
+							<entry>
+								<para>
+									This action uses the native OS file explorer to browse the deploy destination of a local server.
+								</para>
+							</entry>
+						</row>
 						<row>
 							<entry>
 								<para>Delete</para>
@@ -230,17 +239,6 @@
 							</entry>
 							<entry>
 								<para>This will synchronize the publish information between the server and workspace</para>
-							</entry>
-						</row>
-
-						<row>
-							<entry>
-								<para>Explore</para>
-							</entry>
-							<entry>
-								<para>
-									This action uses the native OS file explorer to browse the deploy destination. Note: The option is also available for deployed 	resources and projects (see the figure below).
-								</para>
 							</entry>
 						</row>
 
@@ -510,7 +508,7 @@
 			<title>Drag-n-Drop to Servers view</title>
 
 			<para>
-				Starting from <productname>JBoss AS Tools</productname> 2.0.0.CR2 the <guilabel>Servers</guilabel> view supports drag-n-drop of deployable and runnable projects and resources.
+				The <guilabel>Servers</guilabel> view supports drag-n-drop of deployable and runnable projects and resources.
 			</para>
 
 			<figure>
@@ -784,9 +782,6 @@
             
 
 			<para>The first tab shows the JBoss server arguments</para>
-			<para>
-				See the <ulink url="http://docs.jboss.org/jbossas/guides/installguide/r1/en/html/start-stop.html">AS Installation Guide </ulink> to find the parameters that can be specified for <productname>JBoss Server</productname>.
-			</para>
 
 			<note>
 				<title>Note:</title>

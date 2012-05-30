@@ -4,7 +4,7 @@
 	
 	<para>In this chapter it will be described how to deploy modules onto the server.</para>
 	<para> 
-		First of all it is necessary to say that deploying to a server is mostly painless. There are several ways to do it provided by WTP and some additional methods provided by JBoss Tools. These methods are described further in this chapter.
+		There are several ways to deploy to a server, provided by the Web Tools Platform (WTP) and some additional methods provided by JBoss Tools. These methods are described further in this chapter.
 	</para>
 	
 	<section>
@@ -146,7 +146,5 @@
 		<para>
 			The "Finger" touches descriptors dependent on project (i.e. <filename>web.xml</filename> for WAR, <filename>application.xml</filename> for EAR,  <filename>jboss-esb.xml</filename> in ESB projects).
 		</para>
-				
-		<para>The last chapter covers a variety of methods on how you can deploy needed modules onto a server.</para>
 	</section>
 </chapter>
