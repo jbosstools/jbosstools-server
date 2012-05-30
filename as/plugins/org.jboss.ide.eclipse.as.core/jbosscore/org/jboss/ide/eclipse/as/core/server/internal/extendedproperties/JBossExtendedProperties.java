@@ -89,6 +89,7 @@ public class JBossExtendedProperties extends ServerExtendedProperties {
 		try {
 			JBossServer jbossServer = ServerUtil.checkedGetServerAdapter(server, JBossServer.class);
 			String host = jbossServer.getHost();
+			host = ServerUtil.formatPossibleIpv6Address(host);
 			int webPort = jbossServer.getJBossWebPort();
 			String consoleUrl = MessageFormat.format(WELCOME_PAGE_URL_PATTERN, host, String.valueOf(webPort));
 			return consoleUrl;
