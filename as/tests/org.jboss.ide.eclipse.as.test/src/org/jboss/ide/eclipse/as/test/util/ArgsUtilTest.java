@@ -11,10 +11,14 @@
 package org.jboss.ide.eclipse.as.test.util;
 
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 
 import junit.framework.TestCase;
 
 public class ArgsUtilTest extends TestCase {
+	private static String QUOTE = "\"";
+	private static String EQ = "=";
+
 	public void testParse() {
 		assertEquals(1, ArgsUtil.parse("").length);
 		assertEquals(1, ArgsUtil.parse("a").length);
@@ -104,6 +108,37 @@ public class ArgsUtilTest extends TestCase {
 		
 	}
 	
+	
+	public void testOuterQuoteMultipleSet() {
+		String argId = "-Dtest";
+		String folder = "my folder";
+		String args = QUOTE + argId + EQ + folder + QUOTE;
+		String args2 = ArgsUtil.setArg(args, null, argId, folder);
+		assertTrue(args2.trim().equals(args));
+
+		String args3 = ArgsUtil.setArg(args2, null, argId, folder + "2");
+		assertTrue(args3.trim().equals(QUOTE + argId + EQ + folder + "2" + QUOTE));
+	}
+
+	public void testInnerQuotesMultipleSet() {
+		String argId = "-Dtest";
+		String folder = "my folder";
+		String args = argId + EQ + QUOTE + folder + QUOTE;
+		String args2 = ArgsUtil.setArg(args, null, argId, folder + "2");
+		assertTrue(args2.trim().equals(argId + EQ + QUOTE + folder + "2" + QUOTE));
+		args2 = ArgsUtil.setArg(args2, null, argId, folder + "3");
+		assertTrue(args2.trim().equals(argId + EQ + QUOTE + folder + "3" + QUOTE));
+	}
+	
+	public void testSetToNulLWithQuotes() {
+		String argId = "-Dtest";
+		String folder = "my folder";
+		
+		String args = QUOTE + argId + EQ + folder + QUOTE;
+		String args2 = ArgsUtil.setArg(args, null, argId, null, true);
+		assertTrue(args2.trim().equals(""));
+	}
+
 	// Just for testing, simply split this string into a bunch of options. 
 	// So I don't need to make new arrays all the time... 
 	public String[] split(String val) {

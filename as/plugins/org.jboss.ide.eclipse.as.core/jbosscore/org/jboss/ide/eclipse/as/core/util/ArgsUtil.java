@@ -146,8 +146,11 @@ public class ArgsUtil {
 	}
 	
 	public static String setArg(String allArgs, String shortOpt, String longOpt, String value ) {
-		if( value != null && value.contains(SPACE))
-			value = QUOTE + value + QUOTE;
+		if( value != null && value.contains(SPACE)) {
+			// avoid double quotes
+			if( !(value.startsWith(QUOTE) && value.endsWith(QUOTE)))
+				value = QUOTE + value + QUOTE;
+		}
 		return setArg(allArgs, shortOpt, longOpt, value, false);
 	}
 	
@@ -180,8 +183,12 @@ public class ArgsUtil {
 	 */
 	public static String setArg(String allArgs, String[] shortOpt, String[] longOpt, String value, boolean addQuotes ) {
 		String originalValue = value;
-		if( addQuotes ) 
+		String rawValue = originalValue;
+		if( value != null && addQuotes )
 			value = QUOTE + value + QUOTE;
+		else 
+			rawValue = getRawValue(value);
+
 		boolean found = false;
 		String[] args = parse(allArgs);
 		String retVal = EMPTY;
@@ -196,7 +203,7 @@ public class ArgsUtil {
 				if( value != null ) {
 					String newVal = null;
 					if( args[i].startsWith(QUOTE)) {
-						newVal = QUOTE + longOpt[0] + EQ + originalValue + QUOTE;
+						newVal = QUOTE + longOpt[0] + EQ + rawValue + QUOTE;
 					} else {
 						newVal = longOpt[0] + EQ + value;
 					}
@@ -219,4 +226,11 @@ public class ArgsUtil {
 		return retVal;
 	}
 	
+	private static String getRawValue(String original) {
+		if( original != null && original.startsWith(QUOTE) && original.endsWith(QUOTE)) {
+			original = original.substring(1);
+			original = original.substring(0, original.length()-1);
+		}
+		return original;
+	}
 }
