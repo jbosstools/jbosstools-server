@@ -89,12 +89,14 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 	
 	protected String getArgsOverrideHost(IServer server, String preArgs) {
 		// Overrides
+		String host = server.getHost();
 		if( LaunchCommandPreferences.listensOnAllHosts(jbossServer.getServer())) {
-			return ArgsUtil.setArg(preArgs,
-					IJBossRuntimeConstants.STARTUP_ARG_HOST_SHORT,
-					null, "0.0.0.0");
+			host = "0.0.0.0";
 		}
-		return preArgs;
+		
+		return ArgsUtil.setArg(preArgs,
+					IJBossRuntimeConstants.STARTUP_ARG_HOST_SHORT,
+					null, host);
 	}
 	
 	protected String getArgsOverrideConfigFile(IServer server, String preArgs) {
