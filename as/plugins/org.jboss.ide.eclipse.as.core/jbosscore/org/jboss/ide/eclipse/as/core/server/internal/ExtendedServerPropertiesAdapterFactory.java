@@ -13,11 +13,13 @@ package org.jboss.ide.eclipse.as.core.server.internal;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.IServerType;
+import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossAS6ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossAS710ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossAS7ExtendedProperties;
@@ -50,10 +52,12 @@ public class ExtendedServerPropertiesAdapterFactory implements IAdapterFactory, 
 		IServer s = null;
 		IRuntime r = null;
 		if( adaptableObject instanceof IServerAttributes ) {
-			typeId = ((IServerAttributes)adaptableObject).getServerType().getId();
+			IServerType type =  ((IServerAttributes)adaptableObject).getServerType();
+			typeId = type == null ? null : type.getId();
 			s = (IServer)adaptableObject;
 		} else if( adaptableObject instanceof IRuntime ) {
-			typeId = ((IRuntime)adaptableObject).getRuntimeType().getId();
+			IRuntimeType type = ((IRuntime)adaptableObject).getRuntimeType();
+			typeId = type == null ? null : type.getId();
 			r = (IRuntime)adaptableObject;
 		} else if( adaptableObject instanceof IRuntimeType ) {
 			typeId = ((IRuntimeType)adaptableObject).getId();
@@ -85,18 +89,23 @@ public class ExtendedServerPropertiesAdapterFactory implements IAdapterFactory, 
 				return new JBossAS710ExtendedProperties(adaptable);
 			if( SERVER_EAP_60.equals(typeId) || EAP_60.equals(typeId))
 				return new JBossEAP60ExtendedProperties(adaptable);
-			
+
 			// NEW_SERVER_ADAPTER
+			
+			// Last ditch, allows other server types to adapt also
+			if( s != null ) {
+				IExtendedPropertiesProvider propProvider = (IExtendedPropertiesProvider)
+						s.loadAdapter(IExtendedPropertiesProvider.class, new NullProgressMonitor());
+				if( propProvider != null ) {
+					return propProvider.getExtendedProperties();
+				}
+			}
+
+		} else {
+			// typeId is null... why?
+			Trace.trace(Trace.STRING_FINER, NLS.bind("ExtendedServerPropertiesAdapterFactory unable to adapt object {0} to ServerExtendedProperties", adaptable)); //$NON-NLS-1$
 		}
 		
-		// Last ditch
-		if( s != null ) {
-			IExtendedPropertiesProvider propProvider = (IExtendedPropertiesProvider)
-					s.loadAdapter(IExtendedPropertiesProvider.class, new NullProgressMonitor());
-			if( propProvider != null ) {
-				return propProvider.getExtendedProperties();
-			}
-		}
 		return null;
 	}
 	
