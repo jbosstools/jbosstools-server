@@ -12,7 +12,11 @@ package org.jboss.ide.eclipse.as.ui.views.server.extensions;
 
 import java.net.URL;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
@@ -20,6 +24,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.internal.browser.ImageResource;
 import org.eclipse.ui.navigator.CommonActionProvider;
 import org.eclipse.ui.navigator.CommonViewer;
@@ -63,10 +68,20 @@ public class ShowInWelcomePageActionProvider extends CommonActionProvider {
 		action = new Action() {
 			@Override
 			public void run() {
-				String url = getUrl();
-				if(url!=null) {
-					JBTWebLaunchableClient.checkedCreateInternalBrowser(url, getServer().getName(), JBossServerUIPlugin.PLUGIN_ID, JBossServerUIPlugin.getDefault().getLog());
-				}
+				new Job("Fetching Welcome Page URL") {
+					public IStatus run(IProgressMonitor monitor) {
+						// Get the url in a background thread to not freeze the UI
+						final String url = getUrl();
+						if(url!=null) {
+							Display.getDefault().asyncExec(new Runnable() {
+								public void run() {
+									JBTWebLaunchableClient.checkedCreateInternalBrowser(url, getServer().getName(), JBossServerUIPlugin.PLUGIN_ID, JBossServerUIPlugin.getDefault().getLog());
+								}
+							});
+						}
+						return Status.OK_STATUS;
+					}
+				}.schedule();
 			}
 		};
 		action.setText(ServerActionMessages.OpenWithBrowser);
@@ -74,6 +89,14 @@ public class ShowInWelcomePageActionProvider extends CommonActionProvider {
 		action.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_INTERNAL_BROWSER));
 	}
 
+	private boolean hasURL() {
+		IServer server = getServer();
+		ServerExtendedProperties props = (ServerExtendedProperties)server.loadAdapter(ServerExtendedProperties.class, new NullProgressMonitor());
+		if( props != null )
+			return props.hasWelcomePage();
+		return false;
+	}
+	
 	private String getUrl() {
 		String urlString = null;
 		IServer server = getServer();
@@ -134,7 +157,7 @@ public class ShowInWelcomePageActionProvider extends CommonActionProvider {
 			IContributionItem menuItem = CommonActionProviderUtils.getShowInQuickMenu(menu, true);
 			if (menuItem instanceof MenuManager) {
 				((MenuManager) menuItem).add(action);
-				action.setEnabled(getUrl()!=null);
+				action.setEnabled(hasURL());
 			}
 		}
 	}
