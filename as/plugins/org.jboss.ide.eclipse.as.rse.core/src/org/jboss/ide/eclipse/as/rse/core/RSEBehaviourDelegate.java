@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.rse.services.shells.IHostShell;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
@@ -45,8 +46,7 @@ public class RSEBehaviourDelegate extends AbstractRSEBehaviourDelegate {
 	@Override
 	protected IStatus gracefullStop() {
 		try {
-			executeShutdownCommand(getShutdownCommand(getServer()));
-			return Status.OK_STATUS;
+			return executeShutdownCommand(getShutdownCommand(getServer()));
 		} catch(CoreException ce) {
 			ServerLogger.getDefault().log(getServer(), ce.getStatus());
 			return new Status(
@@ -56,12 +56,19 @@ public class RSEBehaviourDelegate extends AbstractRSEBehaviourDelegate {
 		}
 	}
 
-	private void executeShutdownCommand(String shutdownCommand) throws CoreException {
+	protected IStatus executeShutdownCommand(String shutdownCommand) throws CoreException {
 		ServerShellModel model = RSEHostShellModel.getInstance().getModel(getServer());
-		model.executeRemoteCommand("/", shutdownCommand, new String[]{}, new NullProgressMonitor(), 10000, true);
-		IHostShell shell = model.getStartupShell();
-		if( RSEUtils.isActive(shell)) {
-			shell.writeToShell("exit");
+		int ret = model.executeRemoteCommandGetStatus("/", shutdownCommand, new String[]{}, new NullProgressMonitor(), 10000, true);
+		if( ret == -1 || ret == 0 ) {
+			// either a shutdown success or a failure on the part of the tools to accurately discover the exit code
+			// proceed as normal
+			IHostShell shell = model.getStartupShell();
+			if( RSEUtils.isActive(shell)) {
+				shell.writeToShell("exit");
+			}
+			return Status.OK_STATUS;
 		}
+		return new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, 
+				NLS.bind("Remote shutdown command failed with status {0}", ret));
 	}
 }
