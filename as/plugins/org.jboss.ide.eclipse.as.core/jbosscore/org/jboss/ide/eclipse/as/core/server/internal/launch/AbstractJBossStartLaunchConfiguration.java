@@ -89,16 +89,7 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 	 * but some pollers such as timeout poller 
 	 */
 	protected IStatus isServerStarted(DelegatingServerBehavior jbsBehavior) {
-		IServerStatePoller poller = PollThreadUtils.getPoller(IServerStatePoller.SERVER_UP, jbsBehavior.getServer());
-		
-		// Need to be able to FORCE the poller to poll immediately
-		if( poller == null || !(poller instanceof IServerStatePoller2)) 
-			poller = new WebPortPoller();
-		IStatus started = ((IServerStatePoller2)poller).getCurrentStateSynchronous(jbsBehavior.getServer());
-		// Trace
-		Trace.trace(Trace.STRING_FINER, "Checking if a server is already started: " + started.getMessage()); //$NON-NLS-1$
-		
-		return started;
+		return PollThreadUtils.isServerStarted(jbsBehavior);
 	}
 	
 	protected boolean handleAlreadyStartedScenario(	DelegatingServerBehavior jbsBehavior, IStatus startedStatus) {

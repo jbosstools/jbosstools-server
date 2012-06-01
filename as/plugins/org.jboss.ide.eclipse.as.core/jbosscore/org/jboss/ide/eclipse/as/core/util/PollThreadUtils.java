@@ -13,13 +13,18 @@ package org.jboss.ide.eclipse.as.core.util;
 import java.util.List;
 import java.util.Properties;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
+import org.jboss.ide.eclipse.as.core.Trace;
+import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.INeedCredentials;
 import org.jboss.ide.eclipse.as.core.server.IPollResultListener;
 import org.jboss.ide.eclipse.as.core.server.IProvideCredentials;
 import org.jboss.ide.eclipse.as.core.server.IServerProvider;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
+import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
@@ -196,4 +201,23 @@ public class PollThreadUtils {
 			return returnedCredentials;
 		}
 	}
+	
+	/*
+	 * A solution needs to be found here. 
+	 * Should ideally use the poller that the server says is its poller,
+	 * but some pollers such as timeout poller cannot actively check
+	 */
+	public static IStatus isServerStarted(DelegatingServerBehavior jbsBehavior) {
+		IServerStatePoller poller = PollThreadUtils.getPoller(IServerStatePoller.SERVER_UP, jbsBehavior.getServer());
+		
+		// Need to be able to FORCE the poller to poll immediately
+		if( poller == null || !(poller instanceof IServerStatePoller2)) 
+			poller = new WebPortPoller();
+		IStatus started = ((IServerStatePoller2)poller).getCurrentStateSynchronous(jbsBehavior.getServer());
+		// Trace
+		Trace.trace(Trace.STRING_FINER, "Checking if a server is already started: " + started.getMessage()); //$NON-NLS-1$
+		
+		return started;
+	}
+
 }

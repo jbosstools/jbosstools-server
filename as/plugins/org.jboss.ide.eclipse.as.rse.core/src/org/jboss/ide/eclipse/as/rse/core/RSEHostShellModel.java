@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.rse.core.RSECorePlugin;
 import org.eclipse.rse.core.model.IHost;
 import org.eclipse.rse.core.subsystems.ISubSystem;
@@ -32,6 +33,7 @@ import org.eclipse.rse.services.shells.IShellService;
 import org.eclipse.rse.subsystems.shells.core.subsystems.servicesubsystem.IShellServiceSubSystem;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
+import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.server.IJBASHostShellListener;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.ThreadUtils;
@@ -128,7 +130,8 @@ public class RSEHostShellModel {
 			try {
 				if( singleUseShell == null || !singleUseShell.isActive()) {
 					singleUseShell = service.launchShell(initialWorkingDirectory, environment, monitor);
-				} else {
+				} else if( initialWorkingDirectory != null ){
+					// allow for a null working directory to ensure no command is run here
 					singleUseShell.writeToShell("cd " + initialWorkingDirectory);
 				}
 				singleUseShell.writeToShell(command);
@@ -151,14 +154,72 @@ public class RSEHostShellModel {
 					throws CoreException {
 			executeRemoteCommand(initialWorkingDirectory, command, environment, monitor);
 			ThreadUtils.sleepFor(delay);
-			if( exit ) {
+			if( exit && singleUseShell != null) {
 				singleUseShell.exit();
 				singleUseShell = null;
 			}
 		}
-		
-	}
 	
+		/**
+		 * Return a -1 if no idea what happened, or the actual status code from the shutdown command
+		 * 
+		 * @param initialWorkingDirectory
+		 * @param command
+		 * @param environment
+		 * @param monitor
+		 * @param delay
+		 * @param exit
+		 * @return
+		 * @throws CoreException
+		 */
+		public int executeRemoteCommandGetStatus( 
+				String initialWorkingDirectory, String command, 
+				String[] environment, IProgressMonitor monitor,
+				int delay, boolean exit)
+					throws CoreException {
+			executeRemoteCommand(initialWorkingDirectory, command, environment, monitor);
+			final String[] statusLine = new String[2]; // [0] is last, [1] is new
+			final boolean[] done = new boolean[1];
+			done[0] = false;
+			statusLine[0] = null;
+			IHostShellOutputListener statusListener = new IHostShellOutputListener() {
+				public void shellOutputChanged(IHostShellChangeEvent event) {
+					IHostOutput[] lines = event.getLines();
+					for( int i = 0; i < lines.length; i++ ) {
+						// shift
+						if( !done[0]) {
+							statusLine[0] = statusLine[1];
+							statusLine[1] = lines[i].getString();
+							System.out.println(lines[i].getString());
+						}
+						
+						if( serverId.equals(statusLine[1]))
+							// Then the real answer is the line before this one... statusLine[0]
+							done[0] = true;
+					}
+				}
+			};
+			singleUseShell.getStandardOutputReader().addOutputListener(statusListener);
+			
+			singleUseShell.writeToShell("echo $? && echo " + serverId);
+			ThreadUtils.sleepFor(delay);
+			if( exit && singleUseShell != null && singleUseShell.isActive() ) {
+				singleUseShell.exit();
+				singleUseShell = null;
+			}
+			String s = statusLine[0];
+			if( s != null ) {
+				try {
+					Integer i = Integer.parseInt(s);
+					return i.intValue();
+				} catch(NumberFormatException nfe) {
+				}
+			}
+			Trace.trace(Trace.STRING_FINER, NLS.bind("Command {0} exited with status {1}", command, statusLine[0]));
+			return -1;
+		}
+	}
+
 	public static IShellService findShellService(DelegatingServerBehavior behaviour) throws CoreException {
 		return findShellService(behaviour.getServer());
 	}

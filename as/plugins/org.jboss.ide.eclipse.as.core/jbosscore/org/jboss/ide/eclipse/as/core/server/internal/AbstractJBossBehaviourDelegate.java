@@ -27,6 +27,10 @@ public abstract class AbstractJBossBehaviourDelegate extends AbstractBehaviourDe
 
 	private PollThread pollThread = null;
 
+	protected PollThread getPollThread() {
+		return pollThread;
+	}
+	
 	public IServer getServer() {
 		return actualBehavior.getServer();
 	}

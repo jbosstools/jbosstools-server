@@ -13,9 +13,11 @@
 package org.jboss.ide.eclipse.as.rse.core;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractJBossBehaviourDelegate;
+import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 
 public abstract class AbstractRSEBehaviourDelegate extends AbstractJBossBehaviourDelegate {
 	
@@ -26,16 +28,23 @@ public abstract class AbstractRSEBehaviourDelegate extends AbstractJBossBehaviou
 	
 	@Override
 	public void stopImpl(boolean force) {
-		if( force ) {
+		// If force, or if the server is already started (force a one-time synchronous poll)
+		if( force || !PollThreadUtils.isServerStarted(actualBehavior).isOK()) {
 			forceStop();
+			return;
 		}
 
 		setServerStopping();
-		if (!gracefullStop().isOK()) {
+		IStatus shutdownStatus = gracefullStop();
+		if (!shutdownStatus.isOK()) {
+			// The shutdown failed. This indicates a bad command or nonfunctional shutdown command
+			if(getServer().getServerState() == IServer.STATE_STOPPED)
+				return; // The poller already changed state to stopped
+			
+			if( getPollThread() != null )
+				getPollThread().cancel();
 			setServerStarted();
-		} else {
-			setServerStopped();
-		}
+		} // else wait for the poller to set the proper state
 	}
 
 	@Override
