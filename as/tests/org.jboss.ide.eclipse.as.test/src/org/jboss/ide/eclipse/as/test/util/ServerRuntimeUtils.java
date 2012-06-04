@@ -129,7 +129,11 @@ public class ServerRuntimeUtils extends TestCase {
 	}
 	
 	public static IServer createMockJBoss7Server(String deployLocation, String tempDeployLocation) throws CoreException {
-		IRuntime runtime = RuntimeUtils.createRuntime(IJBossToolingConstants.AS_70, "/", "default");
+		return createMockJBoss7Server("/", deployLocation, tempDeployLocation);
+	}
+
+	public static IServer createMockJBoss7Server(String rtLoc, String deployLocation, String tempDeployLocation) throws CoreException {
+		IRuntime runtime = RuntimeUtils.createRuntime(IJBossToolingConstants.AS_70, rtLoc, "default");
 		IServer s = ServerCreationUtils.createServer2(runtime, IJBossToolingConstants.SERVER_AS_70);
 		IServerWorkingCopy swc = s.createWorkingCopy();
 		swc.setServerConfiguration(null);
@@ -138,7 +142,7 @@ public class ServerRuntimeUtils extends TestCase {
 		IServer server = swc.save(true, null);
 		return server;
 	}
-	
+
 	public static IServer useMockPublishMethod(IServer server) throws CoreException {
 		IServerWorkingCopy wc = server.createWorkingCopy();
 		wc.setAttribute(IDeployableServer.SERVER_MODE, "mock");

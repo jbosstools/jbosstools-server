@@ -66,7 +66,6 @@ public class JBoss7Server extends JBossServer implements IJBoss7Deployment, IMan
 
 	public String getDeployFolder(String type) {
 		if( type.equals(DEPLOY_SERVER) ) {
-			// TODO make sure this is correct?! Upstream APIs have this wrong for as7
 			IRuntime rt = getServer().getRuntime();
 			if( rt == null )
 				return null;
@@ -76,10 +75,13 @@ public class JBoss7Server extends JBossServer implements IJBoss7Deployment, IMan
 		return getDeployFolder(this, type);
 	}
 	
-	// Just force it to be in metadata location, for now
 	public String getTempDeployFolder() {
-		IRuntime rt = getServer().getRuntime();
-		IPath p = rt.getLocation().append(AS7_STANDALONE).append(FOLDER_TMP);
-		return ServerUtil.makeGlobal(rt, p).toString();
+		String type = getDeployLocationType();
+		if( DEPLOY_SERVER.equals(type)) {
+			IRuntime rt = getServer().getRuntime();
+			IPath p = rt.getLocation().append(AS7_STANDALONE).append(FOLDER_TMP);
+			return ServerUtil.makeGlobal(rt, p).toString();
+		}
+		return getTempDeployFolder(this, type);
 	}
 }
