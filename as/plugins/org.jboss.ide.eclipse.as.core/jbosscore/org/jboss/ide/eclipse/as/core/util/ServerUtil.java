@@ -94,6 +94,9 @@ public class ServerUtil {
 	}
 	
 	public static boolean isJBossServerType(IServerType type) {
+		if( type == null )
+			return false;
+		
 		// If we start with AS or EAP serverIds and are NOT deploy-only server
 		return !type.getId().equals(IJBossToolingConstants.DEPLOY_ONLY_SERVER) &&
 				(type.getId().startsWith(IJBossToolingConstants.SERVER_AS_PREFIX) 
@@ -105,6 +108,8 @@ public class ServerUtil {
 	}
 	
 	public static boolean isJBoss7(IServerType type) {
+		if( type == null )
+			return false;
 		return type.getId().equals(IJBossToolingConstants.SERVER_AS_70)
 				 || type.getId().equals(IJBossToolingConstants.SERVER_AS_71)
 				 || type.getId().equals(IJBossToolingConstants.SERVER_EAP_60);

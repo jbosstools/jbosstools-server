@@ -56,7 +56,7 @@ public class SelectServerActionDelegate extends AbstractServerActionDelegate
 	private void update0() {
 		if(action == null) return;
 		IServer server = ServerManager.getInstance().getSelectedServer();
-		if( server != null ) {
+		if( server != null && server.getServerType() != null ) {
 			ImageDescriptor id = ImageResource.getImageDescriptor(server.getServerType().getId());
 			action.setImageDescriptor(id);
 		}
