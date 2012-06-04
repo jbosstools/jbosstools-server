@@ -31,6 +31,7 @@ import org.jboss.ide.eclipse.as.test.classpath.ProjectRuntimeTest;
 import org.jboss.ide.eclipse.as.test.classpath.RuntimeServerModelTest;
 import org.jboss.ide.eclipse.as.test.defects.WebDeployableArtifactUtilDefectTest;
 import org.jboss.ide.eclipse.as.test.projectcreation.TestEar5WithJBossRuntime;
+import org.jboss.ide.eclipse.as.test.publishing.DeployAndTempDeployFolderTest;
 import org.jboss.ide.eclipse.as.test.publishing.JBIDE2512aTest;
 import org.jboss.ide.eclipse.as.test.publishing.JBIDE2512bTest;
 import org.jboss.ide.eclipse.as.test.publishing.JBIDE4184Test;
@@ -73,6 +74,7 @@ public class ASTestSuite extends TestSuite {
         suite.addTestSuite(StringSubstitutionTest.class);
         
         // Publishing tests
+        suite.addTestSuite(DeployAndTempDeployFolderTest.class);
         suite.addTestSuite(BehaviourModelDefectTest.class);
         suite.addTestSuite(WebDeployableArtifactUtilDefectTest.class);
         suite.addTestSuite(MockJSTPublisherTest.class);
