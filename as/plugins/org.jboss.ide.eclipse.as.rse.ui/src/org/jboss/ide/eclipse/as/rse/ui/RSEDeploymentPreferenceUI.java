@@ -61,12 +61,15 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManagerServicePoller;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
@@ -471,8 +474,21 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 	}
 
 	@Override
-	public void performFinish(IProgressMonitor monitor) throws CoreException {
-		// TODO Auto-generated method stub
-		
+	public void performFinish(IServerModeUICallback callback, IProgressMonitor monitor) throws CoreException {
+		// Override the pollers to more sane defaults for RSE
+		// For now, hard code these options. One day, we might need an additional
+		// adapter factory for rse-specific initialization questions on a per-server basis
+		IServerWorkingCopy wc = callback.getServer();
+		// an as7-only key
+		boolean exposed = wc.getAttribute(IJBossToolingConstants.EXPOSE_MANAGEMENT_SERVICE, false);
+		if( !exposed ) {
+			// as<7 || ( as==7 && !exposed) uses poller
+			wc.setAttribute(IJBossToolingConstants.STARTUP_POLLER_KEY, WebPortPoller.WEB_POLLER_ID);
+			wc.setAttribute(IJBossToolingConstants.SHUTDOWN_POLLER_KEY, WebPortPoller.WEB_POLLER_ID);
+		} else {
+			// as7 && exposed
+			wc.setAttribute(IJBossToolingConstants.STARTUP_POLLER_KEY, JBoss7ManagerServicePoller.POLLER_ID);
+			wc.setAttribute(IJBossToolingConstants.SHUTDOWN_POLLER_KEY, JBoss7ManagerServicePoller.POLLER_ID);
+		}
 	}
 }
