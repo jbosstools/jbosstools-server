@@ -52,7 +52,7 @@ public class LocalBehaviorUI implements IDeploymentTypeUI {
 		}
 	}
 	
-	public void performFinish(IProgressMonitor monitor) throws CoreException {
+	public void performFinish(IServerModeUICallback callback, IProgressMonitor monitor) throws CoreException {
 		// Do Nothing
 	}
 

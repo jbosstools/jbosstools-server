@@ -223,7 +223,7 @@ public class JBossServerWizardFragment extends WizardFragment implements IComple
 		if( modeComposite != null ) {
 			IDeploymentTypeUI ui = modeComposite.getCurrentBehaviourUI();
 			if( ui != null )
-				ui.performFinish(monitor);
+				ui.performFinish(DeploymentTypeUIUtil.getCallback(getTaskModel(), handle, this), monitor);
 		}
 	}
 	
