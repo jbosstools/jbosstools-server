@@ -195,7 +195,7 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 		} catch (JBoss7ManangerConnectException e) {
 			return true;
 		} catch (Exception e) {
-			return false;
+			return true;
 		}
 	}
 
