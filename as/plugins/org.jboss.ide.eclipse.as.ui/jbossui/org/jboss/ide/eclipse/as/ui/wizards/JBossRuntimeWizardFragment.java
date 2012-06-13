@@ -131,6 +131,9 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	}
 	
 	protected void updateModels() {
+		// clean state from last time this fragment was used
+		// (fragments apparently do not have new instances constructed. ugh)
+		homeDir = null;
 		updateJREs();
 	}
 	

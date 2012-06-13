@@ -52,11 +52,6 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	}
 
 	@Override
-	protected void updateModels() {
-		updateJREs();
-	}
-
-	@Override
 	protected void createWidgets(Composite main) {
 		createExplanation(main);
 		createNameComposite(main);
