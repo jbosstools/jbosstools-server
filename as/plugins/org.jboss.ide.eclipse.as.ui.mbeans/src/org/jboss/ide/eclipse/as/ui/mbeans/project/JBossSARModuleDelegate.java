@@ -37,7 +37,7 @@ public class JBossSARModuleDelegate extends JBTFlatModuleDelegate implements IJB
 	}
 	
 	@Override
-	protected IFlattenParticipant[] getParticipants() {
+	public IFlattenParticipant[] getParticipants() {
 		List<IFlattenParticipant> participants = new ArrayList<IFlattenParticipant>();
 		participants.add(new JEEHeirarchyExportParticipant());
 		participants.add(new AddMappedOutputFoldersParticipant());
