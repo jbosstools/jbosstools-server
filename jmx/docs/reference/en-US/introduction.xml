@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <chapter id="intruduction">
-	<?dbhtml filename="introduction.html"?>
 
 	<title>Introduction</title>
 	<para>
-		<property>JBoss Tools</property>&apos; JMX project is a fork of <ulink url="http://code.google.com/p/eclipse-jmx/">eclipse-jmx</ulink>, a project by Jeff Mesnil.
-    It was forked with permission. </para>
+		<property>JBoss Tools</property>&apos; JMX project is a fork of <ulink url="http://code.google.com/p/eclipse-jmx/">eclipse-jmx</ulink>, a project by Jeff Mesnil. It was forked with permission. </para>
 
-	<section>
+   <!--	<section>
 		<title>What is JMX?</title>
 		<para>
 			The Java Management Extensions (JMX) technology is a standard part of the Java Platform, Standard Edition (Java SE platform). The JMX technology was added to the platform in the Java 2 Platform, Standard Edition (J2SE) 5.0 release.
@@ -31,10 +29,10 @@
 		<para>
 			The JMX technology defines standard connectors (known as JMX connectors) that enable you to access JMX agents from remote management applications. JMX connectors using different protocols provide the same management interface. Consequently, a management application can manage resources transparently, regardless of the communication protocol used. JMX agents can also be used by systems or applications that are not compliant with the JMX specification, as long as those systems or applications support JMX agents. 
 		</para>
-	<!--	<para>
+		<para>
 			<ulink url="http://java.sun.com/docs/books/tutorial/jmx/overview/index.html">Read more about JMX</ulink>.
-		</para> -->
-	</section>
+		</para>
+	</section> -->
 
 	<section>
 		<title>What is JMX Tools?</title>

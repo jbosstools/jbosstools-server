@@ -7,7 +7,7 @@
 	<productname>JBoss Developer Studio</productname>
 	<productnumber>5.0</productnumber>
 	<edition>5.0.0</edition>
-	<pubsnumber>3</pubsnumber>
+	<pubsnumber>5</pubsnumber>
 	<abstract>
 		<para>The JMX Tools Reference Guide explains how to use the JMX Tools module to setup multiple JMX connections and explore the JMX tree and execute operations.</para>
 	</abstract>

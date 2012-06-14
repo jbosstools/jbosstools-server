@@ -39,7 +39,7 @@
 		<title>Managing Application</title>
 
 		<para>
-			As it has been said earlier in the guide, the JMX technology allows you to monitor and manage Java applications. In this section we will show you how to get connected to a sample Java application and run the <code>sayHello()</code> method remotely from inside of the <guilabel>MBean Explorer</guilabel>.
+			In this section we will show you how to get connected to a sample Java application and run the <code>sayHello()</code> method remotely from inside of the <guilabel>MBean Explorer</guilabel>.
 		</para>
 		<orderedlist>
 
@@ -167,7 +167,7 @@ hello, world</screen>
 
 	</section>
 
-	<section>
+<!--	<section>
 		<title>Eclipse Equinox Managing</title>
 
 		<para>You can manage Equinox through the Equinox monitoring framework.</para>
@@ -183,13 +183,13 @@ hello, world</screen>
 				</para>
 			</listitem>
             
-            <!--<listitem>
+            <listitem>
                 <para>Select <emphasis>
                     <property>JMX Server &gt; Open Connection</property>
                 </emphasis> and click  <emphasis>
                     <property>OK</property>
                 </emphasis></para>
-            </listitem>-->
+            </listitem>
 
 			<listitem>
 				<para>
@@ -219,14 +219,14 @@ hello, world</screen>
 		</orderedlist>
 
 		<para>You now have access to the MBeans exposed by Equinox.</para>
-	</section>
+	</section> -->
     
 
-	<section>
+<!--	<section>
 		<title>Managing a JBoss application server</title>
 
 		<para>
-			Managing JBoss instances is not supported with the <guilabel>JMX Tools</guilabel> alone. <!-- You must also download and install the <guilabel>AS Tools</guilabel> portion of the <guilabel>JBoss Tools</guilabel> distribution Even after installing the proper tooling, you cannot create a JBoss JMX connection yourself or through the Connection Wizard. --> The first step is to create a JBoss Server. The full instructions for this can be found in the application server Tools section; however, the short summary is: 
+			Managing JBoss instances is not supported with the <guilabel>JMX Tools</guilabel> alone. You must also download and install the <guilabel>AS Tools</guilabel> portion of the <guilabel>JBoss Tools</guilabel> distribution Even after installing the proper tooling, you cannot create a JBoss JMX connection yourself or through the Connection Wizard. The first step is to create a JBoss Server. The full instructions for this can be found in the application server Tools section; however, the short summary is: 
 		</para>
 		<orderedlist>
 			<listitem>
@@ -260,13 +260,17 @@ hello, world</screen>
 		</orderedlist>
 
 		<para>Now you can explore MBeans exposed by a JBoss instance.</para>
-	</section>
+	</section> -->
 	
 	<section>
 		<title>Managing a JBoss application server Remotely</title>
-
+		<important>
+			<para>
+				If you are running JBos Enterprise Application Platform 6, JBoss Application Server 7 or later, you can connect automatically to a remote server through the <guilabel>Server Behaviour</guilabel> tab in the server settings. For further information on this see the <emphasis>JBoss Server Manager Reference Guide</emphasis>  for this release.
+			</para>
+		</important>
 		<para>
-			The JBoss JMX Tools allow you to easily access and manage a JBoss AS server remotely. In order to connect to an instance of a JBoss server remotely, you need to run the server or make sure the server is launched. 
+			The JBoss JMX Tools allow you to easily access and manage a JBoss server remotely. In order to connect to a remote instance of a JBoss server, you need to run the server or make sure the server is launched. 
 		</para>
 		<orderedlist>
 			<listitem>
