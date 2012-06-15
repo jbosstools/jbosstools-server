@@ -137,7 +137,7 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 			}
 		};
 		
-		return wrapRemoteCall(run, remotePath.toString(), "failed to delete {0} on host {1}", monitor);
+		return wrapRemoteCall(run, remotePath.toString(), "failed to delete {0} on host {1}", false, monitor);
 	}
 
 	public IStatus[] makeDirectoryIfRequired(final IPath dir,
