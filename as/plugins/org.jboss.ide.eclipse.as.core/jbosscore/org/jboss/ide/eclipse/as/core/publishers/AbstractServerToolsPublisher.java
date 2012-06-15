@@ -250,8 +250,14 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 						tmpTree, new Path("/"), resources, path, childFile); //$NON-NLS-1$
 			}
 			
+            File tempDeployFolder = deployRoot.toFile();
+			//JBIDE-12188 : EAP server created by the JBDS installer doesn't create the temp folder 
+			if (!tempDeployFolder.exists()) {
+				tempDeployFolder.mkdirs();
+			}
+            
 			// Make output
-			temp = File.createTempFile(module.getName(), ".tmp", deployRoot.toFile()); //$NON-NLS-1$
+			temp = File.createTempFile(module.getName(), ".tmp", tempDeployFolder); //$NON-NLS-1$
 			IPath tempFile = new Path(temp.getAbsolutePath());
 			IStatus[] e2 = PublishUtil.packModuleIntoJar(moduleTree[moduleTree.length-1].getName(), 
 					resources, tempFile, getPathFilter(moduleTree));;
