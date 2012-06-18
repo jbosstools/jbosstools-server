@@ -23,12 +23,16 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.rse.core.RSECorePlugin;
 import org.eclipse.rse.core.model.IHost;
 import org.eclipse.rse.core.subsystems.ISubSystem;
+import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
 import org.eclipse.rse.services.files.IFileService;
+import org.eclipse.rse.services.files.IHostFile;
 import org.eclipse.rse.subsystems.files.core.servicesubsystem.IFileServiceSubSystem;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.Trace;
+import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractPublishMethod;
+import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBoss6Server;
 import org.jboss.ide.eclipse.as.core.server.IPublishCopyCallbackHandler;
@@ -39,6 +43,7 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
+import org.jboss.ide.eclipse.as.rse.core.RSERemotePublishHandler.RunnableWithProgress2;
 
 public class RSEPublishMethod extends AbstractPublishMethod {
 
@@ -64,11 +69,15 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 	
 	public void publishStart(DeployableServerBehavior behaviour,
 			IProgressMonitor monitor) throws CoreException {
-		super.publishStart(behaviour, monitor);
+		monitor.beginTask("Beginning Publish for server " + behaviour.getServer().getName(), 300);
+		super.publishStart(behaviour, AbstractServerToolsPublisher.getSubMon(monitor, 100));
 		this.behaviour = behaviour;
 		loadRemoteDeploymentDetails();
-		ensureConnection(monitor);
-
+		IStatus connected = ensureConnection(AbstractServerToolsPublisher.getSubMon(monitor, 100));
+		if( !connected.isOK() ) {
+			throw new CoreException(connected);
+		}
+		
 		DelegatingServerBehavior b = (DelegatingServerBehavior) behaviour.getServer().loadAdapter(DelegatingServerBehavior.class, new NullProgressMonitor());
 		if( b != null && getServer().getServerState() == IServer.STATE_STARTED ) {
 			stopDeploymentScanner();
@@ -135,18 +144,38 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 		return behaviour.getServer();
 	}
 	
-	public boolean ensureConnection(IProgressMonitor monitor) {
+	public IStatus ensureConnection(IProgressMonitor monitor) {
+		monitor.beginTask("Verifying connectivity to remote server", 200);
+		Exception caught = null;
 		Trace.trace(Trace.STRING_FINER, "Ensuring connection to remote server for server " + getServer().getName());
 		if (fileSubSystem != null && !fileSubSystem.isConnected()) {
 		    try {
-		    	fileSubSystem.connect(monitor, false);
+		    	fileSubSystem.connect(AbstractServerToolsPublisher.getSubMon(monitor, 100), false);
 		    } catch (Exception e) {
 				Trace.trace(Trace.STRING_FINER, "Exception connecting to remote server: " + e.getMessage());
-		    	// I'd rather not catch Exception, but that's all they throw
-		    	return false;
+		    	// I'd rather not catch raw Exception, but that's all they throw
+				caught = e;
 		    }
 		}
-		return fileSubSystem != null && fileSubSystem.isConnected();
+		boolean isConnected = fileSubSystem != null && fileSubSystem.isConnected();
+		String connectionName = RSEUtils.getRSEConnectionName(behaviour.getServer());
+		if( isConnected ) {
+			// The RSE tools might be mistaken here. The user may in fact have lost internet connectivity
+			RunnableWithProgress2 run = new RunnableWithProgress2("Accessing Remote System Root") {
+				public void run(IProgressMonitor monitor) throws CoreException,
+						SystemMessageException, RuntimeException {
+					getFileService().getRoots(monitor);
+				}
+			};
+			IProgressMonitor childMonitor = AbstractServerToolsPublisher.getSubMon(monitor, 100);
+			Exception e = RSERemotePublishHandler.wrapRemoteCallStatusTimeLimit(run, "null", "null", null, 15000, childMonitor);
+			if( e == null )
+				return Status.OK_STATUS;
+			return new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL,
+					"The remote server " + connectionName + " is currently not responding to file system requests.", e);
+		}
+		return new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL,
+				"Unable to communicate with remote connection: " + connectionName, caught);
 	}
 	
 	public IPath getRemoteRootFolder() {

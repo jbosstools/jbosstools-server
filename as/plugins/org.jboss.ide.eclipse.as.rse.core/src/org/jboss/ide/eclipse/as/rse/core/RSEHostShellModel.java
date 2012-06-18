@@ -109,6 +109,8 @@ public class RSEHostShellModel {
 				startupShell = hs;
 				startupShell.addOutputListener(listener);
 				return hs;
+			} catch(SystemMessageException sme) {
+				throw sme; 
 			} catch(RuntimeException re) {
 				throw new CoreException(new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, 
 						re.getMessage(), re));
