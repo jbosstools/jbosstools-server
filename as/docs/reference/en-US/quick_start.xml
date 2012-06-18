@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<chapter id="quick_start" role="updated">
+	<title>Quick Start with JBoss Server</title>
+
+	<para>This chapter covers the basics of working with the <property>JBoss Server</property>.</para>
+
+	<section id="JBoss_server_key_features">
+		<title>Key Features of JBoss Server</title>
+		<para>The table below lists the main features included in JBoss Server:</para>
+
+		<table>
+    	
+			<title>Key Functionality for JBoss AS and Archive Tools</title>
+			<tgroup cols="3">
+
+				<colspec colnum="1" align="left" colwidth="2*"/>
+				<colspec colnum="2" colwidth="4*"/>
+				<colspec colnum="3" align="left" colwidth="2*"/>
+
+				<thead>
+					<row>
+						<entry>Feature</entry>
+						<entry>Benefit</entry>
+						<entry>Chapter</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>
+							<para>JBoss AS plugin</para>
+						</entry>
+						<entry>
+							<para>
+								Using WTP the JBoss AS plugin allows you to work with the server in run or debug mode. You can easily install runtimes and servers, copy the existing runtime configuration or configure it up to your needs.
+							</para>
+						</entry>
+						<entry>
+							<link linkend="runtimes_servers">Runtimes and servers</link>
+						</entry>
+					</row>
+
+					<row>
+						<entry>
+							<para>JBoss AS Perspective</para>
+						</entry>
+						<entry>
+							<para>
+								It provides easy management of an installed JBoss Server and includes the standard Console and Properties views and the specially added Project archives and Servers views.
+							</para>
+						</entry>
+						<entry>
+							<link linkend="perspective">JBoss AS perspective</link>
+						</entry>
+					</row>
+
+					<row>
+						<entry>
+							<para>Modules Deployment</para>
+						</entry>
+						<entry>
+							<para>Provides a number of ways, using WTP and JBoss Tools, to deploy either a project or a single file on the server.</para>
+						</entry>
+						<entry>
+							<link linkend="modules">Deploying modules</link>
+						</entry>
+					</row>
+
+			<!--		<row>
+						<entry>
+							<para>TPTP Support</para>
+						</entry>
+						<entry>
+							<para>Test and Performance Tools Platform (TPTP) profiling.</para>
+						</entry>
+						<entry>
+							<link linkend="tptp_support">TPTP support</link>
+						</entry>
+					</row> -->
+
+				</tbody>
+
+			</tgroup>
+		</table>
+  	
+		<para>
+			If you already have installed the JBoss server and runtime this document will show you how to configure, start and stop the server, as well as the deployment and archiving processes. Installing runtimes and servers is covered in more detail in <xref linkend="runtimes_servers"/>.
+		</para>
+  	
+		<para>
+			To start working with JBoss AS, select the <guilabel>JBoss AS</guilabel> Perspective via <menuchoice><guimenuitem>Window</guimenuitem><guimenuitem>Show View</guimenuitem><guimenuitem>Other</guimenuitem><guimenuitem>Server</guimenuitem><guimenuitem>Servers</guimenuitem></menuchoice>.
+		</para>
+	</section>
+
+	<section id="starting">
+		<title>Starting JBoss Server</title>
+
+		<para>
+			Starting <productname>JBoss Server</productname> is quite simple. You can control the server behavior with the help of a special toolbar in the <guilabel>Servers</guilabel> view where you can <guibutton>start</guibutton> it in a regular or debug mode, <guibutton>stop</guibutton> or <guibutton>restart</guibutton> it and <guibutton>publish</guibutton> to the server.
+		</para>
+
+		<figure>
+			<title>Servers Toolbar</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/quick_start/quick_start_1.png"/>
+				</imageobject>
+			</mediaobject>
+		</figure>
+
+		<para>
+			To launch the server click the green-with-white-arrow icon on the <guilabel>Servers</guilabel> view or right click server name in this view and select <guimenuitem>Start</guimenuitem>. If this view is not open, select <menuchoice><guimenuitem>Window</guimenuitem><guimenuitem>Show View</guimenuitem><guimenuitem>Other</guimenuitem><guimenuitem>Server</guimenuitem><guimenuitem>Servers</guimenuitem></menuchoice>.
+		</para>
+
+		<figure>
+			<title>Start JBoss Server</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/quick_start/quick_start_2.png"/>
+				</imageobject>
+			</mediaobject>
+		</figure>
+
+	</section>
+
+	<section id="stopping">
+		<title>Stopping JBoss Server</title>
+
+		<para>
+			To stop the server, click the <guibutton>Stop</guibutton> icon in the <guilabel>Servers</guilabel> view or right click the server name
+      and select the <guimenuitem>Stop</guimenuitem> option.
+		</para>
+
+		<figure>
+			<title>Stop JBoss Server</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/quick_start/quick_start_3.png"/>
+				</imageobject>
+			</mediaobject>
+		</figure>
+
+		<para>When the server is stopped you will see <guilabel>Stopped</guilabel> state next to its name in the square brackets.</para>
+		<para>Learn more about the <guilabel>Servers</guilabel> view in <xref linkend="JBossServerView"/>.</para>
+	</section>
+
+	<section id="archiving">
+
+		<title>Project Archiving</title>
+
+		<para>
+			<property>JBoss Tools</property> comes with our own archives tool. The Project Archives plugin consists primarily of a view to set up each packaging configuration (<menuchoice><guimenuitem>Window</guimenuitem><guimenuitem>Show View</guimenuitem><guimenuitem>Other</guimenuitem><guimenuitem>JBoss Tool</guimenuitem><guimenuitem>Project archives</guimenuitem></menuchoice>).
+		</para>
+		<para>Right clicking in the <guilabel>Project archives</guilabel> view you can create a War, EJB War, EAR or JAR archive.</para>
+
+		<figure>
+			<title>Archive Creating</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/quick_start/quick_start_7.png"/>
+				</imageobject>
+			</mediaobject>
+		</figure>
+
+		<para>
+			Using the context menu on the item you can initiate a <emphasis><property>full build</property></emphasis> on an archive, <emphasis><property>edit</property>,</emphasis><emphasis><property>delete</property></emphasis> or <emphasis><property>publish</property></emphasis> it.
+		</para>
+
+		<figure>
+			<title>Context Menu on the Item</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/quick_start/quick_start_8.png"/>
+				</imageobject>
+			</mediaobject>
+		</figure>
+  	
+		<para>
+			If you wish, you can assign a hotkey for the Build Project Archive action. A key binding can be added by selecting <menuchoice><guimenuitem>Window</guimenuitem><guimenuitem>Preferences</guimenuitem><guimenuitem>General</guimenuitem><guimenuitem>Keys</guimenuitem></menuchoice>.
+		</para>
+  	
+		<figure>
+			<title>Setting the Hotkey for Build Project Archive Action</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/quick_start/hotkeys.png" scale="80"/>
+				</imageobject>
+			</mediaobject>
+		</figure>
+  	
+		<para>
+			To build a project archive, select the project in the <guilabel>Package Explorer</guilabel> view and execute the hotkey combination 
+  		you assigned for this action.
+  	</para>
+  	
+		<para>More information about the <guilabel>Project Archives</guilabel> view can be found in <xref linkend="Project_archivesView"/>.</para>
+	</section>
+
+	<section id="deployment">
+		<title>Deploying an Application to a Server</title>
+
+		<para>There are two times to deploy your application:</para>
+		<itemizedlist>
+			<listitem>
+				<para>While creating it</para>
+			</listitem>
+			<listitem>
+				<para>After it already exists</para>
+			</listitem>
+		</itemizedlist>
+
+		<para>
+			When you create a new project (Seam, JSF or Struts) with the New Project or Import Project wizards, they will include the <guilabel>Target Runtime</guilabel> and <guilabel>Target Server</guilabel> sections. You can deploy the application through the appropriate configuration in these sections.
+		</para>
+
+		<figure>
+			<title>Runtime and Server Sections in the New Project Wizard</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/quick_start/quick_start_4a.png"/>
+				</imageobject>
+			</mediaobject>
+		</figure>
+
+		<figure>
+			<title>Runtime and Server Sections in the Import Project Wizard</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/quick_start/quick_start_4b.png"/>
+				</imageobject>
+			</mediaobject>
+		</figure>
+
+		<para>
+			You can deploy an existing application to a server by right-clicking the target defined server in the <guilabel>Servers</guilabel> view and then selecting <guimenuitem>Add and Remove Projects</guimenuitem> from the context menu.
+		</para>
+
+		<figure>
+			<title>Add and Remove Projects From the Context Menu.</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/quick_start/quick_start_5.png"/>
+				</imageobject>
+			</mediaobject>
+		</figure>
+
+		<para>
+			If this application is not assigned to a server, it will be in the left-hand available projects list. Clicking on the <guibutton>Add ></guibutton> button will add it to the right-hand configured projects list and deploy the application to this server.
+		</para>
+
+		<figure>
+			<title>Modifying The Projects that are Configured on the Server</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/quick_start/quick_start_6.png"/>
+				</imageobject>
+			</mediaobject>
+		</figure>
+		<note>
+			<para>
+				It is now possible to deploy OSGI (Open Services Gateway initiative framework) projects to the JBoss Enterprise Application Platform 6 or JBoss Application Server 7.
+			</para>
+		</note>
+	</section>
+	
+	<section id="publishing">
+		<title>Publishing to JBoss Server</title>
+		<para>The publishing of all the modules added to a Server is performed automatically when starting a Server.</para>
+		<para>
+			Automatically publishing changes made to the workspace is enabled by default, allowing the workspace to remain in sync with the publish folder. If you need to control when to publish the changes, just disable the automatic publish in the Server Editor (see <xref linkend="server_editor"/>) and use the <guibutton>Publish to Server</guibutton> (<inlinemediaobject><imageobject><imagedata fileref="images/quick_start/publish_button.png"/></imageobject></inlinemediaobject>) button which will incrementally publish the workspace.
+		</para>
+		
+		<para>
+			This section has provided some basic information that will allow you to use the common features provided by the JBoss server. However, JBoss server includes a great deal more functionality, which will be discussed in subsequent chapters.
+		</para>
+	</section>
+</chapter>
