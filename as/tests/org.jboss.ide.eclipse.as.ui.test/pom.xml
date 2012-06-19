@@ -11,13 +11,37 @@
 	<packaging>eclipse-test-plugin</packaging>
 	
 	<properties>
-		<systemProperties>-Djbosstools.test.jboss.home.4.2=${requirement.build.root}/jboss-4.2.3.GA</systemProperties>
+		<systemProperties>-Djbosstools.test.jboss.home.4.2=${project.build.directory}/jboss-4.2.3.GA</systemProperties>
 		<coverage.filter>org.jboss.ide.eclipse.as.ui*</coverage.filter>
 		<emma.instrument.bundles>org.jboss.ide.eclipse.as.ui</emma.instrument.bundles>
 	</properties>
 
 	<build>
 		<plugins>
+		<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>install-jboss-as</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.jboss.jbossas</groupId>
+									<artifactId>jboss-as-dist</artifactId>
+									<version>4.2.3.GA</version>
+									<type>zip</type>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>${project.build.directory}</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
