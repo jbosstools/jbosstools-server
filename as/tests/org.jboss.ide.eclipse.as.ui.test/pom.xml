@@ -11,7 +11,7 @@
 	<packaging>eclipse-test-plugin</packaging>
 	
 	<properties>
-		<systemProperties>-Djbosstools.test.jboss.home.4.2=${project.build.directory}/jboss-4.2.3.GA</systemProperties>
+		<systemProperties>-Djbosstools.test.jboss.home.4.2=${requirementsDirectory}/jboss-4.2.3.GA</systemProperties>
 		<coverage.filter>org.jboss.ide.eclipse.as.ui*</coverage.filter>
 		<emma.instrument.bundles>org.jboss.ide.eclipse.as.ui</emma.instrument.bundles>
 	</properties>
@@ -37,7 +37,6 @@
 									<type>zip</type>
 								</artifactItem>
 							</artifactItems>
-							<outputDirectory>${project.build.directory}</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
