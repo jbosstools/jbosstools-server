@@ -180,6 +180,8 @@ public class XPathModel extends UnitedServerListener {
 			saveCategory(categories[i], server, child);
 		}
 		File f = getFile(server);
+		if( !f.getParentFile().exists())
+			f.getParentFile().mkdirs();
 		try {
 			memento.save(new FileOutputStream(f));
 		} catch( IOException ioe) {
