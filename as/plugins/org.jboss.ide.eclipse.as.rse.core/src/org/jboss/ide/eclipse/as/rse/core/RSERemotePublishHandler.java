@@ -45,13 +45,20 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 		return shouldRestartModule;
 	}
 	
-	private interface RunnableWithProgress2 {
-		public void run(IProgressMonitor monitor) throws CoreException, SystemMessageException, RuntimeException;
+	abstract static class RunnableWithProgress2 {
+		private String name;
+		public RunnableWithProgress2(String name){
+			this.name = name;
+		}
+		public abstract void run(IProgressMonitor monitor) throws CoreException, SystemMessageException, RuntimeException;
+		public String getName() {
+			return name;
+		}
 	}
 	
-	protected IStatus generateFailStatus(String message, String resource, Exception sme) {
-		String connectionName = RSEUtils.getRSEConnectionName(method.getBehaviour().getServer());
-		IHost host = RSEUtils.findHost(connectionName);
+	protected static IStatus generateFailStatus(String message, String resource, RSEPublishMethod method, Exception sme) {
+		String connectionName = method == null ? null : RSEUtils.getRSEConnectionName(method.getBehaviour().getServer());
+		IHost host = connectionName == null ? null : RSEUtils.findHost(connectionName);
 		IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL,
 				NLS.bind(message, resource, host == null ? null : host.getName()), sme);
 		return s;
@@ -60,12 +67,52 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 	private IStatus[] wrapRemoteCall(final RunnableWithProgress2 runnable, 
 			final String remoteResource, final String failErrorMessage, 
 			final IProgressMonitor monitor) throws CoreException, RuntimeException  {
-		return wrapRemoteCall(runnable, remoteResource, failErrorMessage, true, monitor);
+		return wrapRemoteCall(runnable, remoteResource, failErrorMessage, true, 
+				method, monitor);
+	}
+
+	static IStatus[] wrapRemoteCall(final RunnableWithProgress2 runnable, 
+			final String remoteResource, final String failErrorMessage, 
+			final boolean alwaysThrow, RSEPublishMethod method, final IProgressMonitor monitor) throws CoreException, RuntimeException  {
+		IStatus s = wrapRemoteCall2(runnable, remoteResource, failErrorMessage, 
+				alwaysThrow, method, monitor);
+		return s == null ? new IStatus[]{} : new IStatus[]{s};
 	}
 	
-	private IStatus[] wrapRemoteCall(final RunnableWithProgress2 runnable, 
+	static Exception wrapRemoteCallStatusTimeLimit(final RunnableWithProgress2 runnable, 
 			final String remoteResource, final String failErrorMessage, 
-			final boolean alwaysThrow, final IProgressMonitor monitor) throws CoreException, RuntimeException  {
+			RSEPublishMethod method, final int maxDelay, final IProgressMonitor monitor) {
+		Thread t = new Thread("Remote call timer") {
+			public void run() {
+				try {
+					Thread.sleep(maxDelay);
+					monitor.setCanceled(true);
+				} catch( InterruptedException ie) {
+					// Do Nothing
+				}
+			}
+		};
+		t.start();
+		try {
+			wrapRemoteCall2(runnable, remoteResource, failErrorMessage,
+					true, method, monitor);
+		} catch (CoreException e) {
+			if( e.getStatus().getSeverity() == IStatus.CANCEL ) {
+				return new CoreException(new Status(IStatus.CANCEL,RSECorePlugin.PLUGIN_ID, 
+						"The remote operation has been canceled because it did not finish in the alloted time (" + maxDelay + "ms)"));
+			}
+			return e;
+		} catch (RuntimeException e) {
+			return e;
+		} finally {
+			t.interrupt();
+		}
+		return null;
+	}
+	
+	static IStatus wrapRemoteCall2(final RunnableWithProgress2 runnable, 
+			final String remoteResource, final String failErrorMessage, 
+			final boolean alwaysThrow, final RSEPublishMethod method, final IProgressMonitor monitor) throws CoreException, RuntimeException  {
 		
 		final CoreException[] coreEx = new CoreException[1];
 		final RuntimeException[] runtEx = new RuntimeException[1];
@@ -80,7 +127,8 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 				} catch( CoreException ce ) { 
 					coreEx[0] = ce;
 				} catch( SystemMessageException sme ) {
-					IStatus stat = generateFailStatus(failErrorMessage, remoteResource, sme);
+					IStatus stat = generateFailStatus(failErrorMessage, 
+							remoteResource, method, sme);
 					if( alwaysThrow )
 						coreEx[0] = new CoreException(stat);
 					else
@@ -99,14 +147,19 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 			}
 		}
 		
-		if( monitor.isCanceled()) {
-			throw new CoreException(Status.CANCEL_STATUS);
+		if( monitor.isCanceled()) { 
+			if( t.isAlive()) {
+				t.interrupt();
+			}
+			IStatus s = new Status(IStatus.CANCEL, RSECorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL,
+					"Remote operation was canceled: " + runnable.getName(), null);
+			throw new CoreException(s);
 		}
-		if( runtEx[0] != null ) throw runtEx[0];
-		if( coreEx[0] != null ) throw coreEx[0];
-		if( failStat[0] != null ) return failStat;
-		return new IStatus[]{};
-
+		// To ensure a full stack-trace, throw all new exceptions. 
+		if( runtEx[0] != null ) throw new RuntimeException(runtEx[0]);
+		if( coreEx[0] != null ) throw new CoreException(coreEx[0].getStatus()); 
+		if( failStat[0] != null ) return failStat[0];
+		return null;
 	}
 	
 	public IStatus[] copyFile(final IModuleFile mf, final IPath path,
@@ -116,7 +169,7 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 		final IPath remotePath = root.append(path);
 		
 		
-		RunnableWithProgress2 run = new RunnableWithProgress2() {
+		RunnableWithProgress2 run = new RunnableWithProgress2("Copy file to remote location: " + remotePath.toString()) {
 			public void run(IProgressMonitor monitor) throws CoreException,
 					SystemMessageException, RuntimeException {
 				method.getFileService().upload(file, remotePath.removeLastSegments(1).toString(), 
@@ -130,14 +183,14 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 	public IStatus[] deleteResource(final IPath path, final IProgressMonitor monitor)
 			throws CoreException {
 		final IPath remotePath = root.append(path);
-		RunnableWithProgress2 run = new RunnableWithProgress2() {
+		RunnableWithProgress2 run = new RunnableWithProgress2("Delete remote file: " + remotePath.toString()) {
 			public void run(IProgressMonitor monitor) throws CoreException,
 					SystemMessageException, RuntimeException {
 				method.getFileService().delete(remotePath.removeLastSegments(1).toString(), remotePath.lastSegment(), monitor);
 			}
 		};
 		
-		return wrapRemoteCall(run, remotePath.toString(), "failed to delete {0} on host {1}", false, monitor);
+		return wrapRemoteCall(run, remotePath.toString(), "failed to delete {0} on host {1}", false, method, monitor);
 	}
 
 	public IStatus[] makeDirectoryIfRequired(final IPath dir,
@@ -149,22 +202,23 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 		if( createdFolders.contains(toMake)) 
 			return new IStatus[]{Status.OK_STATUS};
 
-		RunnableWithProgress2 run = new RunnableWithProgress2() {
+		RunnableWithProgress2 run = new RunnableWithProgress2("Create Remote Directory: " + toMake.toString()) {
 			public void run(IProgressMonitor monitor) throws CoreException,
 					SystemMessageException, RuntimeException {
 				if( toMake.segmentCount() > 0 ) {
 					method.getFileService().createFolder(toMake.removeLastSegments(1).toString(), 
 							toMake.lastSegment(), monitor);
+					createdFolders.add(toMake);
 				}
 			}
 		};
-		return wrapRemoteCall(run, toMake.toString(), "failed to create folder {0} on host {1}", false, monitor);
+		return wrapRemoteCall(run, toMake.toString(), "failed to create folder {0} on host {1}", false, method, monitor);
 	}
 
 	public IStatus[] touchResource(final IPath path, IProgressMonitor monitor) {
 		final IPath file = root.append(path);
 		
-		RunnableWithProgress2 run = new RunnableWithProgress2() {
+		RunnableWithProgress2 run = new RunnableWithProgress2("Touch remote resource" + file.toString()) {
 			public void run(IProgressMonitor monitor) throws CoreException,
 					SystemMessageException, RuntimeException {
 				IRemoteFile rf = method.getFileServiceSubSystem().getRemoteFileObject(file.toString(), new NullProgressMonitor());
@@ -175,7 +229,7 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 			}
 		};
 		try {
-			return wrapRemoteCall(run, file.toString(), "failed to touch resource {0} on host {1}", false, monitor);
+			return wrapRemoteCall(run, file.toString(), "failed to touch resource {0} on host {1}", false, method, monitor);
 		} catch(CoreException ce) {
 			return new IStatus[]{ce.getStatus()};
 		}
@@ -188,7 +242,7 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 		final Boolean[] boolRet = new Boolean[1];
 		boolRet[0] = null;
 		
-		RunnableWithProgress2 run = new RunnableWithProgress2() {
+		RunnableWithProgress2 run = new RunnableWithProgress2("Verify remote file exists: " + file.toString()) {
 			public void run(IProgressMonitor monitor) throws CoreException,
 					SystemMessageException, RuntimeException {
 				IRemoteFile rf = method.getFileServiceSubSystem().getRemoteFileObject(file.toString(), new NullProgressMonitor());

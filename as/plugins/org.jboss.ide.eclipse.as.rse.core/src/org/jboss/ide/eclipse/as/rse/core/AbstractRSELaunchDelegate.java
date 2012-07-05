@@ -44,11 +44,13 @@ public abstract class AbstractRSELaunchDelegate extends AbstractJBossStartLaunch
 			behavior.setServerStopped(); 
 			throw new CoreException(new Status(IStatus.ERROR,
 					org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID,
-					MessageFormat.format("Could not execute command on remote server {0}", behavior.getServer().getName()), sme));
+					MessageFormat.format("Could not execute command on remote server {0}. Please ensure the server is reachable.", behavior.getServer().getName()), sme));
 		}
 	}
 	// Only for debugging
 	private void addShellOutputListener(IHostShell shell) {
+		if( shell == null ) 
+			return; // No listener needed for a null shell. 
 		IHostShellOutputListener listener = null;
 		listener = new IHostShellOutputListener() {
 			public void shellOutputChanged(IHostShellChangeEvent event) {
