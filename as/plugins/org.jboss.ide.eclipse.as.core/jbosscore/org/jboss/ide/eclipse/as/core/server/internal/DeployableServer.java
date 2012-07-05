@@ -15,13 +15,17 @@ import java.net.URL;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jst.j2ee.componentcore.util.EARArtifactEdit;
+import org.eclipse.jst.j2ee.project.JavaEEProjectUtilities;
 import org.eclipse.jst.j2ee.project.WebUtilities;
 import org.eclipse.jst.server.core.IWebModule;
+import org.eclipse.wst.common.componentcore.internal.util.ComponentUtilities;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
@@ -185,13 +189,31 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	}
 	public URL getModuleRootURL(IModule[] module) {
 		if( module.length == 2) {
-			String contextRoot = WebUtilities.getServerContextRoot(module[1].getProject(),
+			String contextRoot = getServerContextRoot(module[1].getProject(),
 					module[0].getProject());
 			return getModuleRootURL(module[1], getServer().getHost(), getWebPort(), contextRoot);
 		} else {
 			return module.length > 0 ? getModuleRootURL(module[0]) : null;
 		}
 	}
+	
+	public static String getServerContextRoot(IProject webProject,IProject earProject) {
+    	String contextRoot = null;
+    	if (earProject == null || !JavaEEProjectUtilities.deploymentDescriptorExists(earProject))
+    		return ComponentUtilities.getServerContextRoot(webProject);
+    	else if (JavaEEProjectUtilities.isEARProject(earProject) && JavaEEProjectUtilities.isDynamicWebProject(webProject)) {
+    		EARArtifactEdit edit = null;
+    		try {
+    			edit = EARArtifactEdit.getEARArtifactEditForRead(earProject);
+    			contextRoot = edit.getWebContextRoot(webProject);
+    		} finally {
+    			if (edit!=null)
+    				edit.dispose();
+    		}
+    	}
+    	return contextRoot;
+    }
+
 	public URL getModuleRootURL(IModule module, String contextRoot) {
 		return getModuleRootURL(module, getServer().getHost(), getWebPort(), contextRoot);
 	}
