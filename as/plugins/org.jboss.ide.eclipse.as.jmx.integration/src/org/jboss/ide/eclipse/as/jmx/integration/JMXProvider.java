@@ -112,9 +112,11 @@ public class JMXProvider {
 			}
 
 			public boolean accept(IServer server) {
-				return (server.getServerType() != null && 
+				boolean preconditions = (server.getServerType() != null && 
 						server.loadAdapter(JBossServer.class, new NullProgressMonitor()) != null
 						&& server.getServerState() == IServer.STATE_STARTED);
+				IConnectionWrapper connection = JBossJMXConnectionProviderModel.getDefault().getConnection(server);
+				return preconditions && connection.isConnected();
 			}
 
 			public void perform(final IServer server) {
