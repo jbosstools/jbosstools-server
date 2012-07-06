@@ -5,14 +5,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathCategory;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult;
-import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
+import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -25,7 +26,13 @@ public class XPathTreeLabelProvider extends LabelProvider {
 		ImageDescriptor des = ImageDescriptor.createFromURL(JBossServerUIPlugin.getDefault().getBundle().getEntry("icons/XMLFile.gif")); //$NON-NLS-1$
 		rootImage = des.createImage();
 	}
-
+//	public boolean useNativeToolTip(Object object) {
+//        return true;
+//    }
+//	public String getToolTipText(Object element) {
+//	    return "BLAAAAAAAH";
+//	}
+	
 	public Image getImage(Object element) {
 		if( element instanceof ServerWrapper )
 			return rootImage;
