@@ -18,8 +18,14 @@ import org.apache.tools.ant.BuildException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.ui.views.server.extensions.XPathTreeContentProvider.ServerWrapper;
+import org.jboss.tools.as.wst.server.ui.xpl.ServerToolTip;
 
 public class FilesetContentProvider implements ITreeContentProvider {
 	private static final String FILESET_KEY = "org.jboss.ide.eclipse.as.ui.views.server.providers.FilesetViewProvider.PropertyKey"; //$NON-NLS-1$
@@ -199,7 +205,25 @@ public class FilesetContentProvider implements ITreeContentProvider {
 	public void dispose() {
 	}
 
+	private ServerToolTip tooltip = null;
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		if( tooltip != null )
+			tooltip.deactivate();
+		tooltip = new ServerToolTip(((TreeViewer)viewer).getTree()) {
+			
+			@Override
+			protected boolean isMyType(Object selected) {
+				return selected instanceof ServerWrapper;
+			}
+			@Override
+			protected void fillStyledText(Composite parent, StyledText sText, Object o) {
+				sText.setText("Quickly access files matching a given pattern in your server installation."); //$NON-NLS-1$
+			}
+		};
+		tooltip.setShift(new Point(15, 8));
+		tooltip.setPopupDelay(500); // in ms
+		tooltip.setHideOnMouseDown(true);
+		tooltip.activate();
 	}
 
 	private IPath[] findPaths(Fileset fs) {

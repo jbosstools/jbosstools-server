@@ -8,15 +8,20 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.StructuredViewer;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathCategory;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult;
+import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
-import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
 import org.jboss.ide.eclipse.as.ui.Messages;
+import org.jboss.tools.as.wst.server.ui.xpl.ServerToolTip;
 
 public class XPathTreeContentProvider implements ITreeContentProvider {
 
@@ -130,7 +135,26 @@ public class XPathTreeContentProvider implements ITreeContentProvider {
 	public void dispose() {
 	}
 
+	private ServerToolTip tooltip = null;
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		if( tooltip != null )
+			tooltip.deactivate();
+		
 		this.viewer = viewer;
+		tooltip = new ServerToolTip(((TreeViewer)viewer).getTree()) {
+			
+			@Override
+			protected boolean isMyType(Object selected) {
+				return selected instanceof ServerWrapper;
+			}
+			@Override
+			protected void fillStyledText(Composite parent, StyledText sText, Object o) {
+				sText.setText("Quickly modify xpath values in your server installation.");
+			}
+		};
+		tooltip.setShift(new Point(15, 8));
+		tooltip.setPopupDelay(500); // in ms
+		tooltip.setHideOnMouseDown(true);
+		tooltip.activate();
 	}
 }
