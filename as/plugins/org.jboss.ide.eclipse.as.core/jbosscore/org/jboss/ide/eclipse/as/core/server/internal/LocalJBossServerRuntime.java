@@ -49,6 +49,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.JavaUtils;
 
 public class LocalJBossServerRuntime extends AbstractLocalJBossServerRuntime implements IJBossServerRuntime {
 
@@ -125,7 +126,7 @@ public class LocalJBossServerRuntime extends AbstractLocalJBossServerRuntime imp
 		String name = getRuntime().getName();
 		String ret = QUOTE + SYSPROP + PROGRAM_NAME_ARG + EQ +  
 			"JBossTools: " + name + QUOTE + SPACE; //$NON-NLS-1$
-		if( Platform.getOS().equals(Platform.OS_MACOSX))
+		if( JavaUtils.supportsServerMode(getVM())) 
 			ret += SERVER_ARG + SPACE;
 		IRuntimeType type = getRuntime().getRuntimeType();
 		if (type != null && 

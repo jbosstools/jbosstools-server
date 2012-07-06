@@ -13,6 +13,7 @@ package org.jboss.ide.eclipse.as.core.server.internal.v7;
 import org.eclipse.core.runtime.IPath;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.JavaUtils;
 
 public class LocalJBoss71ServerRuntime extends LocalJBoss7ServerRuntime implements IJBossRuntimeConstants {
 	public static final String CONFIG_FILE = "org.jboss.ide.eclipse.as.core.server.internal.v7.CONFIG_FILE"; //$NON-NLS-1$
@@ -31,7 +32,8 @@ public class LocalJBoss71ServerRuntime extends LocalJBoss7ServerRuntime implemen
 		IJBossRuntimeResourceConstants c = new IJBossRuntimeResourceConstants() {};
 		IPath bootLog = serverHome.append(c.AS7_STANDALONE).append(c.FOLDER_LOG).append(c.AS7_BOOT_LOG);
 		IPath logConfig = serverHome.append(c.AS7_STANDALONE).append(c.CONFIGURATION).append(c.LOGGING_PROPERTIES);
-		return SERVER_ARG
+		String serverArg =JavaUtils.supportsServerMode(getVM()) ? SERVER_ARG : "";  //$NON-NLS-1$
+		return  serverArg
 				+ " -Xms64m" //$NON-NLS-1$
 				+ " -Xmx512m" //$NON-NLS-1$
 				+ " -XX:MaxPermSize=256m" //$NON-NLS-1$
