@@ -204,6 +204,7 @@ public class JBossServer extends DeployableServer
 			String xpath = getAttribute(xpathKey, defaultXPath);
 			XPathQuery query = XPathModel.getDefault().getQuery(getServer(), new Path(xpath));
 			if(query!=null) {
+				query.refresh(); // Limited refresh only if files have changed
 				result = query.getFirstResult();
 			}
 		}
