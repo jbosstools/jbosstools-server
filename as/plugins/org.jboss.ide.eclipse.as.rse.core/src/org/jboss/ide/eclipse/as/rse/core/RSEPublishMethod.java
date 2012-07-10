@@ -244,6 +244,10 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 	public String getPublishDefaultRootFolder(IServer server) {
 		return getRemoteRootFolder().toString();
 	}
+	public String getPublishDefaultRootTempFolder(IServer server) {
+		// unsupported
+		return getPublishDefaultRootFolder(server);
+	}
 	
 	private void launchCommandNoResult(DelegatingServerBehavior behaviour, int delay, String command) {
 		Trace.trace(Trace.STRING_FINER, "Launching remote command: " + command);
@@ -254,5 +258,12 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 			Trace.trace(Trace.STRING_FINER, "Exception launching remote command (command="+command+"): " + ce.getMessage());
 			ServerLogger.getDefault().log(behaviour.getServer(), ce.getStatus());
 		}
+	}
+
+	public IPublishCopyCallbackHandler getCallbackHandler(IPath deployPath,
+			IPath tmpFolder, IServer server) {
+		// Currently RSE support does not copy files to a temporary folder and then renameTo. 
+		// In fact, RSE support does not use any temporary folder at all. 
+		return getCallbackHandler(deployPath, server);
 	}
 }

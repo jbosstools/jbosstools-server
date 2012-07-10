@@ -34,7 +34,30 @@ public interface IJBossServerPublishMethod {
 	 */
 	public int publishModule(DeployableServerBehavior behaviour, int kind, int deltaKind, IModule[] module, IProgressMonitor monitor) throws CoreException;
 
-	// Methods moved from publishers into the publish method
-	public IPublishCopyCallbackHandler getCallbackHandler(IPath path, IServer server);
+	/**
+	 * Create a callback handler with the given deploy path and server.
+	 * Use a default temporary folder as provided by the server's settings
+	 */
+	public IPublishCopyCallbackHandler getCallbackHandler(IPath deployPath, IServer server);
+
+	/**
+	 * Create a callback handler with the given deploy path and server.
+	 * Use a default temporary folder as provided by the server's settings
+	 */
+	public IPublishCopyCallbackHandler getCallbackHandler(IPath deployPath, IPath tmpFolder, IServer server);
+
+	
+	/**
+	 * Get the default root deploy folder for this server
+	 * @param server
+	 * @return
+	 */
 	public String getPublishDefaultRootFolder(IServer server);
+
+	/**
+	 * Get the default root TEMP deploy folder for this server
+	 * @param server
+	 * @return
+	 */
+	public String getPublishDefaultRootTempFolder(IServer server);
 }

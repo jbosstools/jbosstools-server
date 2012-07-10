@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.internal.Server;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
@@ -64,6 +65,7 @@ public class DeploymentPreferenceLoader {
 		return 	server.getAttribute(IDeployableServer.SERVER_MODE, defaultType);
 	}
 
+	@Deprecated
 	public static DeploymentPreferences loadPreferencesFromFile(IServer server) {
 		File f = getFile(server);
 		if( f.exists()) {
@@ -86,6 +88,7 @@ public class DeploymentPreferenceLoader {
 		return new DeploymentPreferences(bis);
 	}
 
+	@Deprecated
 	public static void savePreferences(IServer server, DeploymentPreferences prefs) throws IOException {
 		File f = getFile(server);
 		prefs.getMemento().saveToFile(f.getAbsolutePath());
@@ -262,15 +265,19 @@ public class DeploymentPreferenceLoader {
 	}
 	
 	public static void savePreferencesToServerWorkingCopy(ServerAttributeHelper helper, DeploymentPreferences prefs) {
+		savePreferencesToServerWorkingCopy(helper.getWorkingCopy(), prefs);
+	}
+	
+	public static void savePreferencesToServerWorkingCopy(IServerWorkingCopy wc, DeploymentPreferences prefs) {
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			DeploymentPreferenceLoader.savePreferences(bos, prefs);
 			String asXML = new String(bos.toByteArray());
-			helper.setAttribute(DeploymentPreferenceLoader.DEPLOYMENT_PREFERENCES_KEY, asXML);
+			wc.setAttribute(DeploymentPreferenceLoader.DEPLOYMENT_PREFERENCES_KEY, asXML);
 		} catch(IOException ioe) {
 			// Should never happen since this is a simple byte array output stream
 			JBossServerCorePlugin.log(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
-				"Could not save module deployment preferences to server " + helper.getServer().getName(), ioe)); //$NON-NLS-1$
+				"Could not save module deployment preferences to server " + wc.getOriginal().getName(), ioe)); //$NON-NLS-1$
 		}
 	}
 

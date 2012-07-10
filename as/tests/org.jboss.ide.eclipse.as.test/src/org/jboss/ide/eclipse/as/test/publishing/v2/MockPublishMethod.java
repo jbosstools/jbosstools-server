@@ -28,27 +28,58 @@ public class MockPublishMethod extends AbstractPublishMethod {
 
 	public static final String PUBLISH_METHOD_ID = "mock";
 	public static final String MOCK_ROOT = "mockRoot";
+	public static final String MOCK_TEMP_ROOT = "mockTempRoot";
 	public static ArrayList<IPath> changed = new ArrayList<IPath>();
 	public static ArrayList<IPath> removed = new ArrayList<IPath>();
+	public static ArrayList<IPath> tempFiles = new ArrayList<IPath>();
 	public static ArrayList<IModuleFile> copiedFiles = new ArrayList<IModuleFile>();
+	
+	
+	protected static String expectedRoot = MOCK_ROOT;
+	protected static String expectedTempRoot = MOCK_TEMP_ROOT;
 	
 	public IPublishCopyCallbackHandler getCallbackHandler(IPath path,
 			IServer server) {
-		return new MockCopyCallbackHandler(path);
+		return new MockCopyCallbackHandler(path, null);
 	}
 
+	public IPublishCopyCallbackHandler getCallbackHandler(IPath deployPath,
+			IPath tmpFolder, IServer server) {
+		return new MockCopyCallbackHandler(deployPath, tmpFolder);
+	}
+
+	
 	public String getPublishDefaultRootFolder(IServer server) {
 		return "/" + MOCK_ROOT;
 	}
 
+	public String getPublishDefaultRootTempFolder(IServer server) {
+		return "/" + MOCK_TEMP_ROOT;
+	}
+	
+
+
+	
 	public String getPublishMethodId() {
 		return PUBLISH_METHOD_ID;
 	}
 	public static void reset() {
 		changed.clear();
 		removed.clear();
+		tempFiles.clear();
 		copiedFiles.clear();
+		expectedRoot = MOCK_ROOT;
+		expectedTempRoot = MOCK_TEMP_ROOT;
 	}
+	
+	public static void setExpectedRoot(String s) {
+		expectedRoot = s;
+	}
+
+	public static void setExpectedTempRoot(String s) {
+		expectedTempRoot = s;
+	}
+
 	public static IPath[] getRemoved() {
 		return (IPath[]) removed.toArray(new IPath[removed.size()]);
 	}
@@ -59,16 +90,24 @@ public class MockPublishMethod extends AbstractPublishMethod {
 	public static IPath[] getChanged() {
 		return (IPath[]) changed.toArray(new IPath[changed.size()]);
 	}
+	public static IPath[] getTempPaths() {
+		return (IPath[]) tempFiles.toArray(new IPath[tempFiles.size()]);
+	}
 
 
 	public class MockCopyCallbackHandler implements IPublishCopyCallbackHandler {
-		private IPath root;
-		public MockCopyCallbackHandler(IPath root) {
-			if( !(new Path(MOCK_ROOT).isPrefixOf(root))) {
+		private IPath root, tempRoot;
+		public MockCopyCallbackHandler(IPath root, IPath tempRoot) {
+			if( !(new Path(expectedRoot).isPrefixOf(root))) {
 				System.out.println("Expected " + new Path(MOCK_ROOT) + " but got: " + root.toString());
 				throw new RuntimeException("Unacceptable use of callback handler");
 			}
+			if( tempRoot != null && !(new Path(expectedTempRoot).isPrefixOf(tempRoot))) {
+				System.out.println("Expected " + new Path(MOCK_TEMP_ROOT) + " but got: " + root.toString());
+				throw new RuntimeException("Unacceptable use of callback handler");
+			}
 			this.root = root;
+			this.tempRoot = tempRoot;
 		}
 		
 		public IStatus[] deleteResource(IPath path, IProgressMonitor monitor)
@@ -102,6 +141,8 @@ public class MockPublishMethod extends AbstractPublishMethod {
 			IPath path2 = root.append(path);
 			if( !changed.contains(path2.makeRelative()))
 				changed.add(path2.makeRelative());
+			IPath tmpFile = (tempRoot == null ? root : tempRoot).append(path);
+			tempFiles.add(tmpFile);
 			copiedFiles.add(mf);
 			return new IStatus[]{};
 		}

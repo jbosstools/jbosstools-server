@@ -39,6 +39,7 @@ import org.jboss.ide.eclipse.as.test.publishing.v2.BehaviourModelDefectTest;
 import org.jboss.ide.eclipse.as.test.publishing.v2.JSTDeployBinaryChildModuleTest;
 import org.jboss.ide.eclipse.as.test.publishing.v2.JSTDeploymentTester;
 import org.jboss.ide.eclipse.as.test.publishing.v2.JSTDeploymentWarUpdateXML;
+import org.jboss.ide.eclipse.as.test.publishing.v2.JSTModuleDeployFoldersTest;
 import org.jboss.ide.eclipse.as.test.publishing.v2.Mock2FilterTest;
 import org.jboss.ide.eclipse.as.test.publishing.v2.MockJSTPublisherTest;
 import org.jboss.ide.eclipse.as.test.publishing.v2.MockJSTPublisherTestDynUtil;
@@ -86,6 +87,7 @@ public class ASTestSuite extends TestSuite {
         suite.addTestSuite(TestEar5WithJBossRuntime.class);
         suite.addTestSuite(JSTDeploymentTester.class);
         suite.addTestSuite(JSTDeployBinaryChildModuleTest.class);
+        suite.addTestSuite(JSTModuleDeployFoldersTest.class);
         suite.addTestSuite(SingleFileDeploymentTester.class);
         suite.addTestSuite(JBossServerAPITest.class);
         suite.addTestSuite(Mock2FilterTest.class);

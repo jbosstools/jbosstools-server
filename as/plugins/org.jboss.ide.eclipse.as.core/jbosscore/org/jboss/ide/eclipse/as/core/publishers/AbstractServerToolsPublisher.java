@@ -134,6 +134,11 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		return PublishUtil.getDeployPath(publishMethod, moduleTree, server);
 	}
 
+	protected IPath getTempDeployPath(IModule[] moduleTree, IDeployableServer server) {
+		return PublishUtil.getTempDeployPath(publishMethod, moduleTree, server);
+	}
+
+
 	/**
 	 * Gets the actual deploy path for this module's parent
 	 * Given modules *MUST* be of length 2 or more
@@ -167,10 +172,15 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 	protected void finishPublish(int publishType, IModule[] moduleTree, IDeployableServer server, IProgressMonitor monitor){
 	}
 	
+	
 	protected IPublishCopyCallbackHandler getCallbackHandler(IPath path) {
 		return publishMethod.getCallbackHandler(path, server.getServer());
 	}
-	
+
+	protected IPublishCopyCallbackHandler getCallbackHandler(IPath deployPath, IPath tempDeployPath) {
+		return publishMethod.getCallbackHandler(deployPath, tempDeployPath, server.getServer());
+	}
+
 	/**
 	 * For certain module trees, some publishers may want to force a child to be zipped.
 	 * For example, JST Publisher may want to force utility project children to be zipped.
@@ -191,7 +201,11 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		Trace.trace(Trace.STRING_FINER, "Begin Handling a full publish for module " + module.getName()); //$NON-NLS-1$
 
 		IPath deployPath = getDeployPath(moduleTree, server);
-		IPublishCopyCallbackHandler callback = getCallbackHandler(getRootPath(deployPath).append(deployPath));
+		IPath dPathSafe = getRootPath(deployPath).append(deployPath);
+		IPath tempDeployPath = getTempDeployPath(moduleTree, server);
+		IPath dTempPathSafe = getRootPath(tempDeployPath).append(tempDeployPath);
+		
+		IPublishCopyCallbackHandler callback = getCallbackHandler(dPathSafe, dTempPathSafe);
 		IModuleResource[] members = PublishUtil.getResources(module, getSubMon(monitor, 200));
  
 		if( monitor.isCanceled())
@@ -399,11 +413,16 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		monitor.beginTask("Copying Child Module: " + moduleTree[moduleTree.length-1].getName(), 100); //$NON-NLS-1$
 		try {
 			IPath destinationPath = getDeployPath(moduleTree, server);
+			IPath tempDeployPath = getTempDeployPath(moduleTree, server);
 			IPath destinationFolder = destinationPath.removeLastSegments(1);
+			IPath tempDeployFolder = tempDeployPath.removeLastSegments(1);
+			IPath safeDest = getRootPath(destinationFolder).append(destinationFolder);
+			IPath safeTempDest = getRootPath(tempDeployFolder).append(tempDeployFolder);
+			
 			IModuleResource[] members = PublishUtil.getResources(moduleTree);
 			File source = PublishUtil.getFile(members[0]);
 			if( source != null ) {
-				IPublishCopyCallbackHandler handler = getCallbackHandler(getRootPath(destinationFolder).append(destinationFolder));
+				IPublishCopyCallbackHandler handler = getCallbackHandler(safeDest, safeTempDest);
 				IPath localFilePath = new Path(source.getAbsolutePath());
 				ModuleFile mf = new ModuleFile(localFilePath.toFile(), localFilePath.lastSegment(), localFilePath);
 				handler.copyFile(mf, new Path(destinationPath.lastSegment()), new NullProgressMonitor());

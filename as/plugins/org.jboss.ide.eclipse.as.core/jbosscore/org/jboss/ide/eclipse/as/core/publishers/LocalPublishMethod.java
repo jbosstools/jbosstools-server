@@ -33,13 +33,25 @@ public class LocalPublishMethod extends AbstractPublishMethod {
 	public IPublishCopyCallbackHandler getCallbackHandler(IPath path, IServer server) {
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
 		String tempDeployPath = ds.getTempDeployFolder();
-		LocalCopyCallback handler = new LocalCopyCallback(server, 
-				path, new Path(tempDeployPath));
+		return getCallbackHandler(path, new Path(tempDeployPath), server);
+	}
+	
+	public IPublishCopyCallbackHandler getCallbackHandler(IPath deployPath,
+			IPath tmpFolder, IServer server) {
+		LocalCopyCallback handler = new LocalCopyCallback(
+				server, deployPath, tmpFolder);
 		return handler;
 	}
+
 
 	public String getPublishDefaultRootFolder(IServer server) {
 		IDeployableServer s = ServerConverter.getDeployableServer(server);
 		return s.getDeployFolder();
 	}
+
+	public String getPublishDefaultRootTempFolder(IServer server) {
+		IDeployableServer s = ServerConverter.getDeployableServer(server);
+		return s.getTempDeployFolder();
+	}
+
 }

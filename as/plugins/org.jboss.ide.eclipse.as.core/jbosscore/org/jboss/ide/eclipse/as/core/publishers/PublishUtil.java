@@ -65,6 +65,8 @@ public class PublishUtil {
 	 * All preferences are stored in the "local" setting as it was decided
 	 * having to replicate deploy paths for each publish method was not good
 	 * 
+	 * This API should be renamed, as it actually gets a value stored at a property key
+	 * 
 	 * @param moduleTree
 	 * @param server
 	 * @param defaultFolder
@@ -77,6 +79,7 @@ public class PublishUtil {
 				server, defaultFolder, moduleProperty);
 	}
 	
+	/* This api should be renamed */
 	public static String getDeployRootFolder(IModule[] moduleTree, String publishMethod,
 			IDeployableServer server, String defaultFolder, String moduleProperty) {
 		String folder = defaultFolder;
@@ -205,6 +208,14 @@ public class PublishUtil {
 		String folder = PublishUtil.getDeployRootFolder(
 				moduleTree, server, defaultFolder,
 				IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC);
+		return PublishUtil.getDeployPath(moduleTree, folder, server);
+	}
+
+	public static IPath getTempDeployPath(IJBossServerPublishMethod method, IModule[] moduleTree, IDeployableServer server) {
+		String defaultFolder = method.getPublishDefaultRootTempFolder(server.getServer());
+		String folder = PublishUtil.getDeployRootFolder(
+				moduleTree, server, defaultFolder,
+				IJBossToolingConstants.LOCAL_DEPLOYMENT_TEMP_LOC);
 		return PublishUtil.getDeployPath(moduleTree, folder, server);
 	}
 
