@@ -79,7 +79,7 @@ public class DeploymentPreferenceLoader {
 		return null;
 	}
 	
-	public static DeploymentPreferences loadPreferencesFromServer(IServer server) {
+	public static DeploymentPreferences loadPreferencesFromServer(IServerAttributes server) {
 		String xml = ((Server)server).getAttribute(DEPLOYMENT_PREFERENCES_KEY, (String)null);
 		ByteArrayInputStream bis = null;
 		if( xml != null ) {
@@ -188,17 +188,23 @@ public class DeploymentPreferenceLoader {
 		}
 		
 		public DeploymentModulePrefs getModulePrefs(IModule module) {
-			return children.get(module.getId());
+			return getModulePrefs(module.getId());
+		}
+		public DeploymentModulePrefs getModulePrefs(String id) {
+			return children.get(id);
 		}
 		public DeploymentModulePrefs getOrCreateModulePrefs(IModule module) {
-			if( children.get(module.getId()) == null ) {
+			return getOrCreateModulePrefs(module.getId());
+		}
+		public DeploymentModulePrefs getOrCreateModulePrefs(String id) {
+			if( children.get(id) == null ) {
 				IMemento childMemento = memento.createChild("module"); //$NON-NLS-1$
-				childMemento.putString("id", module.getId()); //$NON-NLS-1$
-				children.put(module.getId(), 
-						new DeploymentModulePrefs(module.getId(), 
+				childMemento.putString("id", id); //$NON-NLS-1$
+				children.put(id, 
+						new DeploymentModulePrefs(id, 
 								childMemento));
 			}
-			return children.get(module.getId());
+			return children.get(id);
 		}
 		
 		public String getProperty(String key) {

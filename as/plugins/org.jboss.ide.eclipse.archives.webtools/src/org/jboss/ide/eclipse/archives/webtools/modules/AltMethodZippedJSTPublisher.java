@@ -86,7 +86,8 @@ public class AltMethodZippedJSTPublisher extends WTPZippedPublisher {
 			String name = sourcePath.lastSegment();
 			IStatus result = null;
 			
-			DeploymentMarkerUtils.removeDeployFailedMarker(method, server, destination, monitor);
+			if( DeploymentMarkerUtils.supportsJBoss7MarkerDeployment(server) )
+				DeploymentMarkerUtils.removeDeployFailedMarker(method, server, destination, monitor);
 			
 			if(publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
 				result = removeRemoteDeployment(sourcePath, destination.removeLastSegments(1), name, monitor);
@@ -127,7 +128,7 @@ public class AltMethodZippedJSTPublisher extends WTPZippedPublisher {
 		
 		// Locally zip it up into the remote tmp folder
 		IStatus result = super.publishModule(method, server, module, publishType, delta, monitor);
-		if( result.isOK() ) {
+		if( result.isOK() && requiresTransfer()) { // It seems the superclass already transfers it upstream for as7 :|
 			result = remoteFullPublish(sourcePath, destination.removeLastSegments(1), name, 
 					AbstractServerToolsPublisher.getSubMon(monitor, 150));
 		}
