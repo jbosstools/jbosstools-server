@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.jboss.ide.eclipse.as.core.behaviourExtension">
+      <behaviour
+            behaviourDelegate="org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate"
+            launchDelegate="org.jboss.ide.eclipse.as.core.server.internal.launch.LocalJBossStartLaunchDelegate"
+            name="mock4"
+            publishMethod="org.jboss.tools.as.test.core.internal.MockPublishMethod4"
+            serverTypes="org.jboss.ide.eclipse.as.systemCopyServer"
+            typeId="mock4">
+      </behaviour>
+   </extension>
+   <extension
+         point="org.jboss.ide.eclipse.as.core.behaviourExtension">
+      <behaviour
+            behaviourDelegate="org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate"
+            launchDelegate="org.jboss.ide.eclipse.as.core.server.internal.launch.LocalJBossStartLaunchDelegate"
+            name="mock4"
+            publishMethod="org.jboss.tools.as.test.core.internal.MockPublishMethod4"
+            serverTypes="%ServerTypesJBoss6OrLower"
+            typeId="mock4">
+      </behaviour>
+   </extension>
+   <extension
+         point="org.jboss.ide.eclipse.as.core.behaviourExtension">
+      <behaviour
+            behaviourDelegate="org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7BehaviorDelegate"
+            launchDelegate="org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7StartLaunchDelegate"
+            name="mock4"
+            publishMethod="org.jboss.tools.as.test.core.internal.MockPublishMethod4"
+            serverTypes="%ServerTypesJBoss7"
+            typeId="mock4">
+      </behaviour>
+   </extension>
+</plugin>
