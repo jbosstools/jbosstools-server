@@ -99,15 +99,17 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 	}
 
 	private String[] handleAsynchCallbacks(String[] prompts) {
-		List<String> tmp = new ArrayList<String>();
-		tmp.addAll(Arrays.asList(prompts));
-		setRequiredProperties(tmp);
-		RequiresInfoException e2 = new RequiresInfoException("Requires proper credentials"); //$NON-NLS-1$
-		setRequiredInfoException(e2);
-		while( !getDone() && !getCanceled() && getRequiredPropertiesReturned() == null ) {
-			try {
-				Thread.sleep(500);
-			} catch(InterruptedException ie) {/* Do nothing */}
+		if( getRequiredPropertiesReturned() == null ) {
+			List<String> tmp = new ArrayList<String>();
+			tmp.addAll(Arrays.asList(prompts));
+			setRequiredProperties(tmp);
+			RequiresInfoException e2 = new RequiresInfoException("Requires proper credentials"); //$NON-NLS-1$
+			setRequiredInfoException(e2);
+			while( !getDone() && !getCanceled() && getRequiredPropertiesReturned() == null ) {
+				try {
+					Thread.sleep(500);
+				} catch(InterruptedException ie) {/* Do nothing */}
+			}
 		}
 		
 		if( getDone() || getCanceled() )
@@ -119,6 +121,7 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 		
 		// If not cleared then it will keep asking for username/password
 		setRequiredInfoException(null);
+		setRequiredProperties(null);
 		
 		return retPrompts;
 	}
@@ -184,8 +187,20 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 			serverState = service.getServerState(managementDetails);
 			return serverState == JBoss7ServerState.RUNNING;
 		} catch (Exception e) {
+			Throwable root = getRootException(e);
+			// If the exception is one that autnentication failed, re-prompt.
+			if(root != null && root.getMessage() != null && root.getMessage().startsWith("Authentication failed:")) //$NON-NLS-1$
+				provideCredentials(null);
+			// Otherwise, keep trying. 
 			return false;
 		}
+	}
+	
+	private Throwable getRootException(Throwable e) {
+		Throwable cause = e.getCause();
+		if( cause != e && cause != null )
+			return getRootException(cause);
+		return cause == null ? e : cause;
 	}
 
 	private boolean checkShutdown(IJBoss7ManagerService service) {
