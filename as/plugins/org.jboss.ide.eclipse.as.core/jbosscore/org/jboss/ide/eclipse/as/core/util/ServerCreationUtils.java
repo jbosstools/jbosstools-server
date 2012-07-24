@@ -43,7 +43,6 @@ public class ServerCreationUtils {
 		swc.setRuntime(runtime);
 		swc.setAttribute(DeployableServer.DEPLOY_DIRECTORY, deployLocation);
 		swc.setAttribute(DeployableServer.TEMP_DEPLOY_DIRECTORY, tempDeployLocation);
-		swc.setAttribute(Server.PROP_AUTO_PUBLISH_SETTING, Server.AUTO_PUBLISH_DISABLE);
 		IServer server = swc.save(true, null);
 		return server;
 	}
