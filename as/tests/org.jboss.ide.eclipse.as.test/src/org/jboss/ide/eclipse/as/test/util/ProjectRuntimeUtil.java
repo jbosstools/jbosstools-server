@@ -67,7 +67,7 @@ public class ProjectRuntimeUtil extends Assert {
 
 	public static IRuntime createRuntime(String runtimeName, String runtimeTypeId, String asHome, String configuration) throws CoreException {
 		IRuntimeType[] runtimeTypes = ServerUtil.getRuntimeTypes(null,null, runtimeTypeId);
-		assertEquals("expects only one runtime type for jboss 4.2", runtimeTypes.length, 1);
+		assertEquals("expects only one runtime type for "+ runtimeTypeId, runtimeTypes.length, 1);
 		IRuntimeType runtimeType = runtimeTypes[0];
 		RuntimeWorkingCopy jbossRuntime = (RuntimeWorkingCopy)runtimeType.createRuntime(runtimeName, new NullProgressMonitor());
 		jbossRuntime.setLocation(new Path(asHome));

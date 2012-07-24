@@ -37,6 +37,8 @@ import org.eclipse.jst.j2ee.project.facet.IJ2EEFacetConstants;
 import org.eclipse.jst.j2ee.project.facet.IJ2EEFacetInstallDataModelProperties;
 import org.eclipse.jst.j2ee.project.facet.IJ2EEFacetProjectCreationDataModelProperties;
 import org.eclipse.jst.j2ee.project.facet.IJ2EEModuleFacetInstallDataModelProperties;
+import org.eclipse.jst.j2ee.project.facet.IJavaUtilityProjectCreationDataModelProperties;
+import org.eclipse.jst.j2ee.project.facet.JavaUtilityProjectCreationDataModelProvider;
 import org.eclipse.jst.j2ee.web.project.facet.IWebFacetInstallDataModelProperties;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IFacetDataModelProperties;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IFacetInstallDataModelProperties;
@@ -75,7 +77,26 @@ public class CreateProjectOperationsUtility {
 	
 	private static final String CONNECTOR_PROJ_1 = "myConnector_1";
 	private static final String CONNECTOR_PROJ_15 = "myConnector_15";
-    
+
+    /**
+     * Creates and returns a utility project DM provider with the given name and of the given version.
+     * If earName is not null then util project will be added to the EAR with earName
+     * 
+     * @param projName name of the project to create
+     * @param earName name of the ear to add the project too, if NULL then don't add to an EAR
+     * @param version version of Application Client to use
+     * @return a Utility Project Data Model with the appropriate properties set
+     */
+    public static IDataModel getUtilityProjectCreationDataModel(String projName, String earName){
+    	IDataModel dm = DataModelFactory.createDataModel(new JavaUtilityProjectCreationDataModelProvider());
+    	dm.setProperty(IJavaUtilityProjectCreationDataModelProperties.PROJECT_NAME, projName);
+    	dm.setProperty(IJavaUtilityProjectCreationDataModelProperties.SOURCE_FOLDER, "src");
+    	if(earName != null) {
+    		dm.setProperty(IJavaUtilityProjectCreationDataModelProperties.EAR_PROJECT_NAME, earName);
+    	} 
+    	return dm;
+    }
+
     public void testEAR12_Defaults() throws Exception{
     	IDataModel dm = getEARDataModel("aEAR", null, null, null, JavaEEFacetConstants.EAR_12, true);
     	OperationTestCase.runAndVerify(dm);

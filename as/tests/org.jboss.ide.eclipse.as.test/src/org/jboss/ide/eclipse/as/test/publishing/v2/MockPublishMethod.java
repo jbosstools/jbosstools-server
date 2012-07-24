@@ -38,6 +38,8 @@ public class MockPublishMethod extends AbstractPublishMethod {
 	protected static String expectedRoot = MOCK_ROOT;
 	protected static String expectedTempRoot = MOCK_TEMP_ROOT;
 	
+	protected static RuntimeException error = null;
+	
 	public IPublishCopyCallbackHandler getCallbackHandler(IPath path,
 			IServer server) {
 		return new MockCopyCallbackHandler(path, null);
@@ -57,9 +59,6 @@ public class MockPublishMethod extends AbstractPublishMethod {
 		return "/" + MOCK_TEMP_ROOT;
 	}
 	
-
-
-	
 	public String getPublishMethodId() {
 		return PUBLISH_METHOD_ID;
 	}
@@ -70,6 +69,7 @@ public class MockPublishMethod extends AbstractPublishMethod {
 		copiedFiles.clear();
 		expectedRoot = MOCK_ROOT;
 		expectedTempRoot = MOCK_TEMP_ROOT;
+		error = null;
 	}
 	
 	public static void setExpectedRoot(String s) {
@@ -93,18 +93,26 @@ public class MockPublishMethod extends AbstractPublishMethod {
 	public static IPath[] getTempPaths() {
 		return (IPath[]) tempFiles.toArray(new IPath[tempFiles.size()]);
 	}
+	public static Exception getError() {
+		return error;
+	}
 
 
 	public class MockCopyCallbackHandler implements IPublishCopyCallbackHandler {
 		private IPath root, tempRoot;
 		public MockCopyCallbackHandler(IPath root, IPath tempRoot) {
 			if( !(new Path(expectedRoot).isPrefixOf(root))) {
-				System.out.println("Expected " + new Path(MOCK_ROOT) + " but got: " + root.toString());
-				throw new RuntimeException("Unacceptable use of callback handler");
+				String e = "Expected " + new Path(MOCK_ROOT) + " but got: " + root.toString();
+				System.out.println(e);
+				System.out.println(expectedRoot);
+				error = new RuntimeException("Unacceptable use of callback handler: " + e);
+				throw error;
 			}
 			if( tempRoot != null && !(new Path(expectedTempRoot).isPrefixOf(tempRoot))) {
-				System.out.println("Expected " + new Path(MOCK_TEMP_ROOT) + " but got: " + root.toString());
-				throw new RuntimeException("Unacceptable use of callback handler");
+				String e = "Expected " + new Path(MOCK_TEMP_ROOT) + " but got: " + root.toString();
+				System.out.println(e);
+				error = new RuntimeException("Unacceptable use of callback handler: " + e);
+				throw error;
 			}
 			this.root = root;
 			this.tempRoot = tempRoot;
