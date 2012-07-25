@@ -41,8 +41,7 @@ public class JavaUtils {
 	private static File getLinuxServerLibFolder(String version, IVMInstall install) {
 		File serverFolder = null;
 		IPath locPath = new Path(install.getInstallLocation().getAbsolutePath());
-		if( version.startsWith("1.7.")) //$NON-NLS-1$
-			serverFolder = findServerFolder(locPath.append("jre").append("lib")); //$NON-NLS-1$ //$NON-NLS-2$
+		serverFolder = findServerFolder(locPath.append("jre").append("lib")); //$NON-NLS-1$ //$NON-NLS-2$
 		return serverFolder;
 	}
 	
