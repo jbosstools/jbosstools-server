@@ -201,6 +201,8 @@ public class ModelUtil {
 	}
 
 	public static void fillArchiveModel( XbPackages node, IArchiveModelRootNode modelNode) throws ArchivesModelException {
+		if( node == null )
+			return;
 		for (Iterator iter = node.getAllChildren().iterator(); iter.hasNext(); ) {
 			XbPackageNode child = (XbPackageNode) iter.next();
 			ArchiveNodeImpl childImpl = (ArchiveNodeImpl)createPackageNodeImpl(child, modelNode);

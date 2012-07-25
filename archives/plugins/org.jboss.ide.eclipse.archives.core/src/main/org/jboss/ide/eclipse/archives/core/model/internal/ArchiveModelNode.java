@@ -23,8 +23,8 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveModelRootNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeDelta;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XMLBinding;
-import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbPackages;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XMLBinding.XbException;
+import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbPackages;
 
 /**
  * 

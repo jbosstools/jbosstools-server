@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.archives.test.model;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -22,10 +21,10 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XMLBinding;
+import org.jboss.ide.eclipse.archives.core.model.internal.xb.XMLBinding.XbException;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbFileSet;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbPackage;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbPackages;
-import org.jboss.ide.eclipse.archives.core.model.internal.xb.XMLBinding.XbException;
 import org.jboss.ide.eclipse.archives.test.ArchivesTest;
 import org.jboss.ide.eclipse.archives.test.util.FileIOUtil;
 import org.osgi.framework.Bundle;
@@ -79,11 +78,6 @@ public class XBUnmarshallTest extends TestCase {
 	public void testPackageMissingPackageName() {
 		parse("MissingPackageName.xml", false, failedMissingRequiredAtt("name"));
 	}
-
-	// Currently the schema is written that this will pass
-//	public void testPackageMissingDirectory() {
-//		parse("MissingPackageDir.xml", false, failedMissingRequiredAtt("todir"));
-//	}
 	
 	public void testPackageMissingOptionalType() {
 		parse("MissingPackageType.xml", true, failedFalsePositiveRequiredAtt("type"));
@@ -167,18 +161,22 @@ public class XBUnmarshallTest extends TestCase {
 		assertFalse(fs.isFlattened());
 	}
 
+	/* 
+	 * Actions have never been implemented with any UI or true functionality 
+	 * and have only been here as a possible future feature. 
+	 */
 	
-	public void testCorrectAction() {
-		parse("CorrectAction.xml", true, shouldParse("CorrectAction.xml"));
-	}
-	
-	public void testActionMissingTime() {
-		parse("MissingActionTime.xml", false, failedMissingRequiredAtt("time"));
-	}
-	
-	public void testActionMissingType() {
-		parse("MissingActionType.xml", false, failedMissingRequiredAtt("type"));
-	}
+//	public void testCorrectAction() {
+//		parse("CorrectAction.xml", true, shouldParse("CorrectAction.xml"));
+//	}
+//	
+//	public void testActionMissingTime() {
+//		parse("MissingActionTime.xml", false, failedMissingRequiredAtt("time"));
+//	}
+//	
+//	public void testActionMissingType() {
+//		parse("MissingActionType.xml", false, failedMissingRequiredAtt("type"));
+//	}
 	
 	public void testReadPackagesVersion() {
 		XbPackages packs = parse("ReadVersion.xml", true, failedFalsePositiveRequiredAtt("exploded"));

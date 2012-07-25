@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.jboss.ide.eclipse.archives.core.build.ArchiveBuildDelegate;
 import org.jboss.ide.eclipse.archives.test.ArchivesTest;
+import org.jboss.tools.test.util.JobUtils;
 import org.jboss.tools.test.util.ResourcesUtils;
 
 public class JBIDE2439Test extends TestCase {
@@ -60,6 +61,7 @@ public class JBIDE2439Test extends TestCase {
 		try {
 			delegate.fullProjectBuild(aProject.getLocation(), new NullProgressMonitor());
 			aProject.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+			JobUtils.waitForIdle(1000);
 			IResource outs = aProject.getFolder("outputs");
 			final ArrayList<IResource> list = new ArrayList<IResource>();
 			outs.accept(new IResourceVisitor() {

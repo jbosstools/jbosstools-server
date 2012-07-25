@@ -21,13 +21,13 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XMLBinding;
+import org.jboss.ide.eclipse.archives.core.model.internal.xb.XMLBinding.XbException;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbAction;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbFileSet;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbFolder;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbPackage;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbPackages;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbProperty;
-import org.jboss.ide.eclipse.archives.core.model.internal.xb.XMLBinding.XbException;
 import org.jboss.ide.eclipse.archives.test.ArchivesTest;
 import org.jboss.ide.eclipse.archives.test.util.FileIOUtil;
 import org.osgi.framework.Bundle;
@@ -225,15 +225,20 @@ public class XBMarshallTest extends TestCase {
 		write(packs, shouldSucceed);
 	}
 	
-	public void testWriteActionSuccess() {
-		writeAction("preBuild", "ant", true);
-	}
 	
-	public void testWriteActionMissingTime() {
-		writeAction(null, "ant", false);
-	}
-	
-	public void testWriteActionMissingType() {
-		writeAction("preBuild", null, false);
-	}
+	/* 
+	 * "ACTIONS" were never fully added. There is no UI to use them, and never has been. 
+	 * Testing them does not make sense at this time. 
+	 */
+//	public void testWriteActionSuccess() {
+//		writeAction("preBuild", "ant", true);
+//	}
+//	
+//	public void testWriteActionMissingTime() {
+//		writeAction(null, "ant", false);
+//	}
+//	
+//	public void testWriteActionMissingType() {
+//		writeAction("preBuild", null, false);
+//	}
 }

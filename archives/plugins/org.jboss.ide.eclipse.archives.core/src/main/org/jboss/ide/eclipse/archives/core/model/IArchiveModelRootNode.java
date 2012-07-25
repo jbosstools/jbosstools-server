@@ -12,8 +12,6 @@ package org.jboss.ide.eclipse.archives.core.model;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbPackages;
-import org.jboss.ide.eclipse.archives.core.model.internal.xb.XMLBinding.XbException;
 
 
 /**

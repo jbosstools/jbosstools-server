@@ -363,7 +363,8 @@ public class ArchiveBuildDelegate {
 		while(i2.hasNext()) {
 			try {
 				IArchive changed = i2.next();
-				changedPaths.add(changed.getArchiveFilePath());
+				if( !addedChanged.contains(changed.getArchiveFilePath()))
+					changedPaths.add(changed.getArchiveFilePath());
 				EventManager.finishedBuildingArchive(changed);
 			} catch( ClassCastException cce ) {
 				cce.printStackTrace();  

@@ -2,7 +2,7 @@
 
 <packages>
    <package name="TestProject.jar" type="jar" todir="/some/external/path" exploded="false" inWorkspace="false" id="someId">
-      <fileset dir="/some/global/path" includes="**/*.xml" inWorkspace="false" excludes="" flattened="false">
+      <fileset includes="**/*.xml" inWorkspace="false" excludes="" flattened="false">
          <properties></properties>
       </fileset>
    </package>

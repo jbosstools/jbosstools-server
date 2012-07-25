@@ -18,7 +18,6 @@ import java.util.HashMap;
 
 import junit.framework.TestCase;
 
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
