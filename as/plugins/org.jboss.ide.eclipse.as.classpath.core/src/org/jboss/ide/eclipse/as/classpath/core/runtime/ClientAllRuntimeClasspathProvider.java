@@ -139,52 +139,7 @@ public class ClientAllRuntimeClasspathProvider
 	protected IClasspathEntry getEntry(Entry entry) {
 		return JavaRuntime.newArchiveRuntimeClasspathEntry(entry.getPath()).getClasspathEntry();
 	}
-
-	protected void addPaths(IPath folder, Set<Entry> list) {
-		addPaths(folder, list, false);
-	}
 	
-	protected class SimpleFileFilter implements FileFilter {
-		private List<String> ignore;
-		public SimpleFileFilter(String[] ignore) {
-			this.ignore = Arrays.asList(ignore);
-		}
-		public boolean accept(File pathname) {
-			if( !pathname.getName().endsWith(EXT_JAR)) return false;
-			boolean contains = ignore.contains(pathname.getName());
-			return !contains;
-		}
-	}
-	
-	protected void addPaths(IPath folder, Set<Entry> list, boolean recurse) {
-		addPaths(folder, list, recurse, new SimpleFileFilter(new String[]{"jaxb-xjc.jar"})); //$NON-NLS-1$
-	}
-	
-	protected void addPaths(IPath folder, Set<Entry> list, boolean recurse, FileFilter filter) {
-		if( folder.toFile().exists()) {
-			File f = folder.toFile();
-			if(f.isDirectory()) {
-				File[] asFiles = f.listFiles();
-				for( int i = 0; i < asFiles.length; i++ ) {
-					if( filter == null || filter.accept(folder.append(asFiles[i].getName()).toFile())) {
-						addSinglePath(folder.append(asFiles[i].getName()), list);
-					} else if( recurse && asFiles[i].isDirectory()) {
-						addPaths(folder.append(asFiles[i].getName()), list, true, filter);
-					}
-				}
-			} else { // item is a file, not a folder
-				if( filter == null || filter.accept(folder.toFile()))
-					addSinglePath(folder, list);
-			}
-		}
-	}
-	
-	protected void addSinglePath(IPath p, Set<Entry> list) {
-		if (!p.toFile().exists()) {
-			return;
-		}
-		list.add(new Entry(p, p.lastSegment(), p.toFile().length()));
-	}
 	protected void addSinglePath(IPath p, ArrayList<Entry> list) {
 		if (!p.toFile().exists()) {
 			return;
