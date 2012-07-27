@@ -58,8 +58,8 @@ public class EJB3ClasspathContainer implements IClasspathContainer, IJBossServer
 	  this.path = path;
 	  this.javaProject = project;
       String configName = path.segment(1);
-      IProject p = project.getProject();
-      if( configName == null && p.exists() && p.isOpen())
+      IProject p = project == null ? null : project.getProject();
+      if( configName == null && p != null && p.exists() && p.isOpen())
     	  configName = findLegacyConfigName(project);
       IServer foundServer = findServer(configName);
 	  jbossServer = ServerConverter.getJBossServer(foundServer);

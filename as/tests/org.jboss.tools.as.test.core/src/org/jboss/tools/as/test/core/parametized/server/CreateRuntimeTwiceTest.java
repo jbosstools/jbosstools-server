@@ -52,8 +52,8 @@ public class CreateRuntimeTwiceTest extends TestCase {
 	}
 	
 	@Test
-	private void createRuntimes(String serverTypeId) throws CoreException {
-		IServerType type = ServerCore.findServerType(serverTypeId);
+	public void createRuntimes() throws CoreException {
+		IServerType type = ServerCore.findServerType(serverType);
 		IRuntimeType runtimeType = type.getRuntimeType();
 		
 		IRuntimeWorkingCopy firstRuntime = runtimeType.createRuntime(null, new NullProgressMonitor());
@@ -62,7 +62,7 @@ public class CreateRuntimeTwiceTest extends TestCase {
 		IRuntimeWorkingCopy secondRuntime = runtimeType.createRuntime(null, new NullProgressMonitor());
 		IRuntime secondSavedRuntime = secondRuntime.save(true, new NullProgressMonitor());
 		
-		assertEquals(savedRuntime.getName(), secondSavedRuntime.getName());
+		assertNotSame(savedRuntime.getName(), secondSavedRuntime.getName());
 		assertNotSame(savedRuntime, secondSavedRuntime);				
 		assertFalse("Why are two different runtimes " + runtimeType.getId() + " created with the same ID ?!", savedRuntime.getId().equals(secondSavedRuntime.getId()));
 	}

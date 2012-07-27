@@ -44,7 +44,7 @@ public class DeploymentAssemblyArchivePathVarTest extends AbstractComponentPubli
 	private static int PROJECT_ID = 1;
 	@Parameters
 	public static Collection<Object[]> params() {
-		return componentJarData();
+		return fullComponentJarData();
 	}
 	public DeploymentAssemblyArchivePathVarTest(String serverType, String zip,
 			String deployLoc, String perMod, String refName, String refFolder) {

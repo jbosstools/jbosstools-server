@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
+import junit.framework.Assert;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -30,7 +32,7 @@ import org.jboss.tools.as.test.core.TestConstants;
  *   2) Creating IServer objects out of either mock folders or legitimate installations
  *
  */
-public class ServerCreationTestUtils {
+public class ServerCreationTestUtils extends Assert {
 	
 	private static final IPath mockedServers = ASMatrixTests.getDefault().getStateLocation().append("mockedServers");
 	private static HashMap<String, String> asSystemJar = new HashMap<String, String>();
@@ -123,7 +125,10 @@ public class ServerCreationTestUtils {
 	}
 
 	public static IServer createServerWithRuntime(String serverType, String name) throws CoreException {
+		if( serverType.equals(IJBossToolingConstants.DEPLOY_ONLY_SERVER))
+			return createDeployOnlyServer();
 		String loc = TestConstants.getServerHome(serverType);
+		assertNotNull("Runtime location for server type " + serverType + " not set in test suite", loc);
 		File locFile = new Path(loc).toFile();
 		return createServerWithRuntime(serverType, name, locFile);
 	}

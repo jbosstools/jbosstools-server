@@ -10,6 +10,8 @@
  ******************************************************************************/ 
 package org.jboss.tools.as.test.core.parametized.server.publishing;
 
+import java.util.Collection;
+
 import org.eclipse.wst.common.componentcore.internal.operation.AddReferenceDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
@@ -17,11 +19,17 @@ import org.jboss.tools.as.test.core.internal.utils.wtp.CreateProjectOperationsUt
 import org.jboss.tools.as.test.core.internal.utils.wtp.JavaEEFacetConstants;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(value = Parameterized.class)
 public class DeploymentAssemblyArchivePathVarWarTest extends DeploymentAssemblyArchivePathVarTest {
 	private static String PROJECT_PREFIX = "pWar";
 	private static int PROJECT_ID = 1;
+	@Parameters
+	public static Collection<Object[]> params() {
+		return componentJarData();
+	}
+
 	public DeploymentAssemblyArchivePathVarWarTest(String serverType, String zip,
 			String deployLoc, String perMod, String refName, String refFolder) {
 		super(serverType, zip, deployLoc, perMod, refName, refFolder);

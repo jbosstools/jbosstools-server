@@ -7,11 +7,11 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-//	ServerHomeTest.class,
-//	ServerBeanLoader3Test.class,
-//	CreateServerCheckDefaultsTest.class,
-//	ProjectRuntimeClasspathTest.class,
-//	CreateRuntimeTwiceTest.class,
+	ServerHomeTest.class,
+	ServerBeanLoader3Test.class,
+	CreateServerCheckDefaultsTest.class,
+	ProjectRuntimeClasspathTest.class,
+	CreateRuntimeTwiceTest.class,
 	PublishingSuite.class
 })
 public class ParametizedSuite {

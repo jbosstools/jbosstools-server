@@ -12,10 +12,21 @@ import org.jboss.tools.as.test.core.parametized.server.ServerParameterUtils;
 
 public class AbstractComponentPublishingTest extends AbstractPublishingTest {
 	public static Collection<Object[]> componentJarData() {
+		return componentJarData(false);
+	}
+	public static Collection<Object[]> fullComponentJarData() {
+		return componentJarData(true);
+	}
+	public static Collection<Object[]> componentJarData(boolean complete) {
 		Object[] servers = ServerParameterUtils.getPublishServerTypes();
 		Object[] zipOption = ServerParameterUtils.getServerZipOptions();
 		Object[] defaultDeployLoc = ServerParameterUtils.getDefaultDeployOptions();
 		Object[] perModOverrides = ServerParameterUtils.getPerModuleOverrideOptions();
+		if( !complete ) {
+			// simplify these options
+			defaultDeployLoc = new Object[]{defaultDeployLoc[0]};
+			perModOverrides = new Object[]{perModOverrides[0]};
+		}
 		Object[] junitName = new String[] { "junit.jar", "otherOut.jar"};
 		Object[] outFolder = new String[] { "lib", "otherFolder", "deep/nested", ""};
 		Object[][] allOptions = new Object[][] {
@@ -24,6 +35,7 @@ public class AbstractComponentPublishingTest extends AbstractPublishingTest {
 		};
 		return MatrixUtils.toMatrix(allOptions);
 	}
+
 	protected String jarFolder;
 	protected String jarName;
 

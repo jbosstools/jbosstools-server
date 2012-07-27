@@ -23,6 +23,7 @@ import org.eclipse.wst.server.core.IServerLifecycleListener;
 import org.eclipse.wst.server.core.IServerListener;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerEvent;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 /**
  * The UnitedServerListenerManager keeps an array of
@@ -59,19 +60,9 @@ public class UnitedServerListenerManager implements
 		return (UnitedServerListener[]) list.toArray(new UnitedServerListener[list.size()]);
 	}
 	
+	@Deprecated
 	public static boolean isJBossServer(IServer server) {
-		if (server == null) {
-			return false;
-		}
-		IRuntime rt = server.getRuntime();
-		if (rt == null) {
-			return false;
-		}
-		IJBossServerRuntime jbsrt = (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
-		if (jbsrt == null) {
-			return false;
-		}
-		return true;
+		return ServerConverter.getJBossServer(server) != null;
 	}
 
 
