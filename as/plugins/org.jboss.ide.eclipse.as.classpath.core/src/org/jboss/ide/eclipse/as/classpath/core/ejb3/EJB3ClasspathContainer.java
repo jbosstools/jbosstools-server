@@ -32,6 +32,7 @@ import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.classpath.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 /**
  * @author Marshall
@@ -57,39 +58,50 @@ public class EJB3ClasspathContainer implements IClasspathContainer, IJBossServer
 	  this.path = path;
 	  this.javaProject = project;
       String configName = path.segment(1);
-      IServer servers[] = ServerCore.getServers();
       IProject p = project.getProject();
-      if( p.exists() && p.isOpen() /* &&  Deprecated : p.isLocal(IResource.DEPTH_INFINITE)*/) {
-    	  try {
-    		  if (configName == null) {
-    			  // old classpath container, try finding the persisten property
-    			  configName = project.getProject().getPersistentProperty(JBOSS_EJB3_CONFIGURATION);
-    			  if (configName != null) {
-    				  // go ahead and remove the persistent property
-    				  project.getProject().setPersistentProperty(JBOSS_EJB3_CONFIGURATION, null);
-    			  }
-    		  }
-    	  } catch( CoreException ce ) {
-    		  // This should never occur. If it does, it regards legacy situations. 
-    		  // The project is opened and accessible. There are no reasons for this 
-    		  // to ever occur. 
-    	  }
-      }         
-      for (int i = 0; i < servers.length; i++) {
-    	  if (servers[i].getName().equals(configName))  {
-    		  jbossServer = (JBossServer) servers[i].loadAdapter(JBossServer.class, new NullProgressMonitor());
-    		  try {
-    			  homePath = jbossServer.getServer().getRuntime().getLocation();
-    			  configPath = new Path(jbossServer.getConfigDirectory());
-    		  } catch( Exception e ) { 
-    			  IStatus status = new Status(IStatus.ERROR, ClasspathCorePlugin.PLUGIN_ID,Messages.EJB3ClasspathContainer_could_not_determine_home, e);
-    			  ClasspathCorePlugin.getDefault().getLog().log(status);
-    		  }
-    		  break;
-    	  }
-      }
+      if( configName == null && p.exists() && p.isOpen())
+    	  configName = findLegacyConfigName(project);
+      IServer foundServer = findServer(configName);
+	  jbossServer = ServerConverter.getJBossServer(foundServer);
+	  if( jbossServer != null ) {
+		  try {
+			  homePath = jbossServer.getServer().getRuntime().getLocation();
+			  configPath = new Path(jbossServer.getConfigDirectory());
+		  } catch( Exception e ) { 
+			  IStatus status = new Status(IStatus.ERROR, ClasspathCorePlugin.PLUGIN_ID,Messages.EJB3ClasspathContainer_could_not_determine_home, e);
+			  ClasspathCorePlugin.getDefault().getLog().log(status);
+		  }
+	  }
    }
-
+   
+   private String findLegacyConfigName(IJavaProject project) {
+	   if( project == null )
+		   return null;
+	   String configName = null;
+	   try {
+		  // old classpath container, try finding the persisten property
+		  configName = project.getProject().getPersistentProperty(JBOSS_EJB3_CONFIGURATION);
+		  if (configName != null) {
+			  // go ahead and remove the persistent property
+			  project.getProject().setPersistentProperty(JBOSS_EJB3_CONFIGURATION, null);
+		  }
+ 	  } catch( CoreException ce ) {
+ 		  // This should never occur. If it does, it regards legacy situations. 
+ 		  // The project is opened and accessible. There are no reasons for this 
+ 		  // to ever occur. 
+ 	  } 
+	  return configName;
+   }
+   private IServer findServer(String serverName) {
+	   IServer[] servers = ServerCore.getServers();
+	   for (int i = 0; i < servers.length; i++) {
+    	  if (servers[i].getName().equals(serverName))  {
+    		  return servers[i];
+    	  }
+	   }
+	   return null;
+   }
+   
    public String getDescription() {
 	   return Messages.EJB3ClasspathContainer_ejb30_description;
    }
@@ -111,14 +123,16 @@ public class EJB3ClasspathContainer implements IClasspathContainer, IJBossServer
    }
 
    public IClasspathEntry[] getClasspathEntries() {
-	   try {
-	      String id = jbossServer.getServer().getServerType().getRuntimeType().getId();
-	      if( id.equals(AS_40)) return get40Jars(homePath, configPath);
-	      if( id.equals(AS_42)) return get42Jars(homePath, configPath);
-	      if( id.equals(AS_50)) return get50Jars(homePath, configPath);
-	      if( id.equals(AS_51)) return get51Jars(homePath, configPath);
-	      if( id.equals(AS_60)) return get60Jars(homePath, configPath);
-	   } catch( FileNotFoundException fnfe ) {}
+	   if( jbossServer != null ) {
+		   try {
+		      String id = jbossServer.getServer().getServerType().getRuntimeType().getId();
+		      if( id.equals(AS_40)) return get40Jars(homePath, configPath);
+		      if( id.equals(AS_42)) return get42Jars(homePath, configPath);
+		      if( id.equals(AS_50)) return get50Jars(homePath, configPath);
+		      if( id.equals(AS_51)) return get51Jars(homePath, configPath);
+		      if( id.equals(AS_60)) return get60Jars(homePath, configPath);
+		   } catch( FileNotFoundException fnfe ) {}
+	   }
 	   return new IClasspathEntry[]{};
    }
 

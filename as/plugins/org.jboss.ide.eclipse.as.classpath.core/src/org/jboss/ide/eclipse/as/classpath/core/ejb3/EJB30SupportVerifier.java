@@ -33,6 +33,8 @@ public class EJB30SupportVerifier {
 	}
 	
 	public static boolean verify(IRuntime rt) {
+		if( rt == null ) // deploy only server protection
+			return false;
 		IJBossServerRuntime  jbRuntime = (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, null);
 		if( jbRuntime == null )
 			return false;
