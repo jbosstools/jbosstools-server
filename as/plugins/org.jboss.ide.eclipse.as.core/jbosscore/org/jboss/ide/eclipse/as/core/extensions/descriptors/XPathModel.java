@@ -101,6 +101,8 @@ public class XPathModel extends UnitedServerListener {
 	
 	
 	public XPathQuery getQuery(IServer server, IPath path) {
+		if( server == null || path == null || path.segmentCount() != 2)
+			return null;
 		XPathCategory cat = getCategory(server, path.segment(0));
 		if( cat != null )
 			return cat.getQuery(path.segment(1));
