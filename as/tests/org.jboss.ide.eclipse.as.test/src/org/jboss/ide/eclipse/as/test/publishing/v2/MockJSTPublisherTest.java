@@ -16,19 +16,46 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerUtil;
+import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.internal.ServerPreferences;
 import org.jboss.ide.eclipse.as.test.util.IOUtil;
 import org.jboss.ide.eclipse.as.test.util.ServerRuntimeUtils;
+import org.jboss.tools.test.util.JobUtils;
 
 public class MockJSTPublisherTest extends AbstractJSTDeploymentTester {
+	private boolean initialAutopublishVal;
 	public void setUp() throws Exception {
+		super.setUp();
+		initialAutopublishVal = ServerPreferences.getInstance().isAutoPublishing();
+		ServerPreferences.getInstance().setAutoPublishing(false);
+	}
+	public void tearDown() throws Exception {
+		super.tearDown();
+		ServerPreferences.getInstance().setAutoPublishing(initialAutopublishVal);
 	}
 
+	private static int INDEX = 1;
+	private String MY_NAME = null;
+	protected String getModuleName() {
+		if( MY_NAME == null ) {
+			MY_NAME = "MockJSTPublisherTestModule" + INDEX;
+			INDEX++;
+		}
+		return MY_NAME;
+	}
+
+	
 	public void testNormalLogic() throws CoreException, IOException, Exception {
 		server = ServerRuntimeUtils.createMockDeployOnlyServer();
 		server = ServerRuntimeUtils.useMockPublishMethod(server);
+		IServerWorkingCopy wc = server.createWorkingCopy();
+		wc.setAttribute(Server.PROP_AUTO_PUBLISH_SETTING, Server.AUTO_PUBLISH_DISABLE);
+		server = wc.save(true, null);
+		JobUtils.waitForIdle(1000);
 		project = createProject();
+		JobUtils.waitForIdle(1000);
 		MockPublishMethod.reset();
 		theTest(false);
 	}
@@ -48,13 +75,13 @@ public class MockJSTPublisherTest extends AbstractJSTDeploymentTester {
 		ServerRuntimeUtils.publish(server);
 		assertChanged(
 				isAs7, 
-				new String[] { "newModule.ear", "newModule.ear/META-INF/application.xml" }, 
-				new String[] { "newModule.ear", "newModule.ear/META-INF/application.xml", "newModule.ear.dodeploy" });
+				new String[] { MY_NAME + ".ear", MY_NAME + ".ear/META-INF/application.xml" }, 
+				new String[] { MY_NAME + ".ear", MY_NAME + ".ear/META-INF/application.xml", MY_NAME + ".ear.dodeploy" });
 		assertRemoved(
 				isAs7, 
-				new String[] { "newModule.ear" }, 
+				new String[] { MY_NAME + ".ear" }, 
 				// jst publisher always removes the prior deployed artifact since we could have switched from zipped to exploded
-				new String[] { "newModule.ear", "newModule.ear.failed" }); 
+				new String[] { MY_NAME + ".ear", MY_NAME + ".ear.failed" }); 
 		MockPublishMethod.reset();
 
 		IFile textFile = project.getFile(getContentTextFilePath());
@@ -63,43 +90,44 @@ public class MockJSTPublisherTest extends AbstractJSTDeploymentTester {
 		ServerRuntimeUtils.publish(server);
 		assertChanged(
 				isAs7,
-				new String[] { "newModule.ear", "newModule.ear/test.txt" }, 
-				new String[] { "newModule.ear", "newModule.ear/test.txt" });
+				new String[] { MY_NAME + ".ear", MY_NAME + ".ear/test.txt" }, 
+				new String[] { MY_NAME + ".ear", MY_NAME + ".ear/test.txt" });
 		assertRemoved(
 				isAs7,
-				new String[] {}, new String[] { "newModule.ear.failed" });
+				new String[] {}, new String[] { MY_NAME + ".ear.failed" });
 		MockPublishMethod.reset();
 		IOUtil.setContents(textFile, 1);
 		ServerRuntimeUtils.publish(server);
 		assertChanged(
 				isAs7,
-				new String[] { "newModule.ear", "newModule.ear/test.txt" }, 
-				new String[] { "newModule.ear", "newModule.ear/test.txt" });
+				new String[] { MY_NAME + ".ear", MY_NAME + ".ear/test.txt" }, 
+				new String[] { MY_NAME + ".ear", MY_NAME + ".ear/test.txt" });
 		assertRemoved(
 				isAs7,
 				new String[] {}, 
-				new String[] { "newModule.ear.failed" });
+				new String[] { MY_NAME + ".ear.failed" });
 		MockPublishMethod.reset();
 		textFile.delete(true, null);
 		ServerRuntimeUtils.publish(server);
 		assertRemoved(
 				isAs7,
-				new String[] { "newModule.ear/test.txt" }, 
-				new String[] { "newModule.ear.failed", "newModule.ear/test.txt" });
+				new String[] { MY_NAME + ".ear/test.txt" }, 
+				new String[] { MY_NAME + ".ear.failed", MY_NAME + ".ear/test.txt" });
 		assertChanged(
 				isAs7,
 				new String[] {}, 
 				new String[] {});
 		MockPublishMethod.reset();
 
+		IModule[] all = server.getModules();
 		server = ServerRuntimeUtils.removeModule(server, mod);
 		assertEquals(0, MockPublishMethod.getRemoved().length);
 
 		ServerRuntimeUtils.publish(server);
 		assertRemoved(
 				isAs7,
-				new String[] { "newModule.ear" }, 
-				new String[] { "newModule.ear", "newModule.ear.deployed", "newModule.ear.failed" });
+				new String[] { MY_NAME + ".ear" }, 
+				new String[] { MY_NAME + ".ear", MY_NAME + ".ear.deployed", MY_NAME + ".ear.failed" });
 	}
 	
 	protected void assertRemoved(boolean isAs7, String[] nonAs7, String[] as7) {

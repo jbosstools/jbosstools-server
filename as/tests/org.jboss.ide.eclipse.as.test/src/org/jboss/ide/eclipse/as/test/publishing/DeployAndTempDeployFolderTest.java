@@ -46,8 +46,8 @@ public class DeployAndTempDeployFolderTest extends TestCase {
 		wc.setAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, IDeployableServer.DEPLOY_CUSTOM);
 		s = wc.save(true, null);
 		IDeployableServer ds = ServerConverter.getDeployableServer(s);
-		assertTrue("/home/test1".equals(ds.getDeployFolder()));
-		assertTrue("/home/test2".equals(ds.getTempDeployFolder()));
+		assertEquals("/home/test1",ds.getDeployFolder());
+		assertEquals("/home/test2",ds.getTempDeployFolder());
 	}
 
 	public void testAS7xCustomRelative() throws CoreException {
@@ -56,8 +56,8 @@ public class DeployAndTempDeployFolderTest extends TestCase {
 		wc.setAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, IDeployableServer.DEPLOY_CUSTOM);
 		s = wc.save(true, null);
 		IDeployableServer ds = ServerConverter.getDeployableServer(s);
-		assertTrue("/rtHome/home/test1".equals(ds.getDeployFolder()));
-		assertTrue("/rtHome/home/test2".equals(ds.getTempDeployFolder()));
+		assertEquals("/rtHome/home/test1",ds.getDeployFolder());
+		assertEquals("/rtHome/home/test2",ds.getTempDeployFolder());
 	}
 
 	

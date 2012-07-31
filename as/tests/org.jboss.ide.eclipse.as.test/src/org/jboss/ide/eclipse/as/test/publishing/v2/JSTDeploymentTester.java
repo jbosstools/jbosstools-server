@@ -18,11 +18,30 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.ServerUtil;
+import org.eclipse.wst.server.core.internal.ServerPlugin;
+import org.eclipse.wst.server.core.internal.ServerPreferences;
+import org.jboss.ide.eclipse.as.test.ASTest;
 import org.jboss.ide.eclipse.as.test.util.IOUtil;
 import org.jboss.ide.eclipse.as.test.util.ServerRuntimeUtils;
+import org.jboss.ide.eclipse.as.test.util.wtp.ProjectUtility;
+import org.jboss.ide.eclipse.as.ui.editor.ServerPasswordSection;
+import org.jboss.tools.test.util.JobUtils;
 
 public class JSTDeploymentTester extends AbstractJSTDeploymentTester {
-	
+	protected String getModuleName() {
+		return "JSTDeploymentTester5";
+	}
+	private boolean initial;
+	public void setUp() throws Exception {
+		super.setUp();
+		initial = ServerPreferences.getInstance().isAutoPublishing();
+		ServerPreferences.getInstance().setAutoPublishing(false);
+	}
+	public void tearDown() throws Exception {
+		super.tearDown();
+		ServerPreferences.getInstance().setAutoPublishing(initial);
+	}
+
 	
 	public void testMain() throws CoreException, IOException {
 		IModule mod = ServerUtil.getModule(project);
@@ -31,6 +50,7 @@ public class JSTDeploymentTester extends AbstractJSTDeploymentTester {
 		server = ServerRuntimeUtils.addModule(server,mod);
 		ServerRuntimeUtils.publish(server);
 		IPath deployRoot = new Path(ServerRuntimeUtils.getDeployRoot(server));
+		System.out.println(deployRoot.toOSString());
 		IPath rootFolder = deployRoot.append(getModuleName() + ".ear");
 		assertTrue(rootFolder.toFile().exists());
 		assertTrue(IOUtil.countFiles(rootFolder.toFile()) == 0);

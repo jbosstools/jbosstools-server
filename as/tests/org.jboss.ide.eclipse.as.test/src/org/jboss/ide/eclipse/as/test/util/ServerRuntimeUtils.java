@@ -55,6 +55,7 @@ import org.jboss.ide.eclipse.as.core.util.ServerCreationUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.test.ASTest;
 import org.jboss.ide.eclipse.as.test.publishing.AbstractDeploymentTest;
+import org.jboss.tools.test.util.JobUtils;
 import org.osgi.framework.Bundle;
 
 public class ServerRuntimeUtils extends TestCase {
@@ -351,7 +352,9 @@ public class ServerRuntimeUtils extends TestCase {
 	}
 
 	public static IStatus publish(int type, IServer server) throws CoreException {
-		return server.publish(type, new NullProgressMonitor());
+		IStatus s = server.publish(type, new NullProgressMonitor());
+		JobUtils.waitForIdle(1000);
+		return s;
 	}
 	
 	public static IServer setZipped(IServer server, boolean val) {

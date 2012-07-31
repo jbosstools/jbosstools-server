@@ -34,7 +34,6 @@ public class MockPublishMethod extends AbstractPublishMethod {
 	public static ArrayList<IPath> tempFiles = new ArrayList<IPath>();
 	public static ArrayList<IModuleFile> copiedFiles = new ArrayList<IModuleFile>();
 	
-	
 	protected static String expectedRoot = MOCK_ROOT;
 	protected static String expectedTempRoot = MOCK_TEMP_ROOT;
 	

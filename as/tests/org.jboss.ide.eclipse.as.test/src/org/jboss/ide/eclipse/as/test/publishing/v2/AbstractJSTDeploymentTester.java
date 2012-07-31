@@ -31,6 +31,7 @@ import org.jboss.ide.eclipse.as.test.util.wtp.JavaEEFacetConstants;
 import org.jboss.ide.eclipse.as.test.util.wtp.OperationTestCase;
 import org.jboss.ide.eclipse.as.test.util.wtp.ProjectCreationUtil;
 import org.jboss.ide.eclipse.as.test.util.wtp.ProjectUtility;
+import org.jboss.tools.test.util.JobUtils;
 
 public class AbstractJSTDeploymentTester extends TestCase {
 	protected IProject project;
@@ -40,6 +41,7 @@ public class AbstractJSTDeploymentTester extends TestCase {
 	private final String TEXT_FILE = "test.txt";
 	private final IPath CONTENT_TEXT_FILE = new Path(CONTENT_DIR).append(TEXT_FILE);
 	public void setUp() throws Exception {
+		JobUtils.waitForIdle();
 		project = createProject();
 		server = ServerRuntimeUtils.createMockDeployOnlyServer();
 	}
