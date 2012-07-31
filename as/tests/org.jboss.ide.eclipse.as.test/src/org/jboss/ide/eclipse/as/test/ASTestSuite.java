@@ -58,42 +58,42 @@ public class ASTestSuite extends TestSuite {
     public static Test suite() { 
         ValidationFramework.getDefault().suspendAllValidation(true);
         TestSuite suite = new TestSuite("ASTools Test Suite");
-        suite.addTestSuite(ArgsUtilTest.class);
-        suite.addTestSuite(ExpressionResolverUtilTest.class);
-        suite.addTestSuite(PreReqTest.class);
-        suite.addTestSuite(ServerBeanLoaderTest.class);
-        
-        
-        // Cannot find a way to run this test and pre-load the credentials for the keystore
-        //suite.addTestSuite(ServerSecureStorageTest.class);
-        suite.addTestSuite(RuntimeServerModelTest.class);
-        suite.addTestSuite(JEEClasspathContainerTest.class);
-        suite.addTestSuite(ProjectRuntimeTest.class);
-        suite.addTestSuite(JSTDeploymentWarUpdateXML.class);
-        suite.addTestSuite(SingleFileDeployableMockDeploymentTester.class);
-        suite.addTestSuite(XPathModelTest.class);
-        suite.addTestSuite(StringSubstitutionTest.class);
+//        suite.addTestSuite(ArgsUtilTest.class);
+//        suite.addTestSuite(ExpressionResolverUtilTest.class);
+//        suite.addTestSuite(PreReqTest.class);
+//        suite.addTestSuite(ServerBeanLoaderTest.class);
+//        
+//        
+//        // Cannot find a way to run this test and pre-load the credentials for the keystore
+//        //suite.addTestSuite(ServerSecureStorageTest.class);
+//        suite.addTestSuite(RuntimeServerModelTest.class);
+//        suite.addTestSuite(JEEClasspathContainerTest.class);
+//        suite.addTestSuite(ProjectRuntimeTest.class);
+//        suite.addTestSuite(JSTDeploymentWarUpdateXML.class);
+//        suite.addTestSuite(SingleFileDeployableMockDeploymentTester.class);
+//        suite.addTestSuite(XPathModelTest.class);
+//        suite.addTestSuite(StringSubstitutionTest.class);
         
         // Publishing tests
         suite.addTestSuite(DeployAndTempDeployFolderTest.class);
-        suite.addTestSuite(BehaviourModelDefectTest.class);
-        suite.addTestSuite(WebDeployableArtifactUtilDefectTest.class);
-        suite.addTestSuite(MockJSTPublisherTest.class);
-        suite.addTestSuite(MockJSTPublisherTestDynUtil.class);
-        suite.addTestSuite(JBIDE1657Test.class);
-        suite.addTestSuite(JBIDE2512aTest.class);
-        suite.addTestSuite(JBIDE2512bTest.class);
-        suite.addTestSuite(JBIDE4184Test.class);
-        suite.addTestSuite(TestEar5WithJBossRuntime.class);
-        suite.addTestSuite(JSTDeploymentTester.class);
-        suite.addTestSuite(JSTDeployBinaryChildModuleTest.class);
-        suite.addTestSuite(JSTModuleDeployFoldersTest.class);
-        suite.addTestSuite(SingleFileDeploymentTester.class);
-        suite.addTestSuite(JBossServerAPITest.class);
-        suite.addTestSuite(Mock2FilterTest.class);
-        suite.addTestSuite(PublishFilterDirectoryScannerTest.class);
-        suite.addTestSuite(PublishingFilterTest.class);
-        
+//        suite.addTestSuite(BehaviourModelDefectTest.class);
+//        suite.addTestSuite(WebDeployableArtifactUtilDefectTest.class);
+//        suite.addTestSuite(MockJSTPublisherTest.class);
+//        suite.addTestSuite(MockJSTPublisherTestDynUtil.class);
+//        suite.addTestSuite(JBIDE1657Test.class);
+//        suite.addTestSuite(JBIDE2512aTest.class);
+//        suite.addTestSuite(JBIDE2512bTest.class);
+//        suite.addTestSuite(JBIDE4184Test.class);
+//        suite.addTestSuite(TestEar5WithJBossRuntime.class);
+//        suite.addTestSuite(JSTDeploymentTester.class);
+//        suite.addTestSuite(JSTDeployBinaryChildModuleTest.class);
+//        suite.addTestSuite(JSTModuleDeployFoldersTest.class);
+//        suite.addTestSuite(SingleFileDeploymentTester.class);
+//        suite.addTestSuite(JBossServerAPITest.class);
+//        suite.addTestSuite(Mock2FilterTest.class);
+//        suite.addTestSuite(PublishFilterDirectoryScannerTest.class);
+//        suite.addTestSuite(PublishingFilterTest.class);
+//        
         return suite; 
    }
 

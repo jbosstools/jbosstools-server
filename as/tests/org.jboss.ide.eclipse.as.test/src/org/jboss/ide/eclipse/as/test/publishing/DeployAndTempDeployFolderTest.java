@@ -10,8 +10,16 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.test.ASTest;
 import org.jboss.ide.eclipse.as.test.util.ServerRuntimeUtils;
 import org.jboss.ide.eclipse.as.test.util.wtp.ProjectUtility;
+import org.jboss.tools.test.util.JobUtils;
 
 public class DeployAndTempDeployFolderTest extends TestCase {
+	public void setUp() throws Exception {
+		ServerRuntimeUtils.deleteAllServers();
+		ServerRuntimeUtils.deleteAllRuntimes();
+		ProjectUtility.deleteAllProjects();
+		ASTest.clearStateLocation();
+		JobUtils.waitForIdle(2000);
+	}
 	public void tearDown() throws Exception {
 		ServerRuntimeUtils.deleteAllServers();
 		ServerRuntimeUtils.deleteAllRuntimes();

@@ -32,7 +32,11 @@ import org.jboss.ide.eclipse.as.test.util.wtp.ProjectUtility;
 import org.jboss.tools.test.util.JobUtils;
 
 public class WebDeployableArtifactUtilDefectTest extends TestCase {
-	public void setUp() {
+	public void setUp() throws Exception {
+		ServerRuntimeUtils.deleteAllServers();
+		ServerRuntimeUtils.deleteAllRuntimes();
+		ProjectUtility.deleteAllProjects();
+		ASTest.clearStateLocation();
 		JobUtils.waitForIdle(2000);
 	}
 	public void tearDown() throws Exception {

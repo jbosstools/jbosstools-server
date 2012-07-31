@@ -27,9 +27,9 @@ import org.jboss.tools.test.util.JobUtils;
 public class MockJSTPublisherTest extends AbstractJSTDeploymentTester {
 	private boolean initialAutopublishVal;
 	public void setUp() throws Exception {
-		super.setUp();
 		initialAutopublishVal = ServerPreferences.getInstance().isAutoPublishing();
 		ServerPreferences.getInstance().setAutoPublishing(false);
+		super.setUp();
 	}
 	public void tearDown() throws Exception {
 		super.tearDown();
@@ -48,7 +48,6 @@ public class MockJSTPublisherTest extends AbstractJSTDeploymentTester {
 
 	
 	public void testNormalLogic() throws CoreException, IOException, Exception {
-		server = ServerRuntimeUtils.createMockDeployOnlyServer();
 		server = ServerRuntimeUtils.useMockPublishMethod(server);
 		IServerWorkingCopy wc = server.createWorkingCopy();
 		wc.setAttribute(Server.PROP_AUTO_PUBLISH_SETTING, Server.AUTO_PUBLISH_DISABLE);
@@ -60,16 +59,23 @@ public class MockJSTPublisherTest extends AbstractJSTDeploymentTester {
 		theTest(false);
 	}
 
-	public void testForced7Logic() throws CoreException, IOException, Exception {
-		server = ServerRuntimeUtils.createMockJBoss7Server();
-		server = ServerRuntimeUtils.useMockPublishMethod(server);
-		project = createProject();
-		MockPublishMethod.reset();
-		theTest(true);
-	}
+	/* There is no way to force as7 deployment onto a deploy-only server */
+//	public void testForced7Logic() throws CoreException, IOException, Exception {
+//		server = ServerRuntimeUtils.useMockPublishMethod(server);
+//		IServerWorkingCopy wc = server.createWorkingCopy();
+//		wc.setAttribute(Server.PROP_AUTO_PUBLISH_SETTING, Server.AUTO_PUBLISH_DISABLE);
+//		server = wc.save(true, null);
+//		JobUtils.waitForIdle(1000);
+//		project = createProject();
+//		JobUtils.waitForIdle(1000);
+//		MockPublishMethod.reset();
+//		theTest(true);
+//	}
 
 	protected void theTest(boolean isAs7) throws CoreException, IOException {
-		ServerPreferences.getInstance().setAutoPublishing(false);
+
+		JobUtils.delay(5000);
+		JobUtils.waitForIdle();
 		IModule mod = ServerUtil.getModule(project);
 		server = ServerRuntimeUtils.addModule(server, mod);
 		ServerRuntimeUtils.publish(server);

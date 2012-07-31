@@ -17,7 +17,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerUtil;
+import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.internal.ServerPreferences;
 import org.jboss.ide.eclipse.as.test.ASTest;
@@ -33,10 +35,14 @@ public class JSTDeploymentTester extends AbstractJSTDeploymentTester {
 	}
 	private boolean initial;
 	public void setUp() throws Exception {
-		super.setUp();
 		initial = ServerPreferences.getInstance().isAutoPublishing();
 		ServerPreferences.getInstance().setAutoPublishing(false);
+		super.setUp();
+		IServerWorkingCopy wc = server.createWorkingCopy();
+		wc.setAttribute(Server.PROP_AUTO_PUBLISH_SETTING, Server.AUTO_PUBLISH_DISABLE);
+		server = wc.save(true, null);
 	}
+	
 	public void tearDown() throws Exception {
 		super.tearDown();
 		ServerPreferences.getInstance().setAutoPublishing(initial);
