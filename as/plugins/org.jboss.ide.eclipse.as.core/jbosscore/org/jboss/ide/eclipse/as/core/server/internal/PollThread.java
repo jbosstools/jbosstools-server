@@ -227,9 +227,9 @@ public class PollThread extends Thread {
 
 	protected void alertListener(boolean currentState) {
 		if (currentState != expectedState) {
-			listener.stateNotAsserted(currentState, expectedState);
+			listener.stateNotAsserted(expectedState, currentState);
 		} else {
-			listener.stateAsserted(currentState, expectedState);
+			listener.stateAsserted(expectedState, currentState);
 		}
 	}
 	
