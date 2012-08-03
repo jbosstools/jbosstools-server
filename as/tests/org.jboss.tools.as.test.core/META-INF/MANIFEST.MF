@@ -1,8 +1,8 @@
 hManifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: %Bundlehugs-Name.0
+Bundle-Name: %BundleName.0
 Bundle-SymbolicName: org.jboss.tools.as.test.core;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 2.4.0.qualifier
 Bundle-Localization: plugin
 Bundle-Activator: org.jboss.tools.as.test.core.ASMatrixTests
 Require-Bundle: org.eclipse.ui,

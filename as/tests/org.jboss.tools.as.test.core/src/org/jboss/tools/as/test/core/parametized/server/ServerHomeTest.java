@@ -35,8 +35,8 @@ public class ServerHomeTest extends Assert {
 		String loc = TestConstants.getServerHome(serverType);
 		if( loc == null )
 			fail( "Test Runtime for " + serverType + " is not set properly in the build" );
-		if (!new File(loc).exists())
+		boolean exists = new File(loc).exists();
+		if (!exists)
 			fail(serverType + " (" + loc + ") does not exist.");
 	}
-
 }

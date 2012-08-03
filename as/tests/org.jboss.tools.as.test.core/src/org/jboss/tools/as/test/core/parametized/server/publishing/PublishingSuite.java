@@ -1,6 +1,6 @@
 package org.jboss.tools.as.test.core.parametized.server.publishing;
 
-import org.jboss.tools.as.test.core.parametized.server.publishing.defect.RepublishDefectTest;
+import org.jboss.tools.as.test.core.parametized.server.publishing.defect.PublishDefectSuite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -17,9 +17,9 @@ import org.junit.runners.Suite.SuiteClasses;
 	DeploymentAssemblyWorkspaceArchiveVarWarTest.class,
 	DeploymentAssemblyWorkspaceArchiveVarNestedWarTest.class,
 	DeploymentAssemblyFilesetReferenceTest.class,
-	RepublishDefectTest.class,
 	SingleDeployableFileTest.class,
-	SingleDeployableFolderTest.class
+	SingleDeployableFolderTest.class,
+	PublishDefectSuite.class
 })
 public class PublishingSuite {
 }

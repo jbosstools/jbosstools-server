@@ -17,6 +17,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.internal.ServerPreferences;
 import org.eclipse.wst.server.core.model.IModuleFile;
+import org.eclipse.wst.validation.ValidationFramework;
 import org.jboss.ide.eclipse.archives.core.util.internal.TrueZipUtil;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
@@ -68,16 +69,22 @@ public abstract class AbstractPublishingTest extends TestCase {
 	protected IModule primaryModule;
 	
 	public AbstractPublishingTest(String serverType, String zip, String deployLoc, String perMod) { 
-		System.out.println(serverType + ", " + zip + ", " + deployLoc + ", " + perMod);
 		this.param_serverType = serverType;
 		this.param_zip = zip;
 		this.param_deployLoc = deployLoc;
 		this.param_perModOverride = perMod;
 	}
+	
+	protected void printConstructor() {
+		System.out.println(getClass().getName() + ":  " + param_serverType + ", " + param_zip + ", " + param_deployLoc + ", " + param_perModOverride);
+	}
+	
 
 	@Before
 	public void setUp() throws Exception {
+		printConstructor();
 		ServerPreferences.getInstance().setAutoPublishing(false);
+		ValidationFramework.getDefault().suspendAllValidation(true);
 		JobUtils.waitForIdle();
 		server = ServerCreationTestUtils.createMockServerWithRuntime(param_serverType, getClass().getName() + param_serverType);
 		wc = server.createWorkingCopy();
@@ -94,7 +101,11 @@ public abstract class AbstractPublishingTest extends TestCase {
 	
 	@After 
 	public void tearDown() throws Exception {
-		ASMatrixTests.cleanup();
+		try {
+			ASMatrixTests.cleanup();
+		} finally {
+			ValidationFramework.getDefault().suspendAllValidation(false);
+		}
 	}
 	
 	protected void setMockPublishMethod4(IServerWorkingCopy wc) {

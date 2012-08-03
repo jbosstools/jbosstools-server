@@ -34,4 +34,26 @@
             typeId="mock4">
       </behaviour>
    </extension>
+   
+   
+   <!-- Polling -->
+   <extension
+         point="org.jboss.ide.eclipse.as.core.pollers">
+      <serverPoller
+            class="org.jboss.tools.as.test.core.polling.TestInternalPoller"
+            id="org.jboss.tools.as.test.core.poller.TestInternalPoller"
+            name="Test Poller"
+            serverTypes="org.jboss.ide.eclipse.as.32"
+            supportsShutdown="true"
+            supportsStartup="true">
+       </serverPoller>
+   </extension>
+   <extension
+         point="org.jboss.ide.eclipse.as.core.pollerFailureHandler">
+      <pollerHandler
+            class="org.jboss.tools.as.test.core.polling.PollerFailureHandler"
+            id="org.jboss.tools.as.test.core.polling.pollerFailureHandler">
+      </pollerHandler>
+   </extension>
+   
 </plugin>

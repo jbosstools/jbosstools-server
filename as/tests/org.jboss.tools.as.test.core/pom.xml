@@ -18,6 +18,11 @@
 		<jbosstools.test.jboss.home.5.1>${requirementsDirectory}/jboss-5.1.0.GA</jbosstools.test.jboss.home.5.1>
 		<jbosstools.test.jboss.home.6.0>${requirementsDirectory}/jboss-6.0.0.Final</jbosstools.test.jboss.home.6.0>
 		<jbosstools.test.jboss.home.7.0>${requirementsDirectory}/jboss-as-7.0.0.Final</jbosstools.test.jboss.home.7.0>
+		<jbosstools.test.jboss.home.7.1>${requirementsDirectory}/jboss-as-7.1.0.Final</jbosstools.test.jboss.home.7.1>
+		<jbosstools.test.jboss.home.eap.4.3>${requirementsDirectory}/jboss-eap-4.3/jboss-as</jbosstools.test.jboss.home.eap.4.3>
+		<jbosstools.test.jboss.home.eap.5.0>${requirementsDirectory}/jboss-eap-5.1/jboss-as</jbosstools.test.jboss.home.eap.5.0>
+		<jbosstools.test.jboss.home.eap.6.0>${requirementsDirectory}/jboss-eap-6.0</jbosstools.test.jboss.home.eap.6.0>
+
 		<systemProperties>-Djbosstools.test.jboss.home.3.2=${jbosstools.test.jboss.home.3.2} -Djbosstools.test.jboss.home.4.0=${jbosstools.test.jboss.home.4.0} -Djbosstools.test.jboss.home.4.2=${jbosstools.test.jboss.home.4.2} -Djbosstools.test.jboss.home.5.0=${jbosstools.test.jboss.home.5.0} -Djbosstools.test.jboss.home.5.1=${jbosstools.test.jboss.home.5.1} -Djbosstools.test.jboss.home.6.0=${jbosstools.test.jboss.home.6.0} -Djbosstools.test.jboss.home.7.0=${jbosstools.test.jboss.home.7.0} </systemProperties>
 		<coverage.filter>org.jboss.ide.eclipse.as.core*</coverage.filter>
 		<emma.instrument.bundles>org.jboss.ide.eclipse.as.core</emma.instrument.bundles>
@@ -25,6 +30,15 @@
 	
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-surefire-plugin</artifactId>
+				<version>${tychoVersion}</version>
+				<configuration>
+					<testSuite>org.jboss.tools.as.test.core</testSuite>
+					<testClass>org.jboss.tools.as.test.core.ASToolsTestSuite</testClass>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -53,6 +67,12 @@
 									<groupId>org.jboss.as</groupId>
 									<artifactId>jboss-as-dist</artifactId>
 									<version>7.0.0.Final</version>
+									<type>zip</type>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.jboss.as</groupId>
+									<artifactId>jboss-as-dist</artifactId>
+									<version>7.1.0.Final</version>
 									<type>zip</type>
 								</artifactItem>
 							</artifactItems>
@@ -109,6 +129,42 @@
 						<configuration>
 							<url>http://repository.jboss.org/sourceforge/jboss-5.1.0.GA.zip</url>
 							<md5>78322c75ca0c13002a04418b4a8bc920</md5>
+							<unpack>true</unpack>
+						</configuration>
+					</execution>
+					<execution>
+						<id>install-eap-4.3.0</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>wget</goal>
+						</goals>
+						<configuration>
+							<url>http://download.devel.redhat.com/released/JBEAP-4.3.0/CP10/zip/jboss-eap-4.3.0.GA_CP10.zip</url>
+							<md5>1ffb95d935c54a0a1a29865f563e55c7</md5>
+							<unpack>true</unpack>
+						</configuration>
+					</execution>
+					<execution>
+						<id>install-eap-5.1.2</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>wget</goal>
+						</goals>
+						<configuration>
+							<url>http://download.devel.redhat.com/released/JBEAP-5/5.1.2/zip/jboss-eap-5.1.2.zip</url>
+							<md5>6d652593f03b398a9b832760c71ae1ad</md5>
+							<unpack>true</unpack>
+						</configuration>
+					</execution>
+					<execution>
+						<id>install-eap-6.0.0</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>wget</goal>
+						</goals>
+						<configuration>
+							<url>http://download.devel.redhat.com/released/JBEAP-6/6.0.0/zip/jboss-eap-6.0.0.zip</url>
+							<md5>ca0e20c5523281233888c296689b7172</md5>
 							<unpack>true</unpack>
 						</configuration>
 					</execution>

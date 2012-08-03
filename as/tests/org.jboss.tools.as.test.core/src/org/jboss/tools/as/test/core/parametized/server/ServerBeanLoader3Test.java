@@ -69,7 +69,11 @@ public class ServerBeanLoader3Test extends TestCase {
 		String fLoc = TestConstants.getServerHome(serverType);
 		if( fLoc == null )
 			fail("Test Suite has no server home for server type " + serverType);
-		inner_testServerBeanLoaderForFolder(new File(fLoc));
+		Pair p = expected.get(serverType);
+		inner_testServerBeanLoaderForFolder(new File(fLoc), p.type, p.version);
+		if( p.type.equals(JBossServerType.EAP_STD)) {
+			inner_testServerBeanLoaderForFolder(new File(fLoc).getParentFile(), JBossServerType.EAP, p.version);
+		}
 	}
 
 	/*
@@ -80,10 +84,11 @@ public class ServerBeanLoader3Test extends TestCase {
 		File serverDir = (ServerCreationTestUtils.createMockServerLayout(serverType));
 		if( serverDir == null || !serverDir.exists())
 			fail("Creation of mock server type " + serverType + " has failed.");
-		inner_testServerBeanLoaderForFolder(serverDir);
+		Pair p = expected.get(serverType);
+		inner_testServerBeanLoaderForFolder(serverDir, p.type, p.version);
 	}
 	
-	private void inner_testServerBeanLoaderForFolder(File serverDir) {
+	private void inner_testServerBeanLoaderForFolder(File serverDir, JBossServerType expectedType, String expectedVersion) {
 		assertNotNull(serverType);
 		IServerType itype = ServerCore.findServerType(serverType);
 		if( itype == null )
@@ -93,10 +98,10 @@ public class ServerBeanLoader3Test extends TestCase {
 		
 		ServerBeanLoader loader = new ServerBeanLoader(serverDir);
 		JBossServerType type = loader.getServerType();
-		assertTrue(type.equals(expected.get(serverType).type));
+		assertEquals(expectedType, type);
 		String fullVersion = loader.getFullServerVersion();
-		assertTrue(fullVersion + " does not begin with " + expected.get(serverType).version, 
-				fullVersion.startsWith(expected.get(serverType).version));
+		assertTrue(fullVersion + " does not begin with " + expectedVersion, 
+				fullVersion.startsWith(expectedVersion));
 		assertEquals(loader.getServerAdapterId(), serverType);
 	}
 }

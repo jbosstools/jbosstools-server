@@ -130,6 +130,7 @@ public class ServerCreationTestUtils extends Assert {
 		String loc = TestConstants.getServerHome(serverType);
 		assertNotNull("Runtime location for server type " + serverType + " not set in test suite", loc);
 		File locFile = new Path(loc).toFile();
+		assertTrue(locFile.exists());
 		return createServerWithRuntime(serverType, name, locFile);
 	}
 	

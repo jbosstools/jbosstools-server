@@ -47,6 +47,10 @@ public class AbstractComponentPublishingTest extends AbstractPublishingTest {
 		jarFolder = refFolder;
 	}
 	
+	protected void printConstructor() {
+		System.out.println(getClass().getName() + ":  " + param_serverType + ", " + param_zip + ", " + param_deployLoc + ", " + param_perModOverride + ", " + jarName + ", " + jarFolder);
+	}
+
 	protected void completeSetUp() {
 		// Keep it local for REAL publishes
 		wc.setAttribute(IDeployableServer.SERVER_MODE, "local");
