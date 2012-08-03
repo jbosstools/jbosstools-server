@@ -29,6 +29,8 @@ public class SecurityFailureHandler extends UserPassCredentialProvider implement
 	@Override
 	public boolean accepts(IServerProvider serverProvider,
 			List<String> requiredProperties) {
+		if( requiredProperties.size() > 2)
+			return false;
 		IServer s = serverProvider.getServer();
 		JBossServer jbs = ServerConverter.getJBossServer(s);
 		if( jbs != null && jbs.hasJMXProvider())

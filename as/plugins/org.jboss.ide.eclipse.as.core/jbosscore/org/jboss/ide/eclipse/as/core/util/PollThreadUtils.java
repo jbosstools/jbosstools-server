@@ -202,18 +202,22 @@ public class PollThreadUtils {
 		}
 	}
 	
+	public static IStatus isServerStarted(DelegatingServerBehavior jbsBehavior) {
+		IServerStatePoller poller = PollThreadUtils.getPoller(IServerStatePoller.SERVER_UP, jbsBehavior.getServer());
+		return isServerStarted(jbsBehavior.getServer(), poller);
+	}
+	
 	/*
 	 * A solution needs to be found here. 
 	 * Should ideally use the poller that the server says is its poller,
 	 * but some pollers such as timeout poller cannot actively check
 	 */
-	public static IStatus isServerStarted(DelegatingServerBehavior jbsBehavior) {
-		IServerStatePoller poller = PollThreadUtils.getPoller(IServerStatePoller.SERVER_UP, jbsBehavior.getServer());
+	public static IStatus isServerStarted(IServer server,IServerStatePoller poller ) {
 		
 		// Need to be able to FORCE the poller to poll immediately
 		if( poller == null || !(poller instanceof IServerStatePoller2)) 
 			poller = new WebPortPoller();
-		IStatus started = ((IServerStatePoller2)poller).getCurrentStateSynchronous(jbsBehavior.getServer());
+		IStatus started = ((IServerStatePoller2)poller).getCurrentStateSynchronous(server);
 		// Trace
 		Trace.trace(Trace.STRING_FINER, "Checking if a server is already started: " + started.getMessage()); //$NON-NLS-1$
 		
