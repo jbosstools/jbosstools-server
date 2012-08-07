@@ -212,9 +212,9 @@ public class ArchiveNodeDeltaImpl implements IArchiveNodeDelta {
 			// Using a different delta constructor here to force 
 			// whether this child is added or removed. 
 			return new ArchiveNodeDeltaImpl(this, impl, addedOrRemoved,
-					(HashMap)impl.attributeChanges.clone(), 
-					(HashMap)impl.propertyChanges.clone(), 
-					(HashMap)impl.childChanges.clone());
+					impl.getAttributeChanges(), 
+					impl.getPropertyChanges(), 
+					impl.getChildChanges());
 		}
 		return child.getDelta();
 	}

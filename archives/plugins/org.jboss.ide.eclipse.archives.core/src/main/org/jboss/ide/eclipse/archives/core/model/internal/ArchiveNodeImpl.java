@@ -41,9 +41,22 @@ public abstract class ArchiveNodeImpl implements IArchiveNode {
 	protected ArrayList<ArchiveNodeImpl> children;
 
 	// cached data for deltas
-	protected HashMap<String, NodeDelta> attributeChanges;
-	protected HashMap<String, NodeDelta> propertyChanges;
-	protected HashMap<IArchiveNode, Integer> childChanges;
+	private HashMap<String, NodeDelta> attributeChanges;
+	public synchronized HashMap<String, NodeDelta> getAttributeChanges() {
+		return (HashMap<String, NodeDelta>)attributeChanges.clone();
+	}
+
+	public synchronized HashMap<String, NodeDelta> getPropertyChanges() {
+		return (HashMap<String, NodeDelta>)propertyChanges.clone();
+	}
+
+	public synchronized HashMap<IArchiveNode, Integer> getChildChanges() {
+		return (HashMap<IArchiveNode, Integer>)childChanges.clone();
+	}
+
+
+	private HashMap<String, NodeDelta> propertyChanges;
+	private HashMap<IArchiveNode, Integer> childChanges;
 
 
 	public ArchiveNodeImpl (XbPackageNodeWithProperties delegate) {
@@ -260,7 +273,7 @@ public abstract class ArchiveNodeImpl implements IArchiveNode {
 	 * @param child
 	 * @param addInDelegate
 	 */
-	public final void addChild(IArchiveNode child, boolean addInDelegate) throws ArchivesModelException {
+	public synchronized final void addChild(IArchiveNode child, boolean addInDelegate) throws ArchivesModelException {
 		Assert.isNotNull(child);
 		ArchiveNodeImpl childImpl = (ArchiveNodeImpl) child;
 		children.add(childImpl);
@@ -302,7 +315,7 @@ public abstract class ArchiveNodeImpl implements IArchiveNode {
 	 * (non-Javadoc)
 	 * @see org.jboss.ide.eclipse.archives.core.model.IArchiveNode#removeChild(org.jboss.ide.eclipse.archives.core.model.IArchiveNode)
 	 */
-	public void removeChild(IArchiveNode node) {
+	public synchronized void removeChild(IArchiveNode node) {
 		Assert.isNotNull(node);
 		ArchiveNodeImpl impl = (ArchiveNodeImpl) node;
 		boolean removed = false;
@@ -322,64 +335,62 @@ public abstract class ArchiveNodeImpl implements IArchiveNode {
 	/**
 	 * An attribute has changed. Save the change so it can be represented in a delta
 	 */
-	protected void attributeChanged(String key, Object beforeValue, Object afterValue) {
+	protected synchronized void attributeChanged(String key, Object beforeValue, Object afterValue) {
 		int kind = IArchiveNodeDelta.ATTRIBUTE_CHANGED;
-		HashMap<String, NodeDelta> map = attributeChanges;
 
 		// short circuit if no change has REALLY occurred
 		if( beforeValue != null && beforeValue.equals(afterValue)) return;
 
-		if( map.containsKey(key)) {
-			Object original = map.get(key).getBefore();
+		if( attributeChanges.containsKey(key)) {
+			Object original = attributeChanges.get(key).getBefore();
 			if( original == null && afterValue == null )
-				map.remove(key);
+				attributeChanges.remove(key);
 			else if( original == null )
-				map.put(key, new NodeDelta(original, afterValue, kind));
+				attributeChanges.put(key, new NodeDelta(original, afterValue, kind));
 			else if( original.equals(afterValue))
 				// value was changed from x to y, then back to x. Therefore, no change
-				map.remove(key);
+				attributeChanges.remove(key);
 			else
 				// value was changed from x to y to z.
 				// Before should remain x, after should become z
-				map.put(key, new NodeDelta(original, afterValue, kind));
+				attributeChanges.put(key, new NodeDelta(original, afterValue, kind));
 		} else {
 			// added
-			map.put(key, new NodeDelta(beforeValue, afterValue, kind));
+			attributeChanges.put(key, new NodeDelta(beforeValue, afterValue, kind));
 		}
 	}
 
 	/**
 	 * A property has changed. Save the change so it can be represented in a delta
 	 */
-	protected void propertyChanged(String key, Object beforeValue, Object afterValue) {
-		HashMap<String, NodeDelta> changeMap = propertyChanges;
+	protected synchronized void propertyChanged(String key, Object beforeValue, Object afterValue) {
 		// short circuit if no change has REALLY occurred
 		if( beforeValue != null && beforeValue.equals(afterValue)) return;
 
 
-		if( changeMap.containsKey(key)) {
+		if( propertyChanges.containsKey(key)) {
 			// element has already been added, removed, or changed since last save
-			Object original = changeMap.get(key).getBefore();
+			Object original = propertyChanges.get(key).getBefore();
 			if( original == null && afterValue == null )
-				changeMap.remove(key);
+				propertyChanges.remove(key);
 			else if( original == null )
-				changeMap.put(key, new NodeDelta(original, afterValue, IArchiveNodeDelta.PROPERTY_ADDED));
+				propertyChanges.put(key, new NodeDelta(original, afterValue, IArchiveNodeDelta.PROPERTY_ADDED));
 			else if( original.equals(afterValue))
 				// value was changed from x to y, then back to x. Therefore, no change
-				changeMap.remove(key);
+				propertyChanges.remove(key);
 			else if( afterValue == null ) {
 				// changed from x to y to null, so removed
-				changeMap.put(key, new NodeDelta(original, afterValue, IArchiveNodeDelta.PROPERTY_REMOVED));
+				propertyChanges.put(key, new NodeDelta(original, afterValue, IArchiveNodeDelta.PROPERTY_REMOVED));
 			} else {
 				// changed from x to y to z, so changed
-				changeMap.put(key, new NodeDelta(original, afterValue, IArchiveNodeDelta.PROPERTY_CHANGED));
+				propertyChanges.put(key, new NodeDelta(original, afterValue, IArchiveNodeDelta.PROPERTY_CHANGED));
 			}
 		} else {
 			int kind;
 			if( beforeValue == null ) kind = IArchiveNodeDelta.PROPERTY_ADDED;
 			else if( afterValue == null ) kind = IArchiveNodeDelta.PROPERTY_REMOVED;
 			else kind = IArchiveNodeDelta.PROPERTY_CHANGED;
-			changeMap.put(key, new NodeDelta(beforeValue, afterValue, kind));
+			propertyChanges.put(key, new NodeDelta(beforeValue, afterValue, kind));
 		}
 	}
 
@@ -388,7 +399,7 @@ public abstract class ArchiveNodeImpl implements IArchiveNode {
 	 * @param node
 	 * @param changeType
 	 */
-	protected void childChanges(IArchiveNode node, int changeType) {
+	protected synchronized void childChanges(IArchiveNode node, int changeType) {
 		if( childChanges.containsKey(node)) {
 			int lastChange = childChanges.get(node).intValue();
 			if( lastChange == IArchiveNodeDelta.CHILD_ADDED && changeType == IArchiveNodeDelta.CHILD_REMOVED) {
@@ -406,14 +417,15 @@ public abstract class ArchiveNodeImpl implements IArchiveNode {
 	 * @see org.jboss.ide.eclipse.archives.core.model.IArchiveNode#getDelta()
 	 */
 	public IArchiveNodeDelta getDelta() {
-		return new ArchiveNodeDeltaImpl(null, this, (HashMap<String, NodeDelta>)attributeChanges.clone(),
-				(HashMap<String, NodeDelta>)propertyChanges.clone(), (HashMap<IArchiveNode, Integer>)childChanges.clone());
+		return new ArchiveNodeDeltaImpl(null, this, getAttributeChanges(), 
+				getPropertyChanges(), getChildChanges());
 	}
 
+	
 	/**
 	 *  Forget all past state
 	 */
-	public void clearDelta() {
+	public synchronized void clearDelta() {
 		attributeChanges.clear();
 		propertyChanges.clear();
 		childChanges.clear();
