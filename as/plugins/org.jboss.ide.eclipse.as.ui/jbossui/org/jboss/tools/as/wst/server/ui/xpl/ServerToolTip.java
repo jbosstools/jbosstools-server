@@ -12,8 +12,6 @@ package org.jboss.tools.as.wst.server.ui.xpl;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Iterator;
 
 import org.eclipse.jface.internal.text.html.HTML2TextReader;
@@ -40,14 +38,10 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.wst.server.core.IModule;
-import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.ui.IServerModule;
-import org.eclipse.wst.server.ui.internal.provisional.IServerToolTip;
 
 public abstract class ServerToolTip extends ToolTip {	
-	protected Hashtable<String,ArrayList<IServerToolTip>> toolTipProviders = new Hashtable<String,ArrayList<IServerToolTip>>();	
-	protected static Shell CURRENT_TOOLTIP;
+	protected Shell FOCUSSED_TOOLTIP;
+	protected Object tooltipSelection;
 	protected Label hintLabel;
 	protected Tree tree;
 	protected int x;
@@ -64,39 +58,54 @@ public abstract class ServerToolTip extends ToolTip {
 				y = e.y;
 			}
 		});
-		
-		tree.addKeyListener(new KeyListener() {
-			public void keyPressed(KeyEvent  e) {
-				if (e == null)
-					return;
-				
-				if (e.keyCode == SWT.ESC) {
-					if (CURRENT_TOOLTIP != null) {
-						CURRENT_TOOLTIP.dispose();
-						CURRENT_TOOLTIP = null;
-					}
-					activate();
-				}
-				if (e.keyCode == SWT.F6) {
-					if (CURRENT_TOOLTIP == null) {
-						deactivate();
-						hide();
-						createFocusedTooltip(tree);
-					}
-				}
-			}
-			public void keyReleased(KeyEvent e){
-				// nothing to do 
-			}
-		});
+		tree.addKeyListener( new CustomKeyListener(true, true));
 	}
+	
+	// Created a key listener to add it to both the shell and the styledText of the focussed tooltip
+	private class CustomKeyListener implements KeyListener {
+		private boolean handleEscape, handlef6;
+		public CustomKeyListener( boolean handlesEscape, boolean handlesf6) {
+			this.handleEscape = handlesEscape; 
+			this.handlef6 = handlesf6;
+		}
+		public void keyPressed(KeyEvent  e) {
+			if (e == null)
+				return;
+			if( handleEscape )
+				handleEscape(e);
+			if( handlef6) 
+				handlef6(e);
+		}
+		protected void handleEscape(KeyEvent e) {
+			if (e.keyCode == SWT.ESC) {
+				if (FOCUSSED_TOOLTIP != null) {
+					FOCUSSED_TOOLTIP.dispose();
+					FOCUSSED_TOOLTIP = null;
+					tooltipSelection = null;
+				}
+				activate();
+			}
+		}
+		protected void handlef6(KeyEvent e) {
+			if (e.keyCode == SWT.F6) {
+				// We have no focussed window, and we DO have a selection to show in focus
+				if (FOCUSSED_TOOLTIP == null && tooltipSelection != null) {
+					deactivate();
+					hide();
+					createFocusedTooltip(tree);
+				}
+			}
+		}
+		public void keyReleased(KeyEvent e) {
+		}
+	};
 	
 	public void createFocusedTooltip(final Control control) {
 		final Shell stickyTooltip = new Shell(control.getShell(), SWT.ON_TOP | SWT.TOOL
 				| SWT.NO_FOCUS);
 		stickyTooltip.setLayout(new FillLayout());
 		stickyTooltip.setBackground(stickyTooltip.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
-		
+		stickyTooltip.addKeyListener(new CustomKeyListener(true, false));
 		control.getDisplay().asyncExec(new Runnable() {
 			public void run() {
 				Event event = new Event();
@@ -116,7 +125,7 @@ public abstract class ServerToolTip extends ToolTip {
 //				addListener(stickyTooltip);
 			}
 		});
-		CURRENT_TOOLTIP = stickyTooltip;
+		FOCUSSED_TOOLTIP = stickyTooltip;
 	}
 	
 	@Override
@@ -130,20 +139,27 @@ public abstract class ServerToolTip extends ToolTip {
 			return false;
 		/* JBT:  Added this check */
 		Object o = tree.getItem(new Point(event.x, event.y));
+		boolean ret;
 		if( o instanceof TreeItem && !isMyType(((TreeItem)o).getData()))
-			return false;
-		return super.shouldCreateToolTip(event);
+			ret = false;
+		else
+			ret = super.shouldCreateToolTip(event);
+		if( !ret )
+			tooltipSelection = null;
+		return ret;
 	}
 	
 	/*
 	 * JBT:  Added a method
 	 */
 	protected abstract boolean isMyType(Object selected);
+	protected abstract void fillStyledText(Composite parent, StyledText sText, Object o);
 	
 	protected Composite createToolTipContentArea(Event event, Composite parent) {
 		Object o = tree.getItem(new Point(event.x, event.y));
 		if (o == null)
 			return null;
+		tooltipSelection = o;
 		
 		FillLayout layout = (FillLayout)parent.getLayout();
 		layout.type = SWT.VERTICAL;
@@ -154,10 +170,11 @@ public abstract class ServerToolTip extends ToolTip {
 		StyledText sText = new StyledText(parent, SWT.NONE);
 		sText.setEditable(false);
 		sText.setBackground(parent.getBackground());
+		sText.addKeyListener(new CustomKeyListener(true, false));
 		
 		fillStyledText(parent, sText, o);
 		
-		// add the F3 text
+		// add the F6 text 
 		hintLabel = new Label(parent,SWT.BORDER);
 		hintLabel.setAlignment(SWT.RIGHT);
 		hintLabel.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
@@ -183,47 +200,6 @@ public abstract class ServerToolTip extends ToolTip {
 		return parent;
 	}
 	
-	protected void fillStyledText(Composite parent, StyledText sText, Object o) {
-
-		IServer server = null;
-		IServerModule module = null;
-		if (o instanceof TreeItem) {
-			Object obj = ((TreeItem)o).getData();
-			if (obj instanceof IServer)
-				server = (IServer) obj;
-			if (obj instanceof IServerModule)
-				module = (IServerModule) obj;
-		}
-		
-		if (module != null) {
-			IModule[] modules = module.getModule();
-			IModule m = modules[modules.length - 1];
-			sText.setText("<b>" + m.getName() + "</b>");
-			//sText.setText("<b>" + m.getName() + "</b></p>" + m.getModuleType().getName());
-			
-			StyledText sText2 = new StyledText(parent, SWT.NONE);
-			sText2.setEditable(false);
-			sText2.setBackground(parent.getBackground());
-			sText2.setText(m.getModuleType().getName());
-		}
-		
-		if (server != null) {
-			sText.setText("<b>" + server.getName() + "</b>");
-			
-			// add adopters content
-			if (server.getServerType() != null) {
-				ArrayList<IServerToolTip> listOfProviders = toolTipProviders.get(server.getServerType().getId());
-				
-				if (listOfProviders != null) {
-					for (IServerToolTip tipProvider : listOfProviders) {
-						tipProvider.createContent(parent,server);
-					}
-				}
-			}
-		}
-	}
-	
-
 	protected void parseText(String htmlText,StyledText sText) {	
 		TextPresentation presentation = new TextPresentation();
 		HTML2TextReader reader = new HTML2TextReader(new StringReader(htmlText), presentation);

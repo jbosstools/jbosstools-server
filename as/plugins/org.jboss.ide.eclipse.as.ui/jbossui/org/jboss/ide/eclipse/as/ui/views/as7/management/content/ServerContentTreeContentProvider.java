@@ -22,8 +22,12 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.ui.Messages;
+import org.jboss.tools.as.wst.server.ui.xpl.ServerToolTip;
 
 /**
  * ServerContentTreeContentProvider
@@ -92,13 +96,28 @@ public class ServerContentTreeContentProvider implements ITreeContentProvider {
         loadElementJob.cancel();
         pendingUpdates.clear();
     }
-
+    
+	private ServerToolTip tooltip = null;
     public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
         if (viewer instanceof TreeViewer) {
             this.viewer = (TreeViewer) viewer;
         } else {
             viewer = null;
         }
+		if( tooltip != null )
+			tooltip.deactivate();
+		tooltip = new ServerToolTip(((TreeViewer)viewer).getTree()) {
+			protected boolean isMyType(Object selected) {
+				return selected instanceof ResourceNode;
+			}
+			protected void fillStyledText(Composite parent, StyledText sText, Object o) {
+				sText.setText("View JBoss-7 management details."); //$NON-NLS-1$
+			}
+		};
+		tooltip.setShift(new Point(15, 8));
+		tooltip.setPopupDelay(500); // in ms
+		tooltip.setHideOnMouseDown(true);
+		tooltip.activate();
     }
 
     public Object[] getElements(Object inputElement) {
