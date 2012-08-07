@@ -143,4 +143,14 @@ public class ArgsUtilTest extends TestCase {
 	public String[] split(String val) {
 		return val.split(" ");
 	}
+	
+	public void testSettingFlag() {
+		String original = "-Dsome.name=yes -server -Darg2=no";
+		String[] asArray = ArgsUtil.parse(original);
+		assertEquals(3, asArray.length);
+		String cleared = ArgsUtil.clearFlag(original, "-server");
+		assertEquals("-Dsome.name=yes -Darg2=no", cleared);
+		String set = ArgsUtil.setFlag(cleared, "-ser3");
+		assertEquals("-Dsome.name=yes -Darg2=no -ser3", set);
+	}
 }
