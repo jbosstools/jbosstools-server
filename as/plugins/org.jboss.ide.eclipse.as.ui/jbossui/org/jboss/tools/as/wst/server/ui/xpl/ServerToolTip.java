@@ -26,6 +26,8 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.ShellAdapter;
+import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
@@ -71,41 +73,41 @@ public abstract class ServerToolTip extends ToolTip {
 		public void keyPressed(KeyEvent  e) {
 			if (e == null)
 				return;
-			if( handleEscape )
-				handleEscape(e);
-			if( handlef6) 
-				handlef6(e);
-		}
-		protected void handleEscape(KeyEvent e) {
-			if (e.keyCode == SWT.ESC) {
-				if (FOCUSSED_TOOLTIP != null) {
-					FOCUSSED_TOOLTIP.dispose();
-					FOCUSSED_TOOLTIP = null;
-					tooltipSelection = null;
-				}
-				activate();
-			}
-		}
-		protected void handlef6(KeyEvent e) {
-			if (e.keyCode == SWT.F6) {
-				// We have no focussed window, and we DO have a selection to show in focus
-				if (FOCUSSED_TOOLTIP == null && tooltipSelection != null) {
-					deactivate();
-					hide();
-					createFocusedTooltip(tree);
-				}
-			}
+			if( handleEscape && e.keyCode == SWT.ESC)
+				handleEscape();
+			if( handlef6 && e.keyCode == SWT.F6) 
+				handlef6();
 		}
 		public void keyReleased(KeyEvent e) {
 		}
 	};
+	protected void handleEscape() {
+		if (FOCUSSED_TOOLTIP != null) {
+			FOCUSSED_TOOLTIP.dispose();
+			FOCUSSED_TOOLTIP = null;
+			tooltipSelection = null;
+		}
+		activate();
+	}
+	protected void handlef6() {
+		// We have no focussed window, and we DO have a selection to show in focus
+		if (FOCUSSED_TOOLTIP == null && tooltipSelection != null) {
+			deactivate();
+			hide();
+			createFocusedTooltip(tree);
+		}
+	}
 	
 	public void createFocusedTooltip(final Control control) {
 		final Shell stickyTooltip = new Shell(control.getShell(), SWT.ON_TOP | SWT.TOOL
 				| SWT.NO_FOCUS);
 		stickyTooltip.setLayout(new FillLayout());
 		stickyTooltip.setBackground(stickyTooltip.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
-		stickyTooltip.addKeyListener(new CustomKeyListener(true, false));
+		stickyTooltip.addShellListener(new ShellAdapter() {
+			public void shellClosed(ShellEvent e) {
+				handleEscape();
+			}
+		});
 		control.getDisplay().asyncExec(new Runnable() {
 			public void run() {
 				Event event = new Event();
