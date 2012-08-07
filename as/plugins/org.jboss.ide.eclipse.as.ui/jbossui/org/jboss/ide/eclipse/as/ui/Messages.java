@@ -222,6 +222,8 @@ public class Messages extends NLS {
 	public static String EditorNoRuntimeSelected;
 	public static String EditorLocalDeployment;
 	public static String EditorRefreshViewer;
+	public static String EditorDeploymentPageWarning;
+	
 	
 	public static String ExploreUtils_Action_Text;
 	public static String ExploreUtils_Description;

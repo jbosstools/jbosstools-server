@@ -64,4 +64,21 @@ public class UnitedServerListener implements
 		}
 		return false;
 	}
+	
+	public boolean serverModulesChanged(ServerEvent event, int state) {
+		int eventKind = event.getKind();
+		if ((eventKind & ServerEvent.MODULE_CHANGE) != 0) {
+			return true;
+		}
+		return false;
+	}
+	public boolean serverPublishStateChanged(ServerEvent event, int state) {
+		int eventKind = event.getKind();
+		if ((eventKind & ServerEvent.PUBLISH_STATE_CHANGE) != 0) {
+			return true;
+		}
+		return false;
+	}
+	
+	
 }

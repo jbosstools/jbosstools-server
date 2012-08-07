@@ -16,30 +16,38 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerListener;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.eclipse.wst.server.core.ServerEvent;
 import org.eclipse.wst.server.ui.editor.IServerEditorPartInput;
 import org.eclipse.wst.server.ui.editor.ServerEditorPart;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.eclipse.wst.server.ui.internal.editor.ServerEditorPartInput;
 import org.eclipse.wst.server.ui.internal.editor.ServerResourceCommandManager;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.Messages;
+import org.jboss.ide.eclipse.as.ui.UIUtil;
 
 public class ModuleDeploymentPage extends ServerEditorPart {
 	protected ServerResourceCommandManager commandManager;
@@ -47,6 +55,7 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 	protected DeploymentPreferences preferences;
 	protected ServerAttributeHelper helper; 
 	protected DeploymentModuleOptionCompositeAssistant tab;
+	private IServerListener listener;
 	public ServerAttributeHelper getHelper() {
 		if( helper == null ) {
 			helper = new ServerAttributeHelper(getServer().getOriginal(), getServer());
@@ -80,10 +89,42 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 			server = sepi.getServer();
 			commandManager = ((ServerEditorPartInput) sepi).getServerCommandManager();
 			readOnly = sepi.isServerReadOnly();
+			helper = new ServerAttributeHelper(server.getOriginal(), server);
+			listener = new UnitedServerListener() {
+				public void serverChanged(ServerEvent event) {
+					setDeploymentTabEnablement(event.getModule());
+				}
+			};
+			server.getOriginal().addServerListener(listener);
 		}
-		helper = new ServerAttributeHelper(server.getOriginal(), server);
 	}
 	
+	protected void setDeploymentTabEnablement(IModule[] changed) {
+		// This is a big hack due to https://bugs.eclipse.org/bugs/show_bug.cgi?id=386718
+		// IT seems getting the NEW module list from the event is not possible,
+		// and figuring out if a module was added also does not seem to be possible
+		new Thread() {
+			public void run() {
+				try {
+					Thread.sleep(300);
+				} catch(InterruptedException ie) {}
+				
+				IModule[] deployed = server.getOriginal().getModules();
+				final boolean hasNoModules = deployed == null || deployed.length == 0;
+				final boolean enabled =  hasNoModules && server.getOriginal().getServerPublishState() == IServer.PUBLISH_STATE_NONE;
+				Display.getDefault().asyncExec(new Runnable() { 
+					public void run() {
+						tab.setEnabled(enabled);
+					}
+				});
+			}
+		}.start();
+	}
+	
+	public void dispose() {
+		super.dispose();
+		server.getOriginal().removeServerListener(listener);
+	}
 	public void refreshPossibleModules() {
 		ArrayList<IModule> possibleChildren = new ArrayList<IModule>();
 		IModule[] modules2 = org.eclipse.wst.server.core.ServerUtil.getModules(server.getServerType().getRuntimeType().getModuleTypes());
@@ -117,18 +158,19 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 	}
 	
 	private void addDeploymentLocationControls(Composite parent, Control top) {
+		FormToolkit toolkit = new FormToolkit(parent.getDisplay());
+		Label l1 = toolkit.createLabel(parent, Messages.EditorDeploymentPageWarning); 
+		FormData fd = new FormData();
+		fd.left = new FormAttachment(0, 5);
+		fd.top = top == null ? new FormAttachment(0, 5) : new FormAttachment(top, 5); 
+		fd.right = new FormAttachment(100, -5);
+		l1.setLayoutData(fd);
+		
 		tab = new DeploymentModuleOptionCompositeAssistant();
 		tab.setDeploymentPage(this);
 		tab.setDeploymentPrefs(preferences);
 		Composite defaultComposite = tab.createDefaultComposite(parent);
-		FormData fd = new FormData();
-		fd.left = new FormAttachment(0, 5);
-		if( top == null )
-			fd.top = new FormAttachment(0, 5);
-		else
-			fd.top = new FormAttachment(top, 5);
-		fd.right = new FormAttachment(100, -5);
-		defaultComposite.setLayoutData(fd);
+		defaultComposite.setLayoutData(UIUtil.createFormData2(l1, 5, null,0,0,5,100,-5));
 		
 		Composite viewComposite = tab.createViewerPortion(parent);
 		fd = new FormData();

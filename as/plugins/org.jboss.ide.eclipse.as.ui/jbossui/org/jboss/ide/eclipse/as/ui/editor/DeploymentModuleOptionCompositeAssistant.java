@@ -976,4 +976,18 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 			return new Path(folder).append(outputName).toPortableString();
 		return outputName;
 	}
+
+	public void setEnabled(boolean enabled) {
+		Control[] c = new Control[] { 
+				viewer.getTree(), deployText, tempDeployText, 
+				metadataRadio, serverRadio, customRadio, currentSelection, 
+				deployButton, tempDeployButton,zipDeployWTPProjects				
+		};
+		System.out.println("Setting enablement to " + enabled);
+		for( int i = 0; i < c.length; i++ ) {
+			if( c[i] != null && !c[i].isDisposed()) {
+				c[i].setEnabled(enabled);
+			}
+		}
+	}
 }
