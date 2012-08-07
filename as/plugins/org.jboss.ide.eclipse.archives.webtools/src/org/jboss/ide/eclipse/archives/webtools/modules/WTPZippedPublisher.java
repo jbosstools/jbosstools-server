@@ -36,6 +36,7 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class WTPZippedPublisher implements IJBossServerPublisher {
 	private int moduleState = IServer.PUBLISH_STATE_NONE;
+	private boolean requiresTransfer = true;
 	
 	public boolean accepts(String method, IServer server, IModule[] module) {
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
@@ -44,6 +45,9 @@ public class WTPZippedPublisher implements IJBossServerPublisher {
 	
 	public int getPublishState() {
 		return moduleState;
+	}
+	public boolean requiresTransfer() {
+		return requiresTransfer;
 	}
 	
 	protected String getDeployRoot(IModule[] module, IDeployableServer ds) {
@@ -65,9 +69,11 @@ public class WTPZippedPublisher implements IJBossServerPublisher {
 			return null;
 		
 		if( DeploymentMarkerUtils.supportsJBoss7MarkerDeployment(server)) {
+			requiresTransfer = false;
 			status = handleJBoss7Deployment(method, server, module, publishType, delta, monitor);
 		} else {		
 			Trace.trace(Trace.STRING_FINER, "Using as<=6 publishModule logic in WTPZippedPublisher for module " + module[module.length-1].getName() ); //$NON-NLS-1$
+			requiresTransfer = true;
 			IDeployableServer ds = ServerConverter.getDeployableServer(server);
 			String deployRoot = getDeployRoot(module, ds); 
 			LocalZippedPublisherUtil util = new LocalZippedPublisherUtil();

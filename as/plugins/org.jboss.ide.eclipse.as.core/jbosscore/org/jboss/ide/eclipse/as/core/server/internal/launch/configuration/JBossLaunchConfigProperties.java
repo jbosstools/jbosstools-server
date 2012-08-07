@@ -178,6 +178,15 @@ public class JBossLaunchConfigProperties {
 		}
 	}
 
+	public void setServerFlag(boolean useFlag, IJBossServerRuntime runtime,
+			ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
+		String programArguments = getProgramArguments(launchConfig);
+		String newArgs = useFlag ? 
+				ArgsUtil.setFlag(programArguments, IJBossRuntimeConstants.SERVER_ARG) :
+				ArgsUtil.clearFlag(programArguments, IJBossRuntimeConstants.SERVER_ARG);
+		setProgramArguments(newArgs, launchConfig);
+	}
+
 	public boolean isServerHomeSet(ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
 		String value = ArgsUtil.getValue(getProgramArguments(launchConfig),
 				null,

@@ -16,10 +16,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.jst.j2ee.project.facet.JavaUtilityProjectCreationDataModelProvider;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.JavaUtils;
 
 /**
  * @author André Dietisheim
@@ -49,6 +51,7 @@ public abstract class AbstractStartLaunchConfigurator extends AbstractLaunchConf
 		getProperties().setHost(getHost(jbossServer, jbossRuntime), launchConfig);
 		getProperties().setConfig(getServerConfig(jbossRuntime), launchConfig);
 		getProperties().setServerHome(getServerHome(jbossRuntime), jbossRuntime, launchConfig);
+		getProperties().setServerFlag(getSupportsServerFlag(jbossRuntime), jbossRuntime, launchConfig);
 		getProperties().setVmArguments(getDefaultVMArguments(jbossRuntime), launchConfig);
 		getProperties().setJreContainer(getJreContainerPath(jbossRuntime), launchConfig);
 		getProperties().setEndorsedDir(getEndorsedDir(jbossRuntime), launchConfig);
@@ -66,6 +69,7 @@ public abstract class AbstractStartLaunchConfigurator extends AbstractLaunchConf
 		getProperties().setHost(getHost(jbossServer, jbossRuntime), launchConfig);
 		getProperties().setConfig(getServerConfig(jbossRuntime), launchConfig);
 		getProperties().setServerHome(getServerHome(jbossRuntime), jbossRuntime, launchConfig);
+		getProperties().setServerFlag(getSupportsServerFlag(jbossRuntime), jbossRuntime, launchConfig);
 		getProperties().setJreContainer(getJreContainerPath(jbossRuntime), launchConfig);
 		getProperties().setEndorsedDir(getEndorsedDir(jbossRuntime), launchConfig);
 		getProperties().setJavaLibPath(getJavaLibraryPath(jbossRuntime), launchConfig);
@@ -76,6 +80,11 @@ public abstract class AbstractStartLaunchConfigurator extends AbstractLaunchConf
 		getProperties().setServerId(getServerId(jbossServer), launchConfig);
 	}	
 
+	protected boolean getSupportsServerFlag(IJBossServerRuntime runtime) {
+		IVMInstall install = runtime.getVM();
+		return JavaUtils.supportsServerMode(install);
+	}
+	
 	protected abstract String getEndorsedDir(IJBossServerRuntime runtime);
 
 	protected abstract String getJavaLibraryPath(IJBossServerRuntime runtime);

@@ -233,4 +233,27 @@ public class ArgsUtil {
 		}
 		return original;
 	}
+	
+	public static String setFlag(String original, String flagName) {
+		if( original.startsWith(flagName + SPACE ) || original.contains(SPACE + flagName + SPACE) || original.endsWith(flagName)) 
+			return original;
+		return original.trim() + SPACE + flagName;
+	}
+	
+	public static String clearFlag(String original, String flagName) {
+		if( original.trim().startsWith(flagName + SPACE))
+			return original.trim().substring(flagName.length()).trim();
+		
+		if( original.contains(SPACE + flagName + SPACE)) { 
+			return original.replace(SPACE + flagName + SPACE, SPACE).trim();
+		}
+		
+		if( original.trim().endsWith(SPACE + flagName)) {
+			return original.trim().substring(0, original.trim().length() - flagName.length()).trim();
+		}
+		if( original.trim().equals(flagName)) {
+			return ""; //$NON-NLS-1$
+		}
+		return original.trim();
+	}
 }
