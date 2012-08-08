@@ -115,6 +115,9 @@ public class ArchivesUIMessages extends NLS {
 	public static String deleteNodeMBDesc;
 	public static String deleteNodeMBToggle;
 	
+	public static String EnableProjectArchivesJob;
+	public static String DisableProjectArchivesJob;
+	public static String DisableProjectArchivesJobError;
 	
 	static {
 		NLS.initializeMessages("org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages", ArchivesUIMessages.class); //$NON-NLS-1$

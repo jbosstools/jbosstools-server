@@ -245,4 +245,64 @@
             sequence="M3+M2+Y B">
       </key>
    </extension>
+   
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="org.jboss.ide.eclipse.archives.ui.actions.EnableHandler"
+            id="org.jboss.ide.eclipse.archives.ui.actions.enableProjectArchives"
+            name="Add Project Archives Support">
+      </command>
+      <command
+            defaultHandler="org.jboss.ide.eclipse.archives.ui.actions.DisableHandler"
+            id="org.jboss.ide.eclipse.archives.ui.actions.disableProjectArchives"
+            name="Remove Project Archives Support">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:org.eclipse.ui.projectConfigure?before=additions">
+          <command
+                  commandId="org.jboss.ide.eclipse.archives.ui.actions.enableProjectArchives"
+                  label="Add Project Archives Support"
+                  style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <and>
+                  <count value="1"/>
+                  <with variable="activeMenuSelection"/>
+                  <iterate ifEmpty="false" operator="and">
+					 <adapt type="org.eclipse.core.resources.IResource"/>
+                     <not><test
+                              forcePluginActivation="false"
+                              property="org.eclipse.core.resources.projectNature"
+                              value="org.jboss.ide.eclipse.archives.core.archivesNature">
+                     </test> </not>
+               </iterate></and>
+            </visibleWhen>
+          </command>
+
+          <command
+                  commandId="org.jboss.ide.eclipse.archives.ui.actions.disableProjectArchives"
+                  label="Remove Project Archives Support"
+                  style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <and>
+                  <count value="1"/>
+                  <with variable="activeMenuSelection"/>
+                  <iterate ifEmpty="false" operator="and">
+					 <adapt type="org.eclipse.core.resources.IResource"/>
+					 <test
+                              forcePluginActivation="false"
+                              property="org.eclipse.core.resources.projectNature"
+                              value="org.jboss.ide.eclipse.archives.core.archivesNature">
+                     </test>
+               </iterate></and>
+            </visibleWhen>
+          </command>
+      </menuContribution>
+   </extension>
 </plugin>
