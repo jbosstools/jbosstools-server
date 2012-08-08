@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.internal.Server;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
@@ -64,6 +65,7 @@ public class DeploymentPreferenceLoader {
 		return 	server.getAttribute(IDeployableServer.SERVER_MODE, defaultType);
 	}
 
+	@Deprecated
 	public static DeploymentPreferences loadPreferencesFromFile(IServer server) {
 		File f = getFile(server);
 		if( f.exists()) {
@@ -77,7 +79,7 @@ public class DeploymentPreferenceLoader {
 		return null;
 	}
 	
-	public static DeploymentPreferences loadPreferencesFromServer(IServer server) {
+	public static DeploymentPreferences loadPreferencesFromServer(IServerAttributes server) {
 		String xml = ((Server)server).getAttribute(DEPLOYMENT_PREFERENCES_KEY, (String)null);
 		ByteArrayInputStream bis = null;
 		if( xml != null ) {
@@ -86,6 +88,7 @@ public class DeploymentPreferenceLoader {
 		return new DeploymentPreferences(bis);
 	}
 
+	@Deprecated
 	public static void savePreferences(IServer server, DeploymentPreferences prefs) throws IOException {
 		File f = getFile(server);
 		prefs.getMemento().saveToFile(f.getAbsolutePath());
@@ -185,17 +188,23 @@ public class DeploymentPreferenceLoader {
 		}
 		
 		public DeploymentModulePrefs getModulePrefs(IModule module) {
-			return children.get(module.getId());
+			return getModulePrefs(module.getId());
+		}
+		public DeploymentModulePrefs getModulePrefs(String id) {
+			return children.get(id);
 		}
 		public DeploymentModulePrefs getOrCreateModulePrefs(IModule module) {
-			if( children.get(module.getId()) == null ) {
+			return getOrCreateModulePrefs(module.getId());
+		}
+		public DeploymentModulePrefs getOrCreateModulePrefs(String id) {
+			if( children.get(id) == null ) {
 				IMemento childMemento = memento.createChild("module"); //$NON-NLS-1$
-				childMemento.putString("id", module.getId()); //$NON-NLS-1$
-				children.put(module.getId(), 
-						new DeploymentModulePrefs(module.getId(), 
+				childMemento.putString("id", id); //$NON-NLS-1$
+				children.put(id, 
+						new DeploymentModulePrefs(id, 
 								childMemento));
 			}
-			return children.get(module.getId());
+			return children.get(id);
 		}
 		
 		public String getProperty(String key) {
@@ -262,15 +271,19 @@ public class DeploymentPreferenceLoader {
 	}
 	
 	public static void savePreferencesToServerWorkingCopy(ServerAttributeHelper helper, DeploymentPreferences prefs) {
+		savePreferencesToServerWorkingCopy(helper.getWorkingCopy(), prefs);
+	}
+	
+	public static void savePreferencesToServerWorkingCopy(IServerWorkingCopy wc, DeploymentPreferences prefs) {
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			DeploymentPreferenceLoader.savePreferences(bos, prefs);
 			String asXML = new String(bos.toByteArray());
-			helper.setAttribute(DeploymentPreferenceLoader.DEPLOYMENT_PREFERENCES_KEY, asXML);
+			wc.setAttribute(DeploymentPreferenceLoader.DEPLOYMENT_PREFERENCES_KEY, asXML);
 		} catch(IOException ioe) {
 			// Should never happen since this is a simple byte array output stream
 			JBossServerCorePlugin.log(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
-				"Could not save module deployment preferences to server " + helper.getServer().getName(), ioe)); //$NON-NLS-1$
+				"Could not save module deployment preferences to server " + wc.getOriginal().getName(), ioe)); //$NON-NLS-1$
 		}
 	}
 

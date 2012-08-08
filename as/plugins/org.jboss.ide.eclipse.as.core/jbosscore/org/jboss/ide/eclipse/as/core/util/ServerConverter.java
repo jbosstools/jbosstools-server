@@ -104,7 +104,7 @@ public class ServerConverter {
 		return jbServer;
 	}
 
-	public static IDeployableServer getDeployableServer(IServer server) {
+	public static IDeployableServer getDeployableServer(IServerAttributes server) {
 		if (server == null) {
 			return null;
 		}
