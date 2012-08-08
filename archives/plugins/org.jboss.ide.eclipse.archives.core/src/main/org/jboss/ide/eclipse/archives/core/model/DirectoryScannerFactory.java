@@ -84,6 +84,9 @@ public class DirectoryScannerFactory {
 		protected ScannableFileSet fs;
 		protected ArrayList<FileWrapper> matches;
 		protected HashMap<String, ArrayList<FileWrapper>> matchesMap;
+		
+		/* Folders that are required to be created due to a descendent, but are not fully included */
+		protected HashMap<String, ArrayList<FileWrapper>> requiredFolders;
 		public DirectoryScannerExtension(ScannableFileSet fs) {
 			this.fs = fs;
 			String includes = fs.includes == null ? "" : fs.includes; //$NON-NLS-1$
@@ -95,6 +98,7 @@ public class DirectoryScannerFactory {
 			workspaceRelative = fs.inWorkspace;
 			matches = new ArrayList<FileWrapper>();
 			matchesMap = new HashMap<String, ArrayList<FileWrapper>>();
+			requiredFolders = new HashMap<String, ArrayList<FileWrapper>>();
 			setBasedir2(fs.rawPath);
 		}
 
@@ -139,8 +143,10 @@ public class DirectoryScannerFactory {
 	    			.getVFS().getWorkspaceChildren(workspaceRelative);
 	    	IPath[] childrenAbsolute = globalize(childrenWorkspace);
 	    	File[] files = new File[childrenAbsolute.length];
+	    	IPath parentRootFSRelative = ((FileWrapper)file).getRootArchiveRelative();
 	    	for( int i = 0; i < files.length; i++ ) {
-	    		files[i] = new FileWrapper(childrenAbsolute[i].toFile(), childrenWorkspace[i], fs.rootArchiveRelativePath);
+	    		files[i] = new FileWrapper(childrenAbsolute[i].toFile(), childrenWorkspace[i], 
+	    				parentRootFSRelative.append(childrenWorkspace[i].lastSegment()));
 	    	}
 	    	return files;
 	    }
@@ -171,13 +177,27 @@ public class DirectoryScannerFactory {
 	    		f2.setFilesetRelative(relative);
 		    	if( f.isFile() ) {
 		    		matches.add(f2);
-		    		ArrayList<FileWrapper> l = matchesMap.get(f2);
-		    		if( l == null ) {
-		    			l = new ArrayList<FileWrapper>();
-		    			matchesMap.put(((FileWrapper)f).getAbsolutePath(), l);
-		    		}
-		    		l.add(f2);
+		    		addMatchToMap(f2, matchesMap);
+		    		if( fs.inWorkspace ) 
+		    			ensureRequiredFoldersIncluded(f2);
 		    	}
+	    	}
+	    }
+	    protected void addMatchToMap(FileWrapper f2, HashMap<String, ArrayList<FileWrapper>> map) {
+    		ArrayList<FileWrapper> l = map.get(f2);
+    		if( l == null ) {
+    			l = new ArrayList<FileWrapper>();
+    			map.put(f2.getAbsolutePath(), l);
+    		}
+    		l.add(f2);
+	    }
+	    protected void ensureRequiredFoldersIncluded(FileWrapper includedFile) {
+    		FileWrapper tmpParentWrapper = includedFile.getParentFile();
+	    	while(tmpParentWrapper != null ) {
+	    		includedFile = tmpParentWrapper;
+	    		if( requiredFolders.get(includedFile.getAbsolutePath()) != null )
+	    			return; // all done
+	    		addMatchToMap(includedFile, requiredFolders);
 	    	}
 	    }
 	    
@@ -193,6 +213,10 @@ public class DirectoryScannerFactory {
 
 	    public HashMap<String, ArrayList<FileWrapper>> getMatchedMap() {
 	    	return matchesMap;
+	    }
+
+	    public HashMap<String, ArrayList<FileWrapper>> getRequiredFolderMap() {
+	    	return requiredFolders;
 	    }
 
 	    public static class FileWrapper extends File {
@@ -232,8 +256,11 @@ public class DirectoryScannerFactory {
 			}
 
 			public IPath getRootArchiveRelative() {
-				if( rootArchiveRelativePath != null )
+				if( rootArchiveRelativePath != null ) {
+					if( fsRelative == null )
+						return rootArchiveRelativePath;
 					return rootArchiveRelativePath.append(fsRelative);
+				}
 				return null;
 			}
 
@@ -243,6 +270,23 @@ public class DirectoryScannerFactory {
 					return f.equals(fo.f) && path.equals(fo.path);
 				}
 				return false;
+			}
+			@Override
+			public FileWrapper getParentFile() {
+				if( f.getParentFile() == null )
+					return null;
+				if( path.segmentCount() == 0 )
+					return null;
+				if( rootArchiveRelativePath.segmentCount() == 0 )
+					return null;
+				IPath p = new Path(fsRelative);
+				if( p.segmentCount() == 0 )
+					return null;
+				
+				FileWrapper ret = new FileWrapper(f.getParentFile(), 
+						path.removeLastSegments(1), rootArchiveRelativePath.removeLastSegments(1));
+				ret.setFilesetRelative(p.removeLastSegments(1).toString());
+				return ret;
 			}
 	    }
 
