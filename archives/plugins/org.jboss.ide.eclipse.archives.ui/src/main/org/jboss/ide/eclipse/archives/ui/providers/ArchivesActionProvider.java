@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.archives.ui.providers;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import org.eclipse.core.resources.IProject;
@@ -23,17 +24,24 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonActionProvider;
 import org.eclipse.ui.navigator.ICommonActionExtensionSite;
 import org.eclipse.ui.navigator.ICommonViewerSite;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.build.SaveArchivesJob;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
@@ -49,6 +57,7 @@ import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
 import org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages;
 import org.jboss.ide.eclipse.archives.ui.ExtensionManager;
 import org.jboss.ide.eclipse.archives.ui.NodeContribution;
+import org.jboss.ide.eclipse.archives.ui.PackagesUIPlugin;
 import org.jboss.ide.eclipse.archives.ui.actions.BuildAction;
 import org.jboss.ide.eclipse.archives.ui.actions.NewArchiveAction;
 import org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProviderDelegate.WrappedProject;
@@ -63,6 +72,7 @@ public class ArchivesActionProvider extends CommonActionProvider {
 	public static final String INITIAL_SEPARATOR_ID = "org.jboss.ide.eclipse.archives.ui.providers.initialSeparator"; //$NON-NLS-1$
 	public static final String END_ADD_CHILD_SEPARATOR_ID = "org.jboss.ide.eclipse.archives.ui.providers.endAddChildSeparator"; //$NON-NLS-1$
 	
+	private static final String DELETE_NODE_PERMISSION_TOGGLE = "ArchivesActionProvider.DeleteNodePreferenceKey"; //$NON-NLS-1$
 	
 	private MenuManager newPackageManager;
 	private NodeContribution[]  nodePopupMenuContributions;
@@ -70,8 +80,18 @@ public class ArchivesActionProvider extends CommonActionProvider {
 	private Action editAction, deleteAction, newFolderAction, newFilesetAction;
 	private Action buildAction;
 	private ICommonViewerSite site;
-
+	private KeyListener deleteKeyListener;
+	
 	public ArchivesActionProvider() {
+		deleteKeyListener = new KeyListener() {
+			public void keyPressed(KeyEvent e) {
+				if( e.keyCode == SWT.DEL ) {
+					deleteSelectedNode();
+				}
+			}
+			public void keyReleased(KeyEvent e) {
+			} 
+		};
 	}
 
 	public void init(ICommonActionExtensionSite aSite) {
@@ -81,6 +101,8 @@ public class ArchivesActionProvider extends CommonActionProvider {
 		site = aSite.getViewSite();
 		createActions();
 		newPackageManager = new MenuManager(ArchivesUIMessages.ProjectPackagesView_newPackageMenu_label, NEW_PACKAGE_MENU_ID);
+		Control viewerControl = aSite.getStructuredViewer().getControl();
+		viewerControl.addKeyListener(deleteKeyListener);
 	}
 
 	public void fillContextMenu(IMenuManager manager) {
@@ -378,7 +400,7 @@ public class ArchivesActionProvider extends CommonActionProvider {
 
 	private void deleteSelectedNode () {
 		IArchiveNode node = getSelectedNode(site);
-		if (node != null) {
+		if (node != null && approveDeletion(node)) {
 			final IArchiveNode parent = (IArchiveNode) node.getParent();
 			parent.removeChild(node);
 			SaveArchivesJob job = new SaveArchivesJob(parent.getProjectPath());
@@ -386,6 +408,33 @@ public class ArchivesActionProvider extends CommonActionProvider {
 		}
 	}
 
+	private boolean approveDeletion(IArchiveNode node) {
+		if( node != null ) {
+			IPreferenceStore store = PackagesUIPlugin.getDefault().getPreferenceStore();
+			String current = store.getString(DELETE_NODE_PERMISSION_TOGGLE);
+			boolean doNotPrompt = Boolean.parseBoolean(current);
+			if( doNotPrompt )
+				return true;
+			MessageDialogWithToggle d = 
+				MessageDialogWithToggle.openYesNoQuestion(site.getShell(),
+						ArchivesUIMessages.deleteNodeMBTitle,
+						ArchivesUIMessages.deleteNodeMBDesc,
+						ArchivesUIMessages.deleteNodeMBToggle,
+						false, store,  DELETE_NODE_PERMISSION_TOGGLE); 
+			int ret = d.getReturnCode();
+			boolean toggle = d.getToggleState();
+			if( ret == 2 ) {  // ok pressed
+				store.setValue(DELETE_NODE_PERMISSION_TOGGLE, new Boolean(toggle).toString());
+				try {
+					((ScopedPreferenceStore)store).save();
+				} catch(IOException ioe) {
+					// ignore
+				}
+				return true;
+			}
+		}
+		return false;
+	}
 
 	public static IArchiveNode getSelectedNode (ICommonViewerSite site) {
 		Object selected = getSelectedObject(site);
