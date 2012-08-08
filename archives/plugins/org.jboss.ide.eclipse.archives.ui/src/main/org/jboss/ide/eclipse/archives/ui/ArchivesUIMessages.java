@@ -111,6 +111,11 @@ public class ArchivesUIMessages extends NLS {
 	public static String EnableDefaultExcludes;
 	public static String ConfigureWorkspacePrefs;
 
+	public static String deleteNodeMBTitle;
+	public static String deleteNodeMBDesc;
+	public static String deleteNodeMBToggle;
+	
+	
 	static {
 		NLS.initializeMessages("org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages", ArchivesUIMessages.class); //$NON-NLS-1$
 	}
