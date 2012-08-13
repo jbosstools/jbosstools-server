@@ -38,11 +38,7 @@ public class JBoss7Server extends JBossServer implements IJBoss7Deployment, IMan
 		setAttribute(IJBossToolingConstants.WEB_PORT, IJBossToolingConstants.JBOSS_WEB_DEFAULT_PORT);
 		setUsername(null);
 		setPassword(null);
-		// In an emergency, we can switch pollers for EAP
-		if( isEAP(getServer()))
-			setAttribute(IJBossToolingConstants.STARTUP_POLLER_KEY, WebPortPoller.WEB_POLLER_ID);
-		else
-			setAttribute(IJBossToolingConstants.STARTUP_POLLER_KEY, JBoss7ManagerServicePoller.POLLER_ID);
+		setAttribute(IJBossToolingConstants.STARTUP_POLLER_KEY, JBoss7ManagerServicePoller.POLLER_ID);
 	}
 	public boolean hasJMXProvider() {
 		return getExtendedProperties().getJMXProviderType() != ServerExtendedProperties.JMX_NULL_PROVIDER;
