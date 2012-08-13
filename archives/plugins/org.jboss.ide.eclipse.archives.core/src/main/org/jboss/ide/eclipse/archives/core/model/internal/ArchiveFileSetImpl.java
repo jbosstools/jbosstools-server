@@ -16,15 +16,15 @@ import java.util.HashMap;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.osgi.util.NLS;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
-import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbFileSet;
 import org.jboss.ide.eclipse.archives.core.util.PathUtils;
+import org.jboss.ide.eclipse.archives.core.xpl.AntNLS;
 
 /**
  * An implementation for filesets
@@ -137,7 +137,7 @@ public class ArchiveFileSetImpl extends ArchiveNodeImpl implements
 				}
 			} catch( IllegalStateException ise ) {
 				ArchivesCore.getInstance().getLogger().log(IStatus.WARNING, 
-						NLS.bind(ArchivesCoreMessages.CouldNotCreateScanner, ise.getMessage()), ise);
+						AntNLS.bind(ArchivesCoreMessages.CouldNotCreateScanner, ise.getMessage()), ise);
 				matchingPaths = new FileWrapper[0];
 				matchingMap = new HashMap<String, ArrayList<FileWrapper>>();
 			}
