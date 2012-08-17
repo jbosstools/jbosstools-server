@@ -23,6 +23,7 @@ import org.eclipse.rse.services.shells.IHostOutput;
 import org.eclipse.rse.services.shells.IHostShell;
 import org.eclipse.rse.services.shells.IHostShellChangeEvent;
 import org.eclipse.rse.services.shells.IHostShellOutputListener;
+import org.jboss.ide.eclipse.as.core.server.IJBossBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.server.IJBossLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
@@ -33,12 +34,16 @@ import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 public abstract class AbstractRSELaunchDelegate extends AbstractJBossStartLaunchConfiguration 
 	implements IJBossLaunchDelegate {
 
+	public static final String DELIMETER = ":";
+	public static final String ECHO_KEY_DISCOVER_PID = "JBTOOLS_SERVER_START_CMD";
 	protected void executeRemoteCommand(String command, DelegatingServerBehavior behavior)
 			throws CoreException {
 		try {
 			ServerShellModel model = RSEHostShellModel.getInstance().getModel(behavior.getServer());
 			IHostShell shell = model.createStartupShell("/", command, new String[] {}, new NullProgressMonitor());
-			addShellOutputListener(shell);
+			addShellOutputListener(shell, behavior);
+			String getPidCommand = "echo \"" + ECHO_KEY_DISCOVER_PID + DELIMETER + behavior.getServer().getId() + DELIMETER + "\"$!";
+			shell.writeToShell(getPidCommand);
 		} catch (SystemMessageException sme) {
 			// could not connect to remote system
 			behavior.setServerStopped(); 
@@ -47,8 +52,8 @@ public abstract class AbstractRSELaunchDelegate extends AbstractJBossStartLaunch
 					MessageFormat.format("Could not execute command on remote server {0}. Please ensure the server is reachable.", behavior.getServer().getName()), sme));
 		}
 	}
-	// Only for debugging
-	private void addShellOutputListener(IHostShell shell) {
+	
+	private void addShellOutputListener(final IHostShell shell, final DelegatingServerBehavior behavior) {
 		if( shell == null ) 
 			return; // No listener needed for a null shell. 
 		IHostShellOutputListener listener = null;
@@ -56,12 +61,19 @@ public abstract class AbstractRSELaunchDelegate extends AbstractJBossStartLaunch
 			public void shellOutputChanged(IHostShellChangeEvent event) {
 				IHostOutput[] out = event.getLines();
 				for (int i = 0; i < out.length; i++) {
-					// TODO listen here for obvious exceptions or failures
-					// System.out.println(out[i]);
+					if( out[i].toString().startsWith(ECHO_KEY_DISCOVER_PID)) {
+						// pid found
+						int lastColon = out[i].toString().lastIndexOf(DELIMETER);
+						String pid = out[i].toString().substring(lastColon+1);
+						IJBossBehaviourDelegate del = behavior.getDelegate();
+						if( del instanceof AbstractRSEBehaviourDelegate) {
+							((AbstractRSEBehaviourDelegate)del).setPid(pid);
+						}
+					}
 				}
 			}
 		};
-		// shell.addOutputListener(listener);
+		shell.addOutputListener(listener);
 	}
 	
 	protected void launchPingThread(DeployableServerBehavior beh) {
