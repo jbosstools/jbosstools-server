@@ -192,7 +192,7 @@ public class RSEHostShellModel {
 						if( !done[0]) {
 							statusLine[0] = statusLine[1];
 							statusLine[1] = lines[i].getString();
-							System.out.println(lines[i].getString());
+							System.out.println("RSEHostShellModel debug out:  " + lines[i].getString());
 						}
 						
 						if( serverId.equals(statusLine[1]))
@@ -210,6 +210,7 @@ public class RSEHostShellModel {
 				singleUseShell = null;
 			}
 			String s = statusLine[0];
+			done[0] = true; // ensure a cleanup
 			if( s != null ) {
 				try {
 					Integer i = Integer.parseInt(s);

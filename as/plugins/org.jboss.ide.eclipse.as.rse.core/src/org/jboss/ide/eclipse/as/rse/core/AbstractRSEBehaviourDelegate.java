@@ -14,10 +14,13 @@ package org.jboss.ide.eclipse.as.rse.core;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractJBossBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
+import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 
 public abstract class AbstractRSEBehaviourDelegate extends AbstractJBossBehaviourDelegate {
 	
@@ -47,9 +50,27 @@ public abstract class AbstractRSEBehaviourDelegate extends AbstractJBossBehaviou
 		} // else wait for the poller to set the proper state
 	}
 
+	private String pid;
+	public void setPid(String pid) {
+		this.pid = pid;
+	}
+	
 	@Override
-	protected void forceStop() {
+	protected synchronized void forceStop() {
+		if( getServer().getServerState() == IServer.STATE_STOPPED)
+			return;
+		String localPid = pid;
+		pid = null;
 		setServerStopped();
+		if( localPid != null ) {
+			try {
+				ServerShellModel model = RSEHostShellModel.getInstance().getModel(getServer());
+				String cmd = "kill -9 " + localPid;
+				model.executeRemoteCommand("/", cmd, new String[]{}, new NullProgressMonitor(), 2000, true);
+			} catch(CoreException ce ) {
+				RSECorePlugin.getLog().log(new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, "Unable to terminate remote process " + pid, ce));
+			}
+		}
 	}
 
 	protected abstract String getShutdownCommand(IServer server) throws CoreException;
@@ -62,6 +83,11 @@ public abstract class AbstractRSEBehaviourDelegate extends AbstractJBossBehaviou
 	@Override
 	public void onServerStopping() {
 		pollServer(IServerStatePoller.SERVER_DOWN);
+	}
+	@Override
+	protected void setServerStopped() {
+		super.setServerStopped();
+		pid = null;
 	}
 	
 }
