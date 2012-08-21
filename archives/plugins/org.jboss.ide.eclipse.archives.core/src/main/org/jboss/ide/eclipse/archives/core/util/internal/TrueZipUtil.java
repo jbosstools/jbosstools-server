@@ -141,9 +141,11 @@ public class TrueZipUtil {
 	public static boolean updateParentTimestamps(IPath path) {
 		return updateParentTimestamps(getFile(path));
 	}
+	
+	// Update only the PARENT timestamps. 
 	public static boolean updateParentTimestamps(de.schlichtherle.io.File file) {
 		long time = System.currentTimeMillis();
-		de.schlichtherle.io.File parent = file;
+		de.schlichtherle.io.File parent = (de.schlichtherle.io.File)file.getParentFile();
 		boolean b = true;
 		while( parent != null ) {
 			b &= parent.setLastModified(time);

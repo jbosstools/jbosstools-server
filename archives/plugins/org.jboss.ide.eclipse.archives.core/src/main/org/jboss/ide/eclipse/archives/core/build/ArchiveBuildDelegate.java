@@ -314,7 +314,7 @@ public class ArchiveBuildDelegate {
 			for( int j = 0; j < matchingFilesets.length; j++ ) {
 				IStatus[] errors2 = ModelTruezipBridge.deleteFiles(
 						matchingFilesets[j], matchingFilesets[j].getMatches(globalPath),
-						new NullProgressMonitor(), true);
+						new NullProgressMonitor(), false);
 				errors.addAll(Arrays.asList(errors2));
 				if( !seen.contains(matchingFilesets[j])) {
 					seen.add(matchingFilesets[j]);
@@ -343,7 +343,7 @@ public class ArchiveBuildDelegate {
 				}
 				IStatus[] errors2 = ModelTruezipBridge.copyFiles(matchingFilesets[j],
 						matchingFilesets[j].getMatches(globalPath),
-						new NullProgressMonitor(), true, true);
+						new NullProgressMonitor(), true, false);
 				errors.addAll(Arrays.asList(errors2));
 			}
 			EventManager.fileUpdated(path, matchingFilesets);
@@ -351,6 +351,7 @@ public class ArchiveBuildDelegate {
 		}
 
 
+		// NOW do the synch
 		TrueZipUtil.sync();
 		Comparator c = new Comparator() {
 			public int compare(Object o1, Object o2) {
@@ -363,7 +364,8 @@ public class ArchiveBuildDelegate {
 		while(i2.hasNext()) {
 			try {
 				IArchive changed = i2.next();
-				changedPaths.add(changed.getArchiveFilePath());
+				if( !addedChanged.contains(changed.getArchiveFilePath()))
+					changedPaths.add(changed.getArchiveFilePath());
 				EventManager.finishedBuildingArchive(changed);
 			} catch( ClassCastException cce ) {
 				cce.printStackTrace();  
