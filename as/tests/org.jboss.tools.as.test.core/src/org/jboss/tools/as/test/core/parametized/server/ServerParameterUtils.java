@@ -1,6 +1,7 @@
 package org.jboss.tools.as.test.core.parametized.server;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -29,14 +30,30 @@ public class ServerParameterUtils {
 		}
 		return ret;
 	}
-	public static Object[] getJBossServerTypeParamterers() {
-		return IJBossToolingConstants.ALL_JBOSS_SERVERS;
+	
+	public static boolean skipPrivateRequirements() {
+		String prop = System.getProperty("org.jboss.tools.tests.skipPrivateRequirements");
+		boolean skipReqs = prop == null || new Boolean(prop).booleanValue();
+		return skipReqs;
 	}
+	
+	public static Object[] getJBossServerTypeParamterers() {
+		boolean skipReqs = skipPrivateRequirements();
+		ArrayList<String> jbservers = new ArrayList<String>();
+		for( int i = 0; i < IJBossToolingConstants.ALL_JBOSS_SERVERS.length; i++ ) {
+			// we're not skipping reqs, or, we are skipping AND it doesn't start with eap, then add
+			if( !skipReqs || !IJBossToolingConstants.ALL_JBOSS_SERVERS[i].startsWith(IJBossToolingConstants.EAP_SERVER_PREFIX)) {
+				jbservers.add(IJBossToolingConstants.ALL_JBOSS_SERVERS[i]);
+			}
+		}
+		return (String[]) jbservers.toArray(new String[jbservers.size()]);
+	}
+	
 	public static Object[] getAllJBossServerTypeParamterers() {
-		Object[] ret = new Object[IJBossToolingConstants.ALL_JBOSS_SERVERS.length + 1];
-		ret[0] = IJBossToolingConstants.DEPLOY_ONLY_SERVER;
-		System.arraycopy(IJBossToolingConstants.ALL_JBOSS_SERVERS, 0, ret, 1, IJBossToolingConstants.ALL_JBOSS_SERVERS.length);
-		return ret;
+		ArrayList<Object> list = new ArrayList<Object>();
+		list.add(IJBossToolingConstants.DEPLOY_ONLY_SERVER);
+		list.addAll(Arrays.asList(getJBossServerTypeParamterers()));
+		return (Object[]) list.toArray(new Object[list.size()]);
 	}
 	
 	/*

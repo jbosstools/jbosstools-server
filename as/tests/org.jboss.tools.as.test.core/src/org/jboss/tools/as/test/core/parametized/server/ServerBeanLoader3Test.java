@@ -98,9 +98,9 @@ public class ServerBeanLoader3Test extends TestCase {
 		
 		ServerBeanLoader loader = new ServerBeanLoader(serverDir);
 		JBossServerType type = loader.getServerType();
-		assertEquals(expectedType, type);
+		assertEquals("Expected and actual server beans do not match for server type " + serverType, expectedType, type);
 		String fullVersion = loader.getFullServerVersion();
-		assertTrue(fullVersion + " does not begin with " + expectedVersion, 
+		assertTrue(fullVersion + " does not begin with " + expectedVersion + " for server type " + serverType, 
 				fullVersion.startsWith(expectedVersion));
 		assertEquals(loader.getServerAdapterId(), serverType);
 	}

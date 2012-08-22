@@ -89,7 +89,7 @@ public class CreateServerCheckDefaultsTest extends TestCase {
 		
 		ServerExtendedProperties props = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
 		assertNotNull(props);
-		assertTrue(props.verifyServerStructure().isOK());
+		assertTrue("Server creation structure fails a verify call for server type " + serverType, props.verifyServerStructure().isOK());
 		if( props.canVerifyRemoteModuleState())
 			assertNotNull(props.getModuleStateVerifier());
 		if( props.hasWelcomePage()) {
@@ -151,7 +151,7 @@ public class CreateServerCheckDefaultsTest extends TestCase {
 		}
 
 		assertNotNull("No filesets created", fs);
-		assertTrue("0 filesets added for server " + server.getName(), fs.length > 0);
+		assertTrue("0 filesets added for server type " + serverType, fs.length > 0);
 	}
 	
 	private IJBossServerRuntime getJBossRuntime(IServer s) {

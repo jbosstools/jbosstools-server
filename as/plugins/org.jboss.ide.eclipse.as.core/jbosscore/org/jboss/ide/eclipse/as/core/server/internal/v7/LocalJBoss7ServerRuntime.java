@@ -13,6 +13,7 @@ package org.jboss.ide.eclipse.as.core.server.internal.v7;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.internal.launching.environments.EnvironmentsManager;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
@@ -88,7 +89,7 @@ public class LocalJBoss7ServerRuntime extends LocalJBossServerRuntime implements
 	// Overrides of as6-and-below's notion of configuration
 	@Override
 	public String getConfigLocation() {
-		return ""; //$NON-NLS-1$
+		return new Path(getConfigurationFile()).removeLastSegments(1).toFile().getAbsolutePath();
 	}
 	@Override
 	public String getJBossConfiguration() {

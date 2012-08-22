@@ -66,7 +66,7 @@ public class ProjectRuntimeClasspathTest extends TestCase {
 	
 	@Before
 	public void setUp() throws Exception {
-		provider = new TestProjectProvider("org.jboss.ide.eclipse.as.test", null, "basicwebproject", true); 
+		provider = new TestProjectProvider("org.jboss.tools.as.test.core", null, "basicwebproject", true); 
 		project = provider.getProject();
 		project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 		server = ServerCreationTestUtils.createServerWithRuntime(serverType, getClass().getName() + serverType);
