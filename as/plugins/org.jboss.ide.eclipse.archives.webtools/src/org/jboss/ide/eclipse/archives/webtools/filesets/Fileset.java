@@ -84,11 +84,22 @@ public class Fileset implements Cloneable {
 	public String getExcludesPattern() {
 		return excludesPattern == null ? "" : excludesPattern; //$NON-NLS-1$
 	}
+	
+	public String getResolvedExclude() {
+		String pattern = excludesPattern == null ? "" : excludesPattern; //$NON-NLS-1$
+		String resolved = new ConfigNameResolver().performSubstitutions(pattern, runtime == null ? null : runtime.getName(), true);
+		return resolved;
+	}
 	/**
 	 * @return the includesPattern
 	 */
 	public String getIncludesPattern() {
 		return includesPattern == null ? "" : includesPattern; //$NON-NLS-1$
+	}
+	public String getResolvedIncludesPattern() {
+		String pattern = includesPattern == null ? "" : includesPattern; //$NON-NLS-1$
+		String resolved = new ConfigNameResolver().performSubstitutions(pattern, runtime == null ? null : runtime.getName(), true);
+		return resolved;
 	}
 
 	/**
@@ -155,8 +166,8 @@ public class Fileset implements Cloneable {
 	
 	public IPath[] findPaths() {
 		String dir = getFolder();
-		String includes = getIncludesPattern();
-		String excludes = getExcludesPattern();
+		String includes = getResolvedIncludesPattern();
+		String excludes = getResolvedExclude();
 		return findPaths(dir, includes, excludes);
 	}
 	

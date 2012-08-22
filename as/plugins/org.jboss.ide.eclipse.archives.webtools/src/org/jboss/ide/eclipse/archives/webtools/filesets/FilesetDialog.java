@@ -228,8 +228,11 @@ public class FilesetDialog extends TitleAreaDialog {
 	}
 
 	private void updatePreview() {
-		if( preview != null ) 
-			preview.setInput(findPaths(fileset.getFolder(), includes, excludes));
+		if( preview != null ) { 
+			String resInc = fileset.getResolvedIncludesPattern();
+			String resExc = fileset.getResolvedExclude();
+			preview.setInput(findPaths(fileset.getFolder(), resInc, resExc));
+		}
 	}
 
 	public String getDir() {

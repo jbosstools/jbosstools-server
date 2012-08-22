@@ -89,8 +89,11 @@ public class LocalJBoss7ServerRuntime extends LocalJBossServerRuntime implements
 	// Overrides of as6-and-below's notion of configuration
 	@Override
 	public String getConfigLocation() {
-		return new Path(getConfigurationFile()).removeLastSegments(1).toFile().getAbsolutePath();
+		 IPath config = getRuntime().getLocation().append(IJBossRuntimeResourceConstants.AS7_STANDALONE)
+			.append(IJBossRuntimeResourceConstants.CONFIGURATION);
+		 return config.toFile().getAbsolutePath();
 	}
+	
 	@Override
 	public String getJBossConfiguration() {
 		return ""; //$NON-NLS-1$
