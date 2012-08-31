@@ -246,7 +246,7 @@ public class JBossASHandler extends AbstractRuntimeDetector implements IJBossRun
 		return serverWC.save(true, new NullProgressMonitor());
 	}
 
-	public RuntimeDefinition getServerDefinition(File root,
+	public RuntimeDefinition getRuntimeDefinition(File root,
 			IProgressMonitor monitor) {
 		if (monitor.isCanceled() || root == null || !isEnabled()) {
 			return null;
@@ -399,7 +399,7 @@ public class JBossASHandler extends AbstractRuntimeDetector implements IJBossRun
 	}
 
 	@Override
-	public void computeIncludedServerDefinition(
+	public void computeIncludedRuntimeDefinition(
 			RuntimeDefinition serverDefinition) {
 		if (serverDefinition == null) {
 			return;
