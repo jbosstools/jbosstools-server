@@ -350,7 +350,7 @@ public class JBossASHandler extends AbstractRuntimeDetector implements IJBossRun
 				RuntimeDefinition esbDefinition = new RuntimeDefinition(
 						name, version, ESB,
 						esbRoot);
-				IRuntimeDetector esbDetector = RuntimeCoreActivator.getEsbDetector();
+				IRuntimeDetector esbDetector = RuntimeCoreActivator.getDefault().getEsbDetector();
 				if (esbDetector != null) {
 					version = esbDetector.getVersion(esbDefinition);
 					esbDefinition.setVersion(version);
