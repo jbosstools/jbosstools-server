@@ -32,12 +32,16 @@ import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(value = Parameterized.class)
 public class SingleDeployableFolderTest extends AbstractPublishingTest {
+	public static final String PROJECT_ROOT_NAME = "SingleDeployableFolderTest";
+	public static int count = 0;
+
 	@Parameters
 	public static Collection<Object[]> params() {
 		ArrayList<Object[]> ret = defaultData();
 		return ret;
 	}
 
+	private String projectName;
 	public SingleDeployableFolderTest(String serverType, String zip,
 			String deployLoc, String perMod) {
 		super(serverType, zip, deployLoc, perMod);
@@ -45,9 +49,12 @@ public class SingleDeployableFolderTest extends AbstractPublishingTest {
 	
 	@Override
 	protected void createProjects() throws Exception {
-		IDataModel dm = CreateProjectOperationsUtility.getEARDataModel("ear2", "earContent", null, null, JavaEEFacetConstants.EAR_5, false);
+		projectName = PROJECT_ROOT_NAME + count;
+		count++;
+
+		IDataModel dm = CreateProjectOperationsUtility.getEARDataModel(projectName, "earContent", null, null, JavaEEFacetConstants.EAR_5, false);
 		OperationTestCase.runAndVerify(dm);
-		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject("ear2");
+		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		assertTrue(p.exists());
 		IFolder folder1 = p.getFolder("folder1");
 		folder1.create(false, true, new NullProgressMonitor());
@@ -63,7 +70,7 @@ public class SingleDeployableFolderTest extends AbstractPublishingTest {
 	
 	@Test
 	public void testSingleDeployableFolder() throws IOException, CoreException {
-		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject("ear2");
+		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		String file1Path = "folder1/file1.txt";
 		String file2Path = "folder1/file2.txt";
 		IPath f1Path = new Path(file1Path);

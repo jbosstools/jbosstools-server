@@ -7,9 +7,9 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
 	ConfigNameResolverTest.class,
-	ArgsUtilTest.class,
-	ExpressionResolverUtilTest.class,
-	UnitedServerListenerTest.class
+//	ArgsUtilTest.class,
+//	ExpressionResolverUtilTest.class,
+//	UnitedServerListenerTest.class
 })
 public class UtilsSuite {
 }

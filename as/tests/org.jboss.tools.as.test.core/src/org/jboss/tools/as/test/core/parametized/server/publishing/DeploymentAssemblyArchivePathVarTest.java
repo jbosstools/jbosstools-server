@@ -15,9 +15,16 @@ import java.util.Collection;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.internal.core.JavaModelManager;
+import org.eclipse.jdt.internal.junit.buildpath.BuildPathSupport;
 import org.eclipse.jst.j2ee.application.internal.operations.AddReferenceToEnterpriseApplicationDataModelProvider;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
@@ -29,6 +36,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.tools.as.test.core.internal.utils.ComponentReferenceUtils;
 import org.jboss.tools.as.test.core.internal.utils.ResourceUtils;
+import org.jboss.tools.as.test.core.internal.utils.classpath.ASToolsInternalVariableInitializer;
 import org.jboss.tools.as.test.core.internal.utils.wtp.CreateProjectOperationsUtility;
 import org.jboss.tools.as.test.core.internal.utils.wtp.JavaEEFacetConstants;
 import org.jboss.tools.as.test.core.internal.utils.wtp.OperationTestCase;
@@ -36,6 +44,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.osgi.framework.Bundle;
 
 @RunWith(value = Parameterized.class)
 public class DeploymentAssemblyArchivePathVarTest extends AbstractComponentPublishingTest {
@@ -57,6 +66,7 @@ public class DeploymentAssemblyArchivePathVarTest extends AbstractComponentPubli
 		IProject p = projectCreation();
 		addReferences(p);
 		addModuleToServer(p);
+		
 	}
 	
 	protected void setProjectName() {
@@ -89,7 +99,9 @@ public class DeploymentAssemblyArchivePathVarTest extends AbstractComponentPubli
 	}
 	
 	protected IVirtualReference createArchiveReference(IVirtualComponent vc) throws Exception {
-		IPath path = new Path("JUNIT_HOME/junit.jar"); //$NON-NLS-1$
+		ASToolsInternalVariableInitializer.ensureFoldersCreated();
+		String varName = ASToolsInternalVariableInitializer.ASTOOLS_TEST_HOME_VAR;
+		IPath path = new Path(varName + "/junit.jar"); //$NON-NLS-1$
 		IVirtualReference ref = ComponentReferenceUtils.createPathArchiveReference(vc, path, jarFolder, jarName);
 		return ref;
 	}

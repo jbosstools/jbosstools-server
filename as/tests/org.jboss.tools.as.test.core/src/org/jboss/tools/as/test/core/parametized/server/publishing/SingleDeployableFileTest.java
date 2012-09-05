@@ -29,11 +29,17 @@ import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(value = Parameterized.class)
 public class SingleDeployableFileTest extends AbstractPublishingTest {
+	public static final String PROJECT_ROOT_NAME = "SingleDeployableTest";
+	public static int count = 0;
+	
+	
 	@Parameters
 	public static Collection<Object[]> params() {
 		ArrayList<Object[]> ret = defaultData();
 		return ret;
 	}
+	
+	private String projectName;
 
 	public SingleDeployableFileTest(String serverType, String zip,
 			String deployLoc, String perMod) {
@@ -42,9 +48,12 @@ public class SingleDeployableFileTest extends AbstractPublishingTest {
 	
 	@Override
 	protected void createProjects() throws Exception {
-		IDataModel dm = CreateProjectOperationsUtility.getEARDataModel("ear1", "earContent", null, null, JavaEEFacetConstants.EAR_5, false);
+		projectName = PROJECT_ROOT_NAME + count;
+		count++;
+		
+		IDataModel dm = CreateProjectOperationsUtility.getEARDataModel(projectName, "earContent", null, null, JavaEEFacetConstants.EAR_5, false);
 		OperationTestCase.runAndVerify(dm);
-		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject("ear1");
+		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		assertTrue(p.exists());
 		final String filename = "test.xml";
 		IResource file = ResourceUtils.createFile(p, filename, "<test>done</test>");
@@ -58,7 +67,7 @@ public class SingleDeployableFileTest extends AbstractPublishingTest {
 	
 	@Test
 	public void testSingleDeployableFullPublish() throws IOException, CoreException {
-		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject("ear1");
+		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		
 		// Initial
 		fullPublishAndVerify(IServer.PUBLISH_FULL, "<test>done</test>");

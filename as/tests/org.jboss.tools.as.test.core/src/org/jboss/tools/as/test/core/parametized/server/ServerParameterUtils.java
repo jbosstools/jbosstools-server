@@ -30,11 +30,12 @@ public class ServerParameterUtils {
 		}
 		return ret;
 	}
-	
+	public static final String SKIP_PRIVATE_REQUIREMENTS = 
+			"org.jboss.tools.tests.skipPrivateRequirements";
 	public static boolean skipPrivateRequirements() {
-		String prop = System.getProperty("org.jboss.tools.tests.skipPrivateRequirements");
-		boolean skipReqs = prop == null || new Boolean(prop).booleanValue();
-		return skipReqs;
+        if( Boolean.getBoolean(SKIP_PRIVATE_REQUIREMENTS))
+            return true;
+        return false;
 	}
 	
 	public static Object[] getJBossServerTypeParamterers() {

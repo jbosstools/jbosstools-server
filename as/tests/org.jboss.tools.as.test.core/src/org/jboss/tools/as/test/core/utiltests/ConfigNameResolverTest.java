@@ -82,7 +82,7 @@ public class ConfigNameResolverTest extends TestCase {
 		} else 
 			// This is more documenting current behaviour than what it *should* be. 
 			// Oh well :( 
-			assertEquals(result, server.getRuntime().getLocation().toString());
+			assertEquals(result, server.getRuntime().getLocation().append("standalone").append("configuration").toString());
 	}
 	private void testAS7ConfigFile(String var, String result, boolean isAS7 ) {
 		if( isAS7 ) 

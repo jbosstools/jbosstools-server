@@ -37,11 +37,17 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.validation.ValidationFramework;
+import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.internal.utils.ProjectRuntimeUtil;
+import org.jboss.tools.as.test.core.internal.utils.ResourceUtils;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
-import org.jboss.tools.jmx.core.test.util.TestProjectProvider;
+import org.jboss.tools.as.test.core.internal.utils.wtp.CreateProjectOperationsUtility;
+import org.jboss.tools.as.test.core.internal.utils.wtp.JavaEEFacetConstants;
+import org.jboss.tools.as.test.core.internal.utils.wtp.OperationTestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,27 +61,43 @@ public class ProjectRuntimeClasspathTest extends TestCase {
 	 public static Collection<Object[]> data() {
 		 return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerTypeParamterers());
 	 }
-	private TestProjectProvider provider;
+	 
+	private static final String PROJECT_ROOT_NAME = "basicwebproject";
+	private static int count = 1;
+	
 	private IProject project;
 	private IServer server;
 	private String serverType;
+	private String projectName;
 	
 	public ProjectRuntimeClasspathTest(String serverType) {
 		this.serverType = serverType;
+		this.projectName = PROJECT_ROOT_NAME + count;
+		count++;
 	}
 	
 	@Before
 	public void setUp() throws Exception {
-		provider = new TestProjectProvider("org.jboss.tools.as.test.core", null, "basicwebproject", true); 
-		project = provider.getProject();
+		ValidationFramework.getDefault().suspendAllValidation(true);
+		IDataModel dm = CreateProjectOperationsUtility.getWebDataModel(projectName, 
+				null, null, null, null, JavaEEFacetConstants.WEB_24, true);
+		project = createSingleProject(dm, projectName);
 		project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 		server = ServerCreationTestUtils.createServerWithRuntime(serverType, getClass().getName() + serverType);
 	}
+	protected IProject createSingleProject(IDataModel dm, String name) throws Exception {
+		OperationTestCase.runAndVerify(dm);
+		IProject p = ResourceUtils.findProject(name);
+		if( p == null || !p.exists())
+			fail();
+		return p;
+	}
+
 	
 	@After
 	public void tearDown() throws Exception {
-		provider.dispose();
-		ServerCreationTestUtils.deleteAllServersAndRuntimes();
+		ASMatrixTests.cleanup();
+		ValidationFramework.getDefault().suspendAllValidation(false);
 	}
 
 	@Test
@@ -142,13 +164,13 @@ public class ProjectRuntimeClasspathTest extends TestCase {
 	
 	protected void verifyPostRuntimeCPE(IJavaProject jp) throws CoreException {
 		IClasspathEntry[] entries = jp.getRawClasspath();
-		assertEquals(4, entries.length);
-		jp.getResolvedClasspath(false); // make sure it can resolve all
 		String[] required = new String[] { 
 				"org.eclipse.jst.server.core.container",
-				"basicwebproject", 
+				projectName, 
 				"org.eclipse.jst.j2ee.internal.web.container",
 				"org.eclipse.jdt.launching.JRE_CONTAINER"};
+		assertTrue(entries.length >= required.length);
+		jp.getResolvedClasspath(false); // make sure it can resolve all
 		verifyClasspathEntries(entries, required);
 	}
 
@@ -156,7 +178,7 @@ public class ProjectRuntimeClasspathTest extends TestCase {
 		IClasspathEntry[] entries = jp.getRawClasspath();
 		jp.getResolvedClasspath(false); // make sure it can resolve all
 		String[] required = new String[] { 
-				"org.eclipse.jst.j2ee.internal.web.container", "basicwebproject"};
+				"org.eclipse.jst.j2ee.internal.web.container", projectName};
 		verifyClasspathEntries(entries, required);
 	}
 	

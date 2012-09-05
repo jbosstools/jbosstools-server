@@ -56,4 +56,16 @@
       </pollerHandler>
    </extension>
    
+   
+   
+   <!-- test classpath variable initializer -->
+   <extension
+         point="org.eclipse.jdt.core.classpathVariableInitializer">
+      <classpathVariableInitializer
+            variable="ASTOOLS_TEST_HOME"
+            class="org.jboss.tools.as.test.core.internal.utils.classpath.ASToolsInternalVariableInitializer"
+            deprecated="A test variable initializer"
+            readOnly="true">
+      </classpathVariableInitializer>
+   </extension>
 </plugin>

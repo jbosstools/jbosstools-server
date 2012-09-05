@@ -123,17 +123,32 @@ public class EJB3ClasspathContainer implements IClasspathContainer, IJBossServer
    }
 
    public IClasspathEntry[] getClasspathEntries() {
+	   IClasspathEntry[] ret = new IClasspathEntry[]{};
 	   if( jbossServer != null ) {
 		   try {
 		      String id = jbossServer.getServer().getServerType().getRuntimeType().getId();
-		      if( id.equals(AS_40)) return get40Jars(homePath, configPath);
-		      if( id.equals(AS_42)) return get42Jars(homePath, configPath);
-		      if( id.equals(AS_50)) return get50Jars(homePath, configPath);
-		      if( id.equals(AS_51)) return get51Jars(homePath, configPath);
-		      if( id.equals(AS_60)) return get60Jars(homePath, configPath);
+		      if( id.equals(AS_40)) ret = get40Jars(homePath, configPath);
+		      else if( id.equals(AS_42)) 
+		    	  ret = get42Jars(homePath, configPath);
+		      else if( id.equals(AS_50)) 
+		    	  ret = get50Jars(homePath, configPath, true, true);
+		      else if( id.equals(AS_51)) 
+		    	  ret = get51Jars(homePath, configPath);
+		      else if( id.equals(EAP_43)) 
+		    	  ret = get42Jars(homePath, configPath);
+		      else if( id.equals(AS_60)) 
+		    	  ret = get60Jars(homePath, configPath);
+		      else if( id.equals(EAP_50)) 
+		    	  ret = get50Jars(homePath, configPath, false, false);
+		      else if( id.equals(AS_70)) 
+		    	  ret = get70Jars(homePath);
+		      else if( id.equals(AS_71)) 
+		    	  ret = get70Jars(homePath);
+		      else if( id.equals(EAP_50)) 
+		    	  ret = get70Jars(homePath);
 		   } catch( FileNotFoundException fnfe ) {}
 	   }
-	   return new IClasspathEntry[]{};
+	   return ret;
    }
 
    public static IClasspathEntry[] get40Jars(IPath homePath, IPath configPath)  throws FileNotFoundException {
@@ -183,7 +198,7 @@ public class EJB3ClasspathContainer implements IClasspathContainer, IJBossServer
 		return (IClasspathEntry[]) list.toArray(new IClasspathEntry[list.size()]);
   }
    
-   protected static IClasspathEntry[] get50Jars(IPath homePath, IPath configPath)  throws FileNotFoundException {
+   protected static IClasspathEntry[] get50Jars(IPath homePath, IPath configPath, boolean includeEJB3Proxy, boolean includeIIOP)  throws FileNotFoundException {
 		IPath deployers = configPath.append(DEPLOYERS);
 		IPath deployer = deployers.append(EJB3_DEPLOYER);
 		IPath aopDeployer = deployers.append(AOP_JBOSS5_DEPLOYER);
@@ -191,21 +206,23 @@ public class EJB3ClasspathContainer implements IClasspathContainer, IJBossServer
 		ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
 		list.add(getEntry(aopDeployer.append(JBOSS5_ASPECT_LIBRARY_JAR)));
 		list.add(getEntry(deployer.append(JB5_EJB_DEPLOYER_JAR)));
-		list.add(getEntry(deployer.append(JB5_EJB_IIOP_JAR)));
+		if( includeIIOP )
+			list.add(getEntry(deployer.append(JB5_EJB_IIOP_JAR)));
 		list.add(getEntry(client.append(EJB3_PERSISTENCE_JAR)));
 		list.add(getEntry(client.append(jboss_ejb3_common_client)));
 		list.add(getEntry(client.append(jboss_ejb3_core_client)));
 		list.add(getEntry(client.append(jboss_ejb3_ext_api_impl)));
 		list.add(getEntry(client.append(jboss_ejb3_ext_api)));
-		list.add(getEntry(client.append(jboss_ejb3_proxy_client)));
 		list.add(getEntry(client.append(jboss_ejb3_proxy_clustered_client)));
 		list.add(getEntry(client.append(jboss_ejb3_security_client)));
 		list.add(getEntry(homePath.append(CLIENT).append(JB50_HIBERNATE_ANNOTATIONS_JAR)));
+		if(includeEJB3Proxy)
+			list.add(getEntry(client.append(jboss_ejb3_proxy_client)));
 		return (IClasspathEntry[]) list.toArray(new IClasspathEntry[list.size()]);
    }
 
    protected static IClasspathEntry[] get51Jars(IPath homePath, IPath configPath)  throws FileNotFoundException {
-		return get50Jars(homePath, configPath);
+		return get50Jars(homePath, configPath, false, true);
    }
 
    protected static IClasspathEntry[] get60Jars(IPath homePath, IPath configPath)  throws FileNotFoundException {
@@ -225,10 +242,37 @@ public class EJB3ClasspathContainer implements IClasspathContainer, IJBossServer
 		list.add(getEntry(client.append(jboss6_ejb3_proxy_impl_client)));
 		list.add(getEntry(client.append(jboss_ejb3_proxy_clustered_client)));
 		list.add(getEntry(client.append(jboss_ejb3_security_client)));
-		list.add(getEntry(homePath.append(CLIENT).append(JB50_HIBERNATE_ANNOTATIONS_JAR)));
+		if( homePath.append(CLIENT).append(JB50_HIBERNATE_ANNOTATIONS_JAR).toFile().exists())
+			list.add(getEntry(homePath.append(CLIENT).append(JB50_HIBERNATE_ANNOTATIONS_JAR)));
 		return (IClasspathEntry[]) list.toArray(new IClasspathEntry[list.size()]);
    }   
-
+   protected static IClasspathEntry[] get70Jars(IPath homePath)  throws FileNotFoundException {
+	   IPath apiFolder = homePath.append(MODULES).append("javax").append("ejb").append("api").append("main");
+	   IPath jbossEjb3Folder = homePath.append(MODULES).append("org").append("jboss").append("ejb3").append("main");
+	   IPath jbossASEjb3Folder = homePath.append(MODULES).append("org").append("jboss").append("as").append("ejb3").append("main");
+		
+	   IPath api = findJarFile(apiFolder);
+	   IPath jbossEjb3 = findJarFile(jbossEjb3Folder);
+	   IPath jbossASEjb3 = findJarFile(jbossASEjb3Folder);
+	   ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
+	   if( api != null )
+		   list.add(getEntry(api));
+	   if( jbossEjb3 != null )
+		   list.add(getEntry(jbossEjb3));
+	   if( jbossASEjb3 != null )
+		   list.add(getEntry(jbossASEjb3));
+		return (IClasspathEntry[]) list.toArray(new IClasspathEntry[list.size()]);
+   }
+   
+   protected static IPath findJarFile(IPath folder) {
+	   String[]  names = folder.toFile().list();
+	   for( int i = 0; i < names.length; i++ ) {
+		   if( names[i].endsWith(".jar"))
+			   return folder.append(names[i]);
+	   }
+	   return null;
+   }
+   
 	protected static IClasspathEntry getEntry(IPath path) throws FileNotFoundException {
 		if( !path.toFile().exists())
 			throw new FileNotFoundException();

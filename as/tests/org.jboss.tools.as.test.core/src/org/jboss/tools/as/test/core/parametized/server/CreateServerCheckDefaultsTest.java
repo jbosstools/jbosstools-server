@@ -8,6 +8,7 @@ import java.util.Collection;
 
 import junit.framework.TestCase;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
@@ -54,7 +55,12 @@ public class CreateServerCheckDefaultsTest extends TestCase {
 	
 	@Before
 	public void setUp() {
-		server = ServerCreationTestUtils.createMockServerWithRuntime(serverType, getClass().getName() + serverType);
+		try {
+			server = ServerCreationTestUtils.createServerWithRuntime(serverType, getClass().getName() + serverType);
+		} catch(CoreException ce) {
+			ce.printStackTrace();
+			fail();
+		}
 	}
 
 	@After

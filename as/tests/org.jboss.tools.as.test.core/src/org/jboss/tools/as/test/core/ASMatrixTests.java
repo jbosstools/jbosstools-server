@@ -64,7 +64,7 @@ public class ASMatrixTests extends AbstractUIPlugin {
 		}
 	}
 	public static void cleanup() throws Exception {
-		JobUtils.waitForIdle();
+		JobUtils.waitForIdle(100);
 		ServerCreationTestUtils.deleteAllServersAndRuntimes();
 		ProjectUtility.deleteAllProjects();
 		ASMatrixTests.clearStateLocation();
