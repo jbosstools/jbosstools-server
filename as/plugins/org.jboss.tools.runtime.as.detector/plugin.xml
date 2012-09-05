@@ -12,4 +12,50 @@
        		priority="100"/>
 	</extension>
 	
+	
+   <extension
+         point="org.jboss.tools.runtime.core.downloadruntimes">
+      <runtime
+            id="org.jboss.tools.runtime.core.as.423" 
+            name="JBoss AS 4.2.3"
+            version="4.2.3"
+            size="100MB"
+            url="http://sourceforge.net/projects/jboss/files/JBoss/JBoss-4.2.3.GA/jboss-4.2.3.GA-jdk6.zip?use_mirror=autoselect"
+            disclaimer="true"/>
+      <runtime
+            id="org.jboss.tools.runtime.core.as.610" 
+            name="JBoss AS 6.1.0"
+            version="6.1.0.Final"
+            size="183MB"
+            url="http://download.jboss.org/jbossas/6.1/jboss-as-distribution-6.1.0.Final.zip?use_mirror=autoselect"
+            disclaimer="true"/>
+      <runtime
+            id="org.jboss.tools.runtime.core.as.701" 
+            name="JBoss AS 7.0.1 Everything (NOT Java EE6 Certified)"
+            version="7.0.1.Final"
+            size="74MB"
+            url="http://download.jboss.org/jbossas/7.0/jboss-as-7.0.1.Final/jboss-as-7.0.1.Final.zip?use_mirror=autoselect"
+            disclaimer="true"/>
+      <runtime
+            id="org.jboss.tools.runtime.core.as.702" 
+            name="JBoss AS 7.0.2 Everything (NOT Java EE6 Certified)"
+            version="7.0.2.Final"
+            size="75MB"
+            url="http://download.jboss.org/jbossas/7.0/jboss-as-7.0.2.Final/jboss-as-7.0.2.Final.zip?use_mirror=autoselect"
+            disclaimer="true"/>
+      <runtime
+            id="org.jboss.tools.runtime.core.as.711" 
+            name="JBoss AS 7.1.1 Certified Java EE 6 Full Profile"
+            version="7.1.1.Final"
+            size="127MB"
+            url="http://download.jboss.org/jbossas/7.1/jboss-as-7.1.1.Final/jboss-as-7.1.1.Final.zip?use_mirror=autoselect"
+            disclaimer="true"/>
+      <runtime
+            id="org.jboss.tools.runtime.core.as.710" 
+            name="JBoss AS 7.1.0 Certified Java EE 6 Full Profile"
+            version="7.1.0.Final"
+            size="100MB"
+            url="http://download.jboss.org/jbossas/7.1/jboss-as-7.1.0.Final/jboss-as-7.1.0.Final.zip?use_mirror=autoselect"
+            disclaimer="true"/>
+     </extension>
 </plugin>
