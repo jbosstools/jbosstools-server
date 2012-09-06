@@ -82,7 +82,7 @@ public class DeploymentAssemblyArchivePathVarTest extends AbstractComponentPubli
 	protected IProject createSingleProject(IDataModel dm, String name) throws Exception {
 		OperationTestCase.runAndVerify(dm);
 		IProject p = ResourceUtils.findProject(name);
-		if( p == null || !p.exists())
+		if(!p.exists())
 			fail();
 		return p;
 	}
@@ -100,8 +100,7 @@ public class DeploymentAssemblyArchivePathVarTest extends AbstractComponentPubli
 	
 	protected IVirtualReference createArchiveReference(IVirtualComponent vc) throws Exception {
 		ASToolsInternalVariableInitializer.ensureFoldersCreated();
-		String varName = ASToolsInternalVariableInitializer.ASTOOLS_TEST_HOME_VAR;
-		IPath path = new Path(varName + "/junit.jar"); //$NON-NLS-1$
+		IPath path = new Path(ASToolsInternalVariableInitializer.ASTOOLS_TEST_HOME_VAR + "/junit.jar"); //$NON-NLS-1$
 		IVirtualReference ref = ComponentReferenceUtils.createPathArchiveReference(vc, path, jarFolder, jarName);
 		return ref;
 	}

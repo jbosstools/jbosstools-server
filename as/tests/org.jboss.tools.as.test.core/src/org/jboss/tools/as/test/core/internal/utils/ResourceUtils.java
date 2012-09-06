@@ -69,6 +69,13 @@ public class ResourceUtils {
 		}
 	}
 	
+	/**
+	 * This this method forwards request to IWorkspaceRoot.getProject(String name) and it 
+	 * never returns null
+	 * @see IWorkspaceRoot.getProject(String name) 
+	 * @param name - name for the requested project
+	 * @return a handler for project with <code>name</code>
+	 */
 	public static IProject findProject(String name) {
 		return ResourcesPlugin.getWorkspace().getRoot().getProject(name);
 	}

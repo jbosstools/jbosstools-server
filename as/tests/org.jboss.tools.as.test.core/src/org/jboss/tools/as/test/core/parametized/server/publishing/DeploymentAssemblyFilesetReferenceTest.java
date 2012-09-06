@@ -58,7 +58,7 @@ public class DeploymentAssemblyFilesetReferenceTest extends TestCase  {
 				null, null, JavaEEFacetConstants.EAR_5, false);
 		OperationTestCase.runAndVerify(dm);
 		IProject p = ResourceUtils.findProject(MY_PROJECT_NAME);
-		if( p == null || !p.exists())
+		if(!p.exists())
 			fail();
 		
 		p.getFolder("folder1").create(true, true, new NullProgressMonitor());

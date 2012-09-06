@@ -88,7 +88,7 @@ public class ProjectRuntimeClasspathTest extends TestCase {
 	protected IProject createSingleProject(IDataModel dm, String name) throws Exception {
 		OperationTestCase.runAndVerify(dm);
 		IProject p = ResourceUtils.findProject(name);
-		if( p == null || !p.exists())
+		if( !p.exists())
 			fail();
 		return p;
 	}
