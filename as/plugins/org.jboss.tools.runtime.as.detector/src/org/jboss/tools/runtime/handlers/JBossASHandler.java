@@ -257,8 +257,6 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 		final File location = getLocation(runtimeDefinition);
 		File[] directories = runtimeDefinition.getLocation().listFiles(
 				new FileFilter() {
-
-					@Override
 					public boolean accept(File file) {
 						if (!file.isDirectory() || file.equals(location)) {
 							return false;
