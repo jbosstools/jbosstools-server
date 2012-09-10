@@ -52,7 +52,7 @@ public class UnitedServerListener implements
 	}
 	
 	// Utility method
-	public boolean serverSwitchesToState(ServerEvent event, int state) {
+	public static boolean serverSwitchesToState(ServerEvent event, int state) {
 		int eventKind = event.getKind();
 		if ((eventKind & ServerEvent.SERVER_CHANGE) != 0) {
 			// server change event

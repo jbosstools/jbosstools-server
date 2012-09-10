@@ -36,7 +36,11 @@ import org.eclipse.ui.navigator.ICommonViewerWorkbenchSite;
 import org.eclipse.ui.views.IViewDescriptor;
 import org.eclipse.ui.views.IViewRegistry;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerLifecycleListener;
+import org.eclipse.wst.server.core.IServerListener;
+import org.eclipse.wst.server.core.ServerEvent;
 import org.eclipse.wst.server.ui.internal.view.servers.AbstractServerAction;
+import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
@@ -101,7 +105,9 @@ public class JMXProvider {
 			}
 		}
 		
-		public class ShowInJMXViewAction extends AbstractServerAction {
+		public class ShowInJMXViewAction extends AbstractServerAction { 
+			private IStructuredSelection previousSelection;
+			private IServerListener serverListener;
 			public ShowInJMXViewAction(ISelectionProvider sp) {
 				super(sp, null);
 				
@@ -109,6 +115,24 @@ public class JMXProvider {
 				IViewDescriptor desc = reg.find(JMXNavigator.VIEW_ID);
 				setText(desc.getLabel());
 				setImageDescriptor(desc.getImageDescriptor());
+				serverListener = new IServerListener() {
+					public void serverChanged(final ServerEvent event) {
+						// If this is the server that was / is selected
+						if( previousSelection != null && previousSelection.size() > 0 
+								&& previousSelection.getFirstElement().equals(event.getServer())) {
+							// and it switches state, update enablement
+							Display.getDefault().asyncExec(new Runnable() {
+								public void run() {
+									if( UnitedServerListener.serverSwitchesToState(event, IServer.STATE_STARTED)) {
+										setEnabled(true);
+									} else if( UnitedServerListener.serverSwitchesToState(event, IServer.STATE_STOPPED)) {
+										setEnabled(false);
+									}
+								}
+							});
+						}
+					}
+				};
 			}
 
 			public boolean accept(IServer server) {
@@ -118,7 +142,27 @@ public class JMXProvider {
 				IConnectionWrapper connection = JBossJMXConnectionProviderModel.getDefault().getConnection(server);
 				return preconditions && connection.isConnected();
 			}
+			
+			public synchronized void selectionChanged(IStructuredSelection sel) {
+				if( sel.size() == 0 || sel.size() > 1 ) {
+					setEnabled(false);
+					return;
+				}
+				// size = 1
+				switchListener(previousSelection, sel);
+				previousSelection = sel;
+				super.selectionChanged(sel);
+			}
 
+			private void switchListener(IStructuredSelection previousSelection, IStructuredSelection newSel) {
+				if( previousSelection != null ) {
+					IServer s = (IServer)previousSelection.getFirstElement();
+					s.removeServerListener(serverListener);
+				}
+				IServer s2 = (IServer)newSel.getFirstElement();
+				s2.addServerListener(serverListener);
+			}
+			
 			public void perform(final IServer server) {
 				IWorkbenchPart part = null;
 				try {
