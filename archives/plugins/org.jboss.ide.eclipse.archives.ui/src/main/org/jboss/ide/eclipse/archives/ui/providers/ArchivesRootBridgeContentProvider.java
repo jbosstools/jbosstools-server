@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.archives.ui.providers;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
@@ -36,11 +37,15 @@ public class ArchivesRootBridgeContentProvider
 
 	public Object[] getChildren(Object parentElement) {
 		if( parentElement instanceof IProject) {
-			if(  ((IProject)parentElement).isOpen())
-				if( PrefsInitializer.getBoolean(PrefsInitializer.PREF_ALWAYS_SHOW_PROJECT_EXPLORER_NODE) || 
-						ArchivesModel.instance().canReregister(((IProject)parentElement).getLocation())) {
+			if(  ((IProject)parentElement).isOpen()) {
+				IPath loc = ((IProject)parentElement).getLocation();
+				boolean alwaysShow = PrefsInitializer.getBoolean(PrefsInitializer.PREF_ALWAYS_SHOW_PROJECT_EXPLORER_NODE); 
+				boolean fileExists = ArchivesModel.instance().canReregister(loc);
+				boolean nodeExists = ArchivesModel.instance().getRoot(loc) != null;
+				if( alwaysShow || fileExists || nodeExists ) {
 					return new Object[] { new WrappedProject((IProject)parentElement, WrappedProject.CATEGORY) };
 				}
+			}
 			return new Object[]{};
 		}
 		return delegate.getChildren(parentElement);

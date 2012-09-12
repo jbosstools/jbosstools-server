@@ -205,14 +205,15 @@ public class ArchivesContentProviderDelegate implements ITreeContentProvider, IA
 		if( o instanceof WrappedProject && shouldRefreshProject())
 			o = ((WrappedProject)o).element;
 
-		if( viewerInUse instanceof StructuredViewer ) {
-			((StructuredViewer)viewerInUse).refresh(o);
-			if( viewerInUse instanceof TreeViewer ) {
-				((TreeViewer)viewerInUse).expandToLevel(o, 1);
-			}
-		} else
-			viewerInUse.refresh();
-
+		if( !viewerInUse.getControl().isDisposed()) {
+			if( viewerInUse instanceof StructuredViewer ) {
+				((StructuredViewer)viewerInUse).refresh(o);
+				if( viewerInUse instanceof TreeViewer ) {
+					((TreeViewer)viewerInUse).expandToLevel(o, 1);
+				}
+			} else
+				viewerInUse.refresh();
+		}
 	}
 	protected IArchiveNode[] getChanges(IArchiveNodeDelta delta) {
 		IArchiveNodeDelta[] children = delta.getAllAffectedChildren();
