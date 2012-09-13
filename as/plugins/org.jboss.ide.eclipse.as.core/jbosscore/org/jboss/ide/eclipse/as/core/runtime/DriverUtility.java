@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.runtime.handlers;
+package org.jboss.ide.eclipse.as.core.runtime;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -31,10 +31,9 @@ import org.eclipse.datatools.connectivity.drivers.IPropertySet;
 import org.eclipse.datatools.connectivity.drivers.PropertySetImpl;
 import org.eclipse.datatools.connectivity.drivers.models.TemplateDescriptor;
 import org.eclipse.wst.server.core.IServerType;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-import org.jboss.tools.runtime.as.detector.IJBossRuntimePluginConstants;
-import org.jboss.tools.runtime.as.detector.Messages;
-import org.jboss.tools.runtime.as.detector.RuntimeAsActivator;
 
 public class DriverUtility implements IJBossRuntimePluginConstants {
 	public static final HashMap<String,String> SERVER_DRIVER_LOCATION = new HashMap<String, String>();
@@ -65,13 +64,13 @@ public class DriverUtility implements IJBossRuntimePluginConstants {
 		try {
 			driverPath = getDriverPath(jbossASLocation, serverType);
 		} catch (IOException e) {
-			RuntimeAsActivator.getDefault().getLog().log(new Status(IStatus.ERROR,
-					RuntimeAsActivator.PLUGIN_ID, Messages.JBossRuntimeStartup_Cannott_create_new_HSQL_DB_Driver, e));
+			JBossServerCorePlugin.getDefault().getLog().log(new Status(IStatus.ERROR,
+					JBossServerCorePlugin.PLUGIN_ID, Messages.JBossRuntimeStartup_Cannott_create_new_HSQL_DB_Driver, e));
 			return;
 		}
 		if (driverPath == null) {
-			RuntimeAsActivator.getDefault().getLog().log(new Status(IStatus.ERROR,
-					RuntimeAsActivator.PLUGIN_ID, Messages.JBossRuntimeStartup_Cannot_create_new_DB_Driver));
+			JBossServerCorePlugin.getDefault().getLog().log(new Status(IStatus.ERROR,
+					JBossServerCorePlugin.PLUGIN_ID, Messages.JBossRuntimeStartup_Cannot_create_new_DB_Driver));
 		}
 
 		DriverInstance driver = getDriver(serverType);
@@ -90,14 +89,14 @@ public class DriverUtility implements IJBossRuntimePluginConstants {
 				String value = prop.getAttribute("value"); //$NON-NLS-1$
 				props.setProperty(id, value == null ? "" : value); //$NON-NLS-1$
 			}
-			props.setProperty(DTP_DB_URL_PROPERTY_ID, getDriverUrl(serverType)); //$NON-NLS-1$
+			props.setProperty(DTP_DB_URL_PROPERTY_ID, getDriverUrl(serverType)); 
 			props.setProperty(IDriverMgmtConstants.PROP_DEFN_TYPE, descr.getId());
 			props.setProperty(IDriverMgmtConstants.PROP_DEFN_JARLIST, driverPath);
 			if( isAS7StyleServer(serverType)) {
-				props.setProperty(IDBDriverDefinitionConstants.DRIVER_CLASS_PROP_ID, "org.h2.Driver");
-				props.setProperty(IDBDriverDefinitionConstants.DATABASE_VENDOR_PROP_ID, "H2 driver");
-				props.setProperty(IDBDriverDefinitionConstants.URL_PROP_ID, "jdbc:h2:mem");
-				props.setProperty(IDBDriverDefinitionConstants.USERNAME_PROP_ID, "sa");
+				props.setProperty(IDBDriverDefinitionConstants.DRIVER_CLASS_PROP_ID, "org.h2.Driver");//$NON-NLS-1$
+				props.setProperty(IDBDriverDefinitionConstants.DATABASE_VENDOR_PROP_ID, "H2 driver");//$NON-NLS-1$
+				props.setProperty(IDBDriverDefinitionConstants.URL_PROP_ID, "jdbc:h2:mem");//$NON-NLS-1$
+				props.setProperty(IDBDriverDefinitionConstants.USERNAME_PROP_ID, "sa");//$NON-NLS-1$
 			}
 			
 			instance.setBaseProperties(props);
@@ -107,7 +106,7 @@ public class DriverUtility implements IJBossRuntimePluginConstants {
 		}
 
 		driver = DriverManager.getInstance().getDriverInstanceByName(getDriverName(serverType));
-		if (driver != null && ProfileManager.getInstance().getProfileByName(DEFAULT_DS) == null) { //$NON-NLS-1$
+		if (driver != null && ProfileManager.getInstance().getProfileByName(DEFAULT_DS) == null) {
 			// create profile
 			Properties props = new Properties();
 			props.setProperty(ConnectionProfileConstants.PROP_DRIVER_DEFINITION_ID, 
@@ -123,9 +122,9 @@ public class DriverUtility implements IJBossRuntimePluginConstants {
 			props.setProperty(IDBDriverDefinitionConstants.URL_PROP_ID, driver.getProperty(IDBDriverDefinitionConstants.URL_PROP_ID));
 
 			if( isAS7StyleServer(serverType)) {
-				ProfileManager.getInstance().createProfile(DEFAULT_DS,	Messages.JBossRuntimeStartup_The_JBoss_AS_H2_embedded_database, H2_PROFILE_ID, props, "", false); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				ProfileManager.getInstance().createProfile(DEFAULT_DS,	Messages.JBossRuntimeStartup_The_JBoss_AS_H2_embedded_database, H2_PROFILE_ID, props, "", false); //$NON-NLS-1$ 
 			} else {
-				ProfileManager.getInstance().createProfile(DEFAULT_DS,	Messages.JBossRuntimeStartup_The_JBoss_AS_Hypersonic_embedded_database, HSQL_PROFILE_ID, props, "", false); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				ProfileManager.getInstance().createProfile(DEFAULT_DS,	Messages.JBossRuntimeStartup_The_JBoss_AS_Hypersonic_embedded_database, HSQL_PROFILE_ID, props, "", false); //$NON-NLS-1$
 			}
 		}
 		
@@ -133,9 +132,9 @@ public class DriverUtility implements IJBossRuntimePluginConstants {
 
 	protected static String getDriverUrl(IServerType serverType) {
 		if( isAS7StyleServer(serverType)) {
-			return "jdbc:h2:mem";
+			return "jdbc:h2:mem";//$NON-NLS-1$
 		} else {
-			return "jdbc:hsqldb:.";
+			return "jdbc:hsqldb:.";//$NON-NLS-1$
 		}
 	}
 
@@ -174,12 +173,12 @@ public class DriverUtility implements IJBossRuntimePluginConstants {
 			throws IOException {
 		String driverPath;
 		if (isAS7StyleServer(serverType)) {
-			File file = new File(jbossASLocation + "/modules/com/h2database/h2/main").getCanonicalFile();
+			File file = new File(jbossASLocation + "/modules/com/h2database/h2/main").getCanonicalFile();//$NON-NLS-1$
 			File[] fileList = file.listFiles(new FilenameFilter() {
 				
 				@Override
 				public boolean accept(File dir, String name) {
-					if (name.startsWith("h2") && name.endsWith(".jar")) {
+					if (name.startsWith("h2") && name.endsWith(".jar")) {//$NON-NLS-1$ //$NON-NLS-2$
 						return true;
 					}
 					return false;
@@ -191,7 +190,7 @@ public class DriverUtility implements IJBossRuntimePluginConstants {
 			return null;
 		} else {
 			String loc = SERVER_DRIVER_LOCATION.get(serverType.getId());
-			driverPath = new File(jbossASLocation + loc).getCanonicalPath(); //$NON-NLS-1$
+			driverPath = new File(jbossASLocation + loc).getCanonicalPath();
 		}
 		return driverPath;
 	}

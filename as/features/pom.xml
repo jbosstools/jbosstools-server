@@ -19,7 +19,6 @@
 
 		<module>org.jboss.ide.eclipse.as.feature</module>
 		<module>org.jboss.ide.eclipse.as.test.feature</module>
-		<module>org.jboss.tools.runtime.as.detector.feature</module>
 	</modules>
 </project>
 	

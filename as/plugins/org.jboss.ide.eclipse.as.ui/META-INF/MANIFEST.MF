@@ -58,7 +58,9 @@ Require-Bundle: org.eclipse.ui.ide;bundle-version="3.7.0",
  org.eclipse.wst.common.emfworkbench.integration;bundle-version="1.2.100",
  org.jboss.ide.eclipse.as.management.core;bundle-version="1.0.0",
  org.jboss.ide.eclipse.as.dmr;bundle-version="2.3.0",
- org.eclipse.ui.browser;bundle-version="3.3.101"
+ org.eclipse.ui.browser;bundle-version="3.3.101",
+ org.jboss.tools.runtime.core;bundle-version="2.0.0",
+ org.jboss.tools.runtime.ui;bundle-version="2.0.0"
 Bundle-ActivationPolicy: lazy
 Export-Package: org.jboss.ide.eclipse.as.ui,
  org.jboss.ide.eclipse.as.ui.actions,

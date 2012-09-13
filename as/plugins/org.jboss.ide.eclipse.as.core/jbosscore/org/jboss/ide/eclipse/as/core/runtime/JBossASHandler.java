@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.runtime.handlers;
+package org.jboss.ide.eclipse.as.core.runtime;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -19,6 +19,7 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
@@ -30,15 +31,14 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBean;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-import org.jboss.tools.runtime.as.detector.IJBossRuntimePluginConstants;
-import org.jboss.tools.runtime.as.detector.Messages;
-import org.jboss.tools.runtime.as.detector.RuntimeAsActivator;
 import org.jboss.tools.runtime.core.JBossRuntimeLocator;
 import org.jboss.tools.runtime.core.RuntimeCoreActivator;
 import org.jboss.tools.runtime.core.model.AbstractRuntimeDetectorDelegate;
@@ -49,7 +49,7 @@ import org.osgi.framework.Bundle;
 public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements IJBossRuntimePluginConstants {
 	
 	private static String[] hasIncludedRuntimes = new String[] {SOA_P, EAP, EPP, EWP, SOA_P_STD};
-	private static final String DROOLS = "DROOLS"; // NON-NLS-1$
+	private static final String DROOLS = "DROOLS";  //$NON-NLS-1$
 	private static final String ESB = "ESB"; //$NON-NLS-1$
 	
 	// This constants are made to avoid dependency with org.jboss.ide.eclipse.as.core plugin
@@ -78,11 +78,11 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 	private static File getLocation(RuntimeDefinition runtimeDefinitions) {
 		String type = runtimeDefinitions.getType();
 		String version = runtimeDefinitions.getVersion();
-		if (EAP.equals(type) && version != null && version.startsWith("6") ) {
+		if (EAP.equals(type) && version != null && version.startsWith("6") ) {//$NON-NLS-1$
 			return runtimeDefinitions.getLocation();
 		}
 		if (SOA_P.equals(type) || EAP.equals(type) || EPP.equals(type)) {
-			return new File(runtimeDefinitions.getLocation(), "jboss-as");
+			return new File(runtimeDefinitions.getLocation(), "jboss-as");//$NON-NLS-1$
 		}
 		if (SOA_P_STD.equals(type)) {
 			return new File(runtimeDefinitions.getLocation(),"jboss-esb"); //$NON-NLS-1$					
@@ -167,9 +167,9 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 
 			new DriverUtility().createDriver(asLocation.getAbsolutePath(), serverType);
 		} catch (CoreException e) {
-			RuntimeAsActivator.log(e,Messages.JBossRuntimeStartup_Cannot_create_new_JBoss_Server);
+			JBossServerCorePlugin.log(IStatus.ERROR, Messages.JBossRuntimeStartup_Cannot_create_new_JBoss_Server,e);
 		} catch (ConnectionProfileException e) {
-			RuntimeAsActivator.log(e,Messages.JBossRuntimeStartup_Cannott_create_new_DTP_Connection_Profile);
+			JBossServerCorePlugin.log(IStatus.ERROR, Messages.JBossRuntimeStartup_Cannott_create_new_DTP_Connection_Profile,e);
 		}
 	}
 
@@ -288,13 +288,13 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 		if (runtimeDefinition == null) {
 			return;
 		}
-		Bundle drools = Platform.getBundle("org.drools.eclipse");
+		Bundle drools = Platform.getBundle("org.drools.eclipse"); //$NON-NLS-1$
 		Bundle droolsDetector = Platform
-				.getBundle("org.jboss.tools.runtime.drools.detector");
+				.getBundle("org.jboss.tools.runtime.drools.detector");//$NON-NLS-1$
 		if (drools != null && droolsDetector != null) {
 			File droolsRoot = runtimeDefinition.getLocation();
 			if (droolsRoot.isDirectory()) {
-				String name = "Drools - " + runtimeDefinition.getName();
+				String name = "Drools - " + runtimeDefinition.getName();//$NON-NLS-1$
 				RuntimeDefinition droolsDefinition = new RuntimeDefinition(
 						name, runtimeDefinition.getVersion(), DROOLS,
 						droolsRoot);
@@ -309,9 +309,9 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 		if (runtimeDefinition == null) {
 			return;
 		}
-		Bundle esb = Platform.getBundle("org.jboss.tools.esb.project.core");
+		Bundle esb = Platform.getBundle("org.jboss.tools.esb.project.core");//$NON-NLS-1$
 		Bundle esbDetectorPlugin = Platform
-				.getBundle("org.jboss.tools.runtime.esb.detector");
+				.getBundle("org.jboss.tools.runtime.esb.detector");//$NON-NLS-1$
 		if (esb != null && esbDetectorPlugin != null) {
 			String type = runtimeDefinition.getType();
 			File esbRoot;
@@ -321,8 +321,8 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 				esbRoot = new File(runtimeDefinition.getLocation(), "jboss-esb"); //$NON-NLS-1$
 			}
 			if (esbRoot.isDirectory()) {
-				String name = "ESB - " + runtimeDefinition.getName();
-				String version="";
+				String name = "ESB - " + runtimeDefinition.getName();//$NON-NLS-1$
+				String version="";//$NON-NLS-1$
 				RuntimeDefinition esbDefinition = new RuntimeDefinition(
 						name, version, ESB,
 						esbRoot);

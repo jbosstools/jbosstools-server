@@ -500,13 +500,6 @@
             sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"
             sourcePathComputerId="org.eclipse.jst.server.generic.core.sourcePathComputer"/>
       <launchConfigurationType
-            delegate="org.jboss.ide.eclipse.as.core.server.internal.launch.TwiddleLaunchConfiguration"
-            id="org.jboss.ide.eclipse.as.core.server.twiddleConfiguration"
-            modes="run"
-            name="Twiddle"
-            public="false">
-      </launchConfigurationType>
-      <launchConfigurationType
             delegate="org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfiguration"
             id="org.jboss.ide.eclipse.as.core.server.stopLaunchConfiguration"
             modes="run"
@@ -1218,4 +1211,110 @@
       </factory>
    </extension>
    
+   
+   
+   
+   
+   
+   
+   <!-- From as-handler for runtime detection -->
+   
+	<extension
+         point="org.jboss.tools.runtime.core.runtimeDetectors">
+    	<runtimeDetector 
+    	    id="org.jboss.tools.runtime.handlers.JBossASHandler"
+    		name="JBoss AS"
+       		class="org.jboss.ide.eclipse.as.core.runtime.JBossASHandler"
+       		preferenceId="org.eclipse.wst.server.ui.runtime.preferencePage"
+       		priority="100"/>
+	</extension>
+	
+	
+   <extension
+         point="org.jboss.tools.runtime.core.downloadruntimes">
+      <runtime
+            id="org.jboss.tools.runtime.core.as.328" 
+            name="JBoss AS 3.2.8"
+            version="3.2.8"
+            size="100MB"
+            licenseUrl="http://www.gnu.org/licenses/lgpl-2.1.txt"
+            url="http://repository.jboss.org/sourceforge/jboss-3.2.8.SP1.zip"
+            disclaimer="true"/>
+      <runtime
+            id="org.jboss.tools.runtime.core.as.405" 
+            name="JBoss AS 4.0.5"
+            version="4.0.5"
+            size="100MB"
+            licenseUrl="http://www.gnu.org/licenses/lgpl-2.1.txt"
+            url="http://repository.jboss.org/sourceforge/jboss-4.0.5.GA.zip"
+            disclaimer="true"/>
+      <runtime
+            id="org.jboss.tools.runtime.core.as.423" 
+            name="JBoss AS 4.2.3"
+            version="4.2.3"
+            size="100MB"
+            licenseUrl="http://www.gnu.org/licenses/lgpl-2.1.txt"
+            url="http://sourceforge.net/projects/jboss/files/JBoss/JBoss-4.2.3.GA/jboss-4.2.3.GA-jdk6.zip?use_mirror=autoselect"
+            disclaimer="true"/>
+          
+      <runtime
+            id="org.jboss.tools.runtime.core.as.501" 
+            name="JBoss AS 5.0.1"
+            version="5.0.1"
+            size="100MB"
+            licenseUrl="http://www.gnu.org/licenses/lgpl-2.1.txt"
+            url="http://repository.jboss.org/sourceforge/jboss-5.0.1.GA.zip"
+            disclaimer="true"/>
+      <runtime
+            id="org.jboss.tools.runtime.core.as.510" 
+            name="JBoss AS 5.1.0"
+            version="5.1.0"
+            size="100MB"
+            licenseUrl="http://www.gnu.org/licenses/lgpl-2.1.txt"
+            url="http://repository.jboss.org/sourceforge/jboss-5.1.0.GA.zip"
+            disclaimer="true"/>
+            
+      <runtime
+            id="org.jboss.tools.runtime.core.as.610" 
+            name="JBoss AS 6.1.0"
+            version="6.1.0.Final"
+            size="183MB"
+            licenseUrl="http://www.gnu.org/licenses/lgpl-2.1.txt"
+            url="http://download.jboss.org/jbossas/6.1/jboss-as-distribution-6.1.0.Final.zip?use_mirror=autoselect"
+            disclaimer="true"/>
+      <runtime
+            id="org.jboss.tools.runtime.core.as.701" 
+            name="JBoss AS 7.0.1 Everything (NOT Java EE6 Certified)"
+            version="7.0.1.Final"
+            size="74MB"
+            licenseUrl="http://www.gnu.org/licenses/lgpl-2.1.txt"
+            url="http://download.jboss.org/jbossas/7.0/jboss-as-7.0.1.Final/jboss-as-7.0.1.Final.zip?use_mirror=autoselect"
+            disclaimer="true"/>
+      <runtime
+            id="org.jboss.tools.runtime.core.as.702" 
+            name="JBoss AS 7.0.2 Everything (NOT Java EE6 Certified)"
+            version="7.0.2.Final"
+            size="75MB"
+            licenseUrl="http://www.gnu.org/licenses/lgpl-2.1.txt"
+            url="http://download.jboss.org/jbossas/7.0/jboss-as-7.0.2.Final/jboss-as-7.0.2.Final.zip?use_mirror=autoselect"
+            disclaimer="true"/>
+      <runtime
+            id="org.jboss.tools.runtime.core.as.711" 
+            name="JBoss AS 7.1.1 Certified Java EE 6 Full Profile"
+            version="7.1.1.Final"
+            size="127MB"
+            licenseUrl="http://www.gnu.org/licenses/lgpl-2.1.txt"
+            url="http://download.jboss.org/jbossas/7.1/jboss-as-7.1.1.Final/jboss-as-7.1.1.Final.zip?use_mirror=autoselect"
+            disclaimer="true"/>
+      <runtime
+            id="org.jboss.tools.runtime.core.as.710" 
+            name="JBoss AS 7.1.0 Certified Java EE 6 Full Profile"
+            version="7.1.0.Final"
+            size="100MB"
+            licenseUrl="http://www.gnu.org/licenses/lgpl-2.1.txt"
+            url="http://download.jboss.org/jbossas/7.1/jboss-as-7.1.0.Final/jboss-as-7.1.0.Final.zip?use_mirror=autoselect"
+            disclaimer="true"/>
+     <!-- NEW_SERVER_ADAPTER add new downloadable runtimes here. 
+          Also, if adding new, make sure to update DownloadRuntimeToWTPRuntime -->
+     </extension>
 </plugin>

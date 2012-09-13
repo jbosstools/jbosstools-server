@@ -72,6 +72,21 @@ public interface IJBossToolingConstants {
 	public static final String V7_1 = "7.1"; //$NON-NLS-1$
 	// NEW_SERVER_ADAPTER  Add the new version string above this line
 	
+	
+	
+	/* String constants for download runtime extensions */
+	public static final String DOWNLOAD_RT_328 = "org.jboss.tools.runtime.core.as.328"; //$NON-NLS-1$
+	public static final String DOWNLOAD_RT_405 = "org.jboss.tools.runtime.core.as.405"; //$NON-NLS-1$
+	public static final String DOWNLOAD_RT_423 = "org.jboss.tools.runtime.core.as.423"; //$NON-NLS-1$
+	public static final String DOWNLOAD_RT_501 = "org.jboss.tools.runtime.core.as.501"; //$NON-NLS-1$
+	public static final String DOWNLOAD_RT_510 = "org.jboss.tools.runtime.core.as.510"; //$NON-NLS-1$
+	public static final String DOWNLOAD_RT_610 = "org.jboss.tools.runtime.core.as.610"; //$NON-NLS-1$
+	public static final String DOWNLOAD_RT_701 = "org.jboss.tools.runtime.core.as.701"; //$NON-NLS-1$
+	public static final String DOWNLOAD_RT_702 = "org.jboss.tools.runtime.core.as.702"; //$NON-NLS-1$
+	public static final String DOWNLOAD_RT_710 = "org.jboss.tools.runtime.core.as.710"; //$NON-NLS-1$
+	public static final String DOWNLOAD_RT_711 = "org.jboss.tools.runtime.core.as.711"; //$NON-NLS-1$
+
+	
 	/* Files or folders inside the TOOLING */
 	public static final String LOG = "log"; //$NON-NLS-1$
 	public static final String TEMP_DEPLOY = "tempDeploy"; //$NON-NLS-1$

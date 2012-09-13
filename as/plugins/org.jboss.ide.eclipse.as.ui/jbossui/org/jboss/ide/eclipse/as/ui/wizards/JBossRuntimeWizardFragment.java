@@ -12,19 +12,15 @@ package org.jboss.ide.eclipse.as.ui.wizards;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.IJobChangeEvent;
-import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jdt.launching.IVMInstall;
@@ -42,8 +38,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.window.Window;
-import org.eclipse.jface.wizard.IWizardPage;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
@@ -63,7 +57,6 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -76,8 +69,6 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.core.internal.IInstallableRuntime;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
-import org.eclipse.wst.server.ui.internal.wizard.TaskWizard;
-import org.eclipse.wst.server.ui.internal.wizard.fragment.LicenseWizardFragment;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
@@ -92,6 +83,9 @@ import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
+import org.jboss.tools.runtime.core.RuntimeCoreActivator;
+import org.jboss.tools.runtime.core.model.IDownloadRuntimes;
+import org.jboss.tools.runtime.ui.download.DownloadRuntimes;
 import org.osgi.service.prefs.BackingStoreException;
 
 /**
@@ -348,8 +342,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		downloadAndInstallButton = new Button(homeDirComposite, SWT.NONE);
 		downloadAndInstallButton.setText(Messages.rwf_DownloadRuntime);
 		downloadAndInstallButton.addSelectionListener(new DownloadAndInstallListener());
-		final IInstallableRuntime ir = ServerPlugin.findInstallableRuntime(getRuntimeType().getId());
-		downloadAndInstallButton.setEnabled(ir != null);
+		downloadAndInstallButton.setEnabled(true); 
 		
 		// Add listeners
 		homeDirText.addModifyListener(new ModifyListener() {
@@ -379,69 +372,13 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 
 	protected class DownloadAndInstallListener extends SelectionAdapter {
 		public void widgetSelected(SelectionEvent se) {
-			downloadAndInstallButton.setEnabled(false);
-			String license = null;
-			final IInstallableRuntime ir = ServerPlugin.findInstallableRuntime(getRuntimeType().getId());
-			
-			try {
-				license = ir.getLicense(new NullProgressMonitor());
-			} catch (CoreException e) {
-			}
-			TaskModel taskModel = new TaskModel();
-			taskModel.putObject(LicenseWizardFragment.LICENSE, license);
-			TaskWizard wizard2 = new TaskWizard(Messages.rwf_DownloadAndInstallRuntimeWizard, new WizardFragment() {
-				protected void createChildFragments(List list) {
-					list.add(new LicenseWizardFragment());
-				}
-			}, taskModel);
-			
-			WizardDialog dialog2 = new WizardDialog(downloadAndInstallButton.getShell(), wizard2);
-			if (dialog2.open() == Window.CANCEL) {
-				downloadAndInstallButton.setEnabled(true);
-				return;
-			}
-			DirectoryDialog dialog = new DirectoryDialog(downloadAndInstallButton.getShell());
-			dialog.setMessage(Messages.rwf_DownloadServerFileChooser);
-			dialog.setFilterPath(homeDirText.getText());
-			String selectedDirectory = dialog.open();
-			if (selectedDirectory != null) {
-//				ir.install(new Path(selectedDirectory));
-				final IPath installPath = new Path(selectedDirectory);
-				final Job installRuntimeJob = new Job(
-						NLS.bind(Messages.rwf_InstallingRuntimeJob, getRuntimeType().getName())) {
-					public boolean belongsTo(Object family) {
-						return ServerPlugin.PLUGIN_ID.equals(family);
-					}
-					
-					protected IStatus run(IProgressMonitor monitor) {
-						try {
-							ir.install(installPath, monitor);
-						} catch (CoreException ce) {
-							return ce.getStatus();
-						}
-						
-						return Status.OK_STATUS;
-					}
-				};
-				
-				homeDirText.setText(selectedDirectory);
-				JobChangeAdapter jobListener = new JobChangeAdapter() {
-					public void done(IJobChangeEvent event) {
-						installRuntimeJob.removeJobChangeListener(this);
-						Display.getDefault().asyncExec(new Runnable() {
-							public void run() {
-								if( !downloadAndInstallButton.isDisposed())
-									downloadAndInstallButton.setEnabled(true);
-							}
-				        });
-					}
-				};
-				installRuntimeJob.addJobChangeListener(jobListener);
-				installRuntimeJob.schedule();
-				handle.setMessage(Messages.rwf_DownloadingMayTakeLongTime, IMessageProvider.WARNING);
-				MessageDialog.openWarning(downloadAndInstallButton.getShell(), Messages.rwf_InstallingASTitle, 
-						NLS.bind(Messages.rwf_DownloadingMayTakeLongTime, selectedDirectory));
-				((TitleAreaDialog)((IWizardPage)handle).getWizard().getContainer()).close();
+			IDownloadRuntimes downloader = RuntimeCoreActivator.getDefault().getDownloader();
+			if( downloader != null ) {
+				HashMap<String, Object> data = new HashMap<String, Object>();
+				data.put(DownloadRuntimes.SHELL, downloadAndInstallButton.getShell() );
+				IRuntimeType type = getRuntimeType();
+				data.put(IDownloadRuntimes.RUNTIME_FILTER, new JBossASDownloadRuntimeFilter(type));
+				downloader.execute(data);
 			}
 		}
 	}

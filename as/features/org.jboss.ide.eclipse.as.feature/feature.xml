@@ -39,10 +39,6 @@ Raleigh NC 27606 USA.
    <includes
          id="org.jboss.ide.eclipse.as.serverAdapter.wtp.feature"
          version="0.0.0"/>
-   <includes
-         id="org.jboss.tools.runtime.as.detector.feature"
-         version="0.0.0"/>
-
    <requires>
       <import plugin="org.eclipse.ui" version="3.7.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.runtime" version="3.7.0" match="greaterOrEqual"/>

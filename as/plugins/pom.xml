@@ -26,7 +26,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<module>org.jboss.ide.eclipse.as.jmx.integration</module>
 		<module>org.jboss.ide.eclipse.as.management.core</module>
 		<module>org.jboss.ide.eclipse.as.management.as71</module>
-		<module>org.jboss.tools.runtime.as.detector</module>
 	</modules>
 </project>
 	
