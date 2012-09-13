@@ -45,6 +45,7 @@ import org.jboss.tools.runtime.core.model.AbstractRuntimeDetectorDelegate;
 import org.jboss.tools.runtime.core.model.IRuntimeDetector;
 import org.jboss.tools.runtime.core.model.RuntimeDefinition;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleException;
 
 public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements IJBossRuntimePluginConstants {
 	
@@ -69,6 +70,17 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 		SERVER_DEFAULT_NAME.put(IJBossToolingConstants.SERVER_AS_70, Messages.JBossRuntimeStartup_JBoss_Application_Server_7_0);
 		SERVER_DEFAULT_NAME.put(IJBossToolingConstants.SERVER_AS_71, Messages.JBossRuntimeStartup_JBoss_Application_Server_7_1);
 		SERVER_DEFAULT_NAME.put(IJBossToolingConstants.SERVER_EAP_60, Messages.JBossRuntimeStartup_JBoss_EAP_Server_6_0);
+		Bundle bundle = Platform.getBundle("org.jboss.ide.eclipse.archives.webtools"); //$NON-NLS-1$
+		if (bundle != null) {
+			try {
+				if ((bundle.getState() & Bundle.INSTALLED) == 0) {
+					bundle.start(Bundle.START_ACTIVATION_POLICY);
+					bundle.start(Bundle.START_TRANSIENT);
+				}
+			} catch (BundleException e) {
+				// failed, try next bundle
+			}
+		}
 	}
 
 	public void initializeRuntimes(List<RuntimeDefinition> runtimeDefinitions) {
