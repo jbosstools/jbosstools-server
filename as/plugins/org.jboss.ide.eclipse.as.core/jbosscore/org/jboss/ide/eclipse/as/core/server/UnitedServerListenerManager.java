@@ -11,10 +11,8 @@
 package org.jboss.ide.eclipse.as.core.server;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IPublishListener;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeLifecycleListener;
@@ -60,7 +58,6 @@ public class UnitedServerListenerManager implements
 		return (UnitedServerListener[]) list.toArray(new UnitedServerListener[list.size()]);
 	}
 	
-	@Deprecated
 	public static boolean isJBossServer(IServer server) {
 		return ServerConverter.getJBossServer(server) != null;
 	}

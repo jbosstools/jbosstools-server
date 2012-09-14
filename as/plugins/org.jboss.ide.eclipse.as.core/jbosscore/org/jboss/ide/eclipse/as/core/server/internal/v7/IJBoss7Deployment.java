@@ -11,7 +11,11 @@
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
 /**
- * A marker interface for any app server which supports jb7 style deployment
+ * A marker interface for any app server which supports 
+ * jb7 style deployment with marker files. 
+ * 
+ * To be used on the server delegate. 
+ * 		ex: see JBoss7Server
  *
  */
 public interface IJBoss7Deployment {

@@ -2,11 +2,6 @@ package org.jboss.ide.eclipse.as.core.util;
 
 import java.io.File;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-
 /**
  * This class coppied from JBoss's DMR project, ExpressionValue.java
  *

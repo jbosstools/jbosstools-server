@@ -184,7 +184,7 @@ public class PublishUtil {
 
 	}
 	
-	public static ArrayList<String> moduleCoreFactories = new ArrayList<String>();
+	private static ArrayList<String> moduleCoreFactories = new ArrayList<String>();
 	static {
 		moduleCoreFactories.add("org.eclipse.jst.j2ee.server"); //$NON-NLS-1$
 		moduleCoreFactories.add("org.eclipse.jst.jee.server"); //$NON-NLS-1$
