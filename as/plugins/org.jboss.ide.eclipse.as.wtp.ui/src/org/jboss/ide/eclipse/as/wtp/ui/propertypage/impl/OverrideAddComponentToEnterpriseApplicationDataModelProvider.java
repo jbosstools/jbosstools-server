@@ -12,6 +12,10 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 public class OverrideAddComponentToEnterpriseApplicationDataModelProvider 
  extends AddComponentToEnterpriseApplicationDataModelProvider {
 
+	public OverrideAddComponentToEnterpriseApplicationDataModelProvider() {
+		super();
+	}
+	
 	public IDataModelOperation getDefaultOperation() {
 		return new OverrideAddComponentToEnterpriseApplicationOp(model);
 	}
