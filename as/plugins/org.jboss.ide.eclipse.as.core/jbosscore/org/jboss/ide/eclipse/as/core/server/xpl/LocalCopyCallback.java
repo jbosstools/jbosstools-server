@@ -23,11 +23,12 @@ import org.eclipse.wst.server.core.internal.ProgressUtil;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
-import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServerBehaviour;
 import org.jboss.ide.eclipse.as.core.server.IPublishCopyCallbackHandler;
-import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
+import org.jboss.ide.eclipse.as.core.util.ProgressMonitorUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.StreamUtils;
 
@@ -54,8 +55,8 @@ public class LocalCopyCallback implements IPublishCopyCallbackHandler {
 	public IStatus[] copyFile(IModuleFile mf, IPath relativePath, IProgressMonitor monitor) throws CoreException {
 		monitor.beginTask("Copying " + relativePath.toString(), 100); //$NON-NLS-1$
 		File file = PublishUtil.getFile(mf);
-		DeployableServerBehavior beh = ServerConverter.getDeployableServerBehavior(server);
-		shouldRestartModule |= beh.changedFileRequiresModuleRestart(mf);
+		IDeployableServerBehaviour beh = ServerConverter.getDeployableServerBehavior(server);
+		shouldRestartModule |= beh != null && beh.changedFileRequiresModuleRestart(mf);
 		if( file != null ) {
 			if( !file.exists()) {
 				return new IStatus[] {new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL, 
@@ -215,12 +216,15 @@ public class LocalCopyCallback implements IPublishCopyCallbackHandler {
 		File f = null;
 		if( tmpDeployRootFolder != null ) {
 			f = tmpDeployRootFolder.toFile();
-		} else if( server != null ){
-			String path = ServerConverter.getDeployableServer(server).getTempDeployFolder();
-			f = new File(path);
-		} else {
+		} else if( server == null ) {
+			return tempDir;
+		} 
+		IDeployableServer ds = ServerConverter.getDeployableServer(server);
+		if( ds == null ) {
 			return tempDir;
 		}
+		String path = ds.getTempDeployFolder();
+		f = new File(path);
 		if( !f.exists() )
 			f.mkdirs();
 		return f;
@@ -274,7 +278,7 @@ public class LocalCopyCallback implements IPublishCopyCallbackHandler {
 				} else if (current.isDirectory()) {
 					monitor.subTask(NLS.bind(Messages.deletingTask, new String[] {current.getAbsolutePath()}));
 					IStatus[] stat = deleteDirectory(current, 
-							AbstractServerToolsPublisher.getSubMon(monitor, 10));
+							ProgressMonitorUtil.getSubMon(monitor, 10));
 					if (stat != null && stat.length > 0) {
 						deleteCurrent = false;
 						PublishCopyUtil.addArrayToList(status, stat);

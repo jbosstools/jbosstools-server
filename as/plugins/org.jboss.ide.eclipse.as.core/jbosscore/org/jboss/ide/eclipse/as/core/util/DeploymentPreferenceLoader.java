@@ -13,7 +13,6 @@ package org.jboss.ide.eclipse.as.core.util;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -29,7 +28,6 @@ import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.internal.Server;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel;
@@ -65,20 +63,6 @@ public class DeploymentPreferenceLoader {
 		return 	server.getAttribute(IDeployableServer.SERVER_MODE, defaultType);
 	}
 
-	@Deprecated
-	public static DeploymentPreferences loadPreferencesFromFile(IServer server) {
-		File f = getFile(server);
-		if( f.exists()) {
-			try {
-				InputStream is = new FileInputStream(f);
-				return new DeploymentPreferences(is);
-			} catch(IOException ioe) {
-				// Intentionally fall through and return null
-			}
-		} 
-		return null;
-	}
-	
 	public static DeploymentPreferences loadPreferencesFromServer(IServerAttributes server) {
 		String xml = ((Server)server).getAttribute(DEPLOYMENT_PREFERENCES_KEY, (String)null);
 		ByteArrayInputStream bis = null;
@@ -88,19 +72,8 @@ public class DeploymentPreferenceLoader {
 		return new DeploymentPreferences(bis);
 	}
 
-	@Deprecated
-	public static void savePreferences(IServer server, DeploymentPreferences prefs) throws IOException {
-		File f = getFile(server);
-		prefs.getMemento().saveToFile(f.getAbsolutePath());
-	}
-
 	public static void savePreferences(OutputStream os, DeploymentPreferences prefs) throws IOException {
 		prefs.getMemento().save(os);
-	}
-	
-	protected static File getFile(IServer server) {
-		IPath loc = ServerUtil.getServerStateLocation(server);
-		return loc.append("deploymentPreferences.xml").toFile(); //$NON-NLS-1$
 	}
 	
 	public static class DeploymentPreferences {
@@ -125,8 +98,10 @@ public class DeploymentPreferenceLoader {
 		}
 		
 		// prefs are all in "local" now, even for rse stuff. 
+		public static final String LOCAL_PUBLISH_METHOD = "local";  //$NON-NLS-1$
+
 		public DeploymentTypePrefs getOrCreatePreferences() {
-			return getOrCreatePreferences(LocalPublishMethod.LOCAL_PUBLISH_METHOD);
+			return getOrCreatePreferences(LOCAL_PUBLISH_METHOD);
 		}
 		
 		public DeploymentTypePrefs getOrCreatePreferences(String deploymentType) {

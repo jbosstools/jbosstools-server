@@ -75,7 +75,7 @@ public class PublishUtil {
 	 */
 	public static String getDeployRootFolder(IModule[] moduleTree, 
 			IDeployableServer server, String defaultFolder, String moduleProperty) {
-		return getDeployRootFolder(moduleTree, LocalPublishMethod.LOCAL_PUBLISH_METHOD,
+		return getDeployRootFolder(moduleTree, "local", //$NON-NLS-1$
 				server, defaultFolder, moduleProperty);
 	}
 	

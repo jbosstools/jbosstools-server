@@ -10,7 +10,6 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.extensions.events;
 
-import org.eclipse.core.runtime.IStatus;
 
 
 public interface IEventCodes {

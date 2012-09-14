@@ -22,7 +22,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.internal.Messages;
-import org.eclipse.wst.server.core.internal.ProgressUtil;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleFolder;
@@ -31,9 +30,9 @@ import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.modules.ResourceModuleResourceUtil;
-import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.patterns.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.IPublishCopyCallbackHandler;
+import org.jboss.ide.eclipse.as.core.util.ProgressMonitorUtil;
 /**
  * Utility class with an assortment of useful file methods.
  * <p>
@@ -92,7 +91,7 @@ public final class PublishCopyUtil {
 		if (delta == null)
 			return EMPTY_STATUS;
 		
-		monitor = ProgressUtil.getMonitorFor(monitor);
+		monitor = ProgressMonitorUtil.getMonitorFor(monitor);
 		
 		List<IStatus> status = new ArrayList<IStatus>(2);
 		int size2 = delta.length;
@@ -192,11 +191,11 @@ public final class PublishCopyUtil {
 	 */
 	public IStatus[] initFullPublish(IModuleResource[] resources, IModulePathFilter filter, IProgressMonitor monitor) throws CoreException  {
 		int count = ResourceModuleResourceUtil.countMembers(resources);
-		monitor = ProgressUtil.getMonitorFor(monitor);
+		monitor = ProgressMonitorUtil.getMonitorFor(monitor);
 		monitor.beginTask("Publishing " + count + " resources", //$NON-NLS-1$ //$NON-NLS-2$ 
 				(100 * (count)) + 200);
 		handler.makeDirectoryIfRequired(new Path("/"),  //$NON-NLS-1$
-				AbstractServerToolsPublisher.getSubMon(monitor, 100)); 
+				ProgressMonitorUtil.getSubMon(monitor, 100)); 
 		if( monitor.isCanceled())
 			return canceledStatus();
 		IStatus[] results = publishFull(resources, new Path("/"), filter, monitor); //$NON-NLS-1$
@@ -222,7 +221,6 @@ public final class PublishCopyUtil {
 	}
 
 	
-	@Deprecated
 	protected IStatus[] publishFull(IModuleResource[] resources, IPath relative, 
 			IProgressMonitor monitor) throws CoreException {
 		return publishFull(resources, relative, null, monitor);
@@ -237,7 +235,7 @@ public final class PublishCopyUtil {
 			IModuleResource[] children = folder.members();
 			if( children.length == 0 )
 				handler.makeDirectoryIfRequired(folder.getModuleRelativePath().append(folder.getName()), 
-						AbstractServerToolsPublisher.getSubMon(monitor, 5));
+						ProgressMonitorUtil.getSubMon(monitor, 5));
 			else {
 				IStatus[] stat = publishFull(children, path, filter, monitor);
 				addArrayToList(status, stat);
@@ -250,7 +248,7 @@ public final class PublishCopyUtil {
 				if( stats != null && stats.length > 0 && !stats[0].isOK())
 					addArrayToList(status, stats);
 				addArrayToList(status, handler.copyFile(mf, path, 
-						AbstractServerToolsPublisher.getSubMon(monitor, 100)));
+						ProgressMonitorUtil.getSubMon(monitor, 100)));
 			}
 		}
 		return status.toArray(new IStatus[status.size()]);

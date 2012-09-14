@@ -24,7 +24,6 @@ import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
@@ -45,6 +44,7 @@ import org.jboss.ide.eclipse.as.core.server.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.ProgressMonitorUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
@@ -80,19 +80,8 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		this.publishState = state;
 	}
 
-	public static class CustomSubProgress extends SubProgressMonitor {
-		public CustomSubProgress(IProgressMonitor monitor, int ticks, int style) {
-			super(monitor, ticks, style);
-		}
-		public void beginTask(String name, int totalWork) {
-			super.beginTask(null, totalWork);
-			setTaskName(name);
-		}
-	}
-	
 	public static IProgressMonitor getSubMon(IProgressMonitor parent, int ticks) {
-		IProgressMonitor subMon = new CustomSubProgress(parent, ticks, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK);
-		return subMon;
+		return ProgressMonitorUtil.getSubMon(parent, ticks);
 	}
 	
 	public IStatus publishModule(IJBossServerPublishMethod method,

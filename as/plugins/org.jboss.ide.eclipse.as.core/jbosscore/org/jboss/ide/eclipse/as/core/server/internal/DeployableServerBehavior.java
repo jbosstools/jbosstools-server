@@ -31,6 +31,7 @@ import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.publishers.patterns.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServerBehaviour;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
@@ -41,7 +42,8 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 /**
  * @author Rob Stryker
  */
-public class DeployableServerBehavior extends ServerBehaviourDelegate {
+public class DeployableServerBehavior extends ServerBehaviourDelegate 
+	implements IDeployableServerBehaviour {
 
 	public DeployableServerBehavior() {
 	}
