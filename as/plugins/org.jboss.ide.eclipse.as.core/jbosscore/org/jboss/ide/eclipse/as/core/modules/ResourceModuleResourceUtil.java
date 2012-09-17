@@ -32,8 +32,8 @@ import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.util.ModuleFile;
 import org.eclipse.wst.server.core.util.ModuleFolder;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.publishers.patterns.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.publishers.patterns.ModuleDirectoryScannerPathFilter;
+import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
 public class ResourceModuleResourceUtil {

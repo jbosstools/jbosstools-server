@@ -15,7 +15,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.server.core.IModule;
-import org.jboss.ide.eclipse.as.core.publishers.patterns.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 
 public interface IJBossBehaviourDelegate {

@@ -7,18 +7,18 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
-import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePollerType;
 
 public class AbstractTestInternalPoller implements IServerStatePoller2 {
-	private ServerStatePollerType type;
+	private IServerStatePollerType type;
 	private IServer server;
 	public AbstractTestInternalPoller() {
 	}
 	
-	public ServerStatePollerType getPollerType() {
+	public IServerStatePollerType getPollerType() {
 		return type;
 	}
-	public void setPollerType(ServerStatePollerType type) {
+	public void setPollerType(IServerStatePollerType type) {
 		this.type = type;
 	}
 	public void beginPolling(IServer server, boolean expectedState)

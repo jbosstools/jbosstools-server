@@ -10,7 +10,7 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.ServerPreferences;
 import org.eclipse.wst.server.core.model.IModuleResource;
-import org.jboss.ide.eclipse.as.core.publishers.patterns.IModulePathFilter;
+import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.test.util.IOUtil;

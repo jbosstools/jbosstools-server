@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.as.core.publishers.patterns;
 
 import org.eclipse.wst.server.core.model.IModuleResource;
+import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 
 /**
  * @since 2.3

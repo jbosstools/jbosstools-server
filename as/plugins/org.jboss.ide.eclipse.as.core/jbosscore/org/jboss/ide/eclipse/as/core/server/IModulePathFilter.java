@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.core.publishers.patterns;
+package org.jboss.ide.eclipse.as.core.server;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.server.core.model.IModuleResource;

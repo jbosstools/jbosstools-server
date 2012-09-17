@@ -1,7 +1,7 @@
 package org.jboss.ide.eclipse.as.test.publishing.v2;
 
 import org.eclipse.wst.server.core.IModule;
-import org.jboss.ide.eclipse.as.core.publishers.patterns.IModulePathFilter;
+import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate;
 
 public class Mock2BehaviourDelegate extends LocalJBossBehaviorDelegate {

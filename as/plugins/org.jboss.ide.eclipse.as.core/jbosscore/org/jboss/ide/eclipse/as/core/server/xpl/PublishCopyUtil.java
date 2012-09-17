@@ -30,7 +30,7 @@ import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.modules.ResourceModuleResourceUtil;
-import org.jboss.ide.eclipse.as.core.publishers.patterns.IModulePathFilter;
+import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.util.ProgressMonitorUtil;
 /**

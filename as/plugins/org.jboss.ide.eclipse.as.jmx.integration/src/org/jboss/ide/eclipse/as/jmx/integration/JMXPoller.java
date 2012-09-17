@@ -31,7 +31,7 @@ import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
-import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePollerType;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.tools.jmx.core.IJMXRunnable;
 
@@ -60,7 +60,7 @@ public class JMXPoller implements IServerStatePoller2 {
 					
 	
 	private IServer server;
-	private ServerStatePollerType type;
+	private IServerStatePollerType type;
 	private PollingException pollingException = null;
 	private RequiresInfoException requiresInfoException = null;
 	private Properties requiredPropertiesReturned = null;
@@ -229,11 +229,11 @@ public class JMXPoller implements IServerStatePoller2 {
 		return list;
 	}
 
-	public ServerStatePollerType getPollerType() {
+	public IServerStatePollerType getPollerType() {
 		return type;
 	}
 
-	public void setPollerType(ServerStatePollerType type) {
+	public void setPollerType(IServerStatePollerType type) {
 		this.type = type;
 	}
 	

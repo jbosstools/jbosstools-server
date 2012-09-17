@@ -16,8 +16,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.as.core.modules.ResourceModuleResourceUtil;
-import org.jboss.ide.eclipse.as.core.publishers.patterns.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.IJBossBehaviourDelegate;
+import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 
 /**
  * A complete stub implementation of the interface

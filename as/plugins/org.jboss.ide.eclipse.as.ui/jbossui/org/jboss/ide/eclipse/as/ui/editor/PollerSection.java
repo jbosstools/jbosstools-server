@@ -32,8 +32,8 @@ import org.eclipse.wst.server.ui.editor.ServerEditorSection;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePollerType;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
-import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
@@ -46,7 +46,7 @@ public class PollerSection extends ServerEditorSection implements PropertyChange
 	private Combo startPollerCombo, stopPollerCombo;
 	private Composite pollers;
 	private String[] startupTypesStrings, shutdownTypesStrings;
-	private ServerStatePollerType[] startupTypes, shutdownTypes;
+	private IServerStatePollerType[] startupTypes, shutdownTypes;
 	private ModifyListener startPollerListener;
 	private ModifyListener stopPollerListener;
 	protected ServerAttributeHelper helper; 
@@ -157,11 +157,11 @@ public class PollerSection extends ServerEditorSection implements PropertyChange
 		private String preChange;
 		private String attributeKey;
 		private String defaultValue;
-		private ServerStatePollerType[] pollerArray;
+		private IServerStatePollerType[] pollerArray;
 		private Combo combo;
 		private ModifyListener listener;
 		public SetPollerCommand(IServerWorkingCopy server, String name, 
-				String attributeKey, String defaultValue, ServerStatePollerType[] pollerArray, 
+				String attributeKey, String defaultValue, IServerStatePollerType[] pollerArray, 
 				Combo pollerCombo, ModifyListener listener) {
 			super(server, name);
 			this.attributeKey = attributeKey;
