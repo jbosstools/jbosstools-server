@@ -17,8 +17,8 @@ import java.security.Principal;
 import java.util.Properties;
 
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 /**
@@ -105,7 +105,7 @@ public class JMXUtil {
 	}
 
 	public static Properties getDefaultProperties(IServer server) {
-		JBossServer jbs = ServerConverter.getJBossServer(server);
+		IJBossServer jbs = ServerConverter.getJBossServer(server);
 		Properties props = new Properties();
 		if( jbs != null ) {
 			

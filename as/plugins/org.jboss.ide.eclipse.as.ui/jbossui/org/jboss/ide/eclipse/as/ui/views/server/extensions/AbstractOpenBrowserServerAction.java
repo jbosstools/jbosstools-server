@@ -25,7 +25,6 @@ import org.eclipse.ui.navigator.ICommonViewerSite;
 import org.eclipse.ui.navigator.ICommonViewerWorkbenchSite;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.ui.internal.view.servers.AbstractServerAction;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -54,12 +53,7 @@ public abstract class AbstractOpenBrowserServerAction extends CommonActionProvid
 	
 	protected boolean shouldAddForSelection(IStructuredSelection sel) {
 		IServer server = getSingleServer(sel);
-		if( server != null ) {
-			JBossServer jbs = ServerConverter.getJBossServer(server);
-			if( jbs != null )
-				return true;
-		}
-		return false;
+		return server != null && ServerConverter.getJBossServer(server) != null; 
 	}
 	
 	protected IServer getSingleServer(IStructuredSelection sel) {

@@ -132,7 +132,7 @@ public class ServerPasswordSection extends ServerEditorSection {
 	 * @param monitor the progress monitor for the save operation.
 	 */
 	public void doSave(IProgressMonitor monitor) {
-		JBossServer jbs = ServerConverter.getJBossServer(server.getOriginal());
+		JBossServer jbs = (JBossServer)ServerConverter.getJBossServer(server.getOriginal());
 		jbs.setPassword(passwordString);
 		monitor.worked(100);
 	}

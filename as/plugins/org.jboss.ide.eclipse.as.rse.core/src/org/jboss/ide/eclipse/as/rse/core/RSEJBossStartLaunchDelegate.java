@@ -24,8 +24,8 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.IJBossBehaviourDelegate;
+import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
@@ -99,7 +99,7 @@ public class RSEJBossStartLaunchDelegate extends AbstractRSELaunchDelegate {
 
 	private String getDefaultLaunchCommand(ILaunchConfiguration config) throws CoreException {
 		String serverId = new JBossLaunchConfigProperties().getServerId(config);
-		JBossServer jbossServer = ServerConverter.checkedFindJBossServer(serverId);
+		IJBossServer jbossServer = ServerConverter.checkedFindJBossServer(serverId);
 		String rseHome = jbossServer.getServer().getAttribute(RSEUtils.RSE_SERVER_HOME_DIR, "");
 		// initialize startup command to something reasonable
 		String currentArgs = config.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, ""); //$NON-NLS-1$

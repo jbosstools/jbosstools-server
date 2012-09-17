@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
@@ -55,7 +55,7 @@ public class ConfigNameResolverTest extends TestCase {
 		for( int i = 0; i < vars.length; i++ ) {
 			String var = ConfigNameResolver.getVariablePattern(vars[i]);
 			String result = new ConfigNameResolver().performSubstitutions(var, server.getName());
-			JBossServer jbs = ServerConverter.getJBossServer(server);
+			IJBossServer jbs = ServerConverter.getJBossServer(server);
 			if( jbs == null ) {
 				assertEquals("", result);
 			} else  if( vars[i].equals(ConfigNameResolver.JBOSS_CONFIG))

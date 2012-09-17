@@ -17,6 +17,7 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.internal.Base;
+import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.ILaunchConfigConfigurator;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
@@ -34,7 +35,7 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
  */
 public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 
-	private JBossServer jbossServer;
+	private IJBossServer jbossServer;
 	private IJBossServerRuntime jbossRuntime;
 
 	public RSEJBoss7LaunchConfigurator(IServer server) throws CoreException {
@@ -47,7 +48,7 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 
 		boolean detectStartupCommand = RSELaunchConfigProperties.isDetectStartupCommand(launchConfig, true);
 		String currentStartupCmd = RSELaunchConfigProperties.getStartupCommand(launchConfig);
-		String defaultStartup = getLaunchCommand(jbossServer, jbossRuntime);
+		String defaultStartup = getLaunchCommand((JBossServer)jbossServer, jbossRuntime);
 		if( detectStartupCommand || !isSet(currentStartupCmd)) {
 			RSELaunchConfigProperties.setStartupCommand(defaultStartup, launchConfig);
 		}
@@ -55,7 +56,7 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 		
 		boolean detectShutdownCommand = RSELaunchConfigProperties.isDetectShutdownCommand(launchConfig, true);
 		String currentShutdownCmd = RSELaunchConfigProperties.getShutdownCommand(launchConfig);
-		String defaultShutdownCommand = getShutdownCommand(jbossServer, jbossRuntime);
+		String defaultShutdownCommand = getShutdownCommand((JBossServer)jbossServer, jbossRuntime);
 		if( detectShutdownCommand || !isSet(currentShutdownCmd)) {
 			RSELaunchConfigProperties.setShutdownCommand(defaultShutdownCommand, launchConfig);
 		}

@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.INeedCredentials;
 import org.jboss.ide.eclipse.as.core.server.IProvideCredentials;
 import org.jboss.ide.eclipse.as.core.server.IServerProvider;
@@ -40,7 +41,7 @@ public class UserPassCredentialProvider implements IProvideCredentials {
 		if( requiredProperties.size() > 2)
 			return false;
 		IServer s = serverProvider.getServer();
-		JBossServer jbs = ServerConverter.getJBossServer(s);
+		IJBossServer jbs = ServerConverter.getJBossServer(s);
 		if( jbs != null && !jbs.hasJMXProvider())
 			return true;
 		return false;
@@ -57,7 +58,7 @@ public class UserPassCredentialProvider implements IProvideCredentials {
 			public void run() {
 				IServer server = inNeed.getServer();
 				IServerWorkingCopy copy = server.createWorkingCopy();
-				JBossServer jbs = ServerConverter.getJBossServer(copy);
+				JBossServer jbs = (JBossServer)ServerConverter.getJBossServer(copy);
 				String initialUser = jbs.getUsername();
 				String initialPass = jbs.getPassword();
 				RequiredCredentialsDialog d = new RequiredCredentialsDialog(

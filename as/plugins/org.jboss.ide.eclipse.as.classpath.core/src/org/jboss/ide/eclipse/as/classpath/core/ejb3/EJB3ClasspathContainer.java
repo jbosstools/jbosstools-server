@@ -18,7 +18,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
@@ -30,8 +29,8 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.classpath.core.Messages;
+import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 /**
@@ -47,7 +46,7 @@ public class EJB3ClasspathContainer implements IClasspathContainer, IJBossServer
          "org.jboss.ide.eclipse.ejb3.wizards.core.classpath", "jboss-ejb3-configuration"); //$NON-NLS-1$ //$NON-NLS-2$
 
    protected IJavaProject javaProject;
-   protected JBossServer jbossServer;
+   protected IJBossServer jbossServer;
    protected IPath path;
 
    protected IPath configPath = new Path(""); //$NON-NLS-1$
@@ -106,11 +105,11 @@ public class EJB3ClasspathContainer implements IClasspathContainer, IJBossServer
 	   return Messages.EJB3ClasspathContainer_ejb30_description;
    }
 
-   public JBossServer getJBossServer() {
+   public IJBossServer getJBossServer() {
       return jbossServer;
    }
 
-   public void setJBossServer(JBossServer jbossServer) {
+   public void setJBossServer(IJBossServer jbossServer) {
       this.jbossServer = jbossServer;
    }
 

@@ -64,9 +64,9 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
@@ -454,7 +454,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		
 		
 		if(showTempAndDeployTexts()) {
-			JBossServer jbs = ServerConverter.getJBossServer(page.getServer().getOriginal());
+			IJBossServer jbs = ServerConverter.getJBossServer(page.getServer().getOriginal());
 			String newDir = getHelper().getAttribute(IDeployableServer.DEPLOY_DIRECTORY, 
 					jbs == null ? "" : jbs.getDeployFolder()); //$NON-NLS-1$
 			String newTemp = getHelper().getAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, 

@@ -26,9 +26,9 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePollerType;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
@@ -78,7 +78,7 @@ public class WebPortPoller implements IServerStatePoller2 {
 		// v6_safe
 		String host2 = ServerUtil.formatPossibleIpv6Address(server.getHost());
 		String url = "http://"+host2; //$NON-NLS-1$
-		JBossServer jbs = ServerConverter.getJBossServer(server);
+		IJBossServer jbs = ServerConverter.getJBossServer(server);
 		int port = jbs.getJBossWebPort();
 		url += ":" + port; //$NON-NLS-1$
 		return url;

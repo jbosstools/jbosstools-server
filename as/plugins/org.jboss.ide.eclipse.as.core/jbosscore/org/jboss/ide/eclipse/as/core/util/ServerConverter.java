@@ -26,6 +26,7 @@ import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServerBehaviour;
+import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.DelegatingJBoss7ServerBehavior;
 
@@ -36,7 +37,13 @@ import org.jboss.ide.eclipse.as.core.server.internal.v7.DelegatingJBoss7ServerBe
  */
 public class ServerConverter {
 
-	public static JBossServer findJBossServer(String serverId) throws CoreException {
+	public static IServer findServer(String serverId) {
+		if (serverId == null)
+			return null;
+		return ServerCore.findServer(serverId);
+	}
+	
+	public static IJBossServer findJBossServer(String serverId) throws CoreException {
 		if (serverId == null)
 			return null;
 
@@ -46,8 +53,8 @@ public class ServerConverter {
 		return getJBossServer(s);
 	}
 
-	public static JBossServer checkedFindJBossServer(String serverId) throws CoreException {
-		JBossServer server = findJBossServer(serverId);
+	public static IJBossServer checkedFindJBossServer(String serverId) throws CoreException {
+		IJBossServer server = findJBossServer(serverId);
 		if (server == null) {
 			throw new CoreException(
 					new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
@@ -80,15 +87,15 @@ public class ServerConverter {
 		return adaptedServer;
 	}
 	
-	public static JBossServer getJBossServer(IServer server) {
+	public static IJBossServer getJBossServer(IServer server) {
 		return convertServer(server, JBossServer.class);
 	}
 
-	public static JBossServer checkedGetJBossServer(IServer server) throws CoreException {
+	public static IJBossServer checkedGetJBossServer(IServer server) throws CoreException {
 		return checkedConvertServer(server, JBossServer.class);
 	}
 
-	public static JBossServer getJBossServer(IServerWorkingCopy server) {
+	public static IJBossServer getJBossServer(IServerWorkingCopy server) {
 		return convertServer(server, JBossServer.class);
 	}
 
@@ -113,7 +120,7 @@ public class ServerConverter {
 	 * @return
 	 */
 	public static JBossServer[] getAllJBossServers() {
-		ArrayList<JBossServer> servers = new ArrayList<JBossServer>();
+		ArrayList<IJBossServer> servers = new ArrayList<IJBossServer>();
 		IServer[] iservers = ServerCore.getServers();
 		for (int i = 0; i < iservers.length; i++) {
 			if (getJBossServer(iservers[i]) != null) {

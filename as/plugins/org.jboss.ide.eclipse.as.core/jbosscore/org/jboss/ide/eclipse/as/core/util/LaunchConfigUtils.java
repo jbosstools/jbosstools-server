@@ -160,7 +160,6 @@ public class LaunchConfigUtils {
 	
 	public static IServer checkedGetServer(ILaunchConfiguration launchConfig) throws CoreException {
 		String serverId = new JBossLaunchConfigProperties().getServerId(launchConfig);
-		JBossServer server = ServerConverter.checkedFindJBossServer(serverId);
-		return server.getServer();
+		return ServerConverter.findServer(serverId);
 	}
 }

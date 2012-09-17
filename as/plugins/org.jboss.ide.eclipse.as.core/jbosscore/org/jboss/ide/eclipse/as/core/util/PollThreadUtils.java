@@ -19,6 +19,7 @@ import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.INeedCredentials;
 import org.jboss.ide.eclipse.as.core.server.IPollResultListener;
 import org.jboss.ide.eclipse.as.core.server.IProvideCredentials;
@@ -26,7 +27,6 @@ import org.jboss.ide.eclipse.as.core.server.IServerProvider;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePollerType;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 
@@ -45,7 +45,7 @@ public class PollThreadUtils {
 	 * @return
 	 */
 	public static String getPollerId(boolean expectedState, IServer server) {
-		JBossServer s = ServerConverter.getJBossServer(server);
+		IJBossServer s = ServerConverter.getJBossServer(server);
 		ServerAttributeHelper helper = s.getAttributeHelper();
 		String key = expectedState == IServerStatePoller.SERVER_UP ?
 				IJBossToolingConstants.STARTUP_POLLER_KEY

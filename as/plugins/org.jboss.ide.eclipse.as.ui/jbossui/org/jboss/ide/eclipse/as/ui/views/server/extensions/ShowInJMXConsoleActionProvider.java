@@ -13,6 +13,7 @@ package org.jboss.ide.eclipse.as.ui.views.server.extensions;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
@@ -28,7 +29,7 @@ public class ShowInJMXConsoleActionProvider extends AbstractOpenBrowserServerAct
 	protected boolean shouldAddForSelection(IStructuredSelection sel) {
 		IServer server = getSingleServer(sel);
 		if( server != null ) {
-			JBossServer jbs = ServerConverter.getJBossServer(server);
+			IJBossServer jbs = ServerConverter.getJBossServer(server);
 			if( jbs != null ) {
 				// TODO fix this so anything BELOW 7 works
 				// need new util methods

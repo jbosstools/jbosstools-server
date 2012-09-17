@@ -13,9 +13,9 @@ package org.jboss.ide.eclipse.as.jmx.integration;
 import java.util.List;
 
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IProvideCredentials;
 import org.jboss.ide.eclipse.as.core.server.IServerProvider;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.launch.UserPassCredentialProvider;
 
@@ -32,7 +32,7 @@ public class SecurityFailureHandler extends UserPassCredentialProvider implement
 		if( requiredProperties.size() > 2)
 			return false;
 		IServer s = serverProvider.getServer();
-		JBossServer jbs = ServerConverter.getJBossServer(s);
+		IJBossServer jbs = ServerConverter.getJBossServer(s);
 		if( jbs != null && jbs.hasJMXProvider())
 			return true;
 		return false;

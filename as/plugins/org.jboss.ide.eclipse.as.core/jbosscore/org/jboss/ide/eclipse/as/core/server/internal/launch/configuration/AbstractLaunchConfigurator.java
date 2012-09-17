@@ -15,6 +15,7 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.ILaunchConfigConfigurator;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
@@ -27,7 +28,7 @@ public abstract class AbstractLaunchConfigurator implements ILaunchConfigConfigu
 
 	private static final String DEFAULTS_SET = "DEFAULTS_SET"; //$NON-NLS-1$
 
-	private JBossServer jbossServer;
+	private IJBossServer jbossServer;
 	private IJBossServerRuntime jbossRuntime;
 
 	public AbstractLaunchConfigurator(IServer server) throws CoreException {
@@ -38,11 +39,11 @@ public abstract class AbstractLaunchConfigurator implements ILaunchConfigConfigu
 	@Override
 	public void configure(ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
 		if (!areDefaultsSet(launchConfig)) {
-			doConfigure(launchConfig, jbossServer, jbossRuntime);
+			doConfigure(launchConfig, (JBossServer)jbossServer, jbossRuntime);
 			setDefaultsSet(launchConfig);
 		} 
 		if( shouldUpdateLaunch(launchConfig)){
-			doOverrides(launchConfig, jbossServer, jbossRuntime);
+			doOverrides(launchConfig, (JBossServer)jbossServer, jbossRuntime);
 		}
 	}
 
@@ -67,7 +68,7 @@ public abstract class AbstractLaunchConfigurator implements ILaunchConfigConfigu
 		return false;
 	}
 
-	protected JBossServer getJbossServer() {
+	protected IJBossServer getJbossServer() {
 		return jbossServer;
 	}
 

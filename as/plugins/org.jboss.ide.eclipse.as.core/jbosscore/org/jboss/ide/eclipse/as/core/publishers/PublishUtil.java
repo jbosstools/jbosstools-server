@@ -12,26 +12,16 @@ package org.jboss.ide.eclipse.as.core.publishers;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jst.server.core.IEnterpriseApplication;
-import org.eclipse.wst.common.componentcore.ModuleCoreNature;
-import org.eclipse.wst.common.project.facet.core.util.internal.ProgressMonitorUtil;
 import org.eclipse.wst.server.core.IModule;
-import org.eclipse.wst.server.core.internal.DeletedModule;
-import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
-import org.eclipse.wst.server.core.model.IModuleResourceDelta;
-import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.util.ProjectModule;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
@@ -45,22 +35,9 @@ import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentP
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentTypePrefs;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
+import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
 
-public class PublishUtil {
-	public static int countChanges(IModuleResourceDelta[] deltas) {
-		IModuleResource res;
-		int count = 0;
-		if( deltas == null ) return 0;
-		for( int i = 0; i < deltas.length; i++ ) {
-			res = deltas[i].getModuleResource();
-			if( res != null && res instanceof IModuleFile)
-				count++;
-			count += countChanges(deltas[i].getAffectedChildren());
-		}
-		return count;
-	}
-
-
+public class PublishUtil extends ModuleResourceUtil {
 	/**
 	 * All preferences are stored in the "local" setting as it was decided
 	 * having to replicate deploy paths for each publish method was not good
@@ -159,50 +136,6 @@ public class PublishUtil {
 		return root;
 	}
 	
-	/*
-	 * This method is deprecated. Please use the following:
-	 * @see getDeployPath(IModule[] module, String folder, IDeployableServer server)
-	 * @param moduleTree
-	 * @param deployFolder
-	 * @return
-	 */
-	// @Deprecated 
-	//public static IPath getDeployPath(IModule[] moduleTree, String deployFolder);
-	
-	private static String getParentRelativeURI(IModule[] tree, int index, String defaultName) {
-		if( index != 0 ) {
-			IEnterpriseApplication parent = (IEnterpriseApplication)tree[index-1].loadAdapter(IEnterpriseApplication.class, null);
-			if( parent != null ) {
-				String uri = parent.getURI(tree[index]);
-				if(uri != null )
-					return uri;
-			}
-			// TODO if we make our own "enterprise app" interface, do that here
-		} 
-		// return name with extension
-		return defaultName;
-
-	}
-	
-	private static ArrayList<String> moduleCoreFactories = new ArrayList<String>();
-	static {
-		moduleCoreFactories.add("org.eclipse.jst.j2ee.server"); //$NON-NLS-1$
-		moduleCoreFactories.add("org.eclipse.jst.jee.server"); //$NON-NLS-1$
-	}
-	public static void addModuleCoreFactory(String s) {
-		if( !moduleCoreFactories.contains(s))
-			moduleCoreFactories.add(s);
-	}
-	public static boolean isModuleCoreProject(IModule[] module) {
-		IModule lastmod = module[module.length-1];
-		if( lastmod.getProject() == null && lastmod instanceof DeletedModule) {
-			int colon = lastmod.getId().indexOf(':');
-			String factory = lastmod.getId().substring(0,colon == -1 ? lastmod.getId().length() : colon);
-			return moduleCoreFactories.contains(factory);
-		}
-		return ModuleCoreNature.isFlexibleProject(lastmod.getProject());
-	}
-
 	public static IPath getDeployPath(IJBossServerPublishMethod method, IModule[] moduleTree, IDeployableServer server) {
 		String defaultFolder = method.getPublishDefaultRootFolder(server.getServer());
 		String folder = PublishUtil.getDeployRootFolder(
@@ -247,31 +180,6 @@ public class PublishUtil {
 		return suffix;
 	}
 	
-	public static IModuleResource[] getResources(IModule module, IProgressMonitor monitor) throws CoreException {
-		monitor.beginTask("Fetching Module Resources", 100); //$NON-NLS-1$
-		ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, ProgressMonitorUtil.submon(monitor, 100));
-		if( md == null ) {
-			// Deleted Module, TODO handle this differently!
-			return new IModuleResource[]{};
-		}
-		IModuleResource[] members = md.members();
-		monitor.done();
-		return members;
-	}
-	
-	public static IModuleResource[] getResources(IModule[] tree) throws CoreException {
-		return getResources(tree[tree.length-1], new NullProgressMonitor());
-	}
-	
-	public static File getFile(IModuleResource resource) {
-		File source = (File)resource.getAdapter(File.class);
-		if( source == null ) {
-			IFile ifile = (IFile)resource.getAdapter(IFile.class);
-			if( ifile != null ) 
-				source = ifile.getLocation().toFile();
-		}
-		return source;
-	}
 	
 	public static boolean deployPackaged(IModule[] moduleTree) {
 		String moduleTypeId = moduleTree[moduleTree.length-1].getModuleType().getId(); 
@@ -289,13 +197,6 @@ public class PublishUtil {
 		}
 		return false;
 	}
-	public static java.io.File getFile(IModuleFile mf) {
-		return (IFile)mf.getAdapter(IFile.class) != null ? 
-					((IFile)mf.getAdapter(IFile.class)).getLocation().toFile() :
-						(java.io.File)mf.getAdapter(java.io.File.class);
-	}
-	
-	
 	/*
 	 * Just package into a jar raw.  Don't think about it, just do it
 	 */
@@ -374,12 +275,4 @@ public class PublishUtil {
 			}
 		}
 	}
-	
-	public static IModule[] combine(IModule[] module, IModule newMod) {
-		IModule[] retval = new IModule[module.length + 1];
-		for( int i = 0; i < module.length; i++ )
-			retval[i]=module[i];
-		retval[retval.length-1] = newMod;
-		return retval;
-	}	
 }

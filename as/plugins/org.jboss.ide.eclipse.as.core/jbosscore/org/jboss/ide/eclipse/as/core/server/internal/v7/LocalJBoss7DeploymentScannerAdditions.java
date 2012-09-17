@@ -25,6 +25,7 @@ import org.eclipse.wst.server.core.ServerEvent;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
+import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
@@ -141,7 +142,7 @@ public class LocalJBoss7DeploymentScannerAdditions extends UnitedServerListener 
 	}
 	
 	protected String[] getDeployLocationFolders(IServer server) {
-		JBossServer ds = ServerConverter.getJBossServer(server);
+		JBossServer ds = (JBossServer)ServerConverter.getJBossServer(server);
 		ArrayList<String> folders = new ArrayList<String>();
 		// add the server folder deploy loc. first
 		String insideServer = ds.getDeployFolder(JBossServer.DEPLOY_SERVER);
