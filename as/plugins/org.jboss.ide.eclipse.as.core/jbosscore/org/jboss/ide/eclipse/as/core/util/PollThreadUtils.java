@@ -24,12 +24,11 @@ import org.jboss.ide.eclipse.as.core.server.IProvideCredentials;
 import org.jboss.ide.eclipse.as.core.server.IServerProvider;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePollerType;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
-import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
-import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
 
 /**
  * @author Rob Stryker
@@ -70,13 +69,13 @@ public class PollThreadUtils {
 	}
 
 	/**
-	 * Returns the poller for the given poller id. 
+	 * Returns a new poller instance for the given poller type id. 
 	 * 
 	 * @param pollerId the id of the poller to use
 	 * @return the poller for the given id
 	 */
 	public static IServerStatePoller getPoller(String pollerId) {
-		ServerStatePollerType type = ExtensionManager.getDefault().getPollerType(pollerId);
+		IServerStatePollerType type = ExtensionManager.getDefault().getPollerType(pollerId);
 		if (type != null) {
 			IServerStatePoller tempPoller = type.createPoller();
 			tempPoller.setPollerType(type);

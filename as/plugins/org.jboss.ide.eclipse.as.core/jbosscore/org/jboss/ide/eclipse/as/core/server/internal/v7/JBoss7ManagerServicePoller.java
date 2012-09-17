@@ -25,7 +25,7 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
-import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePollerType;
 import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
@@ -40,7 +40,7 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 	public static final String POLLER_ID = "org.jboss.ide.eclipse.as.core.server.JBoss7ManagerServicePoller"; //$NON-NLS-1$
 	private IServer server;
 	private AS7ManagementDetails managementDetails;
-	private ServerStatePollerType type;
+	private IServerStatePollerType type;
 	private boolean expectedState;
 	private IJBoss7ManagerService service;
 	private boolean done = false;
@@ -126,11 +126,11 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 		return retPrompts;
 	}
 	
-	public ServerStatePollerType getPollerType() {
+	public IServerStatePollerType getPollerType() {
 		return type;
 	}
 
-	public void setPollerType(ServerStatePollerType type) {
+	public void setPollerType(IServerStatePollerType type) {
 		this.type = type;
 	}
 

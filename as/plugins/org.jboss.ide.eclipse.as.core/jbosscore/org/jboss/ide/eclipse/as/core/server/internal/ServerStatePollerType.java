@@ -18,13 +18,14 @@ import org.eclipse.osgi.util.NLS;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePollerType;
 
 /**
  * A wrapper for pollers
  * @author Rob Stryker rob.stryker@redhat.com
  *
  */
-public class ServerStatePollerType {
+public class ServerStatePollerType implements IServerStatePollerType {
 	private IConfigurationElement el;
 	public ServerStatePollerType(IConfigurationElement el) {
 		this.el = el;

@@ -16,8 +16,7 @@ import java.util.Properties;
 
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
-import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
-import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePollerType;
 
 /**
  * Wait 15 seconds, then say it's at it's expected state
@@ -30,7 +29,7 @@ public class TimeoutPoller implements IServerStatePoller {
 	private boolean expectedState;
 	private long endTime;
 	private IServer server;
-	private ServerStatePollerType type;
+	private IServerStatePollerType type;
 
 	public void beginPolling(IServer server, boolean expectedState) {
 		this.expectedState = expectedState;
@@ -72,11 +71,11 @@ public class TimeoutPoller implements IServerStatePoller {
 		return null;
 	}
 	
-	public ServerStatePollerType getPollerType() {
+	public IServerStatePollerType getPollerType() {
 		return type;
 	}
 
-	public void setPollerType(ServerStatePollerType type) {
+	public void setPollerType(IServerStatePollerType type) {
 		this.type = type;
 	}
 

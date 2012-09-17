@@ -27,8 +27,8 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePollerType;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
@@ -36,7 +36,7 @@ public class WebPortPoller implements IServerStatePoller2 {
 
 	public static final String WEB_POLLER_ID = "org.jboss.ide.eclipse.as.core.runtime.server.WebPoller"; //$NON-NLS-1$
 	private IServer server;
-	private ServerStatePollerType type;
+	private IServerStatePollerType type;
 	private boolean canceled, done;
 	private boolean state;
 	private boolean expectedState;
@@ -112,11 +112,11 @@ public class WebPortPoller implements IServerStatePoller2 {
 		return false;
 	}
 	
-	public ServerStatePollerType getPollerType() {
+	public IServerStatePollerType getPollerType() {
 		return type;
 	}
 
-	public void setPollerType(ServerStatePollerType type) {
+	public void setPollerType(IServerStatePollerType type) {
 		this.type = type;
 	}
 

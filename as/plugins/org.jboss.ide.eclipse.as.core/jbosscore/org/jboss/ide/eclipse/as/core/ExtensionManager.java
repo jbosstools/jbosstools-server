@@ -34,6 +34,8 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IProvideCredentials;
 import org.jboss.ide.eclipse.as.core.server.IServerAlreadyStartedHandler;
 import org.jboss.ide.eclipse.as.core.server.IServerProvider;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePollerType;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 
 /**
@@ -73,14 +75,14 @@ public class ExtensionManager {
 	 * @param id the id
 	 * @return the poller
 	 */
-	public ServerStatePollerType getPollerType(String id) {
+	public IServerStatePollerType getPollerType(String id) {
 		if( pollers == null ) 
 			loadPollers();
 		return pollers.get(id);
 	}
 	
 	/** Get only the pollers that can poll for startups */
-	public ServerStatePollerType[] getStartupPollers(IServerType serverType) {
+	public IServerStatePollerType[] getStartupPollers(IServerType serverType) {
 		if( pollers == null ) 
 			loadPollers();
 		ArrayList<ServerStatePollerType> list = new ArrayList<ServerStatePollerType>();
@@ -95,7 +97,7 @@ public class ExtensionManager {
 	}
 	
 	/** Get only the pollers that can poll for shutdowns */
-	public ServerStatePollerType[] getShutdownPollers(IServerType serverType) {
+	public IServerStatePollerType[] getShutdownPollers(IServerType serverType) {
 		if( pollers == null ) 
 			loadPollers();
 		ArrayList<ServerStatePollerType> list = new ArrayList<ServerStatePollerType>();
@@ -110,7 +112,7 @@ public class ExtensionManager {
 	}
 	
 
-	protected boolean pollerSupportsServerType(ServerStatePollerType type, IServerType serverType) {
+	protected boolean pollerSupportsServerType(IServerStatePollerType type, IServerType serverType) {
 		String sTypes = type.getServerTypes();
 		if(sTypes == null || sTypes.equals("")) //$NON-NLS-1$
 			return true;

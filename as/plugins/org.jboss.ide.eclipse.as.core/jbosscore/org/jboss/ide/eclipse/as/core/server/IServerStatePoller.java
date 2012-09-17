@@ -12,7 +12,6 @@ package org.jboss.ide.eclipse.as.core.server;
 
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
-import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 
 /**
  * A server state poller will 
@@ -46,8 +45,8 @@ public interface IServerStatePoller extends INeedCredentials {
 	 */
 	public static final int TIMEOUT_BEHAVIOR_FAIL = 2;
 	
-	public ServerStatePollerType getPollerType();
-	public void setPollerType(ServerStatePollerType type);
+	public IServerStatePollerType getPollerType();
+	public void setPollerType(IServerStatePollerType type);
 	/*
 	 * expected to launch own thread
 	 */

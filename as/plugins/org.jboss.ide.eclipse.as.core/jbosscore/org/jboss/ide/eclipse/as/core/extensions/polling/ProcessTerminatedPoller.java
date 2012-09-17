@@ -17,8 +17,8 @@ import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IProcessProvider;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePollerType;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 
 /**
  * Essentially does nothing because the process already has a listener
@@ -33,7 +33,7 @@ public class ProcessTerminatedPoller implements IServerStatePoller {
 
 	public static final String POLLER_ID = "org.jboss.ide.eclipse.as.core.runtime.server.processTerminatedPoller"; //$NON-NLS-1$
 	
-	private ServerStatePollerType type;
+	private IServerStatePollerType type;
 	private IServer server;
 	
 	public void beginPolling(IServer server, boolean expectedState) {
@@ -73,11 +73,11 @@ public class ProcessTerminatedPoller implements IServerStatePoller {
 		return null;
 	}
 	
-	public ServerStatePollerType getPollerType() {
+	public IServerStatePollerType getPollerType() {
 		return type;
 	}
 
-	public void setPollerType(ServerStatePollerType type) {
+	public void setPollerType(IServerStatePollerType type) {
 		this.type = type;
 	}
 
