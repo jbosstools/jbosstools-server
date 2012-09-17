@@ -17,17 +17,17 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.model.LaunchConfigurationDelegate;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 
 public class RSEJBoss7StartLaunchDelegate extends AbstractRSELaunchDelegate {
 
 	@Override
-	public void actualLaunch(DelegatingStartLaunchConfiguration launchConfig,
+	public void actualLaunch(LaunchConfigurationDelegate launchConfig,
 			ILaunchConfiguration configuration, String mode, ILaunch launch,
 			IProgressMonitor monitor) throws CoreException {
 		IDelegatingServerBehavior beh = JBossServerBehaviorUtils.getServerBehavior(configuration);

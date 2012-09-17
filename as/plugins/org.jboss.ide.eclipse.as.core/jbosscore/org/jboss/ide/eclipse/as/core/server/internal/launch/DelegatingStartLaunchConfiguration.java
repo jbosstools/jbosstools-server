@@ -44,7 +44,7 @@ public class DelegatingStartLaunchConfiguration extends AbstractJBossStartLaunch
 		}
 	}
 
-	protected IJBossLaunchDelegate getDelegate(ILaunchConfiguration configuration) throws CoreException {
+	public IJBossLaunchDelegate getDelegate(ILaunchConfiguration configuration) throws CoreException {
 		IServer server = ServerUtil.getServer(configuration);
 		IDeployableServerBehaviour beh = ServerConverter.getDeployableServerBehavior(server);
 		String currentMode = DeploymentPreferenceLoader.getCurrentDeploymentMethodTypeId(beh.getServer(), LocalPublishMethod.LOCAL_PUBLISH_METHOD);

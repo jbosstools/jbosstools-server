@@ -5,11 +5,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.model.LaunchConfigurationDelegate;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration;
 
 public interface IJBossLaunchDelegate {
-	public void actualLaunch(DelegatingStartLaunchConfiguration launchConfig, ILaunchConfiguration configuration, 
+	public void actualLaunch(LaunchConfigurationDelegate launchConfig, ILaunchConfiguration configuration, 
 			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException;
 	
 	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor) 

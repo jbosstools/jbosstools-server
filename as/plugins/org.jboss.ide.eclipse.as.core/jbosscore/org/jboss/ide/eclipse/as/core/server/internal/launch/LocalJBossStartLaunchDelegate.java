@@ -19,6 +19,7 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.debug.core.model.LaunchConfigurationDelegate;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.StandardClasspathProvider;
@@ -50,7 +51,7 @@ public class LocalJBossStartLaunchDelegate extends AbstractJBossStartLaunchConfi
 	 * Actual instance methods
 	 */
 	public void actualLaunch(
-			DelegatingStartLaunchConfiguration launchConfig,
+			LaunchConfigurationDelegate launchConfig,
 			ILaunchConfiguration configuration, String mode, ILaunch launch,
 			IProgressMonitor monitor) throws CoreException {
 		actualLaunch(configuration, mode, launch, monitor);
