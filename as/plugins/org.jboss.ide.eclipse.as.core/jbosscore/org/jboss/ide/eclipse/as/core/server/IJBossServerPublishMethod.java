@@ -15,12 +15,11 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 
 public interface IJBossServerPublishMethod {
 //	public IJBossServerPublishMethodType getPublishMethodType();
-	public void publishStart(DeployableServerBehavior behaviour, IProgressMonitor monitor) throws CoreException;
-	public int publishFinish(DeployableServerBehavior behaviour, IProgressMonitor monitor) throws CoreException;
+	public void publishStart(IDeployableServerBehaviour behaviour, IProgressMonitor monitor) throws CoreException;
+	public int publishFinish(IDeployableServerBehaviour behaviour, IProgressMonitor monitor) throws CoreException;
 
 	/**
 	 * Publish this module
@@ -32,7 +31,7 @@ public interface IJBossServerPublishMethod {
 	 * @return An IServer.STATE_XXX constant, or -1 if the behaviour should not change server state
 	 * @throws CoreException
 	 */
-	public int publishModule(DeployableServerBehavior behaviour, int kind, int deltaKind, IModule[] module, IProgressMonitor monitor) throws CoreException;
+	public int publishModule(IDeployableServerBehaviour behaviour, int kind, int deltaKind, IModule[] module, IProgressMonitor monitor) throws CoreException;
 
 	/**
 	 * Create a callback handler with the given deploy path and server.

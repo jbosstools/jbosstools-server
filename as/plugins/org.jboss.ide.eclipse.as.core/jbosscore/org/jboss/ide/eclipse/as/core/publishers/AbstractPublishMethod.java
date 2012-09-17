@@ -20,19 +20,19 @@ import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServerBehaviour;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
-import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 
 public abstract class AbstractPublishMethod implements IJBossServerPublishMethod {
 	public abstract String getPublishMethodId();
 
-	public void publishStart(DeployableServerBehavior behaviour,
+	public void publishStart(IDeployableServerBehaviour behaviour,
 			IProgressMonitor monitor) throws CoreException {
 		Trace.trace(Trace.STRING_FINER, "Publish start in " + getClass().getName()); //$NON-NLS-1$
 	}
 
-	public int publishFinish(DeployableServerBehavior behaviour,
+	public int publishFinish(IDeployableServerBehaviour behaviour,
 			IProgressMonitor monitor) throws CoreException {
 		Trace.trace(Trace.STRING_FINER, "Beginning publishFinish in " + getClass().getName()); //$NON-NLS-1$
         int result = getServerPublishState(behaviour);
@@ -40,7 +40,7 @@ public abstract class AbstractPublishMethod implements IJBossServerPublishMethod
         return result;
 	}
 	
-	public int getServerPublishState(DeployableServerBehavior behaviour) {
+	public int getServerPublishState(IDeployableServerBehaviour behaviour) {
         IModule[] modules = behaviour.getServer().getModules();
         boolean allpublished= true;
         for (int i = 0; i < modules.length; i++) {
@@ -52,7 +52,7 @@ public abstract class AbstractPublishMethod implements IJBossServerPublishMethod
         return IServer.PUBLISH_STATE_INCREMENTAL;
 	}
 
-	public int publishModule(DeployableServerBehavior behaviour, int kind,
+	public int publishModule(IDeployableServerBehaviour behaviour, int kind,
 			int deltaKind, IModule[] module, IProgressMonitor monitor)
 			throws CoreException {
 		Trace.trace(Trace.STRING_FINER, "Beginning to publish module " + module[module.length-1].getName()); //$NON-NLS-1$
