@@ -18,6 +18,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
+import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.INeedCredentials;
 import org.jboss.ide.eclipse.as.core.server.IPollResultListener;
 import org.jboss.ide.eclipse.as.core.server.IProvideCredentials;
@@ -25,7 +26,6 @@ import org.jboss.ide.eclipse.as.core.server.IServerProvider;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePollerType;
-import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
@@ -201,7 +201,7 @@ public class PollThreadUtils {
 		}
 	}
 	
-	public static IStatus isServerStarted(DelegatingServerBehavior jbsBehavior) {
+	public static IStatus isServerStarted(IDelegatingServerBehavior jbsBehavior) {
 		IServerStatePoller poller = PollThreadUtils.getPoller(IServerStatePoller.SERVER_UP, jbsBehavior.getServer());
 		return isServerStarted(jbsBehavior.getServer(), poller);
 	}

@@ -33,10 +33,10 @@ import org.eclipse.wst.server.core.util.SocketUtil;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServerBehaviour;
 import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel;
 import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel.Behaviour;
 import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel.BehaviourImpl;
-import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -131,7 +131,7 @@ public class ServerModeSectionComposite extends Composite {
 	    	nameList[i] = deployAdditions.get(i).behaviourName;
 	    }
 	    deployTypeCombo.setItems(nameList);
-		DeployableServerBehavior ds = ServerConverter.getDeployableServerBehavior(callback.getServer().getOriginal());
+		IDeployableServerBehaviour ds = ServerConverter.getDeployableServerBehavior(callback.getServer().getOriginal());
 		String current = null;
 		if( ds != null ) {
 			Behaviour b = BehaviourModel.getModel().getBehaviour(callback.getServer().getOriginal().getServerType().getId());

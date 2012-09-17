@@ -13,6 +13,7 @@ package org.jboss.ide.eclipse.as.core.server.internal.launch;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
@@ -22,15 +23,15 @@ public class StopLaunchConfiguration extends AbstractJBossStartLaunchConfigurati
 	@Override
 	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor)
 			throws CoreException {
-		DelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
+		IDelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
 		if (!jbsBehavior.canStop(mode).isOK())
 			throw new CoreException(jbsBehavior.canStart(mode));
 		if (LaunchCommandPreferences.isIgnoreLaunchCommand(jbsBehavior.getServer())) {
-			jbsBehavior.setServerStopping();
-			jbsBehavior.setServerStopped();
+			((DelegatingServerBehavior)jbsBehavior).setServerStopping();
+			((DelegatingServerBehavior)jbsBehavior).setServerStopped();
 			return false;
 		}
-		jbsBehavior.setServerStopping();
+		((DelegatingServerBehavior)jbsBehavior).setServerStopping();
 		return true;
 	}
 }

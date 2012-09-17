@@ -15,13 +15,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.server.core.IModule;
-import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 
 public interface IJBossBehaviourDelegate {
 
 	public String getBehaviourTypeId();
 
-	public void setActualBehaviour(DelegatingServerBehavior actualBehaviour);
+	public void setActualBehaviour(IDelegatingServerBehavior actualBehaviour);
 
 	public void stop(boolean force);
 

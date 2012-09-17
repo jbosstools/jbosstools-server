@@ -37,11 +37,11 @@ import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.modules.ResourceModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServerBehaviour;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.IPublishCopyCallbackHandler;
-import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ProgressMonitorUtil;
@@ -280,7 +280,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 	 * @since 2.3
 	 */
 	protected IModulePathFilter getPathFilter(IModule[] moduleTree) {
-		DeployableServerBehavior beh = ServerConverter.getDeployableServerBehavior(server.getServer());
+		IDeployableServerBehaviour beh = ServerConverter.getDeployableServerBehavior(server.getServer());
 		return beh.getPathFilter(moduleTree);
 	}
 	

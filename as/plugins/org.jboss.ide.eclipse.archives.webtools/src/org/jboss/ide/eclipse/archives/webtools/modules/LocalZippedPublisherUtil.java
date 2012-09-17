@@ -39,6 +39,7 @@ import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServerBehaviour;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
@@ -249,7 +250,7 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 			TrueZipUtil.createArchive(path);
 			de.schlichtherle.io.File root = TrueZipUtil.getFile(path, TrueZipUtil.getJarArchiveDetector());
 			IModuleResource[] resources = getResources(module);
-			DeployableServerBehavior beh = ServerConverter.getDeployableServerBehavior(server);
+			IDeployableServerBehaviour beh = ServerConverter.getDeployableServerBehavior(server);
 			IModulePathFilter filter = beh.getPathFilter(module);
 			IModuleResource[] resources2 = filter == null ? resources : filter.getFilteredMembers();
 			IStatus[] copyResults = copy(root, resources2);
@@ -284,7 +285,7 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 		IPath path = getOutputFilePath(module);
 		de.schlichtherle.io.File root = TrueZipUtil.getFile(path, TrueZipUtil.getJarArchiveDetector());
 		IModuleResourceDelta[] deltas = ((Server)server).getPublishedResourceDelta(module);
-		DeployableServerBehavior beh = ServerConverter.getDeployableServerBehavior(server);
+		IDeployableServerBehaviour beh = ServerConverter.getDeployableServerBehavior(server);
 		IModulePathFilter filter = beh.getPathFilter(module);
 
 		return publishChanges(server, deltas, root, filter);

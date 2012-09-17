@@ -23,6 +23,8 @@ import org.eclipse.rse.services.shells.IHostOutput;
 import org.eclipse.rse.services.shells.IHostShell;
 import org.eclipse.rse.services.shells.IHostShellChangeEvent;
 import org.eclipse.rse.services.shells.IHostShellOutputListener;
+import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServerBehaviour;
 import org.jboss.ide.eclipse.as.core.server.IJBossBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.server.IJBossLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
@@ -36,7 +38,7 @@ public abstract class AbstractRSELaunchDelegate extends AbstractJBossStartLaunch
 
 	public static final String DELIMETER = ":";
 	public static final String ECHO_KEY_DISCOVER_PID = "JBTOOLS_SERVER_START_CMD";
-	protected void executeRemoteCommand(String command, DelegatingServerBehavior behavior)
+	protected void executeRemoteCommand(String command, IDelegatingServerBehavior behavior)
 			throws CoreException {
 		try {
 			ServerShellModel model = RSEHostShellModel.getInstance().getModel(behavior.getServer());
@@ -46,14 +48,15 @@ public abstract class AbstractRSELaunchDelegate extends AbstractJBossStartLaunch
 			shell.writeToShell(getPidCommand);
 		} catch (SystemMessageException sme) {
 			// could not connect to remote system
-			behavior.setServerStopped(); 
+			((DelegatingServerBehavior)behavior).setServerStopped(); 
 			throw new CoreException(new Status(IStatus.ERROR,
 					org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID,
 					MessageFormat.format("Could not execute command on remote server {0}. Please ensure the server is reachable.", behavior.getServer().getName()), sme));
 		}
 	}
 	
-	private void addShellOutputListener(final IHostShell shell, final DelegatingServerBehavior behavior) {
+	private void addShellOutputListener(final IHostShell shell, 
+			final IDelegatingServerBehavior behavior) {
 		if( shell == null ) 
 			return; // No listener needed for a null shell. 
 		IHostShellOutputListener listener = null;
@@ -76,9 +79,9 @@ public abstract class AbstractRSELaunchDelegate extends AbstractJBossStartLaunch
 		shell.addOutputListener(listener);
 	}
 	
-	protected void launchPingThread(DeployableServerBehavior beh) {
+	protected void launchPingThread(IDeployableServerBehaviour beh) {
 		// TODO do it properly here
 		ThreadUtils.sleepFor(30000);
-		beh.setServerStarted();
+		((DeployableServerBehavior)beh).setServerStarted();
 	}
 }

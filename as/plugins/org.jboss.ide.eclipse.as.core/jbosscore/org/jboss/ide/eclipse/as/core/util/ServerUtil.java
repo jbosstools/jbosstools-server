@@ -33,9 +33,9 @@ import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.IJBossBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 
 public class ServerUtil {
@@ -66,7 +66,7 @@ public class ServerUtil {
 	}
 	
 	public static IJBossBehaviourDelegate checkedGetBehaviorDelegate(IServer server) throws CoreException {
-		return checkedGetServerAdapter(server, DelegatingServerBehavior.class).getDelegate();
+		return checkedGetServerAdapter(server, IDelegatingServerBehavior.class).getDelegate();
 	}
 
 	public static IPath makeRelative(IRuntime rt, IPath p) {

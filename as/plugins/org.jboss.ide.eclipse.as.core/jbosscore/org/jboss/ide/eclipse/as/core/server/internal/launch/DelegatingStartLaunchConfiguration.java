@@ -24,9 +24,9 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServerBehaviour;
 import org.jboss.ide.eclipse.as.core.server.IJBossLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel;
-import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
@@ -46,7 +46,7 @@ public class DelegatingStartLaunchConfiguration extends AbstractJBossStartLaunch
 
 	protected IJBossLaunchDelegate getDelegate(ILaunchConfiguration configuration) throws CoreException {
 		IServer server = ServerUtil.getServer(configuration);
-		DeployableServerBehavior beh = ServerConverter.getDeployableServerBehavior(server);
+		IDeployableServerBehaviour beh = ServerConverter.getDeployableServerBehavior(server);
 		String currentMode = DeploymentPreferenceLoader.getCurrentDeploymentMethodTypeId(beh.getServer(), LocalPublishMethod.LOCAL_PUBLISH_METHOD);
 		if( currentMode == null )
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Server's mode (local/rse/etc) is unset or missing.")); //$NON-NLS-1$

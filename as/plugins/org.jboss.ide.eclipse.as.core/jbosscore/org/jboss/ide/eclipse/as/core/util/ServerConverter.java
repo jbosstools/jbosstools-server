@@ -23,11 +23,10 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServerBehaviour;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.DelegatingJBoss7ServerBehavior;
 
 /**
@@ -57,12 +56,12 @@ public class ServerConverter {
 		return server;
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <SERVER> SERVER checkedGetJBossServer(IServer server, Class<SERVER> serverClass) throws CoreException {
-		if (server == null) {
-			return null;
-		}
-		SERVER adaptedServer = (SERVER) server.loadAdapter(serverClass, new NullProgressMonitor());
+		return checkedConvertServer(server, serverClass);
+	}
+	
+	public static <SERVER> SERVER checkedConvertServer(IServerAttributes server, Class<SERVER> serverClass) throws CoreException {
+		SERVER adaptedServer = convertServer(server, serverClass);
 		if (adaptedServer == null) {
 			throw new CoreException(
 					new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
@@ -71,68 +70,41 @@ public class ServerConverter {
 		}
 		return adaptedServer;
 	}
-	
-	public static JBossServer getJBossServer(IServer server) {
+
+	@SuppressWarnings("unchecked")
+	public static <SERVER> SERVER convertServer(IServerAttributes server, Class<SERVER> serverClass) {
 		if (server == null) {
 			return null;
 		}
-		JBossServer jbServer = (JBossServer) server.getAdapter(JBossServer.class);
-		if (jbServer == null) {
-			jbServer = (JBossServer) server.loadAdapter(JBossServer.class, new NullProgressMonitor());
-		}
-		return jbServer;
+		SERVER adaptedServer = (SERVER) server.loadAdapter(serverClass, new NullProgressMonitor());
+		return adaptedServer;
+	}
+	
+	public static JBossServer getJBossServer(IServer server) {
+		return convertServer(server, JBossServer.class);
 	}
 
 	public static JBossServer checkedGetJBossServer(IServer server) throws CoreException {
-		JBossServer jBossServer = getJBossServer(server);
-		if (jBossServer == null) {
-			throw new CoreException(
-					new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
-							NLS.bind(Messages.CannotSetUpImproperServer, server.getName())));
-		}
-		return jBossServer;
+		return checkedConvertServer(server, JBossServer.class);
 	}
 
 	public static JBossServer getJBossServer(IServerWorkingCopy server) {
-		if (server == null) {
-			return null;
-		}
-		JBossServer jbServer = (JBossServer) server.getAdapter(JBossServer.class);
-		if (jbServer == null) {
-			jbServer = (JBossServer) server.loadAdapter(JBossServer.class, new NullProgressMonitor());
-		}
-		return jbServer;
+		return convertServer(server, JBossServer.class);
 	}
 
 	public static IDeployableServer getDeployableServer(IServerAttributes server) {
-		if (server == null) {
-			return null;
-		}
-		IDeployableServer dep = (IDeployableServer) server.getAdapter(IDeployableServer.class);
-		if (dep == null) {
-			dep = (IDeployableServer) server.loadAdapter(IDeployableServer.class, new NullProgressMonitor());
-		}
-		return dep;
+		return convertServer(server, IDeployableServer.class);
 	}
 
-	public static DeployableServerBehavior getDeployableServerBehavior(IServer server) {
-		if (server == null)
-			return null;
-		return (DeployableServerBehavior) server.loadAdapter(
-				DeployableServerBehavior.class, new NullProgressMonitor());
+	public static IDeployableServerBehaviour getDeployableServerBehavior(IServer server) {
+		return convertServer(server, IDeployableServerBehaviour.class);
 	}
 
 	public static DelegatingJBoss7ServerBehavior getJBoss7ServerBehavior(IServer server) {
-		if (server == null)
-			return null;
-		return (DelegatingJBoss7ServerBehavior) server.loadAdapter(
-				DelegatingJBoss7ServerBehavior.class, new NullProgressMonitor());
+		return convertServer(server, DelegatingJBoss7ServerBehavior.class);
 	}
-	public static DelegatingServerBehavior getJBossServerBehavior(IServer server) {
-		if (server == null)
-			return null;
-		return (DelegatingServerBehavior) server.loadAdapter(
-				DelegatingServerBehavior.class, new NullProgressMonitor());
+	public static IDelegatingServerBehavior getJBossServerBehavior(IServer server) {
+		return convertServer(server, IDelegatingServerBehavior.class);
 	}
 
 	/**

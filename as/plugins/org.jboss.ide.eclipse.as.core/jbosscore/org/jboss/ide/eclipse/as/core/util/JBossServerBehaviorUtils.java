@@ -14,7 +14,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
-import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.DelegatingJBoss7ServerBehavior;
 
 /**
@@ -27,10 +27,10 @@ public class JBossServerBehaviorUtils {
 	 * @param configuration
 	 * @return
 	 */
-	public static DelegatingServerBehavior getServerBehavior(ILaunchConfiguration configuration) {
+	public static IDelegatingServerBehavior getServerBehavior(ILaunchConfiguration configuration) {
 		try {
 			IServer server = ServerUtil.getServer(configuration);
-			return (DelegatingServerBehavior) server.getAdapter(DelegatingServerBehavior.class);
+			return (IDelegatingServerBehavior) server.getAdapter(IDelegatingServerBehavior.class);
 		} catch(CoreException ce ) {
 			return null;
 		}
@@ -39,7 +39,10 @@ public class JBossServerBehaviorUtils {
 	 * Return a DelegatingJBoss7ServerBehavior or null
 	 * @param configuration
 	 * @return
+	 * 
+	 *  // TODO delete this method
 	 */
+	@Deprecated
 	public static DelegatingJBoss7ServerBehavior getJBoss7ServerBehavior(ILaunchConfiguration configuration) {
 		try {
 			IServer server = ServerUtil.getServer(configuration);

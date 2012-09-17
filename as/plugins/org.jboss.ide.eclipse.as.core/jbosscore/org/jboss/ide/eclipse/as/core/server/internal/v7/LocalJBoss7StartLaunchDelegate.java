@@ -17,8 +17,9 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.ServerUtil;
+import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.IJBossLaunchDelegate;
-import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.LocalJBossStartLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
@@ -40,16 +41,22 @@ public class LocalJBoss7StartLaunchDelegate extends LocalJBossStartLaunchDelegat
 
 	public void preLaunch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
 			throws CoreException {
-		DelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
+		IServer server = ServerUtil.getServer(configuration);
+		DelegatingJBoss7ServerBehavior beh = 
+				(DelegatingJBoss7ServerBehavior) server.getAdapter(DelegatingJBoss7ServerBehavior.class);
+
+		IDelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
 		if( jbsBehavior != null ) {
-			jbsBehavior.setRunMode(mode);
-			jbsBehavior.setServerStarting();
+			beh.setRunMode(mode);
+			beh.setServerStarting();
 		}
 	}
 
 	public void postLaunch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
 			throws CoreException {
-		DelegatingJBoss7ServerBehavior behavior = JBossServerBehaviorUtils.getJBoss7ServerBehavior(configuration);
+		IServer server = ServerUtil.getServer(configuration);
+		DelegatingJBoss7ServerBehavior behavior = 
+				(DelegatingJBoss7ServerBehavior) server.getAdapter(DelegatingJBoss7ServerBehavior.class);
 		if( behavior != null ) {
 			IProcess[] processes = launch.getProcesses();
 			if (processes != null && processes.length >= 1) {

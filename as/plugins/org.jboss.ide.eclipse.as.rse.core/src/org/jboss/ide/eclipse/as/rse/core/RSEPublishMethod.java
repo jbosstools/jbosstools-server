@@ -25,7 +25,6 @@ import org.eclipse.rse.core.model.IHost;
 import org.eclipse.rse.core.subsystems.ISubSystem;
 import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
 import org.eclipse.rse.services.files.IFileService;
-import org.eclipse.rse.services.files.IHostFile;
 import org.eclipse.rse.subsystems.files.core.servicesubsystem.IFileServiceSubSystem;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.Trace;
@@ -34,6 +33,7 @@ import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractPublishMethod;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServerBehaviour;
 import org.jboss.ide.eclipse.as.core.server.IJBoss6Server;
 import org.jboss.ide.eclipse.as.core.server.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
@@ -49,18 +49,18 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 
 	public static final String RSE_ID = "rse"; //$NON-NLS-1$
 	
-	private DeployableServerBehavior behaviour;
+	private IDeployableServerBehaviour behaviour;
 	
 	@Override
 	public String getPublishMethodId() {
 		return RSE_ID;
 	}
 	
-	public void setBehaviour(DeployableServerBehavior beh) {
+	public void setBehaviour(IDeployableServerBehaviour beh) {
 		this.behaviour = beh;
 	}
 	
-	public DeployableServerBehavior getBehaviour() {
+	public IDeployableServerBehaviour getBehaviour() {
 		return this.behaviour;
 	}
 	

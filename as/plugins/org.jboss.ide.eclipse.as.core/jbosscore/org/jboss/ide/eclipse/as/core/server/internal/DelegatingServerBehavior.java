@@ -25,6 +25,7 @@ import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.JSTPublisherXMLToucher;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
+import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
@@ -43,7 +44,7 @@ import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
  * @author Rob Stryker
  *
  */
-public class DelegatingServerBehavior extends DeployableServerBehavior {
+public class DelegatingServerBehavior extends DeployableServerBehavior implements IDelegatingServerBehavior {
 		
 	private IJBossBehaviourDelegate delegate;
 	private String lastModeId;

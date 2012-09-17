@@ -21,6 +21,7 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
+import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.IJBossBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
@@ -40,8 +41,8 @@ public class RSEJBossStartLaunchDelegate extends AbstractRSELaunchDelegate {
 			DelegatingStartLaunchConfiguration launchConfig,
 			ILaunchConfiguration configuration, String mode, ILaunch launch,
 			IProgressMonitor monitor) throws CoreException {
-		DelegatingServerBehavior beh = JBossServerBehaviorUtils.getServerBehavior(configuration);
-		beh.setServerStarting();
+		IDelegatingServerBehavior beh = JBossServerBehaviorUtils.getServerBehavior(configuration);
+		((DelegatingServerBehavior)beh).setServerStarting();
 		String command = RSELaunchConfigProperties.getStartupCommand(configuration);
 		executeRemoteCommand(command, beh);
 		launchPingThread(beh);
@@ -52,12 +53,12 @@ public class RSEJBossStartLaunchDelegate extends AbstractRSELaunchDelegate {
 	public boolean preLaunchCheck(ILaunchConfiguration configuration,
 			String mode, IProgressMonitor monitor) throws CoreException {
 		// ping if up
-		final DelegatingServerBehavior beh = JBossServerBehaviorUtils.getServerBehavior(configuration);
-		// TODO: use configured polelr
+		final IDelegatingServerBehavior beh = JBossServerBehaviorUtils.getServerBehavior(configuration);
+		// TODO: use configured poller
 		boolean started = WebPortPoller.onePing(beh.getServer());
 		if (started) {
-			beh.setServerStarting();
-			beh.setServerStarted();
+			((DelegatingServerBehavior)beh).setServerStarting();
+			((DelegatingServerBehavior)beh).setServerStarted();
 			return false;
 		}
 		return true;

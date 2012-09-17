@@ -31,10 +31,8 @@ import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.Trace;
-import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
+import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.IServerAlreadyStartedHandler;
-import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
-import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
@@ -51,7 +49,7 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 	@Override
 	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor)
 			throws CoreException {
-		DelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
+		IDelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
 		IStatus s = jbsBehavior.canStart(mode);
 
 		Trace.trace(Trace.STRING_FINEST, "Ensuring Server can start: " + s.getMessage()); //$NON-NLS-1$
@@ -59,15 +57,15 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 			throw new CoreException(jbsBehavior.canStart(mode));
 		if (LaunchCommandPreferences.isIgnoreLaunchCommand(jbsBehavior.getServer())) {
 			Trace.trace(Trace.STRING_FINEST, "Server is marked as ignore Launch. Marking as started."); //$NON-NLS-1$
-			jbsBehavior.setServerStarting();
-			jbsBehavior.setServerStarted();
+			((DelegatingServerBehavior)jbsBehavior).setServerStarting();
+			((DelegatingServerBehavior)jbsBehavior).setServerStarted();
 			return false;
 		}
 		
 		JBossExtendedProperties props = ExtendedServerPropertiesAdapterFactory.getJBossExtendedProperties(jbsBehavior.getServer());
 		IStatus status = props.verifyServerStructure();
 		if( !status.isOK() ) {
-			jbsBehavior.setServerStopped();
+			((DelegatingServerBehavior)jbsBehavior).setServerStopped();
 			throw new CoreException(status);
 		}
 		
@@ -88,11 +86,11 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 	 * Should ideally use the poller that the server says is its poller,
 	 * but some pollers such as timeout poller 
 	 */
-	protected IStatus isServerStarted(DelegatingServerBehavior jbsBehavior) {
+	protected IStatus isServerStarted(IDelegatingServerBehavior jbsBehavior) {
 		return PollThreadUtils.isServerStarted(jbsBehavior);
 	}
 	
-	protected boolean handleAlreadyStartedScenario(	DelegatingServerBehavior jbsBehavior, IStatus startedStatus) {
+	protected boolean handleAlreadyStartedScenario(	IDelegatingServerBehavior jbsBehavior, IStatus startedStatus) {
 		IServerAlreadyStartedHandler handler = ExtensionManager.getDefault().getAlreadyStartedHandler(jbsBehavior.getServer());
 		if( handler != null ) {
 			int handlerResult = handler.promptForBehaviour(jbsBehavior.getServer(), startedStatus);
@@ -105,7 +103,7 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 		}
 		Trace.trace(Trace.STRING_FINEST, "There is no handler available to prompt the user. The server will be set to started automatically. "); //$NON-NLS-1$
 		// force server to started mode
-		jbsBehavior.setServerStarted();
+		((DelegatingServerBehavior)jbsBehavior).setServerStarted();
 		return false;
 	}
 	

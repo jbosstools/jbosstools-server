@@ -15,10 +15,10 @@ import java.util.Properties;
 
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.IProcessProvider;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePollerType;
-import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 
 /**
  * Essentially does nothing because the process already has a listener
@@ -57,7 +57,7 @@ public class ProcessTerminatedPoller implements IServerStatePoller {
 	public boolean isComplete() throws PollingException {
 		if( server.getServerState() == IServer.STATE_STOPPED)
 			return true;
-		DelegatingServerBehavior beh = (DelegatingServerBehavior) server.getAdapter(DelegatingServerBehavior.class);
+		IDelegatingServerBehavior beh = (IDelegatingServerBehavior) server.getAdapter(IDelegatingServerBehavior.class);
 		if(beh != null && beh.getDelegate() != null && beh.getDelegate() instanceof IProcessProvider) {
 			IProcess p = ((IProcessProvider)beh.getDelegate()).getProcess();
 			if( p == null || p.isTerminated())

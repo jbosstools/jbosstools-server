@@ -12,7 +12,6 @@ package org.jboss.ide.eclipse.as.core.server.internal.launch;
 
 import java.util.ArrayList;
 
-import org.apache.tools.ant.property.GetProperty;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -26,6 +25,7 @@ import org.eclipse.jdt.launching.StandardClasspathProvider;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.IJBossLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractLocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
@@ -58,17 +58,17 @@ public class LocalJBossStartLaunchDelegate extends AbstractJBossStartLaunchConfi
 
 	public void preLaunch(ILaunchConfiguration configuration,
 			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		DelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
+		IDelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
 		if( jbsBehavior != null ) {
-			jbsBehavior.setRunMode(mode);
-			jbsBehavior.setServerStarting();
+			((DelegatingServerBehavior)jbsBehavior).setRunMode(mode);
+			((DelegatingServerBehavior)jbsBehavior).setServerStarting();
 		}
 	}
 
 	public void postLaunch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		IProcess[] processes = launch.getProcesses();
-		DelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
+		IDelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
 		if( jbsBehavior != null )
 			((LocalJBossBehaviorDelegate) (jbsBehavior.getDelegate())).setProcess(processes[0]);
 	}

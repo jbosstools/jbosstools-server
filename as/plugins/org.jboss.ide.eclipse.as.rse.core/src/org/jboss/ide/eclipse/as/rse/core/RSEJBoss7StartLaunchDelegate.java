@@ -18,6 +18,7 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
@@ -29,12 +30,13 @@ public class RSEJBoss7StartLaunchDelegate extends AbstractRSELaunchDelegate {
 	public void actualLaunch(DelegatingStartLaunchConfiguration launchConfig,
 			ILaunchConfiguration configuration, String mode, ILaunch launch,
 			IProgressMonitor monitor) throws CoreException {
-		DelegatingServerBehavior beh = JBossServerBehaviorUtils.getServerBehavior(configuration);
-		beh.setServerStarting();
+		IDelegatingServerBehavior beh = JBossServerBehaviorUtils.getServerBehavior(configuration);
 		if (LaunchCommandPreferences.isIgnoreLaunchCommand(beh.getServer())) {
-			beh.setServerStarted();
+			((DelegatingServerBehavior)beh).setServerStarting();
+			((DelegatingServerBehavior)beh).setServerStarted();
 			return;
 		}
+		((DelegatingServerBehavior)beh).setServerStarting();
 		String command = RSELaunchConfigProperties.getStartupCommand(configuration);
 		executeRemoteCommand(command, beh);
 	}

@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.as.core.modules.ResourceModuleResourceUtil;
+import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.IJBossBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 
@@ -24,10 +25,10 @@ import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
  */
 public abstract class AbstractBehaviourDelegate implements IJBossBehaviourDelegate {
 
-	protected DelegatingServerBehavior actualBehavior;
+	protected IDelegatingServerBehavior actualBehavior;
 	
 	@Override
-	public void setActualBehaviour(DelegatingServerBehavior actualBehaviour) {
+	public void setActualBehaviour(IDelegatingServerBehavior actualBehaviour) {
 		this.actualBehavior = actualBehaviour;
 	}
 
