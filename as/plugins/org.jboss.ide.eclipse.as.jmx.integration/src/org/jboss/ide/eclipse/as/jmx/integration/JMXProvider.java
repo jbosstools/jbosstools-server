@@ -156,11 +156,15 @@ public class JMXProvider {
 
 			private void switchListener(IStructuredSelection previousSelection, IStructuredSelection newSel) {
 				if( previousSelection != null ) {
-					IServer s = (IServer)previousSelection.getFirstElement();
-					s.removeServerListener(serverListener);
+					Object o = previousSelection.getFirstElement();
+					if( o instanceof IServer) {
+						((IServer)o).removeServerListener(serverListener);
+					}
 				}
-				IServer s2 = (IServer)newSel.getFirstElement();
-				s2.addServerListener(serverListener);
+				Object newSel1 = newSel.getFirstElement();
+				if( newSel1 instanceof IServer) {
+					((IServer)newSel1).addServerListener(serverListener);
+				}
 			}
 			
 			public void perform(final IServer server) {
