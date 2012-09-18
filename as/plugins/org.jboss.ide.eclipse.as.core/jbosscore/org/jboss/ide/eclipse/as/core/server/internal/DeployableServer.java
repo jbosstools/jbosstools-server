@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -28,10 +29,14 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerPort;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServerBehaviour;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.IMultiModuleURLProvider;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
@@ -222,5 +227,18 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 		} catch( MalformedURLException murle) { return null; }
 	}
 
-
+	protected IJBossServerPublishMethod createPublishMethod() {
+		IDeployableServerBehaviour beh = ServerConverter.getDeployableServerBehavior(getServer());
+		if( beh != null ) {
+			IJBossServerPublishMethod method = ((DeployableServerBehavior)beh).createPublishMethod();
+			return method;
+		}
+		return null;
+	}
+	public IPath getDeploymentLocation(IModule[] module, boolean deep) {
+		return PublishUtil.getDeployPath(createPublishMethod(), module, this, deep);
+	}
+	public IPath getTempDeploymentLocation(IModule[] module, boolean deep) {
+		return PublishUtil.getTempDeployPath(createPublishMethod(), module, this, deep);
+	}
 }

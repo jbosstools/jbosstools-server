@@ -385,7 +385,7 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 	
 	public IPath getOutputFilePath(IServer server, IModule[] module, String deployRoot) {
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
-		return getDeployPath(module, deployRoot, ds);
+		return getModuleNestedDeployPath(module, deployRoot, ds);
 	}
 	
 	public boolean hasBeenChanged() {

@@ -10,10 +10,8 @@
  ******************************************************************************/ 
 package org.jboss.tools.as.wst.server.ui.xpl;
 
-import java.io.File;
 import java.util.HashMap;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
@@ -32,7 +30,6 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.actions.ExploreUtils;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.CommonActionProviderUtils;
@@ -43,41 +40,9 @@ public class ExploreActionProvider extends CommonActionProvider {
 	}
 	public static HashMap<String, IExploreBehavior> exploreBehaviorMap = new HashMap<String, IExploreBehavior>();
 	static {
-		exploreBehaviorMap.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new IExploreBehavior() {
-			public boolean canExplore(IServer server, IModule[] module) {
-				if( module != null )
-					return ExploreUtils.canExplore(server, module);
-				return ExploreUtils.canExplore(server);
-			}
-			public void openExplorer(IServer server, IModule[] module) {
-				if( module != null ) 
-					runExploreModuleServer(server, module);
-				else
-					runExploreServer(server);
-			}
-			public void runExploreServer(IServer server) {
-				String deployDirectory = ExploreUtils.getDeployDirectory(server);
-				if (deployDirectory != null && deployDirectory.length() > 0) {
-					ExploreUtils.explore(deployDirectory);
-				} 
-			}
-			
-			public void runExploreModuleServer(IServer server, IModule[] module) {
-				IPath path = getModuleDeployPath(server, module);
-				if (path != null) {
-					File file = path.toFile();
-					if (file.exists()) {
-						ExploreUtils.explore(file.getAbsolutePath());
-					}
-				}
-			}
-			private IPath getModuleDeployPath(IServer server, IModule[] module) {
-				IDeployableServer deployableServer = ServerConverter.getDeployableServer(server);
-				if( deployableServer != null )
-					return ExploreUtils.getDeployPath(deployableServer, module);
-				return null;
-			}
-		});
+		exploreBehaviorMap.put(
+				LocalPublishMethod.LOCAL_PUBLISH_METHOD,
+				new LocalExploreBehavior());
 	}
 
 	

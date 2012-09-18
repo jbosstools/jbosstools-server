@@ -100,7 +100,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 				RSEPublishMethod method = (RSEPublishMethod)type.createPublishMethod();
 				method.setBehaviour(ServerConverter.getDeployableServerBehavior(server));
 				if( module != null ) {
-					remoteFolder = PublishUtil.getDeployPath(method, module, ds);
+					remoteFolder = ds.getDeploymentLocation(module, true);
 				}
 				try {
 					method.getFileService();

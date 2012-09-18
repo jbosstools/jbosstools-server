@@ -97,14 +97,14 @@ public class PublishWeb2DeletesWeb1LibsTest extends TestCase {
 	private void verifyEJBAndJarExist() {
 		// Make sure ejb and libs exist
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
-		IPath fullPath = PublishUtil.getDeployPath(findArrayForProject("UserForum1EJB1"), ds);
+		IPath fullPath = ds.getDeploymentLocation(findArrayForProject("UserForum1EJB1"), true);
 		assertTrue(fullPath.toFile().exists());
 		assertTrue(fullPath.append("UserForum1Util1.jar").toFile().exists());
 	}
 	private void verifyWeb1AndLibsExist() {
 		// Make sure ejb and libs exist
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
-		IPath fullPath = PublishUtil.getDeployPath(findArrayForProject("UserForum1Web1"), ds);
+		IPath fullPath = ds.getDeploymentLocation(findArrayForProject("UserForum1Web1"), true);
 		assertTrue(fullPath.toFile().exists());
 		assertTrue(fullPath.append("WEB-INF").append("lib").append("UserForum1Util1.jar").toFile().exists());
 		assertTrue(fullPath.append("WEB-INF").append("lib").append("UserForum1Util2.jar").toFile().exists());
@@ -112,7 +112,7 @@ public class PublishWeb2DeletesWeb1LibsTest extends TestCase {
 	private void verifyWeb2AndLibsExist() {
 		// Make sure ejb and libs exist
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
-		IPath fullPath = PublishUtil.getDeployPath(findArrayForProject("UserForum1Web2"), ds);
+		IPath fullPath = ds.getDeploymentLocation(findArrayForProject("UserForum1Web2"), true); 
 		assertTrue(fullPath.toFile().exists());
 		assertTrue(fullPath.append("WEB-INF").append("lib").append("UserForum1Util1.jar").toFile().exists());
 		assertTrue(fullPath.append("WEB-INF").append("lib").append("UserForum1Util2.jar").toFile().exists());

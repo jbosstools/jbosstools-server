@@ -26,9 +26,12 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
 /**
+ * 
+ * The utilities in this class are only useful for
+ * exploring LOCALLY. 
+ * 
  * @author snjeza
  * 
  */
@@ -129,7 +132,7 @@ public class ExploreUtils {
 	public static boolean canExplore(IServer server, IModule[] modules) {
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
 		if( ds != null ) {
-			IPath p = PublishUtil.getDeployRootFolder(modules, ds);
+			IPath p = ds.getDeploymentLocation(modules, false); 
 			if (p == null || !p.toFile().exists() || ExploreUtils.getExploreCommand() == null)
 				return false;
 			return true;
@@ -178,16 +181,4 @@ public class ExploreUtils {
 			}
 		}
 	}
-	
-	public static IPath getDeployPath(IDeployableServer server,IModule[] moduleTree) {
-		IPath fullPath = PublishUtil.getDeployPath(moduleTree, server);
-		if (Platform.getOS().equals(Platform.OS_WIN32)) {
-			return fullPath;
-		}
-		if( !ServerModelUtilities.isBinaryModule(moduleTree)) {
-			return fullPath;
-		}
-		return fullPath.removeLastSegments(1);
-	}
-	
 }

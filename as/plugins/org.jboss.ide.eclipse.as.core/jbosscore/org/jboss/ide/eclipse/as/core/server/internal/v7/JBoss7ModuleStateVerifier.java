@@ -73,7 +73,8 @@ public class JBoss7ModuleStateVerifier implements IServerModuleStateVerifier {
 	private boolean isRootModuleStarted(IServer server, IModule root, IProgressMonitor monitor) throws Exception {
 		JBoss7Server jbossServer = ServerConverter.checkedGetJBossServer(server, JBoss7Server.class);
 		IJBoss7ManagerService service = JBoss7ManagerUtil.getService(server);
-		IPath deployPath = PublishUtil.getDeployPath(new IModule[]{root}, jbossServer);
+		// TODO does this need to change??
+		IPath deployPath = jbossServer.getDeploymentLocation(new IModule[]{root}, true); 
 		return isRootModuleStarted(server, root, service, deployPath, monitor);
 	}
 
@@ -94,7 +95,8 @@ public class JBoss7ModuleStateVerifier implements IServerModuleStateVerifier {
 		try {
 			JBoss7Server jbossServer = ServerConverter.checkedGetJBossServer(server, JBoss7Server.class);
 			IJBoss7ManagerService service = JBoss7ManagerUtil.getService(server);
-			IPath deployPath = PublishUtil.getDeployPath(new IModule[]{module[0]}, jbossServer);
+			// TODO DOES THIS NEED TO CHANGE?
+			IPath deployPath = jbossServer.getDeploymentLocation(new IModule[]{module[0]}, true);
 			boolean waitedOnce = false;
 			
 			while (!monitor.isCanceled()) {

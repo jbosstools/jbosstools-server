@@ -44,25 +44,24 @@ public class PublishUtil extends ModuleResourceUtil {
 	 * 
 	 * This API should be renamed, as it actually gets a value stored at a property key
 	 * 
-	 * @param moduleTree
-	 * @param server
-	 * @param defaultFolder
-	 * @param moduleProperty
+	 * Practically, this method will find the deploy root folder or 
+	 * the temp deploy root folder for a given module  by checking
+	 * the override model
+	 * 
+	 * @param moduleTree the module 
+	 * @param server the server
+	 * @param defaultFolder the default folder if per-module settings DNE
+	 * @param moduleProperty key representing folder or temp folder 
 	 * @return
 	 */
-	public static String getDeployRootFolder(IModule[] moduleTree, 
-			IDeployableServer server, String defaultFolder, String moduleProperty) {
-		return getDeployRootFolder(moduleTree, "local", //$NON-NLS-1$
-				server, defaultFolder, moduleProperty);
-	}
-	
 	/* This api should be renamed */
-	public static String getDeployRootFolder(IModule[] moduleTree, String publishMethod,
+	private static String getDeployRootFolder(IModule[] moduleTree, 
 			IDeployableServer server, String defaultFolder, String moduleProperty) {
 		String folder = defaultFolder;
 		// TODO bug 286699
 		DeploymentPreferences prefs = DeploymentPreferenceLoader.loadPreferencesFromServer(server.getServer());
-		DeploymentTypePrefs typePrefs = prefs.getOrCreatePreferences(publishMethod);
+		DeploymentTypePrefs typePrefs = prefs.getOrCreatePreferences(
+				IJBossToolingConstants.DEFAULT_DEPLOYMENT_METHOD_TYPE);
 		DeploymentModulePrefs modPrefs = typePrefs.getModulePrefs(moduleTree[0]);
 		if( modPrefs != null ) {
 			String loc = modPrefs.getProperty(moduleProperty);
@@ -78,33 +77,45 @@ public class PublishUtil extends ModuleResourceUtil {
 		}
 		return folder;
 	}
-	
-	public static IPath getDeployPath(IModule[] moduleTree, IDeployableServer server) {
-		String folder = getDeployRootFolder(
-				moduleTree, server, 
-				server.getDeployFolder(), 
+
+	public static boolean DEEP = true;
+	public static boolean ROOT = false;
+	public static IPath getDeployPath(IJBossServerPublishMethod method, IModule[] moduleTree, IDeployableServer server, boolean deep) {
+		String defaultFolder = method.getPublishDefaultRootFolder(server.getServer());
+		String folder = PublishUtil.getDeployRootFolder(
+				moduleTree, server, defaultFolder,
 				IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC);
-		return getDeployPath(moduleTree, folder, server);
+		if( deep == ROOT )
+			return new Path(folder);
+		return getModuleNestedDeployPath(moduleTree, folder, server);
 	}
 
-	public static IPath getDeployRootFolder(IModule[] moduleTree, IDeployableServer server) {
-		String folder = getDeployRootFolder(
-				moduleTree, server, 
-				server.getDeployFolder(), 
-				IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC);
-		return new Path(folder);
-	}
-
-	public static IPath getTempDeployFolder(IModule[] moduleTree, IDeployableServer server) {
-		String folder = getDeployRootFolder(
-				moduleTree, server, 
-				server.getTempDeployFolder(), 
+	public static IPath getTempDeployPath(IJBossServerPublishMethod method, IModule[] moduleTree, 
+			IDeployableServer server, boolean deep) {
+		String defaultFolder = method.getPublishDefaultRootTempFolder(server.getServer());
+		String folder = PublishUtil.getDeployRootFolder(
+				moduleTree, server, defaultFolder,
 				IJBossToolingConstants.LOCAL_DEPLOYMENT_TEMP_LOC);
-		return new Path(folder);
+		if( deep == ROOT )
+			return new Path(folder);
+		return getModuleNestedDeployPath(moduleTree, folder, server);
 	}
+
 	
-	public static IPath getDeployPath(IModule[] moduleTree, String deployFolder, IDeployableServer server) {
-		IPath root = new Path( deployFolder );
+	/**
+	 * Given a folder to deploy this module, append the various
+	 * subparts of this module[] into the name. For example, if we
+	 * know that this specific module should be published to 
+	 *  /home/user/custom/path, then append the module names to yield
+	 *  a return value of /home/user/custom/path/some.ear/some.war
+	 * 
+	 * @param moduleTree
+	 * @param deployFolder
+	 * @param server
+	 * @return
+	 */
+	public static IPath getModuleNestedDeployPath(IModule[] moduleTree, String rootFolder, IDeployableServer server) {
+		IPath root = new Path( rootFolder );
 		String type, modName, name, uri, suffixedName;
 		for( int i = 0; i < moduleTree.length; i++ ) {	
 			boolean found = false;
@@ -136,22 +147,6 @@ public class PublishUtil extends ModuleResourceUtil {
 		return root;
 	}
 	
-	public static IPath getDeployPath(IJBossServerPublishMethod method, IModule[] moduleTree, IDeployableServer server) {
-		String defaultFolder = method.getPublishDefaultRootFolder(server.getServer());
-		String folder = PublishUtil.getDeployRootFolder(
-				moduleTree, server, defaultFolder,
-				IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC);
-		return PublishUtil.getDeployPath(moduleTree, folder, server);
-	}
-
-	public static IPath getTempDeployPath(IJBossServerPublishMethod method, IModule[] moduleTree, IDeployableServer server) {
-		String defaultFolder = method.getPublishDefaultRootTempFolder(server.getServer());
-		String folder = PublishUtil.getDeployRootFolder(
-				moduleTree, server, defaultFolder,
-				IJBossToolingConstants.LOCAL_DEPLOYMENT_TEMP_LOC);
-		return PublishUtil.getDeployPath(moduleTree, folder, server);
-	}
-
 	public static String getSuffix(String type) {
 		// TODO
 		// VirtualReferenceUtilities.INSTANCE. has utility methods to help!!
@@ -274,5 +269,37 @@ public class PublishUtil extends ModuleResourceUtil {
 				}
 			}
 		}
+	}
+
+	/* Deprecated */
+	@Deprecated
+	public static IPath getLocalDeployPath(IModule[] moduleTree, IDeployableServer server) {
+		return server.getDeploymentLocation(moduleTree, true);
+	}
+
+	@Deprecated
+	public static IPath getLocalDeployRootFolder(IModule[] moduleTree, IDeployableServer server) {
+		return server.getDeploymentLocation(moduleTree, false);
+	}
+
+	@Deprecated
+	public static IPath getLocalTempDeployPath(IModule[] moduleTree, IDeployableServer server) {
+		return server.getTempDeploymentLocation(moduleTree, true);
+	}
+
+	@Deprecated
+	public static IPath getLocalTempDeployRootFolder(IModule[] moduleTree, IDeployableServer server) {
+		return server.getTempDeploymentLocation(moduleTree, false);
+	}
+	
+	@Deprecated
+	public static IPath getDeployPath(IJBossServerPublishMethod method, IModule[] moduleTree, IDeployableServer server) {
+		return server.getDeploymentLocation(moduleTree, true);
+	}
+
+	@Deprecated
+	public static IPath getTempDeployPath(IJBossServerPublishMethod method, IModule[] moduleTree, 
+			IDeployableServer server) {
+		return server.getTempDeploymentLocation(moduleTree, true);
 	}
 }

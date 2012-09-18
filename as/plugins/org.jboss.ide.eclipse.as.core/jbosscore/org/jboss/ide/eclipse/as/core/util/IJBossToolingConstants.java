@@ -146,6 +146,8 @@ public interface IJBossToolingConstants {
 
 	public static final String EXPOSE_MANAGEMENT_SERVICE = "org.jboss.ide.eclipse.as.core.server.EXPOSE_MANAGEMENT_SERVICE"; //$NON-NLS-1$
 
+	public static final String DEFAULT_DEPLOYMENT_METHOD_TYPE = "local";  //$NON-NLS-1$
+
 	public static final String LOCAL_DEPLOYMENT_NAME = "name";  //$NON-NLS-1$
 	public static final String LOCAL_DEPLOYMENT_LOC = "location";  //$NON-NLS-1$
 	public static final String LOCAL_DEPLOYMENT_TEMP_LOC = "tempLocation";  //$NON-NLS-1$

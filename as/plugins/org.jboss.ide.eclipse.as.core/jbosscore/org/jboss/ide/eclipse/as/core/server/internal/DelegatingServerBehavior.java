@@ -187,7 +187,7 @@ public class DelegatingServerBehavior extends DeployableServerBehavior implement
 			return;
 
 		IJBossServerPublishMethod method = createPublishMethod();
-		IPath depPath = PublishUtil.getDeployPath(method, module, ds);
+		IPath depPath = ds.getDeploymentLocation(module, true);
 		if( ServerModelUtilities.isBinaryModule(module[module.length-1]) || ds.zipsWTPDeployments()) {
 			// touch the file
 			method.getCallbackHandler(depPath.removeLastSegments(1), getServer())

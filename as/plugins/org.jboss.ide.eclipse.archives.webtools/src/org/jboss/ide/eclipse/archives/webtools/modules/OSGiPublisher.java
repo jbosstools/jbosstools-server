@@ -38,12 +38,12 @@ public class OSGiPublisher extends AltMethodZippedJSTPublisher {
 			IProgressMonitor monitor) throws CoreException {
 		
 		IDeployableServer server2 = ServerConverter.getDeployableServer(server);
-		IPath destination = PublishUtil.getDeployPath(method, module, server2);
+		IPath destination = server2.getDeploymentLocation(module, true);
 		String remoteTempDeployRoot = getDeployRoot(module, ServerConverter.getDeployableServer(server));
 		if( new Path(remoteTempDeployRoot).toFile().exists())
 			new Path(remoteTempDeployRoot).toFile().mkdirs();
 		
-		IPath presumedSourcePath = PublishUtil.getDeployPath(module, remoteTempDeployRoot, server2);
+		IPath presumedSourcePath = PublishUtil.getModuleNestedDeployPath(module, remoteTempDeployRoot, server2);
 		String name = presumedSourcePath.lastSegment();
 		IPath realSourcePathFolder = presumedSourcePath.removeLastSegments(1).append("plugins"); //$NON-NLS-1$
 		IProject project = module[module.length-1].getProject();

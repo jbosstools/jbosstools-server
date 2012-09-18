@@ -16,15 +16,12 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.server.xpl.LocalCopyCallback;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 
 public class LocalPublishMethod extends AbstractPublishMethod {
-	/**
-	 * TODO: refactor to "LOCAL" since we have local publishing and local 
-	 * launching/stopping which both have to be mapped in equal ways
-	 */
-	public static final String LOCAL_PUBLISH_METHOD = "local";  //$NON-NLS-1$
+	public static final String LOCAL_PUBLISH_METHOD = IJBossToolingConstants.DEFAULT_DEPLOYMENT_METHOD_TYPE;
 	
 	public String getPublishMethodId() {
 		return LOCAL_PUBLISH_METHOD;

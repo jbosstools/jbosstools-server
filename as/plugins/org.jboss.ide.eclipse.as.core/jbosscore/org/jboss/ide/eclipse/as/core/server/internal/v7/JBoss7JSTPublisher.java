@@ -50,7 +50,7 @@ public class JBoss7JSTPublisher extends AbstractServerToolsPublisher {
 		Trace.trace(Trace.STRING_FINER, "Using AS7 publishModule logic in JBoss7JSTPublisher for module " + module[module.length-1].getName() ); //$NON-NLS-1$
 
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
-		DeploymentMarkerUtils.removeDeployFailedMarker(method, server, PublishUtil.getDeployPath(method, module, ds), monitor);
+		DeploymentMarkerUtils.removeDeployFailedMarker(method, server, ds.getDeploymentLocation(module, true), monitor);
 		
 		if( publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
 			IStatus s = DeploymentMarkerUtils.removeDeployedMarkerIfExists(method, ds, module, monitor);
@@ -85,7 +85,7 @@ public class JBoss7JSTPublisher extends AbstractServerToolsPublisher {
 
 	private void doDeployRequired(IJBossServerPublishMethod method,IDeployableServer server,
 			IModule[] moduleTree, IProgressMonitor monitor ) throws CoreException {
-		IPath p = PublishUtil.getDeployPath(method, moduleTree, server);
+		IPath p = server.getDeploymentLocation(moduleTree, true);
 		Trace.trace(Trace.STRING_FINER, "Marking path " + p + " as requiring a .dodeploy marker, but NOT creating the file yet"); //$NON-NLS-1$ //$NON-NLS-2$
 		DelegatingJBoss7ServerBehavior beh = ServerConverter.getJBoss7ServerBehavior(server.getServer());
 		beh.markDoDeploy(p);

@@ -166,7 +166,7 @@ public class LocalJBoss7DeploymentScannerAdditions extends UnitedServerListener 
 				IModule[] module = new IModule[] { modules2[i] };
 				IStatus status = server.canModifyModules(module, null, null);
 				if (status != null && status.getSeverity() != IStatus.ERROR) {
-					String tempFolder = PublishUtil.getDeployRootFolder(module, ds).toString(); 
+					String tempFolder = ds.getDeploymentLocation(module, false).toString();
 					if( !folders.contains(tempFolder))
 						folders.add(tempFolder);
 				}

@@ -51,55 +51,8 @@
       </nodeContribution>
    </extension>
    
-      <!--
-      *  With these actions removed, if they never return, a large
-         portion of this plugin and it's classes can be deprecated 
-         and eventually removed *
-      
-   <extension
-         point="org.jboss.ide.eclipse.archives.ui.newArchiveActions">
-      <newPackageAction
-            class="org.jboss.ide.eclipse.archives.webtools.ui.NewWARAction"
-            icon="$nl$/icons/war.gif"
-            id="org.jboss.ide.eclipse.packages.ui.newWARAction"
-            label="%newPackageAction.label.war"/>
-      <newPackageAction
-            class="org.jboss.ide.eclipse.archives.webtools.ui.NewEJBJARAction"
-            icon="$nl$/icons/EJBJar.gif"
-            id="org.jboss.ide.eclipse.packages.ui.newEJBJarAction"
-            label="%newPackageAction.label.ejbJar"/>
-      <newPackageAction
-            class="org.jboss.ide.eclipse.archives.webtools.ui.NewEARAction"
-            icon="$nl$/icons/ear.gif"
-            id="org.jboss.ide.eclipse.packages.ui.newEARAction"
-            label="%newPackageAction.label.ear"/>
-   </extension>
-   
-   -->
-   
    <extension
          point="org.jboss.ide.eclipse.as.core.publishers">
-      <!--
-      <publisher
-            class="org.jboss.ide.eclipse.archives.webtools.modules.PackagesPublisher"
-            priority="5">
-      </publisher>
-      <publisher
-            class="org.jboss.ide.eclipse.archives.webtools.modules.WTPZippedPublisher"
-            priority="2"
-            zipDelegate="true">
-      </publisher>
-      <publisher
-            class="org.jboss.ide.eclipse.archives.webtools.modules.SingleFolderZippedPublisher"
-            priority="2"
-            zipDelegate="true">
-      </publisher>
-      <publisher
-            class="org.jboss.ide.eclipse.archives.webtools.modules.AltMethodZippedFolderPublisher"
-            priority="8"
-            zipDelegate="true">
-      </publisher>
-      -->
       <publisher
             class="org.jboss.ide.eclipse.archives.webtools.modules.AltMethodZippedJSTPublisher"
             priority="3"
@@ -111,8 +64,6 @@
             zipDelegate="false">
       </publisher>
    </extension>
-
-
 
 	<extension
       point="org.eclipse.ui.navigator.navigatorContent">

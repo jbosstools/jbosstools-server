@@ -120,11 +120,11 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 	 * @return
 	 */
 	protected IPath getDeployPath(IModule[] moduleTree, IDeployableServer server) {
-		return PublishUtil.getDeployPath(publishMethod, moduleTree, server);
+		return server.getDeploymentLocation(moduleTree, true);
 	}
 
 	protected IPath getTempDeployPath(IModule[] moduleTree, IDeployableServer server) {
-		return PublishUtil.getTempDeployPath(publishMethod, moduleTree, server);
+		return server.getTempDeploymentLocation(moduleTree, true);
 	}
 
 
@@ -143,7 +143,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		}
 		if( tree2.length == 0 ) 
 			return new Path(publishMethod.getPublishDefaultRootFolder(server.getServer()));
-		return PublishUtil.getDeployPath(publishMethod, tree2, server);
+		return server.getDeploymentLocation(moduleTree, true);
 	}
 
 	

@@ -119,7 +119,7 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 			return;
 
 		IJBossServerPublishMethod method = createPublishMethod();
-		IPath depPath = PublishUtil.getDeployPath(method, module, ds);
+		IPath depPath = ds.getDeploymentLocation(module, true);
 		createDoDeployMarker(method, Arrays.asList(new IPath[]{depPath}), monitor);
 		setModuleState(module, IServer.STATE_STARTING);
 		ServerExtendedProperties props = (ServerExtendedProperties)getServer()

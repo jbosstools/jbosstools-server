@@ -67,7 +67,7 @@ public class DeploymentMarkerUtils {
 	 */
 	public static IStatus addDoDeployMarker(IJBossServerPublishMethod method, IDeployableServer server,
 			IModule[] moduleTree, IProgressMonitor monitor) throws CoreException {
-		IPath depPath = PublishUtil.getDeployPath(method, moduleTree, server);
+		IPath depPath = server.getDeploymentLocation(moduleTree, true);
 		return addDoDeployMarker(method, server.getServer(), depPath, monitor);
 	}
 
@@ -138,7 +138,7 @@ public class DeploymentMarkerUtils {
 	public static IStatus removeDeployedMarkerIfExists(IJBossServerPublishMethod method, IServer server,
 			IModule[] module, IProgressMonitor monitor)	throws CoreException {
 		IDeployableServer deployableServer = ServerConverter.getDeployableServer(server);
-		IPath deployPath = PublishUtil.getDeployPath(method, module, deployableServer);
+		IPath deployPath = deployableServer.getDeploymentLocation(module, true);
 		return removeDeployedMarkerIfExists(method, server, deployPath, monitor);
 	}
 
@@ -156,7 +156,7 @@ public class DeploymentMarkerUtils {
 	public static IStatus removeDeployedMarkerIfExists(IJBossServerPublishMethod method, IDeployableServer jbServer,
 			IModule[] moduleTree, IProgressMonitor monitor)
 			throws CoreException {
-		IPath deployPath = PublishUtil.getDeployPath(method, moduleTree, jbServer);
+		IPath deployPath = jbServer.getDeploymentLocation(moduleTree, true);
 		return removeDeployedMarkerIfExists(method, jbServer.getServer(), deployPath, monitor);
 	}
 
@@ -198,7 +198,7 @@ public class DeploymentMarkerUtils {
 	public static IStatus removeDeployFailedMarkerIfExists(IJBossServerPublishMethod method, IServer server,
 			IModule[] module, IProgressMonitor monitor) throws CoreException {
 		IDeployableServer deployableServer = ServerConverter.getDeployableServer(server);
-		IPath deployPath = PublishUtil.getDeployPath(method, module, deployableServer);
+		IPath deployPath = deployableServer.getDeploymentLocation(module, true);
 		return removeFile(FAILED_DEPLOY, server, deployPath, method, monitor);
 	}
 

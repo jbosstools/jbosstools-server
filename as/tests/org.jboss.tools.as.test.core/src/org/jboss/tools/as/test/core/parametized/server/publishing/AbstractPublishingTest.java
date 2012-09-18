@@ -324,7 +324,7 @@ public abstract class AbstractPublishingTest extends TestCase {
 	}
 	protected IPath getLocalPublishMethodDeployRoot() {
 		DeployableServer ds = (DeployableServer)server.loadAdapter(DeployableServer.class, new NullProgressMonitor());
-		IPath path = PublishUtil.getDeployPath(new LocalPublishMethod(), new IModule[]{primaryModule}, ds);
+		IPath path = ds.getDeploymentLocation(new IModule[]{primaryModule}, true);
 		return path;
 	}
 	

@@ -13,6 +13,8 @@ package org.jboss.ide.eclipse.as.core.server;
 
 import java.util.regex.Pattern;
 
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 
@@ -41,6 +43,9 @@ public interface IDeployableServer {
 	public void setDeployLocationType(String type);
 	public boolean zipsWTPDeployments();
 	public void setZipWTPDeployments(boolean val);
+	
+	public IPath getDeploymentLocation(IModule[] module, boolean deep);
+	public IPath getTempDeploymentLocation(IModule[] module, boolean deep);
 	
 	
 	public String getConfigDirectory();
