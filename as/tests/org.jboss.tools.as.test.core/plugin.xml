@@ -64,7 +64,6 @@
       <classpathVariableInitializer
             variable="ASTOOLS_TEST_HOME"
             class="org.jboss.tools.as.test.core.internal.utils.classpath.ASToolsInternalVariableInitializer"
-            deprecated="A test variable initializer"
             readOnly="true">
       </classpathVariableInitializer>
    </extension>
