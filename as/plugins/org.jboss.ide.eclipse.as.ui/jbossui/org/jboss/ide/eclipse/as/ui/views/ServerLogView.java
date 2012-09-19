@@ -53,7 +53,6 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISelectionService;
-import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
@@ -63,15 +62,14 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.XMLMemento;
 import org.eclipse.ui.ide.FileStoreEditorInput;
-import org.eclipse.ui.internal.Workbench;
 import org.eclipse.ui.internal.views.log.Messages;
 import org.eclipse.ui.internal.views.log.SharedImages;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IServerLogListener;
+import org.jboss.ide.eclipse.as.core.util.IEventCodes;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 
 public class ServerLogView extends ViewPart implements IServerLogListener, ISelectionListener {

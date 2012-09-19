@@ -11,7 +11,7 @@
 package org.jboss.ide.eclipse.as.core.server;
 
 import org.eclipse.core.runtime.IPath;
-import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.wtp.core.Messages;
 
 public interface IJBoss6Server {
 	public static final String JMX_RMI_PORT = "org.jboss.ide.eclipse.as.core.server.jmxrmiport"; //$NON-NLS-1$

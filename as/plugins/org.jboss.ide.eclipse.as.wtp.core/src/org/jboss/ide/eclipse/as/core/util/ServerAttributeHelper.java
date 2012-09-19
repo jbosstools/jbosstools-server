@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.core.server.internal;
+package org.jboss.ide.eclipse.as.core.util;
 
 import java.util.List;
 import java.util.Map;
@@ -17,12 +17,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.internal.Server;
-import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
+import org.jboss.ide.eclipse.as.wtp.core.Messages;
 
 /**
  * This class just opens up the get and set attributes for a server,
@@ -109,7 +108,7 @@ public class ServerAttributeHelper {
 		try {
 			return save(false, new NullProgressMonitor());
 		} catch( CoreException e ) {
-			JBossServerCorePlugin.log(IStatus.ERROR, Messages.ServerSaveFailed, e);
+			ASWTPToolsPlugin.log(IStatus.ERROR, Messages.ServerSaveFailed, e);
 		}
 		return null;
 	}	

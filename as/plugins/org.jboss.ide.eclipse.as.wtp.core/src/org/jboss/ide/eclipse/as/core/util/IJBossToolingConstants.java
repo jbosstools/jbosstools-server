@@ -11,9 +11,7 @@
 package org.jboss.ide.eclipse.as.core.util;
 
 import org.eclipse.core.runtime.IPath;
-import org.jboss.ide.eclipse.as.core.Messages;
-import org.jboss.ide.eclipse.as.core.extensions.polling.ProcessTerminatedPoller;
-import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
+import org.jboss.ide.eclipse.as.wtp.core.Messages;
 
 public interface IJBossToolingConstants {
 	/* Server runtime types */
@@ -113,8 +111,8 @@ public interface IJBossToolingConstants {
 	// NEW_SERVER_ADAPTER Add the new properties file for this server adapter above this line
 	
 	// Poller constants
-	public static final String DEFAULT_STARTUP_POLLER = WebPortPoller.WEB_POLLER_ID;
-	public static final String DEFAULT_SHUTDOWN_POLLER = ProcessTerminatedPoller.POLLER_ID;
+	public static final String DEFAULT_STARTUP_POLLER = "org.jboss.ide.eclipse.as.core.runtime.server.WebPoller"; //$NON-NLS-1$
+	public static final String DEFAULT_SHUTDOWN_POLLER = "org.jboss.ide.eclipse.as.core.runtime.server.processTerminatedPoller"; //$NON-NLS-1$
 	
 	/* 
 	 * Property keys stored in the server object

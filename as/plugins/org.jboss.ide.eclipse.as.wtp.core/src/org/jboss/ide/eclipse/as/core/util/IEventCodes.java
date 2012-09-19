@@ -8,7 +8,9 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.core.extensions.events;
+package org.jboss.ide.eclipse.as.core.util;
+
+import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 
 
 
@@ -20,9 +22,9 @@ public interface IEventCodes {
 
 	public static final int ISTATUS_MASK = 0xE0 << 24; // slot 31 and 32
 	public static final int MAJOR_TYPE_MASK = 0x1F << 24; 
-	public static final int POLLING_CODE = 1 << 24;
 	public static final int PUBLISHING_CODE = 2 << 24;
-	public static final int POLLER_MASK = 0xFF << 16;
+	public static final int POLLING_CODE = IServerStatePoller.POLLING_CODE;
+	public static final int POLLER_MASK = IServerStatePoller.POLLER_MASK;
 	public static final int PUBLISHER_MASK = 0xFF << 16;
 	public static final int FULL_POLLER_MASK = MAJOR_TYPE_MASK | POLLER_MASK;
 	public static final int FULL_PUBLISHER_MASK = MAJOR_TYPE_MASK | PUBLISHER_MASK;

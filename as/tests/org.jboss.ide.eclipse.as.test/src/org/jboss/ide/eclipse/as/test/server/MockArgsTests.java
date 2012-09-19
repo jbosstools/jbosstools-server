@@ -10,8 +10,6 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.test.server;
 
-import junit.framework.TestCase;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -23,8 +21,8 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.server.IProcessProvider;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.test.util.ServerRuntimeUtils;
 
 public class MockArgsTests extends SimpleServerImplTest {

@@ -340,7 +340,6 @@ public class JBossServerType implements IJBossToolingConstants {
 			return false;
 		}
 
-		@Override
 		public String getServerTypeId(String version) {
 			// V6_0, V6_1, V5_1, V5_0, V4_2, V4_0, V3_2
 			if( version.equals(V3_2)) return IJBossToolingConstants.SERVER_AS_32;

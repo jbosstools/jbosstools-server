@@ -15,8 +15,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IPublishCopyCallbackHandler;
-import org.jboss.ide.eclipse.as.core.server.xpl.LocalCopyCallback;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.LocalCopyCallback;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 

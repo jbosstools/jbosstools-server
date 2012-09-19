@@ -36,7 +36,6 @@ import org.jboss.ide.eclipse.archives.core.util.internal.TrueZipUtil;
 import org.jboss.ide.eclipse.archives.webtools.IntegrationPlugin;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
-import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServerBehaviour;
@@ -45,6 +44,7 @@ import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.FileUtil.IFileUtilListener;
+import org.jboss.ide.eclipse.as.core.util.IEventCodes;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 

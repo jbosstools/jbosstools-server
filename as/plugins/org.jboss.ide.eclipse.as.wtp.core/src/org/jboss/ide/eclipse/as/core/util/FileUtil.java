@@ -29,8 +29,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
-import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
+import org.jboss.ide.eclipse.as.wtp.core.Messages;
 
 public class FileUtil {
 
@@ -153,19 +153,19 @@ public class FileUtil {
 		public void fileCopied(File source, File dest, boolean result,
 				Exception e) {
 			if(!result)
-				errors.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+				errors.add(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, 
 						NLS.bind(Messages.CopyFileError, source.toString(), dest.toString()), e));
 		}
 		public void fileDeleted(File file, boolean result, Exception e) {
 			if(!result)
 				errors.add(new Status(IStatus.ERROR, 
-						JBossServerCorePlugin.PLUGIN_ID, 
+						ASWTPToolsPlugin.PLUGIN_ID, 
 						NLS.bind(Messages.DeleteFolderError, file.toString(), e)));
 		}
 
 		public void folderDeleted(File file, boolean result, Exception e) {
 			if(!result)
-				errors.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+				errors.add(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, 
 						NLS.bind(Messages.DeleteFolderError, file.toString()), e));
 		} 
 		
@@ -234,7 +234,7 @@ public class FileUtil {
 			try {
 				dest.createNewFile();
 			} catch (IOException e1) {
-				JBossServerCorePlugin.log(e1); 
+				ASWTPToolsPlugin.log(e1); 
 			}
         InputStream is = null;
         OutputStream os = null;
@@ -244,18 +244,18 @@ public class FileUtil {
             copyStream(is, os);
             return true;
         } catch (IOException e) {
-        	JBossServerCorePlugin.log(e);
+        	ASWTPToolsPlugin.log(e);
             return false;
         } finally {
             try {
                 if (is != null) is.close();
             } catch (IOException e) {
-            	JBossServerCorePlugin.log(e);
+            	ASWTPToolsPlugin.log(e);
             }
             try {
                 if (os != null) os.close();
             } catch (IOException e) {
-            	JBossServerCorePlugin.log(e);
+            	ASWTPToolsPlugin.log(e);
             }
         }
     }

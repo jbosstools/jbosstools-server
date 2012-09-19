@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.core.server.xpl;
+package org.jboss.ide.eclipse.as.core.util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,15 +22,9 @@ import org.eclipse.wst.server.core.internal.Messages;
 import org.eclipse.wst.server.core.internal.ProgressUtil;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.IModuleFile;
-import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
-import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServerBehaviour;
 import org.jboss.ide.eclipse.as.core.server.IPublishCopyCallbackHandler;
-import org.jboss.ide.eclipse.as.core.util.FileUtil;
-import org.jboss.ide.eclipse.as.core.util.ProgressMonitorUtil;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
-import org.jboss.ide.eclipse.as.core.util.StreamUtils;
 
 public class LocalCopyCallback implements IPublishCopyCallbackHandler {
 
@@ -54,7 +48,7 @@ public class LocalCopyCallback implements IPublishCopyCallbackHandler {
 	
 	public IStatus[] copyFile(IModuleFile mf, IPath relativePath, IProgressMonitor monitor) throws CoreException {
 		monitor.beginTask("Copying " + relativePath.toString(), 100); //$NON-NLS-1$
-		File file = PublishUtil.getFile(mf);
+		File file = ModuleResourceUtil.getFile(mf);
 		IDeployableServerBehaviour beh = ServerConverter.getDeployableServerBehavior(server);
 		shouldRestartModule |= beh != null && beh.changedFileRequiresModuleRestart(mf);
 		if( file != null ) {
@@ -133,7 +127,6 @@ public class LocalCopyCallback implements IPublishCopyCallbackHandler {
 	}
 	
 	private File writeToTempFile(InputStream in, IPath filePath) throws IOException {			
-		// Change from original PublishUtil, will require 
 		File tempFile = File.createTempFile(TEMPFILE_PREFIX, "." + filePath.getFileExtension(), getTempFolder()); //$NON-NLS-1$
 		FileUtil.writeTo(in, tempFile);				
 		return tempFile;
@@ -168,7 +161,7 @@ public class LocalCopyCallback implements IPublishCopyCallbackHandler {
 		// At this point, the file should be guaranteed not to exist. 
 		if (!safeRename(tempFile, file, 10))
 			throw new CoreException(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, IEventCodes.JST_PUB_ASSEMBLE_FAIL, 
-					NLS.bind(org.jboss.ide.eclipse.as.core.Messages.PublishRenameFailure, 
+					NLS.bind(org.jboss.ide.eclipse.as.wtp.core.Messages.PublishRenameFailure, 
 							tempFile.toString(), file.getAbsolutePath()), null));
 	}
 

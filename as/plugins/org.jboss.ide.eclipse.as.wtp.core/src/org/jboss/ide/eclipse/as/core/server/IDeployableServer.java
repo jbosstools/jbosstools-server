@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
 
 /**
  *

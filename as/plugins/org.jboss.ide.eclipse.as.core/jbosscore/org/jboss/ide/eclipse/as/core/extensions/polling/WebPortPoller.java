@@ -29,12 +29,13 @@ import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePollerType;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 public class WebPortPoller implements IServerStatePoller2 {
 
-	public static final String WEB_POLLER_ID = "org.jboss.ide.eclipse.as.core.runtime.server.WebPoller"; //$NON-NLS-1$
+	public static final String WEB_POLLER_ID = IJBossToolingConstants.DEFAULT_STARTUP_POLLER;
 	private IServer server;
 	private IServerStatePollerType type;
 	private boolean canceled, done;

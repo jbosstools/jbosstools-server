@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.core.server.xpl;
+package org.jboss.ide.eclipse.as.core.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,12 +27,9 @@ import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
-import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
-import org.jboss.ide.eclipse.as.core.modules.ResourceModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.IPublishCopyCallbackHandler;
-import org.jboss.ide.eclipse.as.core.util.ProgressMonitorUtil;
+import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
 /**
  * Utility class with an assortment of useful file methods.
  * <p>
@@ -56,7 +53,7 @@ public final class PublishCopyUtil {
 
 	protected IStatus[] canceledStatus() {
 		return new IStatus[]{
-				new Status(IStatus.CANCEL, JBossServerCorePlugin.PLUGIN_ID, "Publish Canceled") //$NON-NLS-1$
+				new Status(IStatus.CANCEL, ASWTPToolsPlugin.PLUGIN_ID, "Publish Canceled") //$NON-NLS-1$
 			}; // todo
 	}
 
@@ -190,7 +187,7 @@ public final class PublishCopyUtil {
 	 * @since 2.3
 	 */
 	public IStatus[] initFullPublish(IModuleResource[] resources, IModulePathFilter filter, IProgressMonitor monitor) throws CoreException  {
-		int count = ResourceModuleResourceUtil.countMembers(resources);
+		int count = ModuleResourceUtil.countMembers(resources);
 		monitor = ProgressMonitorUtil.getMonitorFor(monitor);
 		monitor.beginTask("Publishing " + count + " resources", //$NON-NLS-1$ //$NON-NLS-2$ 
 				(100 * (count)) + 200);

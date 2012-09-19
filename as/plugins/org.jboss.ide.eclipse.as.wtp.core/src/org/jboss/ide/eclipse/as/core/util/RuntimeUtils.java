@@ -13,11 +13,10 @@ import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.ServerUtil;
-import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
-import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
+import org.jboss.ide.eclipse.as.wtp.core.Messages;
 
 public class RuntimeUtils {
 	
@@ -35,7 +34,7 @@ public class RuntimeUtils {
 	public static IJBossServerRuntime checkedGetJBossServerRuntime(IServerAttributes server) throws CoreException {
 		IJBossServerRuntime jbrt = getJBossServerRuntime(server);
 		if (jbrt == null)
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+			throw new CoreException(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID,
 					NLS.bind(Messages.ServerRuntimeNotFound, server.getName())));
 		return jbrt;
 	}
@@ -59,7 +58,7 @@ public class RuntimeUtils {
 	public static IJBossServerRuntime checkedGetJBossServerRuntime(IRuntime runtime) throws CoreException {
 		IJBossServerRuntime jbossRuntime = getJBossServerRuntime(runtime);
 		if (jbossRuntime == null)
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+			throw new CoreException(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID,
 					NLS.bind(Messages.ServerRuntimeNotFound, ((runtime==null)?"null":runtime.getName())))); //$NON-NLS-1$
 		return jbossRuntime;
 	}

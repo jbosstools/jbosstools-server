@@ -18,17 +18,13 @@ import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
-import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.model.RuntimeDelegate;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 
-public abstract class AbstractLocalJBossServerRuntime extends RuntimeDelegate {
-	public static String PROPERTY_VM_ID = "PROPERTY_VM_ID"; //$NON-NLS-1$
-	public static String PROPERTY_VM_TYPE_ID = "PROPERTY_VM_TYPE_ID"; //$NON-NLS-1$
-	public static String PROPERTY_EXECUTION_ENVIRONMENT = "PROPERTY_EXEC_ENVIRONMENT"; //$NON-NLS-1$
+public abstract class AbstractLocalJBossServerRuntime extends RuntimeDelegate implements IJBossServerRuntime {
 	
 	public void setDefaults(IProgressMonitor monitor) {
 		getRuntimeWorkingCopy().setName(getNextRuntimeName());

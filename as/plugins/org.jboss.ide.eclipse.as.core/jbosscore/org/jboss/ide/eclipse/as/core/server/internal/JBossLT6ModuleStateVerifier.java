@@ -25,9 +25,9 @@ import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.ExtensionManager.IServerJMXRunnable;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
-import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
+import org.jboss.ide.eclipse.as.core.util.IEventCodes;
 
 public class JBossLT6ModuleStateVerifier implements IServerModuleStateVerifier {
 	public JBossLT6ModuleStateVerifier() {

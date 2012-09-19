@@ -28,9 +28,9 @@ import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
 import org.eclipse.rse.subsystems.files.core.subsystems.IRemoteFile;
 import org.eclipse.wst.common.project.facet.core.util.internal.ProgressMonitorUtil;
 import org.eclipse.wst.server.core.model.IModuleFile;
-import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IPublishCopyCallbackHandler;
+import org.jboss.ide.eclipse.as.core.util.IEventCodes;
 
 public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 	protected IPath root;

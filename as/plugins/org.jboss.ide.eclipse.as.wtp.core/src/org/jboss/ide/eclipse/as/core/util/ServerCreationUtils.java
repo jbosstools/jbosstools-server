@@ -26,7 +26,6 @@ import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
 import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 
 public class ServerCreationUtils {
 
@@ -40,8 +39,8 @@ public class ServerCreationUtils {
 		swc.setServerConfiguration(null);
 		swc.setName(serverName);
 		swc.setRuntime(runtime);
-		swc.setAttribute(DeployableServer.DEPLOY_DIRECTORY, deployLocation);
-		swc.setAttribute(DeployableServer.TEMP_DEPLOY_DIRECTORY, tempDeployLocation);
+		swc.setAttribute(IDeployableServer.DEPLOY_DIRECTORY, deployLocation);
+		swc.setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, tempDeployLocation);
 		IServer server = swc.save(true, null);
 		return server;
 	}

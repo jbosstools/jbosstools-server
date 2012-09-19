@@ -21,10 +21,15 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="3.7.0",
  org.eclipse.core.commands;bundle-version="3.6.0",
  org.eclipse.jst.server.core;bundle-version="1.2.101",
  org.eclipse.jdt.core;bundle-version="3.7.0",
- org.eclipse.wst.common.emfworkbench.integration;bundle-version="1.2.100"
+ org.eclipse.wst.common.emfworkbench.integration;bundle-version="1.2.100",
+ org.eclipse.debug.core;bundle-version="3.7.100",
+ org.eclipse.jdt.launching;bundle-version="3.6.100"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Export-Package: org.jboss.ide.eclipse.as.wtp.core.modules,
+Export-Package: org.jboss.ide.eclipse.as.core.server,
+ org.jboss.ide.eclipse.as.core.server.bean,
+ org.jboss.ide.eclipse.as.core.util,
+ org.jboss.ide.eclipse.as.wtp.core.modules,
  org.jboss.ide.eclipse.as.wtp.core.util,
  org.jboss.ide.eclipse.as.wtp.core.vcf
 Bundle-Vendor: JBoss by Red Hat

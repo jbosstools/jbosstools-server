@@ -10,7 +10,9 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.wtp.core;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Plugin;
+import org.eclipse.core.runtime.Status;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -57,5 +59,23 @@ public class ASWTPToolsPlugin extends Plugin {
 	public static ASWTPToolsPlugin getDefault() {
 		return plugin;
 	}
+
+
+    public static void log(IStatus status) {
+        getDefault().getLog().log(status);
+    }
+
+    public static void log(int severity, String message, Throwable e) {
+        log(new Status(severity, PLUGIN_ID, 0, message, e));
+    }
+    
+
+    public static void log(Throwable e) {
+    	log(e.getMessage(), e);
+    }
+
+    public static void log(String message, Throwable e) {
+        log(IStatus.ERROR, message, e);
+    }
 
 }

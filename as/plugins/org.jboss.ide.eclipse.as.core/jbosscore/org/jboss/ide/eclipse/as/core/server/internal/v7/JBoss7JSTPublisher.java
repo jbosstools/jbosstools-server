@@ -21,7 +21,6 @@ import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.JSTPublisherXMLToucher;
-import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
@@ -87,7 +86,8 @@ public class JBoss7JSTPublisher extends AbstractServerToolsPublisher {
 			IModule[] moduleTree, IProgressMonitor monitor ) throws CoreException {
 		IPath p = server.getDeploymentLocation(moduleTree, true);
 		Trace.trace(Trace.STRING_FINER, "Marking path " + p + " as requiring a .dodeploy marker, but NOT creating the file yet"); //$NON-NLS-1$ //$NON-NLS-2$
-		DelegatingJBoss7ServerBehavior beh = ServerConverter.getJBoss7ServerBehavior(server.getServer());
+		DelegatingJBoss7ServerBehavior beh = ServerConverter.
+				convertServer(server.getServer(),DelegatingJBoss7ServerBehavior.class);
 		beh.markDoDeploy(p);
 	}
 }

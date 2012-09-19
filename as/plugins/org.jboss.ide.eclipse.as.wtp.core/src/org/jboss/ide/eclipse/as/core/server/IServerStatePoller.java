@@ -11,7 +11,6 @@
 package org.jboss.ide.eclipse.as.core.server;
 
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 
 /**
  * A server state poller will 
@@ -19,8 +18,8 @@ import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
  *
  */
 public interface IServerStatePoller extends INeedCredentials {
-	public static final int POLLING_CODE = IEventCodes.POLLING_CODE;
-	public static final int POLLER_MASK = IEventCodes.POLLER_MASK;
+	public static final int POLLING_CODE = 1 << 24;
+	public static final int POLLER_MASK = 0xFF << 16;
 	
 	public static final boolean SERVER_UP = true;
 	public static final boolean SERVER_DOWN = false;

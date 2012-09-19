@@ -17,6 +17,7 @@ import java.util.Properties;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePollerType;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
 /**
  * Wait 15 seconds, then say it's at it's expected state
@@ -24,7 +25,7 @@ import org.jboss.ide.eclipse.as.core.server.IServerStatePollerType;
  *
  */
 public class TimeoutPoller implements IServerStatePoller {
-	public static final String POLLER_ID = "org.jboss.ide.eclipse.as.core.runtime.server.timeoutpoller"; //$NON-NLS-1$
+	public static final String POLLER_ID = IJBossToolingConstants.DEFAULT_SHUTDOWN_POLLER;
 	
 	private boolean expectedState;
 	private long endTime;

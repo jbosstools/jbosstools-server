@@ -15,7 +15,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.test.ASTest;
 import org.jboss.ide.eclipse.as.test.util.ServerRuntimeUtils;
 import org.jboss.ide.eclipse.as.test.util.wtp.OperationTestCase;

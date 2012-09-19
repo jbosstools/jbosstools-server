@@ -18,8 +18,8 @@ import java.util.Map;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
-import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
+import org.jboss.ide.eclipse.as.wtp.core.Messages;
 
 public class ArgsUtil {
 
@@ -80,9 +80,9 @@ public class ArgsUtil {
 			}
 			return retVal;
 		} catch( Exception e ) {
-			Status status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+			Status status = new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, 
 					NLS.bind(Messages.ServerArgsParseError, s), e);
-			JBossServerCorePlugin.log(status);
+			ASWTPToolsPlugin.log(status);
 			return new String[] { };
 		}
 	}

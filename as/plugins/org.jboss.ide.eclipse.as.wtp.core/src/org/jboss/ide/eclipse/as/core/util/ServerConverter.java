@@ -21,14 +21,12 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
-import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServerBehaviour;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.DelegatingJBoss7ServerBehavior;
+import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
+import org.jboss.ide.eclipse.as.wtp.core.Messages;
 
 /**
  * 
@@ -57,7 +55,7 @@ public class ServerConverter {
 		IJBossServer server = findJBossServer(serverId);
 		if (server == null) {
 			throw new CoreException(
-					new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+					new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID,
 							NLS.bind(Messages.CouldNotFindServer, serverId)));			
 		}
 		return server;
@@ -71,7 +69,7 @@ public class ServerConverter {
 		SERVER adaptedServer = convertServer(server, serverClass);
 		if (adaptedServer == null) {
 			throw new CoreException(
-					new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+					new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID,
 							NLS.bind(Messages.CannotSetUpImproperServer, server.getName())));
 
 		}
@@ -88,15 +86,15 @@ public class ServerConverter {
 	}
 	
 	public static IJBossServer getJBossServer(IServer server) {
-		return convertServer(server, JBossServer.class);
+		return convertServer(server, IJBossServer.class);
 	}
 
 	public static IJBossServer checkedGetJBossServer(IServer server) throws CoreException {
-		return checkedConvertServer(server, JBossServer.class);
+		return checkedConvertServer(server, IJBossServer.class);
 	}
 
 	public static IJBossServer getJBossServer(IServerWorkingCopy server) {
-		return convertServer(server, JBossServer.class);
+		return convertServer(server, IJBossServer.class);
 	}
 
 	public static IDeployableServer getDeployableServer(IServerAttributes server) {
@@ -107,9 +105,6 @@ public class ServerConverter {
 		return convertServer(server, IDeployableServerBehaviour.class);
 	}
 
-	public static DelegatingJBoss7ServerBehavior getJBoss7ServerBehavior(IServer server) {
-		return convertServer(server, DelegatingJBoss7ServerBehavior.class);
-	}
 	public static IDelegatingServerBehavior getJBossServerBehavior(IServer server) {
 		return convertServer(server, IDelegatingServerBehavior.class);
 	}
@@ -119,7 +114,7 @@ public class ServerConverter {
 	 * 
 	 * @return
 	 */
-	public static JBossServer[] getAllJBossServers() {
+	public static IJBossServer[] getAllJBossServers() {
 		ArrayList<IJBossServer> servers = new ArrayList<IJBossServer>();
 		IServer[] iservers = ServerCore.getServers();
 		for (int i = 0; i < iservers.length; i++) {
@@ -127,7 +122,7 @@ public class ServerConverter {
 				servers.add(getJBossServer(iservers[i]));
 			}
 		}
-		JBossServer[] ret = new JBossServer[servers.size()];
+		IJBossServer[] ret = new IJBossServer[servers.size()];
 		servers.toArray(ret);
 		return ret;
 	}
