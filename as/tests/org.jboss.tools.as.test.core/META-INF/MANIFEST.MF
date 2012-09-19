@@ -7,7 +7,7 @@ Bundle-Localization: plugin
 Bundle-Activator: org.jboss.tools.as.test.core.ASMatrixTests
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.junit4;bundle-version="4.8.1",
+ org.junit;bundle-version="4.8.1",
  org.jboss.ide.eclipse.archives.core;bundle-version="3.2.1",
  org.jboss.ide.eclipse.archives.jdt.integration;bundle-version="3.2.1",
  org.jboss.ide.eclipse.archives.ui;bundle-version="3.2.1",
