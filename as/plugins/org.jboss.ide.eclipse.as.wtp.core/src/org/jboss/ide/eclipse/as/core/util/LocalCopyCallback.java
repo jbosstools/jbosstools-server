@@ -206,18 +206,19 @@ public class LocalCopyCallback implements IPublishCopyCallbackHandler {
 	}
 	
 	protected File getTempFolder() {
+		if( tmpDeployRootFolder == null && server == null )
+			return tempDir;
 		File f = null;
 		if( tmpDeployRootFolder != null ) {
-			f = tmpDeployRootFolder.toFile();
-		} else if( server == null ) {
-			return tempDir;
-		} 
-		IDeployableServer ds = ServerConverter.getDeployableServer(server);
-		if( ds == null ) {
-			return tempDir;
+			f = tmpDeployRootFolder.toFile();			
+		} else /* if server != null */{
+			IDeployableServer ds = ServerConverter.getDeployableServer(server);
+			if( ds == null ) {
+				return tempDir;
+			}
+			String path = ds.getTempDeployFolder();
+			f = new File(path);
 		}
-		String path = ds.getTempDeployFolder();
-		f = new File(path);
 		if( !f.exists() )
 			f.mkdirs();
 		return f;

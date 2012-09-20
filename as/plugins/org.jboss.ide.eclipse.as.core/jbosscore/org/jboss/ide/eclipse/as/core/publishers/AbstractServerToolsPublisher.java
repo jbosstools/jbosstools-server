@@ -124,7 +124,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 	}
 
 	protected IPath getTempDeployPath(IModule[] moduleTree, IDeployableServer server) {
-		return server.getTempDeploymentLocation(moduleTree, true);
+		return server.getTempDeploymentLocation(moduleTree, false);
 	}
 
 
