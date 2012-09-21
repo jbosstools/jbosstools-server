@@ -37,6 +37,7 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonActionProvider;
 import org.eclipse.ui.navigator.ICommonActionExtensionSite;
@@ -114,14 +115,9 @@ public class ArchivesActionProvider extends CommonActionProvider {
 		menuAboutToShow2(manager);
 	}
 
-	public void menuAboutToShow2(IMenuManager manager) {
-		if (ProjectArchivesCommonView.getInstance() == null) {
+	public void menuAboutToShow2(IMenuManager manager) { 
+		if( site == null || site.getAdapter(IViewSite.class) == null )
 			return;
-		}
-		IProject currentProject = ProjectArchivesCommonView.getInstance().getCurrentProject();
-		if (currentProject == null || !currentProject.exists() || !currentProject.isOpen()) {
-			return;
-		}
 		addNewPackageActions(newPackageManager);
 
 		IStructuredSelection selection = getSelection(site);
