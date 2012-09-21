@@ -59,6 +59,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
@@ -102,7 +103,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	protected int jreComboIndex;
 	protected Button homeDirButton, jreButton;
 	protected Composite nameComposite, homeDirComposite, jreComposite;
-	protected Button downloadAndInstallButton;
+	protected Link downloadAndInstallButton;
 	protected String name, homeDir;
 
 	// Configuration stuff
@@ -337,8 +338,8 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		homeDirButton = new Button(homeDirComposite, SWT.NONE);
 		homeDirButton.setText(Messages.browse);
 
-		downloadAndInstallButton = new Button(homeDirComposite, SWT.NONE);
-		downloadAndInstallButton.setText(Messages.rwf_DownloadRuntime);
+		downloadAndInstallButton = new Link(homeDirComposite, SWT.NONE);
+		downloadAndInstallButton.setText("<a href=\"\">" + Messages.rwf_DownloadRuntime + "</a>");
 		downloadAndInstallButton.addSelectionListener(new DownloadAndInstallListener());
 		downloadAndInstallButton.setEnabled(true); 
 		
@@ -365,7 +366,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		homeDirLabel.setLayoutData(UIUtil.createFormData2(null,0,homeDirText,-5,0,5,null,0));
 		homeDirText.setLayoutData(UIUtil.createFormData2(homeDirLabel,5,null,0,0,5,homeDirButton,-5));
 		homeDirButton.setLayoutData(UIUtil.createFormData2(homeDirLabel,5,null,0,null,0,100,0));
-		downloadAndInstallButton.setLayoutData(UIUtil.createFormData2(0,0,homeDirButton,-5,null,0,100,-5));
+		downloadAndInstallButton.setLayoutData(UIUtil.createFormData2(0,0,homeDirButton,-5,null,0,100,-10));
 	}
 
 	protected class DownloadAndInstallListener extends SelectionAdapter {
