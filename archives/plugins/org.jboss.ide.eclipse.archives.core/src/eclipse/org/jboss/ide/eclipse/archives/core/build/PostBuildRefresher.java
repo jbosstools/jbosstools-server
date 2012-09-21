@@ -2,6 +2,7 @@ package org.jboss.ide.eclipse.archives.core.build;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.WorkspaceJob;
@@ -31,6 +32,13 @@ public class PostBuildRefresher extends AbstractBuildListener {
 	}
 	
 	private void handlePostBuild(IArchive pkg) {
+		String projectName = pkg.getProjectName();
+		IProject p = projectName == null ? null : 
+			ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+		if( p == null || !p.exists()) {
+			return;
+		}
+		
 		IPath loc = PathUtils.getGlobalLocation(pkg);
 		IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(loc);
 		for( int i = 0; i < files.length; i++ ) {

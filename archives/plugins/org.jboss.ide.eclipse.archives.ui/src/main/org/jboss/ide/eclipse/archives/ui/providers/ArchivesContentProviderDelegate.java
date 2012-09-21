@@ -177,12 +177,18 @@ public class ArchivesContentProviderDelegate implements ITreeContentProvider, IA
 			topChanges = getChanges(delta);
 		else if( delta.getKind() == IArchiveNodeDelta.NO_CHANGE)
 			return;
-		else
+		else if( delta.getPostNode() == null )
+			topChanges = null;
+		else 
 			topChanges = new IArchiveNode[]{delta.getPostNode()};
 
 		// now go through and refresh them
 		Display.getDefault().asyncExec(new Runnable () {
 			public void run () {
+				if( topChanges == null ) {
+					refreshViewer(null);
+					return;
+				}
 				for( int i = 0; i < topChanges.length; i++ ) {
 					refreshViewer(topChanges[i]);
 				}
@@ -207,9 +213,13 @@ public class ArchivesContentProviderDelegate implements ITreeContentProvider, IA
 
 		if( !viewerInUse.getControl().isDisposed()) {
 			if( viewerInUse instanceof StructuredViewer ) {
-				((StructuredViewer)viewerInUse).refresh(o);
-				if( viewerInUse instanceof TreeViewer ) {
-					((TreeViewer)viewerInUse).expandToLevel(o, 1);
+				if( o == null ) {
+					((StructuredViewer)viewerInUse).refresh();
+				} else {
+					((StructuredViewer)viewerInUse).refresh(o);
+					if( viewerInUse instanceof TreeViewer ) {
+						((TreeViewer)viewerInUse).expandToLevel(o, 1);
+					}
 				}
 			} else
 				viewerInUse.refresh();

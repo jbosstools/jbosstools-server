@@ -103,8 +103,10 @@ public class DirectoryScannerFactory {
 		}
 
 		public void setBasedir2(String path) {
-
-			IPath translatedPath = new Path(PathUtils.getAbsoluteLocation(path, fs.projectName, fs.inWorkspace, fs.version));
+			String s = PathUtils.getAbsoluteLocation(path, fs.projectName, fs.inWorkspace, fs.version);
+			if( s == null )
+				return;
+			IPath translatedPath = new Path(s);
 			if( workspaceRelative ) {
 				IPath p = PathUtils.getGlobalLocation(path, fs.projectName, true, fs.version);
 				setBasedir(new FileWrapper(p.toFile(), translatedPath, fs.rootArchiveRelativePath));
@@ -202,7 +204,7 @@ public class DirectoryScannerFactory {
 	    }
 	    
 	    protected boolean isSelected(String name, File file) {
-	    	return super.isSelected(name, file) && file.isFile();
+	    	return file != null && super.isSelected(name, file) && file.isFile();
 	    }
 
 
@@ -291,6 +293,9 @@ public class DirectoryScannerFactory {
 	    }
 
 	    public boolean couldBeIncluded(String path, boolean inWorkspace) {
+	    	if( getBasedir() == null )
+	    		return false;
+	    	
 	    	IPath targetBase = ((FileWrapper)getBasedir()).getWrapperPath();
 	    	IPath[] questionFiles = new IPath[] { new Path(path) };
 	    	if( workspaceRelative && !inWorkspace) {

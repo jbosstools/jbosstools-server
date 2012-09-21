@@ -57,7 +57,7 @@ public class ArchivesRootContentProvider implements ITreeContentProvider {
 				}
 				return wrap((IProject[]) tmp.toArray(new IProject[tmp.size()]));
 			}
-			if( cp != null )
+			if( cp != null && cp.isAccessible())
 				return wrap(new IProject[]{cp});
 		} else if( cp != null ){
 			return getChildren(new WrappedProject(cp, WrappedProject.NAME));
