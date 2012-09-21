@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.archives.ui.wizards.pages;
 
-import java.awt.FlowLayout;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,15 +24,11 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -308,8 +303,10 @@ public class FilesetInfoWizardPage extends WizardPage {
 				if( parentNode.getRootArchive().isDestinationInWorkspace()) {
 					effectiveExcludes += "," + parentNode.getRootArchive().getRawDestinationPath(); //$NON-NLS-1$
 				}
-				ds = DirectoryScannerFactory.createDirectoryScanner(
-						replaceVariables(), null, includes, effectiveExcludes, parentNode.getProjectName(),
+				System.out.println(6);
+				IPath parentRelativeToRoot = parentNode.getRootArchiveRelativePath();
+				ds = DirectoryScannerFactory.createDirectoryScanner( 
+						replaceVariables(), parentRelativeToRoot, includes, effectiveExcludes, parentNode.getProjectName(),
 						srcDestComposite.isWorkspaceRelative(), parentNode.getModelRootNode().getDescriptorVersion(), false);
 				Iterator<File> it = ds.iterator();
 				ArrayList<String> paths2 = new ArrayList<String>();
@@ -333,6 +330,7 @@ public class FilesetInfoWizardPage extends WizardPage {
 					}
 				};
 			} catch( Exception e ) {
+				e.printStackTrace(); 
 				r = new Runnable() {
 					public void run() {
 						previewComposite.setInput(new IPath[0]);
