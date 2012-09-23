@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.IDecoratorManager;
 import org.eclipse.ui.IStartup;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.wst.server.core.ServerCore;
@@ -94,7 +95,9 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 		ServerCore.removeServerLifecycleListener(selectionProvider);
 		UnitedServerListenerManager.getDefault().removeListener(ShowConsoleServerStateListener.getDefault());
 		UnitedServerListenerManager.getDefault().removeListener(as7ScannerAssist);
-		JBossServerUISharedImages.instance().cleanup();
+		if (PlatformUI.isWorkbenchRunning()) {
+			JBossServerUISharedImages.instance().cleanup();
+		}
 		super.stop(context);
 	}
 
