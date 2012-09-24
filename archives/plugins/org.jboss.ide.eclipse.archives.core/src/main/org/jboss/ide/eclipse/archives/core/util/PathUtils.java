@@ -66,7 +66,7 @@ public class PathUtils {
 	// Get an absolute path, workspace-absolute or fs-absolute
 	public static String getAbsoluteLocation(String expression,
 			String projectName, boolean inWorkspace, double version) {
-		if( projectName == null )
+		if( inWorkspace && projectName == null )
 			return null;
 		
 		if( inWorkspace && ("".equals(expression) || ".".equals(expression))) //$NON-NLS-1$ //$NON-NLS-2$
