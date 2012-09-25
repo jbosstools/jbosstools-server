@@ -40,11 +40,14 @@ import org.jboss.ide.eclipse.as.ui.Messages;
  */
 public class ServerPasswordSection extends ServerEditorSection {
 
+	private static String PASSWORD_NOT_LOADED = "***jbt****"; //$NON-NLS-1$
+	
 	private ModifyListener nameModifyListener, passModifyListener;
 	private Text nameText, passText;
 	private ServerAttributeHelper helper;
 	
 	private String passwordString;
+	private boolean passwordChanged = false;
 	
 	public void init(IEditorSite site, IEditorInput input) {
 		super.init(site, input);
@@ -69,12 +72,11 @@ public class ServerPasswordSection extends ServerEditorSection {
 		Label username = toolkit.createLabel(composite, Messages.swf_Username);
 		username.setForeground(toolkit.getColors().getColor(IFormColors.TITLE));
 		String n = ServerConverter.getJBossServer(server.getOriginal()).getUsername();
-		String p = ServerConverter.getJBossServer(server.getOriginal()).getPassword();
+		passwordString = PASSWORD_NOT_LOADED;
 		nameText = toolkit.createText(composite, n); 
 		Label password = toolkit.createLabel(composite, Messages.swf_Password);
 		password.setForeground(toolkit.getColors().getColor(IFormColors.TITLE));
-		passText = toolkit.createText(composite, p, SWT.SINGLE | SWT.PASSWORD);
-		passwordString = p;
+		passText = toolkit.createText(composite, passwordString, SWT.SINGLE | SWT.PASSWORD);
 		
 		d = new GridData(); d.grabExcessHorizontalSpace = true; d.widthHint = 100;
 		nameText.setLayoutData(d);
@@ -111,11 +113,12 @@ public class ServerPasswordSection extends ServerEditorSection {
 		public SetPassCommand(IServerWorkingCopy server) {
 			super(server, Messages.EditorChangePasswordCommandName, passText, passText.getText(), 
 					IJBossToolingConstants.SERVER_PASSWORD, passModifyListener);
-			oldVal = passText.getText();
+			oldVal = passwordString;
 		}
 		
 		public void execute() {
 			passwordString = newVal;
+			passwordChanged = !PASSWORD_NOT_LOADED.equals(passwordString);
 		}
 		
 		public void undo() {
@@ -123,6 +126,7 @@ public class ServerPasswordSection extends ServerEditorSection {
 			text.removeModifyListener(listener);
 			text.setText(oldVal);
 			text.addModifyListener(listener);
+			passwordChanged = !PASSWORD_NOT_LOADED.equals(passwordString);
 		}
 	}
 
@@ -131,9 +135,11 @@ public class ServerPasswordSection extends ServerEditorSection {
 	 * @param monitor the progress monitor for the save operation.
 	 */
 	public void doSave(IProgressMonitor monitor) {
-		JBossServer jbs = (JBossServer)ServerConverter.getJBossServer(server.getOriginal());
-		jbs.setPassword(passwordString);
-		monitor.worked(100);
+		if( passwordChanged ) {
+			JBossServer jbs = (JBossServer)ServerConverter.getJBossServer(server.getOriginal());
+			jbs.setPassword(passwordString);
+			monitor.worked(100);
+		}
 	}
 
 }
