@@ -26,11 +26,11 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.rse.core.model.IHost;
 import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
 import org.eclipse.rse.subsystems.files.core.subsystems.IRemoteFile;
-import org.eclipse.wst.common.project.facet.core.util.internal.ProgressMonitorUtil;
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.util.IEventCodes;
+import org.jboss.ide.eclipse.as.core.util.ProgressMonitorUtil;
 
 public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 	protected IPath root;
@@ -57,6 +57,10 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 	}
 	
 	protected static IStatus generateFailStatus(String message, String resource, RSEPublishMethod method, Exception sme) {
+		String exceptionMsg = sme.getMessage();
+		if( "Missing element for : ''".equals(exceptionMsg)) {
+			sme = new Exception("The requested path is not found on the remote system.", sme);
+		}
 		String connectionName = method == null ? null : RSEUtils.getRSEConnectionName(method.getBehaviour().getServer());
 		IHost host = connectionName == null ? null : RSEUtils.findHost(connectionName);
 		IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL,
