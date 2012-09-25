@@ -303,7 +303,6 @@ public class FilesetInfoWizardPage extends WizardPage {
 				if( parentNode.getRootArchive().isDestinationInWorkspace()) {
 					effectiveExcludes += "," + parentNode.getRootArchive().getRawDestinationPath(); //$NON-NLS-1$
 				}
-				System.out.println(6);
 				IPath parentRelativeToRoot = parentNode.getRootArchiveRelativePath();
 				ds = DirectoryScannerFactory.createDirectoryScanner( 
 						replaceVariables(), parentRelativeToRoot, includes, effectiveExcludes, parentNode.getProjectName(),
