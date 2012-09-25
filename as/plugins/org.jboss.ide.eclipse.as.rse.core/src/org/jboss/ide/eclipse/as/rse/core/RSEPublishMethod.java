@@ -31,12 +31,12 @@ import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractPublishMethod;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
+import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServerBehaviour;
 import org.jboss.ide.eclipse.as.core.server.IJBoss6Server;
 import org.jboss.ide.eclipse.as.core.server.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.IEventCodes;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
@@ -67,7 +67,8 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 	private IFileServiceSubSystem fileSubSystem = null;
 	private IPath remoteRootFolder;
 	
-	public void publishStart(DeployableServerBehavior behaviour,
+	@Override
+	public void publishStart(IDeployableServerBehaviour behaviour,
 			IProgressMonitor monitor) throws CoreException {
 		monitor.beginTask("Beginning Publish for server " + behaviour.getServer().getName(), 300);
 		super.publishStart(behaviour, AbstractServerToolsPublisher.getSubMon(monitor, 100));
@@ -85,10 +86,11 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 		Trace.trace(Trace.STRING_FINER, "Finished publish start for server " + getServer().getName());
 	}
 	
-	public int publishFinish(DeployableServerBehavior behaviour,
+	@Override
+	public int publishFinish(IDeployableServerBehaviour behaviour,
 			IProgressMonitor monitor) throws CoreException {
 		Trace.trace(Trace.STRING_FINER, "Beginning publishFinish for server " + getServer().getName());
-		DelegatingServerBehavior b = (DelegatingServerBehavior) behaviour.getServer().loadAdapter(DelegatingServerBehavior.class, new NullProgressMonitor());
+		IDelegatingServerBehavior b = (IDelegatingServerBehavior) behaviour.getServer().loadAdapter(IDelegatingServerBehavior.class, new NullProgressMonitor());
 		if( b != null && getServer().getServerState() == IServer.STATE_STARTED ) {
 			startDeploymentScanner();
 		}
@@ -99,7 +101,7 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 		Trace.trace(Trace.STRING_FINER, "Starting remote deployment scanner for server " + getServer().getName());
 		String cmd = getDeploymentScannerCommand(new NullProgressMonitor(), true);
 		if( cmd != null )
-			launchCommandNoResult((DelegatingServerBehavior)behaviour, 3000, cmd);
+			launchCommandNoResult((IDelegatingServerBehavior)behaviour, 3000, cmd);
 	}
 
 	protected void stopDeploymentScanner() {
@@ -242,6 +244,7 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 	}
 
 	public String getPublishDefaultRootFolder(IServer server) {
+		this.behaviour = ServerConverter.getDeployableServerBehavior(server);
 		return getRemoteRootFolder().toString();
 	}
 	public String getPublishDefaultRootTempFolder(IServer server) {
@@ -249,7 +252,7 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 		return getPublishDefaultRootFolder(server);
 	}
 	
-	private void launchCommandNoResult(DelegatingServerBehavior behaviour, int delay, String command) {
+	private void launchCommandNoResult(IDelegatingServerBehavior behaviour, int delay, String command) {
 		Trace.trace(Trace.STRING_FINER, "Launching remote command: " + command);
 		try {
 			ServerShellModel model = RSEHostShellModel.getInstance().getModel(behaviour.getServer());
