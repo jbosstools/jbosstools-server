@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.IConnectionProvider;
+import org.jboss.tools.jmx.core.IConnectionProviderEventEmitter;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.IJMXRunnable;
 import org.jboss.tools.jmx.core.JMXActivator;
@@ -77,7 +78,7 @@ public class DefaultConnectionWrapper implements IConnectionWrapper {
         connector = JMXConnectorFactory.connect(new JMXServiceURL(descriptor.getURL()), environment);
         connection = connector.getMBeanServerConnection();
 		isConnected = true;
-		((DefaultConnectionProvider)getProvider()).fireChanged(this);
+		((IConnectionProviderEventEmitter)getProvider()).fireChanged(this);
 	}
 	
 	public synchronized void disconnect() throws IOException {
@@ -87,7 +88,7 @@ public class DefaultConnectionWrapper implements IConnectionWrapper {
 		try {
 			connector.close();
 		} finally {
-			((DefaultConnectionProvider)getProvider()).fireChanged(this);
+			((IConnectionProviderEventEmitter)getProvider()).fireChanged(this);
 		}
         connector = null;
         connection = null;

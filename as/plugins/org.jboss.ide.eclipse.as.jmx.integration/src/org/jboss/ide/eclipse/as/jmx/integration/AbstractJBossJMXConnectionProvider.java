@@ -24,10 +24,12 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.tools.jmx.core.IConnectionProvider;
+import org.jboss.tools.jmx.core.IConnectionProviderEventEmitter;
 import org.jboss.tools.jmx.core.IConnectionProviderListener;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 
-public abstract class AbstractJBossJMXConnectionProvider implements IConnectionProvider, IServerLifecycleListener  {
+public abstract class AbstractJBossJMXConnectionProvider implements 
+	IConnectionProvider, IConnectionProviderEventEmitter, IServerLifecycleListener  {
 
 	private ArrayList<IConnectionProviderListener> listeners = 
 		new ArrayList<IConnectionProviderListener>();
@@ -124,7 +126,7 @@ public abstract class AbstractJBossJMXConnectionProvider implements IConnectionP
 		listeners.remove(listener);
 	}
 	
-	void fireAdded(IConnectionWrapper wrapper) {
+	public void fireAdded(IConnectionWrapper wrapper) {
 		for(Iterator<IConnectionProviderListener> i = listeners.iterator(); i.hasNext();)
 			try {
 				i.next().connectionAdded(wrapper);
@@ -133,7 +135,7 @@ public abstract class AbstractJBossJMXConnectionProvider implements IConnectionP
 			}
 	}
 
-	void fireChanged(IConnectionWrapper wrapper) {
+	public void fireChanged(IConnectionWrapper wrapper) {
 		for(Iterator<IConnectionProviderListener> i = listeners.iterator(); i.hasNext();)
 			try {
 				i.next().connectionChanged(wrapper);
@@ -142,7 +144,7 @@ public abstract class AbstractJBossJMXConnectionProvider implements IConnectionP
 			}
 	}
 
-	void fireRemoved(IConnectionWrapper wrapper) {
+	public void fireRemoved(IConnectionWrapper wrapper) {
 		for(Iterator<IConnectionProviderListener> i = listeners.iterator(); i.hasNext();)
 			try {
 				i.next().connectionRemoved(wrapper);

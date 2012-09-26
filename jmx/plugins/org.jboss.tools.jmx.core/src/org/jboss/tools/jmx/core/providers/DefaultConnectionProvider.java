@@ -20,11 +20,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.jboss.tools.jmx.core.IConnectionProvider;
+import org.jboss.tools.jmx.core.IConnectionProviderEventEmitter;
 import org.jboss.tools.jmx.core.IConnectionProviderListener;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.IMemento;
@@ -35,7 +35,7 @@ import org.jboss.tools.jmx.core.util.XMLMemento;
 /**
  * The default connection type that comes bundled
  */
-public class DefaultConnectionProvider implements IConnectionProvider {
+public class DefaultConnectionProvider implements IConnectionProvider, IConnectionProviderEventEmitter {
 	public static final String PROVIDER_ID = "org.jboss.tools.jmx.core.providers.DefaultConnectionProvider"; //$NON-NLS-1$
 	public static final String ID = "id"; //$NON-NLS-1$
 	public static final String URL = "url"; //$NON-NLS-1$
@@ -63,21 +63,21 @@ public class DefaultConnectionProvider implements IConnectionProvider {
 		listeners.remove(listener);
 	}
 
-	void fireAdded(IConnectionWrapper wrapper) {
+	public void fireAdded(IConnectionWrapper wrapper) {
 		for(Iterator<IConnectionProviderListener> i = listeners.iterator(); i.hasNext();)
 			try {
 				i.next().connectionAdded(wrapper);
 			} catch(RuntimeException re) {}
 		}
 
-	void fireChanged(IConnectionWrapper wrapper) {
+	public void fireChanged(IConnectionWrapper wrapper) {
 		for(Iterator<IConnectionProviderListener> i = listeners.iterator(); i.hasNext();)
 			try {
 				i.next().connectionChanged(wrapper);
 			} catch(RuntimeException re) {}
 	}
 
-	void fireRemoved(IConnectionWrapper wrapper) {
+	public void fireRemoved(IConnectionWrapper wrapper) {
 		for(Iterator<IConnectionProviderListener> i = listeners.iterator(); i.hasNext();)
 			try {
 				i.next().connectionRemoved(wrapper);
