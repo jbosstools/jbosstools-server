@@ -239,7 +239,7 @@ public class XMLMemento implements IMemento {
 			return null;
 		String strValue = attr.getValue();
 		try {
-			return new Integer(strValue);
+			return Integer.valueOf(strValue);
 		} catch (NumberFormatException e) {
 			return null;
 		}
@@ -364,16 +364,14 @@ public class XMLMemento implements IMemento {
 		if (attr == null)
 			return null;
 		String strValue = attr.getValue();
-		if ("true".equalsIgnoreCase(strValue)) //$NON-NLS-1$
-			return new Boolean(true);
-		return new Boolean(false);
+		return Boolean.valueOf(strValue);
 	}
 
 	/*
 	 * @see IMemento#putBoolean(String, boolean)
 	 */
 	public void putBoolean(String key, boolean value) {
-		element.setAttribute(key, new Boolean(value).toString());
+		element.setAttribute(key, Boolean.toString(value));
 	}
 
 	/**
