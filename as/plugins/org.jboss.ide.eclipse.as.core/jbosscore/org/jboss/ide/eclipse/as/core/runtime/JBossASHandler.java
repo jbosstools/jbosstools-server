@@ -23,7 +23,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.datatools.connectivity.ConnectionProfileException;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
@@ -34,6 +33,7 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
+import org.jboss.ide.eclipse.as.core.runtime.DriverUtility.DriverUtilityException;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBean;
@@ -176,15 +176,24 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 			if (runtime != null) {
 				createServer(progressMonitor, runtime, serverType, name);
 			}
-
-			new DriverUtility().createDriver(asLocation.getAbsolutePath(), serverType);
+			
+			if( isDtpPresent())
+				new DriverUtility().createDriver(asLocation.getAbsolutePath(), serverType);
 		} catch (CoreException e) {
 			JBossServerCorePlugin.log(IStatus.ERROR, Messages.JBossRuntimeStartup_Cannot_create_new_JBoss_Server,e);
-		} catch (ConnectionProfileException e) {
+		} catch (DriverUtilityException e) {
 			JBossServerCorePlugin.log(IStatus.ERROR, Messages.JBossRuntimeStartup_Cannott_create_new_DTP_Connection_Profile,e);
 		}
 	}
 
+	private static boolean isDtpPresent() {
+		String bundle1 = "org.eclipse.datatools.connectivity"; //$NON-NLS-1$
+		String bundle2 = "org.eclipse.datatools.connectivity.db.generic"; //$NON-NLS-1$
+		Bundle b1 = Platform.getBundle(bundle1);
+		Bundle b2 = Platform.getBundle(bundle2);
+		return b1 != null && b2 != null;
+	}
+	
 	/**
 	 * Creates new JBoss AS Runtime
 	 * @param jbossASLocation location of JBoss AS

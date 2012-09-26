@@ -18,6 +18,7 @@ import java.util.Properties;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.datatools.connectivity.ConnectionProfileConstants;
 import org.eclipse.datatools.connectivity.ConnectionProfileException;
@@ -34,6 +35,7 @@ import org.eclipse.wst.server.core.IServerType;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.osgi.framework.Bundle;
 
 public class DriverUtility implements IJBossRuntimePluginConstants {
 	public static final HashMap<String,String> SERVER_DRIVER_LOCATION = new HashMap<String, String>();
@@ -55,7 +57,14 @@ public class DriverUtility implements IJBossRuntimePluginConstants {
 	 * @throws ConnectionProfileException
 	 * @return driver instance
 	 */
-	public void createDriver(String jbossASLocation, IServerType serverType) throws ConnectionProfileException {
+	public void createDriver(String jbossASLocation, IServerType serverType) throws DriverUtilityException {
+		try {
+			createDriver2(jbossASLocation, serverType);
+		} catch( ConnectionProfileException cfe ) {
+			throw new DriverUtilityException(cfe);
+		}
+	}
+	private void createDriver2(String jbossASLocation, IServerType serverType) throws ConnectionProfileException {
 		if(ProfileManager.getInstance().getProfileByName(DEFAULT_DS) != null) {
 			// Don't create the driver a few times
 			return;
@@ -205,4 +214,10 @@ public class DriverUtility implements IJBossRuntimePluginConstants {
 		return false;
 	}
 
+	public class DriverUtilityException extends Exception {
+		public DriverUtilityException(Exception e) {
+			super(e);
+		}
+	}
+	
 }
