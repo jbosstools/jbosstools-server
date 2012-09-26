@@ -163,7 +163,8 @@ public class ArchivesModel implements IArchiveModel {
 	public IArchiveModelRootNode registerProject(IPath projectPath, String file, IProgressMonitor monitor) throws ArchivesModelException {
 		XbPackages packages;
 		ArchiveModelNode modelNode;
-
+		if( projectPath == null )
+			return null;
 		IPath packagesFile = projectPath.append(file);
 		if (packagesFile.toFile().exists()) {
 			try {

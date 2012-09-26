@@ -28,7 +28,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModelException;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModel;
@@ -97,11 +96,11 @@ public class WorkspaceChangeListener implements IResourceChangeListener {
 				try {
 					if( p.getSessionProperty(new QualifiedName(ArchivesCorePlugin.PLUGIN_ID, "localname")) == null ) { //$NON-NLS-1$
 						try {
-							ArchivesModel.instance().registerProject(p.getLocation(), new NullProgressMonitor());
-							new Job(ArchivesCore.bind(ArchivesCoreMessages.RefreshProject, p.getName())) {
-							protected IStatus run(IProgressMonitor monitor) {
-								try {
-									p.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+							new WorkspaceJob(ArchivesCore.bind(ArchivesCoreMessages.RefreshProject, p.getName())) {
+								public IStatus runInWorkspace(IProgressMonitor monitor) {
+									try {
+										ArchivesModel.instance().registerProject(p.getLocation(), new NullProgressMonitor());
+										p.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 									} catch( CoreException e ) {
 										IStatus status = new Status(IStatus.WARNING, ArchivesCorePlugin.PLUGIN_ID,
 											ArchivesCore.bind(ArchivesCoreMessages.RefreshProjectFailed, p.getName()),e);

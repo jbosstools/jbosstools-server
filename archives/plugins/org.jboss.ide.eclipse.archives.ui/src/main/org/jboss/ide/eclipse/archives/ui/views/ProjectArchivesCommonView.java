@@ -82,6 +82,10 @@ public class ProjectArchivesCommonView extends CommonNavigator implements IArchi
 				if( part == instance )
 					return;
 				if (selection == null || selection.isEmpty()) {
+					if( currentProject != null && !currentProject.isAccessible()) {
+						currentProject = null;
+						jiggleViewerInput();
+					}
 					return;
 				}
 				if (!(selection instanceof IStructuredSelection))
