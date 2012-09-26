@@ -11,7 +11,9 @@
 package org.jboss.ide.eclipse.as.jmx.integration;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.management.MBeanServerConnection;
@@ -46,7 +48,8 @@ public class JBoss71ServerConnection extends JBossServerConnection {
 	protected void initializeEnvironment(IServer s, String user, String pass) throws CredentialException {
 		this.user = user;
 		this.pass = pass;
-		this.connectionToConnector = new HashMap<MBeanServerConnection, JMXConnector>();
+		if( this.connectionToConnector == null )
+			this.connectionToConnector = new HashMap<MBeanServerConnection, JMXConnector>();
 	}
 	
 	protected MBeanServerConnection createConnection(IServer s) throws Exception  {
@@ -81,17 +84,25 @@ public class JBoss71ServerConnection extends JBossServerConnection {
 	
 	protected void cleanupConnection(IServer server, MBeanServerConnection connection) {
 		super.cleanupConnection(server, connection);
-		JMXConnector connector = null;
-		synchronized(this) {
-			connector = connectionToConnector.get(connection);
-			if( connector != null ) {
-				connectionToConnector.remove(connection);
+	}
+	protected void checkState(IServer server) {
+		super.checkState(server);
+		if( connectionToConnector != null && !isConnected() ) {
+			closeAllConnections();
+		}
+	}
+	private void closeAllConnections() {
+		Collection<JMXConnector> c = connectionToConnector.values();
+		Iterator<JMXConnector> i = c.iterator();
+		while(i.hasNext()) {
+			JMXConnector jmxc = i.next();
+			// Same logic here as in AS71Manager, because the close can block for 10+ minutes
+			if( jmxc != null ) {
+				closeClientJoin(jmxc);
 			}
 		}
-		
-		// Same logic here as in AS71Manager, because the close can block for 10+ minutes
-		if( connector != null ) {
-			closeClientJoin(connector);
+		synchronized(this) {
+			connectionToConnector.clear();
 		}
 	}
 
@@ -116,5 +127,4 @@ public class JBoss71ServerConnection extends JBossServerConnection {
 			  t.interrupt();
 			}
 	}
-
 }

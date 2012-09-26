@@ -140,7 +140,7 @@ public class JMXProvider {
 						server.loadAdapter(JBossServer.class, new NullProgressMonitor()) != null
 						&& server.getServerState() == IServer.STATE_STARTED);
 				IConnectionWrapper connection = JBossJMXConnectionProviderModel.getDefault().getConnection(server);
-				return preconditions && connection.isConnected();
+				return preconditions && connection != null && connection.isConnected();
 			}
 			
 			public synchronized void selectionChanged(IStructuredSelection sel) {
