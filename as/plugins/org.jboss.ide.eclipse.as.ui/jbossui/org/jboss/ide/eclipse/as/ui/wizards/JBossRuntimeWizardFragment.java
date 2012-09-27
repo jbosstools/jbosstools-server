@@ -38,6 +38,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.window.Window;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
@@ -378,6 +379,11 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 				IRuntimeType type = getRuntimeType();
 				data.put(IDownloadRuntimes.RUNTIME_FILTER, new JBossASDownloadRuntimeFilter(type));
 				downloader.execute(data);
+				Boolean launched = (Boolean)data.get(IDownloadRuntimes.DOWNLOAD_LAUNCHED);
+				if( launched != null && launched.booleanValue()) {
+					((IWizardPage)handle).getWizard().performCancel();
+					((IWizardPage)handle).getWizard().getContainer().getShell().close();
+				}
 			}
 		}
 	}
