@@ -147,7 +147,7 @@ public class SingleDeployableFolderTest extends AbstractPublishingTest {
 		IPath[] changed = MockPublishMethod4.getChanged();
 		IPath[] removed = MockPublishMethod4.getRemoved();
 		IPath[] temp = MockPublishMethod4.getTempPaths();
-		System.out.println("   " + changed.length + ", " + removed.length + ", " + temp.length);
+		//System.out.println("   " + changed.length + ", " + removed.length + ", " + temp.length);
 		if( !isZipped() ) {
 			boolean foundRemoved = false;
 			for( int i = 0; i < removed.length; i++ ) {

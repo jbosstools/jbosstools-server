@@ -113,7 +113,8 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 	}
 		
 	/**
-	 * Gets the actual deploy path for this module 
+	 * Gets the actual deploy path for this module, including all 
+	 * sub-module folders. 
 	 * 
 	 * @param moduleTree
 	 * @param server
@@ -123,6 +124,14 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		return server.getDeploymentLocation(moduleTree, true);
 	}
 
+	/**
+	 * Gets the actual temp deploy root folder. Do Not deep-dive 
+	 * into sub-modules  
+	 * 
+	 * @param moduleTree
+	 * @param server
+	 * @return
+	 */
 	protected IPath getTempDeployPath(IModule[] moduleTree, IDeployableServer server) {
 		return server.getTempDeploymentLocation(moduleTree, false);
 	}
@@ -402,9 +411,8 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		monitor.beginTask("Copying Child Module: " + moduleTree[moduleTree.length-1].getName(), 100); //$NON-NLS-1$
 		try {
 			IPath destinationPath = getDeployPath(moduleTree, server);
-			IPath tempDeployPath = getTempDeployPath(moduleTree, server);
+			IPath tempDeployFolder = getTempDeployPath(moduleTree, server);
 			IPath destinationFolder = destinationPath.removeLastSegments(1);
-			IPath tempDeployFolder = tempDeployPath.removeLastSegments(1);
 			IPath safeDest = getRootPath(destinationFolder).append(destinationFolder);
 			IPath safeTempDest = getRootPath(tempDeployFolder).append(tempDeployFolder);
 			

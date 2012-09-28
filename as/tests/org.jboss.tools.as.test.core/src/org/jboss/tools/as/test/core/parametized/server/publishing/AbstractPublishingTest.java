@@ -168,7 +168,7 @@ public abstract class AbstractPublishingTest extends TestCase {
 			if( param_deployLoc.equals(ServerParameterUtils.DEPLOY_CUSTOM_NULL) || 
 					param_deployLoc.equals(ServerParameterUtils.DEPLOY_CUSTOM_ABS) ||
 					param_deployLoc.equals(ServerParameterUtils.DEPLOY_CUSTOM_REL)) {
-				ds.setDeployLocationType(IDeployableServer.DEPLOY_SERVER);
+				ds.setDeployLocationType(IDeployableServer.DEPLOY_CUSTOM);
 			}
 			if( param_deployLoc.equals(ServerParameterUtils.DEPLOY_CUSTOM_ABS)) {
 				String f = getCustomAbsoluteFolder();
@@ -253,6 +253,7 @@ public abstract class AbstractPublishingTest extends TestCase {
 		if( MockPublishMethod4.getError() != null ) {
 			Throwable t = MockPublishMethod4.getError();
 			System.out.println("   " + t.getMessage());
+			t.printStackTrace();
 			fail("Error when publishing: " + t.getMessage());
 		}
 	}
@@ -260,7 +261,8 @@ public abstract class AbstractPublishingTest extends TestCase {
 		IPath[] changed2 = MockPublishMethod4.getChanged();
 		IPath[] removed2 = MockPublishMethod4.getRemoved();
 		IPath[] temp2 = MockPublishMethod4.getTempPaths();
-		System.out.println("   " + changed2.length + ", " + removed2.length + ", " + temp2.length);
+		String t = "   " + changed2.length + ", " + removed2.length + ", " + temp2.length;
+//		System.out.println(t);
 		assertEquals(changed2.length, changed);
 		assertEquals(removed2.length, removed);
 		assertEquals(temp2.length,    temp);

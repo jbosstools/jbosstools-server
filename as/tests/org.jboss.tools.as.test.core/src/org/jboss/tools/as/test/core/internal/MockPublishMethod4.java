@@ -121,7 +121,7 @@ public class MockPublishMethod4 extends AbstractPublishMethod {
 				throw error;
 			}
 			if( tempRoot != null && !(new Path(expectedTempRoot).isPrefixOf(tempRoot))) {
-				String e = "Expected " + new Path(expectedTempRoot) + " but got: " + root.toString();
+				String e = "Expected " + new Path(expectedTempRoot) + " but got: " + tempRoot.toString();
 				System.out.println(e);
 				error = new RuntimeException("Unacceptable use of callback handler: " + e);
 				throw error;
