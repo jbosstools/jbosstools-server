@@ -133,6 +133,7 @@ public class JMXProvider {
 						}
 					}
 				};
+				selectionChanged(sp.getSelection());
 			}
 
 			public boolean accept(IServer server) {
