@@ -53,6 +53,7 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 	protected void doOverrides(ILaunchConfigurationWorkingCopy launchConfig, JBossServer jbossServer, IJBossServerRuntime jbossRuntime) throws CoreException {
 		getProperties().setHost(getHost(jbossServer, jbossRuntime), launchConfig);
 		getProperties().setServerHome(getServerHome(jbossRuntime), jbossRuntime, launchConfig);
+		getProperties().setServerFlag(getSupportsServerFlag(jbossRuntime), jbossRuntime, launchConfig);
 		getProperties().setJreContainer(getJreContainerPath(jbossRuntime), launchConfig);
 		getProperties().setEndorsedDir(getEndorsedDir(jbossRuntime), launchConfig);
 		getProperties().setJavaLibPath(getJavaLibraryPath(jbossRuntime), launchConfig);
