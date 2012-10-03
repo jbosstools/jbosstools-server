@@ -34,24 +34,34 @@ import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(value = Parameterized.class)
 public class RepublishDefectTest extends AbstractPublishingTest {
+	public static int count = 1;
+	
 	@Parameters
 	public static Collection<Object[]> params() {
 		return defaultData();
 	}
 	
+	private int myCount;
 	public RepublishDefectTest(String serverType, String zip,
 			String deployLoc, String perMod) {
 		super(serverType, zip, deployLoc, perMod);
+		myCount = count;
+		count++;
 	}
 
 	protected void createProjects() throws Exception {
-    	IDataModel dm = CreateProjectOperationsUtility.getEARDataModel("ear", "thatContent", null, null, JavaEEFacetConstants.EAR_5, true);
+    	IDataModel dm = CreateProjectOperationsUtility.getEARDataModel(ap("ear"), "thatContent", null, null, JavaEEFacetConstants.EAR_5, true);
     	OperationTestCase.runAndVerify(dm);
-    	IDataModel dyn1Model = CreateProjectOperationsUtility.getWebDataModel("d1", "ear", null, null, null, JavaEEFacetConstants.WEB_23, true);
+    	IDataModel dyn1Model = CreateProjectOperationsUtility.getWebDataModel(ap("d1v"), ap("ear"), null, null, null, JavaEEFacetConstants.WEB_23, true);
     	OperationTestCase.runAndVerify(dyn1Model);
-    	IDataModel dyn2Model = CreateProjectOperationsUtility.getWebDataModel("d2", "ear", null, null, null, JavaEEFacetConstants.WEB_23, true);
+    	IDataModel dyn2Model = CreateProjectOperationsUtility.getWebDataModel(ap("d2v"), ap("ear"), null, null, null, JavaEEFacetConstants.WEB_23, true);
     	OperationTestCase.runAndVerify(dyn2Model);
     	addModuleToServer(ServerUtil.getModule(findProject("ear")));
+	}
+	
+	/* Append myCount as a suffix to this original*/
+	private String ap(String original) {
+		return original + myCount;
 	}
 	
 	protected void completeSetUp() {
@@ -72,7 +82,7 @@ public class RepublishDefectTest extends AbstractPublishingTest {
 	
 	@Test
 	public void testJBIDE6184_Odd_Republish_Error() throws Exception {
-		IModule[] ear = getModule(findProject("ear"));
+		IModule[] ear = getModule(findProject(ap("ear")));
 		
     	// Create a temp server
 		addOrRemoveModuleWithPublish(ear, true);
@@ -86,20 +96,20 @@ public class RepublishDefectTest extends AbstractPublishingTest {
 		addOrRemoveModuleWithPublish(ear, false);
 		assertFalse(earPath.toFile().exists());
 		
-		ResourceUtils.deleteProject("d1");
+		ResourceUtils.deleteProject(ap("d1v"));
 		
 		// republish the ear
 		addOrRemoveModuleWithPublish(ear, true);
 		JBIDE6184EarHasDynProjs(earPath, false);
 		
 		// recreate the war
-		IDataModel dyn1Model = CreateProjectOperationsUtility.getWebDataModel("d1", "ear", null, null, null, JavaEEFacetConstants.WEB_23, true);
+		IDataModel dyn1Model = CreateProjectOperationsUtility.getWebDataModel(ap("d1v"), ap("ear"), null, null, null, JavaEEFacetConstants.WEB_23, true);
     	OperationTestCase.runAndVerify(dyn1Model);
 		server.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
 		JBIDE6184EarHasDynProjs(earPath, true);
 	}
 	
-	protected void JBIDE6184EarHasDynProjs(IPath earPath, boolean d1Present ) {
+	protected void JBIDE6184EarHasDynProjs(IPath earPath, boolean d1vPresent ) {
 		ArrayList<IPath> mustBePresent = new ArrayList<IPath>();
 		ArrayList<IPath> mustBeMissing = new ArrayList<IPath>();
 		
@@ -107,18 +117,20 @@ public class RepublishDefectTest extends AbstractPublishingTest {
 		mustBePresent.add(earPath.append("META-INF"));
 		mustBePresent.add(earPath.append("META-INF").append("application.xml"));
 		
-		ArrayList<IPath> tmp = d1Present ? mustBePresent : mustBeMissing;
-		tmp.add(earPath.append("d1.war"));
-		tmp.add(earPath.append("d1.war").append("WEB-INF"));
-		tmp.add(earPath.append("d1.war").append("META-INF"));
-		tmp.add(earPath.append("d1.war").append("META-INF").append("MANIFEST.MF"));
-		tmp.add(earPath.append("d1.war").append("WEB-INF").append("web.xml"));
+		ArrayList<IPath> tmp = d1vPresent ? mustBePresent : mustBeMissing;
+		String d1WarName = ap("d1v") + ".war";
+		tmp.add(earPath.append(d1WarName));
+		tmp.add(earPath.append(d1WarName).append("WEB-INF"));
+		tmp.add(earPath.append(d1WarName).append("META-INF"));
+		tmp.add(earPath.append(d1WarName).append("META-INF").append("MANIFEST.MF"));
+		tmp.add(earPath.append(d1WarName).append("WEB-INF").append("web.xml"));
 
-		mustBePresent.add(earPath.append("d2.war"));
-		mustBePresent.add(earPath.append("d2.war").append("WEB-INF"));
-		mustBePresent.add(earPath.append("d2.war").append("META-INF"));
-		mustBePresent.add(earPath.append("d2.war").append("META-INF").append("MANIFEST.MF"));
-		mustBePresent.add(earPath.append("d2.war").append("WEB-INF").append("web.xml"));
+		String d2WarName = ap("d2v") + ".war";
+		mustBePresent.add(earPath.append(d2WarName));
+		mustBePresent.add(earPath.append(d2WarName).append("WEB-INF"));
+		mustBePresent.add(earPath.append(d2WarName).append("META-INF"));
+		mustBePresent.add(earPath.append(d2WarName).append("META-INF").append("MANIFEST.MF"));
+		mustBePresent.add(earPath.append(d2WarName).append("WEB-INF").append("web.xml"));
 		
 		verifyList(earPath, mustBePresent, true);
 		verifyList(earPath, mustBeMissing, false);
