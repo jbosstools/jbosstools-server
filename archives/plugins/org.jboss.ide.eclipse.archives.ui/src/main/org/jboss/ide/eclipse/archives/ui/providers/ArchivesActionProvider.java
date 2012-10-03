@@ -172,8 +172,10 @@ public class ArchivesActionProvider extends CommonActionProvider {
 				}
 				addContextMenuContributions(node, manager);
 			}
-		} else if( ProjectArchivesCommonView.getInstance().getCurrentProject() != null ){
-			manager.add(newPackageManager);
+		} else {
+			ProjectArchivesCommonView v = ProjectArchivesCommonView.getInstance();
+			if( v != null && v.getCurrentProject() != null ) 
+				manager.add(newPackageManager);
 		}
 	}
 
