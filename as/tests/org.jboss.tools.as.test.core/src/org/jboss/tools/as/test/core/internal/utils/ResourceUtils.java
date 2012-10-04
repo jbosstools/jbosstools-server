@@ -81,8 +81,8 @@ public class ResourceUtils {
 	}
 	
 	public static void deleteProject(String name) {
-		final IProject projectA = findProject("d1");
-		Job deleteJob = new Job("delete d1") {
+		final IProject projectA = findProject(name);
+		Job deleteJob = new Job("delete " + name) {
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
 					projectA.delete(true, new NullProgressMonitor());

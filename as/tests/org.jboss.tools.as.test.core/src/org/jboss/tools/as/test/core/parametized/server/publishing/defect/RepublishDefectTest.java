@@ -56,7 +56,7 @@ public class RepublishDefectTest extends AbstractPublishingTest {
     	OperationTestCase.runAndVerify(dyn1Model);
     	IDataModel dyn2Model = CreateProjectOperationsUtility.getWebDataModel(ap("d2v"), ap("ear"), null, null, null, JavaEEFacetConstants.WEB_23, true);
     	OperationTestCase.runAndVerify(dyn2Model);
-    	addModuleToServer(ServerUtil.getModule(findProject("ear")));
+    	addModuleToServer(ServerUtil.getModule(findProject(ap("ear"))));
 	}
 	
 	/* Append myCount as a suffix to this original*/
