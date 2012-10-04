@@ -112,8 +112,8 @@ public class XMLBinding {
 	private static List nullSafe(List list) {
 		return list == null ? new ArrayList() : list;
 	}
-	private static boolean isEmpty(String s) {
-		return s != null && !"".equals(s); //$NON-NLS-1$
+	private static boolean isEmpty(String s) { 
+		return (s == null || s.isEmpty());
 	}
 	private static void marshallAddPackages(XMLMemento memento, List packages) throws XbException {
 		Iterator i = packages.iterator();

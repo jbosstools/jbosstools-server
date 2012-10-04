@@ -111,7 +111,22 @@ public class XBMarshallTest extends TestCase {
 			}
 		}
 	}
-	
+	protected String writeToString(XbPackages packs, boolean shouldPass) {
+		XbException e = null;
+		try {
+			return XMLBinding.serializePackages(packs, new NullProgressMonitor());
+		} catch( XbException xbe ) {
+			e = xbe;
+		} finally {
+			if( e == null && !shouldPass) {
+				fail("Incomplete Model saved when it should not have been.");
+			}
+			if( e != null && shouldPass) {
+				fail("Model failed to save when it should have saved. " + e.getMessage());
+			}
+		}
+		return null;
+	}
 	protected void writePackage(String name, String toDir, boolean shouldPass) {
 		XbPackages packs = new XbPackages();
 		XbPackage pack = new XbPackage();
@@ -121,11 +136,27 @@ public class XBMarshallTest extends TestCase {
 		write(packs, shouldPass);
 	}
 	
+	protected String writePackageToString(String name, String toDir, boolean shouldPass) {
+		XbPackages packs = new XbPackages();
+		XbPackage pack = new XbPackage();
+		pack.setName(name);
+		pack.setToDir(toDir);
+		packs.addChild(pack);
+		return writeToString(packs, true);
+	}
+	
 	public void testWritePackageSuccess() {
 		writePackage("someName", "someFile.jar", true);
 	}
 	public void testWritePackageMissingName() {
 		writePackage(null, "someFile.jar", false);
+	}
+	public void test12495Defect() {
+		String result = writePackageToString("someName", "outs", true);
+		boolean b = result.contains("todir=\"outs\"");
+		if( !b ) {
+			fail();
+		}
 	}
 
 	// Currently the schema is written that this will pass
