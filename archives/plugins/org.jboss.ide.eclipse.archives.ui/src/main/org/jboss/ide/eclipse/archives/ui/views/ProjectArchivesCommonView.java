@@ -72,7 +72,11 @@ public class ProjectArchivesCommonView extends CommonNavigator implements IArchi
 
     public void dispose() {
     	super.dispose();
-    	PlatformUI.getWorkbench().getActiveWorkbenchWindow().getSelectionService().removePostSelectionListener(selectionListener);
+    	try {
+    		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getSelectionService().removePostSelectionListener(selectionListener);
+    	} catch(NullPointerException npe) { 
+    		// Seriously ignore, don't feel like 5 null checks
+    	}
 		PrefsInitializer.removeListener(this);
     }
 
