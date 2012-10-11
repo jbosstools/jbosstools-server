@@ -20,6 +20,7 @@ import org.jboss.ide.eclipse.archives.test.model.FilesetMatchesPathTest;
 import org.jboss.ide.eclipse.archives.test.model.ModelCreationTest;
 import org.jboss.ide.eclipse.archives.test.model.ModelTruezipBridgeTest;
 import org.jboss.ide.eclipse.archives.test.model.ModelUtilTest;
+import org.jboss.ide.eclipse.archives.test.model.ReadWriteTest;
 import org.jboss.ide.eclipse.archives.test.model.XBMarshallTest;
 import org.jboss.ide.eclipse.archives.test.model.XBUnmarshallTest;
 import org.jboss.ide.eclipse.archives.test.projects.InnerZipResourceTimestampTest;
@@ -38,6 +39,7 @@ public class ArchivesTestSuite extends TestSuite {
         suite.addTestSuite(ArchivesCoreTest.class);
         suite.addTestSuite(XBMarshallTest.class);
         suite.addTestSuite(XBUnmarshallTest.class);
+        suite.addTestSuite(ReadWriteTest.class);
         suite.addTestSuite(TruezipUtilTest.class);
         suite.addTestSuite(ModelUtilTest.class);
         suite.addTestSuite(DirectoryScannerTest.class);

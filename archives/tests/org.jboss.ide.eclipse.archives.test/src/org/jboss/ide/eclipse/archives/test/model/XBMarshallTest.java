@@ -111,7 +111,7 @@ public class XBMarshallTest extends TestCase {
 			}
 		}
 	}
-	protected String writeToString(XbPackages packs, boolean shouldPass) {
+	public static String writeToString(XbPackages packs, boolean shouldPass) {
 		XbException e = null;
 		try {
 			return XMLBinding.serializePackages(packs, new NullProgressMonitor());

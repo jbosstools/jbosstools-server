@@ -10,6 +10,9 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.archives.test.model;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -188,10 +191,29 @@ public class XBUnmarshallTest extends TestCase {
 	 * Utility
 	 */
 	
-	protected XbPackages parse(String file, boolean shouldSucceed, String failMsg) {
+	public XbPackages parse(String file, boolean shouldSucceed, String failMsg) {
+		File f = archiveDescriptors.append(file).toFile();
+		return parseFromFile(f, shouldSucceed, failMsg );
+	}
+	public static XbPackages parseFromFile(File f, boolean shouldSucceed, String failMsg) {
 		XbPackages packs = null;
 		try {
-			packs = XMLBinding.unmarshal(archiveDescriptors.append(file).toFile(), new NullProgressMonitor());
+			packs = XMLBinding.unmarshal(f, new NullProgressMonitor());
+		} catch( XbException e ) {
+			if( shouldSucceed )
+				fail(failMsg + " - " + e.getMessage());
+			return packs;
+		}
+		if( !shouldSucceed )
+			fail(failMsg);
+		return packs;
+	}
+	
+	public static XbPackages parseFromString(String xml, boolean shouldSucceed, String failMsg) {
+		XbPackages packs = null;
+		ByteArrayInputStream is = new ByteArrayInputStream(xml.getBytes());
+		try {
+			packs = XMLBinding.unmarshal(is, new NullProgressMonitor());
 		} catch( XbException e ) {
 			if( shouldSucceed )
 				fail(failMsg + " - " + e.getMessage());

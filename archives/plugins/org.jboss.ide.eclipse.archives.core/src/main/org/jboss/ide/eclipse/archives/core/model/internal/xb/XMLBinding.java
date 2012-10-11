@@ -31,6 +31,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModelRootNode;
 import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveImpl;
+import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbProperties.PropertiesExt;
 
 
 /**
@@ -99,9 +100,8 @@ public class XMLBinding {
 		XMLMemento root = XMLMemento.createWriteRoot("packages"); //$NON-NLS-1$
 		root.putString("version", new Double(element.getVersion()).toString()); //$NON-NLS-1$
 		List packagesToAdd = element.getChildren(XbPackage.class);
-		List props = element.getChildren(XbProperties.class);
 		marshallAddPackages(root, nullSafe(packagesToAdd));
-		marshallAddProperties(root, nullSafe(props));
+		marshallAddProperties(root, element.getProperties());
 		try{
 			String s = root.saveToString();
 			writer.write(s);
@@ -137,7 +137,7 @@ public class XMLBinding {
 			addFileset(childMemento, nullSafe(childXb.getChildren(XbFileSet.class)));
 			addLibFileset(childMemento, nullSafe(childXb.getChildren(XbLibFileSet.class)));
 			addFolders(childMemento, nullSafe(childXb.getChildren(XbFolder.class)));
-			marshallAddProperties(childMemento, nullSafe(childXb.getChildren(XbProperties.class)));
+			marshallAddProperties(childMemento, childXb.getProperties());
 		}
 	}
 
@@ -155,7 +155,7 @@ public class XMLBinding {
 			addFileset(childMemento, nullSafe(childXb.getChildren(XbFileSet.class)));
 			addLibFileset(childMemento, nullSafe(childXb.getChildren(XbLibFileSet.class)));
 			addFolders(childMemento, nullSafe(childXb.getChildren(XbFolder.class)));
-			marshallAddProperties(childMemento, nullSafe(childXb.getChildren(XbProperties.class)));
+			marshallAddProperties(childMemento, childXb.getProperties());
 		}
 	}
 
@@ -175,7 +175,7 @@ public class XMLBinding {
 				fsMemento.putString("excludes", fsXb.getExcludes()); //$NON-NLS-1$
 			fsMemento.putString("inWorkspace",new Boolean(fsXb.isInWorkspace()).toString()); //$NON-NLS-1$ 
 			fsMemento.putString("flatten", new Boolean(fsXb.isFlatten()).toString()); //$NON-NLS-1$
-			marshallAddProperties(fsMemento, nullSafe(fsXb.getChildren(XbProperties.class)));
+			marshallAddProperties(fsMemento, fsXb.getProperties());
 		}
 	}
 
@@ -186,22 +186,23 @@ public class XMLBinding {
 			XbLibFileSet fsXb = (XbLibFileSet)i.next();
 			if( !isEmpty(fsXb.getId()))
 				fsMemento.putString("name", fsXb.getId()); //$NON-NLS-1$
-			marshallAddProperties(fsMemento, nullSafe(fsXb.getChildren(XbProperties.class)));
+			marshallAddProperties(fsMemento, fsXb.getProperties());
 		}
 	}
 
-	private static void marshallAddProperties(XMLMemento memento, List properties) {
+	private static void marshallAddProperties(XMLMemento memento, XbProperties properties) {
 		// should only have one "properties"
-		XbProperties propsObj = properties.size() == 0 ? null : (XbProperties)properties.get(0);
 		XMLMemento props = (XMLMemento)memento.createChild("properties"); //$NON-NLS-1$
-		if( propsObj != null ) {
-			List indivProps = propsObj.getAllChildren();
-			Iterator j = indivProps.iterator();
+		if( properties != null ) {
+			PropertiesExt ext = properties.getProperties();
+			Set<Object> set = ext.keySet();
+			Iterator j = set.iterator();
 			while(j.hasNext()) {
-				XbProperty prop = (XbProperty)j.next();
+				String prop = (String)j.next();
+				String value = ext.getProperty(prop);
 				XMLMemento propMemento = (XMLMemento) props.createChild("property"); //$NON-NLS-1$
-				propMemento.putString("name", prop.getName()); //$NON-NLS-1$
-				propMemento.putString("value", prop.getValue()); //$NON-NLS-1$
+				propMemento.putString("name", prop); //$NON-NLS-1$
+				propMemento.putString("value", value); //$NON-NLS-1$
 			}
 		}
 	}
@@ -217,7 +218,7 @@ public class XMLBinding {
 		}
 	}
 
-	protected static XbPackages unmarshal (final InputStream in,
+	public static XbPackages unmarshal (final InputStream in,
 			final IProgressMonitor monitor) throws XbException {
 		XMLMemento root = XMLMemento.createReadRoot(in);
 		if( root == null ) {
@@ -293,7 +294,7 @@ public class XMLBinding {
 			// properties
 			IMemento[] propertiesChild = packageChildren[i].getChildren("properties"); //$NON-NLS-1$
 			if( propertiesChild != null && propertiesChild.length == 1)
-				unmarshallProperties(packs, propertiesChild[0]);
+				unmarshallProperties(pack, propertiesChild[0]);
 
 			packs.addChild(pack);
 		}
@@ -376,7 +377,7 @@ public class XMLBinding {
 	}
 	private static void unmarshallProperties(XbPackageNodeWithProperties node, IMemento propNode) throws XbException {
 		XbProperties propsWrapper = new XbProperties();
-		node.addChild(propsWrapper);
+		node.setProperties(propsWrapper);
 		String[] names = ((XMLMemento)propNode).getChildNames();
 		Set<String> set = new TreeSet<String>();
 		set.addAll(Arrays.asList(names));
@@ -397,7 +398,7 @@ public class XMLBinding {
 				throw new XbException(new Exception("Element 'property' contains unknown attribute key")); //$NON-NLS-1$
 			p.setName(name);
 			p.setValue(val);
-			propsWrapper.addChild(p);
+			propsWrapper.addProperty(p);
 		}
 	}
 }
