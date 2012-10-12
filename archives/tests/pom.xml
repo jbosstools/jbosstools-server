@@ -11,7 +11,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 	<name>archives.tests</name>
 	<packaging>pom</packaging>
 	<modules>
-		<module>org.jboss.ide.eclipse.archives.test</module>
+		<!-- https://issues.jboss.org/browse/JBIDE-12846 comment out until this test plugin compiles OK <module>org.jboss.ide.eclipse.archives.test</module> -->
 		<module>org.jboss.ide.eclipse.archives.ui.test</module>
 		<module>org.jboss.tools.archives.ui.bot.test</module>		
 	</modules>
