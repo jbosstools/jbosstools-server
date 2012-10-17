@@ -16,6 +16,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.CellEditor;
@@ -139,6 +140,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 
 	// Combo strings - TODO extract to messages
 	private static final String ALL = "All";
+	private static final String DEPLOYABLE = "Deployable";
 	private static final String DEPLOYED = "Deployed";
 	private static final String BY_MODNAME = "By Module Name";
 	private static final String BY_MODTYPE = "By Module Type";
@@ -763,7 +765,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		Label comboLabel = new Label(root, SWT.NULL);
 		comboLabel.setText("Filter by:");
 		filterCombo = new Combo(root, SWT.READ_ONLY);
-		filterCombo.setItems(new String[]{ALL, DEPLOYED, BY_MODNAME});
+		filterCombo.setItems(new String[]{ALL, DEPLOYABLE, DEPLOYED, BY_MODNAME});
 		filterCombo.select(0);
 		
 		filterText = new Text(root, SWT.SINGLE |SWT.BORDER);
@@ -780,7 +782,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		};
 		filterCombo.addModifyListener(ml);
 		filterText.addModifyListener(ml);
-		filterCombo.select(1); // select DEPLOYED
+		filterCombo.select(1); // select DEPLOYABLE
 		return root;
 	}
 	
@@ -875,18 +877,31 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 			return page.getPossibleModules();
 		if( filterCombo.getItem(filterCombo.getSelectionIndex()).equals(DEPLOYED))
 			return page.getServer().getModules();
-		if( filterCombo.getItem(filterCombo.getSelectionIndex()).equals(BY_MODNAME)) {
+		else {
 			IModule[] mods = page.getPossibleModules();
-			String txt = filterText.getText();
 			ArrayList<IModule> result = new ArrayList<IModule>();
-			for( int i = 0; i < mods.length; i++) {
-				if( mods[i].getName().startsWith(txt)) {
-					result.add(mods[i]);
+			if( filterCombo.getItem(filterCombo.getSelectionIndex()).equals(DEPLOYABLE)) {
+				for( int i = 0; i < mods.length; i++) {
+					try {
+						IModule[] parent = page.getServer().getRootModules(mods[i], new NullProgressMonitor());
+						if( parent.length == 1 && parent[0] == mods[i]) {
+							result.add(mods[i]);
+						}
+					} catch(CoreException ce) {
+						ce.printStackTrace();
+					}
+				}
+			}
+			if( filterCombo.getItem(filterCombo.getSelectionIndex()).equals(BY_MODNAME)) {
+				String txt = filterText.getText();
+				for( int i = 0; i < mods.length; i++) {
+					if( mods[i].getName().contains(txt)) {
+						result.add(mods[i]);
+					}
 				}
 			}
 			return result.toArray(new IModule[result.size()]);
 		}
-		return new Object[]{};
 	}
 	
 	private class ModulePageLabelProvider implements ITableLabelProvider {
@@ -963,7 +978,10 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 	
 	
 	public static String getDefaultOutputName(IModule module) {
-		return new Path(module.getName()).lastSegment() + PublishUtil.getSuffix(module.getModuleType().getId());
+		String lastSegment = new Path(module.getName()).lastSegment();
+		String suffix = PublishUtil.getSuffix(module.getModuleType().getId());
+		String ret = lastSegment.endsWith(suffix) ? lastSegment : lastSegment + suffix;
+		return  ret;
 	}
 	
 	protected static String getOutputFolderAndName(DeploymentModulePrefs modPref, IModule m) {
@@ -983,7 +1001,6 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 				metadataRadio, serverRadio, customRadio, currentSelection, 
 				deployButton, tempDeployButton,zipDeployWTPProjects				
 		};
-		System.out.println("Setting enablement to " + enabled);
 		for( int i = 0; i < c.length; i++ ) {
 			if( c[i] != null && !c[i].isDisposed()) {
 				c[i].setEnabled(enabled);

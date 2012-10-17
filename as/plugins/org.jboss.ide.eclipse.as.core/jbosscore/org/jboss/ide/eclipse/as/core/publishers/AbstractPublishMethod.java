@@ -59,6 +59,7 @@ public abstract class AbstractPublishMethod implements IJBossServerPublishMethod
 
 		// kind = [incremental, full, auto, clean] = [1,2,3,4]
 		// delta = [no_change, added, changed, removed] = [0,1,2,3]
+		// modulePublish= [unknown, none, incremental full] = [0,1,2,3]
 		if( module.length == 0 ) return IServer.PUBLISH_STATE_NONE;
 		int modulePublishState = behaviour.getServer().getModulePublishState(module);
 		int publishType = behaviour.getPublishType(kind, deltaKind, modulePublishState);
