@@ -1,5 +1,9 @@
 # The Server Tools project
 
+## Summary
+
+Server Tools provide the JBoss Server Adapter for Eclipse WTP, project archive tooling and JMX views.
+
 ## Install
 
 _Server Tools_ is part of [JBoss Tools](http://jboss.org/tools) from
