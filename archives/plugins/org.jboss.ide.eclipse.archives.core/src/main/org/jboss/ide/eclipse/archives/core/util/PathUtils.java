@@ -64,10 +64,11 @@ public class PathUtils {
 	}
 
 	// Get an absolute path, workspace-absolute or fs-absolute
+	// or return null if projectName == null
 	public static String getAbsoluteLocation(String expression,
 			String projectName, boolean inWorkspace, double version) {
 		if( inWorkspace && ("".equals(expression) || ".".equals(expression))) //$NON-NLS-1$ //$NON-NLS-2$
-			return new Path(projectName).makeAbsolute().toString();
+			return projectName == null ? null : new Path(projectName).makeAbsolute().toString();
 
 		try {
 			String translated = ArchivesCore.getInstance().getVFS().
