@@ -86,6 +86,8 @@ public class AntLauncher {
 			String s = getBuildXmlContents(template, replacements);
 			InputStream is = new ByteArrayInputStream(s.getBytes("UTF-8"));
 			antFile.create(is, true, new NullProgressMonitor());
+			
+			project.getFolder("output").create(false, true, new NullProgressMonitor());
 		} catch(CoreException ce ) {
 			ce.printStackTrace();
 			fail(ce.getMessage());
