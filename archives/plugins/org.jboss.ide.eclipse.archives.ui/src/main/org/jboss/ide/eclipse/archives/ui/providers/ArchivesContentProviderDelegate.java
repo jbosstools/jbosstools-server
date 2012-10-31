@@ -22,6 +22,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.widgets.Display;
 import org.jboss.ide.eclipse.archives.core.build.RegisterArchivesJob;
+import org.jboss.ide.eclipse.archives.core.build.RegisterArchivesJob.RegistrationCallback;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModelListener;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModelRootNode;
@@ -90,6 +91,7 @@ public class ArchivesContentProviderDelegate implements ITreeContentProvider, IA
 
 	protected Viewer viewerInUse;
 	protected ArrayList<IProject> loadingProjects = new ArrayList<IProject>();
+	private ArrayList<IProject> failedLoads = new ArrayList<IProject>();
 
 	public Object[] getChildren(Object parentElement) {
 		if( parentElement instanceof WrappedProject ) {
@@ -99,7 +101,8 @@ public class ArchivesContentProviderDelegate implements ITreeContentProvider, IA
 			// if currently loading, always send a delay
 			if( loadingProjects.contains(p))
 				return new Object[]{new DelayProxy(wp)};
-			
+			if( failedLoads.contains(p))
+				return new Object[]{"Error parsing project archives descriptor."}; //$NON-NLS-1$
 			if( !p.isOpen()) 
 				return new Object[]{};
 			
@@ -119,10 +122,21 @@ public class ArchivesContentProviderDelegate implements ITreeContentProvider, IA
 
 
 	protected void launchRegistrationThread(final DelayProxy dp) {
-		Runnable callback = new Runnable() {
+		RegistrationCallback callback = new RegistrationCallback() {
 			public void run() {
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
+						loadingProjects.remove(dp.project);
+						refreshViewer(dp.wProject);
+					}
+				});
+			}
+
+			public void registrationFailed() {
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						if( !failedLoads.contains(dp.project))
+							failedLoads.add(dp.project);
 						loadingProjects.remove(dp.project);
 						refreshViewer(dp.wProject);
 					}

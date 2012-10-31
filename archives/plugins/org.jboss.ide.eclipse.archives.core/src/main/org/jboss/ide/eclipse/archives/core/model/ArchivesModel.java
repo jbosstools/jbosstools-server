@@ -170,10 +170,10 @@ public class ArchivesModel implements IArchiveModel {
 			try {
 				packages = XMLBinding.unmarshal(packagesFile.toFile(), monitor);
 			} catch( XbException xbe ) {
-				// Empty / non-working XML file loaded
-				ArchivesCore.getInstance().getLogger().log(IStatus.ERROR,
-						ArchivesCore.bind(ArchivesCoreMessages.ErrorUnmarshallingFile, packagesFile.toString()), xbe);
-				return null;
+				// non-working XML file loaded
+				String msg = ArchivesCore.bind(ArchivesCoreMessages.ErrorUnmarshallingFile, packagesFile.toString()); 
+				ArchivesCore.getInstance().getLogger().log(IStatus.ERROR,msg, xbe);
+				throw new ArchivesModelException(new RuntimeException(msg, xbe));
 			}
 		} else {
 			packages = new XbPackages();

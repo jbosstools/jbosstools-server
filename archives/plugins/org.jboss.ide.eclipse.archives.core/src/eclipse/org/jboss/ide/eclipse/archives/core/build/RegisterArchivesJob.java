@@ -21,6 +21,14 @@ import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModelException;
 
 public class RegisterArchivesJob extends Job {
+	/**
+	 * @since 3.4
+	 */
+	public static interface RegistrationCallback extends Runnable {
+		public void run();
+		public void registrationFailed();
+	}
+	
 	private IProject[] projects;
 	private Runnable callback;
 	public RegisterArchivesJob(IProject[] projects, Runnable callback) {
@@ -36,6 +44,8 @@ public class RegisterArchivesJob extends Job {
 				ArchivesModel.instance().registerProject(projects[i].getLocation(), monitor);
 			} catch( ArchivesModelException ame ) {
 				IStatus status = new Status(IStatus.ERROR, ArchivesCorePlugin.PLUGIN_ID, ame.getMessage(), ame);
+				if( callback instanceof RegistrationCallback)
+					((RegistrationCallback)callback).registrationFailed();
 				return status;
 			}
 		}

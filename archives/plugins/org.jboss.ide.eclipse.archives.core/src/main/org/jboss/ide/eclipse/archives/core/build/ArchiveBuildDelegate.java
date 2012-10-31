@@ -70,8 +70,9 @@ public class ArchiveBuildDelegate {
 			// Adding a code here. If the project isn't registered yet, 
 			// the eclipse code can launch a registration job
 			if(ArchivesModel.instance().canReregister(project)) {
-				ArchivesModel.instance().registerProject(project, monitor);
-				return Status.OK_STATUS;
+				IArchiveModelRootNode registered = ArchivesModel.instance().registerProject(project, monitor);
+				if( registered != null ) 
+					return Status.OK_STATUS;
 			}
 			IStatus s = new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID, CANNOT_REGISTER_CODE,
 					ArchivesCore.bind(ArchivesCoreMessages.ErrorLocatingRootNode, project.toOSString()), null);

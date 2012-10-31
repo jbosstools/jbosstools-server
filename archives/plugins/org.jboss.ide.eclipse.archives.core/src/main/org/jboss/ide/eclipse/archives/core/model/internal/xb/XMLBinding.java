@@ -44,6 +44,12 @@ public class XMLBinding {
 	
 	public static class XbException extends Exception {
 		private Exception parent;
+		private String msg;
+		public XbException(String msg, Exception e) {
+			super();
+			parent = e;
+			this.msg = msg;
+		}
 		public XbException(Exception e) {
 			super();
 			parent = e;
@@ -52,7 +58,9 @@ public class XMLBinding {
 			return parent;
 		}
 		public String getMessage() {
-			return parent.getCause() == null ? parent.getMessage() : parent.getCause().getMessage();
+			String prefix = (msg == null ? "" : msg + ": "); //$NON-NLS-1$ //$NON-NLS-2$
+			String suffix = (parent.getCause() == null ? parent.getMessage() : parent.getCause().getMessage()); // 
+			return prefix + suffix;
 		}
 		public Throwable getCause() {
 			return parent;
@@ -214,7 +222,8 @@ public class XMLBinding {
 		} catch( FileNotFoundException fnfe ) {
 			throw new XbException(fnfe);
 		} catch( XbException xbe) {
-			throw xbe;
+			throw new XbException("Unable to parse project archives file: " +  //$NON-NLS-1$
+					(file == null ? null : file.getAbsolutePath()), xbe);
 		}
 	}
 
