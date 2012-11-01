@@ -20,6 +20,7 @@ import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
+import javax.security.sasl.SaslException;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -74,6 +75,11 @@ public class JBoss71ServerConnection extends JBossServerConnection {
 			}
 			return connection;
 		} catch(IOException ioe) {
+			if( ioe instanceof SaslException) {
+				IStatus stat = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+						"Authentication against the remote JBoss instance has failed. Please verify your management credentials in the server editor.", ioe);
+				throw new JMXException(stat);
+			}
 			return null;
 		} catch( RuntimeException re) {
 			IStatus stat = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
