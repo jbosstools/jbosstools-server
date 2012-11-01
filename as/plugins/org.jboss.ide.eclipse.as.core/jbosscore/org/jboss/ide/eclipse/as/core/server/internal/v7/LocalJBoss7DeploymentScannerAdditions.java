@@ -24,8 +24,6 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerEvent;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.Trace;
-import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
-import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
@@ -144,20 +142,29 @@ public class LocalJBoss7DeploymentScannerAdditions extends UnitedServerListener 
 	protected String[] getDeployLocationFolders(IServer server) {
 		JBossServer ds = (JBossServer)ServerConverter.getJBossServer(server);
 		ArrayList<String> folders = new ArrayList<String>();
-		// add the server folder deploy loc. first
-		String insideServer = ds.getDeployFolder(JBossServer.DEPLOY_SERVER);
-		String metadata = JBossServer.getDeployFolder(ds, JBossServer.DEPLOY_METADATA);
-		String custom = JBossServer.getDeployFolder(ds, JBossServer.DEPLOY_CUSTOM);
 		String type = ds.getDeployLocationType();
-		String serverHome = null;
-		if (server != null && server.getRuntime()!= null && server.getRuntime().getLocation() != null) {
-			serverHome = server.getRuntime().getLocation().toString();
-		}
+	
+		// inside server first, always there
+		String insideServer = ds.createPublishMethod().getPublishDefaultRootFolder(ds.getServer());
 		folders.add(insideServer);
-		if( type.equals(JBossServer.DEPLOY_METADATA) && !folders.contains(metadata))
-			folders.add(metadata);
-		if( type.equals(JBossServer.DEPLOY_CUSTOM) && !folders.contains(custom) && !custom.equals(serverHome))
-			folders.add(custom);
+		
+		// metadata
+		if( type.equals(JBossServer.DEPLOY_METADATA)) {
+			String metadata = JBossServer.getDeployFolder(ds, JBossServer.DEPLOY_METADATA);
+			if( !folders.contains(metadata))
+				folders.add(metadata);
+		}
+		
+		// custom
+		if( type.equals(JBossServer.DEPLOY_CUSTOM)) {
+			String serverHome = null;
+			if (server != null && server.getRuntime()!= null && server.getRuntime().getLocation() != null) {
+				serverHome = server.getRuntime().getLocation().toString();
+			}
+			String custom = JBossServer.getDeployFolder(ds, JBossServer.DEPLOY_CUSTOM);
+			if( !folders.contains(custom) && !custom.equals(serverHome))
+				folders.add(custom);
+		}
 
 		IModule[] modules2 = org.eclipse.wst.server.core.ServerUtil.getModules(server.getServerType().getRuntimeType().getModuleTypes());
 		if (modules2 != null) {

@@ -158,9 +158,8 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 		}
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer#getAttributeHelper()
+	/**
+	 * @since 2.4
 	 */
 	public ServerAttributeHelper getAttributeHelper() {
 		IServerWorkingCopy copy = getServerWorkingCopy();
@@ -228,7 +227,11 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 		} catch( MalformedURLException murle) { return null; }
 	}
 
-	protected IJBossServerPublishMethod createPublishMethod() {
+	
+	/**
+	 * @since 2.4
+	 */
+	public IJBossServerPublishMethod createPublishMethod() {
 		IDeployableServerBehaviour beh = ServerConverter.getDeployableServerBehavior(getServer());
 		if( beh != null ) {
 			IJBossServerPublishMethod method = ((DeployableServerBehavior)beh).createPublishMethod();
@@ -236,9 +239,15 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 		}
 		return null;
 	}
+	/**
+	 * @since 2.4
+	 */
 	public IPath getDeploymentLocation(IModule[] module, boolean deep) {
 		return PublishUtil.getDeployPath(createPublishMethod(), module, this, deep);
 	}
+	/**
+	 * @since 2.4
+	 */
 	public IPath getTempDeploymentLocation(IModule[] module, boolean deep) {
 		return PublishUtil.getTempDeployPath(createPublishMethod(), module, this, deep);
 	}
