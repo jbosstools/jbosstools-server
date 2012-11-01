@@ -86,6 +86,9 @@ public class DirectoryScannerFactory {
 		protected HashMap<String, ArrayList<FileWrapper>> matchesMap;
 		
 		/* Folders that are required to be created due to a descendent, but are not fully included */
+		/**
+		 * @since 3.4
+		 */
 		protected HashMap<String, ArrayList<FileWrapper>> requiredFolders;
 		public DirectoryScannerExtension(ScannableFileSet fs) {
 			this.fs = fs;
@@ -185,6 +188,9 @@ public class DirectoryScannerFactory {
 		    	}
 	    	}
 	    }
+	    /**
+		 * @since 3.4
+		 */
 	    protected void addMatchToMap(FileWrapper f2, HashMap<String, ArrayList<FileWrapper>> map) {
     		ArrayList<FileWrapper> l = map.get(f2);
     		if( l == null ) {
@@ -193,6 +199,9 @@ public class DirectoryScannerFactory {
     		}
     		l.add(f2);
 	    }
+	    /**
+		 * @since 3.4
+		 */
 	    protected void ensureRequiredFoldersIncluded(FileWrapper includedFile) {
     		FileWrapper tmpParentWrapper = includedFile.getParentFile();
 	    	while(tmpParentWrapper != null ) {
@@ -217,10 +226,16 @@ public class DirectoryScannerFactory {
 	    	return matchesMap;
 	    }
 
+	    /**
+		 * @since 3.4
+		 */
 	    public HashMap<String, ArrayList<FileWrapper>> getRequiredFolderMap() {
 	    	return requiredFolders;
 	    }
 
+	    /**
+		 * @since 3.4
+		 */
 	    public static class FileWrapper extends File {
 	    	// The actual source file
 	    	File f;
@@ -273,6 +288,9 @@ public class DirectoryScannerFactory {
 				}
 				return false;
 			}
+			/**
+			 * @since 3.4
+			 */
 			@Override
 			public FileWrapper getParentFile() {
 				if( f.getParentFile() == null )

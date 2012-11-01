@@ -41,7 +41,7 @@ public interface IJBossBehaviourDelegate {
 	public String getDefaultStopArguments() throws CoreException;
 	
 	/**
-	 * @since 2.3
+	 * @since 2.4
 	 */
 	public IModulePathFilter getPathFilter(IModule[] moduleTree);
 	

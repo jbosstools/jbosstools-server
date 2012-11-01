@@ -93,7 +93,7 @@ public abstract class AbstractBehaviourDelegate implements IJBossBehaviourDelega
 	}
 
 	/**
-	 * @since 2.3
+	 * @since 2.4
 	 */
 	public IModulePathFilter getPathFilter(IModule[] moduleTree) {
 		return ResourceModuleResourceUtil.findDefaultModuleFilter(moduleTree[moduleTree.length-1]);

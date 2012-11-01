@@ -21,6 +21,9 @@ import org.eclipse.osgi.util.NLS;
 import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
 import org.jboss.ide.eclipse.as.wtp.core.Messages;
 
+/**
+ * @since 2.4
+ */
 public class ArgsUtil {
 
 	public static final Integer NO_VALUE = new Integer(-1); 
@@ -234,12 +237,18 @@ public class ArgsUtil {
 		return original;
 	}
 	
+	/**
+	 * @since 2.4
+	 */
 	public static String setFlag(String original, String flagName) {
 		if( original.startsWith(flagName + SPACE ) || original.contains(SPACE + flagName + SPACE) || original.endsWith(flagName)) 
 			return original;
 		return original.trim() + SPACE + flagName;
 	}
 	
+	/**
+	 * @since 2.4
+	 */
 	public static String clearFlag(String original, String flagName) {
 		if( original.trim().startsWith(flagName + SPACE))
 			return original.trim().substring(flagName.length()).trim();

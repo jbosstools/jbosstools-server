@@ -41,7 +41,7 @@ public class ProjectUtils {
 	}
 	
 	/**
-	 * @since 3.3
+	 * @since 3.4
 	 */
 	public static boolean addProjectNature(IProject project, String natureId, IProgressMonitor monitor) {
 		monitor = monitor == null ? new NullProgressMonitor() : monitor;
@@ -70,7 +70,7 @@ public class ProjectUtils {
 	}
 
 	/**
-	 * @since 3.3
+	 * @since 3.4
 	 */
 	public static boolean removeProjectNature(IPath path) {
 		IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot()
@@ -85,13 +85,13 @@ public class ProjectUtils {
 	}
 
 	/**
-	 * @since 3.3
+	 * @since 3.4
 	 */
 	public static boolean removeProjectNature(IProject project, String natureId) {
 		return removeProjectNature(project, natureId, null);
 	}
 	/**
-	 * @since 3.3
+	 * @since 3.4
 	 */
 	public static boolean removeProjectNature(IProject project, String natureId, IProgressMonitor monitor) {
 		monitor = monitor == null ? new NullProgressMonitor() : monitor;

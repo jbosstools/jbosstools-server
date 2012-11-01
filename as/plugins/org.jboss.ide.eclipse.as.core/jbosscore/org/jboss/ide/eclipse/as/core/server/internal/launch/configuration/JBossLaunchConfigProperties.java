@@ -178,6 +178,9 @@ public class JBossLaunchConfigProperties {
 		}
 	}
 
+	/**
+	 * @since 2.4
+	 */
 	public void setServerFlag(boolean useFlag, IJBossServerRuntime runtime,
 			ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
 		String programArguments = getVMArguments(launchConfig);

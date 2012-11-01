@@ -50,7 +50,7 @@ public class ResourceModuleResourceUtil extends ModuleResourceUtil {
 	/**
 	 * Get a proper includes / excludes filter for this project if it exists
 	 * or null
-	 * @since 2.3
+	 * @since 2.4
 	 */
 	public static IModulePathFilter findDefaultModuleFilter(IModule module) {
 		if( ServerModelUtilities.isBinaryModule(module) )

@@ -14,7 +14,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.server.core.model.IModuleResource;
 
 /**
- * @since 2.3
+ * @since 2.4
  */
 public interface IModulePathFilter {
 	/**

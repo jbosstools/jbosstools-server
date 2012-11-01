@@ -42,7 +42,7 @@ import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
  * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
  * (repeatedly) as the API evolves.
  * </p>
- * @since 2.0
+ * @since 2.4
  */
 public final class PublishCopyUtil {
 	private static final IStatus[] EMPTY_STATUS = new IStatus[0];

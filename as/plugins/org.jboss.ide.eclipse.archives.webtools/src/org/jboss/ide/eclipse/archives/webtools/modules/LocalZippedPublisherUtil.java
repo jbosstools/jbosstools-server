@@ -294,7 +294,7 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 	/**
 	 * @since 2.3
 	 */
-	protected IStatus[] publishChanges(IServer server, IModuleResourceDelta[] deltas, 
+	private IStatus[] publishChanges(IServer server, IModuleResourceDelta[] deltas, 
 			de.schlichtherle.io.File root, IModulePathFilter filter) {
 		ArrayList<IStatus> results = new ArrayList<IStatus>();
 		if( deltas == null || deltas.length == 0 )

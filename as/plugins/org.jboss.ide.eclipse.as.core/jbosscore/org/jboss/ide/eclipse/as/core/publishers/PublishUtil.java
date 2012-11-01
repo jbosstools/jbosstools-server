@@ -206,7 +206,7 @@ public class PublishUtil extends ModuleResourceUtil {
 	}
 	
 	/**
-	 * @since 2.3
+	 * @since 2.4
 	 */
 	public static IStatus[] packModuleIntoJar(String moduleName, IModuleResource[] resources, 
 			IPath destination, IModulePathFilter filter) throws CoreException {
@@ -245,7 +245,7 @@ public class PublishUtil extends ModuleResourceUtil {
 	}
 	
 	/**
-	 * @since 2.3
+	 * @since 2.4
 	 */
 	public static void doPackModule(IModuleResource resource, ModulePackager packager, IModulePathFilter filter) throws CoreException, IOException{
 		if (resource instanceof IModuleFolder) {

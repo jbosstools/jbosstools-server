@@ -250,7 +250,7 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate
 	 * Some projects may request post-processing filtering on 
 	 * the servertools list of resources. 
 	 * 
-	 * @since 2.3
+	 * @since 2.4
 	 */
 	public IModulePathFilter getPathFilter(IModule[] moduleTree) {
 		return null;
