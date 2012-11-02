@@ -99,6 +99,8 @@ public class ArchivePublishWizard extends Wizard {
 			setControl(mainComposite);
 			getContainer().updateTitleBar();
 			setPackageDefaults();
+			IStructuredSelection sel = (IStructuredSelection)viewer.getSelection();
+			setPageComplete(sel.size() > 0);
 		}
 
 		protected void setPackageDefaults() {
@@ -199,6 +201,7 @@ public class ArchivePublishWizard extends Wizard {
 					tmp += ((IDeployableServer)os[i]).getServer().getId() + ","; //$NON-NLS-1$
 				}
 				viewerResult = tmp;
+				setPageComplete(sel2.size() > 0);
 			}
 		}
 		protected String getServers() {
