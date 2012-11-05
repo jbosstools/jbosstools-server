@@ -105,7 +105,7 @@ public abstract class AbstractJBossBehaviourDelegate extends AbstractBehaviourDe
 				if (currentState == IServerStatePoller.SERVER_UP) {
 					setServerStarted();
 				} else {
-					stop(true);
+					setServerStopped();
 				}
 			}
 		};

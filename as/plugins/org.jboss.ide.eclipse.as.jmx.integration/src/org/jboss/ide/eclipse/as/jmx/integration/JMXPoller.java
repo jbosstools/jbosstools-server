@@ -29,6 +29,7 @@ import org.jboss.ide.eclipse.as.core.ExtensionManager.IServerJMXRunnable;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePollerType;
 import org.jboss.ide.eclipse.as.core.util.IEventCodes;
@@ -65,9 +66,11 @@ public class JMXPoller implements IServerStatePoller2 {
 	private RequiresInfoException requiresInfoException = null;
 	private Properties requiredPropertiesReturned = null;
 
+	private boolean expectedState;
 	public void beginPolling(IServer server, boolean expectedState) throws PollingException {
 		ceFound = nnfeFound = startingFound = canceled = done = false;
 		this.server = server;
+		this.expectedState = expectedState;
 		launchJMXPoller();
 	}
 
@@ -89,20 +92,20 @@ public class JMXPoller implements IServerStatePoller2 {
 			JMXPollerRunnable runnable = new JMXPollerRunnable();
 			JMXSafeRunner runner = new JMXSafeRunner(server);
 			while( !done && !canceled) {
+				CoreException coreCe = null;
 				try {
 					runner.run(runnable);
 					started = runnable.result ? STATE_STARTED : STATE_TRANSITION;
-					done = runnable.result;
-					if( !startingFound ) {
-						startingFound = true;
-						IStatus s = new Status(IStatus.INFO, JBossServerCorePlugin.PLUGIN_ID, 
-								JMXPOLLER_CODE|started, Messages.ServerStarting, null);
-						log(s);
-					}
 				} catch(CoreException ce) {
-					handleException(ce.getCause(), runner);
+					coreCe = ce;
 				} 
+				if( expectedState == IServerStatePoller.SERVER_UP)
+					handleStartupLogging(coreCe, runner);
+				else
+					handleShutdownLogging(coreCe, runner);
 
+				done = (started == STATE_STARTED && expectedState == IServerStatePoller.SERVER_UP)
+						|| (started == STATE_STOPPED && expectedState == IServerStatePoller.SERVER_DOWN);
 				try { 
 					Thread.sleep(500);} 
 				catch (InterruptedException e) {
@@ -112,58 +115,111 @@ public class JMXPoller implements IServerStatePoller2 {
 			runner2.endTransaction(server, this);
 		}
 		
-		protected void handleException(Throwable t, final JMXSafeRunner runner) {
-			if( t instanceof SecurityException ) {
-				synchronized(this) {
-					if( !waitingForCredentials ) {
-						waitingForCredentials = true;
-						requiresInfoException = new PollingSecurityException(
-								NLS.bind(Messages.securityException, t.getMessage()));
-					} else {
-						// we're waiting. are they back yet?
-						if( requiredPropertiesReturned != null ) {
-							if( requiredPropertiesReturned == IGNORED_PROPERTIES) {
-								requiresInfoException = null;
-								done = true;
-								started = STATE_STARTED;
-							} else {
-								requiresInfoException = null;
-								String user, pass;
-								user = (String)requiredPropertiesReturned.get(REQUIRED_USER);
-								pass = (String)requiredPropertiesReturned.get(REQUIRED_PASS);
-								requiredPropertiesReturned = null;
-								runner.setUser(user);
-								runner.setPass(pass);
-								waitingForCredentials = false;
-							}
+		private void handleCredentialRequest(Throwable t, JMXSafeRunner runner) {
+			synchronized(this) {
+				if( !waitingForCredentials ) {
+					waitingForCredentials = true;
+					requiresInfoException = new PollingSecurityException(
+							NLS.bind(Messages.securityException, t.getMessage()));
+				} else {
+					// we're waiting. are they back yet?
+					if( requiredPropertiesReturned != null ) {
+						if( requiredPropertiesReturned == IGNORED_PROPERTIES) {
+							requiresInfoException = null;
+							done = true;
+							started = STATE_STARTED;
+						} else {
+							requiresInfoException = null;
+							String user, pass;
+							user = (String)requiredPropertiesReturned.get(REQUIRED_USER);
+							pass = (String)requiredPropertiesReturned.get(REQUIRED_PASS);
+							requiredPropertiesReturned = null;
+							runner.setUser(user);
+							runner.setPass(pass);
+							waitingForCredentials = false;
 						}
 					}
 				}
+			}
+		}
+		protected void handleShutdownLogging(Throwable t, final JMXSafeRunner runner) {
+			if( t == null || t.getCause() == null )
+				return;
+			
+			Throwable cause = t.getCause();
+			if( cause instanceof SecurityException ) {
+				handleCredentialRequest(cause, runner);
 				return;
 			}
 			
-			if( t instanceof CommunicationException ) {
+			if( cause instanceof CommunicationException ) {
+				// a CE exception indicates the server is down
+				started = STATE_STOPPED;
+				return;
+			}
+			
+			if( cause instanceof NamingException ) {
+				// a naming exception indicates the server is partially up
+				started = STATE_TRANSITION;
+				return;
+			}
+		
+			if( cause instanceof IllegalArgumentException) {
+				// the mbean has been removed, so server is still transitioning
+				started = STATE_TRANSITION;
+				return;
+			}
+			
+			// All other exceptions are indication of a failure of some type
+			if( cause != null ) {
+				pollingException = new PollingException(cause.getMessage());
+				done = true;
+			}
+		}
+		
+		protected void handleStartupLogging(Throwable t, final JMXSafeRunner runner) {
+			if( t == null && expectedState == IServerStatePoller.SERVER_UP && !startingFound ) {
+				// Log that the server is still starting up (once)
+				startingFound = true;
+				IStatus s = new Status(IStatus.INFO, JBossServerCorePlugin.PLUGIN_ID, 
+						JMXPOLLER_CODE|started, Messages.ServerStarting, null);
+				log(s);
+			}
+			if( t == null || t.getCause() == null )
+				return;
+			
+			Throwable cause = t.getCause();
+			
+			if( cause instanceof SecurityException ) {
+				handleCredentialRequest(cause, runner);
+				return;
+			}
+			
+			if( cause instanceof CommunicationException ) {
+				// a CE exception indicates the server is down
 				started = STATE_STOPPED;
 				if( !ceFound ) {
 					ceFound = true;
-					IStatus s = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, JMXPOLLER_CODE|started, t.getMessage(), t);
+					IStatus s = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, JMXPOLLER_CODE|started, cause.getMessage(), cause);
 					log(s);
 				}
 				return;
 			}
 			
-			if( t instanceof NamingException ) {
-				started = STATE_STOPPED;
+			if( cause instanceof NamingException ) {
+				// a naming exception indicates the server is partially up
+				started = STATE_TRANSITION;
 				if( !nnfeFound ) {
 					nnfeFound = true;
-					IStatus s = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, JMXPOLLER_CODE|started, t.getMessage(), t);
+					IStatus s = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, JMXPOLLER_CODE|started, cause.getMessage(), cause);
 					log(s);
 				}
 				return;
 			}
 		
-			if( t != null ) {
-				pollingException = new PollingException(t.getMessage());
+			// All other exceptions are indication of a failure of some type
+			if( cause != null ) {
+				pollingException = new PollingException(cause.getMessage());
 				done = true;
 			}
 		}

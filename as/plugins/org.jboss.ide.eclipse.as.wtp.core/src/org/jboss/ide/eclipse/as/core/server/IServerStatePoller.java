@@ -46,8 +46,11 @@ public interface IServerStatePoller extends INeedCredentials {
 	
 	public IServerStatePollerType getPollerType();
 	public void setPollerType(IServerStatePollerType type);
-	/*
-	 * expected to launch own thread
+	/**
+	 * Begin polling the provided server for its state, while the server transitions into expectedState.
+	 * @param server
+	 * @param expectedState one of IServerStatePoller.SERVER_UP or IServerStatePoller.SERVER_DOWN
+	 * @throws PollingException
 	 */
 	public void beginPolling(IServer server, boolean expectedState) throws PollingException; 
 	public boolean isComplete() throws PollingException, RequiresInfoException;
