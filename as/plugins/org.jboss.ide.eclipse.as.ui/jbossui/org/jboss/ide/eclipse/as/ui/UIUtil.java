@@ -20,10 +20,37 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
 public class UIUtil {
-
+	/*
+	 * This method is here for legacy purposes. Cannot add 'static' to the name
+	 * in case old users instantiate directly. :(  
+	 * This is also the reason why the createFormData2 exists :|
+	 */
+	public FormData createFormData(Object topStart, int topOffset, Object bottomStart, int bottomOffset, 
+			Object leftStart, int leftOffset, Object rightStart, int rightOffset) {
+		FormData data = new FormData();
+		return setFormAttachments(data, topStart, topOffset, bottomStart, bottomOffset, leftStart, leftOffset, rightStart, rightOffset);
+	}
+	
+	/**
+	 * @since 2.4
+	 */
+	public static FormData createFormData(int minHeight, int minWidth, Object topStart, int topOffset, Object bottomStart, int bottomOffset, 
+			Object leftStart, int leftOffset, Object rightStart, int rightOffset) {
+		FormData data = new FormData(minWidth, minHeight);
+		return setFormAttachments(data, topStart, topOffset, bottomStart, bottomOffset, leftStart, leftOffset, rightStart, rightOffset);
+	}
+	
 	public static FormData createFormData2(Object topStart, int topOffset, Object bottomStart, int bottomOffset, 
 			Object leftStart, int leftOffset, Object rightStart, int rightOffset) {
 		FormData data = new FormData();
+		return setFormAttachments(data, topStart, topOffset, bottomStart, bottomOffset, leftStart, leftOffset, rightStart, rightOffset);
+	}
+	
+	/**
+	 * @since 2.4
+	 */
+	public static FormData setFormAttachments(FormData data, Object topStart, int topOffset, Object bottomStart, int bottomOffset, 
+			Object leftStart, int leftOffset, Object rightStart, int rightOffset) {
 
 		if( topStart != null ) {
 			data.top = topStart instanceof Control ? new FormAttachment((Control)topStart, topOffset) : 
@@ -47,11 +74,6 @@ public class UIUtil {
 		return data;
 	}
 
-	public FormData createFormData(Object topStart, int topOffset, Object bottomStart, int bottomOffset, 
-			Object leftStart, int leftOffset, Object rightStart, int rightOffset) {
-		return createFormData2(topStart, topOffset, bottomStart, bottomOffset, leftStart, leftOffset, rightStart, rightOffset);
-	}
-	
 	public static final IWorkbenchPart bringViewToFront(String viewId) throws PartInitException {
 		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow() ;
 		IWorkbenchPart part = null;

@@ -24,6 +24,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -31,6 +32,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 import org.jboss.ide.eclipse.as.rse.core.RSELaunchConfigProperties;
+import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.launch.JBossLaunchConfigurationTabGroup.IJBossLaunchTabProvider;
 
 /**
@@ -58,12 +60,14 @@ public class RSELaunchTabProvider implements IJBossLaunchTabProvider {
 		}
 		
 		public void createUI(Composite parent) {
-			Composite comp = SWTFactory.createComposite(parent, parent.getFont(), 1, 1, GridData.FILL_BOTH);
-			((GridLayout)comp.getLayout()).verticalSpacing = 0;
-			setControl(comp);
+			Composite main = new Composite(parent, SWT.NONE);
+			main.setLayout(new FormLayout());
+			main.setFont(parent.getFont());
+
+			setControl(main);
 			
 			// begin start group
-			Group startGroup = SWTFactory.createGroup(comp, RSEUIMessages.RSE_START_COMMAND, 2, 1, GridData.FILL_HORIZONTAL);
+			Group startGroup = SWTFactory.createGroup(main, RSEUIMessages.RSE_START_COMMAND, 2, 1, GridData.FILL_HORIZONTAL);
 			startGroup.setLayout(new GridLayout(1,true));
 			autoStartArgs = new Button(startGroup, SWT.CHECK);
 			autoStartArgs.setText(RSEUIMessages.RSE_AUTOMATICALLY_CALCULATE);
@@ -75,7 +79,7 @@ public class RSELaunchTabProvider implements IJBossLaunchTabProvider {
 
 			
 			// begin stop group
-			Group stopGroup = SWTFactory.createGroup(comp, RSEUIMessages.RSE_STOP_COMMAND, 2, 1, GridData.FILL_HORIZONTAL);
+			Group stopGroup = SWTFactory.createGroup(main, RSEUIMessages.RSE_STOP_COMMAND, 2, 1, GridData.FILL_HORIZONTAL);
 			stopGroup.setLayout(new GridLayout(1, true));
 			
 			autoStopArgs = new Button(stopGroup, SWT.CHECK);
@@ -85,6 +89,10 @@ public class RSELaunchTabProvider implements IJBossLaunchTabProvider {
 			gd.heightHint = 75;
 			gd.widthHint = 100;
 			stopText.setLayoutData(gd);
+			
+			// Set the layout data of the two main widgets
+			stopGroup.setLayoutData(UIUtil.createFormData(100, SWT.DEFAULT, 70, 0, 100, -5, 0, 5, 100, -5));
+			startGroup.setLayoutData(UIUtil.createFormData(100, SWT.DEFAULT, 0, 5, stopGroup, -5, 0, 5, 100, -5));
 		}
 		
 		protected void addListeners() {
