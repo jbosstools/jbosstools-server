@@ -256,11 +256,7 @@ public class JBossServer extends DeployableServer
 				DeployableServerBehavior.class, new NullProgressMonitor());
 		if( beh == null )
 			return false;
-		String type = DeploymentPreferenceLoader.getCurrentDeploymentMethodTypeId(getServer(), LocalPublishMethod.LOCAL_PUBLISH_METHOD);
-		if( type.equals(LocalPublishMethod.LOCAL_PUBLISH_METHOD)) {
-			return true;
-		}
-		return false;
+		return true;
 	}
 
 }

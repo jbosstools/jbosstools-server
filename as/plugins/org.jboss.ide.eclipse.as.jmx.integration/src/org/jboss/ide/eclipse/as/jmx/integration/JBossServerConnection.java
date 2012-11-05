@@ -11,12 +11,12 @@
 package org.jboss.ide.eclipse.as.jmx.integration;
 
 import java.io.IOException;
+import java.net.NoRouteToHostException;
 import java.util.HashMap;
 import java.util.Properties;
 
 import javax.management.MBeanServerConnection;
 import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -142,7 +142,11 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 		} catch(JMXException jmxe) {
 			// rethrow
 			throw jmxe;
-		} catch( Exception e ) {  
+		} catch( Exception e ) {
+			if( e.getCause() != null && e.getCause() instanceof NoRouteToHostException) {
+				throw new JMXException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+						"Error connecting to remote JMX. Please ensure your server is properly configured for JMX access. A firewall may be blocking the request. You may wish to review your application server's security guide for information on ports used.", e));
+			}
 			// wrap all others
 			throw new JMXException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
 					"Error connecting to remote JMX. Please ensure your server is properly configured for JMX access.", e));
@@ -159,6 +163,7 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 		Object obj = ic.lookup(IJBossRuntimeConstants.RMIAdaptor);
 		ic.close();
 		if (obj instanceof MBeanServerConnection) {
+			((MBeanServerConnection)obj).getDomains();
 			return (MBeanServerConnection)obj;
 		}
 		return null;
@@ -194,7 +199,9 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 	
 	protected void checkState(IServer server) {
 		IDeployableServer jbs = ServerConverter.getDeployableServer(server);
-		if( server.getServerState() == IServer.STATE_STARTED && jbs != null && jbs.hasJMXProvider()) {
+		boolean supportsJMX = jbs != null && jbs.hasJMXProvider();
+		boolean started = server.getServerState() == IServer.STATE_STARTED;
+		if( started && supportsJMX ) {
 			launchConnectionJob(server);
 		} else {
 			root = null;
