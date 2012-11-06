@@ -20,12 +20,14 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.eclipse.wst.server.ui.editor.ServerEditorPart;
 import org.eclipse.wst.server.ui.editor.ServerEditorSection;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI.IServerModeUICallback;
 
 public class ServerModeSection extends ServerEditorSection {
 	private IServerModeUICallback callback = null;
 	private IEditorInput input;
+	private ServerEditorPart editor;
 	public void init(IEditorSite site, IEditorInput input) {
 		super.init(site, input);
 		this.input = input;
@@ -37,10 +39,17 @@ public class ServerModeSection extends ServerEditorSection {
 		
 	private IServerModeUICallback getUICallback() {
 		if( callback == null ) {
-			callback = DeploymentTypeUIUtil.getCallback(server, input, this);
+			callback = DeploymentTypeUIUtil.getCallback(server, input, editor, this);
 		}
 		return callback;
 	}
+	
+	@Override
+	public void setServerEditorPart(ServerEditorPart editor) {
+		super.setServerEditorPart(editor);
+		this.editor = editor;
+	}
+
 	
 	public void createSection(Composite parent) {
 		super.createSection(parent);

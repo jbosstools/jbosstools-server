@@ -22,6 +22,7 @@ import org.eclipse.rse.services.shells.IHostShell;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
@@ -96,7 +97,7 @@ public class RSEUtils {
 		else if (JBossServer.DEPLOY_METADATA.equals(type)) {
 			type = JBossServer.DEPLOY_SERVER;
 		}
-		else if (JBossServer.DEPLOY_SERVER.equals(type)) {
+		if (JBossServer.DEPLOY_SERVER.equals(type)) {
 			// TODO !!!! Need API (nmaybe in JBossServer?) so servers can
 			// override this behavior
 			// Cannot move this code to JBossServer because this requires an

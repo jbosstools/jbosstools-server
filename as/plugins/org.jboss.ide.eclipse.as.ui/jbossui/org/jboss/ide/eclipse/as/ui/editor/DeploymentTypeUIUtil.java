@@ -43,13 +43,9 @@ public class DeploymentTypeUIUtil {
 		return new NewServerWizardBehaviourCallback(tm, handle, completable);
 	}
 
-	public static IServerModeUICallback getCallback(final IServerWorkingCopy server, IEditorInput input, ServerEditorPart part) {
-		return new ServerEditorUICallback(server, input, part);
+	public static IServerModeUICallback getCallback(final IServerWorkingCopy server, IEditorInput input, ServerEditorPart part, ServerEditorSection section) {
+		return new ServerEditorUICallback(input, part, section);
 	}
-	public static IServerModeUICallback getCallback(final IServerWorkingCopy server, IEditorInput input, ServerEditorSection section) {
-		return new ServerEditorUICallback(server, input, section);
-	}
-
 	
 	/**
 	 * For use inside a wizard fragment
@@ -109,37 +105,31 @@ public class DeploymentTypeUIUtil {
 	 * For use inside a server editor
 	 */
 	public static class ServerEditorUICallback implements IServerModeUICallback {
-		private IServerWorkingCopy server;
 		private ServerResourceCommandManager commandManager;
 		private ServerEditorPart part;
 		private ServerEditorSection section;
-		public ServerEditorUICallback(final IServerWorkingCopy server, IEditorInput input, ServerEditorPart part ) {
+		public ServerEditorUICallback(IEditorInput input, ServerEditorPart part, ServerEditorSection section ) {
 			this.part = part;
-			this.server = server;
-			commandManager = ((ServerEditorPartInput) input).getServerCommandManager();
-		}
-		public ServerEditorUICallback(final IServerWorkingCopy server, IEditorInput input, ServerEditorSection section) {
 			this.section = section;
-			this.server = server;
 			commandManager = ((ServerEditorPartInput) input).getServerCommandManager();
 		}
 		public IServerWorkingCopy getServer() {
-			return server;
+			return part.getServer();
 		}
 		public void execute(IUndoableOperation operation) {
 			commandManager.execute(operation);
 		}
 		public IRuntime getRuntime() {
-			return server.getRuntime();
+			return part.getServer().getRuntime();
 		}
 		public void executeLongRunning(Job j) {
 			j.schedule();
 		}
 		public void setErrorMessage(String msg) {
-			if( part != null )
-				part.setErrorMessage(msg);
-			else
+			if( section != null )
 				section.setErrorMessage(msg);
+			else
+				part.setErrorMessage(msg);
 		}
 		public Object getAttribute(String key) {
 			return null;

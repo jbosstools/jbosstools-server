@@ -13,7 +13,6 @@ package org.jboss.ide.eclipse.as.core.server.internal.launch;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
@@ -32,8 +31,6 @@ public class StopLaunchConfiguration extends AbstractJBossStartLaunchConfigurati
 			((DelegatingServerBehavior)jbsBehavior).setServerStopped();
 			return false;
 		}
-//		if( jbsBehavior.getServer().getServerState() == IServer.STATE_STARTED)
-//			((DelegatingServerBehavior)jbsBehavior).setServerStopping();
 		return true;
 	}
 }

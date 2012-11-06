@@ -145,7 +145,8 @@ public abstract class AbstractJBossJMXConnectionProvider implements
 	}
 
 	public void fireRemoved(IConnectionWrapper wrapper) {
-		for(Iterator<IConnectionProviderListener> i = listeners.iterator(); i.hasNext();)
+		Iterator<IConnectionProviderListener> i = listeners.iterator();
+		while( i.hasNext())
 			try {
 				i.next().connectionRemoved(wrapper);
 			} catch(RuntimeException re) {
