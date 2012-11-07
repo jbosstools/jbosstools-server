@@ -34,6 +34,7 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.jmx.integration.JMXUtil.CredentialException;
 import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.IConnectionProvider;
+import org.jboss.tools.jmx.core.IConnectionProviderEventEmitter;
 import org.jboss.tools.jmx.core.IConnectionProviderListener;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.IJMXRunnable;
@@ -57,11 +58,15 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 	}
 	
 	public void connect() throws IOException {
-		// Not supported
+		// re-connect
+		connectToStartedServer();
 	}
 
 	public void disconnect() throws IOException {
-		// Not supported
+		// close
+		root = null;
+		isConnected = false;
+		((AbstractJBossJMXConnectionProvider)getProvider()).fireChanged(JBossServerConnection.this);
 	}
 
 	public IConnectionProvider getProvider() {
@@ -266,6 +271,6 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 	}
 
 	public boolean canControl() {
-		return false;
+		return server.getServerState() == IServer.STATE_STARTED;
 	}
 }
