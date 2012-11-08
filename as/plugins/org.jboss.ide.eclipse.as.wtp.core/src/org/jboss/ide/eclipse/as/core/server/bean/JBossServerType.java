@@ -266,6 +266,7 @@ public class JBossServerType implements IJBossToolingConstants {
 			if( V4_3.equals(version)) return IJBossToolingConstants.SERVER_EAP_43;
 			if( V5_0.equals(version)) return IJBossToolingConstants.SERVER_EAP_50;
 			if( V5_1.equals(version)) return IJBossToolingConstants.SERVER_EAP_50;
+			if( V5_2.equals(version)) return IJBossToolingConstants.SERVER_EAP_50;
 			if( V6_0.equals(version)) return IJBossToolingConstants.SERVER_EAP_60;
 			return null;
 		}
