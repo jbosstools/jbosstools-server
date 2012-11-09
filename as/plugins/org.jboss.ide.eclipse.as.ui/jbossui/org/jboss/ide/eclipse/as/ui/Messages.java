@@ -73,6 +73,7 @@ public class Messages extends NLS {
 	public static String rwf_noValidJRE;
 	public static String rwf_DefaultJREForExecEnv;
 	public static String rwf7_ConfigFileError;
+	public static String rwf7_ConfigFileAbsoluteError;
 	public static String swf_Title;
 	public static String swf_RuntimeInformation;
 	public static String swf_AuthorizationDescription;

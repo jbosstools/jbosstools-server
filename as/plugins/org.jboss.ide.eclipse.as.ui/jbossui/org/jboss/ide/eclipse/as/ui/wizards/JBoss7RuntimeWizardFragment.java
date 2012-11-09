@@ -118,7 +118,7 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 		if (ffile != null) {
 			IPath standaloneFolder = new Path(homeDir).append(IJBossRuntimeResourceConstants.AS7_STANDALONE)
 					.append(IJBossRuntimeResourceConstants.CONFIGURATION);
-			if(ffile.getAbsolutePath().startsWith(standaloneFolder.toString())) {
+			if(ffile.getAbsolutePath().startsWith(standaloneFolder.toFile().getAbsolutePath())) {
 				String result = ffile.getAbsolutePath().substring(standaloneFolder.toString().length());
 				configDirText.setText(new Path(result).makeRelative().toString());
 			} else {
@@ -201,7 +201,10 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 		
 		if( configDirTextVal != null) {
 			IPath p = new Path(configDirTextVal);
-			IPath actualPath = p.isAbsolute() ? p : new Path(homeDir)
+			if( p.isAbsolute() ) {
+				return Messages.bind(Messages.rwf7_ConfigFileAbsoluteError, p.toString());
+			}
+			IPath actualPath = new Path(homeDir)
 					.append(IJBossRuntimeResourceConstants.AS7_STANDALONE)
 					.append(IJBossRuntimeResourceConstants.CONFIGURATION).append(p);
 			if( !actualPath.toFile().exists()) {
