@@ -27,21 +27,30 @@ public class JavaUtils {
 		if( version == null || Platform.getOS().equals(Platform.OS_MACOSX))
 			return true;
 		
-		File libFolder = null;
-		if( Platform.getOS().equals(Platform.OS_WIN32))
-			libFolder = getWindowsServerLibFolder(version, install);
-		else
-			libFolder = getLinuxServerLibFolder(version, install);
-		if( libFolder != null && libFolder.exists() && 
-				libFolder.isDirectory() && libFolder.list().length > 0)
+		File jdkLibFolder = null;
+		File jreLibFolder = null;
+		if( Platform.getOS().equals(Platform.OS_WIN32)) {
+			jdkLibFolder = getWindowsServerLibFolder(version, install, true);
+			jreLibFolder = getWindowsServerLibFolder(version, install, false);
+		} else {
+			jdkLibFolder = getLinuxServerLibFolder(version, install, true);
+			jreLibFolder = getLinuxServerLibFolder(version, install, false);
+		}
+		if( jdkLibFolder != null && jdkLibFolder.exists() && 
+				jdkLibFolder.isDirectory() && jdkLibFolder.list().length > 0)
+			return true;
+		if( jreLibFolder != null && jreLibFolder.exists() && 
+				jreLibFolder.isDirectory() && jreLibFolder.list().length > 0)
 			return true;
 		return false;
 	}
 
-	private static File getLinuxServerLibFolder(String version, IVMInstall install) {
+	private static File getLinuxServerLibFolder(String version, IVMInstall install, boolean jdk) {
 		File serverFolder = null;
 		IPath locPath = new Path(install.getInstallLocation().getAbsolutePath());
-		serverFolder = findServerFolder(locPath.append("jre").append("lib")); //$NON-NLS-1$ //$NON-NLS-2$
+		if( jdk )
+			locPath = locPath.append("jre");//$NON-NLS-1$
+		serverFolder = findServerFolder(locPath.append("lib")); //$NON-NLS-1$
 		return serverFolder;
 	}
 	
@@ -62,8 +71,11 @@ public class JavaUtils {
 		return null;
 	}
 
-	private static File getWindowsServerLibFolder(String version, IVMInstall install) {
+	private static File getWindowsServerLibFolder(String version, IVMInstall install, boolean jdk) {
 		IPath locPath = new Path(install.getInstallLocation().getAbsolutePath());
-		return locPath.append("jre").append("bin").append("server").toFile(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		if( jdk )
+			locPath = locPath.append("jre");//$NON-NLS-1$
+		return locPath.append("bin").append("server").toFile(); //$NON-NLS-1$ //$NON-NLS-2$ 
 	}
+
 }
