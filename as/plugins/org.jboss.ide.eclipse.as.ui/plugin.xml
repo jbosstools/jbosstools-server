@@ -278,6 +278,10 @@
             class="org.jboss.ide.eclipse.as.ui.editor.PortSection$JBoss7ManagementPortEditorExtension"
             serverIds="%ServerTypesJBoss7">
       </section>
+      <section
+            class="org.jboss.ide.eclipse.as.ui.editor.PortSection$JBoss7PortOffsetEditorExtension"
+            serverIds="%ServerTypesJBoss7">
+      </section>
       
       <!-- NEW_SERVER_ADAPTER  Add the new port sections in the server editor above this line -->
    </extension>

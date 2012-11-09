@@ -214,6 +214,7 @@ public class Messages extends NLS {
 	public static String EditorWebPort;
 	public static String EditorJMXRMIPort;
 	public static String EditorAS7ManagementPort;
+	public static String EditorAS7PortOffset;
 	public static String EditorAutomaticallyDetectPort;
 	public static String EditorPortInvalid;
 	public static String EditorChangeJNDICommandName;

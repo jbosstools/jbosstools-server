@@ -139,6 +139,14 @@ public interface IJBossToolingConstants {
 	public static final String AS7_MANAGEMENT_PORT_DEFAULT_XPATH = Messages.Ports + IPath.SEPARATOR + "JBoss Management"; //$NON-NLS-1$
 	public static final int    AS7_MANAGEMENT_PORT_DEFAULT_PORT = 9999;
 	
+	public static final String PORT_OFFSET = "org.jboss.ide.eclipse.as.core.server.portOffset"; //$NON-NLS-1$
+	public static final String PORT_OFFSET_DETECT= "org.jboss.ide.eclipse.as.core.server.portOffsetAutoDetect"; //$NON-NLS-1$
+	public static final String PORT_OFFSET_DETECT_XPATH = "org.jboss.ide.eclipse.as.core.server.portOffsetAutoDetect.XPath"; //$NON-NLS-1$
+	public static final String PORT_OFFSET_DEFAULT_XPATH = Messages.Ports + IPath.SEPARATOR + "Port Offset"; //$NON-NLS-1$
+	public static final int    PORT_OFFSET_DEFAULT_PORT = 0;
+	
+	
+	
 	public static final String IGNORE_LAUNCH_COMMANDS = "org.jboss.ide.eclipse.as.core.server.IGNORE_LAUNCH_COMMANDS"; //$NON-NLS-1$
 	public static final String LISTEN_ALL_HOSTS = "org.jboss.ide.eclipse.as.core.server.LISTEN_ON_ALL_HOSTS"; //$NON-NLS-1$
 

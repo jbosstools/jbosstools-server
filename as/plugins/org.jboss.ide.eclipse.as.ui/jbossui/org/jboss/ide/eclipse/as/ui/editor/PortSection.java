@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.as.ui.editor;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -70,6 +71,8 @@ public class PortSection extends ServerEditorSection {
 
 	private ArrayList<IPortEditorExtension> sectionList = new ArrayList<IPortEditorExtension>();
 	protected ServerAttributeHelper helper;
+	private IPortOffsetProvider offsetProvider;
+	
 	public void init(IEditorSite site, IEditorInput input) {
 		super.init(site, input);
 		helper = new ServerAttributeHelper(server.getOriginal(), server);
@@ -85,12 +88,31 @@ public class PortSection extends ServerEditorSection {
 						Object o = cf[i].createExecutableExtension("class"); //$NON-NLS-1$
 						if (o != null && o instanceof IPortEditorExtension)
 							sectionList.add((IPortEditorExtension) o);
+						if( o != null && o instanceof IPortOffsetProvider) 
+							offsetProvider = (IPortOffsetProvider)o;
 					}
 				} catch (CoreException ce) { 
 					/* silently ignore */
+					ce.printStackTrace();
 				}
 			}
 		}
+	}
+	
+	public int getPortOffset() {
+		return offsetProvider == null ? 0 : offsetProvider.getOffset();
+	}
+	
+	public void offsetChanged() {
+		Iterator<IPortEditorExtension> i = sectionList.iterator();
+		IPortEditorExtension ext;
+		while(i.hasNext()) {
+			ext = i.next();
+			if( !(ext instanceof IPortOffsetProvider)) {
+				ext.refresh();
+			}
+		}
+		
 	}
 
 	protected boolean serverTypeMatches(String serverType, String approvedTypes) {
@@ -108,11 +130,17 @@ public class PortSection extends ServerEditorSection {
 		createUI(parent);
 	}
 
+	
+	public static interface IPortOffsetProvider {
+		public int getOffset();
+	}
+	
 	public static interface IPortEditorExtension {
 		public void setServerAttributeHelper(ServerAttributeHelper helper);
 		public void setSection(PortSection section);
 		public void createControl(Composite parent);
 		public String getValue();
+		public void refresh();
 	}
 
 	public static class JNDIPortEditorExtension extends PortEditorExtension {
@@ -150,6 +178,7 @@ public class PortSection extends ServerEditorSection {
 					Messages.EditorChangeJMXRMICommandName);
 		}
 	}
+	
 
 	public static class JBoss7ManagementPortEditorExtension extends PortEditorExtension {
 		public JBoss7ManagementPortEditorExtension() {
@@ -161,6 +190,32 @@ public class PortSection extends ServerEditorSection {
 					IJBossToolingConstants.AS7_MANAGEMENT_PORT_DEFAULT_PORT,
 					Messages.EditorChangeAS7ManagementCommandName);
 		}
+	}
+	public static class JBoss7PortOffsetEditorExtension extends PortEditorExtension implements IPortOffsetProvider {
+		public JBoss7PortOffsetEditorExtension() {
+			super(Messages.EditorAS7PortOffset, 
+					IJBossToolingConstants.PORT_OFFSET_DETECT_XPATH,
+					IJBossToolingConstants.PORT_OFFSET_DETECT,
+					IJBossToolingConstants.PORT_OFFSET,
+					IJBossToolingConstants.PORT_OFFSET_DEFAULT_XPATH,
+					IJBossToolingConstants.PORT_OFFSET_DEFAULT_PORT,
+					Messages.EditorChangeAS7ManagementCommandName);
+		}
+		protected void listenerEvent(Event event) {
+			section.execute(getCommand());
+			section.offsetChanged();
+		}
+		public int getOffset() {
+			String v = text == null ? "" : text.getText();
+			int i = "".equals(v) ? 0 : Integer.parseInt(v);
+			return i;
+		}
+		@Override
+		/* Do not let the offset apply to itself... that'd be crazy! */
+		protected int discoverOffset() {
+			return 0;
+		}
+
 	}
 
 
@@ -246,19 +301,28 @@ public class PortSection extends ServerEditorSection {
 			text.setEditable(!shouldDetect);
 			currentXPath = helper.getAttribute(currentXPathKey, defaultXPath);
 			if( shouldDetect ) {
-				text.setText(findPortWithDefault(helper.getServer(), new Path(currentXPath), defaultValue));
+				text.setText(findPortWithDefault(helper.getServer(), new Path(currentXPath), defaultValue, discoverOffset()));
 			} else
 				text.setText(helper.getAttribute(overrideValueKey, "")); //$NON-NLS-1$
+		}
+		protected int discoverOffset() {
+			return section.getPortOffset();
+		}
+		public void refresh() {
+			initialize();
 		}
 		protected void addListeners() {
 			listener = new Listener() {
 				public void handleEvent(Event event) {
-					section.execute(getCommand());
+					listenerEvent(event);
 				}
 			};
 			text.addListener(SWT.Modify, listener);
 			detect.addListener(SWT.Selection, listener);
 			link.addListener(SWT.Selection, createLinkListener());
+		}
+		protected void listenerEvent(Event event) {
+			section.execute(getCommand());
 		}
 
 		protected Listener createLinkListener() {
@@ -412,7 +476,7 @@ public class PortSection extends ServerEditorSection {
 			text.setEditable(!button.getSelection());
 			if( button.getSelection() ) {
 				text.removeListener(SWT.Modify, listener);
-				text.setText(findPortWithDefault(helper.getServer(), new Path(xpath), this.defVal));
+				text.setText(findPortWithDefault(helper.getServer(), new Path(xpath), this.defVal, ext.discoverOffset()));
 				text.addListener(SWT.Modify, listener);
 			}
 			validate();
@@ -444,14 +508,20 @@ public class PortSection extends ServerEditorSection {
 	}
 
 	protected static String findPortWithDefault(IServer server, IPath path, int defaultValue) {
-		String s = findPort(server, path);
+		return findPortWithDefault(server, path, defaultValue, 0);
+	}
+	protected static String findPortWithDefault(IServer server, IPath path, int defaultValue, int offset) {
+		String s = findPort(server, path, offset);
 		if( s.equals("")) { //$NON-NLS-1$
-			s = new Integer(defaultValue).toString();
+			s = new Integer(defaultValue+offset).toString();
 		} 
 		return s;
 	}
 	
 	protected static String findPort(IServer server, IPath path) {
+		return findPort(server, path, 0);
+	}
+	protected static String findPort(IServer server, IPath path, int offset) {
 		XPathQuery query = XPathModel.getDefault().getQuery(server, path);
 		String result = ""; //$NON-NLS-1$
 		if(query!=null) {
@@ -460,7 +530,7 @@ public class PortSection extends ServerEditorSection {
 				result = query.getFirstResult();
 				result = result == null ? "" : result; //$NON-NLS-1$
 				result = ExpressionResolverUtil.safeReplaceProperties(result);
-				return new Integer(Integer.parseInt(result)).toString();
+				return new Integer(Integer.parseInt(result)+offset).toString();
 			} catch(NumberFormatException nfe) {
 				/* Intentionally fall through, return non-replaced string */
 			} catch( IllegalStateException ise ) {
