@@ -143,9 +143,12 @@ public class XPathActionProvider extends CommonActionProvider {
 						}
 						if (categoryItem != null) {
 							XPathQuery query = new XPathQuery(
-									null, d.getName(),
-									"server/${config}", // TODO  externalize this in a constant
-									null, d.getXpath(), d.getAttribute());
+									categoryItem.getServer(), 
+									d.getName(),
+									d.getBaseDir(),
+									d.getFilePattern(), 
+									d.getXpath(), 
+									d.getAttribute());
 							categoryItem.addQuery(query);
 							XPathModel.getDefault().save(getServer());
 							refreshViewer();

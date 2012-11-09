@@ -16,9 +16,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.TreeSet;
 
-import org.eclipse.core.internal.variables.StringSubstitutionEngine;
-import org.eclipse.core.internal.variables.StringVariableManager;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -69,6 +66,8 @@ import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 
@@ -195,10 +194,15 @@ public class XPathDialogs {
 				this.category = original.getCategory();
 				this.xpath = original.getXpathPattern();
 				this.attribute = original.getAttribute();
-			} 
+			}
 			if( this.xpath == null ) this.xpath = "//server/mbean"; //$NON-NLS-1$
 			if( this.filePattern == null ) this.filePattern = "**/*.xml"; //$NON-NLS-1$
-			if( this.rootDir == null ) this.rootDir = ""; //$NON-NLS-1$
+			if( this.rootDir == null ) {
+				JBossServer jbs = server == null ? null : (JBossServer)ServerConverter.getJBossServer(server);
+				ServerExtendedProperties properties = jbs == null ? null : jbs.getExtendedProperties();
+				String defaultRootDir = properties == null ? "" : properties.getNewFilesetDefaultRootFolder(); //$NON-NLS-1$
+				this.rootDir = defaultRootDir;
+			}
 		}
 
 		protected void configureShell(Shell shell) {
