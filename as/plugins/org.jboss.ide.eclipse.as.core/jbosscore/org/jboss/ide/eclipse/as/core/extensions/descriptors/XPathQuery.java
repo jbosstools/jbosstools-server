@@ -64,6 +64,9 @@ public class XPathQuery implements Serializable {
 	protected transient XMLDocumentRepository repository = null;
 	protected IServer server; // May be null
 	
+	/* When's the last time this was scanned for updates in the files that match the xpath / patterns */
+	private long lastScanned = 0;
+	
 	public XPathQuery(IMemento memento, IServer server) {
 		this.server = server;
 		this.name = memento.getString("name"); //$NON-NLS-1$
@@ -128,12 +131,16 @@ public class XPathQuery implements Serializable {
 	public void refresh() {
 		String[] files = getFilter().getIncludedFiles();
 		boolean changed = false;
+		IPath fullPath;
 		for( int i = 0; i < files.length; i++ ) {
-			changed = changed || getRepository().refresh(new Path(effectiveBaseDir).append(files[i]).toOSString());
+			fullPath = new Path(effectiveBaseDir).append(files[i]);
+			getRepository().refresh(fullPath.toOSString());
+			changed = changed || getRepository().hasChangedSince(fullPath.toOSString(), this.lastScanned);
 		}
 		if( changed ) {
 			results = null;
 		}
+		this.lastScanned = System.currentTimeMillis();
 	}
 	
 	/**

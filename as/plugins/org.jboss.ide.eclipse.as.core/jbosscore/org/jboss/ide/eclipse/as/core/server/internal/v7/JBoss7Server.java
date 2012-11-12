@@ -18,11 +18,15 @@ import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.AS7_MANA
 import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.AS7_MANAGEMENT_PORT_DEFAULT_XPATH;
 import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.AS7_MANAGEMENT_PORT_DETECT;
 import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.AS7_MANAGEMENT_PORT_DETECT_XPATH;
+import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.PORT_OFFSET;
+import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.PORT_OFFSET_DEFAULT_PORT;
+import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.PORT_OFFSET_DEFAULT_XPATH;
+import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.PORT_OFFSET_DETECT;
+import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.PORT_OFFSET_DETECT_XPATH;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.server.core.IRuntime;
-import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.IManagementPortProvider;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
@@ -45,9 +49,20 @@ public class JBoss7Server extends JBossServer implements IJBoss7Deployment, IMan
 	}
 	
 	public int getManagementPort() {
-		return findPort(AS7_MANAGEMENT_PORT, AS7_MANAGEMENT_PORT_DETECT, AS7_MANAGEMENT_PORT_DETECT_XPATH, 
+		return getPortOffset() + findPort(AS7_MANAGEMENT_PORT, AS7_MANAGEMENT_PORT_DETECT, AS7_MANAGEMENT_PORT_DETECT_XPATH, 
 				AS7_MANAGEMENT_PORT_DEFAULT_XPATH, AS7_MANAGEMENT_PORT_DEFAULT_PORT);
 	}
+	
+	/*
+	 * Only truly applicable for AS7.1, EAP6, etc. AS7.0 has no support for this, 
+	 * however, the findPort will return 0.
+	 */
+	@Override
+	protected int getPortOffset() {
+		return findPort(PORT_OFFSET, PORT_OFFSET_DETECT, PORT_OFFSET_DETECT_XPATH, 
+				PORT_OFFSET_DEFAULT_XPATH, PORT_OFFSET_DEFAULT_PORT);
+	}
+
 	
 	@Override
 	protected String resolveXPathResult(String result) {

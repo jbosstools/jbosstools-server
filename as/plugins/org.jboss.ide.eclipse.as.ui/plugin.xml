@@ -263,6 +263,10 @@
    <extension
          point="org.jboss.ide.eclipse.as.ui.ServerEditorPortSection">
       <section
+            class="org.jboss.ide.eclipse.as.ui.editor.PortSection$JBoss7PortOffsetEditorExtension"
+            serverIds="org.jboss.ide.eclipse.as.71,org.jboss.ide.eclipse.as.eap.60">
+      </section>
+      <section
             class="org.jboss.ide.eclipse.as.ui.editor.PortSection$JNDIPortEditorExtension"
             serverIds="%ServerTypesJBoss6OrLower">
       </section>
@@ -276,10 +280,6 @@
       </section>
       <section
             class="org.jboss.ide.eclipse.as.ui.editor.PortSection$JBoss7ManagementPortEditorExtension"
-            serverIds="%ServerTypesJBoss7">
-      </section>
-      <section
-            class="org.jboss.ide.eclipse.as.ui.editor.PortSection$JBoss7PortOffsetEditorExtension"
             serverIds="%ServerTypesJBoss7">
       </section>
       

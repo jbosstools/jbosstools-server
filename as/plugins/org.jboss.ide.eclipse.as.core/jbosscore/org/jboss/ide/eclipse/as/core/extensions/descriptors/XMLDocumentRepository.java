@@ -110,11 +110,11 @@ public class XMLDocumentRepository {
 		if( d == null && parent != null)
 			d = parent.getDocument(fullPath, false, save);
 		if (d == null && load) {
-			d = loadDocument(fullPath);
-			if (save) {
-				pathToDocument.put(fullPath, d);
-				pathToTimestamp.put(fullPath, new Long(new File(fullPath)
-						.lastModified()));
+			if( !save ) {
+				d = loadDocument(fullPath);
+			} else {
+				refresh(fullPath);
+				d = pathToDocument.get(fullPath);
 			}
 		}
 		return d;
@@ -135,6 +135,14 @@ public class XMLDocumentRepository {
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * @since 2.4
+	 */
+	public boolean hasChangedSince(String fullPath, long timestamp) {
+		Long lastUpdated = pathToTimestamp.get(fullPath);
+		return lastUpdated.longValue() > timestamp;
 	}
 
 	/*

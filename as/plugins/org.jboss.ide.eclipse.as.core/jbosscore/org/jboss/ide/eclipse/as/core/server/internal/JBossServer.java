@@ -183,7 +183,7 @@ public class JBossServer extends DeployableServer
 	}
 	
 	public int getJNDIPort() {
-		return findPort(JNDI_PORT, JNDI_PORT_DETECT, JNDI_PORT_DETECT_XPATH, 
+		return getPortOffset() + findPort(JNDI_PORT, JNDI_PORT_DETECT, JNDI_PORT_DETECT_XPATH, 
 				JNDI_PORT_DEFAULT_XPATH, JNDI_DEFAULT_PORT);
 	}
 	
@@ -192,8 +192,15 @@ public class JBossServer extends DeployableServer
 	}
 
 	public int getJBossWebPort() {
-		return findPort(WEB_PORT, WEB_PORT_DETECT, WEB_PORT_DETECT_XPATH, 
+		return getPortOffset() + findPort(WEB_PORT, WEB_PORT_DETECT, WEB_PORT_DETECT_XPATH, 
 				WEB_PORT_DEFAULT_XPATH, JBOSS_WEB_DEFAULT_PORT);
+	}
+	
+	/**
+	 * @since 2.4
+	 */
+	protected int getPortOffset() {
+		return 0;
 	}
 
 	protected int findPort(String attributeKey, String detectKey, String xpathKey, String defaultXPath, int defaultValue) {
