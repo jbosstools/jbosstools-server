@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.ui.editor;
 
 import java.util.ArrayList;
 
+import org.apache.tools.ant.taskdefs.optional.j2ee.ServerDeploy;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -91,14 +92,15 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 			helper = new ServerAttributeHelper(server.getOriginal(), server);
 			listener = new UnitedServerListener() {
 				public void serverChanged(ServerEvent event) {
-					setDeploymentTabEnablement(event.getModule());
+					setDeploymentTabEnablement();
 				}
 			};
 			server.getOriginal().addServerListener(listener);
+			setDeploymentTabEnablement();
 		}
 	}
 	
-	protected void setDeploymentTabEnablement(IModule[] changed) {
+	protected void setDeploymentTabEnablement() {
 		// This is a big hack due to https://bugs.eclipse.org/bugs/show_bug.cgi?id=386718
 		// IT seems getting the NEW module list from the event is not possible,
 		// and figuring out if a module was added also does not seem to be possible
