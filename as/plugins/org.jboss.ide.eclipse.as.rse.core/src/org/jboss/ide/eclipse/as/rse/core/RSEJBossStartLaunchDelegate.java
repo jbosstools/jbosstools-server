@@ -45,7 +45,6 @@ public class RSEJBossStartLaunchDelegate extends AbstractRSELaunchDelegate {
 		((DelegatingServerBehavior)beh).setServerStarting();
 		String command = RSELaunchConfigProperties.getStartupCommand(configuration);
 		executeRemoteCommand(command, beh);
-		launchPingThread(beh);
 	}
 	
 
