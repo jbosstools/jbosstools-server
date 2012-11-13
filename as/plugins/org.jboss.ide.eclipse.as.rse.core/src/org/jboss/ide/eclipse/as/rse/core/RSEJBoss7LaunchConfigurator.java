@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.rse.core;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
@@ -21,6 +22,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.ILaunchConfigConfigurator;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
@@ -90,6 +92,11 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 	
 	protected String getArgsOverrideHost(IServer server, String preArgs) {
 		// Overrides
+		JBossExtendedProperties props2 = (JBossExtendedProperties)server
+				.loadAdapter(JBossExtendedProperties.class,  new NullProgressMonitor());
+		if( !props2.runtimeSupportsBindingToAllInterfaces() ) {
+			return preArgs;
+		}
 		String host = server.getHost();
 		if( LaunchCommandPreferences.listensOnAllHosts(jbossServer.getServer())) {
 			host = "0.0.0.0";
