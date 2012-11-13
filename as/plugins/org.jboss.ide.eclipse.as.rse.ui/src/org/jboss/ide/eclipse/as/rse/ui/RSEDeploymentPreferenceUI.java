@@ -106,7 +106,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 					method.getFileService();
 					method.ensureConnection(new NullProgressMonitor());
 					IHostFile file = method.getFileService().getFile(remoteFolder.removeLastSegments(1).toOSString(), remoteFolder.lastSegment(), new NullProgressMonitor());
-					String path = file.getAbsolutePath();
+					String path = remoteFolder.toString();
 					
 					IRemoteFile rf = method.getFileServiceSubSystem().getRemoteFileObject(path, null);
 					
