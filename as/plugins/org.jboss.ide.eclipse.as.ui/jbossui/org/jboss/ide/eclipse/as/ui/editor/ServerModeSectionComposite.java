@@ -194,14 +194,6 @@ public class ServerModeSectionComposite extends Composite {
 	}
 
 	protected JBossExtendedProperties getExtendedProperties() {
-		IRuntime rt = callback.getRuntime();
-		if( rt == null )
-			return null;
-		
-		JBossExtendedProperties props2 = (JBossExtendedProperties)rt
-				.loadAdapter(JBossExtendedProperties.class, 
-							 new NullProgressMonitor());
-		props2.runtimeSupportsBindingToAllInterfaces();
 		IServerWorkingCopy wc = callback.getServer();
 		JBossExtendedProperties props = (JBossExtendedProperties)wc
 				.loadAdapter(JBossExtendedProperties.class, 

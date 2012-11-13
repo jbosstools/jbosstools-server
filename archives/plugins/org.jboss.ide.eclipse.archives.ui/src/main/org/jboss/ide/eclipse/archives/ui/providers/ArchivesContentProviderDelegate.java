@@ -15,7 +15,14 @@ import java.util.Arrays;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -24,6 +31,7 @@ import org.eclipse.swt.widgets.Display;
 import org.jboss.ide.eclipse.archives.core.build.RegisterArchivesJob;
 import org.jboss.ide.eclipse.archives.core.build.RegisterArchivesJob.RegistrationCallback;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveModel;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModelListener;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModelRootNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
@@ -82,13 +90,65 @@ public class ArchivesContentProviderDelegate implements ITreeContentProvider, IA
 	public ArchivesContentProviderDelegate(int type) {
 		this.type = type;
 		ArchivesModel.instance().addModelListener(this);
+		addWorkspaceListener();
 	}
 	public ArchivesContentProviderDelegate(boolean addListener) {
 		this.type = WrappedProject.NAME;
 		if( addListener)
 			ArchivesModel.instance().addModelListener(this);
+		addWorkspaceListener();
 	}
 
+	private IResourceChangeListener workspaceListener;
+	private void addWorkspaceListener() {
+		workspaceListener = new IResourceChangeListener(){
+			public void resourceChanged(
+					IResourceChangeEvent event) {
+				IResource r = event.getResource();
+				int t = event.getType();
+				boolean shouldClear = t == IResourceChangeEvent.PRE_CLOSE || 
+						t == IResourceChangeEvent.PRE_DELETE || t == IResourceChangeEvent.PRE_REFRESH;
+				IProject[] toClear = new IProject[0];
+				if( r instanceof IProject && shouldClear) {
+					toClear = new IProject[]{(IProject)r};
+				} else if( r == null ) {
+					toClear = discoverChangedProjects(event);
+				}
+				for( int i = 0; i < toClear.length; i++ ) {
+					if( toClear[i] != null && failedLoads.contains(toClear[i])) {
+						failedLoads.remove(toClear[i]);
+						safeRefreshViewer(toClear[i]);
+					}
+				}
+			}
+		};
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(workspaceListener);
+	}
+	private IProject[] discoverChangedProjects(IResourceChangeEvent event) {
+		final ArrayList<IProject> toClear = new ArrayList<IProject>();
+		IResourceDelta delta = event.getDelta();
+		try {
+			delta.accept(new IResourceDeltaVisitor(){
+				public boolean visit(IResourceDelta delta)
+						throws CoreException {
+					IPath projectRel = delta.getResource().getProjectRelativePath();
+					if( projectRel != null && projectRel.segmentCount() == 1 
+							&& projectRel.lastSegment().equals(IArchiveModel.DEFAULT_PACKAGES_FILE)) {
+						toClear.add(delta.getResource().getProject());
+					}
+					if( delta.getResource() instanceof IWorkspaceRoot || delta.getResource() instanceof IProject )
+						return true;
+					return false;
+				}});
+		} catch( CoreException ce) {
+			// Ignore
+		}
+		return toClear.toArray(new IProject[toClear.size()]);
+	}
+	private void removeWorkspaceListener() {
+		ResourcesPlugin.getWorkspace().removeResourceChangeListener(workspaceListener);
+	}
+	
 	protected Viewer viewerInUse;
 	protected ArrayList<IProject> loadingProjects = new ArrayList<IProject>();
 	private ArrayList<IProject> failedLoads = new ArrayList<IProject>();
@@ -135,8 +195,9 @@ public class ArchivesContentProviderDelegate implements ITreeContentProvider, IA
 			public void registrationFailed() {
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-						if( !failedLoads.contains(dp.project))
+						if( !failedLoads.contains(dp.project)) {
 							failedLoads.add(dp.project);
+						}
 						loadingProjects.remove(dp.project);
 						refreshViewer(dp.wProject);
 					}
@@ -179,6 +240,7 @@ public class ArchivesContentProviderDelegate implements ITreeContentProvider, IA
 
 	public void dispose() {
 		ArchivesModel.instance().removeModelListener(this);
+		removeWorkspaceListener();
 	}
 
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
@@ -210,6 +272,13 @@ public class ArchivesContentProviderDelegate implements ITreeContentProvider, IA
 		});
 	}
 
+	protected void safeRefreshViewer(final Object o) {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				refreshViewer(o);
+			}
+		});
+	}
 	/*
 	 * The inputs to ProjectArchivesCommonView are either an IProject, if no root projects are shown,
 	 * or an IWorkspaceRoot, if they are. A parent, though can be a WrappedProject
@@ -218,6 +287,8 @@ public class ArchivesContentProviderDelegate implements ITreeContentProvider, IA
 	protected void refreshViewer(Object o) {
 		if( o instanceof IArchiveModelRootNode) {
 			String projName = ((IArchiveModelRootNode)o).getProjectName();
+			if( projName == null )
+				return;
 			IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(projName);
 			if( p != null )
 				o = new WrappedProject(p, type);
