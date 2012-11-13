@@ -122,12 +122,27 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 				String result = ffile.getAbsolutePath().substring(standaloneFolder.toString().length());
 				configDirText.setText(new Path(result).makeRelative().toString());
 			} else {
-				configDirText.setText(ffile.getAbsolutePath());
+				IPath ffilePath = new Path(ffile.getAbsolutePath());
+				String relativeToStandalone = makeRelativeToStandaloneConfig(standaloneFolder, ffilePath);
+				configDirText.setText(relativeToStandalone);
 			}
 		}
 		configDirTextVal = configDirText.getText();
 	}
-
+	private String makeRelativeToStandaloneConfig(IPath standaloneFolder, IPath ffilePath) {
+		StringBuffer sb = new StringBuffer();
+		boolean done = false;
+		while( !done ) {
+			if( !standaloneFolder.isPrefixOf(ffilePath)) {
+				sb.append("../");
+				standaloneFolder = standaloneFolder.removeLastSegments(1);
+			} else {
+				done = true;
+			}
+		}
+		sb.append(ffilePath.removeFirstSegments(standaloneFolder.segmentCount()).toString());
+		return sb.toString();
+	}
 
 	protected static File getFile(File startingDirectory, Shell shell) {
 		FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
