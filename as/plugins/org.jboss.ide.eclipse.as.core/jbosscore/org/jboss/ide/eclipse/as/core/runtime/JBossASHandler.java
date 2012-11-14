@@ -92,8 +92,10 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 	private static File getLocation(RuntimeDefinition runtimeDefinitions) {
 		String type = runtimeDefinitions.getType();
 		String version = runtimeDefinitions.getVersion();
-		if (EAP.equals(type) && version != null && version.startsWith("6") ) {//$NON-NLS-1$
-			return runtimeDefinitions.getLocation();
+		if (EAP.equals(type) && version != null) {
+			if (version.startsWith("6") || version.startsWith("5.2")) {//$NON-NLS-1$ //$NON-NLS-2$
+				return runtimeDefinitions.getLocation();
+			}
 		}
 		if (SOA_P.equals(type) || EAP.equals(type) || EPP.equals(type)) {
 			return new File(runtimeDefinitions.getLocation(), "jboss-as");//$NON-NLS-1$
