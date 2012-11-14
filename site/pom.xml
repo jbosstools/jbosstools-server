@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.jboss.tools</groupId>
-		<artifactId>server.all</artifactId>
+		<artifactId>server</artifactId>
 		<version>4.0.0-SNAPSHOT</version>
 	</parent>
-	<groupId>org.jboss.tools</groupId>
-	<artifactId>server.site</artifactId>
+	<groupId>org.jboss.tools.server</groupId>
+	<artifactId>site</artifactId>
 	<packaging>eclipse-repository</packaging>
 
 	<properties>
