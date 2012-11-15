@@ -15,6 +15,7 @@ import org.eclipse.jface.wizard.Wizard;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.ui.ConnectionWizardPage;
 import org.jboss.tools.jmx.ui.IEditableConnectionWizardPage;
+import org.jboss.tools.jmx.ui.Messages;
 import org.jboss.tools.jmx.ui.UIExtensionManager;
 import org.jboss.tools.jmx.ui.UIExtensionManager.ConnectionProviderUI;
 
@@ -25,7 +26,7 @@ public class EditConnectionWizard extends Wizard {
 		this.connection = connection;
 	}
 	public String getWindowTitle() {
-		return "TEST TITLE"; //$NON-NLS-1$
+		return Messages.EditConnectionWizardTitle;
 	}
 
 	public void addPages() {
