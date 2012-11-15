@@ -489,7 +489,7 @@ public class ServiceXMLEditorConfiguration extends
 			
 			String elementName = contentAssistRequest.getNode().getNodeName();
 			String match = contentAssistRequest.getMatchString();
-			List list = attributes.get(elementName);
+			List list = attributes.get(elementName) == null ? new ArrayList() : attributes.get(elementName); 
 			Iterator i = list.iterator();
 			while(i.hasNext()) {
 				DTDAttributes att = (DTDAttributes)i.next();
