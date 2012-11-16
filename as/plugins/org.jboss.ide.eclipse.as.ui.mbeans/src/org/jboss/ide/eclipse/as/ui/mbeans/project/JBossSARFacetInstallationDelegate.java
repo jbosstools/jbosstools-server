@@ -36,6 +36,7 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.project.facet.core.IDelegate;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.ui.mbeans.Activator;
 import org.osgi.service.prefs.BackingStoreException;
 
 public class JBossSARFacetInstallationDelegate implements IDelegate {
@@ -94,14 +95,11 @@ public class JBossSARFacetInstallationDelegate implements IDelegate {
 						}
 					}
 					catch(Exception e){
-						// TODO 
+						Activator.log(e);
 					}
 				}
 			}
 		}
-		
-//		IVirtualComponent outputFoldersComponent = new OutputFoldersVirtualComponent(project, newComponent);
-//		VCFUtil.addReference(outputFoldersComponent, newComponent, "/", null); //$NON-NLS-1$
 	}
 	
 	

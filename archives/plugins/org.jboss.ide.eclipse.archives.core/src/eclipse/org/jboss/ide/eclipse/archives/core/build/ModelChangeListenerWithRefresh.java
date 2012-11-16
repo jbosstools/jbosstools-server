@@ -73,6 +73,7 @@ public class ModelChangeListenerWithRefresh extends ModelChangeListener {
 							// refresh infinitely in case the output is exploded
 							res.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 						} catch( CoreException ce ) {
+							// Do not log. If the refresh fails, this is not enough to alert the user.
 						}
 					}
 				}
@@ -80,6 +81,7 @@ public class ModelChangeListenerWithRefresh extends ModelChangeListener {
 				try {
 					proj.getFile(new Path(IArchiveModel.DEFAULT_PACKAGES_FILE)).refreshLocal(IResource.DEPTH_ONE, new NullProgressMonitor());
 				} catch( CoreException ce ) {
+					// Also do not log. 
 				}
 			} catch( CoreException ce ) {
 			}

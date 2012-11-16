@@ -888,7 +888,9 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 							result.add(mods[i]);
 						}
 					} catch(CoreException ce) {
-						ce.printStackTrace();
+						// getRootModules only throws CE if modules cannot be modified.
+						// If they cannot be modified, they will not get added to result list.
+						// No logging is needed
 					}
 				}
 			}

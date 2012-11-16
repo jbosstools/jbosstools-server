@@ -63,8 +63,10 @@ public class FilesetWizard extends Wizard {
 				}
 			});
 		} catch (InvocationTargetException e) {
+			// There will be no invocation target exceptions. I catch all possible exceptions already
 		} catch (InterruptedException e) {
-		} catch(Exception e) {}
+			// Ignore this, as the user probably interrupted us. 
+		}
 		return true;
 	}
 

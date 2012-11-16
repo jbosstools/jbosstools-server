@@ -113,8 +113,10 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 					SystemShowInTableAction act = new SystemShowInTableAction(Display.getDefault().getActiveShell()); 
 					act.setSelectedObject(rf);
 					act.run();
-				} catch(Exception e) {
-					e.printStackTrace();
+				} catch(SystemMessageException e) {
+					
+				} catch(CoreException ce) {
+					
 				}
 			}
 

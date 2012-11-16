@@ -191,10 +191,18 @@ public class XPathQuery implements Serializable {
 			}
 			results = resultList.toArray(new XPathFileResult[resultList.size()]);
 		} catch( IllegalStateException ise ) {
-			// cannot load  TODO log?
+			/*
+			 * We do not want to log an error here.
+			 * Many callers call here, often times several times, 
+			 * especially from the UI using temporary objects.
+			 */
 			results = new XPathFileResult[0];
 		} catch( JaxenException je ) {
-			// cannot load  TODO log?
+			/*
+			 * We do not want to log an error here.
+			 * Many callers call here, often times several times, 
+			 * especially from the UI using temporary objects.
+			 */
 			results = new XPathFileResult[0];
 		}
 	}

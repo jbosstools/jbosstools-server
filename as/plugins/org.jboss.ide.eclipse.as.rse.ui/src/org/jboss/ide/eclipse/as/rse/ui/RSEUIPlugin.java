@@ -11,7 +11,10 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.rse.ui;
 
+import org.eclipse.core.internal.runtime.InternalPlatform;
 import org.eclipse.core.runtime.ILog;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel;
 import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
 import org.jboss.ide.eclipse.as.ui.console.JBASConsoleWriter;
@@ -58,6 +61,23 @@ public class RSEUIPlugin implements BundleActivator {
 	}
 
 	public static ILog getLog() {
-		return plugin.getLog();
+		return InternalPlatform.getDefault().getLog(context.getBundle());
 	}
+    public static void log(IStatus status) {
+        getLog().log(status);
+    }
+
+    public static void log(int severity, String message, Throwable e) {
+        log(new Status(severity, PLUGIN_ID, 0, message, e));
+    }
+    
+
+    public static void log(Throwable e) {
+    	log(e.getMessage(), e);
+    }
+
+    public static void log(String message, Throwable e) {
+        log(IStatus.ERROR, message, e);
+    }
+	
 }
