@@ -11,11 +11,10 @@
 package org.jboss.ide.eclipse.archives.webtools.modules;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Random;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -35,11 +34,11 @@ import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.model.ModuleFactoryDelegate;
 import org.eclipse.wst.server.core.util.ModuleFile;
 import org.eclipse.wst.server.core.util.ModuleFolder;
+import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeVisitor;
-import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
 import org.jboss.ide.eclipse.archives.core.util.ModelUtil;
 import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
 
@@ -58,7 +57,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 	// the factory delegate and the factory respectively
 	private static PackageModuleFactory factDelegate;
 	private static ModuleFactory factory;
-
+	private static Random generator2 = new Random( 19580499 );
 	/**
 	 * Find the module factory wrapper WTP provides for us
 	 * @return
@@ -101,7 +100,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 	protected static String getStamp(IArchive pack, boolean create) {
 		String propVal = pack.getProperty(MODULE_ID_PROPERTY_KEY);
 		if( propVal == null && create ) {
-			propVal = "" + new Date().getTime();//$NON-NLS-1$
+			propVal = (("" + new Date().getTime()) + System.nanoTime()) + generator2.nextInt();//$NON-NLS-1$
 		}
 		return propVal;
 	}
