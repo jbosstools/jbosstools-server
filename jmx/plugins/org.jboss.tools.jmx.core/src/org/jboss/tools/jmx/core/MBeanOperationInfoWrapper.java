@@ -31,7 +31,10 @@ public class MBeanOperationInfoWrapper extends MBeanFeatureInfoWrapper {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((info == null) ? 0 : info.hashCode());
+        int infoHC = (info == null) ? 0 : info.hashCode();
+        int onHC = getMBeanInfoWrapper() == null ? 0 : getMBeanInfoWrapper().getObjectName() == null ? 0 : 
+        	getMBeanInfoWrapper().getObjectName().hashCode();
+        result = prime * result + (infoHC + onHC);
         return result;
     }
 
@@ -54,6 +57,9 @@ public class MBeanOperationInfoWrapper extends MBeanFeatureInfoWrapper {
                 return false;
         } else if (!EqualsUtil.operationEquals(info, other.info))
             return false;
-        return true;
+        String on1 = getMBeanInfoWrapper().getObjectName().toString();
+        String on2 = other.getMBeanInfoWrapper().getObjectName().toString();
+        boolean objectNamesMatch = on1 == on2 ? true : on1 == null ? false : on1.equals(on2);
+        return objectNamesMatch;
     }
 }
