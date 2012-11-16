@@ -15,7 +15,14 @@ import org.eclipse.ui.model.IWorkbenchAdapter;
 public class LogEntry extends AbstractEntry {
 
 	public static final String F_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS"; //$NON-NLS-1$
-	private static final SimpleDateFormat F_SDF = new SimpleDateFormat(F_DATE_FORMAT);
+	// SimpleDateFormat is not thread-safe, so give one to each thread
+    private static final ThreadLocal<SimpleDateFormat> F_SDF = new ThreadLocal<SimpleDateFormat>(){
+        @Override
+        protected SimpleDateFormat initialValue()
+        {
+            return new SimpleDateFormat(F_DATE_FORMAT);
+        }
+    };
 
 	private String pluginId;
 	private int severity;
@@ -70,7 +77,7 @@ public class LogEntry extends AbstractEntry {
 
 	public String getFormattedDate() {
 		if (fDateString == null)
-			fDateString = F_SDF.format(getDate());
+			fDateString = F_SDF.get().format(getDate());
 		return fDateString;
 	}
 
@@ -161,10 +168,10 @@ public class LogEntry extends AbstractEntry {
 			}
 		}
 		try {
-			Date date = F_SDF.parse(dateBuffer.toString());
+			Date date = F_SDF.get().parse(dateBuffer.toString());
 			if (date != null) {
 				fDate = date;
-				fDateString = F_SDF.format(fDate);
+				fDateString = F_SDF.get().format(fDate);
 			}
 		} catch (ParseException e) { // do nothing
 		}
@@ -214,10 +221,10 @@ public class LogEntry extends AbstractEntry {
 			}
 		}
 		try {
-			Date date = F_SDF.parse(dateBuffer.toString());
+			Date date = F_SDF.get().parse(dateBuffer.toString());
 			if (date != null) {
 				fDate = date;
-				fDateString = F_SDF.format(fDate);
+				fDateString = F_SDF.get().format(fDate);
 			}
 		} catch (ParseException e) { // do nothing
 		}
@@ -245,7 +252,7 @@ public class LogEntry extends AbstractEntry {
 		severity = status.getSeverity();
 		code = status.getCode();
 		fDate = new Date();
-		fDateString = F_SDF.format(fDate);
+		fDateString = F_SDF.get().format(fDate);
 		message = status.getMessage();
 		Throwable throwable = status.getException();
 		if (throwable != null) {
