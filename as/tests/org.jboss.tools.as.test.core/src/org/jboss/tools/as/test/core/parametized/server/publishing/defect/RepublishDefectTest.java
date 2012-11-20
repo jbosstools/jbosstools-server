@@ -107,6 +107,7 @@ public class RepublishDefectTest extends AbstractPublishingTest {
     	OperationTestCase.runAndVerify(dyn1Model);
 		server.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
 		JBIDE6184EarHasDynProjs(earPath, true);
+		Thread.sleep(2000);
 	}
 	
 	protected void JBIDE6184EarHasDynProjs(IPath earPath, boolean d1vPresent ) {

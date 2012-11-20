@@ -63,7 +63,13 @@ public abstract class AbstractPublishMethod implements IJBossServerPublishMethod
 		if( module.length == 0 ) return IServer.PUBLISH_STATE_NONE;
 		int modulePublishState = behaviour.getServer().getModulePublishState(module);
 		int publishType = behaviour.getPublishType(kind, deltaKind, modulePublishState);
-		
+		if( module[module.length-1].getName().startsWith("ear")) { //$NON-NLS-1$
+			if(deltaKind == 0 ) {
+				System.out.println("BROKEN 2"); //$NON-NLS-1$
+			}
+		}
+		System.out.println(module[module.length-1].getName() + ", " + kind + ", " + deltaKind + " and " + publishType); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
 		// Let the publisher decide what to do
 		if( module.length > 0 ) {
 			IJBossServerPublisher publisher = ExtensionManager.getDefault().getPublisher(behaviour.getServer(), module, getPublishMethodId());
