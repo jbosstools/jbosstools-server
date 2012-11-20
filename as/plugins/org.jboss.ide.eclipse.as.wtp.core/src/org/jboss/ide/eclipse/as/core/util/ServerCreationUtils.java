@@ -31,6 +31,10 @@ public class ServerCreationUtils {
 
 	public static IServer createDeployOnlyServer(String deployLocation, String tempDeployLocation, 
 			String rtName, String serverName) throws CoreException {
+		return createDeployOnlyServerWorkingCopy(deployLocation, tempDeployLocation, rtName, serverName).save(true, null);
+	}
+	public static IServerWorkingCopy createDeployOnlyServerWorkingCopy(String deployLocation, String tempDeployLocation, 
+			String rtName, String serverName) throws CoreException {
 		IRuntimeType rt = ServerCore.findRuntimeType(IJBossToolingConstants.DEPLOY_ONLY_RUNTIME);
 		IRuntimeWorkingCopy wc = rt.createRuntime(rtName, null);
 		IRuntime runtime = wc.save(true, null);
@@ -41,8 +45,7 @@ public class ServerCreationUtils {
 		swc.setRuntime(runtime);
 		swc.setAttribute(IDeployableServer.DEPLOY_DIRECTORY, deployLocation);
 		swc.setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, tempDeployLocation);
-		IServer server = swc.save(true, null);
-		return server;
+		return swc;
 	}
 	
 	public static IServer createServer2(IRuntime currentRuntime, String serverTypeId) throws CoreException {
@@ -61,14 +64,17 @@ public class ServerCreationUtils {
 	public static IServer createServer2(IRuntime currentRuntime, IServerType serverType, String serverName) throws CoreException {
 		return createServer2(currentRuntime, serverType, serverName, "local"); //$NON-NLS-1$
 	}
-	public static IServer createServer2(IRuntime currentRuntime, IServerType serverType, String serverName, String mode) throws CoreException {
+	public static IServerWorkingCopy createServerWorkingCopy(IRuntime currentRuntime, IServerType serverType, String serverName, String mode) throws CoreException {
 		IServerWorkingCopy serverWC = serverType.createServer(null, null,
 				new NullProgressMonitor());
 		serverWC.setRuntime(currentRuntime);
 		serverWC.setName(serverName);
 		serverWC.setServerConfiguration(null);
 		serverWC.setAttribute(IDeployableServer.SERVER_MODE, mode); 
-		return serverWC.save(true, new NullProgressMonitor());
+		return serverWC;
+	}
+	public static IServer createServer2(IRuntime currentRuntime, IServerType serverType, String serverName, String mode) throws CoreException {
+		return createServerWorkingCopy(currentRuntime, serverType, serverName, mode).save(true, new NullProgressMonitor());
 	}
 	
 	public static IRuntime createRuntime(String runtimeId, String homeDir,

@@ -206,10 +206,10 @@ public class ServerCreationTestUtils extends Assert {
 	private static IServer createServer(String serverType,
 			String location, String configuration, String name) throws CoreException {
 		IRuntime runtime = RuntimeUtils.createRuntime(serverRuntimeMap.get(serverType), location, configuration);
-		IServer s = ServerCreationUtils.createServer2(runtime, serverType, name);
-		IServerWorkingCopy wc = s.createWorkingCopy();
-		wc.setAttribute(Server.PROP_AUTO_PUBLISH_SETTING, Server.AUTO_PUBLISH_DISABLE);
-		return wc.save(true, new NullProgressMonitor());
+		IServerType serverType2 = ServerCore.findServerType(serverType);
+		IServerWorkingCopy swc = ServerCreationUtils.createServerWorkingCopy(runtime, serverType2, name, "local");
+		swc.setAttribute(Server.PROP_AUTO_PUBLISH_SETTING, Server.AUTO_PUBLISH_DISABLE);
+		return swc.save(true, new NullProgressMonitor());
 	}
 
 	private static IServer createDeployOnlyServer(String deployLocation, String tempDeployLocation) throws CoreException {
@@ -217,15 +217,14 @@ public class ServerCreationTestUtils extends Assert {
 	}
 	private static IServer createDeployOnlyServer(String deployLocation, String tempDeployLocation, 
 			String rtName, String serverName) throws CoreException {
-		IServer s = ServerCreationUtils.createDeployOnlyServer(deployLocation, tempDeployLocation, rtName, serverName);
-		IServerWorkingCopy wc = s.createWorkingCopy();
+		IServerWorkingCopy wc = ServerCreationUtils.createDeployOnlyServerWorkingCopy(deployLocation, tempDeployLocation, rtName, serverName);
 		wc.setAttribute(Server.PROP_AUTO_PUBLISH_SETTING, Server.AUTO_PUBLISH_DISABLE);
 		return wc.save(true, new NullProgressMonitor());
 	}
 	private static IServer createJBoss7IServer(String rtLoc, String name) throws CoreException {
 		IRuntime runtime = RuntimeUtils.createRuntime(IJBossToolingConstants.AS_70, rtLoc, null);
-		IServer s = ServerCreationUtils.createServer2(runtime, IJBossToolingConstants.SERVER_AS_70, name);
-		IServerWorkingCopy swc = s.createWorkingCopy();
+		IServerType serverType = ServerCore.findServerType(IJBossToolingConstants.SERVER_AS_70);
+		IServerWorkingCopy swc = ServerCreationUtils.createServerWorkingCopy(runtime, serverType, name, "local");
 		swc.setServerConfiguration(null);
 		swc.setAttribute(Server.PROP_AUTO_PUBLISH_SETTING, Server.AUTO_PUBLISH_DISABLE);
 		IServer server = swc.save(true, null);
