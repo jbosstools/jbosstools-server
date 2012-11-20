@@ -114,7 +114,6 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate
 	
 	protected void publishModule(int kind, int deltaKind, IModule[] module, IProgressMonitor monitor) throws CoreException {
 		Trace.trace(Trace.STRING_FINER, "Beginning to publish module " + module[module.length-1].getName() + " in DeployableServerBehavior"); //$NON-NLS-1$ //$NON-NLS-2$
-
 		if( method == null )
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Not publishing")); //$NON-NLS-1$
 		try { 

@@ -338,7 +338,11 @@ public abstract class AbstractPublishingTest extends TestCase {
 			IPath next = iterator.next();
 			IPath nextTrimmed = next.removeFirstSegments(root.segmentCount());
 			de.schlichtherle.io.File toCheck = new de.schlichtherle.io.File(f, nextTrimmed.toString(), ArchiveDetector.DEFAULT);
-			assertEquals(toCheck.exists(), exists);
+			boolean exists2 = toCheck.exists();
+			if( exists != exists2) {
+				System.out.println("Broken");
+			}
+			assertEquals(exists2, exists);
 		}
 	}
 
