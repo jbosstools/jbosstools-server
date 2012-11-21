@@ -87,12 +87,12 @@ public class DeploymentAssemblyFilesetReferenceTest extends TestCase  {
 
 	@Test
 	public void testRootFolder() throws Exception {
-		runTest(MY_PROJECT_NAME, "**", "", "/", 12);
+		runTest(MY_PROJECT_NAME, "**", ".settings/**", "/", 9);
 	}
 
 	@Test
 	public void testRootFolderExcludeZ() throws Exception {
-		runTest(MY_PROJECT_NAME, "**", "**/z*", "/", 9);
+		runTest(MY_PROJECT_NAME, "**", ".settings/**,**/z*", "/", 6);
 	}
 
 	@Test
