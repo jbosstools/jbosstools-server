@@ -27,6 +27,7 @@ import org.jboss.tools.as.test.core.internal.utils.wtp.CreateProjectOperationsUt
 import org.jboss.tools.as.test.core.internal.utils.wtp.JavaEEFacetConstants;
 import org.jboss.tools.as.test.core.internal.utils.wtp.OperationTestCase;
 import org.jboss.tools.as.test.core.parametized.server.publishing.AbstractPublishingTest;
+import org.jboss.tools.test.util.JobUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -105,9 +106,9 @@ public class RepublishDefectTest extends AbstractPublishingTest {
 		// recreate the war
 		IDataModel dyn1Model = CreateProjectOperationsUtility.getWebDataModel(ap("d1v"), ap("ear"), null, null, null, JavaEEFacetConstants.WEB_23, true);
     	OperationTestCase.runAndVerify(dyn1Model);
+    	JobUtils.waitForIdle(1000);
 		server.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
 		JBIDE6184EarHasDynProjs(earPath, true);
-		Thread.sleep(2000);
 	}
 	
 	protected void JBIDE6184EarHasDynProjs(IPath earPath, boolean d1vPresent ) {
