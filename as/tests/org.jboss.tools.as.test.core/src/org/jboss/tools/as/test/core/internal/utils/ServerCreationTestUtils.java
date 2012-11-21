@@ -49,6 +49,7 @@ public class ServerCreationTestUtils extends Assert {
 	private static final String as_server_7_1_jar = "7.1.0.mf.jboss-as-server.jar";
 	private static final String twiddle_eap_4_3 = "eap4.3" + twiddle_suffix;
 	private static final String twiddle_eap_5_0 = "eap5.0" + twiddle_suffix;
+	private static final String twiddle_eap_5_1 = "eap5.1" + twiddle_suffix;
 	private static final String eap_server_6_0_jar = "eap6.0.0.mf.jboss-as-server.jar";
 	private static final String run_jar = "run.jar";
 	private static final String service_xml = "service.xml";
@@ -62,7 +63,7 @@ public class ServerCreationTestUtils extends Assert {
 		asSystemJar.put(IJBossToolingConstants.SERVER_AS_70, as_server_7_0_jar);
 		asSystemJar.put(IJBossToolingConstants.SERVER_AS_71, as_server_7_1_jar);
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_43, twiddle_eap_4_3);
-		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_50, twiddle_eap_5_0);
+		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_50, twiddle_eap_5_1);
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_60, eap_server_6_0_jar);
 
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_AS_32, IJBossToolingConstants.AS_32);
