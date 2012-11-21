@@ -366,6 +366,7 @@ public class ServiceXMLEditorConfiguration extends
 			if( thisNode.equals("#text")) thisNode = ""; //$NON-NLS-1$ //$NON-NLS-2$
 			
 			ArrayList possibleNodes = children.get(parentElement);
+			possibleNodes = (possibleNodes == null ? new ArrayList() : possibleNodes);
 			ChildOccurances occ;
 			for( int i = 0; i < possibleNodes.size(); i++ ) {
 				occ = (ChildOccurances)possibleNodes.get(i);
