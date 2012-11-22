@@ -105,12 +105,12 @@ public class ServiceXMLEditorConfiguration extends
 
 	
 	public class ServiceXMLContentAssistProcessor extends XMLContentAssistProcessor {
-		private HashMap<String, ArrayList<ChildOccurances>> children;
+		private HashMap<String, List<ChildOccurances>> children;
 		private HashMap<String, List> attributes;
 		
 		public ServiceXMLContentAssistProcessor() {
 			super();
-			children = new HashMap<String, ArrayList<ChildOccurances>>();
+			children = new HashMap<String, List<ChildOccurances>>();
 			attributes = new HashMap<String, List>();
 			fillChildren();
 			fillAttributes();
@@ -365,14 +365,15 @@ public class ServiceXMLEditorConfiguration extends
 			String thisNode = contentAssistRequest.getNode().getNodeName();
 			if( thisNode.equals("#text")) thisNode = ""; //$NON-NLS-1$ //$NON-NLS-2$
 			
-			ArrayList possibleNodes = children.get(parentElement);
-			possibleNodes = (possibleNodes == null ? new ArrayList() : possibleNodes);
-			ChildOccurances occ;
-			for( int i = 0; i < possibleNodes.size(); i++ ) {
-				occ = (ChildOccurances)possibleNodes.get(i);
-				if( occ.name.startsWith(thisNode)) {
-					createAndAddTagCompletionProposals(contentAssistRequest.getNode(), occ, contentAssistRequest.getParent(), 
-							contentAssistRequest.getReplacementBeginPosition(), contentAssistRequest, true);
+			List possibleNodes = children.get(parentElement);
+			if( possibleNodes != null ) {
+				ChildOccurances occ;
+				for( int i = 0; i < possibleNodes.size(); i++ ) {
+					occ = (ChildOccurances)possibleNodes.get(i);
+					if( occ.name.startsWith(thisNode)) {
+						createAndAddTagCompletionProposals(contentAssistRequest.getNode(), occ, contentAssistRequest.getParent(), 
+								contentAssistRequest.getReplacementBeginPosition(), contentAssistRequest, true);
+					}
 				}
 			}
 		}
@@ -387,15 +388,15 @@ public class ServiceXMLEditorConfiguration extends
 			}
 
 			String parentElement = contentAssistRequest.getParent().getNodeName();
-			ArrayList possibleNodes = children.get(parentElement);
+			List possibleNodes = children.get(parentElement);
 
-			if( possibleNodes == null ) return;
-	
-			ChildOccurances occ;
-			for( int i = 0; i < possibleNodes.size(); i++ ) {
-				occ = (ChildOccurances)possibleNodes.get(i);
-				createAndAddTagCompletionProposals(contentAssistRequest.getNode(), occ, contentAssistRequest.getParent(), 
-						contentAssistRequest.getReplacementBeginPosition(), contentAssistRequest, false);
+			if( possibleNodes != null ) {
+				ChildOccurances occ;
+				for( int i = 0; i < possibleNodes.size(); i++ ) {
+					occ = (ChildOccurances)possibleNodes.get(i);
+					createAndAddTagCompletionProposals(contentAssistRequest.getNode(), occ, contentAssistRequest.getParent(), 
+							contentAssistRequest.getReplacementBeginPosition(), contentAssistRequest, false);
+				}
 			}
 		}
 		
