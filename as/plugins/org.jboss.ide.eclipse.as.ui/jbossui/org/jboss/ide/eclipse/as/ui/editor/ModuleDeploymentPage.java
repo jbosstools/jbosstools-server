@@ -112,7 +112,9 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 				
 				IModule[] deployed = server.getOriginal().getModules();
 				final boolean hasNoModules = deployed == null || deployed.length == 0;
-				final boolean enabled =  hasNoModules && server.getOriginal().getServerPublishState() == IServer.PUBLISH_STATE_NONE;
+				final boolean enabled =  hasNoModules && 
+						(server.getOriginal().getServerPublishState() == IServer.PUBLISH_STATE_NONE
+						|| server.getOriginal().getServerPublishState() == IServer.PUBLISH_STATE_UNKNOWN);
 				Display.getDefault().asyncExec(new Runnable() { 
 					public void run() {
 						tab.setEnabled(enabled);

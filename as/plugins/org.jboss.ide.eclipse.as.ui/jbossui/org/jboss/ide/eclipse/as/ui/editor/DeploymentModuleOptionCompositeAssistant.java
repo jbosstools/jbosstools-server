@@ -1001,7 +1001,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		Control[] c = new Control[] { 
 				viewer.getTree(), deployText, tempDeployText, 
 				metadataRadio, serverRadio, customRadio, currentSelection, 
-				deployButton, tempDeployButton,zipDeployWTPProjects				
+				deployButton, tempDeployButton
 		};
 		for( int i = 0; i < c.length; i++ ) {
 			if( c[i] != null && !c[i].isDisposed()) {
