@@ -13,6 +13,7 @@ package org.jboss.ide.eclipse.as.core.server.internal;
 import java.io.File;
 
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.internal.Server;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
@@ -32,6 +33,7 @@ public class ServerListener extends UnitedServerListener {
 
 	public void serverAdded(IServer server) {
 		ServerUtil.createStandardFolders(server);
+		((Server)server).setServerPublishState(IServer.PUBLISH_STATE_NONE);
 	}
 
 	public void serverRemoved(IServer server) {
