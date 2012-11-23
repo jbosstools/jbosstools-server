@@ -33,7 +33,6 @@ public class ServerListener extends UnitedServerListener {
 
 	public void serverAdded(IServer server) {
 		ServerUtil.createStandardFolders(server);
-		((Server)server).setServerPublishState(IServer.PUBLISH_STATE_NONE);
 	}
 
 	public void serverRemoved(IServer server) {
