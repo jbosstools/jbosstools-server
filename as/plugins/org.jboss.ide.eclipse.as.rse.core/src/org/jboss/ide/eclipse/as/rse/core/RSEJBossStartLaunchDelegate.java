@@ -20,6 +20,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.LaunchConfigurationDelegate;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
+import org.eclipse.rse.core.model.IHost;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
@@ -104,9 +105,19 @@ public class RSEJBossStartLaunchDelegate extends AbstractRSELaunchDelegate {
 		String currentArgs = config.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, ""); //$NON-NLS-1$
 		String currentVMArgs = config.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, ""); //$NON-NLS-1$
 
+		// Clear old flag which used url
 		currentArgs = ArgsUtil.setArg(currentArgs, null,
-				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JBOSS_SERVER_HOME_URL,
-				"file:" + new Path(rseHome).append(IJBossRuntimeResourceConstants.SERVER).toOSString());
+				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JBOSS_SERVER_BASE_URL, null);
+		
+		String connectionName = RSEUtils.getRSEConnectionName(jbossServer.getServer());
+		IHost host = RSEUtils.findHost(connectionName);
+		String remoteSafe = RSEUtils.pathToRemoteSystem(host, rseHome, IJBossRuntimeResourceConstants.SERVER);
+
+		// Use new flag which forces dir instead (safer)
+		currentArgs = ArgsUtil.setArg(currentArgs, null,
+				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JBOSS_SERVER_BASE_DIR,
+				remoteSafe);
+
 
 		currentArgs = ArgsUtil.setArg(currentArgs, null,
 				IJBossRuntimeConstants.STARTUP_ARG_CONFIG_LONG,
@@ -114,19 +125,19 @@ public class RSEJBossStartLaunchDelegate extends AbstractRSELaunchDelegate {
 
 		currentVMArgs = ArgsUtil.setArg(currentVMArgs, null,
 				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.ENDORSED_DIRS,
-				new Path(rseHome).append(
-						IJBossRuntimeResourceConstants.LIB).append(
-						IJBossRuntimeResourceConstants.ENDORSED).toOSString(), true);
+				RSEUtils.pathToRemoteSystem(host, rseHome, IJBossRuntimeResourceConstants.LIB + Path.SEPARATOR + 
+						IJBossRuntimeResourceConstants.ENDORSED), true);
 
 		String libPath = new Path(rseHome).append(IJBossRuntimeResourceConstants.BIN)
 				.append(IJBossRuntimeResourceConstants.NATIVE).toOSString();
 		currentVMArgs = ArgsUtil.setArg(currentVMArgs, null,
 				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JAVA_LIB_PATH,
-				libPath, true);
+				RSEUtils.pathToRemoteSystem(host, libPath, null), true);
 
+		String startJar = new Path(rseHome).append(IJBossRuntimeResourceConstants.BIN).append(
+				IJBossRuntimeResourceConstants.START_JAR).toString(); 
 		String cmd = "java " + currentVMArgs + " -classpath " +
-				new Path(rseHome).append(IJBossRuntimeResourceConstants.BIN).append(
-						IJBossRuntimeResourceConstants.START_JAR).toString() + IJBossRuntimeConstants.SPACE +
+				 RSEUtils.pathToRemoteSystem(host, startJar, null) + IJBossRuntimeConstants.SPACE +
 				IJBossRuntimeConstants.START_MAIN_TYPE + IJBossRuntimeConstants.SPACE + currentArgs + "&";
 		return cmd;
 	}
