@@ -14,7 +14,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	ParametizedSuite.class,
 	UtilsSuite.class,
 	PollThreadTest.class,
-	ClasspathSuite.class
+	ClasspathSuite.class,
 })
 public class ASToolsTestSuite {
 }
