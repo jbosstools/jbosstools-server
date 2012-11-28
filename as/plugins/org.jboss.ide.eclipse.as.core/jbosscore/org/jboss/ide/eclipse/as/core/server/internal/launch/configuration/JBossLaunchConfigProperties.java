@@ -172,7 +172,7 @@ public class JBossLaunchConfigProperties {
 			String programArguments = getProgramArguments(launchConfig);
 			String arguments = ArgsUtil.setArg(programArguments,
 					null,
-					IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JBOSS_SERVER_HOME_URL,
+					IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JBOSS_SERVER_BASE_URL,
 					serverHome);
 			setProgramArguments(arguments, launchConfig);
 		}
@@ -193,7 +193,7 @@ public class JBossLaunchConfigProperties {
 	public boolean isServerHomeSet(ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
 		String value = ArgsUtil.getValue(getProgramArguments(launchConfig),
 				null,
-				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JBOSS_SERVER_HOME_URL);
+				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JBOSS_SERVER_BASE_URL);
 		return value != null;
 	}
 
