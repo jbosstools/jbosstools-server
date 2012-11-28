@@ -20,6 +20,15 @@ public interface IJBossRuntimeConstants {
 	public static final String FILE_COLON = "file:"; //$NON-NLS-1$
 	
 	public static final String JBOSS_SERVER_HOME_DIR = "jboss.server.home.dir"; //$NON-NLS-1$
+	/*
+	 *  This constant is incorrectly named. 
+	 *  It is deprecated for now. 
+	 *  It may one day come back, with the value
+	 *     'jboss.server.home.url'
+	 *  Any consumers who may be affected should change now  
+	 */
+	@Deprecated 
+	public static final String JBOSS_SERVER_HOME_URL = "jboss.server.base.url"; //$NON-NLS-1$
 	public static final String JBOSS_SERVER_BASE_URL = "jboss.server.base.url"; //$NON-NLS-1$
 	public static final String JBOSS_SERVER_BASE_DIR = "jboss.server.base.dir"; //$NON-NLS-1$
 	public static final String JBOSS_SERVER_NAME = "jboss.server.name"; //$NON-NLS-1$
