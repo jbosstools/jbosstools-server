@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.core.runtime;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -380,7 +381,13 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 		if (location == null || !location.isDirectory()) {
 			return false;
 		}
-		String path = location.getAbsolutePath();
+		String path;
+		try {
+			path = location.getCanonicalPath();
+		} catch (IOException e) {
+			JBossServerCorePlugin.log(e);
+			path = location.getAbsolutePath();
+		}
 		if (path == null) {
 			return false;
 		}
@@ -390,7 +397,13 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 			if (runtime == null || runtime.getLocation() == null) {
 				continue;
 			}
-			if(path.equals(runtime.getLocation().toOSString())) {
+			String loc = runtime.getLocation().toOSString();
+			try {
+				loc = new File(loc).getCanonicalPath();
+			} catch (IOException e) {
+				JBossServerCorePlugin.log(e);
+			}
+			if(path.equals(loc)) {
 				return true;
 			}
 		}
