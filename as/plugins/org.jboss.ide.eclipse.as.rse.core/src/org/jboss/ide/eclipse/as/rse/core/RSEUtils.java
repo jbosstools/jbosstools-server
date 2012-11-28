@@ -18,17 +18,16 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.rse.core.RSECorePlugin;
 import org.eclipse.rse.core.model.IHost;
+import org.eclipse.rse.core.subsystems.ISubSystem;
 import org.eclipse.rse.services.shells.IHostShell;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
@@ -181,5 +180,54 @@ public class RSEUtils {
 		return shell != null
 				&& shell.isActive();
 	}
+	
+	   /**
+     * The Unix separator character.
+     */
+    private static final char UNIX_SEPARATOR = '/';
 
+    /**
+     * The Windows separator character.
+     */
+    private static final char WINDOWS_SEPARATOR = '\\';
+	public static String pathToRemoteSystem(IHost host, String path, String append) {
+		boolean hostIsWindows = isHostWindows(host);
+		char sep = hostIsWindows ? WINDOWS_SEPARATOR : UNIX_SEPARATOR;
+		boolean endsWithSep = path.endsWith(Character.toString(WINDOWS_SEPARATOR)) || path.endsWith(Character.toString(UNIX_SEPARATOR));
+		String path2 = append == null ? path :
+			// ensure we have a trailing separator before appending the 'append'
+			(endsWithSep ? path : path + sep) + append;
+		String path3 = hostIsWindows ? separatorsToWindows(path2) : separatorsToUnix(path2);
+		return path3;
+	}
+	private static boolean isHostWindows(IHost host) {
+		String sysType = host.getSystemType().getId();
+		if( sysType.equals("org.eclipse.rse.systemtype.windows"))
+			return true;
+		ISubSystem[] systems = RSECorePlugin.getTheSystemRegistry().getSubSystems(host);
+		for( int i = 0; i < systems.length; i++ ) {
+			if( systems[i].getConfigurationId().equals("dstore.windows.files"))
+				return true;
+		}
+		return false;
+	}
+    public static String separatorsToUnix(String path) {
+        if (path == null || path.indexOf(WINDOWS_SEPARATOR) == -1) {
+            return path;
+        }
+        return path.replace(WINDOWS_SEPARATOR, UNIX_SEPARATOR);
+    }
+
+    /**
+     * Converts all separators to the Windows separator of backslash.
+     * 
+     * @param path  the path to be changed, null ignored
+     * @return the updated path
+     */
+    public static String separatorsToWindows(String path) {
+        if (path == null || path.indexOf(UNIX_SEPARATOR) == -1) {
+            return path;
+        }
+        return path.replace(UNIX_SEPARATOR, WINDOWS_SEPARATOR);
+    }
 }
