@@ -191,7 +191,7 @@ public class RSEUtils {
      */
     private static final char WINDOWS_SEPARATOR = '\\';
 	public static String pathToRemoteSystem(IHost host, String path, String append) {
-		boolean hostIsWindows = hostIsWindows(host);
+		boolean hostIsWindows = isHostWindows(host);
 		char sep = hostIsWindows ? WINDOWS_SEPARATOR : UNIX_SEPARATOR;
 		boolean endsWithSep = path.endsWith(Character.toString(WINDOWS_SEPARATOR)) || path.endsWith(Character.toString(UNIX_SEPARATOR));
 		String path2 = append == null ? path :
@@ -200,7 +200,7 @@ public class RSEUtils {
 		String path3 = hostIsWindows ? separatorsToWindows(path2) : separatorsToUnix(path2);
 		return path3;
 	}
-	private static boolean hostIsWindows(IHost host) {
+	private static boolean isHostWindows(IHost host) {
 		String sysType = host.getSystemType().getId();
 		if( sysType.equals("org.eclipse.rse.systemtype.windows"))
 			return true;

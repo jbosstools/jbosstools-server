@@ -37,24 +37,22 @@ public class RSEUtilsTest extends TestCase {
 	public void testRemoteUnix() {
 		host = createLinuxHost(HOST_NAME);
 		assertNotNull(host);
-		String home = "/home/rob/jboss-eap-5.1";
+		String home = "/home/wonkauser/jboss-eap-5.1";
 		IServer s = createEAP5Server(home);
 		String args = getStartArgsForServer(s);
-		System.out.println(args);
-		assertTrue(args.contains("/home/rob/jboss-eap-5.1/lib/endorsed"));
-		assertTrue(args.contains("/home/rob/jboss-eap-5.1/server"));
-		assertTrue(args.contains("/home/rob/jboss-eap-5.1/bin/native"));
+		assertTrue(args.contains("/home/wonkauser/jboss-eap-5.1/lib/endorsed"));
+		assertTrue(args.contains("/home/wonkauser/jboss-eap-5.1/server"));
+		assertTrue(args.contains("/home/wonkauser/jboss-eap-5.1/bin/native"));
 	}
 	public void testRemoteSshOnly() {
 		host = createSshOnlyHost(HOST_NAME);
 		assertNotNull(host);
-		String home = "/home/rob/jboss-eap-5.1";
+		String home = "/home/wonkauser/jboss-eap-5.1";
 		IServer s = createEAP5Server(home);
 		String args = getStartArgsForServer(s);
-		System.out.println(args);
-		assertTrue(args.contains("/home/rob/jboss-eap-5.1/lib/endorsed"));
-		assertTrue(args.contains("/home/rob/jboss-eap-5.1/server"));
-		assertTrue(args.contains("/home/rob/jboss-eap-5.1/bin/native"));
+		assertTrue(args.contains("/home/wonkauser/jboss-eap-5.1/lib/endorsed"));
+		assertTrue(args.contains("/home/wonkauser/jboss-eap-5.1/server"));
+		assertTrue(args.contains("/home/wonkauser/jboss-eap-5.1/bin/native"));
 	}
 	public void testRemoteWindows() {
 		host = createWindowsHost(HOST_NAME);
@@ -62,7 +60,6 @@ public class RSEUtilsTest extends TestCase {
 		String home = "c:\\apps\\jboss\\jboss-eap-5.1";
 		IServer s = createEAP5Server(home);
 		String args = getStartArgsForServer(s);
-		System.out.println(args);
 		assertTrue(args.contains("c:\\apps\\jboss\\jboss-eap-5.1\\lib\\endorsed"));
 		assertTrue(args.contains("c:\\apps\\jboss\\jboss-eap-5.1\\server"));
 		assertTrue(args.contains("c:\\apps\\jboss\\jboss-eap-5.1\\bin\\native"));
@@ -74,7 +71,7 @@ public class RSEUtilsTest extends TestCase {
 		try {
 			s = createRemoteServer(IJBossToolingConstants.EAP_50, host, homeDir, "default");
 		} catch(CoreException ce) {
-			fail(ce.getMessage());
+			fail("Server not created: " + ce.getMessage());
 		}
 		if( s == null ) {
 			fail("Server not created.");
@@ -113,8 +110,9 @@ public class RSEUtilsTest extends TestCase {
 		return createHost(hostName, "org.eclipse.rse.systemtype.windows", configurations);
 	}
 	public IHost createHost(String hostName, String sysType, String[] configurationIds) throws AssertionFailedError {
-		String profileName = getSystemProfileName();
+		String profileName = getOrCreateSystemProfileName();
 		IRSESystemType systemType = findSystemType(sysType);
+		assertNotNull("System type not found: " + sysType);
 		ArrayList<ISubSystemConfigurator> configuratorList = new ArrayList<ISubSystemConfigurator>();
 		for( int i = 0; i < configurationIds.length; i++ ) {
 			configuratorList.add(createSubsystemConfigurator(configurationIds[i]));
@@ -126,7 +124,7 @@ public class RSEUtilsTest extends TestCase {
 			IHost host = sr.createHost(profileName, systemType, hostName, hostName, "test host", "", 0, configurators);
 			return host;
 		} catch(Exception e) {
-			fail(e.getMessage());
+			fail("Failed to create host: " + e.getMessage());
 		}
 		return null;
 	}
@@ -154,7 +152,7 @@ public class RSEUtilsTest extends TestCase {
 	}
 
 	
-	private String getSystemProfileName() {
+	private String getOrCreateSystemProfileName() {
 		String[] profiles = RSECorePlugin.getTheSystemProfileManager().getActiveSystemProfileNames();
 		for( int i = 0; i < profiles.length; i++ )
 			if( profiles[i] != null )
