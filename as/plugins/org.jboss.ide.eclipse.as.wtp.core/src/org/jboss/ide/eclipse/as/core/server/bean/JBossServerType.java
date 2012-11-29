@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -95,13 +96,13 @@ public class JBossServerType implements IJBossToolingConstants {
 			"SOA-P",//$NON-NLS-1$
 			"SOA Platform",//$NON-NLS-1$
 			JBOSS_AS_PATH + File.separatorChar + BIN_PATH+ File.separatorChar + TWIDDLE_JAR_NAME,
-			new String[]{V4_3, V5_0 }, new SOAPServerTypeCondition());
+			new String[]{V4_3, V5_0, V5_1 }, new SOAPServerTypeCondition());
 
 	public static final JBossServerType SOAP_STD = new JBossServerType(
 			"SOA-P-STD",//$NON-NLS-1$
 			"SOA Platform Standalone",//$NON-NLS-1$
 			JBOSS_ESB_PATH + File.separatorChar + BIN_PATH+ File.separatorChar + RUN_JAR_NAME,
-			new String[]{V4_3, V5_0 }, new SOAPStandaloneServerTypeCondition());
+			new String[]{V4_3, V5_0, V5_1 }, new SOAPStandaloneServerTypeCondition());
 
 	public static final JBossServerType EWP = new JBossServerType( 
 			"EWP",//$NON-NLS-1$
@@ -119,7 +120,7 @@ public class JBossServerType implements IJBossToolingConstants {
 			UNKNOWN_STR,
 			UNKNOWN_STR,
 			"",//$NON-NLS-1$
-			new String[]{V7_0, V7_1, V6_0, V6_1, V5_1, V5_2, V5_0, V4_3, V4_2, V4_0, V3_2}, null);
+			new String[]{V7_0, V7_1, V6_0, V6_1, V5_1, V5_2, V5_3, V5_0, V4_3, V4_2, V4_0, V3_2}, null);
 
 	public String toString() {
 		return id;
@@ -267,6 +268,7 @@ public class JBossServerType implements IJBossToolingConstants {
 			if( V5_0.equals(version)) return IJBossToolingConstants.SERVER_EAP_50;
 			if( V5_1.equals(version)) return IJBossToolingConstants.SERVER_EAP_50;
 			if( V5_2.equals(version)) return IJBossToolingConstants.SERVER_EAP_50;
+			if( V5_3.equals(version)) return IJBossToolingConstants.SERVER_EAP_50;
 			if( V6_0.equals(version)) return IJBossToolingConstants.SERVER_EAP_60;
 			return null;
 		}
@@ -392,11 +394,15 @@ public class JBossServerType implements IJBossToolingConstants {
 		
 		public String getFullVersion(File location, File systemFile) {
 			String fullVersion = ServerBeanLoader.getFullServerVersionFromZip(systemFile);
-			if (fullVersion != null && fullVersion.startsWith("5.1.1")) { //$NON-NLS-1$
-				// SOA-P 5.2
-				String runJar = JBossServerType.JBOSS_AS_PATH + File.separatorChar + 
+			if (fullVersion != null && fullVersion.length() >= 5) {
+				// SOA-P 5.2, SOA-P 5.3 ...
+				String check = fullVersion.substring(0,5); 
+				Pattern pattern = Pattern.compile("5\\.1\\.[1-9]");
+				if (pattern.matcher(check).matches()) {
+					String runJar = JBossServerType.JBOSS_AS_PATH + File.separatorChar + 
 						JBossServerType.BIN_PATH+ File.separatorChar + JBossServerType.RUN_JAR_NAME;
-				fullVersion = ServerBeanLoader.getFullServerVersionFromZip(new File(location, runJar));
+					fullVersion = ServerBeanLoader.getFullServerVersionFromZip(new File(location, runJar));
+				}
 			}
 			return fullVersion;
 		}
