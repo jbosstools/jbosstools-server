@@ -55,6 +55,9 @@ public class DownloadRuntimeToWTPRuntime implements IJBossToolingConstants {
 	
 	public static DownloadRuntime[] getDownloadRuntimes(IRuntimeType type, Map<String, DownloadRuntime> dlRuntimes) {
 		String[] all = map.get(type.getId());
+		if(all==null) {
+			all = new String[0];
+		}
 		ArrayList<DownloadRuntime> ret = new ArrayList<DownloadRuntime>();
 		for( int i = 0; i < all.length;i++ ) {
 			DownloadRuntime r = dlRuntimes.get(all[i]);
