@@ -21,6 +21,7 @@ import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.util.ModuleFile;
 import org.eclipse.wst.server.core.util.ModuleFolder;
 import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
+import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
 
 public class ModuleResourceUtil {
 	public static int countChanges(IModuleResourceDelta[] deltas) {
@@ -37,14 +38,18 @@ public class ModuleResourceUtil {
 	}
 	
 	public static String getParentRelativeURI(IModule[] tree, int index, String defaultName) {
-		if( index != 0 ) {
+		if( index != 0 ) { 
 			IEnterpriseApplication parent = (IEnterpriseApplication)tree[index-1].loadAdapter(IEnterpriseApplication.class, null);
 			if( parent != null ) {
 				String uri = parent.getURI(tree[index]);
 				if(uri != null )
 					return uri;
 			}
-			// TODO if we make our own "enterprise app" interface, do that here
+			IJBTModule parent2 = (IJBTModule)tree[index-1].loadAdapter(IJBTModule.class, null);
+			if( parent2 != null ) {
+				String uri = parent2.getURI(tree[index]);
+				return uri;
+			}
 		} 
 		// return name with extension
 		return defaultName;
