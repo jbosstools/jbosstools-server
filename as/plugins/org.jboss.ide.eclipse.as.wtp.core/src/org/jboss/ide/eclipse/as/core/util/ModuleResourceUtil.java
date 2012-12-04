@@ -22,6 +22,7 @@ import org.eclipse.wst.server.core.util.ModuleFile;
 import org.eclipse.wst.server.core.util.ModuleFolder;
 import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
 import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
+import org.jboss.ide.eclipse.as.wtp.core.util.CustomProjectInEarWorkaroundUtil;
 
 public class ModuleResourceUtil {
 	public static int countChanges(IModuleResourceDelta[] deltas) {
@@ -39,16 +40,18 @@ public class ModuleResourceUtil {
 	
 	public static String getParentRelativeURI(IModule[] tree, int index, String defaultName) {
 		if( index != 0 ) { 
-			IEnterpriseApplication parent = (IEnterpriseApplication)tree[index-1].loadAdapter(IEnterpriseApplication.class, null);
-			if( parent != null ) {
-				String uri = parent.getURI(tree[index]);
+			IModule parent = tree[index-1];
+			IModule child = tree[index];
+			ModuleDelegate md = CustomProjectInEarWorkaroundUtil.getCustomProjectSafeModuleDelegate(parent);
+			if( md instanceof IEnterpriseApplication) {
+				String uri = ((IEnterpriseApplication)md).getURI(child);
 				if(uri != null )
 					return uri;
 			}
-			IJBTModule parent2 = (IJBTModule)tree[index-1].loadAdapter(IJBTModule.class, null);
-			if( parent2 != null ) {
-				String uri = parent2.getURI(tree[index]);
-				return uri;
+			if( md instanceof IJBTModule) {
+				String uri = ((IJBTModule)md).getURI(child);
+				if(uri != null )
+					return uri;
 			}
 		} 
 		// return name with extension

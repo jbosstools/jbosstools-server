@@ -12,22 +12,18 @@ package org.jboss.ide.eclipse.as.wtp.core.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.jst.j2ee.internal.deployables.J2EEFlexProjDeployable;
-import org.eclipse.jst.jee.internal.deployables.JEEFlexProjDeployable;
 import org.eclipse.jst.server.core.IEnterpriseApplication;
 import org.eclipse.jst.server.core.IJ2EEModule;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerUtil;
-import org.eclipse.wst.web.internal.deployables.FlatComponentDeployable;
+import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
 import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
-import org.jboss.ide.eclipse.as.wtp.core.vcf.JBTHeirarchyParticipantProvider;
 
 public class ServerModelUtilities {
 	
@@ -83,55 +79,14 @@ public class ServerModelUtilities {
 	
 	public static IModule[] getChildModules(IModule module) {
 		if( module.getModuleType().getId().equals(IWTPConstants.FACET_EAR)) {
-			IModule[] ret = getEarProjectChildren(module);
-			if( ret != null )
-				return ret;
-			// else fall through
+			return CustomProjectInEarWorkaroundUtil.getSafeChildrenModules(module);
 		}
-			
-		IEnterpriseApplication enterpriseApplication = (IEnterpriseApplication) 
-                module.loadAdapter(IEnterpriseApplication.class, null);
-		if( enterpriseApplication != null )
-			return enterpriseApplication.getModules() == null ? new IModule[]{} : enterpriseApplication.getModules();
-		IJBTModule jbtMod = (IJBTModule)module.loadAdapter(IJBTModule.class, null);
-		if( jbtMod != null )
-			return jbtMod.getModules();
-		return new IModule[0];
+		ModuleDelegate md = CustomProjectInEarWorkaroundUtil
+					.getCustomProjectSafeModuleDelegate(module);
+		IModule[] children = md == null ? null : md.getChildModules();
+		return children == null ? new IModule[0] : children;
 	}
 	
-	private static IModule[] getEarProjectChildren(IModule module) {
-		FlatComponentDeployable dep = (FlatComponentDeployable)module.loadAdapter(FlatComponentDeployable.class, null);
-		J2EEFlexProjDeployable hack = null;
-		
-		if( dep instanceof JEEFlexProjDeployable ) {
-			hack = new JEEFlexProjDeployable(module.getProject(), dep.getComponent()) {
-				public String[] getParticipantIds() {
-					return addRequiredParticipants(super.getParticipantIds());
-				}
-			};
-		} else if( dep instanceof J2EEFlexProjDeployable ) {
-			hack = new J2EEFlexProjDeployable(module.getProject(), dep.getComponent()) {
-				public String[] getParticipantIds() {
-					return addRequiredParticipants(super.getParticipantIds());
-				}
-			};
-		}
-		if( hack != null ) {
-			// get the new children
-			return hack.getChildModules();
-		}
-		return dep == null ? null : dep.getChildModules();
-	}
-	
-	// manually add the id of a participant which recognizes jbt projects
-	// as children of ears
-	private static final String JBT_IN_EAR_PARTICIPANT = JBTHeirarchyParticipantProvider.JBT_PROJ_IN_EAR_PARTICIPANT_ID;
-	private static String[] addRequiredParticipants(String[] parentParticipants) {
-		List<String> l = new ArrayList<String>(Arrays.asList(parentParticipants));
-		if( !l.contains(JBT_IN_EAR_PARTICIPANT))
-			l.add(JBT_IN_EAR_PARTICIPANT);
-		return (String[]) l.toArray(new String[l.size()]);
-	}
 	
 	public static boolean isBinaryModule(IModule[] moduleTree) {
 		return moduleTree == null ? false : isBinaryModule(moduleTree[moduleTree.length - 1]);
