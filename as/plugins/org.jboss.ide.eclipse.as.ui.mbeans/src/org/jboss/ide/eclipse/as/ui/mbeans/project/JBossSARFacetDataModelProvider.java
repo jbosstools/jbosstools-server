@@ -26,7 +26,6 @@ public class JBossSARFacetDataModelProvider extends J2EEModuleFacetInstallDataMo
 		names.add(CONFIG_FOLDER);
 		names.add(IJBossSARFacetDataModelProperties.SAR_SOURCE_FOLDER);
 		names.add(IJBossSARFacetDataModelProperties.SAR_CONTENT_FOLDER);
-		names.add(IJBossSARFacetDataModelProperties.SAR_SOURCE_FOLDER);
 		names.add(RUNTIME_ID);
 		names.add(RUNTIME_HOME);
 		names.add(RUNTIME_IS_SERVER_SUPPLIED);

@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.jst.common.project.facet.IJavaFacetInstallDataModelProperties;
 import org.eclipse.jst.j2ee.applicationclient.internal.creation.AppClientFacetProjectCreationDataModelProvider;
 import org.eclipse.jst.j2ee.earcreation.IEarFacetInstallDataModelProperties;
 import org.eclipse.jst.j2ee.ejb.project.operations.IEjbFacetInstallDataModelProperties;
@@ -45,6 +46,8 @@ import org.eclipse.wst.common.componentcore.datamodel.properties.IFacetProjectCr
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+import org.jboss.ide.eclipse.as.ui.mbeans.project.IJBossSARFacetDataModelProperties;
+import org.jboss.ide.eclipse.as.ui.mbeans.project.JBossSARFacetProjectCreationDataModelProvider;
 
 
 /**
@@ -636,4 +639,32 @@ public class CreateProjectOperationsUtility {
         
     	return dm;
     }
+    
+    
+    
+    
+    public static IDataModel getSarDataModel(String projName, String sourceFolder, String contentFolder, 
+    		String outputFolder, IProjectFacetVersion version){
+    	IDataModel dm = DataModelFactory.createDataModel(new JBossSARFacetProjectCreationDataModelProvider());
+    	dm.setProperty(IFacetProjectCreationDataModelProperties.FACET_PROJECT_NAME, projName);
+    	
+    	FacetDataModelMap facetMap = (FacetDataModelMap) dm.getProperty(IFacetProjectCreationDataModelProperties.FACET_DM_MAP);
+    	IDataModel esbFacetModel = facetMap.getFacetDataModel(IJBossSARFacetDataModelProperties.SAR_PROJECT_FACET);
+        esbFacetModel.setProperty(IFacetDataModelProperties.FACET_VERSION, version);
+        
+        String tmp = JavaEEFacetConstants.JAVA_FACET.getId();
+        IDataModel javaFacetModel = facetMap.getFacetDataModel(tmp);
+        
+        if(sourceFolder != null)
+        	javaFacetModel.setProperty(IJavaFacetInstallDataModelProperties.SOURCE_FOLDER_NAME, sourceFolder);
+        
+        if(outputFolder != null)
+        	javaFacetModel.setProperty(IJavaFacetInstallDataModelProperties.DEFAULT_OUTPUT_FOLDER_NAME, outputFolder);
+
+        if(contentFolder != null)
+        	esbFacetModel.setProperty(IJBossSARFacetDataModelProperties.SAR_CONTENT_FOLDER, contentFolder);
+        	
+    	return dm;
+    }
+
 }

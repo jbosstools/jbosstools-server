@@ -110,6 +110,7 @@ public class SARProjectWizard extends NewProjectDataModelFacetWizard implements
 			
 			if(runtime == null) return;
 			
+			// TODO move this into the facet installation 
 			String name = runtime.getName();
 			org.eclipse.wst.server.core.IRuntime serverRuntime = ServerCore.findRuntime(name);
 			RuntimeClasspathProviderWrapper rcpw = JavaServerPlugin.findRuntimeClasspathProvider(serverRuntime.getRuntimeType());

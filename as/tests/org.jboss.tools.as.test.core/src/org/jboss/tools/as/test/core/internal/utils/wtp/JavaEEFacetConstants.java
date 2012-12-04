@@ -14,6 +14,7 @@ import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+import org.jboss.ide.eclipse.as.ui.mbeans.project.IJBossSARFacetDataModelProperties;
 
 public class JavaEEFacetConstants {
 
@@ -49,6 +50,9 @@ public class JavaEEFacetConstants {
 	public static final IProjectFacetVersion EAR_14 = EAR_FACET.getVersion("1.4"); //$NON-NLS-1$
 	public static final IProjectFacetVersion EAR_5 = EAR_FACET.getVersion("5.0"); //$NON-NLS-1$
 	//public static final IProjectFacetVersion EAR_6 = EAR_FACET.getVersion("6.0"); //$NON-NLS-1$
+	
+	public static final IProjectFacet SAR_FACET = ProjectFacetsManager.getProjectFacet(IJBossSARFacetDataModelProperties.SAR_PROJECT_FACET); //$NON-NLS-1$
+	public static final IProjectFacetVersion SAR_1 = SAR_FACET.getVersion("1.0"); //$NON-NLS-1$
 	
 	public static final IProjectFacet JAVA_FACET = ProjectFacetsManager.getProjectFacet(IModuleConstants.JST_JAVA); //$NON-NLS-1$
 	public static final IProjectFacetVersion JAVA_13 = JAVA_FACET.getVersion("1.3"); //$NON-NLS-1$
