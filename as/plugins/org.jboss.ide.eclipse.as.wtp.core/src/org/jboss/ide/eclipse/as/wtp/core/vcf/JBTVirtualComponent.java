@@ -34,6 +34,10 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 
+/**
+ * This class is used for PROJECT-LEVEL virtual components, such as a sar, 
+ * esb, or bpel component. 
+ */
 public class JBTVirtualComponent 
 	extends VirtualComponent implements IJBTComponent, IComponentImplFactory {
 
@@ -192,5 +196,13 @@ public class JBTVirtualComponent
 			}
 		}
 		return uri;
+	}
+	
+	/**
+	 * Extenders who do not belong inside an EAR should override this method
+	 * @return
+	 */
+	public boolean canNestInsideEar() {
+		return true;
 	}
 }
