@@ -39,24 +39,18 @@ public class ModuleResourceUtil {
 	}
 	
 	public static String getParentRelativeURI(IModule[] tree, int index, String defaultName) {
+		String uri = null;
 		if( index != 0 ) { 
 			IModule parent = tree[index-1];
 			IModule child = tree[index];
 			ModuleDelegate md = CustomProjectInEarWorkaroundUtil.getCustomProjectSafeModuleDelegate(parent);
-			if( md instanceof IEnterpriseApplication) {
-				String uri = ((IEnterpriseApplication)md).getURI(child);
-				if(uri != null )
-					return uri;
-			}
-			if( md instanceof IJBTModule) {
-				String uri = ((IJBTModule)md).getURI(child);
-				if(uri != null )
-					return uri;
-			}
+			if( md instanceof IEnterpriseApplication)
+				uri = ((IEnterpriseApplication)md).getURI(child);
+			else if( md instanceof IJBTModule)
+				uri = ((IJBTModule)md).getURI(child);
 		} 
 		// return name with extension
-		return defaultName;
-
+		return uri == null ? defaultName : uri;
 	}
 	
 

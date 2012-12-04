@@ -52,7 +52,8 @@ public class CustomProjectInEarWorkaroundUtil {
 	
 	public static IModule[] getSafeChildrenModules(IModule module) {
 		ModuleDelegate safeModule = getCustomProjectSafeModuleDelegate(module);
-		return safeModule.getChildModules();
+		IModule[] children = safeModule.getChildModules(); 
+		return children == null ? new IModule[0] : children;
 	}
 	
 	// manually add the id of a participant which recognizes jbt projects

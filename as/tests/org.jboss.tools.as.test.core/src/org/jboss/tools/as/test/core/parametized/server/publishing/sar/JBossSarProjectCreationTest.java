@@ -82,11 +82,11 @@ public class JBossSarProjectCreationTest extends TestCase {
 	}
 
 	public void testSarInsideEarAsChildModule()  {
-		createSarInEar("sar1dear", "sar1g", "server1", new Path("lib").makeAbsolute());
+		createSarInEarAndVerify("sar1dear", "sar1g", "server1", new Path("lib").makeAbsolute());
 	}
 	
 	public void testSarInsideEarPublish()  {
-		createSarInEar("sar1fear", "sar1h", "server2", new Path("lib").makeAbsolute());
+		createSarInEarAndVerify("sar1fear", "sar1h", "server2", new Path("lib").makeAbsolute());
     	IProject earProj = ResourcesPlugin.getWorkspace().getRoot().getProject("sar1fear");
     	IProject sarProj = ResourcesPlugin.getWorkspace().getRoot().getProject("sar1h");
     	
@@ -126,8 +126,7 @@ public class JBossSarProjectCreationTest extends TestCase {
 		
 	}
 	
-	protected void createSarInEar(String earName, String sarName, String serverName, IPath rootRelativePath) {
-
+	protected void createSarInEarAndVerify(String earName, String sarName, String serverName, IPath rootRelativePath) {
 		try {
 	    	createSarAndEarProjects(earName, sarName);
 	    	addSarReferenceToEar(earName, sarName, rootRelativePath);

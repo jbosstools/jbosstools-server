@@ -78,13 +78,7 @@ public class ServerModelUtilities {
 	}
 	
 	public static IModule[] getChildModules(IModule module) {
-		if( module.getModuleType().getId().equals(IWTPConstants.FACET_EAR)) {
-			return CustomProjectInEarWorkaroundUtil.getSafeChildrenModules(module);
-		}
-		ModuleDelegate md = CustomProjectInEarWorkaroundUtil
-					.getCustomProjectSafeModuleDelegate(module);
-		IModule[] children = md == null ? null : md.getChildModules();
-		return children == null ? new IModule[0] : children;
+		return CustomProjectInEarWorkaroundUtil.getSafeChildrenModules(module);
 	}
 	
 	
