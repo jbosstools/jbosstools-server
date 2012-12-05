@@ -337,6 +337,9 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 			if( children[i] instanceof IModuleFile ) {
 				IModuleFile mf = (IModuleFile)children[i];
 				java.io.File source = getFile(mf);
+				if( source == null )
+					// Can do nothing here. The source doesn't exist.
+					continue;
 				de.schlichtherle.io.File destination = getFileInArchive(root, mf.getModuleRelativePath().append(mf.getName()));
 				boolean b = new de.schlichtherle.io.File(source, ArchiveDetector.NULL).archiveCopyAllTo(destination);
 				if( !b )

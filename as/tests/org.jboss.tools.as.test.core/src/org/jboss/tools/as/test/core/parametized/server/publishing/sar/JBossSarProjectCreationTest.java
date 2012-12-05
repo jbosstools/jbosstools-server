@@ -37,9 +37,14 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerUtil;
+import org.eclipse.wst.server.core.model.IModuleFile;
+import org.eclipse.wst.server.core.model.IModuleFolder;
+import org.eclipse.wst.server.core.model.IModuleResource;
+import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
+import org.jboss.ide.eclipse.as.wtp.core.util.CustomProjectInEarWorkaroundUtil;
 import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.internal.utils.ProjectRuntimeUtil;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
@@ -94,6 +99,76 @@ public class JBossSarProjectCreationTest extends TestCase {
 	public void testSarInsideEarAsChildModule()  {
 		createSarInEarAndVerify("sar1dear", "sar1g", "server1", new Path("lib").makeAbsolute());
 	}
+	
+	/*
+	 * This test is demonstrating the WRONG way to do things. 
+	 * This way will NOT be safe for all circumstances. 
+	 */
+	public void testSarInsideEarMemberResources()  {
+		createSarInEarAndVerify("sar1jear", "sar1j", "server3", new Path("lib").makeAbsolute());
+    	IProject earProj = ResourcesPlugin.getWorkspace().getRoot().getProject("sar1jear");
+    	IModule mod = ServerUtil.getModule(earProj);
+    	ModuleDelegate md = (ModuleDelegate)mod.loadAdapter(ModuleDelegate.class, null);
+    	try {
+    		// Current wtp behavior creates this resource
+    		IModuleResource sar = getResourceAtPath(md.members(), new Path("lib/sar1j.sar"));
+    		assertNotNull(sar);
+    		assertTrue(sar instanceof IModuleFile);
+	    	IModuleResource[] members = md.members();
+	    	
+	    	// Current behavior treats the sar resources as a very confused entity.
+	    	// It tries to treat it as an archive reference, but cannot convert it
+	    	// to a file or ifile. 
+	    	java.io.File f = (java.io.File)sar.getAdapter(java.io.File.class);
+	    	assertNull(f);
+	    	IFile ifile = (IFile)sar.getAdapter(IFile.class);
+	    	assertNull(ifile);
+	    	
+	    	// In this case, the child is not found
+    		IModule[] children = md.getChildModules();
+    		assertTrue(children.length == 0);
+    	} catch(CoreException ce) {
+    		fail("Unable to get members for ear module: " + ce.getMessage());
+    	}
+	}
+	
+	/*
+	 * This is the correct apis to use if you need a more correct model
+	 * than wtp can provide based on current api.
+	 */
+	public void testSarInsideEarMemberResourcesSafe()  {
+		createSarInEarAndVerify("sar1kear", "sar1k", "server4", new Path("lib").makeAbsolute());
+    	IProject earProj = ResourcesPlugin.getWorkspace().getRoot().getProject("sar1kear");
+    	IModule mod = ServerUtil.getModule(earProj);
+    	
+    	// Do not simply get the module delegate;  Use our safe hack method
+    	//ModuleDelegate md = (ModuleDelegate)mod.loadAdapter(ModuleDelegate.class, null);
+    	ModuleDelegate md = CustomProjectInEarWorkaroundUtil.getCustomProjectSafeModuleDelegate(mod);
+    	try {
+    		// On this safe impl, the resource should NOT be found
+    		IModuleResource sar = getResourceAtPath(md.members(), new Path("lib/sar1k.sar"));
+    		assertNull(sar);
+    		
+    		IModule[] children = md.getChildModules();
+    		assertTrue(children.length > 0);
+    	} catch(CoreException ce) {
+    		fail("Unable to get members for ear module: " + ce.getMessage());
+    	}
+	}
+	protected IModuleResource getResourceAtPath(IModuleResource[] resources, IPath toFind) {
+		for( int i = 0; i < resources.length; i++ ) {
+			if( resources[i].getName().equals(toFind.segment(0))) {
+				if( toFind.segmentCount() == 1)
+					return resources[i];
+				// seg count > 1
+				if( resources[i] instanceof IModuleFile)
+					return null;
+				return getResourceAtPath(((IModuleFolder)resources[i]).members(), toFind.removeFirstSegments(1));
+			}
+		}
+		return null;
+	}
+
 	
 	public void testSarInsideEarPublish()  {
 		createSarInEarAndVerify("sar1fear", "sar1h", "server2", new Path("lib").makeAbsolute());
