@@ -115,6 +115,46 @@ public class TrueZipUtil {
 	public static boolean createArchive(IPath path) {
 		return createArchive(path.removeLastSegments(1), path.lastSegment());
 	}
+	
+	/**
+	 * This method takes a parent file (however configured, as jar or not)
+	 * and appends one path segment at a time, treating each one as a simple
+	 * file or folder.  When reaching the last segment, it treats this last 
+	 * one as an archive. 
+	 * 
+	 * @param parentFile
+	 * @param path
+	 * @return
+	 */
+	public static boolean createArchive(java.io.File parentFile, IPath relative) {
+		de.schlichtherle.io.File archive = getRelativeArchiveFile(parentFile, relative);
+		boolean b = archive.mkdirs();
+	    return b && updateParentTimestamps(archive);
+	}
+	
+	public static de.schlichtherle.io.File getRelativeArchiveFile(java.io.File parentFile, IPath relative) {
+		de.schlichtherle.io.File working = null;
+		if( parentFile instanceof de.schlichtherle.io.File)
+			working = (de.schlichtherle.io.File)parentFile;
+		else
+			working = new de.schlichtherle.io.File(parentFile);
+
+		// IF the path is 0 length, just return now
+		if( relative.segmentCount() == 0)
+			return working;
+		
+		// the path of the final file's parent relative to the passed in root
+		IPath finalFileRelativeLocationPath = relative.removeLastSegments(1);
+		// the parent of the object to be returned
+		de.schlichtherle.io.File finalFileLocation = getFileInArchive(working, finalFileRelativeLocationPath);
+		
+		de.schlichtherle.io.File retval = new de.schlichtherle.io.File(finalFileLocation, 
+				relative.lastSegment(), getJarArchiveDetector());
+		return retval;
+	}
+	
+	
+	
 	public static void umount() {
 		try {
 			de.schlichtherle.io.File.umount();
@@ -186,5 +226,13 @@ public class TrueZipUtil {
 	    return dir.delete();
 	}
 
+	public static de.schlichtherle.io.File getFileInArchive(de.schlichtherle.io.File root, IPath relative) {
+		while(relative.segmentCount() > 0 ) {
+			root = new de.schlichtherle.io.File(root, 
+					relative.segment(0), ArchiveDetector.NULL);
+			relative = relative.removeFirstSegments(1);
+		}
+		return root;
+	}
 	
 }
