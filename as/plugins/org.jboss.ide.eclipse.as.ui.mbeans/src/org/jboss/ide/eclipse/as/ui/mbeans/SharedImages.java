@@ -34,6 +34,8 @@ import org.osgi.framework.Bundle;
  */
 public class SharedImages {
 	public static final String IMG_MBEAN = "mbean16"; //$NON-NLS-1$
+	public static final String IMG_SAR_16 = "sar16"; //$NON-NLS-1$
+	public static final String IMG_SAR_64 = "sar64"; //$NON-NLS-1$
 
 	private static SharedImages instance;
 	
@@ -46,7 +48,9 @@ public class SharedImages {
 		
 		
 		Bundle pluginBundle = Activator.getDefault().getBundle();
-		descriptors.put(IMG_MBEAN, createImageDescriptor(pluginBundle, "icons/mbean16")); //$NON-NLS-1$
+		descriptors.put(IMG_MBEAN, createImageDescriptor(pluginBundle, "icons/mbean16.gif")); //$NON-NLS-1$
+		descriptors.put(IMG_SAR_16, createImageDescriptor(pluginBundle, "icons/sar16.gif")); //$NON-NLS-1$
+		descriptors.put(IMG_SAR_64, createImageDescriptor(pluginBundle, "icons/sar64.gif")); //$NON-NLS-1$
 		
 		Iterator<String> iter = descriptors.keySet().iterator();
 

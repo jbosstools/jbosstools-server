@@ -14,7 +14,15 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jst.j2ee.application.internal.operations.AddReferenceToEnterpriseApplicationDataModelProvider;
+import org.eclipse.jst.server.core.internal.JavaServerPlugin;
+import org.eclipse.jst.server.core.internal.RuntimeClasspathContainer;
+import org.eclipse.jst.server.core.internal.RuntimeClasspathProviderWrapper;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IAddReferenceDataModelProperties;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualReference;
@@ -24,12 +32,14 @@ import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.internal.utils.ProjectRuntimeUtil;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
@@ -195,45 +205,81 @@ public class JBossSarProjectCreationTest extends TestCase {
 		}	
 
 	}
+	
 	// This test will fail so it is commented
 	// Need to implement something like J2EEFacetRuntimeChangedDelegate
 	// See also: ProjectRuntimeTest
-//	public void testProjectRuntimeModifyingClasspath() {
-//		try {
-//			// runtime part
-//			IServer s = ServerCreationTestUtils.createMockServerWithRuntime(IJBossToolingConstants.SERVER_AS_60, "server1");
-//			assertNotNull(s);
-//			assertEquals("server1", s.getName());
-//			IRuntime rt = s.getRuntime();
-//			assertNotNull(rt);
-//			
-//			IDataModel sar1Model = CreateProjectOperationsUtility.getSarDataModel("sar1c", 
-//					null,null, null, JavaEEFacetConstants.SAR_1);
-//			
-//	    	OperationTestCase.runAndVerify(sar1Model);
-//	    	JobUtils.waitForIdle(1000);
-//	    	
-//	    	IProject sar = ResourcesPlugin.getWorkspace().getRoot().getProject("sar1c");
-//			try {
-//				IJavaProject jp = JavaCore.create(sar);
-//				IClasspathEntry[] raw1 = jp.getRawClasspath();
-//				
-//				ProjectRuntimeUtil.setTargetRuntime(rt, sar);
-//				raw1 = jp.getRawClasspath();
-//				
-//				ProjectRuntimeUtil.clearRuntime(sar);
-//				raw1 = jp.getRawClasspath();
-//				
-//				System.out.println("done");
-//			} catch( JavaModelException jme ) {
-//				jme.printStackTrace();
-//				fail(jme.getMessage());
-//			} catch( CoreException ce ) {
-//				ce.printStackTrace();
-//				fail(ce.getMessage());
-//			}
-//		} catch(Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
+	public void testProjectRuntimeModifyingClasspath() {
+		try {
+			// runtime part
+			IServer s = ServerCreationTestUtils.createMockServerWithRuntime(IJBossToolingConstants.SERVER_AS_60, "server1");
+			assertNotNull(s);
+			assertEquals("server1", s.getName());
+			IRuntime rt = s.getRuntime();
+			assertNotNull(rt);
+			IRuntime rt2 = RuntimeUtils.createRuntime(rt.getRuntimeType().getId(),
+					rt.getName() + "v2",
+					rt.getLocation().toOSString(), "default", JavaRuntime.getDefaultVMInstall());
+			
+			IDataModel sar1Model = CreateProjectOperationsUtility.getSarDataModel("sar1c", 
+					null,null, null, JavaEEFacetConstants.SAR_1);
+			
+	    	OperationTestCase.runAndVerify(sar1Model);
+	    	JobUtils.waitForIdle(1000);
+	    	
+	    	IProject sar = ResourcesPlugin.getWorkspace().getRoot().getProject("sar1c");
+			try {
+				IJavaProject jp = JavaCore.create(sar);
+				IClasspathEntry[] raw1 = jp.getRawClasspath();
+				assertEquals(raw1.length, 2);
+				
+				ProjectRuntimeUtil.setTargetRuntime(rt, sar);
+				raw1 = jp.getRawClasspath();
+				assertEquals(raw1.length, 3);
+				IPath desiredEntry = getContainerPathForRuntime(rt);
+				boolean found = false;
+				for( int i = 0; i < raw1.length; i++ ) {
+					if( raw1[i].getPath().equals(desiredEntry)) {
+						found = true;
+						break;
+					}
+				}
+				assertTrue(found);
+				
+				ProjectRuntimeUtil.setTargetRuntime(rt2, sar);
+				raw1 = jp.getRawClasspath();
+				desiredEntry = getContainerPathForRuntime(rt2);
+				assertEquals(raw1.length, 3);
+				found = false;
+				for( int i = 0; i < raw1.length; i++ ) {
+					if( raw1[i].getPath().equals(desiredEntry)) {
+						found = true;
+						break;
+					}
+				}
+				assertTrue(found);
+				
+				ProjectRuntimeUtil.clearRuntime(sar);
+				raw1 = jp.getRawClasspath();
+				assertEquals(raw1.length, 2);
+				
+				System.out.println("done");
+			} catch( JavaModelException jme ) {
+				jme.printStackTrace();
+				fail(jme.getMessage());
+			} catch( CoreException ce ) {
+				ce.printStackTrace();
+				fail(ce.getMessage());
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	protected IPath getContainerPathForRuntime(IRuntime rt) {
+		RuntimeClasspathProviderWrapper rcpw = JavaServerPlugin.findRuntimeClasspathProvider(rt.getRuntimeType());
+		IPath serverContainerPath = new Path(RuntimeClasspathContainer.SERVER_CONTAINER)
+			.append(rcpw.getId()).append(rt.getId());
+		return serverContainerPath;
+	}
 }

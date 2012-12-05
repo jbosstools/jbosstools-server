@@ -63,13 +63,19 @@ public class RuntimeUtils {
 		return jbossRuntime;
 	}
 	
-	public static IRuntime createRuntime(String runtimeId, String homeDir,
+	public static IRuntime createRuntime(String runtimeTypeId, String homeDir,
 			String config, IVMInstall install) throws CoreException {
-		IRuntimeType[] runtimeTypes = ServerUtil.getRuntimeTypes(null, null,runtimeId);
+		return createRuntime(runtimeTypeId, runtimeTypeId, homeDir, config, install);
+	}
+	
+	public static IRuntime createRuntime(String runtimeTypeId, String name, String homeDir,
+			String config, IVMInstall install) throws CoreException {
+
+		IRuntimeType[] runtimeTypes = ServerUtil.getRuntimeTypes(null, null,runtimeTypeId);
 		IRuntimeType runtimeType = runtimeTypes[0];
 		IRuntimeWorkingCopy runtimeWC = runtimeType.createRuntime(null,
 				new NullProgressMonitor());
-		runtimeWC.setName(runtimeId);
+		runtimeWC.setName(name);
 		runtimeWC.setLocation(new Path(homeDir));
 		((RuntimeWorkingCopy) runtimeWC).setAttribute(
 				IJBossServerRuntime.PROPERTY_VM_ID, install.getId());
