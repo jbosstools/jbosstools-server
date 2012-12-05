@@ -22,8 +22,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
-import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
-import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.ui.AbstractFacetWizardPage;
 import org.eclipse.wst.common.project.facet.ui.IFacetWizardPage;
 import org.jboss.ide.eclipse.as.ui.mbeans.Messages;
@@ -34,10 +32,6 @@ public class SARFacetInstallationPage extends AbstractFacetWizardPage implements
 	private Text contentFolder;
 	private Label contentRootLabel;
 	private IDataModel model;
-	private boolean hasValidContentFolder = true;
-	private IFacetedProjectListener fpListerner;
-	private IFacetedProjectWorkingCopy fpwc;
-	
 	public SARFacetInstallationPage() {
 		super( "esb.facet.install.page"); //$NON-NLS-1$
 		setTitle(Messages.NewSarProject_FacetInstallationPage);
@@ -56,7 +50,6 @@ public class SARFacetInstallationPage extends AbstractFacetWizardPage implements
 	private void changePageStatus(){
 		if(!validFolderName(contentFolder.getText())){
 			setErrorMessage(Messages.NewSarProject_FacetInstallationPage_ContentRootError);
-			hasValidContentFolder = false;
 			setPageComplete(isPageComplete());
 		}
 	}
@@ -68,7 +61,6 @@ public class SARFacetInstallationPage extends AbstractFacetWizardPage implements
 
 	
 	protected Composite createTopLevelComposite(Composite parent) {
-		//setInfopopID(IWstWebUIContextIds.NEW_STATIC_WEB_PROJECT_PAGE3);
 		final Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new GridLayout(1, false));
 		createProjectGroup(composite);

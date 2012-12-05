@@ -17,12 +17,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.IWizardPage;
-import org.eclipse.jst.server.core.internal.JavaServerPlugin;
-import org.eclipse.jst.server.core.internal.RuntimeClasspathContainer;
-import org.eclipse.jst.server.core.internal.RuntimeClasspathProviderWrapper;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
@@ -32,12 +28,13 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
-import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.web.ui.internal.wizards.NewProjectDataModelFacetWizard;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.ui.mbeans.Messages;
 import org.jboss.ide.eclipse.as.ui.mbeans.SharedImages;
 import org.jboss.ide.eclipse.as.ui.mbeans.project.IJBossSARFacetDataModelProperties;
 import org.jboss.ide.eclipse.as.ui.mbeans.project.JBossSARFacetProjectCreationDataModelProvider;
+import org.jboss.ide.eclipse.as.ui.mbeans.project.SarProjectRuntimeChangedDelegate;
 import org.jboss.ide.eclipse.as.wtp.core.vcf.VCFClasspathCommand;
 
 public class SARProjectWizard extends NewProjectDataModelFacetWizard implements
@@ -47,13 +44,13 @@ public class SARProjectWizard extends NewProjectDataModelFacetWizard implements
 		super();
 		Set<IProjectFacetVersion> current = getFacetedProjectWorkingCopy().getProjectFacets();
 		getFacetedProjectWorkingCopy().setProjectFacets(current);
-		setWindowTitle("New Sar Project");
+		setWindowTitle(Messages.NewSarProject_FirstPageTitle);
 		setDefaultPageImageDescriptor(SharedImages.getImageDescriptor(SharedImages.IMG_SAR_64));
 	}
 
 	public SARProjectWizard(IDataModel model) {
 		super(model);
-		setWindowTitle("New Sar Project");
+		setWindowTitle(Messages.NewSarProject_FirstPageTitle);
 		setDefaultPageImageDescriptor(SharedImages.getImageDescriptor(SharedImages.IMG_SAR_64));
 		
 	}
@@ -63,12 +60,9 @@ public class SARProjectWizard extends NewProjectDataModelFacetWizard implements
 		return DataModelFactory.createDataModel(new JBossSARFacetProjectCreationDataModelProvider());
 	}
 
-    private IFacetedProjectWorkingCopy fpjwc;
-    
     @Override
     public void setFacetedProjectWorkingCopy( final IFacetedProjectWorkingCopy fpjwc ) {
 		super.setFacetedProjectWorkingCopy(fpjwc);
-        this.fpjwc = fpjwc;
     }
 
 	@Override
@@ -101,14 +95,8 @@ public class SARProjectWizard extends NewProjectDataModelFacetWizard implements
 			}
 		}
 		if(runtime != null) {
-			org.eclipse.wst.server.core.IRuntime serverRuntime = ServerCore.findRuntime(runtime.getName());
-			RuntimeClasspathProviderWrapper rcpw = JavaServerPlugin.findRuntimeClasspathProvider(serverRuntime.getRuntimeType());
-			IPath serverContainerPath = new Path(RuntimeClasspathContainer.SERVER_CONTAINER)
-				.append(rcpw.getId()).append(serverRuntime.getId());
+			IPath serverContainerPath = SarProjectRuntimeChangedDelegate.getContainerPath(runtime);
 			VCFClasspathCommand.addContainerClasspathEntry(project, serverContainerPath);
 		}
 	}
-	
-	
-
 }

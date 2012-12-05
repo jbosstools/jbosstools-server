@@ -262,8 +262,6 @@ public class JBossSarProjectCreationTest extends TestCase {
 				ProjectRuntimeUtil.clearRuntime(sar);
 				raw1 = jp.getRawClasspath();
 				assertEquals(raw1.length, 2);
-				
-				System.out.println("done");
 			} catch( JavaModelException jme ) {
 				jme.printStackTrace();
 				fail(jme.getMessage());
