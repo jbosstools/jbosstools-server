@@ -30,7 +30,8 @@ import org.jboss.ide.eclipse.as.wtp.core.modules.JBTFlatProjectModuleFactory;
 public class JBossSARModuleFactory extends JBTFlatProjectModuleFactory {
 	public static final String FACTORY_ID = "org.jboss.ide.eclipse.as.core.modules.sar.moduleFactory"; //$NON-NLS-1$
 	public static final String MODULE_TYPE = IJBossSARFacetDataModelProperties.JBOSS_SAR_FACET_ID;
-
+	public static final String V1_0 = "1.0"; //$NON-NLS-1$
+	
 	public String getFactoryId() {
 		return FACTORY_ID;
 	}
@@ -77,7 +78,7 @@ public class JBossSARModuleFactory extends JBTFlatProjectModuleFactory {
 
 	@Override
 	protected String getModuleVersion(IProject project) {
-		return "1.0"; //$NON-NLS-1$
+		return V1_0;
 	}
 
 	@Override

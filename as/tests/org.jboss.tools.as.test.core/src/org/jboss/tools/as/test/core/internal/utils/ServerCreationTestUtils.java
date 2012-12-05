@@ -139,7 +139,7 @@ public class ServerCreationTestUtils extends Assert {
 		if( f != null ) {
 			IServerType type = ServerCore.findServerType(serverType);
 			if( ServerUtil.isJBoss7(type)) {
-				return createJBoss7IServer(f.getAbsolutePath(), name);
+				return createJBoss7IServer(type, f.getAbsolutePath(), name);
 			}
 			return createServer(serverType, f.getAbsolutePath(), "default", name);
 		}
@@ -222,9 +222,9 @@ public class ServerCreationTestUtils extends Assert {
 		wc.setAttribute(Server.PROP_AUTO_PUBLISH_SETTING, Server.AUTO_PUBLISH_DISABLE);
 		return wc.save(true, new NullProgressMonitor());
 	}
-	private static IServer createJBoss7IServer(String rtLoc, String name) throws CoreException {
-		IRuntime runtime = RuntimeUtils.createRuntime(IJBossToolingConstants.AS_70, rtLoc, null);
-		IServerType serverType = ServerCore.findServerType(IJBossToolingConstants.SERVER_AS_70);
+	
+	private static IServer createJBoss7IServer(IServerType serverType, String rtLoc, String name) throws CoreException {
+		IRuntime runtime = RuntimeUtils.createRuntime(serverType.getRuntimeType().getId(), rtLoc, null);
 		IServerWorkingCopy swc = ServerCreationUtils.createServerWorkingCopy(runtime, serverType, name, "local");
 		swc.setServerConfiguration(null);
 		swc.setAttribute(Server.PROP_AUTO_PUBLISH_SETTING, Server.AUTO_PUBLISH_DISABLE);

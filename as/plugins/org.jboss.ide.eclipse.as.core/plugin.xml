@@ -252,7 +252,6 @@
           <moduleType types="jboss.singlefile" versions="1.0"/>
           <moduleType types="jst.jboss.esb" versions="4.2,4.3,4.4"/>
           <moduleType types="jst.jboss.sar" versions="1.0"/>
-          <moduleType types="jst.jboss.sar" versions="1.0"/>
       </runtimeType>
       <runtimeType
              vendor="%providerName"

@@ -16,7 +16,6 @@ import java.util.Set;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jst.common.project.facet.core.JavaFacet;
-import org.eclipse.jst.j2ee.internal.plugin.J2EEUIPlugin;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
@@ -24,6 +23,7 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.web.ui.internal.wizards.DataModelFacetCreationWizardPage;
+import org.jboss.ide.eclipse.as.ui.mbeans.Activator;
 import org.jboss.ide.eclipse.as.ui.mbeans.project.IJBossSARFacetDataModelProperties;
 
 public class SARProjectFirstPage extends DataModelFacetCreationWizardPage {
@@ -54,7 +54,7 @@ public class SARProjectFirstPage extends DataModelFacetCreationWizardPage {
 	
 	@Override
 	protected IDialogSettings getDialogSettings() {
-        return J2EEUIPlugin.getDefault().getDialogSettings();
+        return Activator.getDefault().getDialogSettings();
     }
 	
 	
@@ -68,8 +68,6 @@ public class SARProjectFirstPage extends DataModelFacetCreationWizardPage {
 				config.add(primaryFacetVersion);
 			} else if (fixedFacet == JavaFacet.FACET) {
 				config.add(JavaFacet.VERSION_1_6);
-//				IProjectFacetVersion v = getDefaultJavaVersion();
-//				config.add(getDefaultJavaVersion());
 			} else {
 				config.add(fpjwc.getHighestAvailableVersion(fixedFacet));
 			}

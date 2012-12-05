@@ -20,7 +20,6 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 public class JBossSARFacetProjectCreationDataModelProvider extends
 		FacetProjectCreationDataModelProvider {
 
-
 	public void init() {
 		super.init();
 
@@ -32,17 +31,10 @@ public class JBossSARFacetProjectCreationDataModelProvider extends
 		map.add(sarFacet);
 		String sarSrc = sarFacet.getStringProperty(IJBossSARFacetDataModelProperties.SAR_SOURCE_FOLDER);
 		javaFacet.setProperty(IJavaFacetInstallDataModelProperties.SOURCE_FOLDER_NAME, sarSrc);
-        
 	}
 
-
-	
 	@Override
 	public IStatus validate(String propertyName) {
-		 
 		return super.validate(propertyName);
 	}
-
-	
-	
 }
