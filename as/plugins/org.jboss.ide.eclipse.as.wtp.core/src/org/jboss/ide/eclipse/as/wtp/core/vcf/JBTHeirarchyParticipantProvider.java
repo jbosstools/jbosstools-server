@@ -5,6 +5,8 @@ import java.util.Properties;
 import org.eclipse.jst.j2ee.componentcore.J2EEModuleVirtualArchiveComponent;
 import org.eclipse.jst.j2ee.componentcore.J2EEModuleVirtualComponent;
 import org.eclipse.jst.j2ee.componentcore.util.EARVirtualComponent;
+import org.eclipse.jst.j2ee.project.JavaEEProjectUtilities;
+import org.eclipse.jst.j2ee.project.facet.IJ2EEFacetConstants;
 import org.eclipse.wst.common.componentcore.internal.flat.AbstractFlattenParticipant;
 import org.eclipse.wst.common.componentcore.internal.flat.FlatVirtualComponent.FlatComponentTaskModel;
 import org.eclipse.wst.common.componentcore.internal.flat.IFlattenParticipant;
@@ -14,11 +16,16 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 
 public class JBTHeirarchyParticipantProvider implements IFlattenParticipantProvider {
 	public static final String JBT_PROJ_IN_EAR_PARTICIPANT_ID = "jbtProjectInEarHeirarchyParticipant";
+	public static final String NESTED_UTILITIES_HEIRARCHY_PARTICIPANT_ID = "allowNestedUtilitiesHeirarchyParticipant";
+	
 	public JBTHeirarchyParticipantProvider() {
 	}
 	public IFlattenParticipant findParticipant(String id, Properties properties) {
 		if( JBT_PROJ_IN_EAR_PARTICIPANT_ID.equals(id)) {
 			return new JBTHeirarchyParticipant();
+		}
+		if( NESTED_UTILITIES_HEIRARCHY_PARTICIPANT_ID.equals(id)) {
+			return new NestedUtilitiesHeirarchyParticipant();
 		}
 		return null;
 	}
@@ -36,6 +43,26 @@ public class JBTHeirarchyParticipantProvider implements IFlattenParticipantProvi
 			return tmp instanceof J2EEModuleVirtualComponent 
 				|| tmp instanceof J2EEModuleVirtualArchiveComponent 
 				|| tmp instanceof EARVirtualComponent;
+		}
+	}
+
+	public static class NestedUtilitiesHeirarchyParticipant extends AbstractFlattenParticipant {
+		public boolean isChildModule(IVirtualComponent rootComponent,
+				IVirtualReference referenced, FlatComponentTaskModel dataModel) {
+			if( (rootComponent instanceof JBTVirtualComponent) && 
+					isUtilityProject(referenced.getReferencedComponent())) {
+				return true;
+			}
+			return false;
+		}
+		private boolean isUtilityProject(IVirtualComponent component) {
+			IVirtualComponent tmp = component.getComponent();
+			if( tmp instanceof J2EEModuleVirtualComponent ) {
+				String childType = JavaEEProjectUtilities.getJ2EEComponentType(tmp);
+				if( IJ2EEFacetConstants.UTILITY.equals(childType))
+					return true;
+			}
+			return false;
 		}
 	}
 }

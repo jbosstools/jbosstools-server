@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
@@ -241,23 +242,38 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 		}
 	}
 	protected IStatus[] fullPublish(IServer server, String deployRoot, IModule[] module) {
+		return fullPublish(server, deployRoot, module, null);
+	}
+	protected IStatus[] fullPublish(IServer server, String deployRoot, IModule[] module, File parent) {
+
 		ArrayList<IStatus> results = new ArrayList<IStatus>();
 		try {
 			IPath path = getOutputFilePath(module);
 			// Get rid of the old
-			FileUtil.safeDelete(path.toFile(), null);
+			if( module.length == 1 )
+				FileUtil.safeDelete(path.toFile(), null);
 			
-			TrueZipUtil.createArchive(path);
-			de.schlichtherle.io.File root = TrueZipUtil.getFile(path, TrueZipUtil.getJarArchiveDetector());
+			de.schlichtherle.io.File moduleRoot = null;
+			if( parent == null ) {
+				boolean createWorked = TrueZipUtil.createArchive(path);
+				moduleRoot = TrueZipUtil.getFile(path, TrueZipUtil.getJarArchiveDetector());
+			} else {
+				// BE BETTER
+				IPath parentPath = new Path(parent.getAbsolutePath());
+				IPath addition = path.removeFirstSegments(parentPath.segmentCount());
+				TrueZipUtil.createArchive(parent,addition);
+				moduleRoot = TrueZipUtil.getRelativeArchiveFile(parent, addition);
+			}
+			
 			IModuleResource[] resources = getResources(module);
 			IDeployableServerBehaviour beh = ServerConverter.getDeployableServerBehavior(server);
 			IModulePathFilter filter = beh.getPathFilter(module);
 			IModuleResource[] resources2 = filter == null ? resources : filter.getFilteredMembers();
-			IStatus[] copyResults = copy(root, resources2);
+			IStatus[] copyResults = copy(moduleRoot, resources2);
 			results.addAll(Arrays.asList(copyResults));
 			
 			IModule[] children = server.getChildModules(module, new NullProgressMonitor());
-			publishChildren(server, deployRoot, module, results, children);
+			publishChildren(server, deployRoot, module, results, children, moduleRoot);
 			TrueZipUtil.umount();
 			hasBeenChanged = true;
 			return (IStatus[]) results.toArray(new IStatus[results.size()]);
@@ -268,8 +284,8 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 	}
 
 
-	private void publishChildren(IServer server, String deployRoot, IModule[] module, ArrayList<IStatus> results,
-			IModule[] children) {
+	private void publishChildren(IServer server, String deployRoot, IModule[] module, 
+			ArrayList<IStatus> results, IModule[] children, File parentModule) {
 		if( children == null )
 			return;
 		
@@ -277,7 +293,7 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 			if( ServerModelUtilities.isBinaryModule(children[i]))
 				results.addAll(Arrays.asList(fullBinaryPublish(server, deployRoot, module, children[i])));
 			else
-				results.addAll(Arrays.asList(fullPublish(server, deployRoot, combine(module, children[i]))));
+				results.addAll(Arrays.asList(fullPublish(server, deployRoot, combine(module, children[i]), parentModule)));
 		}
 	}
 	
@@ -366,12 +382,7 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 	}
 	
 	protected de.schlichtherle.io.File getFileInArchive(de.schlichtherle.io.File root, IPath relative) {
-		while(relative.segmentCount() > 0 ) {
-			root = new de.schlichtherle.io.File(root, 
-					relative.segment(0), ArchiveDetector.NULL);
-			relative = relative.removeFirstSegments(1);
-		}
-		return root;
+		return TrueZipUtil.getFileInArchive(root, relative);
 	}
 
 	public static IModule[] combine(IModule[] module, IModule newMod) {

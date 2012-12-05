@@ -18,12 +18,14 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jst.common.internal.modulecore.AddMappedOutputFoldersParticipant;
 import org.eclipse.jst.common.internal.modulecore.IgnoreJavaInSourceFolderParticipant;
 import org.eclipse.jst.j2ee.internal.common.exportmodel.JEEHeirarchyExportParticipant;
+import org.eclipse.wst.common.componentcore.internal.flat.FlattenParticipantModel;
 import org.eclipse.wst.common.componentcore.internal.flat.IFlattenParticipant;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
 import org.jboss.ide.eclipse.as.wtp.core.modules.JBTFlatModuleDelegate;
 import org.jboss.ide.eclipse.as.wtp.core.modules.JBTFlatProjectModuleFactory;
+import org.jboss.ide.eclipse.as.wtp.core.vcf.JBTHeirarchyParticipantProvider;
 
 public class JBossSARModuleDelegate extends JBTFlatModuleDelegate implements IJBTModule {
 
@@ -38,7 +40,11 @@ public class JBossSARModuleDelegate extends JBTFlatModuleDelegate implements IJB
 	
 	@Override
 	public IFlattenParticipant[] getParticipants() {
+		IFlattenParticipant nestedUtils = 
+				FlattenParticipantModel.getDefault().getParticipant(
+				JBTHeirarchyParticipantProvider.NESTED_UTILITIES_HEIRARCHY_PARTICIPANT_ID);
 		List<IFlattenParticipant> participants = new ArrayList<IFlattenParticipant>();
+		participants.add(nestedUtils);
 		participants.add(new JEEHeirarchyExportParticipant());
 		participants.add(new AddMappedOutputFoldersParticipant());
 		participants.add(new IgnoreJavaInSourceFolderParticipant());
