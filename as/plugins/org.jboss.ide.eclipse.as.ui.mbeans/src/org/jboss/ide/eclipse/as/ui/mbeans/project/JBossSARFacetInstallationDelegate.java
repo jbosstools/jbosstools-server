@@ -108,7 +108,7 @@ public class JBossSARFacetInstallationDelegate implements IDelegate {
 		String strContentFolder = model.getStringProperty(IJBossSARFacetDataModelProperties.SAR_CONTENT_FOLDER);
 		project.setPersistentProperty(IJBossSARFacetDataModelProperties.QNAME_SAR_CONTENT_FOLDER, strContentFolder);
 		
-		String qualifier = JBossServerCorePlugin.getDefault().getDescriptor().getUniqueIdentifier();
+		String qualifier = JBossServerCorePlugin.getDefault().getBundle().getSymbolicName();
 		IScopeContext context = new ProjectScope(project);
 		IEclipsePreferences node = context.getNode(qualifier);
 		if (node != null)

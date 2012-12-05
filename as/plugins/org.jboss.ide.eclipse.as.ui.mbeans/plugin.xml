@@ -52,23 +52,6 @@
             point="org.jboss.ide.eclipse.as.ui.mbeans.ServiceXMLOutlineMenuProvider">
          <MenuProvider class="org.jboss.ide.eclipse.as.ui.mbeans.editors.proposals.internal.ConvertNodeToXPathDialogOutlineMenuItemProvider"/>
       </extension>
-
-<!--   <extension
-         point="org.eclipse.ui.popupMenus">
-      <viewerContribution
-            id="org.jboss.ide.eclipse.packages.ui.jbossContribution"
-            targetID="org.jboss.ide.eclipse.packages.ui.newPackageMenu">
-         <action
-               class="org.jboss.ide.eclipse.as.ui.mbeans.packages.NewSARAction"
-               icon="icons/sar.gif"
-               id="org.jboss.ide.eclipse.packages.ui.newSARAction"
-               label="SAR"
-               menubarPath="additions"
-               style="push"/>
-      </viewerContribution>
-   </extension>-->
-   
-   
    
       <extension
          point="org.eclipse.ui.newWizards">
@@ -78,7 +61,7 @@
       <wizard
             category="org.jboss.ide.eclipse.as.ui.MBeanComponentsCategory"
             class="org.jboss.ide.eclipse.as.ui.mbeans.wizards.NewMBeanWizard"
-            icon="icons/mbean16.gif"
+            icon="$nl$/icons/mbean16.gif"
             id="org.jboss.ide.eclipse.as.ui.MBeanComponents"
             name="MBean Stubs"
             project="false">
@@ -91,13 +74,13 @@
    
    <extension point="org.eclipse.ui.newWizards">
       <wizard
-            icon="icons/ctool16/newclass_wiz.gif"
+            icon="$nl$/icons/ctool16/newclass_wiz.gif"
             class="org.jboss.ide.eclipse.as.ui.mbeans.wizards.NewSessionBeanWizard"
             category="org.eclipse.jst.ejb.ui"
             name="EJB3 Session Bean"
             id="org.jboss.ide.eclipse.ejb3.wizards.ui.NewSessionBeanWizard"/>
       <wizard
-            icon="icons/ctool16/newclass_wiz.gif"
+            icon="$nl$/icons/ctool16/newclass_wiz.gif"
             class="org.jboss.ide.eclipse.as.ui.mbeans.wizards.NewMessageDrivenBeanWizard"
             category="org.eclipse.jst.ejb.ui"
             name="EJB3 Message Driven Bean"
@@ -158,6 +141,14 @@
                facet="jst.jboss.sar">
          </fixed>
       </template>
+      <event-handler
+            facet="jst.jboss.sar"
+            type="RUNTIME_CHANGED"
+            version="1.0">
+         <delegate
+               class="org.jboss.ide.eclipse.as.ui.mbeans.project.SarProjectRuntimeChangedDelegate">
+         </delegate>
+      </event-handler>
    </extension>
        <extension
           point="org.eclipse.wst.server.core.moduleTypes">
@@ -208,7 +199,7 @@
       <wizard
             category="org.jboss.ide.eclipse.as.ui.MBeanComponentsCategory"
             class="org.jboss.ide.eclipse.as.ui.mbeans.project.ui.SARProjectWizard"
-            icon="$nl$/icons/sar.gif"
+            icon="$nl$/icons/sar16.gif"
             id="JBoss.SAR.Project.Wizard"
             name="SAR Project"
             project="true">
@@ -227,7 +218,7 @@
    <extension
          point="org.eclipse.wst.server.ui.serverImages">
       <image
-            icon="icons/sar.gif"
+            icon="$nl$/icons/sar16.gif"
             id="org.jboss.ide.eclipse.as.ui.mbeans.sar.module"
             typeIds="jst.jboss.sar"/>
    </extension>

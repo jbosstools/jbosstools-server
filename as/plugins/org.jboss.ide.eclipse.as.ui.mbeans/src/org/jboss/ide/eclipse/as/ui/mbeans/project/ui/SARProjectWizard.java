@@ -24,8 +24,6 @@ import org.eclipse.jst.server.core.internal.JavaServerPlugin;
 import org.eclipse.jst.server.core.internal.RuntimeClasspathContainer;
 import org.eclipse.jst.server.core.internal.RuntimeClasspathProviderWrapper;
 import org.eclipse.ui.INewWizard;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
@@ -37,6 +35,7 @@ import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.web.ui.internal.wizards.NewProjectDataModelFacetWizard;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.ui.mbeans.SharedImages;
 import org.jboss.ide.eclipse.as.ui.mbeans.project.IJBossSARFacetDataModelProperties;
 import org.jboss.ide.eclipse.as.ui.mbeans.project.JBossSARFacetProjectCreationDataModelProvider;
 import org.jboss.ide.eclipse.as.wtp.core.vcf.VCFClasspathCommand;
@@ -47,20 +46,15 @@ public class SARProjectWizard extends NewProjectDataModelFacetWizard implements
 	public SARProjectWizard() {
 		super();
 		Set<IProjectFacetVersion> current = getFacetedProjectWorkingCopy().getProjectFacets();
-//		getFacetedProjectWorkingCopy().addListener(new IFacetedProjectListener(){
-//			public void handleEvent(IFacetedProjectEvent event) {
-//				System.out.println("runtime changed" + event.getWorkingCopy().getPrimaryRuntime().getName());
-//			}}, IFacetedProjectEvent.Type.PRIMARY_RUNTIME_CHANGED);
-		IRuntime rt = getFacetedProjectWorkingCopy().getPrimaryRuntime();
 		getFacetedProjectWorkingCopy().setProjectFacets(current);
 		setWindowTitle("New Sar Project");
-		//setDefaultPageImageDescriptor(ESBSharedImages.getImageDescriptor(ESBSharedImages.WIZARD_NEW_PROJECT));
+		setDefaultPageImageDescriptor(SharedImages.getImageDescriptor(SharedImages.IMG_SAR_64));
 	}
 
 	public SARProjectWizard(IDataModel model) {
 		super(model);
 		setWindowTitle("New Sar Project");
-		//setDefaultPageImageDescriptor(ESBSharedImages.getImageDescriptor(ESBSharedImages.WIZARD_NEW_PROJECT));
+		setDefaultPageImageDescriptor(SharedImages.getImageDescriptor(SharedImages.IMG_SAR_64));
 		
 	}
 
@@ -84,7 +78,7 @@ public class SARProjectWizard extends NewProjectDataModelFacetWizard implements
 
 	@Override
 	protected ImageDescriptor getDefaultPageImageDescriptor() {
-		return null; //ESBSharedImages.getImageDescriptor(ESBSharedImages.WIZARD_NEW_PROJECT);
+		return SharedImages.getImageDescriptor(SharedImages.IMG_SAR_64);
 	}
 
 	@Override
@@ -97,31 +91,22 @@ public class SARProjectWizard extends NewProjectDataModelFacetWizard implements
 		super.postPerformFinish();
 		String prjName = this.getProjectName();
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(prjName);
-		if(!project.exists()) return;
-		
-		try {
-			String esbcontent = project.getPersistentProperty(IJBossSARFacetDataModelProperties.QNAME_SAR_CONTENT_FOLDER);
-			IPath esbPath = new Path(esbcontent).append(IJBossSARFacetDataModelProperties.META_INF);
-			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-			
-			// Add the server runtime as well
-			IFacetedProject fp = ProjectFacetsManager.create(project);
-			IRuntime runtime = fp.getPrimaryRuntime();
-			
-			if(runtime == null) return;
-			
-			// TODO move this into the facet installation 
-			String name = runtime.getName();
-			org.eclipse.wst.server.core.IRuntime serverRuntime = ServerCore.findRuntime(name);
+		IRuntime runtime = null;
+		if(project.exists()) {
+			try {
+				IFacetedProject fp = ProjectFacetsManager.create(project);
+				runtime = fp.getPrimaryRuntime();
+			} catch (CoreException e) {
+				JBossServerCorePlugin.getDefault().getLog().log(e.getStatus());
+			}
+		}
+		if(runtime != null) {
+			org.eclipse.wst.server.core.IRuntime serverRuntime = ServerCore.findRuntime(runtime.getName());
 			RuntimeClasspathProviderWrapper rcpw = JavaServerPlugin.findRuntimeClasspathProvider(serverRuntime.getRuntimeType());
 			IPath serverContainerPath = new Path(RuntimeClasspathContainer.SERVER_CONTAINER)
 				.append(rcpw.getId()).append(serverRuntime.getId());
-			VCFClasspathCommand.addClassPath(project, serverContainerPath);
-
-		} catch (CoreException e) {
-			JBossServerCorePlugin.getDefault().getLog().log(e.getStatus());
+			VCFClasspathCommand.addContainerClasspathEntry(project, serverContainerPath);
 		}
-		
 	}
 	
 	
