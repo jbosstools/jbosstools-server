@@ -6,6 +6,20 @@
 	<simpara>
 		<revhistory>
 			<revision>
+				<revnumber>3-0</revnumber>
+				<date>Mon Dec 24 2012</date>
+				<author>
+					<firstname>Rob</firstname>
+					<surname>Stryker</surname>
+					<email>rstryker@redhat.com</email>
+				</author>
+				<revdescription>
+					<simplelist>
+						<member>Updated for JBoss Developer Studio 6.0</member>
+					</simplelist>
+				</revdescription>
+			</revision>
+			<revision>
 				<revnumber>2-0</revnumber>
 				<date>Mon Nov 26 2012</date>
 				<author>

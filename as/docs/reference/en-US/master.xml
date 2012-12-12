@@ -4,10 +4,12 @@
 
 [<!ENTITY quick_start SYSTEM "quick_start.xml">
 <!ENTITY runtimes_servers SYSTEM "runtimes_servers.xml">
+<!ENTITY editor SYSTEM "editor.xml">
 <!ENTITY perspective SYSTEM "perspective.xml">
 <!ENTITY webtools SYSTEM "webtools.xml">
 <!ENTITY modules SYSTEM "modules.xml">
 <!ENTITY tptp_support SYSTEM "tptp_support.xml">
+<!ENTITY archives SYSTEM "archives.xml">
 
 <!ENTITY seamlink "../../seam/html_single/index.html">
 <!ENTITY aslink "../../as/html_single/index.html">
@@ -67,9 +69,11 @@
     <toc/> 
     &quick_start;
     &runtimes_servers;
+    &editor;
     &perspective;
     &webtools;
     &modules;
+    &archives;
     &tptp_support;
     
 </book>    

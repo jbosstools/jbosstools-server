@@ -10,30 +10,28 @@
 			<keyword>JBoss</keyword>
 		</keywordset>
 	</chapterinfo>
-	<title>Runtimes and Servers in the JBoss AS plugin</title>
+	<title>Runtimes and Servers in JBoss AS-Tools</title>
 	
-	<para>In this chapter we will discuss how to install runtimes and servers.</para>
+	<para>In this chapter we will discuss how to install and configure JBoss runtimes and servers.</para>
 	
-	<para>
-		First of all it is necessary to mention that the JBoss AS plugin makes use of WTP. This includes starting and stopping servers in run or debug mode. It also includes targeting WTP projects, such as Dynamic Web Projects, to certain server runtimes in order to ensure that the proper JARs from a specific server are added to the project's classpath properly.
+	<para>Runtimes in JBoss Tools provide key functionality for creating, running, and debugging J2EE applications. They provide classpath entries for projects, and are instrumental in starting, stopping, and publishing to the various server adapters. In their simplest form, though, a Runtime is nothing more than a representation of key information about a server configuration which can be used to provide classpath entries or other information important for the server lifecycles. </para>
+	<para>For AS7 / EAP6 related servers, the runtime consists of a server home, a JRE compatible with the server, and the configuration file used to describe the specific details about the server. For earlier versions of JBoss Application Server, the Runtime consists of the server home and JRE, as well as a configuration folder, and a configuration name.
 	</para>
 	<para>
-		In order to get started creating, running and debugging J2EE applications, we should create our <property>runtime</property> and <property>server</property> instances.
+		In order to get started creating, running, and debugging J2EE applications, we should create our <property>runtime</property> and <property>server</property> instances.
 	</para>
 	
 	<section>
 		<title>Runtimes</title>
 		<para>
-			In <property>JBoss Tools</property>, the main purpose of Server Runtimes is to point to a server installation somewhere on disk. In our case, this will be a JBoss installation. It can then be used for two primary purposes:
+			In <property>JBoss Tools</property>, the main purpose of Server Runtimes is to point to a server installation somewhere on disk. In our case, this will be a JBoss installation. It can then be used for two primary purposes, as mentioned above:
 		</para>
 		<itemizedlist>
 			<listitem>
 				<para>Providing classpath additions to WTP projects that require them.</para>
 			</listitem>
 			<listitem>
-				<para>
-					For <property>JBoss server</property> at least, it provides the necessary information to allow the server to be started and stopped and provides information on which JARs to run and which configuration to use.
-				</para>
+				<para>Acting as the backing data for a JBoss Server, which we'll look at later.</para>
 			</listitem>
 		</itemizedlist>
 		<section id="InstNewRuntime">
@@ -77,22 +75,22 @@
 					Now there is a separation between .org servers (the <guilabel>JBoss Community</guilabel> category) and product server that comes with JBoss EAP in JBDS ( the <guilabel>JBoss Enterprise Middleware</guilabel> category).
 				</para>
 			</note>
-			
+			<!--
 			<para>
-				As you can see, <productname>JBoss Tools</productname> provide its own adapters such as JBoss 3.2, 4.0, 4.2 and 5.0 as well. The last one comes a new safer incremental deployment feature, which prevents partial deployments to be picked up by the server. It means that scanning for auto-deployment is suspended while files are being copied to the deployment location and resumed when the copy is completed.
+				<productname>JBoss Tools</productname> provide its own adapters starting from JBoss 3.2, through JBoss 7.1. Recent versions include a new safer incremental deployment feature, which prevents partial deployments from being picked up by the server. The server's deployment scanners are suspended for the duration of a publish event, until the module is fully published. At that point, the scanner is re-enabled, and your running server will pick up the changes. 
 			</para>
-			
+			-->
 			<note>
 				<title>Note:</title>
-				<para>We recommend you use a fully supported JBoss Enterprise 6.0 server adapter.</para>
+				<para>JBoss Tools provides server adapters for all versions of the JBoss Application Server and JBoss Enterprise Application Platform. We currently recommend you use a fully supported JBoss Enterprise 6.0 server adapter.</para>
 			</note>
 			
 			<para>
-				You will also note a Deploy-Only Runtime type. This type does not provide a classpath for WTP projects. It is used solely by it&apos;s server type for the purpose of setting up a deploy directory for users who do not wish to make use of starting, stopping, or debugging their projects inside Eclipse.
+				You will also note a Deploy-Only Runtime type. This type does not provide a classpath for WTP projects. It is used solely by it&apos;s server type for the purpose of setting up a simple deploy directory for users who do not wish to make use of starting, stopping, or debugging their projects inside Eclipse.
 			</para>
 			
 			<figure id="add_runtime_figure">
-				<title>Adding a JBoss 5.0 Runtime</title>
+				<title>Adding a JBoss EAP 6.0 Runtime</title>
 				<mediaobject>
 					<imageobject>
 						<imagedata fileref="images/runtimes_servers/runtimes_servers_3.png"/>
@@ -100,92 +98,97 @@
 				</mediaobject>
 			</figure>
 			
-			<para>The following table describes all the available options of the current wizard page.</para>
+			<para>The following tables describe all the available options for JBoss runtimes.</para>
 			<table>
-				<title>Server Runtime Wizard Parameters</title>
+				<title>Runtime Options for AS 3.2 to AS 6.0, EAP 4.3 to EAP 5.2 </title>
 				<tgroup cols="2">
 					<colspec colnum="1" align="left" colwidth="1*"/>
 					<colspec colnum="2" colwidth="3*"/>
 					
-					<thead>
-						<row>
-							<entry align="center">
-								<para>Name</para>
-							</entry>
-							
-							<entry align="center">
-								<para>Description</para>
-							</entry>
-						</row>
-					</thead>
+					<thead><row>
+						<entry align="center"><para>Name</para></entry>
+						<entry align="center"><para>Description</para></entry>
+					</row></thead>
 					
-					<tbody>
+					<tbody><row>
+							<entry><para>Name</para></entry>
+							<entry><para>
+							The name of a new Runtime for a chosen server. We suggest 
+							that you do not leave the default value for this field. 
+							It is better to give descriptive names that will help to distinguish one runtime from another.
+							</para></entry>
+						</row>
 						<row>
-							<entry>
-								<para>Name</para>
-							</entry>
-							<entry>
-								<para>
-									The name of a new Runtime for a chosen server. We suggest that you do not leave the default value for this field. It is better to give descriptive names that will help to distinguish one runtime from another.
-								</para>
-							</entry>
+							<entry><para>Home directory</para></entry>
+							<entry><para>The path to a directory where the runtime is installed.</para></entry>
+						</row>
+						<row>
+							<entry><para>JRE</para></entry>
+							<entry><para>A compatible Java Runtime Environment which can be used for launching or classpath resolution. </para></entry>
 						</row>
 						
 						<row>
-							<entry>
-								<para>Home directory</para>
-							</entry>
-							<entry>
-								<para>The path to a directory where the runtime is installed.</para>
-							</entry>
-						</row>
-						
-						<row>
-							<entry>
-								<para>JRE</para>
-							</entry>
-							<entry>
-								<para>
-									The Java Runtime Environment.
-								</para>
-							</entry>
-						</row>
-						
-						<row>
-							<entry>
-								<para>Directory</para>
-							</entry>
-							<entry>
-								<para>The path to a directory where the configurations are installed.</para>
-							</entry>
+							<entry><para>Directory</para></entry>
+							<entry><para>The path to a directory where the configurations are installed.</para></entry>
 						</row>
 						<row>
-							<entry>
-								<para>Configuration</para>
-							</entry>
-							<entry>
-								<para>The list of configurations (all, default, minimal), which is updated as soon as you browse to a valid runtime installation folder.</para>
-							</entry>
+							<entry><para>Configuration</para></entry>
+							<entry><para>The list of configurations (all, default, minimal), which is updated as soon as you browse to a valid runtime installation folder.</para></entry>
 						</row>
 					
-					</tbody>
-				</tgroup>
-			</table>
+			</tbody></tgroup></table>
+			
+
+
+			<table>
+				<title>Runtime Options for JBoss AS 7.x / EAP 6.x</title>
+				<tgroup cols="2">
+					<colspec colnum="1" align="left" colwidth="1*"/>
+					<colspec colnum="2" colwidth="3*"/>
+					
+					<thead><row>
+						<entry align="center"><para>Name</para></entry>
+						<entry align="center"><para>Description</para></entry>
+					</row></thead>
+					
+					<tbody><row>
+							<entry><para>Name</para></entry>
+							<entry><para>
+							The name of a new Runtime for a chosen server.
+							</para></entry>
+						</row>
+						<row>
+							<entry><para>Home directory</para></entry>
+							<entry><para>The path to a directory where the runtime is installed.</para></entry>
+						</row>
+						<row>
+							<entry><para>JRE</para></entry>
+							<entry><para>A compatible Java Runtime Environment.</para></entry>
+						</row>
+						
+						<row>
+							<entry><para>Configuration File</para></entry>
+							<entry><para>A path to the configuration file you are targeting. This path must be relative to the standalone folder.</para></entry>
+						</row>
+					
+			</tbody></tgroup></table>
 			
 			<para>
-				As a result of having each runtime represent a specific configuration rather than the server installation as a whole, it is very likely you will create several different runtimes to test each of your configurations. So it becomes important to ensure your runtimes and later your servers, are given descriptive names that help you to remember which is which.
+				As a result of having each runtime represent a specific configuration rather than the server installation as a whole, it is very likely you will create several different runtimes to test each of your configurations. With this in mind, it becomes important to ensure your runtimes, and later your servers, are given descriptive names that help you to remember which is which.
 			</para>
 			
 			<para>Click the <guibutton>Finish</guibutton> button to see your new runtime in the list.</para>
 			<note>
 				<title>Note:</title>
+				<para>For the most part, changes to runtimes will be persisted, and all dependent servers will be updated according to those changes. However, you should be aware that if multiple servers depend on the same runtime, modifications to that runtime will change several servers, not just one. </para>
 				<para>
-					If you edit the configuration of a runtime, the changes don't affect the settings of the servers that currently use the runtime. To apply the changes to them also, you should double left click on the server, select <menuchoice><guimenuitem>Overview</guimenuitem>
-						<guimenuitem>Runtime Environment</guimenuitem>
-					</menuchoice>, make sure that necessary configuration is chosen, click the <guibutton>Finish</guibutton> button and then  <guibutton>Save</guibutton> button.
+					As a word of warning, renaming your runtime will cause all servers targeting that runtime to lose their reference. This may manifest itself by the server being unable to start, or publish. The most visible way to verify that your server is in a consistent state is to double left-click on the server to open the Server Editor, and look in the  <menuchoice><guimenuitem>Overview</guimenuitem> section for the entry labeled 
+						<guimenuitem>Runtime Environment</guimenuitem>.
+					</menuchoice>If the combo has no selected item, your server is in an inconsistant state. To fix this, simply select the newly renamed runtime from the combo box, and save the editor. 
 				</para>
 			</note>
 		</section>
+
 		<section id="Detecting_an_existing_runtime">
 			<title>Detecting an existing runtime</title>
 			<para>
@@ -210,9 +213,7 @@
 				The <guibutton>Add</guibutton> button in the <guilabel>Paths</guilabel> section opens a file system browser window. Select the directory you wish to have recursively searched for JBoss runtimes. The directory will  be searched and all found servers will be displayed as a list in the <guilabel>Searching for runtimes</guilabel> dialog. From the returned list, choose the runtimes you wish to make available by clicking the box beside each runtime and clicking the <guibutton>OK</guibutton> button.
 			</para>
 			<note>
-				<para>
-					Server runtime detection now recognizes the ESB runtime distributed as part of the JBoss Service-Oriented Architecture Platform.
-				</para>
+				<para>If you are using a full JBoss Developer Studio installation, runtime detection now recognizes the ESB runtime distributed as part of the JBoss Service-Oriented Architecture Platform runtimes during a scan. If you are using the a-la-carte installation options provided by JBoss Tools, you may or may not benefit from this enhancement depending on what plugins you have installed. </para>
 			</note>
 			<figure>
 				<title>JBoss Runtime search results</title>
@@ -223,7 +224,7 @@
 				</mediaobject>
 			</figure>
 			<para>
-				The path you searched is now added to a list in the <guilabel>JBoss Tools Runtime Detection</guilabel> dialog <guilabel>Paths</guilabel> section. All the paths in this section will be automatically searched when a new workspace is created. If you wish for a path to be searched on startup then check the checkbox in the <guilabel>Every start</guilabel> column associated with it. 
+				The path you searched is now added to a list in the <guilabel>JBoss Tools Runtime Detection</guilabel> dialog <guilabel>Paths</guilabel> section. All the paths in this section will be automatically searched when a new workspace is created. This is convenient in that it allows you to quickly create a new workspace with your runtime settings much easier to replicate. If you wish for a path to be searched on each and every startup, then check the checkbox in the <guilabel>Every start</guilabel> column associated with it. 
 			</para>
 			<figure>
 				<title>JBoss Runtime search results</title>
@@ -275,51 +276,14 @@
 				</mediaobject>
 			</figure>
 		</section>
-<!--		No longer valid - cannot export or import runtime preferences
 
-		<section id="Exporting_and_Importing_runtime_preferences">
-			<title>Exporting and Importing runtime preferences</title>
-			<para>
-				The <guimenuitem>JBoss Runtimes</guimenuitem>
-				<guilabel>Preferences</guilabel> interface seen in <xref linkend="Detecting_an_existing_runtime"/> also allows you to export and import your runtime preferences. You can navigate to the page by selecting <menuchoice><guimenuitem>Window</guimenuitem>
-					<guimenuitem>Preferences</guimenuitem>
-					<guimenuitem>JBoss Tools</guimenuitem>
-					<guimenuitem>JBoss Runtimes</guimenuitem>
-				</menuchoice>.
-       </para>
-			<para>
-			 The <guibutton>Export</guibutton> button opens the <guilabel>Export Preferences</guilabel> dialog. The <guilabel>Export all</guilabel> box will automatically be selected, however you can choose to only export specific preference settings (such as only those related to your JBoss runtime) by selecting individual entries from the displayed list.
-       </para>
-			<figure>
-				<title>Export Preferences dialog</title>
-				<mediaobject>
-					<imageobject>
-						<imagedata fileref="images/runtimes_servers/runtimes_servers-export_runtime_1.png"/>
-					</imageobject>
-				</mediaobject>
-			</figure>
-			<para>
-				To export the preference settings you must specify the preference file that the information will be written to. This file, once exported, can be used to reapply your settings by clicking on the <guilabel>Import</guilabel> button. 
-       </para>
-			<para>
-				The <guibutton>Import</guibutton> button opens the <guilabel>Import Preferences</guilabel> dialog. The <guilabel>Import all</guilabel> box will automatically be selected, however you can choose to only import specific preference settings (such as only those related to your JBoss runtime) by selecting individual entries from the list that displays after using the <guibutton>Browse</guibutton> button to select your exported preference file (for example: preference_file.epf).
-       </para>
-			<figure>
-				<title>Import Preferences dialog</title>
-				<mediaobject>
-					<imageobject>
-						<imagedata fileref="images/runtimes_servers/runtimes_servers-import_runtime_1.png"/>
-					</imageobject>
-				</mediaobject>
-			</figure>
-		</section> -->
 		<section id="CopyRuntime">
-			<title>Duplicating a runtime configuration</title>
+			<title>Duplicating an AS &lt; 6.x runtime configuration</title>
 			<para>
-				While installing a new runtime you can copy the configuration from the existing one. To do this you should perform all the steps in <xref linkend="InstNewRuntime"/>, with the exception of clicking the <guibutton>Finish</guibutton> button in the New Server Runtime Environment menu.
+				While installing a new runtime you can create a clone configuration from an existing one. To do this you should perform all the steps in <xref linkend="InstNewRuntime"/>, but do not click the <guibutton>Finish</guibutton> button in the New Server Runtime Environment dialog.
       </para>
 			<para>
-				Make sure that you browse to a valid runtime folder and can see the list of configurations (all, default, minimal) in the Configuration section. Then choose appropriate Configuration from the list and click the <guibutton>Copy</guibutton> button.The next dialog should appear.
+				Make sure that you browse to a valid runtime folder and can see the list of configurations (all, default, minimal) in the Configuration section. Then choose an appropriate Configuration from the list and click the <guibutton>Copy</guibutton> button. You will then see the following dialog. 
       </para>
 			<figure>
 				<title>Copy the existing configuration</title>
@@ -330,16 +294,8 @@
 				</mediaobject>
 			</figure>
 			<para>
-				Change the name, click the <guibutton>Browse</guibutton> button and select your configuration location or leave as it is if you want it to be located together with other runtime configurations.
+				First, give the new clone configuration a name. Then, click the <guibutton>Browse</guibutton> button and select the new location for your configuration to live, or leave as it is if you want it to be located together with other runtime configurations.
       </para>
-			<figure>
-				<title>Copy the existing configuration</title>
-				<mediaobject>
-					<imageobject>
-						<imagedata fileref="images/runtimes_servers/runtimes_servers_4b.png"/>
-					</imageobject>
-				</mediaobject>
-			</figure>
 			
 			<para>Click the <guibutton>OK</guibutton> button and you should see the next wizard with the newly copied configuration.</para>
 			<figure>
@@ -360,10 +316,10 @@
 	<section>
 		<title>Servers</title>
 		<para>
-			WTP servers are Eclipse-representations of a back end server installation. They are used to start or stop servers, deploy to servers, or debug code that will run on the server. They keep track of the modules (JARs, WARs, etc) you deploy to the server and also allow you to undeploy those modules (see <xref linkend="run_on_server_wizard"/>). 
+			WTP servers are Eclipse-representations of a back end server installation. They are used to start or stop servers, deploy to servers, or debug code that will run on the server. They also keep track of the modules (JARs, WARs, etc) you deploy to the server, and allow you to undeploy those modules (see <xref linkend="run_on_server_wizard"/>). 
 		</para>
 		<para>
-			Servers can be started or stopped via the <guilabel>Servers</guilabel> view in your workbench. They are often backed by a runtime object representing that server's location.
+			Servers can be started or stopped via the <guilabel>Servers</guilabel> view in your workbench. They are usually backed by a runtime object representing that server's configuration details.
 		</para>
 		
 		<section id="creating_a_new_server">
@@ -381,14 +337,14 @@
 				</mediaobject>
 			</figure>
 			<para>
-				A server object keeps track of the command line arguments when starting or stopping and the runtimes keep track of the location of the installation. This means that each server instance must be backed by an appropriate runtime.
+				A server object keeps track of the command line arguments for starting or stopping a server process. The runtime keeps track of the location of the installation and is used to help generate these command line arguments. 
 			</para>
 			
 			<para>
 				The <guilabel>New server wizard</guilabel> allows you to name the server via the <guilabel>Server name</guilabel> field, or you can use a generated default name.
 			</para>
 			<para>
-				You can select the appropriate runtime from the <guilabel>Server runtime environment</guilabel> combo box. If there is no runtime that matches your needs, press the <guilabel>Add...</guilabel> link nearby to bring up the wizard for creating a new runtime (see <xref linkend="add_runtime_figure"/>). To configure an existing runtime, go to server preferences by pressing the <guilabel>Configure runtime environments...</guilabel> link.
+				You can select one of the already-created runtimes from the <guilabel>Server runtime environment</guilabel> combo box. If there is no runtime that matches your needs, press the <guilabel>Add...</guilabel> link nearby to bring up the wizard for creating a new runtime (see <xref linkend="add_runtime_figure"/>). To make changes to an existing runtime, go to server preferences by pressing the <guilabel>Configure runtime environments...</guilabel> link. Be aware that any changes you make here may change other servers dependent on that runtime. We reccommend creating new runtimes for each different scenario.
 			</para>
 			
 			<para>If the server you want to create does not have any installed runtime yet, the combobox and the links are absent.</para>
@@ -403,14 +359,15 @@
 			</figure>
 			
 			<para>
-				In this case the next page of the wizard which has the same form as in <link linkend="add_runtime_figure">the previous section</link> and will ask you to create the associated runtime.
+				If there is no runtime when creating your server, the next page of the wizard will be identical to the runtime page mentioned in <link linkend="add_runtime_figure">the previous section</link>. This page guides you through creating a runtime for your server. 
 			</para>
 			<para>
-				After targeting your server to a runtime, the final screen in this wizard presents a summary of the selected options, giving you a chance to verify that you have selected the appropriate runtime.
+				After either targeting your server to an existing runtime, or creating a new runtime, the final page of the wizard presents a summary of the selected options, giving you a chance to verify that you have selected the appropriate runtime.
 			</para>
-	<!--		<para>
-				You are also given the option to select the <guilabel>Server Behaviour</guilabel>. Through the drop-down list you can select whether the server is to be treated as a <guimenuitem>Local</guimenuitem> or <guimenuitem>Remote System Deployment</guimenuitem>. For setting up a remote server, see <xref linkend="remote_system_deployment" />.
-			</para> -->
+
+
+<!-- TODO show local vs RSE screenshots here -->
+
 			<figure>
 				<title>Installed Server Runtime Environments</title>
 				<mediaobject>
@@ -419,19 +376,23 @@
 					</imageobject>
 				</mediaobject>
 			</figure>
-			
+			<para>You will also see several other options here. The first option reads <guilabel>Server is externally managed. Assume server is started</guilabel>. This option indicates that starting the server should actually take no action, launch no java command, and assume that the user is managing the server lifecycle on his own. 
+			</para>	
+			<para>The second option reads <guilabel>Listen on all interfaces to allow remote connections</guilabel>. This option is most often required when using the tools to control a remote server. Effectively, this adds the -b 0.0.0.0 flags to the server's launch command, which allows your server to respond to requests on all hostnames.
+			</para>
+			<para>
+				The third option reads <guilabel>Expose your management port as the server's hostname.</guilabel> This option helps ensure that attempts to connect to your server over the management port actually succeed. If your server adapter does not have this option selected, requests to run management commands may be rejected. This should not be a problem for any server adapters representing a local server instance. Locally, JBoss passes around a filesystem token for management authorizations. However, if your server adapter is representing a remote server, failure to expose the management ports may lead to an inability to communicate with the remote instance. 
+			</para>
+			<para>Not all of these options will show for all servers. JBoss 7.0.0 and 7.0.1 for example do not support the -b binding flag, while versions &lt; 7.0 do not have the same remote management options. Be aware that this list changes based on the context of what server types you are creating.</para>
 			<para>Click the <guibutton>Finish</guibutton> button to complete the process of the server creation.</para>
 			<para>Now that we have created our runtimes and servers, we can explore the services and tools provided by the JBoss Server Manager.</para>
 			
-	<!--		<para>
-				We hope this guide helped you to get started with the JBoss Tools server manager. For additional information you are welcome on <ulink url="http://www.jboss.com/index.html?module=bb&amp;op=viewforum&amp;f=201">JBoss forum</ulink>.
-			</para> -->
 				<important>
 					<para>
 						It is not recommended to run two servers on the same host, at the same time as you may experience a conflict in ports. If a server is already running on the same host a warning will appear indicating this and will ask if you wish to <guilabel>Set the server adapter to 'started', but do not launch</guilabel> or <guilabel>Launch a new instance anyway</guilabel>
 					</para>
 				<figure>
-						<title>Multiple server adaptors warning</title>
+						<title>Conflicting Ports Warning</title>
 						<mediaobject>
 							<imageobject>
 								<imagedata fileref="images/runtimes_servers/runtimes_servers_8.png"/>
@@ -440,11 +401,28 @@
 					</figure>
 				</important>
 		</section>
-<!--		<section id="remote_system_deployment">
-			<title>Creating a new remote server</title>
-			<para>
-				The option to create a new remote server comes at the end of the <guilabel>New Server</guilabel> wizard. For information on creating a new server before this stage, see <xref linkend="creating_a_new_server" />.
-			</para>
-		</section> -->
+		<section>
+			<title>Creating Remote Servers</title>
+			<para>You may also create a server adapter to control a remote server instance. These types of server adapters are slightly different to set up, but generally follow the same process. the primary difference here is that on the last page of the New Server Wizard, you will also need to select <guilabel>Remote System Deployment</guilabel> option in the combo box at the bottom of the page as shown below..</para>
+
+                                <figure>
+                                                <title>Remote System Server Creation for AS &lt; 7.0</title>
+                                                <mediaobject>
+                                                        <imageobject>
+                                                                <imagedata fileref="images/runtimes_servers/runtimes_servers_10a.png"/>
+                                                        </imageobject>
+                                                </mediaobject>
+                                        </figure>
+
+                                <figure>
+                                                <title>Remote System Server Creation for AS 7.x / EAP 6.x</title>
+                                                <mediaobject>
+                                                        <imageobject>
+                                                                <imagedata fileref="images/runtimes_servers/runtimes_servers_10b.png"/>
+                                                        </imageobject>
+                                                </mediaobject>
+                                        </figure>
+			<para>Once you've chosen the Remote Server Deployment behavior type, your next step is to choose a remote host. If you do not have a remote host defined, you'll want to click <guilabel>New Host...</guilabel>, which will walk you through the process of setting up a remote host. After that, you must fill in the remote details for your server configuration. This includes filling in your  remote server's home directory and the appropriate configuration details depending on your chosen server version. As with local runtimes, earlier versions of JBoss require a configuration folder and a configuration name, while recent versions require only a configuration file.</para>
+		</section>
 	</section>
 </chapter>

@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="archives" xreflabel="archives" role="updated">
+	<?dbhtml filename="archives.html"?>
+	<chapterinfo>
+		<keywordset>
+			<keyword>JBoss Developer Studio</keyword>
+			<keyword>Eclipse</keyword>
+			<keyword>Deploy</keyword>
+			<keyword>Deployment</keyword>
+			<keyword>JBoss</keyword>
+		</keywordset>
+	</chapterinfo>
+
+	<title>Project Archives</title>
+
+	<section id="Project_archivesView" role="updated">
+		<title>Project Archives View</title>
+		<para>
+			Every application, whether Plain Old Java, J2EE, or some other language altogether, needs to be packaged in some way. In Java-related projects, many people use ANT.
+		</para>
+		<para>
+			But <productname>JBoss Tools</productname> comes with our own Archives tool with simpler and less-verbose XML and a handy user interface. The Project Archives plugin consists primarily of the <guilabel>Project Archives</guilabel> view to set up each packaging configuration.
+		</para>
+		
+		<para>Let&apos;s look through all functionality that the <guilabel>Project Archives</guilabel> view provides.</para>
+
+		<section id="archives_overview">
+			<title>Overview</title>
+
+			<para>
+				The packaging configuration for each project is stored in the project's root folder in a file named <filename>.packages</filename>, which has a fairly simple XML structure. Modifying the file by hand is neither required nor recommended, as the UI is the only supported way to modify your packaging structure.
+			</para>
+
+			<figure>
+				<title>Archives View</title>
+				<mediaobject>
+					<imageobject>
+						<imagedata fileref="images/perspective/perspective_21.png"/>
+					</imageobject>
+				</mediaobject>
+			</figure>
+
+			<para>
+				A project&apos;s configuration contains archives. As you can see on the image above a project can contain more than one archive. Internal archives and filesets can be directly inside of an archive, or in a sub-folder of that archive.
+			</para>
+
+			<para>
+				In the upper right corner of the view you can see an icon which, when clicked, will build the selected top-level archive. Additionally, you can select <menuchoice><guimenuitem>Project</guimenuitem><guimenuitem>Build Packages</guimenuitem></menuchoice> when a project is selected in the <guilabel>Packages View</guilabel> to build all declared packages in that project&apos;s <filename>.packages</filename> file. This will execute a full build on all declared archives.
+			</para>
+		</section>
+
+		<section id="Creating_Archive">
+			<title>Creating an Archive</title>
+
+			<para>
+				When you open the <guilabel>Project archives</guilabel> view for the first time, it asks you to select the project for which you want to create an archive.
+			</para>
+
+			<figure>
+				<title>Archives View</title>
+				<mediaobject>
+					<imageobject>
+						<imagedata fileref="images/perspective/perspective_21a.png"/>
+					</imageobject>
+				</mediaobject>
+			</figure>
+
+			<para>To get started creating a jar, you need right-click inside the view and select <guimenuitem>New Archive</guimenuitem>. When creating your new JAR output, you can customize the name, add folders, filesets and inner JARs to it. Shown below is the first page of the New archive wizard.
+			</para>
+			<figure>
+				<title>New JAR Wizard</title>
+				<mediaobject>
+					<imageobject>
+						<imagedata fileref="images/perspective/perspective_23.png"/>
+					</imageobject>
+				</mediaobject>
+			</figure>
+
+			<para>The page is pretty simple. First it prompts you to set the name of your new archive and a destination.</para>
+
+			<para>
+				The destination of an archive can be anywhere on the file system, anywhere in the workspace, inside another archive, or inside a folder declared inside an archive. Select the appropriate checkbox (either <guilabel>workspace</guilabel> or <guilabel>file system</guilabel>) to specify that the destination is related to either the workspace or filesystem. You can browse to workspace or filesystem destinations by clicking on their respective buttons. To select a destination inside some other archive, you'll need to click the <guibutton>Workspace</guibutton> button.
+			</para>
+
+			<figure>
+				<title>Selecting the destination in the workspace</title>
+				<mediaobject>
+					<imageobject>
+						<imagedata fileref="images/perspective/perspective_23a.png"/>
+					</imageobject>
+				</mediaobject>
+			</figure>
+
+			<para>
+				Also in the wizard for creating a new archive you can choose whether an archive to be compressed or exploded into a folder (without compression). You need just select proper checkbox in the <guilabel>Archive type</guilabel> section.
+			</para>
+			
+			<para>If a build or incremental update fails Project Archives will show an error dialog:</para>
+			<figure>
+				<title>Selecting the destination in the workspace</title>
+				<mediaobject>
+					<imageobject>
+						<imagedata fileref="images/perspective/projectarchives_error.png"/>
+					</imageobject>
+				</mediaobject>
+			</figure>
+			<para>Click the <guibutton>Details</guibutton> button to view detailed information about the cause of the error.</para>
+
+			<para>In the <guilabel>Package Explorer</guilabel> you can view the created archive.</para>
+			<figure>
+				<title>The Archive in the Package Explorer</title>
+				<mediaobject>
+					<imageobject>
+						<imagedata fileref="images/perspective/perspective_23b.png"/>
+					</imageobject>
+				</mediaobject>
+			</figure>
+
+			<para>
+				If you use the exploded type of archiving, instead of a single file archive the result put into a folder is displayed in the <guilabel>Package Explorer</guilabel>.
+			</para>
+			
+			<figure>
+				<title>The Exploded Archive in the Package Explorer</title>
+				<mediaobject>
+					<imageobject>
+						<imagedata fileref="images/perspective/perspective_23c.png"/>
+					</imageobject>
+				</mediaobject>
+			</figure>
+
+			<section id="CreatingaFolder">
+				<title>Creating a Folder</title>
+				<para>
+					To create a folder right-click on an archive or folder you want your new folder to be a child of. The only piece of required information the folder name.
+				</para>
+			</section>
+			<section id="CreatingaFileSet">
+				<title>Creating a FileSet</title>
+				<para>
+					To create a new fileset, right click on an available target location such as an archive, a nested archive, or a folder within an archive and select the <guimenuitem>New Fileset</guimenuitem> option.
+				</para>				
+				<para>
+					The <guilabel>New Fileset</guilabel> wizard requires a destination (where the files will be located) and a root directory (or where the files are coming from). The source can be anywhere in the workspace or from the filesystem at large.
+				</para>
+
+				<figure>
+					<title>Adding a New FileSet</title>
+					<mediaobject>
+						<imageobject>
+							<imagedata fileref="images/perspective/perspective_24.png"/>
+						</imageobject>
+					</mediaobject>
+				</figure>
+
+				<para>
+					Below that, the fileset requires only an <guilabel>Includes</guilabel> and <guilabel>excludes</guilabel> pattern. As you type in either of these fields, the preview viewer will list those files that are matched.
+				</para>
+
+				<para>You can create a Fileset with flattening or without it. Look at the difference on the figure below.</para>
+
+				<figure>
+					<title>The FileSet with flattening and without it</title>
+					<mediaobject>
+						<imageobject>
+							<imagedata fileref="images/perspective/perspective_24a.png"/>
+						</imageobject>
+					</mediaobject>
+				</figure>
+
+			</section>
+
+			<section id="CreatingaUserLibrariesFileSet">
+				<title>Creating User Library FileSet</title>
+
+				<para>
+					If you make use of user libraries in your projects you can also refer to these from project archives and have all the JAR and ZIP files they refer included into the archive.
+				</para>
+				<para>
+					To add a new user libraries file set, right-click on the necessary archive and select the <guimenuitem>New User Libraries FileSet</guimenuitem> option.
+				</para>
+
+				<figure>
+					<title>Adding New User Library Fileset</title>
+					<mediaobject>
+						<imageobject>
+							<imagedata fileref="images/perspective/userlibraryfileset1.png"/>
+						</imageobject>
+					</mediaobject>
+				</figure>
+
+				<para>
+					You can edit the existing user libraries as well using <guilabel>User Libraries Fileset</guilabel> Wizard. Right-click on the library fileset and select the <guimenuitem>Edit Fileset</guimenuitem> option.
+				</para>
+
+				<figure>
+					<title>Editing User Library Fileset</title>
+					<mediaobject>
+						<imageobject>
+							<imagedata fileref="images/perspective/userlibraryfileset2.png"/>
+						</imageobject>
+					</mediaobject>
+				</figure>
+
+			</section>
+
+		</section>
+
+		<section id="View_Actions">
+			<title>Archive Actions</title>
+			<figure>
+				<title>Context Menu on the Item</title>
+				<mediaobject>
+					<imageobject>
+						<imagedata fileref="images/perspective/perspective_25.png"/>
+					</imageobject>
+				</mediaobject>
+			</figure>
+			<para>There are a number of variable options in the context menu, but there are also several that come standard.</para>
+
+			<table>
+				<title>Context Menu on the Item</title>
+				<tgroup cols="2">
+					<colspec colnum="1" align="left" colwidth="1*"/>
+					<colspec colnum="2" colwidth="3*"/>
+
+
+					<thead>
+						<row>
+							<entry align="center">
+								<para>Name</para>
+							</entry>
+
+							<entry align="center">
+								<para>Description</para>
+							</entry>
+						</row>
+					</thead>
+
+					<tbody>
+
+						<row>
+							<entry>
+								<para>Build Archive (Full)</para>
+							</entry>
+
+							<entry>
+								<para>This action is enabled only on top-level archives and initiates a full build on that archive</para>
+							</entry>
+						</row>
+
+						<row>
+							<entry>
+								<para>Edit Archive</para>
+							</entry>
+
+							<entry>
+								<para>Standard action that brings up the wizard associated with that particular node type and allows the details to be changed</para>
+							</entry>
+						</row>
+
+						<row>
+							<entry>
+								<para>Delete Archive</para>
+							</entry>
+
+							<entry>
+								<para>This option deletes the selected node</para>
+							</entry>
+						</row>
+
+						<row>
+							<entry>
+								<para>Publish To Server</para>
+							</entry>
+
+							<entry>
+								<para>This action will publish to a declared server</para>
+							</entry>
+						</row>
+
+						<row>
+							<entry>
+								<para>Edit publish settings</para>
+							</entry>
+
+							<entry>
+								<para>This option edits the archives publish settings</para>
+							</entry>
+						</row>
+
+					</tbody>
+				</tgroup>
+			</table>
+
+			<note>
+				<title>Note:</title>
+				<para>When editing an archive, it is also updated in all folders and other archives where it is nested.</para>
+			</note>
+		</section>
+
+		<section id="PublishToServer">
+			<title>Publishing to Server</title>
+			<para>
+				Finally, you will need to publish your application to a server. This section describes how to do it with the help of the <guilabel>Archives</guilabel> View.
+			</para>
+
+			<figure>
+				<title>Context Menu on the Item</title>
+				<mediaobject>
+					<imageobject>
+						<imagedata fileref="images/perspective/perspective_26.png"/>
+					</imageobject>
+				</mediaobject>
+			</figure>
+			<para>
+				The dialog shown above appears after selecting the <guilabel>Publish To Server</guilabel> option. To publish once, select the server(s) that you want and click the <guibutton>Finish</guibutton> button. If you want the <guilabel>Publish to Server</guilabel> action on that particular Archive to always publish to that set of servers, then check the appropriate checkbox. To enable automatic publishing upon build events, check the last checkbox.
+			</para>
+			<para>
+				The automatic publishing feature is nice if, for example, your package's destination (where it is built) is a temporary folder and you want the archive published to several servers. If you only need your archive published to one server, it might be easier to have the archive's destination folder be the deploy folder of the server.
+			</para>
+		</section>
+		<section id="rel_res_links_archiving">
+			<title>Relevant Resources Links</title>
+			<para>
+				Refer to the <ulink url="http://ant.apache.org/manual/index.html">Ant manual</ulink> to find more on how to build your applications using Ant.
+			</para>
+
+			<para>
+				We also recommend that you watch this <ulink url="http://docs.jboss.org/tools/movies/demos/archiving/archiving.htm">movie</ulink> which demonstrates the powerful archiving functionality in <productname>JBoss Tools</productname>.
+			</para>
+		</section>
+
+	</section>
+
+
+</chapter>
