@@ -9,7 +9,7 @@
 	<edition>6.0.0</edition>
 	<pubsnumber>1</pubsnumber>
 	<abstract>
-		<para>The JBoss Server Manager Reference Guide explains how to use the JBoss Server Manager to configure, start, stop the server, to know deployment and archiving processes.</para>
+		<para>The JBoss Server Manager Reference Guide explains how to use the JBoss Server Manager to work with a local or remote JBoss Application Server. This includes configuring the server for startup, customizing launch parameters, starting and stopping the server, and deploying modules and projects to the server. The guide will also take you through an alternative publish method using the Project Archives framework.</para>
 	</abstract>
 	<corpauthor>
 		<inlinemediaobject>

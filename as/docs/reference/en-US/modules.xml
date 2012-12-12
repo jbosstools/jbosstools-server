@@ -75,64 +75,39 @@
 	</section>
 	<section>
 		<title>Deploying with Servers View</title>
-		<para>
-			As it has been already mentioned <guilabel>Servers</guilabel> view contains two parts: the top part that displays all defined servers and the bottom part which provides categories with additional information. Thus, in this section we suggest two more ways to deploy resources onto the server.
+		<para>The root elements of the Servers View are the server objects. Expanding these, you will see the modules listed. With this in mind, we suggest two more ways to deploy resources onto the server.
 		</para>
-		<section>
-			<title>Top part of Servers view</title>
-			<para>
-				In the top part of the <guilabel>Servers</guilabel> view you should right click on a server and select the <guimenuitem>Add and Remove</guimenuitem> menu item.
-			</para>
-			<figure>
-				<title>Add and Remove Projects</title>
-				<mediaobject>
-					<imageobject>
-						<imagedata fileref="images/modules/modules_3.png"/>
-					</imageobject>
-				</mediaobject>
-			</figure>
-			
-			<para>
-				This will bring up a dialog (see <xref linkend="add_rem_proj"/>) that allows you to either publish projects or modules to a server, or remove them from the server. If the selected module is a project like a Dynamic Web project, EJB project, or EAR project, it will be published as through <guilabel>Run on Server</guilabel> wizard, with a best-guess full package. If, however, the selected element is an archive from the Project Archives view (see <xref linkend="Project_archivesView"/>), it will be published according to the rules of that module type.
-			</para>
-		</section>
-		
-		<section>
-			<title>Bottom part of Servers view</title>
-			<para>
-				In the bottom part of <guilabel>Servers</guilabel> view there is a category called <guilabel>Modules</guilabel> which should display all currently-published modules on the server. Right-clicking on the desired module and selecting <guimenuitem>Full Publish</guimenuitem> will force a full rebuild of the entire module.
-			</para>
-			<figure>
-				<title>Full Publish</title>
-				<mediaobject>
-					<imageobject>
-						<imagedata fileref="images/modules/modules_4.png"/>
-					</imageobject>
-				</mediaobject>
-			</figure>
-			
-			<para>
-				Here, <guilabel>Incremental Publish</guilabel> is meant to enable publishing of only those parts where changes have been made.
-			</para>
-		</section>
-	</section>
-	<section>
-		<title>Deploying with Project Archives View</title>
-		<para>
-			In the <guilabel>Project Archives View</guilabel> you can right-click on any declared archive and select the <guilabel>Publish To Server</guilabel> element. For more on this subject, see <xref linkend="PublishToServer"/> in the Project Archives View section.
-		</para>
+
+		<para>For the first method, you should right click on a server and select the <guimenuitem>Add and Remove</guimenuitem> menu item.</para>
 		<figure>
-			<title>Publish to Server</title>
+			<title>Add and Remove Projects</title>
 			<mediaobject>
 				<imageobject>
-					<imagedata fileref="images/modules/modules_5.png"/>
+					<imagedata fileref="images/modules/modules_3.png"/>
 				</imageobject>
 			</mediaobject>
 		</figure>
-		<para> 
-			The only way to ensure an <guilabel>Incremental Build</guilabel>, such as changes to one <filename>.jsp</filename>, <filename>.html</filename>, or <filename>.class</filename> file, is to enable the builder for that project. This is done by either changing the global preferences for the <guilabel>Archives View</guilabel>, or by enabling project-specific preferences and ensuring the builder is on.
+			
+		<para>
+			This will bring up a dialog (see <xref linkend="add_rem_proj"/>) that allows you to either publish projects or modules to a server, or remove them from the server. If the selected module is a project like a Dynamic Web project, EJB project, or EAR project, it will be published as through <guilabel>Run on Server</guilabel> wizard, with a best-guess full package. If, however, the selected element is an archive from the Project Archives view (see <xref linkend="Project_archivesView"/>), it will be published according to the rules of that module type.
 		</para>
-		
+		<para>Nested beneath each server, there is a list of modules. Each module displays the module name, as well as decorated information on the module's various states. Right-clicking on the desired module and selecting <guimenuitem>Full Publish</guimenuitem> will force a full rebuild of the entire module.
+		</para>
+		<figure>
+			<title>Full Publish</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/modules/modules_4.png"/>
+				</imageobject>
+			</mediaobject>
+		</figure>
+			
+		<para>
+			Here, <guilabel>Incremental Publish</guilabel> is meant to enable publishing of only those parts where changes have been made.
+		</para>
+	</section>
+	<section>
+		<title>Redeploying with Finger Touch</title>
 		<para>You can also use the "Finger touch" button for a quick restart of the project without restarting the server:</para>
 		<figure>
 			<title>Finger Touch button</title>
