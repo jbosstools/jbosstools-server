@@ -77,12 +77,12 @@ public abstract class AbstractLocalJBossServerRuntime extends RuntimeDelegate im
 		
 		if( getExecutionEnvironment() != null ) {
 			IVMInstall[] installs = getExecutionEnvironment().getCompatibleVMs();
-			// IF your execution env has a default vm:
 			if( getExecutionEnvironment().getDefaultVM() != null )
 				return getExecutionEnvironment().getDefaultVM();
-			// Check if the workspace default vm is in the list
+
 			IVMInstall workspaceDefault = JavaRuntime.getDefaultVMInstall();
 			
+			// Find an install that is strictly compatible first
 			for (int i = 0; i < installs.length; i++) {
 				IVMInstall install = installs[i];
 				if (getExecutionEnvironment().isStrictlyCompatible(install)) {
@@ -90,13 +90,16 @@ public abstract class AbstractLocalJBossServerRuntime extends RuntimeDelegate im
 				}
 			}
 			
+			// If there aren't any, check if the workspace default vm is in the list of compatible vms
 			if( installs != null && workspaceDefault != null ) {
 				for( int i = 0; i < installs.length; i++) {
 					if( workspaceDefault.equals(installs[i]))
 						return workspaceDefault;
 				}
 			}
-			if( installs != null && installs.length > 0 && installs[0] != null)
+
+			// Otherwise, return the first vm of any compatability 
+			if( installs != null && installs.length > 0 && installs[0] != null )
 				return installs[0];
 		}
 		// not found, return default vm
