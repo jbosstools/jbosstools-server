@@ -83,6 +83,13 @@ public abstract class AbstractLocalJBossServerRuntime extends RuntimeDelegate im
 			// Check if the workspace default vm is in the list
 			IVMInstall workspaceDefault = JavaRuntime.getDefaultVMInstall();
 			
+			for (int i = 0; i < installs.length; i++) {
+				IVMInstall install = installs[i];
+				if (getExecutionEnvironment().isStrictlyCompatible(install)) {
+					return install;
+				}
+			}
+			
 			if( installs != null && workspaceDefault != null ) {
 				for( int i = 0; i < installs.length; i++) {
 					if( workspaceDefault.equals(installs[i]))
