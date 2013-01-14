@@ -18,16 +18,18 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledPageBook;
-import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.util.SocketUtil;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
@@ -57,10 +59,15 @@ public class ServerModeSectionComposite extends Composite {
 	private Button exposeManagement; // may be null
 
 	private DeployUIAdditions currentUIAddition;
-	
+	private IManagedForm form;
 	public ServerModeSectionComposite(Composite parent, int style, IServerModeUICallback callback) {
+		this(parent, style, callback, null);
+	}
+	
+	public ServerModeSectionComposite(Composite parent, int style, IServerModeUICallback callback, IManagedForm form) {
 		super(parent, style);
 		this.callback = callback;
+		this.form = form;
 		loadDeployTypeData();
 		FormToolkit toolkit = new FormToolkit(getDisplay());
 		FormUtils.adaptFormCompositeRecursively(this, toolkit);	
@@ -271,6 +278,15 @@ public class ServerModeSectionComposite extends Composite {
 				ui.createComposite(newRoot);
 			}
 			preferencePageBook.showPage(ui);
+			Control page = preferencePageBook.getCurrentPage();
+			Point point = page.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
+			FormData data = (FormData) preferencePageBook.getLayoutData();
+			data.bottom = new FormAttachment(0, point.x-50);
+			System.out.println(data);
+			if (form != null) {
+				form.getForm().layout(true, true);
+				form.getForm().reflow(true);
+			}
 			if( fireEvent ) {
 				callback.execute(new ChangeServerPropertyCommand(
 						callback.getServer(), IDeployableServer.SERVER_MODE, 
