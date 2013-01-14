@@ -12,7 +12,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	CreateServerCheckDefaultsTest.class,
 	ProjectRuntimeClasspathTest.class,
 	CreateRuntimeTwiceTest.class,
-	PublishingSuite.class
+	PublishingSuite.class,
+	XPathModelTest.class
 })
 public class ParametizedSuite {
 }
