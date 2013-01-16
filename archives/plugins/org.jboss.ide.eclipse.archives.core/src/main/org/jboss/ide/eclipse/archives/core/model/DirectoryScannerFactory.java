@@ -51,14 +51,6 @@ public class DirectoryScannerFactory {
 			String rawPath, IPath rootArchiveRelativePath,
 			String includes, String excludes, String projectName,
 			boolean inWorkspace, double version, boolean scan) {
-		return createDirectoryScanner(rawPath, rootArchiveRelativePath, includes, 
-				excludes, projectName, inWorkspace, version, scan, false);
-	}
-	
-	public static DirectoryScannerExtension createDirectoryScanner (
-			String rawPath, IPath rootArchiveRelativePath,
-			String includes, String excludes, String projectName,
-			boolean inWorkspace, double version, boolean scan, boolean suppressError) {
 
 		ScannableFileSet fs = new ScannableFileSet();
 		fs.rawPath = rawPath;
@@ -73,10 +65,8 @@ public class DirectoryScannerFactory {
 			try {
 				scanner.scan();
 			} catch(IllegalStateException ise) {
-				if( !suppressError ) {
-					IStatus status = new Status(IStatus.WARNING, ArchivesCore.PLUGIN_ID, ise.getMessage(), ise);
-					ArchivesCore.getInstance().getLogger().log(status);
-				}
+				IStatus status = new Status(IStatus.WARNING, ArchivesCore.PLUGIN_ID, ise.getMessage(), ise);
+				ArchivesCore.getInstance().getLogger().log(status);
 			}
 		}
 		return scanner;
