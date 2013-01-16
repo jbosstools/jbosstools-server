@@ -50,7 +50,6 @@ import org.jboss.ide.eclipse.as.test.publishing.v2.SingleFileDeploymentTester;
 import org.jboss.ide.eclipse.as.test.server.JBossServerAPITest;
 import org.jboss.ide.eclipse.as.test.server.ServerBeanLoaderTest;
 import org.jboss.ide.eclipse.as.test.server.StringSubstitutionTest;
-import org.jboss.ide.eclipse.as.test.server.XPathModelTest;
 import org.jboss.ide.eclipse.as.test.util.ArgsUtilTest;
 import org.jboss.ide.eclipse.as.test.util.ExpressionResolverUtilTest;
 
