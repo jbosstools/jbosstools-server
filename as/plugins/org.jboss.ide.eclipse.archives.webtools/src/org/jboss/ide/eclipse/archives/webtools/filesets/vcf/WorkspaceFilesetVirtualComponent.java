@@ -107,7 +107,10 @@ public class WorkspaceFilesetVirtualComponent extends AbstractFilesetVirtualComp
 			try {
 				scanner.scan();
 			} catch(IllegalStateException ise) {
-				// Ignore all errors. Scanner will return no matches
+				// scan() javadoc indicates an IllegalStateException 
+				// will only be thrown if the root folder is not set,
+				// is not found, or is not a directory. 
+				// Ignore this error. Scanner will return no matches.
 			}			
 		}
 		public boolean accepts(IResource resource) {
