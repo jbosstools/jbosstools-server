@@ -100,7 +100,7 @@ public class WorkspaceFilesetVirtualComponent extends AbstractFilesetVirtualComp
 			scanner = DirectoryScannerFactory.createDirectoryScanner(
 					rootFolderPath, new Path(""),  //$NON-NLS-1$
 					includes, excludes, getProject().getName(), true,
-					IArchiveModelRootNode.DESCRIPTOR_VERSION_1_3, true);
+					IArchiveModelRootNode.DESCRIPTOR_VERSION_1_3, true, true);
 		}
 		public boolean accepts(IResource resource) {
 			String absolutePath = resource.getLocation().toFile().getAbsolutePath();
