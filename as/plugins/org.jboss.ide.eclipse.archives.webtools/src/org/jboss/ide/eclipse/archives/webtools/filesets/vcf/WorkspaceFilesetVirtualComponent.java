@@ -19,9 +19,12 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
+import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModelRootNode;
@@ -100,7 +103,12 @@ public class WorkspaceFilesetVirtualComponent extends AbstractFilesetVirtualComp
 			scanner = DirectoryScannerFactory.createDirectoryScanner(
 					rootFolderPath, new Path(""),  //$NON-NLS-1$
 					includes, excludes, getProject().getName(), true,
-					IArchiveModelRootNode.DESCRIPTOR_VERSION_1_3, true, true);
+					IArchiveModelRootNode.DESCRIPTOR_VERSION_1_3, false);
+			try {
+				scanner.scan();
+			} catch(IllegalStateException ise) {
+				// Ignore all errors. Scanner will return no matches
+			}			
 		}
 		public boolean accepts(IResource resource) {
 			String absolutePath = resource.getLocation().toFile().getAbsolutePath();
