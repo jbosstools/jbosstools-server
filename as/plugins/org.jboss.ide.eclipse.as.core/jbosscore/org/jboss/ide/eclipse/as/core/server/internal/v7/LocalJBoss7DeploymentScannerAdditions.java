@@ -24,9 +24,13 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerEvent;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.Trace;
+import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
+import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class LocalJBoss7DeploymentScannerAdditions extends UnitedServerListener {
@@ -145,7 +149,13 @@ public class LocalJBoss7DeploymentScannerAdditions extends UnitedServerListener 
 		String type = ds.getDeployLocationType();
 	
 		// inside server first, always there
-		String insideServer = ds.createPublishMethod().getPublishDefaultRootFolder(ds.getServer());
+		IJBossServerPublishMethodType publishType = DeploymentPreferenceLoader.getCurrentDeploymentMethodType(server);
+		String insideServer = null;
+		if( publishType.getId().equals(LocalPublishMethod.LOCAL_PUBLISH_METHOD)) {
+			insideServer = ds.getDeployFolder(IDeployableServer.DEPLOY_SERVER);
+		} else {
+			insideServer = ds.createPublishMethod().getPublishDefaultRootFolder(ds.getServer());
+		}
 		folders.add(insideServer);
 		
 		// metadata
