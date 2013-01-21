@@ -1,5 +1,7 @@
 package org.jboss.tools.as.test.core.parametized.server;
 
+import org.jboss.tools.as.test.core.launch.DeploymentScannerAdditionsTest;
+import org.jboss.tools.as.test.core.launch.MockArgsTests;
 import org.jboss.tools.as.test.core.parametized.server.publishing.PublishingSuite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -13,7 +15,9 @@ import org.junit.runners.Suite.SuiteClasses;
 	ProjectRuntimeClasspathTest.class,
 	CreateRuntimeTwiceTest.class,
 	PublishingSuite.class,
-	XPathModelTest.class
+	XPathModelTest.class,
+	MockArgsTests.class, 
+	DeploymentScannerAdditionsTest.class
 })
 public class ParametizedSuite {
 }
