@@ -17,3 +17,4 @@ Require-Bundle: org.eclipse.ui;bundle-version="3.7.0",
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: JBoss by Red Hat
+Export-Package: org.jboss.ide.eclipse.as.jmx.integration;x-friends:="org.jboss.tools.as.test.core"
