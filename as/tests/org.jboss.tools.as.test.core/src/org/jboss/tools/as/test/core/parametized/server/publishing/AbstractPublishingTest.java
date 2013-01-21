@@ -141,6 +141,10 @@ public abstract class AbstractPublishingTest extends TestCase {
 	}
 	
 	protected void setCustomDeployOverride(IModule rootModule, String outputName, String outputDir, String temporaryDir) {
+		setCustomDeployOverride(wc, rootModule, outputName, outputDir, temporaryDir);
+	}
+
+	public static void setCustomDeployOverride(IServerWorkingCopy wc, IModule rootModule, String outputName, String outputDir, String temporaryDir) {
 		DeploymentPreferences prefs = DeploymentPreferenceLoader.loadPreferencesFromServer(wc);
 		DeploymentModulePrefs modPrefs = prefs.getOrCreatePreferences().getOrCreateModulePrefs(rootModule);
 		modPrefs.setProperty(IJBossToolingConstants.LOCAL_DEPLOYMENT_TEMP_LOC, temporaryDir);

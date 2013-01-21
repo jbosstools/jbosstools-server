@@ -23,16 +23,20 @@ import org.eclipse.wst.server.core.ServerEvent;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
+import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
+import org.jboss.ide.eclipse.as.core.server.internal.AbstractDeploymentScannerAdditions;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7DeploymentScannerAdditions;
 import org.jboss.ide.eclipse.as.core.util.IEventCodes;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.tools.jmx.core.IJMXRunnable;
 import org.jboss.tools.jmx.core.JMXException;
 
-public class JMXServerLifecycleListener extends LocalJBoss7DeploymentScannerAdditions {
-	protected boolean accepts(IServer server) {
+public class JMXServerLifecycleListener extends AbstractDeploymentScannerAdditions {
+	public boolean accepts(IServer server) {
+		if( !LocalPublishMethod.LOCAL_PUBLISH_METHOD.equals(getServerMode(server)))
+			return false;
+		
 		ServerExtendedProperties props = (ServerExtendedProperties)server.loadAdapter(ServerExtendedProperties.class, null);
 		JBossServer jbs = (JBossServer)server.loadAdapter(JBossServer.class, new NullProgressMonitor());
 		boolean hasJMXProvider = jbs != null && jbs.hasJMXProvider();
@@ -43,10 +47,6 @@ public class JMXServerLifecycleListener extends LocalJBoss7DeploymentScannerAddi
 		return false;
 	}
 	
-	protected void verifyPrimaryScannerEnablement() {
-		// Do Nothing
-	}
-
 	protected void modifyDeploymentScanners(ServerEvent event){
 		String[] folders = getDeployLocationFolders(event.getServer());
 		Trace.trace(Trace.STRING_FINER, "Adding " + folders.length + " Deployment Scanners via JMX"); //$NON-NLS-1$

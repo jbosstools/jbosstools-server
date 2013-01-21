@@ -15,36 +15,24 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.ServerEvent;
-import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
-import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
-import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.AbstractDeploymentScannerAdditions;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
-public class LocalJBoss7DeploymentScannerAdditions extends UnitedServerListener {
-	protected boolean accepts(IServer server) {
+public class LocalJBoss7DeploymentScannerAdditions extends AbstractDeploymentScannerAdditions {
+	
+	public boolean accepts(IServer server) {
+		if( !LocalPublishMethod.LOCAL_PUBLISH_METHOD.equals(getServerMode(server)))
+			return false;
+
 		ServerExtendedProperties props = (ServerExtendedProperties)server.loadAdapter(ServerExtendedProperties.class, null);
 		boolean usesManagement = props != null && 
 			props.getMultipleDeployFolderSupport() == ServerExtendedProperties.DEPLOYMENT_SCANNER_AS7_MANAGEMENT_SUPPORT;
-		if(usesManagement) {
-			return true;
-		}
-		return false;
+		return usesManagement;
 	}
-	
-	private final static String SCANNER_PROP_FILE = "as7Scanners.properties"; //$NON-NLS-1$
 	
 	/**
 	 * Ensure the following folders are added to a deployment scanner. 
@@ -123,74 +111,4 @@ public class LocalJBoss7DeploymentScannerAdditions extends UnitedServerListener 
 		return AS7DeploymentScannerUtility.SCANNER_PREFIX + i;
 	}
 	
-	public void serverChanged(final ServerEvent event) {
-		if( accepts(event.getServer()) && serverSwitchesToState(event, IServer.STATE_STARTED)){
-			new Job(getJobName(event.getServer())) {
-				protected IStatus run(IProgressMonitor monitor) {
-					modifyDeploymentScanners(event);
-					return Status.OK_STATUS;
-				}
-			}.schedule();
-		}
-	}
-	
-	protected String getJobName(IServer server) {
-		return Messages.bind(Messages.UpdateDeploymentScannerJobName, server.getName() );
-	}
-	
-	protected void modifyDeploymentScanners(ServerEvent event){
-		String[] folders = getDeployLocationFolders(event.getServer());
-		ensureScannersAdded(event.getServer(), folders);
-	}
-	
-	protected String[] getDeployLocationFolders(IServer server) {
-		JBossServer ds = (JBossServer)ServerConverter.getJBossServer(server);
-		ArrayList<String> folders = new ArrayList<String>();
-		String type = ds.getDeployLocationType();
-	
-		// inside server first, always there
-		IJBossServerPublishMethodType publishType = DeploymentPreferenceLoader.getCurrentDeploymentMethodType(server);
-		String insideServer = null;
-		if( publishType.getId().equals(LocalPublishMethod.LOCAL_PUBLISH_METHOD)) {
-			insideServer = ds.getDeployFolder(IDeployableServer.DEPLOY_SERVER);
-		} else {
-			insideServer = ds.createPublishMethod().getPublishDefaultRootFolder(ds.getServer());
-		}
-		folders.add(insideServer);
-		
-		// metadata
-		if( type.equals(JBossServer.DEPLOY_METADATA)) {
-			String metadata = JBossServer.getDeployFolder(ds, JBossServer.DEPLOY_METADATA);
-			if( !folders.contains(metadata))
-				folders.add(metadata);
-		}
-		
-		// custom
-		if( type.equals(JBossServer.DEPLOY_CUSTOM)) {
-			String serverHome = null;
-			if (server != null && server.getRuntime()!= null && server.getRuntime().getLocation() != null) {
-				serverHome = server.getRuntime().getLocation().toString();
-			}
-			String custom = JBossServer.getDeployFolder(ds, JBossServer.DEPLOY_CUSTOM);
-			if( !folders.contains(custom) && !custom.equals(serverHome))
-				folders.add(custom);
-		}
-
-		IModule[] modules2 = org.eclipse.wst.server.core.ServerUtil.getModules(server.getServerType().getRuntimeType().getModuleTypes());
-		if (modules2 != null) {
-			int size = modules2.length;
-			for (int i = 0; i < size; i++) {
-				IModule[] module = new IModule[] { modules2[i] };
-				IStatus status = server.canModifyModules(module, null, null);
-				if (status != null && status.getSeverity() != IStatus.ERROR) {
-					String tempFolder = ds.getDeploymentLocation(module, false).toString();
-					if( !folders.contains(tempFolder))
-						folders.add(tempFolder);
-				}
-			}
-		}
-		folders.remove(insideServer); // doesn't need to be added to deployment scanner
-		String[] folders2 = (String[]) folders.toArray(new String[folders.size()]);
-		return folders2;
-	}
 }
