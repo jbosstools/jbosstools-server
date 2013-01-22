@@ -65,6 +65,6 @@ public class ServerModeSection extends ServerEditorSection {
 	}
 
 	private Composite createPublishMethodComposite(Composite parent) {
-		return new ServerModeSectionComposite(parent, SWT.None, getUICallback());
+		return new ServerModeSectionComposite(parent, SWT.None, getUICallback(), getManagedForm());
 	}
 }
