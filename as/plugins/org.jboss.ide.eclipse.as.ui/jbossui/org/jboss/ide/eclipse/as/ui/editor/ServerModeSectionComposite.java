@@ -173,10 +173,12 @@ public class ServerModeSectionComposite extends Composite {
 	    deployTypeChanged(false);
 	}
 	
+	/* Return the currently selected behavior mode's ui object */
 	public IDeploymentTypeUI getCurrentBehaviourUI() {
 		return currentUIAddition.getUI();
 	}
 	
+	/* Set what our default local and remote modes are */
 	protected String getDefaultServerMode() {
 		return LocalPublishMethod.LOCAL_PUBLISH_METHOD;
 	}
@@ -187,14 +189,17 @@ public class ServerModeSectionComposite extends Composite {
 		return "rse"; //$NON-NLS-1$
 	}
 	
+	/* Can this server type expose management port? */
 	protected boolean showExecuteShellCheckbox() {
 		return true;
 	}
+	/* Can this server type listen on all ports via -b flag? */
 	protected boolean showListenOnAllHostsCheckbox() {
 		JBossExtendedProperties props = getExtendedProperties();
 		return props == null ? false : props.runtimeSupportsBindingToAllInterfaces();
 	}
 
+	/* Can this server type expose management port? */
 	protected boolean showExposeManagementCheckbox() {
 		JBossExtendedProperties props = getExtendedProperties();
 		return props == null ? false : props.runtimeSupportsExposingManagement();
@@ -208,24 +213,28 @@ public class ServerModeSectionComposite extends Composite {
 		return props;
 	}
 	
+	// Set the 'ignore launch' boolean on the server wc
 	protected void executeShellToggled() {
 		callback.execute(new ChangeServerPropertyCommand(
 				callback.getServer(), IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, 
 				new Boolean(executeShellScripts.getSelection()).toString(), Messages.EditorDoNotLaunchCommand));
 	}
 	
+	// Set the listen on all hosts boolean on the server wc
 	protected void listenOnAllHostsToggled() {
 		callback.execute(new ChangeServerPropertyCommand(
 				callback.getServer(), IJBossToolingConstants.LISTEN_ALL_HOSTS, 
 				new Boolean(listenOnAllHosts.getSelection()).toString(), Messages.EditorListenOnAllHostsCommand));
 	}
 
+	// Set the expose management boolean on the server wc
 	protected void exposeManagementToggled() {
 		callback.execute(new ChangeServerPropertyCommand(
 				callback.getServer(), IJBossToolingConstants.EXPOSE_MANAGEMENT_SERVICE, 
 				new Boolean(exposeManagement.getSelection()).toString(), Messages.EditorExposeManagementCommand));
 	}
 
+	/* An internal wrapper class to help with instantiating the local / rse widgets */
 	private class DeployUIAdditions {
 		private String behaviourName;
 		private String behaviourId;
@@ -257,6 +266,7 @@ public class ServerModeSectionComposite extends Composite {
 		}
 	}
 
+	// Load the deploy type ui elements (local / rse / other)
 	private void loadDeployTypeData() {
 		deployAdditions = new ArrayList<DeployUIAdditions>();
 		Behaviour b = BehaviourModel.getModel().getBehaviour(callback.getServer().getServerType().getId());
@@ -268,6 +278,10 @@ public class ServerModeSectionComposite extends Composite {
 		}
 	}
 
+	/* 
+	 * The deploy type has changed, and so we should swap out
+	 * the deploy type widget to show the new mode's composite 
+	 */
 	private void deployTypeChanged(boolean fireEvent) {
 		int index = deployTypeCombo.getSelectionIndex();
 		if( index != -1 ) {
@@ -279,11 +293,15 @@ public class ServerModeSectionComposite extends Composite {
 			}
 			preferencePageBook.showPage(ui);
 			Control page = preferencePageBook.getCurrentPage();
-			Point point = page.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
-			FormData data = (FormData) preferencePageBook.getLayoutData();
-			data.bottom = new FormAttachment(0, point.x-50);
-			System.out.println(data);
+			
 			if (form != null) {
+				// If we have a managed form, we can recompute the size of 
+				// the local / rse composite to fit the contents. 
+				// If we don't have a managed form, we should continue with the 
+				// largest size possible. 
+				Point point = page.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
+				FormData data = (FormData) preferencePageBook.getLayoutData();
+				data.bottom = new FormAttachment(0, point.x-50);
 				form.getForm().layout(true, true);
 				form.getForm().reflow(true);
 			}
@@ -308,10 +326,12 @@ public class ServerModeSectionComposite extends Composite {
 		}
 	}
 
+	/* Deploy only server does not expose the various local / rse widgets */
 	private boolean shouldChangeDefaultDeployType(IServerWorkingCopy server) {
 		return !server.getServerType().getId().equals(IJBossToolingConstants.DEPLOY_ONLY_SERVER);
 	}
 	
+	/* A command which sets a key / value pair on the server */
 	public static class ChangeServerPropertyCommand extends ServerCommand {
 		private IServerWorkingCopy server;
 		private String key;
