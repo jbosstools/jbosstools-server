@@ -22,6 +22,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.ui.editor.ServerEditorPart;
 import org.eclipse.wst.server.ui.editor.ServerEditorSection;
+import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI.IServerModeUICallback;
 
 public class ServerModeSection extends ServerEditorSection {
@@ -57,7 +58,7 @@ public class ServerModeSection extends ServerEditorSection {
 		Section publishTypeSection = toolkit2.createSection(parent,
 				ExpandableComposite.TWISTIE | ExpandableComposite.EXPANDED
 						| ExpandableComposite.TITLE_BAR);
-		publishTypeSection.setText("Server Behaviour");
+		publishTypeSection.setText(Messages.ServerBehavior);
 		Control c = createPublishMethodComposite(publishTypeSection);
 		publishTypeSection.setClient(c);
 		publishTypeSection.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL));

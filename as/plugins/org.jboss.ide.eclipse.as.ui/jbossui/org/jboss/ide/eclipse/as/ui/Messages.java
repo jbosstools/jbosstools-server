@@ -298,6 +298,8 @@ public class Messages extends NLS {
     public static String ServerContent_Label_Not_Connected;
     public static String ServerContent_Label_Retrieval_Error;
     public static String ServerContent_Job_Title;
+    
+    public static String ServerBehavior;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME,

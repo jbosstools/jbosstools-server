@@ -167,7 +167,7 @@ public class JBossServerWizardFragment extends WizardFragment implements IComple
 	
 	protected void createBehaviourGroup(Composite main) {
 		Group g = new Group(main, SWT.NONE);
-		g.setText("Server Behaviour");
+		g.setText(Messages.ServerBehavior);
 		FormData groupData = new FormData();
 		groupData.left = new FormAttachment(0,5);
 		groupData.right = new FormAttachment(100, -5);
