@@ -31,11 +31,12 @@ public class EnableHandler extends AbstractHandler {
 					monitor.beginTask(jobName, 200);
 					IPath loc = ((IProject) e).getLocation();
 					
+					SubProgressMonitor mon2 = new SubProgressMonitor(monitor, 100);
+					ArchivesModel.instance().registerProject(loc, mon2);
+					
 					SubProgressMonitor mon1 = new SubProgressMonitor(monitor, 100);
 					ProjectUtils.addProjectNature(((IProject) e), ArchivesNature.NATURE_ID, mon1);
 					
-					SubProgressMonitor mon2 = new SubProgressMonitor(monitor, 100);
-					ArchivesModel.instance().registerProject(loc, mon2);
 					return Status.OK_STATUS;
 				}
 			}.schedule();
