@@ -14,7 +14,10 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.widgets.Display;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveModelListener;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeDelta;
 import org.jboss.ide.eclipse.archives.ui.PrefsInitializer;
 import org.jboss.ide.eclipse.archives.ui.PrefsInitializer.IArchivesPreferenceListener;
 import org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProviderDelegate.WrappedProject;
@@ -28,10 +31,11 @@ import org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProviderDelega
  *
  */
 public class ArchivesRootBridgeContentProvider
-	implements ITreeContentProvider, IArchivesPreferenceListener {
+	implements ITreeContentProvider, IArchivesPreferenceListener, IArchiveModelListener {
 	private ArchivesContentProviderDelegate delegate;
 	public ArchivesRootBridgeContentProvider() {
 		delegate = new ArchivesContentProviderDelegate(WrappedProject.CATEGORY);
+		ArchivesModel.instance().addModelListener(this);
 		PrefsInitializer.addListener(this);
 	}
 
@@ -79,5 +83,16 @@ public class ArchivesRootBridgeContentProvider
 
 	public void preferenceChanged(String key, String val) {
 		viewer.refresh();
+	}
+
+	public void modelChanged(IArchiveNodeDelta delta) {
+		int k = delta.getKind();
+		if( k == IArchiveNodeDelta.NODE_REGISTERED || k == IArchiveNodeDelta.NODE_UNREGISTERED) {
+			Display.getDefault().asyncExec(new Runnable() { 
+				public void run() {
+					viewer.refresh();
+				}
+			});
+		}
 	}
 }
