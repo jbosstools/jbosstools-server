@@ -10,7 +10,10 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.SPACE;
+
 import org.eclipse.core.runtime.IAdaptable;
+import org.jboss.ide.eclipse.as.core.Messages;
 
 /**
  *
@@ -19,6 +22,10 @@ public class JBossAS710ExtendedProperties extends JBossAS7ExtendedProperties {
 
 	public JBossAS710ExtendedProperties(IAdaptable obj) {
 		super(obj);
+	}
+	
+	public String getRuntimeTypeVersionString() {
+		return "7.x"; //$NON-NLS-1$
 	}
 
 	public int getJMXProviderType() {
