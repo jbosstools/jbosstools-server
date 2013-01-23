@@ -69,6 +69,7 @@ public class ArchivesRootBridgeContentProvider
 
 	public void dispose() {
 		PrefsInitializer.removeListener(this);
+		ArchivesModel.instance().removeModelListener(this);
 	}
 
 	private Viewer viewer;
