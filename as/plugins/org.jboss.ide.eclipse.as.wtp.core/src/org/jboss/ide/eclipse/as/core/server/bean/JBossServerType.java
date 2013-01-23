@@ -67,7 +67,7 @@ public class JBossServerType implements IJBossToolingConstants {
 			"as" + File.separatorChar + //$NON-NLS-1$
 			"server" + File.separatorChar + //$NON-NLS-1$
 			"main", //$NON-NLS-1$
-			new String[]{V7_0,V7_1}, new AS7ServerTypeCondition());
+			new String[]{V7_0,V7_1,V7_2}, new AS7ServerTypeCondition());
 	
 	public static final JBossServerType EAP_STD = new JBossServerType(
 			"EAP_STD",//$NON-NLS-1$
@@ -120,7 +120,7 @@ public class JBossServerType implements IJBossToolingConstants {
 			UNKNOWN_STR,
 			UNKNOWN_STR,
 			"",//$NON-NLS-1$
-			new String[]{V7_0, V7_1, V6_0, V6_1, V5_1, V5_2, V5_3, V5_0, V4_3, V4_2, V4_0, V3_2}, null);
+			new String[]{V7_0, V7_1, V7_2, V6_0, V6_1, V5_1, V5_2, V5_3, V5_0, V4_3, V4_2, V4_0, V3_2}, null);
 
 	public String toString() {
 		return id;
@@ -364,6 +364,7 @@ public class JBossServerType implements IJBossToolingConstants {
 		public String getServerTypeId(String version) {
 			if( version.equals(V7_0)) return IJBossToolingConstants.SERVER_AS_70;
 			if( version.equals(V7_1)) return IJBossToolingConstants.SERVER_AS_71;
+			if( version.equals(V7_2)) return IJBossToolingConstants.SERVER_AS_71;
 			return null;
 		}
 	}
