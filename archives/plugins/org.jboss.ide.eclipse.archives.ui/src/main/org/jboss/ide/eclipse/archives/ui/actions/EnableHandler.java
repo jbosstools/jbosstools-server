@@ -35,8 +35,7 @@ public class EnableHandler extends AbstractHandler {
 					ProjectUtils.addProjectNature(((IProject) e), ArchivesNature.NATURE_ID, mon1);
 					
 					SubProgressMonitor mon2 = new SubProgressMonitor(monitor, 100);
-					ArchivesModel.instance().registerProject(loc, mon2);
-					
+					ArchivesModel.instance().registerProject(loc, mon2);					
 					return Status.OK_STATUS;
 				}
 			}.schedule();
