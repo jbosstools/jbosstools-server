@@ -37,7 +37,6 @@ import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.TaskModel;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
-import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
@@ -194,12 +193,7 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 		updateErrorMessage();
 		saveDetailsInRuntime();
 	}
-	protected String getWarningString() {
-		if( getHomeVersionWarning() != null )
-			return getHomeVersionWarning();
-		return null;
-	}
-
+	
 	protected String getErrorString() {
 		if (nameText == null)
 			// not yet initialized. no errors
@@ -227,19 +221,9 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 			}
 		}
 		
-		// Forced error strings for as7.0 and 7.1 incompatabilities. 
-		String version = getVersionString(new File(homeDir));
-		IRuntime rt = (IRuntime) getTaskModel().getObject(
-				TaskModel.TASK_RUNTIME);
-		String adapterVersion = rt.getRuntimeType().getVersion();
-		
-		if(!isEAP() && ((adapterVersion.equals("7.0") && !version.startsWith("7.0."))
-				|| (adapterVersion.equals("7.1") && version.startsWith("7.0."))) ) {
-			return NLS.bind(Messages.rwf_homeIncorrectVersionError, adapterVersion, version);
-		}
-		if( isEAP() && !adapterVersion.equals("6.0") )
-				return NLS.bind(Messages.rwf_homeIncorrectVersionError, adapterVersion, version);
-		
+		String versionWarning = getHomeVersionWarning(); 
+		if( versionWarning != null )
+			return versionWarning;
 		return null;
 	}
 
@@ -251,8 +235,6 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	}
 
 	private boolean standaloneScriptExists() {
-		ServerBeanLoader loader = new ServerBeanLoader(new File(homeDir));
-		String version = loader.getFullServerVersion();
 		String s = JBossServerType.AS7.getSystemJarPath();
 		IPath p = new Path(homeDir).append(s);
 		return p.toFile().exists();
