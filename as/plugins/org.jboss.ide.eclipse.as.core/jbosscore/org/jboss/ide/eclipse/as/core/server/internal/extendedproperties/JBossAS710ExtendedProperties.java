@@ -25,7 +25,7 @@ public class JBossAS710ExtendedProperties extends JBossAS7ExtendedProperties {
 	}
 	
 	public String getRuntimeTypeVersionString() {
-		return "7.x"; //$NON-NLS-1$
+		return "7.1"; //$NON-NLS-1$
 	}
 
 	public int getJMXProviderType() {
