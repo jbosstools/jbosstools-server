@@ -20,6 +20,10 @@ public class JBossAS6ExtendedProperties extends JBossExtendedProperties {
 		super(adaptable);
 	}
 	
+	public String getRuntimeTypeVersionString() {
+		return "6.x"; //$NON-NLS-1$
+	}
+
 	public IServerModuleStateVerifier getModuleStateVerifier() {
 		return new JBoss6ModuleStateVerifier();
 	}

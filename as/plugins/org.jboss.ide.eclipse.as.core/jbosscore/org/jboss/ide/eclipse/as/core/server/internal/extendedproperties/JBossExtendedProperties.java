@@ -10,6 +10,8 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.SPACE;
+
 import java.io.File;
 import java.text.MessageFormat;
 
@@ -26,6 +28,7 @@ import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossLT6ModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 /**
@@ -37,6 +40,21 @@ import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 public class JBossExtendedProperties extends ServerExtendedProperties {
 	public JBossExtendedProperties(IAdaptable adaptable) {
 		super(adaptable);
+	}
+	
+	/* 
+	 * Get the version string for this runtime type. 
+	 * Some subclasses may choose to respond with a .x suffix. 
+	 */
+	public String getRuntimeTypeVersionString() {
+		return runtime.getRuntimeType().getVersion();
+	}
+	
+	public boolean runtimeIsEapType() {
+		return runtime != null
+				&& runtime.getRuntimeType() != null
+				&& runtime.getRuntimeType().getId() != null
+				&& runtime.getRuntimeType().getId().startsWith(IJBossToolingConstants.EAP_RUNTIME_PREFIX);
 	}
 
 	public boolean runtimeSupportsBindingToAllInterfaces() {

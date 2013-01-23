@@ -47,6 +47,8 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.JavaUtils;
@@ -61,16 +63,9 @@ public class LocalJBossServerRuntime extends AbstractLocalJBossServerRuntime imp
 
 	@Override
 	protected String getNextRuntimeName() {
-		String rtVersion = getRuntime().getRuntimeType().getVersion(); 
-		String prefix = Messages.jboss;
-		if( isEAP()) {
-			prefix = Messages.jboss + " EAP"; //$NON-NLS-1$
-			if( rtVersion.equals(IJBossToolingConstants.V5_0)) {
-				rtVersion = "5.x"; //$NON-NLS-1$
-			}
-		} else if( rtVersion.equals(IJBossToolingConstants.V6_0)) {
-			rtVersion = "6.x"; //$NON-NLS-1$
-		}
+		JBossExtendedProperties props = (JBossExtendedProperties)getRuntime().getAdapter(JBossExtendedProperties.class);
+		String prefix = props.runtimeIsEapType() ? Messages.jboss + " EAP" : Messages.jboss; //$NON-NLS-1$
+		String rtVersion = props.getRuntimeTypeVersionString();
 		String base = prefix + SPACE + rtVersion + SPACE + Messages.runtime;
 		return getNextRuntimeName(base);
 	}
