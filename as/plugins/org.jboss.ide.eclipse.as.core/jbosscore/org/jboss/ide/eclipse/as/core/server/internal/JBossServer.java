@@ -49,9 +49,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.ExpressionResolverUtil;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
@@ -70,13 +68,16 @@ public class JBossServer extends DeployableServer
 		setAttribute("auto-publish-time", 1); //$NON-NLS-1$
 		setAttribute("id", getAttribute("id", (String)"") + new Date().getTime()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		setUsername("admin"); //$NON-NLS-1$
+		
+		// TODO move this to an extended properties setting
 		boolean defaultServerDeployment = isAS50() || isEAP(getServer());
 		setDeployLocationType(defaultServerDeployment ? IDeployableServer.DEPLOY_SERVER : IDeployableServer.DEPLOY_METADATA);
 		setAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
 	}
 	
+	@Deprecated
 	public static boolean isEAP(IServer server) {
-		return server.getServerType().getId().startsWith(IJBossToolingConstants.EAP_SERVER_PREFIX);
+		return RuntimeUtils.isEAP(server.getServerType().getRuntimeType());
 	}
 
 	private boolean isAS50() {

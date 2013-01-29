@@ -13,44 +13,10 @@
 package org.jboss.ide.eclipse.as.rse.core;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.debug.core.ILaunch;
-import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.debug.core.model.LaunchConfigurationDelegate;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
-import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
-import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 
-public class RSEJBoss7StartLaunchDelegate extends AbstractRSELaunchDelegate {
-
-	@Override
-	public void actualLaunch(LaunchConfigurationDelegate launchConfig,
-			ILaunchConfiguration configuration, String mode, ILaunch launch,
-			IProgressMonitor monitor) throws CoreException {
-		IDelegatingServerBehavior beh = JBossServerBehaviorUtils.getServerBehavior(configuration);
-		if (LaunchCommandPreferences.isIgnoreLaunchCommand(beh.getServer())) {
-			((DelegatingServerBehavior)beh).setServerStarting();
-			((DelegatingServerBehavior)beh).setServerStarted();
-			return;
-		}
-		((DelegatingServerBehavior)beh).setServerStarting();
-		String command = RSELaunchConfigProperties.getStartupCommand(configuration);
-		executeRemoteCommand(command, beh);
-	}
-
-	@Override
-	public void preLaunch(ILaunchConfiguration configuration, String mode,
-			ILaunch launch, IProgressMonitor monitor) throws CoreException {
-	}
-
-	@Override
-	public void postLaunch(ILaunchConfiguration configuration, String mode,
-			ILaunch launch, IProgressMonitor monitor) throws CoreException {
-	}
-
+public class RSEJBoss7StartLaunchDelegate extends RSEJBossStartLaunchDelegate {
 	@Override
 	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IServer server)
 			throws CoreException {

@@ -16,10 +16,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
-import org.eclipse.jst.j2ee.project.facet.JavaUtilityProjectCreationDataModelProvider;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.JavaUtils;
 
@@ -57,7 +57,7 @@ public abstract class AbstractStartLaunchConfigurator extends AbstractLaunchConf
 		getProperties().setEndorsedDir(getEndorsedDir(jbossRuntime), launchConfig);
 		getProperties().setMainType(getMainType(), launchConfig);
 		getProperties().setWorkingDirectory(getWorkingDirectory(jbossServer, jbossRuntime), launchConfig);
-		getProperties().setEnvironmentVariables(getEnvironmentVariables(jbossRuntime), launchConfig);
+		getProperties().setEnvironmentVariables(getEnvironmentVariables(), launchConfig);
 		getProperties().setClasspathProvider(getClasspathProvider(), launchConfig);
 		getProperties().setClasspath(getClasspath(jbossServer, jbossRuntime, getProperties().getClasspath(launchConfig)), launchConfig);
 		getProperties().setUseDefaultClassPath(isUseDefaultClasspath(), launchConfig);
@@ -100,12 +100,18 @@ public abstract class AbstractStartLaunchConfigurator extends AbstractLaunchConf
 	protected String getClasspathProvider() {
 		return DEFAULT_CP_PROVIDER_ID;
 	}
-
-	protected Map<String, String> getEnvironmentVariables(IJBossServerRuntime runtime) {
-		return runtime.getDefaultRunEnvVars();
+	
+	protected JBossExtendedProperties getExtendedProperties() {
+		return (JBossExtendedProperties)getJbossServer().getServer().getAdapter(JBossExtendedProperties.class);
 	}
 
-	protected abstract String getDefaultVMArguments(IJBossServerRuntime runtime);
+	protected Map<String, String> getEnvironmentVariables() {
+		return getExtendedProperties().getDefaultLaunchArguments().getDefaultRunEnvVars();
+	}
+
+	protected String getDefaultVMArguments(IJBossServerRuntime runtime) {
+		return getExtendedProperties().getDefaultLaunchArguments().getStartDefaultVMArgs();
+	}
 	
 	
 	protected String getJreContainerPath(IJBossServerRuntime runtime) {

@@ -34,6 +34,8 @@ import org.jboss.ide.eclipse.as.core.ExtensionManager.IServerJMXRunnable;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
+import org.jboss.ide.eclipse.as.core.extensions.polling.ProcessTerminatedPoller;
+import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.IProcessProvider;
@@ -42,6 +44,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.LocalS
 import org.jboss.ide.eclipse.as.core.util.IEventCodes;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
+import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ThreadUtils;
 
@@ -81,8 +84,12 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 			stopPolling();
 			forceStop();
 		} else {
-			setServerStopping();
-			gracefullStop();
+			getActualBehavior().setServerStopping();
+			IStatus result = gracefullStop();
+			if (!result.isOK()) {
+				nextStopRequiresForce = true;
+				getActualBehavior().setServerStarted();
+			}
 		}
 	}
 	
@@ -102,7 +109,7 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 					if (stopProcess.getExitValue() != 0) {
 						// TODO: correct concurrent access to process, pollThread and nextStopRequiresForce
 						// Stop process exit value was NOT zero, so the stop process failed
-						setServerStarted();
+						getActualBehavior().setServerStarted();
 						cancelPolling(Messages.STOP_FAILED_MESSAGE);
 						nextStopRequiresForce = true;
 					}
@@ -129,7 +136,8 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 			}
 		}
 		process = null;
-		setServerStopped();
+		getActualBehavior().setServerStopped();
+		nextStopRequiresForce = false;
 	}
 	
 	protected void addForceStopFailedEvent(DebugException e) {
@@ -329,5 +337,20 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 		}
 		return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
 				MessageFormat.format(Messages.ServerHasNoRuntimeVM, getServer().getName())); 
+	}
+	
+	protected void pollServer(final boolean expectedState) {
+		// IF shutting down a process started OUTSIDE of eclipse, force use the web poller, 
+		// since there's no process watch for shutdowns
+		if( expectedState == IServerStatePoller.SERVER_DOWN && !isProcessRunning() ) {
+			IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, getServer());
+			// Only override the poller if it is currently set to the process terminated poller
+			if( poller.getPollerType().getId().equals(ProcessTerminatedPoller.POLLER_ID))
+				poller = PollThreadUtils.getPoller(WebPortPoller.WEB_POLLER_ID);
+			pollServer(expectedState, poller);
+		} else {
+			IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, getServer());
+			pollServer(expectedState, poller);
+		}
 	}
 }

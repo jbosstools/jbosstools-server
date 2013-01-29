@@ -47,12 +47,12 @@ public class RuntimeUtils {
 	}
 	
 	public static boolean isEAP(IRuntime runtime) {
-		IJBossServerRuntime jbossRuntime = getJBossServerRuntime(runtime);
-		if (jbossRuntime == null) {
-			return false;
-		}
-		return jbossRuntime.isEAP();
-		
+		return runtime != null && isEAP(runtime.getRuntimeType());
+	}
+	
+	public static boolean isEAP(IRuntimeType type) {
+		return type != null && type.getId() != null 
+				&& type.getId().startsWith(IJBossToolingConstants.EAP_RUNTIME_PREFIX);
 	}
 	
 	public static IJBossServerRuntime checkedGetJBossServerRuntime(IRuntime runtime) throws CoreException {

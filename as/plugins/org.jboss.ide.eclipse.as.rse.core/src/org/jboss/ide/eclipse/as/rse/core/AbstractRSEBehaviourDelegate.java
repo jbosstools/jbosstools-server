@@ -37,7 +37,7 @@ public abstract class AbstractRSEBehaviourDelegate extends AbstractJBossBehaviou
 			return;
 		}
 
-		setServerStopping();
+		getActualBehavior().setServerStopping();
 		IStatus shutdownStatus = gracefullStop();
 		if (!shutdownStatus.isOK()) {
 			// The shutdown failed. This indicates a bad command or nonfunctional shutdown command
@@ -46,7 +46,7 @@ public abstract class AbstractRSEBehaviourDelegate extends AbstractJBossBehaviou
 			
 			if( getPollThread() != null )
 				getPollThread().cancel();
-			setServerStarted();
+			getActualBehavior().setServerStarted();
 		} // else wait for the poller to set the proper state
 	}
 
@@ -61,7 +61,7 @@ public abstract class AbstractRSEBehaviourDelegate extends AbstractJBossBehaviou
 			return;
 		String localPid = pid;
 		pid = null;
-		setServerStopped();
+		getActualBehavior().setServerStopped();
 		if( localPid != null ) {
 			try {
 				ServerShellModel model = RSEHostShellModel.getInstance().getModel(getServer());
@@ -84,9 +84,10 @@ public abstract class AbstractRSEBehaviourDelegate extends AbstractJBossBehaviou
 	public void onServerStopping() {
 		pollServer(IServerStatePoller.SERVER_DOWN);
 	}
-	@Override
+	
+	@Override @Deprecated
 	protected void setServerStopped() {
-		super.setServerStopped();
+		getActualBehavior().setServerStopped();
 		pid = null;
 	}
 	

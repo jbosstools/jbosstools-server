@@ -85,19 +85,11 @@ public class JBossLaunchConfigProperties {
 		return launchConfig.hasAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY);
 	}
 
-	public void setServerId(String serverId, ILaunchConfigurationWorkingCopy launchConfig) {
-		if (isSet(serverId)) {
-			launchConfig.setAttribute(SERVER_ID, serverId);
-		}
-	}
 
 	public String getServerId(ILaunchConfiguration launchConfig) throws CoreException {
 		return launchConfig.getAttribute(SERVER_ID, (String) null);
 	}
 
-	public boolean isServerIdSet(ILaunchConfiguration launchConfig) throws CoreException {
-		return launchConfig.hasAttribute(SERVER_ID);
-	}
 
 	public void setHost(String host, ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
 		if (isSet(host)) {
@@ -293,4 +285,17 @@ public class JBossLaunchConfigProperties {
 		}
 		return null;
 	}
+	
+	/* The server framework sets this id. We shouldn't be setting this */
+	@Deprecated
+	public void setServerId(String serverId, ILaunchConfigurationWorkingCopy launchConfig) {
+		if (isSet(serverId)) {
+			launchConfig.setAttribute(SERVER_ID, serverId);
+		}
+	}
+	@Deprecated
+	public boolean isServerIdSet(ILaunchConfiguration launchConfig) throws CoreException {
+		return launchConfig.hasAttribute(SERVER_ID);
+	}
+
 }
