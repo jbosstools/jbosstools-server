@@ -253,23 +253,13 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 		saveRuntimeLocationInPreferences(rt);
 	}
 
+	
 	@Override
-	protected void saveDetailsInRuntime() {
-		IRuntime r = (IRuntime) getTaskModel()
-				.getObject(TaskModel.TASK_RUNTIME);
-		IRuntimeWorkingCopy runtimeWC = r.isWorkingCopy() ? ((IRuntimeWorkingCopy) r)
-				: r.createWorkingCopy();
-
-		if( name != null )
-			runtimeWC.setName(name);
-		if( homeDir != null )
-			runtimeWC.setLocation(new Path(homeDir));
-		LocalJBoss7ServerRuntime srt = (LocalJBoss7ServerRuntime) runtimeWC.loadAdapter(
+	protected void saveConfigurationDetailsInRuntime(IRuntimeWorkingCopy wc) {
+		LocalJBoss7ServerRuntime srt = (LocalJBoss7ServerRuntime) wc.loadAdapter(
 				LocalJBoss7ServerRuntime.class, new NullProgressMonitor());
-		if( selectedVM != null )
-			srt.setVM(selectedVM);
 		if( configDirTextVal != null && !"".equals(configDirTextVal))
 			srt.setConfigurationFile(configDirTextVal);
-		getTaskModel().putObject(TaskModel.TASK_RUNTIME, runtimeWC);
 	}
+
 }
