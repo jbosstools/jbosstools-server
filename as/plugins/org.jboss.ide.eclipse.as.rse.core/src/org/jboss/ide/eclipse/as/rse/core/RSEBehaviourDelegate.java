@@ -23,7 +23,8 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.rse.services.shells.IHostShell;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
-import org.jboss.ide.eclipse.as.core.util.ServerUtil;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 
 public class RSEBehaviourDelegate extends AbstractRSEBehaviourDelegate {
@@ -38,9 +39,10 @@ public class RSEBehaviourDelegate extends AbstractRSEBehaviourDelegate {
 	
 	@Override
 	protected String getShutdownCommand(IServer server) throws CoreException {
-		String defaultCommand = ServerUtil.checkedGetBehaviorDelegate(server).getDefaultStopArguments();
+		JBossServer jbs = (JBossServer)ServerConverter.getJBossServer(getServer());
+		String defaultArgs = jbs.getExtendedProperties().getDefaultLaunchArguments().getDefaultStopArgs();
 		ILaunchConfiguration config = getServer().getLaunchConfiguration(false, new NullProgressMonitor());
-		return RSELaunchConfigProperties.getShutdownCommand(config, defaultCommand);
+		return RSELaunchConfigProperties.getShutdownCommand(config, defaultArgs);
 	}
 
 	@Override

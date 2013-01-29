@@ -116,13 +116,14 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 
 	@Override
 	protected String getDefaultProgramArguments(JBossServer server, IJBossServerRuntime runtime) {
-		return runtime.getDefaultRunArgs();
+		return server.getExtendedProperties().getDefaultLaunchArguments().getStartDefaultProgramArgs();
 	}
 
 	@Override
 	protected String getServerHome(IJBossServerRuntime runtime) {
 		return runtime.getRuntime().getLocation().toString();
 	}
+
 
 	@Override
 	protected String getServerConfig(IJBossServerRuntime runtime) {
@@ -134,11 +135,6 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 	protected String getEndorsedDir(IJBossServerRuntime runtime) {
 		// not needed
 		return null;
-	}
-
-	@Override
-	protected String getDefaultVMArguments(IJBossServerRuntime runtime) {
-		return runtime.getDefaultRunVMArgs();
 	}
 
 	@Override
