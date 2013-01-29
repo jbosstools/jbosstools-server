@@ -120,11 +120,16 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	// jre fields
 	protected List<IVMInstall> installedJREs;
 	protected String[] jreNames;
-	protected int defaultVMIndex;
+	protected int defaultVMIndex = -1;
 	protected IVMInstall selectedVM;
 	protected String originalName;
 
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
+		/*
+		 * Any state should be CLEARED right now or in enclosed methods and loaded from the model.
+		 * WTP creates only one instance of this wizard fragment for the entire
+		 * life of the workspace.
+		 */
 		this.handle = handle;
 		Composite main = new Composite(parent, SWT.NONE);
 		main.setLayout(new FormLayout());
@@ -764,20 +769,25 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 
 	// JRE methods
 	protected void updateJREs() {
-		// get all installed JVMs
+		defaultVMIndex = 0;
+
+		// get all valid JVMs
+		IVMInstall runtimesInstall = getRuntime().getHardVM();
+		
 		installedJREs = getValidJREs();
 		// get names
 		int size = installedJREs.size();
-		size = size+1;
 		int index = 0;
-		jreNames = new String[size];
+		jreNames = new String[size+1];
 		jreNames[index++] = NLS.bind(Messages.rwf_DefaultJREForExecEnv, getRuntime().getExecutionEnvironment().getId());
 		 
 		for (int i = 0; i < installedJREs.size(); i++) {
 			IVMInstall vmInstall = installedJREs.get(i);
+			if( vmInstall.equals(runtimesInstall)) {
+				defaultVMIndex = index;
+			}
 			jreNames[index++] = vmInstall.getName();
 		}
-		defaultVMIndex = 0;
 	}
 	
 	
@@ -801,20 +811,32 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 				.getObject(TaskModel.TASK_RUNTIME);
 		IRuntimeWorkingCopy runtimeWC = r.isWorkingCopy() ? ((IRuntimeWorkingCopy) r)
 				: r.createWorkingCopy();
+		
+		saveBasicDetailsInRuntime(runtimeWC);
+		saveConfigurationDetailsInRuntime(runtimeWC);
+		getTaskModel().putObject(TaskModel.TASK_RUNTIME, runtimeWC);
+	}
 
+	protected void saveBasicDetailsInRuntime(IRuntimeWorkingCopy runtimeWC) {
+		IJBossServerRuntime srt = (IJBossServerRuntime) runtimeWC.loadAdapter(
+				IJBossServerRuntime.class, new NullProgressMonitor());
 		if( name != null )
 			runtimeWC.setName(name);
 		if( homeDir != null)
 			runtimeWC.setLocation(new Path(homeDir));
-		IJBossServerRuntime srt = (IJBossServerRuntime) runtimeWC.loadAdapter(
-				IJBossServerRuntime.class, new NullProgressMonitor());
 		if( selectedVM != null )
 			srt.setVM(selectedVM);
+		else
+			srt.setVM(null);
+	}
+	
+	protected void saveConfigurationDetailsInRuntime(IRuntimeWorkingCopy wc) {
+		IJBossServerRuntime srt = (IJBossServerRuntime) wc.loadAdapter(
+				IJBossServerRuntime.class, new NullProgressMonitor());
 		if( configurations != null && configurations.getSelectedConfiguration() != null )
 			srt.setJBossConfiguration(configurations.getSelectedConfiguration());
 		if( configDirText != null )
 			srt.setConfigLocation(configDirTextVal);
-		getTaskModel().putObject(TaskModel.TASK_RUNTIME, runtimeWC);
 	}
 
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
