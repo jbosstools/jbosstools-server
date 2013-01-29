@@ -160,7 +160,7 @@ public class JBossDefaultLaunchArguments implements IDefaultLaunchArguments, IJB
 	}
 	
 	protected boolean isEmpty(String s) {
-		return s != null && s.length() > 0;
+		return s == null || s.length() == 0;
 	}
 	
 	@Override
