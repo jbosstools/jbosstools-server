@@ -14,7 +14,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.internal.JBoss6ModuleStateVerifier;
 
-public class JBossEAP5ExtendedProperties extends JBossAS6ExtendedProperties {
+public class JBossEAP5ExtendedProperties extends JBossExtendedProperties {
 
 	public JBossEAP5ExtendedProperties(IAdaptable adaptable) {
 		super(adaptable);
