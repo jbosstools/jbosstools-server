@@ -11,7 +11,6 @@
 package org.jboss.ide.eclipse.as.jmx.integration;
 
 import org.eclipse.core.runtime.Plugin;
-import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -31,7 +30,6 @@ public class Activator extends Plugin {
 	public Activator() {
 	}
 
-	private JMXServerLifecycleListener listener = new JMXServerLifecycleListener();
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
@@ -39,7 +37,6 @@ public class Activator extends Plugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		UnitedServerListenerManager.getDefault().addListener(listener);
 	}
 
 	/*
@@ -47,7 +44,6 @@ public class Activator extends Plugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
-		UnitedServerListenerManager.getDefault().removeListener(listener);
 		plugin = null;
 		super.stop(context);
 	}

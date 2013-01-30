@@ -8,31 +8,34 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.jmx.integration;
+package org.jboss.ide.eclipse.as.core.server.internal;
 
 import java.net.URI;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerEvent;
+import org.jboss.ide.eclipse.as.core.ExtensionManager;
+import org.jboss.ide.eclipse.as.core.ExtensionManager.IServerJMXRunnable;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
-import org.jboss.ide.eclipse.as.core.server.internal.AbstractDeploymentScannerAdditions;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.IEventCodes;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
-import org.jboss.tools.jmx.core.IJMXRunnable;
-import org.jboss.tools.jmx.core.JMXException;
 
-public class JMXServerLifecycleListener extends AbstractDeploymentScannerAdditions {
+public class JMXServerDeploymentScannerAdditions extends AbstractDeploymentScannerAdditions {
+	public JMXServerDeploymentScannerAdditions() {
+		
+	}
 	public boolean accepts(IServer server) {
 		if( !LocalPublishMethod.LOCAL_PUBLISH_METHOD.equals(getServerMode(server)))
 			return false;
@@ -49,25 +52,26 @@ public class JMXServerLifecycleListener extends AbstractDeploymentScannerAdditio
 	
 	protected void modifyDeploymentScanners(ServerEvent event){
 		String[] folders = getDeployLocationFolders(event.getServer());
-		Trace.trace(Trace.STRING_FINER, "Adding " + folders.length + " Deployment Scanners via JMX"); //$NON-NLS-1$
+		Trace.trace(Trace.STRING_FINER, "Adding " + folders.length + " Deployment Scanners via JMX"); //$NON-NLS-1$ //$NON-NLS-2$
 		if( folders.length > 0 ) 
 			ensureScannersAdded(event.getServer(), folders);
 		Trace.trace(Trace.STRING_FINER, "Finished Adding Deployment Scanners via JMX"); //$NON-NLS-1$
 	}
 
 	protected void ensureScannersAdded(final IServer server, final String[] folders) {
-		IJMXRunnable r = new IJMXRunnable() {
+		ExtensionManager.getDefault().getJMXRunner().beginTransaction(server, this);
+		IServerJMXRunnable r = new IServerJMXRunnable() {
 			public void run(MBeanServerConnection connection) throws Exception {
 				ensureDeployLocationAdded(server, connection, folders);
 			}
 		};
 		try {
-			JBossJMXConnectionProviderModel.getDefault().run(server, r);
-		} catch( JMXException jmxe ) {
-			IStatus s = jmxe.getStatus();
-			IStatus newStatus = new Status(s.getSeverity(), s.getPlugin(), IEventCodes.ADD_DEPLOYMENT_FOLDER_FAIL, 
-					Messages.AddingJMXDeploymentFailed, s.getException());
-			ServerLogger.getDefault().log(server, newStatus);
+			ExtensionManager.getDefault().getJMXRunner().run(server, r);
+		} catch( CoreException jmxe ) {
+			IStatus status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, 
+					IEventCodes.ADD_DEPLOYMENT_FOLDER_FAIL, 
+					Messages.AddingJMXDeploymentFailed, jmxe);
+			ServerLogger.getDefault().log(server, status);
 		}
 	}
 	
@@ -75,7 +79,7 @@ public class JMXServerLifecycleListener extends AbstractDeploymentScannerAdditio
 			MBeanServerConnection connection, String[] folders2) throws Exception {
 		for( int i = 0; i < folders2.length; i++ ) {
 			String asURL = encode(folders2[i]);
-			Trace.trace(Trace.STRING_FINER, "Adding Deployment Scanner: " + asURL);
+			Trace.trace(Trace.STRING_FINER, "Adding Deployment Scanner: " + asURL); //$NON-NLS-1$
 			ObjectName name = new ObjectName(IJBossRuntimeConstants.DEPLOYMENT_SCANNER_MBEAN_NAME);
 			Object o = connection.invoke(name, IJBossRuntimeConstants.addURL, new Object[] { asURL }, new String[] {String.class.getName()});
 			System.out.println(o);

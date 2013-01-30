@@ -23,7 +23,9 @@ import org.jboss.ide.eclipse.as.core.server.internal.AbstractDeploymentScannerAd
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 
 public class LocalJBoss7DeploymentScannerAdditions extends AbstractDeploymentScannerAdditions {
-	
+	public LocalJBoss7DeploymentScannerAdditions() {
+		
+	}
 	public boolean accepts(IServer server) {
 		if( !LocalPublishMethod.LOCAL_PUBLISH_METHOD.equals(getServerMode(server)))
 			return false;

@@ -17,6 +17,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.IPollResultListener;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
@@ -100,6 +101,17 @@ public abstract class AbstractJBossBehaviourDelegate extends AbstractBehaviourDe
 	protected IDelegatingServerBehavior getActualBehavior() {
 		return actualBehavior;
 	}
+	
+	@Override
+	public void onServerStarted() {
+		// The server is started. Let's add our deployment scanners
+		IServer s = getActualBehavior().getServer();
+		JBossExtendedProperties properties = (JBossExtendedProperties)s.loadAdapter(JBossExtendedProperties.class, null);
+		if( properties != null ) {
+			properties.getDeploymentScannerModifier().updateDeploymentScanners(s);
+		}
+	}
+
 	
 	/* 
 	 * The following 4 methods are not interface methods and should not be used anymore.

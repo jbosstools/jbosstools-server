@@ -17,8 +17,10 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
+import org.jboss.ide.eclipse.as.core.server.IDeploymentScannerModifier;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ModuleStateVerifier;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7DeploymentScannerAdditions;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 
@@ -81,6 +83,10 @@ public class JBossAS7ExtendedProperties extends JBossExtendedProperties {
 		if( server != null)
 			return new JBoss70DefaultLaunchArguments(server);
 		return new JBoss70DefaultLaunchArguments(runtime);
+	}
+
+	public IDeploymentScannerModifier getDeploymentScannerModifier() {
+		return new LocalJBoss7DeploymentScannerAdditions();
 	}
 
 }

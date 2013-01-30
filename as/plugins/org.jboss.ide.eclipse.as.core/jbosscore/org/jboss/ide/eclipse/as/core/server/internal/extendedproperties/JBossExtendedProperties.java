@@ -22,10 +22,12 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver;
 import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
+import org.jboss.ide.eclipse.as.core.server.IDeploymentScannerModifier;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossLT6ModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.JMXServerDeploymentScannerAdditions;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
@@ -126,7 +128,11 @@ public class JBossExtendedProperties extends ServerExtendedProperties {
 	public IServerModuleStateVerifier getModuleStateVerifier() {
 		return new JBossLT6ModuleStateVerifier();
 	}
-
+	
+	public IDeploymentScannerModifier getDeploymentScannerModifier() {
+		return new JMXServerDeploymentScannerAdditions();
+	}
+	
 	public IDefaultLaunchArguments getDefaultLaunchArguments() {
 		// to avoid making too many classes with one method, 
 		// we'll handle below 6 here. Otherwise we need another 

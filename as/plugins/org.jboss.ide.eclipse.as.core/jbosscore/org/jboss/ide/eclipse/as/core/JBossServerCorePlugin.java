@@ -31,7 +31,6 @@ import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerListener;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7DeploymentScannerAdditions;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.osgi.framework.BundleContext;
 
@@ -62,7 +61,6 @@ public class JBossServerCorePlugin extends Plugin  {
 		return extensions;
 	}
 	
-	private LocalJBoss7DeploymentScannerAdditions jboss7Additions;
 	/**
 	 * This method is called upon plug-in activation
 	 */
@@ -77,8 +75,6 @@ public class JBossServerCorePlugin extends Plugin  {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				// Start the array of models that need to be started
-				jboss7Additions = new LocalJBoss7DeploymentScannerAdditions();
-				UnitedServerListenerManager.getDefault().addListener(jboss7Additions);
 				FacetedProjectFramework.addListener(JBoss4xEarFacetInstallListener.getDefault(), IFacetedProjectEvent.Type.POST_INSTALL);
 				return Status.OK_STATUS;
 			}
@@ -103,7 +99,6 @@ public class JBossServerCorePlugin extends Plugin  {
 		UnitedServerListenerManager.getDefault().removeListener(ServerListener.getDefault());
 		UnitedServerListenerManager.getDefault().removeListener(XPathModel.getDefault());
 		FacetedProjectFramework.removeListener(JBoss4xEarFacetInstallListener.getDefault());
-		UnitedServerListenerManager.getDefault().removeListener(jboss7Additions);
 	}
 
 	/**

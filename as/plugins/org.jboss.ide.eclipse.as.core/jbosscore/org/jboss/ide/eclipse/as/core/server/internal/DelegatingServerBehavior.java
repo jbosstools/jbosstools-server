@@ -104,8 +104,6 @@ public class DelegatingServerBehavior extends DeployableServerBehavior implement
 		getDelegate().onServerStopping();
 	}
 	
-
-	
 	public void setServerStopped() {
 		super.setServerStopped();
 		IModule[] mods = getServer().getModules();

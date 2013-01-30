@@ -23,8 +23,8 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractDeploymentScannerAdditions;
+import org.jboss.ide.eclipse.as.core.server.internal.JMXServerDeploymentScannerAdditions;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7DeploymentScannerAdditions;
-import org.jboss.ide.eclipse.as.jmx.integration.JMXServerLifecycleListener;
 import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.internal.utils.ResourceUtils;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
@@ -153,7 +153,7 @@ public class DeploymentScannerAdditionsTest extends TestCase  {
 		}
 		boolean accepts = new LocalJBoss7DeploymentScannerAdditions().accepts(s);
 		assertFalse(accepts);
-		accepts = new JMXServerLifecycleListener().accepts(s);
+		accepts = new JMXServerDeploymentScannerAdditions().accepts(s);
 		assertFalse(accepts);
 	}
 
