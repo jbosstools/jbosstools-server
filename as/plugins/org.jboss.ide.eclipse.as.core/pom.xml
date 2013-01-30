@@ -8,5 +8,6 @@
 	</parent>
 	<groupId>org.jboss.tools.as.plugins</groupId>
 	<artifactId>org.jboss.ide.eclipse.as.core</artifactId> 
+	<version>2.4.1-SNAPSHOT</version>
 	<packaging>eclipse-plugin</packaging>
 </project>
