@@ -30,7 +30,6 @@ import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
 import org.jboss.tools.as.test.core.parametized.server.ServerParameterUtils;
 import org.junit.After;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -52,7 +51,6 @@ public class MockArgsTests extends TestCase  {
 		ASMatrixTests.cleanup();
 	}
 	
-	@Test
 	protected IServer runAndVerifyArgs() {
 		IServer server = ServerCreationTestUtils.createMockServerWithRuntime(serverType, serverType);
 		IServer fixed = setMockDetails(server);

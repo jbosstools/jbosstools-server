@@ -35,7 +35,7 @@ public class XPathModelTest extends TestCase {
 	private String serverType;
 	@Parameters
 	public static Collection<Object[]> data() {
-		 return ServerParameterUtils.asCollection(ServerParameterUtils.getAllJBossServerTypeParamterers());
+		 return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerTypeParamterers());
 	}
 	@Before
 	public void setUp() {
