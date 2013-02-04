@@ -90,7 +90,7 @@ public class ServerCreationTestUtils extends Assert {
 		boolean isEap = false;
 		if(serverType.startsWith(IJBossToolingConstants.EAP_SERVER_PREFIX))
 			isEap = true;
-		String name = serverType + (isEap ? "/jbossas" : "");
+		String name = serverType;
 		IPath serverDir = null;
 		if( IJBossToolingConstants.SERVER_AS_32.equals(serverType) ||
 				IJBossToolingConstants.SERVER_AS_40.equals(serverType) ||
@@ -100,6 +100,7 @@ public class ServerCreationTestUtils extends Assert {
 				IJBossToolingConstants.SERVER_AS_60.equals(serverType) ||
 				IJBossToolingConstants.SERVER_EAP_43.equals(serverType) ||
 				IJBossToolingConstants.SERVER_EAP_50.equals(serverType)) {
+			name += (isEap ? "/jbossas" : "");
 			serverDir = createAS6AndBelowMockServerDirectory(serverType + getRandomString(), 
 					asSystemJar.get(serverType), "default");
 		} else if( IJBossToolingConstants.SERVER_AS_70.equals(serverType) ||
@@ -176,7 +177,17 @@ public class ServerCreationTestUtils extends Assert {
 			serverJarBelongs.toFile().mkdirs();
 			File serverJarLoc = BundleUtils.getFileLocation("serverMock/" + serverJar);
 			FileUtil.fileSafeCopy(serverJarLoc, serverJarBelongs.append("anything.jar").toFile());
+			
+			IPath standalonexml = loc.append("standalone").append("configuration").append("standalone.xml");
+			standalonexml.toFile().getParentFile().mkdirs();
+			standalonexml.toFile().createNewFile();
+			
+			loc.append("jboss-modules.jar").toFile().createNewFile();
+			loc.append("bin").toFile().mkdirs();
 		} catch(CoreException ce) {
+			FileUtil.completeDelete(loc.toFile());
+			return null;
+		} catch(IOException ioe) {
 			FileUtil.completeDelete(loc.toFile());
 			return null;
 		}
@@ -194,6 +205,13 @@ public class ServerCreationTestUtils extends Assert {
 			IPath manifest = loc.append("modules/org/jboss/as/product/eap/dir/META-INF/MANIFEST.MF");
 			String manString = "JBoss-Product-Release-Name: EAP\nJBoss-Product-Release-Version: 6.0.0.Alpha\nJBoss-Product-Console-Slot: eap";
 			IOUtil.setContents(manifest.toFile(), manString);
+			
+			IPath standalonexml = loc.append("standalone").append("configuration").append("standalone.xml");
+			standalonexml.toFile().getParentFile().mkdirs();
+			standalonexml.toFile().createNewFile();
+			
+			loc.append("jboss-modules.jar").toFile().createNewFile();
+			loc.append("bin").toFile().mkdirs();
 		} catch(CoreException ce) {
 			FileUtil.completeDelete(loc.toFile());
 			return null;

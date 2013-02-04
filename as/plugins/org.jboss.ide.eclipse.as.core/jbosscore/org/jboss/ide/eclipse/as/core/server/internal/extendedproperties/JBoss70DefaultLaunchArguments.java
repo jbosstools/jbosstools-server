@@ -45,7 +45,7 @@ public class JBoss70DefaultLaunchArguments extends JBossDefaultLaunchArguments {
 		return "-Xms64m -Xmx512m -XX:MaxPermSize=256m "; //$NON-NLS-1$
 	}
 	protected String getResolverWarning() {
-		return " -Dorg.jboss.resolver.warning=true ";  //$NON-NLS-1$
+		return "-Dorg.jboss.resolver.warning=true ";  //$NON-NLS-1$
 	}
 	protected String getJBossJavaFlags() {
 		IPath serverHome = getServerHome();
@@ -58,7 +58,7 @@ public class JBoss70DefaultLaunchArguments extends JBossDefaultLaunchArguments {
 		IPath logConfig = serverHome.append(c.AS7_STANDALONE).append(c.CONFIGURATION).append(c.LOGGING_PROPERTIES);
 
 		String ret = 
-			" -Djava.awt.headless=true" + //$NON-NLS-1$
+			"-Djava.awt.headless=true" + //$NON-NLS-1$
 			SPACE + QUOTE + SYSPROP + JB7_BOOT_LOG_ARG + EQ + bootLog.toString() + QUOTE + 
 			SPACE + QUOTE + SYSPROP + JB7_LOGGING_CONFIG_FILE + EQ + 
 			"file:" + logConfig.toString() + QUOTE + //$NON-NLS-1$  

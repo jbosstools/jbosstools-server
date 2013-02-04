@@ -28,7 +28,7 @@ public class JBoss71DefaultLaunchArguments extends JBoss70DefaultLaunchArguments
 	}
 	
 	protected String getJBossJavaFlags() {
-		return " -Djboss.modules.system.pkgs=org.jboss.byteman " + //$NON-NLS-1$
+		return "-Djboss.modules.system.pkgs=org.jboss.byteman " + //$NON-NLS-1$
 				super.getJBossJavaFlags();
 	}
 }

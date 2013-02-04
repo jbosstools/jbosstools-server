@@ -41,6 +41,17 @@ public class JBossDefaultLaunchArguments implements IDefaultLaunchArguments, IJB
 		this.server = s;
 		serverHome = getLocalRuntimeHomeDirectory();
 	}
+
+	/*
+	 * If created via just a runtime, only the local information
+	 * can be used. This method is left here for API backwards 
+	 * compatability ONLY, and is NOT endorsed API.
+	 */
+	public JBossDefaultLaunchArguments(IRuntime rt) {
+		this.runtime = rt;
+		serverHome = getLocalRuntimeHomeDirectory();
+	}
+
 	
 	private void setServerHome(IPath path) {
 		this.serverHome = path;
@@ -49,16 +60,7 @@ public class JBossDefaultLaunchArguments implements IDefaultLaunchArguments, IJB
 	protected IPath getServerHome() {
 		return serverHome;
 	}
-	
-	/*
-	 * If created via just a runtime, only the local information
-	 * can be used. This method is left here for API backwards 
-	 * compatability ONLY, and is NOT endorsed API.
-	 */
-	public JBossDefaultLaunchArguments(IRuntime rt) {
-		this.runtime = rt;
-	}
-	
+		
 	protected IRuntime getRuntime() {
 		return server == null ? runtime : server.getRuntime();
 	}

@@ -204,7 +204,8 @@ public class JBossLaunchConfigProperties {
 		if (isSet(endorsedDir)) {
 			String vmArguments = getVMArguments(launchConfig);
 			vmArguments = ArgsUtil.setArg(vmArguments,
-					null, IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.ENDORSED_DIRS, endorsedDir);
+					null, IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.ENDORSED_DIRS, 
+					IJBossRuntimeConstants.QUOTE + endorsedDir + IJBossRuntimeConstants.QUOTE);
 			setVmArguments(vmArguments, launchConfig);
 		}
 	}
