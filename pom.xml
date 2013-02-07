@@ -18,13 +18,5 @@
 		<module>jmx</module>
 		<module>site</module>
 	</modules>
-	<profiles>
-		<profile>
-			<id>bootstrap</id>
-			<modules>
-				<module>../jbosstools-base</module>
-			</modules>
-		</profile>
-	</profiles>
 </project>
 	
