@@ -20,4 +20,9 @@ public class JBossEAP60ExtendedProperties extends JBossAS710ExtendedProperties {
 	public JBossEAP60ExtendedProperties(IAdaptable obj) {
 		super(obj);
 	}
+	
+	public String getRuntimeTypeVersionString() {
+		return "6.0"; //$NON-NLS-1$
+	}
+
 }
