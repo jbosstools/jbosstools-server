@@ -27,6 +27,7 @@ public interface IJBossToolingConstants {
 	public static final String EAP_43 = "org.jboss.ide.eclipse.as.runtime.eap.43"; //$NON-NLS-1$
 	public static final String EAP_50 = "org.jboss.ide.eclipse.as.runtime.eap.50"; //$NON-NLS-1$
 	public static final String EAP_60 = "org.jboss.ide.eclipse.as.runtime.eap.60"; //$NON-NLS-1$
+	public static final String EAP_61 = "org.jboss.ide.eclipse.as.runtime.eap.61"; //$NON-NLS-1$
 	public static final String[] ALL_JBOSS_RUNTIMES = new String[] {
 		AS_32,AS_40,AS_42,AS_50,AS_51,AS_60,AS_70,AS_71,EAP_43,EAP_50,EAP_60
 	};
@@ -45,6 +46,7 @@ public interface IJBossToolingConstants {
 	public static final String SERVER_EAP_43 = "org.jboss.ide.eclipse.as.eap.43"; //$NON-NLS-1$
 	public static final String SERVER_EAP_50 = "org.jboss.ide.eclipse.as.eap.50"; //$NON-NLS-1$
 	public static final String SERVER_EAP_60 = "org.jboss.ide.eclipse.as.eap.60"; //$NON-NLS-1$
+	public static final String SERVER_EAP_61 = "org.jboss.ide.eclipse.as.eap.61"; //$NON-NLS-1$
 	public static final String[] ALL_JBOSS_SERVERS = new String[] {
 		SERVER_AS_32,SERVER_AS_40,SERVER_AS_42,SERVER_AS_50,SERVER_AS_51,
 		SERVER_AS_60,SERVER_AS_70,SERVER_AS_71,SERVER_EAP_43,SERVER_EAP_50,SERVER_EAP_60
@@ -85,7 +87,9 @@ public interface IJBossToolingConstants {
 	public static final String DOWNLOAD_RT_702 = "org.jboss.tools.runtime.core.as.702"; //$NON-NLS-1$
 	public static final String DOWNLOAD_RT_710 = "org.jboss.tools.runtime.core.as.710"; //$NON-NLS-1$
 	public static final String DOWNLOAD_RT_711 = "org.jboss.tools.runtime.core.as.711"; //$NON-NLS-1$
+	// NEW_SERVER_ADAPTER  Add the new version string above this line
 
+	
 	
 	/* Files or folders inside the TOOLING */
 	public static final String LOG = "log"; //$NON-NLS-1$
@@ -109,7 +113,6 @@ public interface IJBossToolingConstants {
 	public static final String DEFAULT_PROPS_71 = "jboss.71.default.ports.properties"; //$NON-NLS-1$
 	public static final String DEFAULT_PROPS_EAP_43 = "jboss.eap.43.default.ports.properties"; //$NON-NLS-1$
 	public static final String DEFAULT_PROPS_EAP_50 = "jboss.eap.50.default.ports.properties"; //$NON-NLS-1$
-	public static final String DEFAULT_PROPS_EAP_60 = "jboss.eap.60.default.ports.properties"; //$NON-NLS-1$
 	// NEW_SERVER_ADAPTER Add the new properties file for this server adapter above this line
 	
 	// Poller constants
