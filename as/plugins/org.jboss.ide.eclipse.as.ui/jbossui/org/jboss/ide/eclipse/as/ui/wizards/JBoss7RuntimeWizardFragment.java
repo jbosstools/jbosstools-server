@@ -235,7 +235,7 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	}
 
 	private boolean standaloneScriptExists() {
-		String s = JBossServerType.AS7.getSystemJarPath();
+		String s = getSystemJarPath();
 		IPath p = new Path(homeDir).append(s);
 		return p.toFile().exists();
 	}
