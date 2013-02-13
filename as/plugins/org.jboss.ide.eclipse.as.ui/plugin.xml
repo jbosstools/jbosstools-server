@@ -40,7 +40,11 @@
       <fragment
             class="org.jboss.ide.eclipse.as.ui.wizards.JBoss7RuntimeWizardFragment"
             id="org.jboss.ide.eclipse.as.ui.jboss7RuntimeWizardFragment"
-            typeIds="%RuntimeTypesJBoss7"/>
+            typeIds="org.jboss.ide.eclipse.as.runtime.70,org.jboss.ide.eclipse.as.runtime.71,org.jboss.ide.eclipse.as.runtime.eap.60"/>
+      <fragment
+            class="org.jboss.ide.eclipse.as.ui.wizards.JBoss72Eap61RuntimeWizardFragment"
+            id="org.jboss.ide.eclipse.as.ui.jboss72Eap61RuntimeWizardFragment"
+            typeIds="org.jboss.ide.eclipse.as.runtime.eap.61"/>
       <fragment
             class="org.jboss.ide.eclipse.as.ui.wizards.JBoss7ServerWizardFragment"
             id="org.jboss.ide.eclipse.as.ui.jboss7ServerWizardFragment"

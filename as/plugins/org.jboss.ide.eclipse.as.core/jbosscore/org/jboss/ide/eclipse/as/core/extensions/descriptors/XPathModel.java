@@ -258,7 +258,6 @@ public class XPathModel extends UnitedServerListener {
 	private static final String ATTRIBUTE_SUFFIX = "_ATTRIBUTE";//$NON-NLS-1$
 	private static final String FILE_SUFFIX = "_FILE";//$NON-NLS-1$
 	static {
-		IPath properties = new Path(IJBossToolingConstants.PROPERTIES);
 		rtToPortsFile = new HashMap<String, URL>();
 		rtToPortsFile.put(IConstants.AS_32, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_32));
 		rtToPortsFile.put(IConstants.AS_40, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_40));
@@ -271,6 +270,7 @@ public class XPathModel extends UnitedServerListener {
 		rtToPortsFile.put(IConstants.EAP_43, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_EAP_43));
 		rtToPortsFile.put(IConstants.EAP_50, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_EAP_50));
 		rtToPortsFile.put(IConstants.EAP_60, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_71));
+		rtToPortsFile.put(IConstants.EAP_61, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_71));
 		// TODO NEW_SERVER_ADAPTER Add the new server ID to port mapping file above this line 
 	}
 	
