@@ -112,7 +112,8 @@ public class ServerUtil {
 			return false;
 		return type.getId().equals(IJBossToolingConstants.SERVER_AS_70)
 				 || type.getId().equals(IJBossToolingConstants.SERVER_AS_71)
-				 || type.getId().equals(IJBossToolingConstants.SERVER_EAP_60);
+				 || type.getId().equals(IJBossToolingConstants.SERVER_EAP_60)
+				 || type.getId().equals(IJBossToolingConstants.SERVER_EAP_61);
 	}
 	
 	public static void createStandardFolders(IServer server) {
