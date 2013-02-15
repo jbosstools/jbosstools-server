@@ -157,7 +157,7 @@ public class ShowInWelcomePageActionProvider extends CommonActionProvider {
 			IContributionItem menuItem = CommonActionProviderUtils.getShowInQuickMenu(menu, true);
 			if (menuItem instanceof MenuManager) {
 				((MenuManager) menuItem).add(action);
-				action.setEnabled(hasURL());
+				action.setEnabled(hasURL() && getServer().getServerState() == IServer.STATE_STARTED);
 			}
 		}
 	}
