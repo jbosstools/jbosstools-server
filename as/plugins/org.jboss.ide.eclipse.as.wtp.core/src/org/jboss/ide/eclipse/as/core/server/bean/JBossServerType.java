@@ -151,7 +151,8 @@ public class JBossServerType implements IJBossToolingConstants {
 			UNKNOWN_STR,
 			UNKNOWN_STR,
 			"",//$NON-NLS-1$
-			new String[]{V7_0, V7_1, V7_2, V6_0, V6_1, V5_1, V5_2, V5_3, V5_0, V4_3, V4_2, V4_0, V3_2}, null);
+			new String[]{V7_0, V7_1, V7_2, V6_0, V6_1, V5_1, V5_2, V5_3, V5_0, V4_3, V4_2, V4_0, V3_2}, 
+			null);
 
 	public String toString() {
 		return id;
@@ -197,8 +198,17 @@ public class JBossServerType implements IJBossToolingConstants {
 		return this.condition.getFullVersion(root, new File(root, getSystemJarPath()));
 	}
 	
+	/**
+	 * This will return a version, if it can be discovered.
+	 * If this is an UNKNOWN server bean, the return 
+	 * value will be null
+	 * 
+	 * @param version
+	 * @return
+	 */
 	public String getServerAdapterTypeId(String version) {
-		return this.condition.getServerTypeId(version);
+		return condition == null ? null :
+			this.condition.getServerTypeId(version);
 	}
 	
 	private static final String IMPLEMENTATION_TITLE = "Implementation-Title"; //$NON-NLS-1$

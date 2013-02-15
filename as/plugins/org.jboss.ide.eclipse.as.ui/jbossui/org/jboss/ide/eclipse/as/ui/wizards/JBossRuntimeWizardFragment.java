@@ -693,7 +693,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	
 	protected String getVersionString(File loc) {
 		String version = new ServerBeanLoader(loc).getFullServerVersion();
-		return version;
+		return version == null ? "UNKNOWN" : version;
 	}
 	
 	protected String getSystemJarPath() {
