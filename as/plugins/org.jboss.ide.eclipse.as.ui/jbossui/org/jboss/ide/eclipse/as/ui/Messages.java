@@ -63,6 +63,8 @@ public class Messages extends NLS {
 	public static String rwf_Explanation;
 	public static String rwf_NameInUse;
 	public static String rwf_homeMissingFiles;
+	public static String rwf_homeMissingFiles2;
+	public static String rwf_homeIsNotDirectory;
 	public static String rwf_jboss7homeNotValid;
 	public static String rwf_homeIncorrectVersion;
 	public static String rwf_homeIncorrectVersionError;
