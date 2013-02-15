@@ -36,6 +36,8 @@ public class JBossServerType implements IJBossToolingConstants {
 	private static final String JBOSS_PORTLETBRIDGE_PATH = "portletbridge"; //$NON-NLS-1$
 	private static final String JBOSS_PORTAL_SAR = "jboss-portal.sar";  //$NON-NLS-1$
 	private static final String UNKNOWN_STR = "UNKNOWN"; //$NON-NLS-1$
+	private static final String EAP60_DIR_META_INF = "modules/org/jboss/as/product/eap/dir/META-INF"; //$NON-NLS-1$
+	private static final String EAP61_DIR_META_INF = "modules/system/layers/base/org/jboss/as/product/eap/dir/META-INF"; //$NON-NLS-1$
 	
 	private String name;
 	private String jbossSystemJarPath;
@@ -94,7 +96,6 @@ public class JBossServerType implements IJBossToolingConstants {
 			new String[]{V6_0}, new EAP6ServerTypeCondition());
 	
 	
-	/* EAP 6.1 is the same as the unreleased AS 7.2 */
 	public static final JBossServerType AS72 = new JBossServerType(
 			"AS", //$NON-NLS-1$
 			"Application Server", //$NON-NLS-1$
@@ -109,19 +110,19 @@ public class JBossServerType implements IJBossToolingConstants {
 				+ "main", //$NON-NLS-1$
 			new String[]{V7_2}, new AS72ServerTypeCondition());
 
-	
-//	TODO 
-//	public static final JBossServerType EAP61 = new JBossServerType(
-//			"EAP", //$NON-NLS-1$
-//			"Enterprise Application Platform", //$NON-NLS-1$
-//				"modules" + File.separatorChar +  //$NON-NLS-1$
-//				"org" + File.separatorChar + //$NON-NLS-1$
-//				"jboss" + File.separatorChar + //$NON-NLS-1$
-//				"as" + File.separatorChar + //$NON-NLS-1$
-//				"server" + File.separatorChar + //$NON-NLS-1$
-//				"main", //$NON-NLS-1$
-//			new String[]{V6_1}, new EAP6ServerTypeCondition());
-
+	public static final JBossServerType EAP61 = new JBossServerType(
+			"EAP", //$NON-NLS-1$
+			"Application Server", //$NON-NLS-1$
+			"modules" + File.separatorChar  //$NON-NLS-1$
+				+ "system" + File.separatorChar  //$NON-NLS-1$
+				+ "layers" + File.separatorChar  //$NON-NLS-1$
+				+ "base" + File.separatorChar  //$NON-NLS-1$
+				+ "org" + File.separatorChar //$NON-NLS-1$
+				+ "jboss" + File.separatorChar //$NON-NLS-1$
+				+ "as" + File.separatorChar //$NON-NLS-1$
+				+ "server" + File.separatorChar //$NON-NLS-1$
+				+ "main", //$NON-NLS-1$
+			new String[]{V6_1}, new EAP61ServerTypeCondition());
 	
 	public static final JBossServerType SOAP = new JBossServerType(
 			"SOA-P",//$NON-NLS-1$
@@ -313,7 +314,7 @@ public class JBossServerType implements IJBossToolingConstants {
 			if( V6_0.equals(version)) return IJBossToolingConstants.SERVER_EAP_60;
 			
 			// TODO eap 6.1 will probably need a different adapter type
-			if( V6_1.equals(version)) return IJBossToolingConstants.SERVER_EAP_60;
+			if( V6_1.equals(version)) return IJBossToolingConstants.SERVER_EAP_61;
 			return null;
 		}
 	}
@@ -326,11 +327,21 @@ public class JBossServerType implements IJBossToolingConstants {
 	}
 	
 	public static class EAP6ServerTypeCondition extends AbstractEAPTypeCondition {
+		
 		public boolean isServerRoot(File location) {
-			return getEAP6Version(location, "6.") != null; //$NON-NLS-1$
+			return getEAP6xVersion(location, EAP60_DIR_META_INF, "6.") != null; //$NON-NLS-1$
 		}
 		public String getFullVersion(File location, File systemJarFile) {
-			return getEAP6Version(location, "6."); //$NON-NLS-1$
+			return getEAP6xVersion(location, EAP60_DIR_META_INF, "6."); //$NON-NLS-1$
+		}
+	}
+	
+	public static class EAP61ServerTypeCondition extends AbstractEAPTypeCondition {
+		public boolean isServerRoot(File location) {
+			return getEAP6xVersion(location, EAP61_DIR_META_INF, "6.") != null; //$NON-NLS-1$
+		}
+		public String getFullVersion(File location, File systemJarFile) {
+			return getEAP6xVersion(location, EAP61_DIR_META_INF, "6."); //$NON-NLS-1$
 		}
 	}
 	
@@ -340,7 +351,7 @@ public class JBossServerType implements IJBossToolingConstants {
 	 * @param versionPrefix
 	 * @return
 	 */
-	protected static String getEAP6Version(File location,  String versionPrefix) {
+	protected static String getEAP6xVersion(File location,  String metaInfPath, String versionPrefix) {
 		IPath rootPath = new Path(location.getAbsolutePath());
 		IPath productConf = rootPath.append("bin/product.conf"); //$NON-NLS-1$
 		if( productConf.toFile().exists()) {
@@ -349,7 +360,7 @@ public class JBossServerType implements IJBossToolingConstants {
 				p.load(new FileInputStream(productConf.toFile()));
 				String product = (String) p.get("slot"); //$NON-NLS-1$
 				if("eap".equals(product)) { //$NON-NLS-1$
-					IPath eapDir = rootPath.append("modules/org/jboss/as/product/eap/dir/META-INF"); //$NON-NLS-1$
+					IPath eapDir = rootPath.append(metaInfPath); //$NON-NLS-1$
 					if( eapDir.toFile().exists()) {
 						IPath manifest = eapDir.append("MANIFEST.MF"); //$NON-NLS-1$
 						Properties p2 = new Properties();
