@@ -194,6 +194,7 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 		saveDetailsInRuntime();
 	}
 	
+	@Override
 	protected String getErrorString() {
 		if (nameText == null)
 			// not yet initialized. no errors
@@ -202,11 +203,14 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 		if (getRuntime(name) != null)
 			return Messages.rwf_NameInUse;
 
-		if (!isHomeValid())
-			return NLS.bind(Messages.rwf_homeMissingFiles, getSystemJarPath());
-
 		if (name == null || name.equals("")) //$NON-NLS-1$
 			return Messages.rwf_nameTextBlank;
+		
+		if( !homeDirectoryIsDirectory()) 
+			return Messages.rwf_homeIsNotDirectory;
+		
+		if( !jbossModulesJarExists())
+			return NLS.bind(Messages.rwf_homeMissingFiles2, getJBossModulesJar());
 		
 		if( configDirTextVal != null) {
 			IPath p = new Path(configDirTextVal);
@@ -220,21 +224,39 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 				return Messages.bind(Messages.rwf7_ConfigFileError, actualPath.toString());
 			}
 		}
-		
-		String versionWarning = getHomeVersionWarning(); 
-		if( versionWarning != null )
-			return versionWarning;
 		return null;
 	}
-
+	
+	
 	@Override
-	protected boolean isHomeValid() {
-		if (homeDir == null || homeDir.length() == 0 || !(new File(homeDir).exists()))
-			return false;
-		return standaloneScriptExists();
+	public String getWarningString() {
+		if (!systemJarExists())
+			return NLS.bind(Messages.rwf_homeMissingFiles2, getSystemJarPath());
+		// superclass handles the version warning
+		return super.getWarningString();
 	}
 
-	private boolean standaloneScriptExists() {
+	protected boolean homeDirectoryIsDirectory() {
+		if (homeDir == null || homeDir.length() == 0 )
+			return false;
+		File home = new File(homeDir);
+		if( !home.exists() || !home.isDirectory()) {
+			return false;
+		}
+		return true;
+	}
+
+	protected boolean jbossModulesJarExists() {
+		return getJBossModulesJar().toFile().exists();
+	}
+	
+	protected IPath getJBossModulesJar() {
+		return new Path(homeDir).append("jboss-modules.jar");
+	}
+	
+	
+	
+	protected boolean systemJarExists() {
 		String s = getSystemJarPath();
 		IPath p = new Path(homeDir).append(s);
 		return p.toFile().exists();
