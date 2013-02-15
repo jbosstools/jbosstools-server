@@ -34,7 +34,8 @@ public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
 	protected IStatus gracefullStop() {
 		IServer server = getServer();
 		try {
-			getService().stop(new AS7ManagementDetails(getServer()));
+			AS7ManagementDetails det = new AS7ManagementDetails(getServer());
+			getService().stop(det);
 			return Status.OK_STATUS;
 		} catch (Exception e) {
 			return new Status(

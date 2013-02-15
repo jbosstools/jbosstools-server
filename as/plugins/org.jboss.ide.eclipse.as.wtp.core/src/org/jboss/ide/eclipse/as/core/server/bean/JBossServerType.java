@@ -52,6 +52,7 @@ public class JBossServerType implements IJBossToolingConstants {
 		this.condition = condition;
 	}
 
+	// NEW_SERVER_ADAPTER
 	public static final JBossServerType AS = new JBossServerType(
 			"AS", //$NON-NLS-1$
 			"Application Server", //$NON-NLS-1$
@@ -67,7 +68,7 @@ public class JBossServerType implements IJBossToolingConstants {
 			"as" + File.separatorChar + //$NON-NLS-1$
 			"server" + File.separatorChar + //$NON-NLS-1$
 			"main", //$NON-NLS-1$
-			new String[]{V7_0,V7_1,V7_2}, new AS7ServerTypeCondition());
+			new String[]{V7_0,V7_1}, new AS7ServerTypeCondition());
 	
 	public static final JBossServerType EAP_STD = new JBossServerType(
 			"EAP_STD",//$NON-NLS-1$
@@ -91,6 +92,36 @@ public class JBossServerType implements IJBossToolingConstants {
 				"server" + File.separatorChar + //$NON-NLS-1$
 				"main", //$NON-NLS-1$
 			new String[]{V6_0}, new EAP6ServerTypeCondition());
+	
+	
+	/* EAP 6.1 is the same as the unreleased AS 7.2 */
+	public static final JBossServerType AS72 = new JBossServerType(
+			"AS", //$NON-NLS-1$
+			"Application Server", //$NON-NLS-1$
+			"modules" + File.separatorChar  //$NON-NLS-1$
+				+ "system" + File.separatorChar  //$NON-NLS-1$
+				+ "layers" + File.separatorChar  //$NON-NLS-1$
+				+ "base" + File.separatorChar  //$NON-NLS-1$
+				+ "org" + File.separatorChar //$NON-NLS-1$
+				+ "jboss" + File.separatorChar //$NON-NLS-1$
+				+ "as" + File.separatorChar //$NON-NLS-1$
+				+ "server" + File.separatorChar //$NON-NLS-1$
+				+ "main", //$NON-NLS-1$
+			new String[]{V7_2}, new AS72ServerTypeCondition());
+
+	
+//	TODO 
+//	public static final JBossServerType EAP61 = new JBossServerType(
+//			"EAP", //$NON-NLS-1$
+//			"Enterprise Application Platform", //$NON-NLS-1$
+//				"modules" + File.separatorChar +  //$NON-NLS-1$
+//				"org" + File.separatorChar + //$NON-NLS-1$
+//				"jboss" + File.separatorChar + //$NON-NLS-1$
+//				"as" + File.separatorChar + //$NON-NLS-1$
+//				"server" + File.separatorChar + //$NON-NLS-1$
+//				"main", //$NON-NLS-1$
+//			new String[]{V6_1}, new EAP6ServerTypeCondition());
+
 	
 	public static final JBossServerType SOAP = new JBossServerType(
 			"SOA-P",//$NON-NLS-1$
@@ -120,7 +151,8 @@ public class JBossServerType implements IJBossToolingConstants {
 			UNKNOWN_STR,
 			UNKNOWN_STR,
 			"",//$NON-NLS-1$
-			new String[]{V7_0, V7_1, V7_2, V6_0, V6_1, V5_1, V5_2, V5_3, V5_0, V4_3, V4_2, V4_0, V3_2}, null);
+			new String[]{V7_0, V7_1, V7_2, V6_0, V6_1, V5_1, V5_2, V5_3, V5_0, V4_3, V4_2, V4_0, V3_2}, 
+			null);
 
 	public String toString() {
 		return id;
@@ -166,8 +198,17 @@ public class JBossServerType implements IJBossToolingConstants {
 		return this.condition.getFullVersion(root, new File(root, getSystemJarPath()));
 	}
 	
+	/**
+	 * This will return a version, if it can be discovered.
+	 * If this is an UNKNOWN server bean, the return 
+	 * value will be null
+	 * 
+	 * @param version
+	 * @return
+	 */
 	public String getServerAdapterTypeId(String version) {
-		return this.condition.getServerTypeId(version);
+		return condition == null ? null :
+			this.condition.getServerTypeId(version);
 	}
 	
 	private static final String IMPLEMENTATION_TITLE = "Implementation-Title"; //$NON-NLS-1$
@@ -369,8 +410,29 @@ public class JBossServerType implements IJBossToolingConstants {
 		}
 	}
 	
+	public static class AS72ServerTypeCondition extends AbstractCondition {
+		public boolean isServerRoot(File location) {
+			return checkAS72Version(location, JBAS7_RELEASE_VERSION, "7.2"); //$NON-NLS-1$
+		}
+
+		public String getServerTypeId(String version) {
+			if( version.equals(V7_2)) return IJBossToolingConstants.SERVER_EAP_61;
+			return null;
+		}
+	}
+
+	
 	protected static boolean checkAS7Version(File location, String property, String propPrefix) {
 		String mainFolder = JBossServerType.AS7.jbossSystemJarPath;
+		return checkAS7StyleVersion(location, mainFolder, property, propPrefix);
+	}
+	
+	protected static boolean checkAS72Version(File location, String property, String propPrefix) {
+		String mainFolder = JBossServerType.AS72.jbossSystemJarPath;
+		return checkAS7StyleVersion(location, mainFolder, property, propPrefix);
+	}
+	
+	protected static boolean checkAS7StyleVersion(File location, String mainFolder, String property, String propPrefix) {
 		File f = new File(location, mainFolder);
 		if( f.exists() ) {
 			File[] children = f.listFiles();

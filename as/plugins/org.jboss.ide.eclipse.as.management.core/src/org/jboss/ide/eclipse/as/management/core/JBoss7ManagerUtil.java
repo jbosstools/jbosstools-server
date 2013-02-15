@@ -19,6 +19,7 @@ public class JBoss7ManagerUtil {
 	private static final String JBOSS7_RUNTIME = "org.jboss.ide.eclipse.as.runtime.70"; //$NON-NLS-1$
 	private static final String JBOSS71_RUNTIME = "org.jboss.ide.eclipse.as.runtime.71"; //$NON-NLS-1$
 	private static final String EAP6_RUNTIME = "org.jboss.ide.eclipse.as.runtime.eap.60"; //$NON-NLS-1$
+	private static final String EAP61_RUNTIME = "org.jboss.ide.eclipse.as.runtime.eap.61"; //$NON-NLS-1$
 	
 	
 	public static IJBoss7ManagerService getService(IServer server) throws InvalidSyntaxException  {
@@ -28,6 +29,7 @@ public class JBoss7ManagerUtil {
 		return proxy;
 	}
 	
+	// This may need to be updated for as7-style servers NEW_SERVER_ADAPTER
 	private static String getRequiredVersion(IServer server) {
 		String id = server.getRuntime().getRuntimeType().getId();
 		if (JBOSS7_RUNTIME.equals(id)
@@ -36,6 +38,8 @@ public class JBoss7ManagerUtil {
 			return IJBoss7ManagerService.AS_VERSION_710_Beta; 
 		}
 		if( JBOSS71_RUNTIME.equals(id))
+			return IJBoss7ManagerService.AS_VERSION_710_Beta;
+		if( EAP61_RUNTIME.equals(id)) 
 			return IJBoss7ManagerService.AS_VERSION_710_Beta;
 		return null;
 	}
