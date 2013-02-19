@@ -38,6 +38,8 @@ public interface IJBossBehaviourDelegate {
 
 	public IStatus canChangeState(String launchMode);
 
+	/* Use the JBossExtendedProperties.getDefaultLaunchArguments().getDefaultStopArgs()  instead*/
+	@Deprecated 
 	public String getDefaultStopArguments() throws CoreException;
 	
 	/**

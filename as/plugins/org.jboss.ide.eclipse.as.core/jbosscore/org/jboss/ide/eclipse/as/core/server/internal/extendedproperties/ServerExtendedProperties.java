@@ -15,14 +15,19 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.IServerAttributes;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 
 public class ServerExtendedProperties {
-	protected IServerAttributes server;
+	protected IServer server;
 	protected IRuntime runtime;
+	
+	/**
+	 * Create the properties for either an IServer or an IRuntime
+	 * 
+	 * @param adaptable an IServer or an IRuntime
+	 */
 	public ServerExtendedProperties(IAdaptable adaptable) {
-		if( adaptable instanceof IServerAttributes) {
+		if( adaptable instanceof IServer) {
 			this.server = (IServer)adaptable;
 			this.runtime = server.getRuntime();
 		} else if( adaptable instanceof IRuntime){

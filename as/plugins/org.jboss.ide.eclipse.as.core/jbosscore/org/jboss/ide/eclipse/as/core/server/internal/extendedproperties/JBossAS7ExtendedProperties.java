@@ -16,14 +16,12 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
 import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 
-/**
- *
- */
 public class JBossAS7ExtendedProperties extends JBossExtendedProperties {
 	public JBossAS7ExtendedProperties(IAdaptable obj) {
 		super(obj);
@@ -78,6 +76,11 @@ public class JBossAS7ExtendedProperties extends JBossExtendedProperties {
 	
 	public IServerModuleStateVerifier getModuleStateVerifier() {
 		return new JBoss7ModuleStateVerifier();
+	}
+	public IDefaultLaunchArguments getDefaultLaunchArguments() {
+		if( server != null)
+			return new JBoss70DefaultLaunchArguments(server);
+		return new JBoss70DefaultLaunchArguments(runtime);
 	}
 
 }
