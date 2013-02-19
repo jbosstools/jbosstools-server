@@ -268,8 +268,8 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 				tempDeployFolder.mkdirs();
 			}
             
-			// Make output
-			temp = File.createTempFile(module.getName(), ".tmp", tempDeployFolder); //$NON-NLS-1$
+			// Make output, pad the output name with a few digits to ensure its of sufficient length
+			temp = File.createTempFile(module.getName() + "000", ".tmp", tempDeployFolder); //$NON-NLS-1$ //$NON-NLS-2$
 			IPath tempFile = new Path(temp.getAbsolutePath());
 			IStatus[] e2 = PublishUtil.packModuleIntoJar(moduleTree[moduleTree.length-1].getName(), 
 					resources, tempFile, getPathFilter(moduleTree));;
