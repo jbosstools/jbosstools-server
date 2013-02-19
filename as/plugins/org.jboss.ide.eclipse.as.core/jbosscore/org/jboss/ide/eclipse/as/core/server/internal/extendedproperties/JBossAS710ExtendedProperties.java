@@ -10,14 +10,9 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
-import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.SPACE;
-
 import org.eclipse.core.runtime.IAdaptable;
-import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
 
-/**
- *
- */
 public class JBossAS710ExtendedProperties extends JBossAS7ExtendedProperties {
 
 	public JBossAS710ExtendedProperties(IAdaptable obj) {
@@ -33,5 +28,10 @@ public class JBossAS710ExtendedProperties extends JBossAS7ExtendedProperties {
 	}
 	public boolean runtimeSupportsBindingToAllInterfaces() {
 		return true;
+	}
+	public IDefaultLaunchArguments getDefaultLaunchArguments() {
+		if( server != null)
+			return new JBoss71DefaultLaunchArguments(server);
+		return new JBoss71DefaultLaunchArguments(runtime);
 	}
 }
