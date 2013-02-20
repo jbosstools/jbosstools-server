@@ -42,16 +42,17 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
-import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.JavaUtils;
+import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 
 public class LocalJBossServerRuntime extends AbstractLocalJBossServerRuntime implements IJBossServerRuntime {
 
@@ -64,19 +65,22 @@ public class LocalJBossServerRuntime extends AbstractLocalJBossServerRuntime imp
 	@Override
 	protected String getNextRuntimeName() {
 		JBossExtendedProperties props = (JBossExtendedProperties)getRuntime().getAdapter(JBossExtendedProperties.class);
-		String prefix = props.runtimeIsEapType() ? Messages.jboss + " EAP" : Messages.jboss; //$NON-NLS-1$
+		String prefix = RuntimeUtils.isEAP(getRuntimeType()) ? Messages.jboss + " EAP" : Messages.jboss; //$NON-NLS-1$
 		String rtVersion = props.getRuntimeTypeVersionString();
 		String base = prefix + SPACE + rtVersion + SPACE + Messages.runtime;
 		return getNextRuntimeName(base);
 	}
 	
+	@Deprecated
 	public boolean isEAP() {
-		return getRuntime() != null
-				&& getRuntime().getRuntimeType() != null
-				&& getRuntime().getRuntimeType().getId() != null
-				&& getRuntime().getRuntimeType().getId().startsWith(IJBossToolingConstants.EAP_RUNTIME_PREFIX);
+		return RuntimeUtils.isEAP(getRuntimeType());
 	}
-
+	
+	protected IRuntimeType getRuntimeType() {
+	    IRuntime rt = getRuntime();
+	    return rt == null ? getRuntimeWorkingCopy().getRuntimeType() : rt.getRuntimeType();
+	}
+	
 	@Override
 	public IStatus validate() {
 		IStatus s = super.validate();
