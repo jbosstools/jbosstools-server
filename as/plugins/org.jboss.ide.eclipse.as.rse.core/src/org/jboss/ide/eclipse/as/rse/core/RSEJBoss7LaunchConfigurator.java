@@ -20,6 +20,7 @@ import org.eclipse.wst.server.core.IServerType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.ILaunchConfigConfigurator;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossAS7ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
@@ -87,10 +88,11 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 	}
 	
 	protected String getManagementScript(IServer server) {
-		IServerType type = server.getServerType();
-		if( type.getId().equals(IJBossToolingConstants.SERVER_AS_71) || type.getId().equals(IJBossToolingConstants.SERVER_EAP_60)) {
-			return IJBossRuntimeResourceConstants.AS_71_MANAGEMENT_SCRIPT;
+		JBossExtendedProperties props = (JBossExtendedProperties)server.loadAdapter(JBossExtendedProperties.class, null);
+		if( props instanceof JBossAS7ExtendedProperties ) {
+			return ((JBossAS7ExtendedProperties)props).getJBossAdminScript();
 		}
+		// Return a sensible default
 		return IJBossRuntimeResourceConstants.AS_70_MANAGEMENT_SCRIPT;
 	}
 	

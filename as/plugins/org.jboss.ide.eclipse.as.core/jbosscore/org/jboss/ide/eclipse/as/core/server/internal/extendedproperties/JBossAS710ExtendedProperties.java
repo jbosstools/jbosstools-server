@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 
 public class JBossAS710ExtendedProperties extends JBossAS7ExtendedProperties {
 
@@ -45,4 +46,10 @@ public class JBossAS710ExtendedProperties extends JBossAS7ExtendedProperties {
 		}
 		return new JBoss71DefaultLaunchArguments(runtime);
 	}
+	
+	@Override
+	public String getJBossAdminScript() {
+		return IJBossRuntimeResourceConstants.AS_71_MANAGEMENT_SCRIPT;
+	}
+
 }
