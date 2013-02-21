@@ -60,6 +60,9 @@ public interface IJBossToolingConstants {
 	/* Version Strings */
 	public static final String V3_0 = "3.0"; //$NON-NLS-1$
 	public static final String V3_2 = "3.2"; //$NON-NLS-1$
+	public static final String V3_3 = "3.3"; //$NON-NLS-1$
+	public static final String V3_4 = "3.4"; //$NON-NLS-1$
+	public static final String V3_5 = "3.5"; //$NON-NLS-1$
 	public static final String V4_0 = "4.0"; //$NON-NLS-1$
 	public static final String V4_2 = "4.2"; //$NON-NLS-1$
 	public static final String V4_3 = "4.3"; //$NON-NLS-1$

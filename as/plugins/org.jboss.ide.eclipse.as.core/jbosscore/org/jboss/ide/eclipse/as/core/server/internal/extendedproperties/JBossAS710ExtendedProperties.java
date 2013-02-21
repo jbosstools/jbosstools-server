@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2012 Red Hat, Inc. 
+ * Copyright (c) 2013 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -12,6 +12,8 @@ package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
+import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
+import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 
 public class JBossAS710ExtendedProperties extends JBossAS7ExtendedProperties {
 
@@ -30,8 +32,17 @@ public class JBossAS710ExtendedProperties extends JBossAS7ExtendedProperties {
 		return true;
 	}
 	public IDefaultLaunchArguments getDefaultLaunchArguments() {
-		if( server != null)
+		if( server != null) {
+			ServerBeanLoader l = new ServerBeanLoader(server.getRuntime().getLocation().toFile());
+			if( l.getServerType().getName().equals(JBossServerType.AS7GateIn.getName())) {
+				String version = l.getServerBean().getVersion();
+				if( JBossServerType.V3_3.equals(version) 
+						|| JBossServerType.V3_4.equals(version) ) {
+					return new GateIn33AS71DefaultLaunchArguments(server);
+				}
+			}
 			return new JBoss71DefaultLaunchArguments(server);
+		}
 		return new JBoss71DefaultLaunchArguments(runtime);
 	}
 }

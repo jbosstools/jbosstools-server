@@ -29,7 +29,7 @@ public class ServerBeanLoader {
 		JBossServerType.AS, 
 		JBossServerType.EAP61, JBossServerType.AS72, 
 		JBossServerType.JPP6, JBossServerType.EAP6, 
-		JBossServerType.AS7, JBossServerType.EAP_STD, 
+		JBossServerType.AS7GateIn, JBossServerType.AS7, JBossServerType.EAP_STD, 
 		JBossServerType.SOAP, JBossServerType.SOAP_STD, JBossServerType.EPP, JBossServerType.EAP, 
 		JBossServerType.EWP
 	};

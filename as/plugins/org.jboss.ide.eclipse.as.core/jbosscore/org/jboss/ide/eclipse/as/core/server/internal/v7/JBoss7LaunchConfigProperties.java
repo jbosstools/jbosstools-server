@@ -24,10 +24,13 @@ public class JBoss7LaunchConfigProperties extends JBossLaunchConfigProperties {
 			throws CoreException {
 		if (isSet(mp)) {
 			String progArgs = getProgramArguments(launchConfig);
-			progArgs = ArgsUtil.setArg(progArgs,
-					IJBossRuntimeConstants.DASH + IJBossRuntimeConstants.JB7_MP_ARG, null,  
-					IJBossRuntimeConstants.QUOTE + mp + IJBossRuntimeConstants.QUOTE);
-			setProgramArguments(progArgs, launchConfig);
+			// This is a hack, but other users may wish to add multiple modules folders
+			if( !progArgs.contains(mp)) {
+				progArgs = ArgsUtil.setArg(progArgs,
+						IJBossRuntimeConstants.DASH + IJBossRuntimeConstants.JB7_MP_ARG, null,  
+						IJBossRuntimeConstants.QUOTE + mp + IJBossRuntimeConstants.QUOTE);
+				setProgramArguments(progArgs, launchConfig);
+			}
 		}
 	}
 	public void setConfigurationFile(String file, ILaunchConfigurationWorkingCopy launchConfig)
