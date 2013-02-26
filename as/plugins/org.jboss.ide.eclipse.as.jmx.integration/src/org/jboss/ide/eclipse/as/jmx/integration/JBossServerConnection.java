@@ -165,9 +165,13 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 	protected MBeanServerConnection createConnection(IServer s) throws Exception {
 		Properties p = JMXUtil.getDefaultProperties(s);
 		InitialContext ic = new InitialContext(p);
-		Object obj = ic.lookup(IJBossRuntimeConstants.RMIAdaptor);
-		ic.close();
-		if (obj instanceof MBeanServerConnection) {
+		Object obj = null;
+		try {
+			obj = ic.lookup(IJBossRuntimeConstants.RMIAdaptor);
+		} finally {
+			ic.close();
+		}
+		if (obj != null && obj instanceof MBeanServerConnection) {
 			((MBeanServerConnection)obj).getDomains();
 			return (MBeanServerConnection)obj;
 		}
