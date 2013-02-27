@@ -49,7 +49,7 @@ public interface IJBossToolingConstants {
 	public static final String SERVER_EAP_61 = "org.jboss.ide.eclipse.as.eap.61"; //$NON-NLS-1$
 	public static final String[] ALL_JBOSS_SERVERS = new String[] {
 		SERVER_AS_32,SERVER_AS_40,SERVER_AS_42,SERVER_AS_50,SERVER_AS_51,
-		SERVER_AS_60,SERVER_AS_70,SERVER_AS_71,SERVER_EAP_43,SERVER_EAP_50,SERVER_EAP_60
+		SERVER_AS_60,SERVER_AS_70,SERVER_AS_71,SERVER_EAP_43,SERVER_EAP_50,SERVER_EAP_60, SERVER_EAP_61
 	};
 	// NEW_SERVER_ADAPTER Add the new server id above this line
 	
