@@ -17,9 +17,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerType;
-import org.eclipse.wst.server.core.internal.Base;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.ILaunchConfigConfigurator;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
@@ -38,11 +36,9 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 
 	private IJBossServer jbossServer;
-	private IJBossServerRuntime jbossRuntime;
 
 	public RSEJBoss7LaunchConfigurator(IServer server) throws CoreException {
 		this.jbossServer = ServerConverter.checkedGetJBossServer(server);
-		this.jbossRuntime = jbossServer.getRuntime();
 	}
 
 	@Override
@@ -50,53 +46,65 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 
 		boolean detectStartupCommand = RSELaunchConfigProperties.isDetectStartupCommand(launchConfig, true);
 		String currentStartupCmd = RSELaunchConfigProperties.getStartupCommand(launchConfig);
-		String defaultStartup = getLaunchCommand((JBossServer)jbossServer, jbossRuntime);
+		
+		// Set the default startup command
+		String defaultStartup = getLaunchCommand((JBossServer)jbossServer);
+		RSELaunchConfigProperties.setDefaultStartupCommand(defaultStartup, launchConfig);
+		
+		// If we're auto-detecting, or user has not customized, use the default
 		if( detectStartupCommand || !isSet(currentStartupCmd)) {
 			RSELaunchConfigProperties.setStartupCommand(defaultStartup, launchConfig);
 		}
-		RSELaunchConfigProperties.setDefaultStartupCommand(defaultStartup, launchConfig);
 		
 		boolean detectShutdownCommand = RSELaunchConfigProperties.isDetectShutdownCommand(launchConfig, true);
 		String currentShutdownCmd = RSELaunchConfigProperties.getShutdownCommand(launchConfig);
-		String defaultShutdownCommand = getShutdownCommand((JBossServer)jbossServer, jbossRuntime);
+		
+		// Set the default shutdown command
+		String defaultShutdownCommand = getDefaultShutdownCommand(jbossServer.getServer());
+		RSELaunchConfigProperties.setDefaultShutdownCommand(defaultShutdownCommand, launchConfig);
+		
+		// If we're auto-detecting, or user has not customized, use the default
 		if( detectShutdownCommand || !isSet(currentShutdownCmd)) {
 			RSELaunchConfigProperties.setShutdownCommand(defaultShutdownCommand, launchConfig);
 		}
-		RSELaunchConfigProperties.setDefaultShutdownCommand(defaultShutdownCommand, launchConfig);
 	}
 
-	protected String getShutdownCommand(JBossServer jbossServer, IJBossServerRuntime jbossRuntime) throws CoreException {
-		String rseHome = RSEUtils.getRSEHomeDir(jbossServer.getServer());
+	protected String getDefaultShutdownCommand(IServer server) throws CoreException {
+		String rseHome = RSEUtils.getRSEHomeDir(server);
 		IPath p = new Path(rseHome).append(IJBossRuntimeResourceConstants.BIN);
-		String ret = p.toString() + "/" + getManagementScript(jbossServer);
+		String ret = p.toString() + "/" + getManagementScript(server);
 		
-		boolean exposeManagement = LaunchCommandPreferences.exposesManagement(jbossServer.getServer());
+		boolean exposeManagement = LaunchCommandPreferences.exposesManagement(server);
 		if( exposeManagement ) {
-			String host = jbossServer.getServer().getHost();
+			String host = server.getHost();
 			int defPort = IJBossToolingConstants.AS7_MANAGEMENT_PORT_DEFAULT_PORT;
-			int port = (jbossServer instanceof JBoss7Server) ? 
-					((JBoss7Server)jbossServer).getManagementPort() : defPort;
+			int port = (server instanceof JBoss7Server) ? 
+					((JBoss7Server)server).getManagementPort() : defPort;
 			ret += " --controller=" + host + ":" + port;
 		}
 		ret += " --connect command=:shutdown";
 		return ret;
 	}
 	
-	protected String getManagementScript(JBossServer server) {
-		IServerType type = server.getServer().getServerType();
+	protected String getManagementScript(IServer server) {
+		IServerType type = server.getServerType();
 		if( type.getId().equals(IJBossToolingConstants.SERVER_AS_71) || type.getId().equals(IJBossToolingConstants.SERVER_EAP_60)) {
 			return IJBossRuntimeResourceConstants.AS_71_MANAGEMENT_SCRIPT;
 		}
 		return IJBossRuntimeResourceConstants.AS_70_MANAGEMENT_SCRIPT;
 	}
 	
-	protected String getArgsOverrideHost(IServer server, String preArgs) {
-		// Overrides
-		JBossExtendedProperties props2 = (JBossExtendedProperties)server
+	protected JBossExtendedProperties getExtendedProperties() {
+		JBossExtendedProperties props = (JBossExtendedProperties)jbossServer.getServer()
 				.loadAdapter(JBossExtendedProperties.class,  new NullProgressMonitor());
-		if( !props2.runtimeSupportsBindingToAllInterfaces() ) {
+		return props;
+	}
+	
+	protected String getArgsOverrideHost(IServer server, String preArgs) {
+		if( !getExtendedProperties().runtimeSupportsBindingToAllInterfaces() ) {
 			return preArgs;
 		}
+		
 		String host = server.getHost();
 		if( LaunchCommandPreferences.listensOnAllHosts(jbossServer.getServer())) {
 			host = "0.0.0.0";
@@ -108,7 +116,10 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 	}
 	
 	protected String getArgsOverrideConfigFile(IServer server, String preArgs) {
-		String rseConfigFile = ((Base)jbossServer.getServer()).getAttribute(
+		// This is coded in this way bc rseutils doesn't have code to access the as7 stuff.
+		// the same key is used, but a different default value is needed.
+		// what a mess
+		String rseConfigFile = server.getAttribute(
 				RSEUtils.RSE_SERVER_CONFIG, LocalJBoss7ServerRuntime.CONFIG_FILE_DEFAULT);
 		String programArguments = ArgsUtil.setArg(preArgs, null,
 				IJBossRuntimeConstants.JB7_SERVER_CONFIG_ARG, rseConfigFile
@@ -128,15 +139,15 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 	}
 	
 	
-	protected String getLaunchCommand(JBossServer jbossServer, IJBossServerRuntime jbossRuntime) throws CoreException {
-		String programArguments = getDefaultProgramArguments(jbossServer, jbossRuntime);
+	protected String getLaunchCommand(JBossServer jbossServer) throws CoreException {
+		String programArguments = getDefaultProgramArguments(jbossServer.getServer());
 		programArguments = getArgsOverrideHost(jbossServer.getServer(), programArguments);
 		programArguments = getArgsOverrideConfigFile(jbossServer.getServer(), programArguments);
 		
-		String vmArguments = getDefaultVMArguments(jbossServer, jbossRuntime);
+		String vmArguments = getDefaultVMArguments(jbossServer.getServer());
 		vmArguments = getArgsOverrideExposedManagement(jbossServer.getServer(), vmArguments);
 		
-		String jar = getJar(jbossServer, jbossRuntime);
+		String jar = getJar(jbossServer.getServer());
 
 		String command = "java "
 				+ vmArguments
@@ -147,19 +158,21 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 
 	}
 	
-	protected String getDefaultVMArguments(JBossServer server, IJBossServerRuntime runtime) {
-		String rseHomeDir = RSEUtils.getRSEHomeDir(server.getServer());
-		return runtime.getDefaultRunVMArgs(new Path(rseHomeDir));
+	protected String getDefaultVMArguments(IServer server) {
+		String rseHomeDir = RSEUtils.getRSEHomeDir(server);
+		IPath rseHome = new Path(rseHomeDir);
+		return getExtendedProperties().getDefaultLaunchArguments().getStartDefaultVMArgs(rseHome);
 	}
 
-	protected String getDefaultProgramArguments(JBossServer server, IJBossServerRuntime runtime) {
-		String rseHomeDir = RSEUtils.getRSEHomeDir(server.getServer());
-		return runtime.getDefaultRunArgs(new Path(rseHomeDir));
+	protected String getDefaultProgramArguments(IServer server) {
+		String rseHomeDir = RSEUtils.getRSEHomeDir(server);
+		IPath rseHome = new Path(rseHomeDir);
+		return getExtendedProperties().getDefaultLaunchArguments().getStartDefaultProgramArgs(rseHome);
 	}
 	
-	protected String getJar(JBossServer server, IJBossServerRuntime runtime) {
-		String rseHome = RSEUtils.getRSEHomeDir(server.getServer());
-		return new Path(rseHome).append(IJBossRuntimeResourceConstants.JBOSS7_MODULES_JAR).toString();
+	protected String getJar(IServer server) {
+		String rseHome = RSEUtils.getRSEHomeDir(server);
+		return new Path(rseHome).append(getMainType()).toString();
 	}
 	
 	protected String getMainType() {
@@ -167,7 +180,6 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 	}
 	
 	private boolean isSet(String value) {
-		return value != null
-				&& value.length() > 0;
+		return value != null && value.length() > 0;
 	}
 }

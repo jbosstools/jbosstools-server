@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2012 Red Hat, Inc. 
+ * Copyright (c) 2013 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -10,19 +10,18 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
-import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IServer;
 
-/**
- *
- */
-public class JBossEAP60ExtendedProperties extends JBossAS710ExtendedProperties {
-
-	public JBossEAP60ExtendedProperties(IAdaptable obj) {
-		super(obj);
+public class JBoss5xDefaultLaunchArguments extends JBossDefaultLaunchArguments {
+	public JBoss5xDefaultLaunchArguments(IRuntime rt) {
+		super(rt);
 	}
-	
-	public String getRuntimeTypeVersionString() {
-		return "6.0"; //$NON-NLS-1$
+	public JBoss5xDefaultLaunchArguments(IServer server) {
+		super(server);
 	}
 
+	protected String getMemoryArgs() {
+		return DEFAULT_MEM_ARGS_AS50;
+	}
 }

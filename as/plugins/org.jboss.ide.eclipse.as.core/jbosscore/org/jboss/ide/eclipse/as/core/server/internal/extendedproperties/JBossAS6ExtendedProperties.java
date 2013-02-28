@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.internal.JBoss6ModuleStateVerifier;
 
@@ -20,7 +21,17 @@ public class JBossAS6ExtendedProperties extends JBossExtendedProperties {
 		super(adaptable);
 	}
 	
+	public String getRuntimeTypeVersionString() {
+		return "6.x"; //$NON-NLS-1$
+	}
+
 	public IServerModuleStateVerifier getModuleStateVerifier() {
 		return new JBoss6ModuleStateVerifier();
+	}
+	
+	public IDefaultLaunchArguments getDefaultLaunchArguments() {
+		if( server != null)
+			return new JBoss6xDefaultLaunchArguments(server);
+		return new JBoss6xDefaultLaunchArguments(runtime);
 	}
 }

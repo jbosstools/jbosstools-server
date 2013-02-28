@@ -67,12 +67,24 @@ public interface IJBossServerRuntime {
 	 */
 	public IPath getConfigurationFullPath();
 	
-	// for startup
-	public String getDefaultRunArgs();
-	public String getDefaultRunArgs(IPath serverHome);
-	public String getDefaultRunVMArgs();
-	public String getDefaultRunVMArgs(IPath serverHome);
-	public HashMap<String, String> getDefaultRunEnvVars();
 	public boolean isUsingDefaultJRE();
+	
+	/**
+	 * Use RuntimeUtils.isEAP();
+	 * @return
+	 */
+	@Deprecated
 	public boolean isEAP();
+	
+	// for startup
+	@Deprecated
+	public String getDefaultRunArgs();
+	@Deprecated
+	public String getDefaultRunArgs(IPath serverHome);
+	@Deprecated
+	public String getDefaultRunVMArgs();
+	@Deprecated
+	public String getDefaultRunVMArgs(IPath serverHome);
+	@Deprecated
+	public HashMap<String, String> getDefaultRunEnvVars();
 }

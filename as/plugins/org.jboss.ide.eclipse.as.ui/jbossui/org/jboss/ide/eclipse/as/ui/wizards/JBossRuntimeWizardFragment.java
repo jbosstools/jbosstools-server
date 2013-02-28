@@ -75,6 +75,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractLocalJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
@@ -119,11 +120,16 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	// jre fields
 	protected List<IVMInstall> installedJREs;
 	protected String[] jreNames;
-	protected int defaultVMIndex;
+	protected int defaultVMIndex = -1;
 	protected IVMInstall selectedVM;
 	protected String originalName;
 
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
+		/*
+		 * Any state should be CLEARED right now or in enclosed methods and loaded from the model.
+		 * WTP creates only one instance of this wizard fragment for the entire
+		 * life of the workspace.
+		 */
 		this.handle = handle;
 		Composite main = new Composite(parent, SWT.NONE);
 		main.setLayout(new FormLayout());
@@ -144,14 +150,11 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	
 	protected void updateWizardHandle(Composite parent) {
 		// make modifications to parent
-		IRuntime r = (IRuntime) getTaskModel()
-			.getObject(TaskModel.TASK_RUNTIME);
+		IRuntime r = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		
 		// TODO:  Unify with code in LocalJBossServerRuntime and in getHomeVersionWarning
-		String version = r.getRuntimeType().getVersion();
-		if( isEAP() && version.startsWith("5."))
-			version = "5.x";
-		if( !isEAP() && version.startsWith("6."))
-			version = "6.x";
+		JBossExtendedProperties props = (JBossExtendedProperties)r.getAdapter(JBossExtendedProperties.class);
+		String version = props.getRuntimeTypeVersionString();
 		
 		handle.setTitle( Messages.rwf_JBossRuntime);
 		String description = NLS.bind(
@@ -194,11 +197,12 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			String value = prefs2.get(IPreferenceKeys.RUNTIME_HOME_PREF_KEY_PREFIX + rt.getRuntimeType().getId(), null);
 
 			String locationDefault = Platform.getOS().equals(Platform.WS_WIN32) 
-			? "c:/program files/jboss-" : "/usr/bin/jboss-"; //$NON-NLS-1$ //$NON-NLS-2$
+					? "c:/program files/jboss-" : "/usr/bin/jboss-"; //$NON-NLS-1$ //$NON-NLS-2$
 			if( isEAP() )
 				locationDefault += "eap-"; //$NON-NLS-1$
-			String version = rt.getRuntimeType().getVersion();
-			locationDefault += version + ".x"; //$NON-NLS-1$
+			JBossExtendedProperties props = (JBossExtendedProperties)rt.getAdapter(JBossExtendedProperties.class);
+			String version = props.getRuntimeTypeVersionString();
+			locationDefault += version + (version.endsWith(".x") ? "" : ".x");
 			homeDir = (value != null && value.length() != 0) ? value : locationDefault;
 		} else {
 			// old runtime, load from it
@@ -689,7 +693,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	
 	protected String getVersionString(File loc) {
 		String version = new ServerBeanLoader(loc).getFullServerVersion();
-		return version;
+		return version == null ? "UNKNOWN" : version;
 	}
 	
 	protected String getSystemJarPath() {
@@ -698,34 +702,17 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	
 	protected String getHomeVersionWarning() {
 		File loc = new File(homeDir);
-		String version = getVersionString(loc);
-		IRuntime rt = (IRuntime) getTaskModel().getObject(
-				TaskModel.TASK_RUNTIME);
-		String v = rt.getRuntimeType().getVersion();
-		return getHomeVersionWarning(version, v);
-	}
-
-	protected String getHomeVersionWarning(String version, String v) {
-		/* 
-		 * CHEAP WARNING HACK - 
-		 *   EAP 5.0 was started as named 5.0, but is now 5.x.
-		 *   So a jar with 5.1 should work here also.  
-		 */
-		// This really needs to be extracted into an API
-		// To determine what server types work for what actual underlying version
-		// Unify with the core code in LocalJBossServerRuntime which changes 6.0 to 6.x
-		if( isEAP() && v.startsWith("5."))
-			v = "5.";
-		if( !isEAP() && v.startsWith("6."))
-			v = "6.";
-		if( !isEAP() && v.startsWith("7."))
-			v = "7.";
-		if( isEAP() && v.startsWith("6."))
-			v = "6.";
-		if( !isEAP() && v.startsWith("7."))
-			v = "7.";
-
-		return version.startsWith(v) ? null : NLS.bind(Messages.rwf_homeIncorrectVersion, v, version);
+		String serverId = new ServerBeanLoader(loc).getServerAdapterId();
+		String rtId = serverId == null ? null : 
+				ServerCore.findServerType(serverId).getRuntimeType().getId();
+		IRuntime adapterRt = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		String adapterRuntimeId = adapterRt.getRuntimeType().getId();
+		if( !adapterRuntimeId.equals(rtId)) {
+			return NLS.bind(Messages.rwf_homeIncorrectVersionError, 
+					adapterRt.getRuntimeType().getVersion(), 
+					getVersionString(loc));
+		}
+		return null;
 	}
 
 	protected void browseHomeDirClicked() {
@@ -782,20 +769,25 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 
 	// JRE methods
 	protected void updateJREs() {
-		// get all installed JVMs
+		defaultVMIndex = 0;
+
+		// get all valid JVMs
+		IVMInstall runtimesInstall = getRuntime().getHardVM();
+		
 		installedJREs = getValidJREs();
 		// get names
 		int size = installedJREs.size();
-		size = size+1;
 		int index = 0;
-		jreNames = new String[size];
+		jreNames = new String[size+1];
 		jreNames[index++] = NLS.bind(Messages.rwf_DefaultJREForExecEnv, getRuntime().getExecutionEnvironment().getId());
 		 
 		for (int i = 0; i < installedJREs.size(); i++) {
 			IVMInstall vmInstall = installedJREs.get(i);
+			if( vmInstall.equals(runtimesInstall)) {
+				defaultVMIndex = index;
+			}
 			jreNames[index++] = vmInstall.getName();
 		}
-		defaultVMIndex = 0;
 	}
 	
 	
@@ -819,20 +811,32 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 				.getObject(TaskModel.TASK_RUNTIME);
 		IRuntimeWorkingCopy runtimeWC = r.isWorkingCopy() ? ((IRuntimeWorkingCopy) r)
 				: r.createWorkingCopy();
+		
+		saveBasicDetailsInRuntime(runtimeWC);
+		saveConfigurationDetailsInRuntime(runtimeWC);
+		getTaskModel().putObject(TaskModel.TASK_RUNTIME, runtimeWC);
+	}
 
+	protected void saveBasicDetailsInRuntime(IRuntimeWorkingCopy runtimeWC) {
+		IJBossServerRuntime srt = (IJBossServerRuntime) runtimeWC.loadAdapter(
+				IJBossServerRuntime.class, new NullProgressMonitor());
 		if( name != null )
 			runtimeWC.setName(name);
 		if( homeDir != null)
 			runtimeWC.setLocation(new Path(homeDir));
-		IJBossServerRuntime srt = (IJBossServerRuntime) runtimeWC.loadAdapter(
-				IJBossServerRuntime.class, new NullProgressMonitor());
 		if( selectedVM != null )
 			srt.setVM(selectedVM);
+		else
+			srt.setVM(null);
+	}
+	
+	protected void saveConfigurationDetailsInRuntime(IRuntimeWorkingCopy wc) {
+		IJBossServerRuntime srt = (IJBossServerRuntime) wc.loadAdapter(
+				IJBossServerRuntime.class, new NullProgressMonitor());
 		if( configurations != null && configurations.getSelectedConfiguration() != null )
 			srt.setJBossConfiguration(configurations.getSelectedConfiguration());
 		if( configDirText != null )
 			srt.setConfigLocation(configDirTextVal);
-		getTaskModel().putObject(TaskModel.TASK_RUNTIME, runtimeWC);
 	}
 
 	public void performFinish(IProgressMonitor monitor) throws CoreException {

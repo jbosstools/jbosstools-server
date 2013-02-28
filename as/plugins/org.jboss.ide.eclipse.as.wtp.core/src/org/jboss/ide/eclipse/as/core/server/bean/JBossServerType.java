@@ -36,6 +36,10 @@ public class JBossServerType implements IJBossToolingConstants {
 	private static final String JBOSS_PORTLETBRIDGE_PATH = "portletbridge"; //$NON-NLS-1$
 	private static final String JBOSS_PORTAL_SAR = "jboss-portal.sar";  //$NON-NLS-1$
 	private static final String UNKNOWN_STR = "UNKNOWN"; //$NON-NLS-1$
+	private static final String EAP60_DIR_META_INF = "modules/org/jboss/as/product/eap/dir/META-INF"; //$NON-NLS-1$
+	private static final String EAP61_DIR_META_INF = "modules/system/layers/base/org/jboss/as/product/eap/dir/META-INF"; //$NON-NLS-1$
+	private static final String JPP60a_DIR_META_INF = "modules/org/jboss/as/product/jpp/dir/META-INF"; //$NON-NLS-1$
+	private static final String JPP60b_DIR_META_INF = "modules/system/layers/base/org/jboss/as/product/jpp/dir/META-INF"; //$NON-NLS-1$
 	
 	private String name;
 	private String jbossSystemJarPath;
@@ -52,80 +56,115 @@ public class JBossServerType implements IJBossToolingConstants {
 		this.condition = condition;
 	}
 
+	private static String asPath(String... vals) {
+		StringBuffer sb = new StringBuffer();
+		for ( String v : vals ) {
+			sb.append(v);
+			sb.append(File.separatorChar);
+		}
+		String s = sb.toString();
+		s = s.substring(0, s.length() - 1);
+		return s;
+	}
+	
+	// NEW_SERVER_ADAPTER
 	public static final JBossServerType AS = new JBossServerType(
 			"AS", //$NON-NLS-1$
 			"Application Server", //$NON-NLS-1$
-			BIN_PATH+File.separatorChar + TWIDDLE_JAR_NAME,
+			asPath(BIN_PATH, TWIDDLE_JAR_NAME),
 			new String[]{V6_0, V6_1, V5_1, V5_0, V4_2, V4_0, V3_2}, new ASServerTypeCondition());
 	
 	public static final JBossServerType AS7 = new JBossServerType(
 			"AS", //$NON-NLS-1$
 			"Application Server", //$NON-NLS-1$
-			"modules" + File.separatorChar +  //$NON-NLS-1$
-			"org" + File.separatorChar + //$NON-NLS-1$
-			"jboss" + File.separatorChar + //$NON-NLS-1$
-			"as" + File.separatorChar + //$NON-NLS-1$
-			"server" + File.separatorChar + //$NON-NLS-1$
-			"main", //$NON-NLS-1$
+			asPath( "modules","org","jboss","as","server","main"),
 			new String[]{V7_0,V7_1}, new AS7ServerTypeCondition());
 	
 	public static final JBossServerType EAP_STD = new JBossServerType(
 			"EAP_STD",//$NON-NLS-1$
 			"Enterprise Application Platform",//$NON-NLS-1$
-			BIN_PATH+ File.separatorChar + TWIDDLE_JAR_NAME, 
+			asPath(BIN_PATH, TWIDDLE_JAR_NAME),
 			new String[]{V4_2,V4_3,V5_0,V5_1}, new EAPStandaloneServerTypeCondition());
 	
 	public static final JBossServerType EAP = new JBossServerType(
 			"EAP",//$NON-NLS-1$
 			"Enterprise Application Platform",//$NON-NLS-1$
-			JBOSS_AS_PATH + File.separatorChar + BIN_PATH+ File.separatorChar + TWIDDLE_JAR_NAME, 
+			asPath(JBOSS_AS_PATH,BIN_PATH,TWIDDLE_JAR_NAME),
 			new String[]{V4_2,V4_3,V5_0,V5_1}, new EAPServerTypeCondition());
 	
 	public static final JBossServerType EAP6 = new JBossServerType(
 			"EAP", //$NON-NLS-1$
 			"Enterprise Application Platform", //$NON-NLS-1$
-				"modules" + File.separatorChar +  //$NON-NLS-1$
-				"org" + File.separatorChar + //$NON-NLS-1$
-				"jboss" + File.separatorChar + //$NON-NLS-1$
-				"as" + File.separatorChar + //$NON-NLS-1$
-				"server" + File.separatorChar + //$NON-NLS-1$
-				"main", //$NON-NLS-1$
+			asPath("modules", "org", "jboss", "as", "server", "main"),
 			new String[]{V6_0}, new EAP6ServerTypeCondition());
+	
+	
+	public static final JBossServerType AS72 = new JBossServerType(
+			"AS", //$NON-NLS-1$
+			"Application Server", //$NON-NLS-1$
+			asPath("modules","system","layers","base",
+					"org","jboss","as","server","main"),
+			new String[]{V7_2}, new AS72ServerTypeCondition());
+
+	public static final JBossServerType EAP61 = new JBossServerType(
+			"EAP", //$NON-NLS-1$
+			"Application Server", //$NON-NLS-1$
+			asPath("modules","system","layers","base",
+					"org","jboss","as","server","main"),
+			new String[]{V6_1}, new EAP61ServerTypeCondition());
 	
 	public static final JBossServerType SOAP = new JBossServerType(
 			"SOA-P",//$NON-NLS-1$
 			"SOA Platform",//$NON-NLS-1$
-			JBOSS_AS_PATH + File.separatorChar + BIN_PATH+ File.separatorChar + TWIDDLE_JAR_NAME,
+			asPath(JBOSS_AS_PATH,BIN_PATH,TWIDDLE_JAR_NAME),
 			new String[]{V4_3, V5_0, V5_1 }, new SOAPServerTypeCondition());
 
 	public static final JBossServerType SOAP_STD = new JBossServerType(
 			"SOA-P-STD",//$NON-NLS-1$
 			"SOA Platform Standalone",//$NON-NLS-1$
-			JBOSS_ESB_PATH + File.separatorChar + BIN_PATH+ File.separatorChar + RUN_JAR_NAME,
+			asPath(JBOSS_ESB_PATH,BIN_PATH,RUN_JAR_NAME),
 			new String[]{V4_3, V5_0, V5_1 }, new SOAPStandaloneServerTypeCondition());
 
 	public static final JBossServerType EWP = new JBossServerType( 
 			"EWP",//$NON-NLS-1$
 			"Enterprise Web Platform",//$NON-NLS-1$
-			JBOSS_AS_WEB_PATH + File.separatorChar + BIN_PATH + File.separatorChar + RUN_JAR_NAME,
+			asPath(JBOSS_AS_WEB_PATH,BIN_PATH,RUN_JAR_NAME),
 			new String[]{V5_0 }, new EWPTypeCondition());
 	
 	public static final JBossServerType EPP = new JBossServerType( 
 			"EPP",//$NON-NLS-1$
 			"Enterprise Portal Platform",//$NON-NLS-1$
-			JBOSS_AS_PATH + File.separatorChar + BIN_PATH + File.separatorChar + RUN_JAR_NAME,
+			asPath(JBOSS_AS_PATH,BIN_PATH,RUN_JAR_NAME),
 			new String[]{V4_3, V5_0}, new EPPTypeCondition());
+	
+	public static final JBossServerType JPP6 = new JBossServerType( 
+			"JPP",//$NON-NLS-1$
+			"JBoss Portal Platform",//$NON-NLS-1$
+			asPath("modules", "org", "jboss", "as", "server", "main"),
+			new String[]{V6_0}, new JPP6ServerTypeCondition());
 	
 	public static final JBossServerType UNKNOWN = new JBossServerType(
 			UNKNOWN_STR,
 			UNKNOWN_STR,
 			"",//$NON-NLS-1$
-			new String[]{V7_0, V7_1, V6_0, V6_1, V5_1, V5_2, V5_3, V5_0, V4_3, V4_2, V4_0, V3_2}, null);
+			new String[]{V7_0, V7_1, V7_2, V6_0, V6_1, V5_1, V5_2, V5_3, V5_0, V4_3, V4_2, V4_0, V3_2}, 
+			null);
 
 	public String toString() {
 		return id;
 	}
 	
+	/**
+	 * This method is almost impossible to accurately respond.
+	 * AS7 and AS-5 both have the same JBossServerType.name value, "AS", 
+	 * so if a user wishes to get the JBossServerType which corresponds
+	 * to AS7, it is impossible for him to do so. 
+	 * 
+	 * This method really should be deprecated or fixed. 
+	 * 
+	 * @param name
+	 * @return
+	 */
 	public static JBossServerType getType(String name) {
 		if(AS.name.equals(name)) {
 			return AS;
@@ -166,8 +205,17 @@ public class JBossServerType implements IJBossToolingConstants {
 		return this.condition.getFullVersion(root, new File(root, getSystemJarPath()));
 	}
 	
+	/**
+	 * This will return a version, if it can be discovered.
+	 * If this is an UNKNOWN server bean, the return 
+	 * value will be null
+	 * 
+	 * @param version
+	 * @return
+	 */
 	public String getServerAdapterTypeId(String version) {
-		return this.condition.getServerTypeId(version);
+		return condition == null ? null :
+			this.condition.getServerTypeId(version);
 	}
 	
 	private static final String IMPLEMENTATION_TITLE = "Implementation-Title"; //$NON-NLS-1$
@@ -207,14 +255,14 @@ public class JBossServerType implements IJBossToolingConstants {
 				String value = (String) props.get(propertyName);
 				return value;
 			} catch (IOException e) {
-				// I would let it fall through, but hudson doesn't like empty catch blocks
+				// Intentionally empty
 				return null; 
 			} finally {
 				if (jar != null) {
 					try {
 						jar.close();
 					} catch (IOException e) {
-						// I would let it fall through, but hudson doesn't like empty catch blocks
+						// Intentionally empty
 						return null;
 					}
 				}
@@ -223,7 +271,11 @@ public class JBossServerType implements IJBossToolingConstants {
 		return null;
 	}
 	
-	public static final JBossServerType[] KNOWN_TYPES = {AS, EAP, SOAP, SOAP_STD, EWP, EPP};
+	/**
+	 * This public variable duplicates the hidden one. 
+	 * We shouldn't have to update this in multiple places.
+	 */
+	public static final JBossServerType[] KNOWN_TYPES = ServerBeanLoader.typesInOrder;
 
 	static interface Condition {
 		/**
@@ -270,6 +322,9 @@ public class JBossServerType implements IJBossToolingConstants {
 			if( V5_2.equals(version)) return IJBossToolingConstants.SERVER_EAP_50;
 			if( V5_3.equals(version)) return IJBossToolingConstants.SERVER_EAP_50;
 			if( V6_0.equals(version)) return IJBossToolingConstants.SERVER_EAP_60;
+			
+			// TODO eap 6.1 will probably need a different adapter type
+			if( V6_1.equals(version)) return IJBossToolingConstants.SERVER_EAP_61;
 			return null;
 		}
 	}
@@ -282,11 +337,39 @@ public class JBossServerType implements IJBossToolingConstants {
 	}
 	
 	public static class EAP6ServerTypeCondition extends AbstractEAPTypeCondition {
+		
 		public boolean isServerRoot(File location) {
-			return getEAP6Version(location, "6.") != null; //$NON-NLS-1$
+			return getEAP6xVersion(location, EAP60_DIR_META_INF, "6.", "eap", "EAP") != null; //$NON-NLS-1$
 		}
 		public String getFullVersion(File location, File systemJarFile) {
-			return getEAP6Version(location, "6."); //$NON-NLS-1$
+			return getEAP6xVersion(location, EAP60_DIR_META_INF, "6.", "eap", "EAP"); //$NON-NLS-1$
+		}
+	}
+	
+	
+	public static class JPP6ServerTypeCondition extends AbstractEAPTypeCondition {
+		public boolean isServerRoot(File location) {
+			return getFullVersion(location, null) != null;
+		}
+		public String getFullVersion(File location, File systemJarFile) {
+			String s1 = getEAP6xVersion(location, JPP60a_DIR_META_INF, "6.", "jpp", "Portal Platform"); //$NON-NLS-1$
+			if( s1 == null )
+				s1 = getEAP6xVersion(location, JPP60b_DIR_META_INF, "6.", "jpp", "Portal Platform"); //$NON-NLS-1$
+			return s1;
+		}
+		public String getServerTypeId(String version) {
+			if( V6_0.equals(version))
+				return IJBossToolingConstants.SERVER_EAP_60;
+			return null;
+		}
+	}
+
+	public static class EAP61ServerTypeCondition extends AbstractEAPTypeCondition {
+		public boolean isServerRoot(File location) {
+			return getEAP6xVersion(location, EAP61_DIR_META_INF, "6.", "eap", "EAP") != null; //$NON-NLS-1$
+		}
+		public String getFullVersion(File location, File systemJarFile) {
+			return getEAP6xVersion(location, EAP61_DIR_META_INF, "6.", "eap", "EAP"); //$NON-NLS-1$
 		}
 	}
 	
@@ -296,34 +379,49 @@ public class JBossServerType implements IJBossToolingConstants {
 	 * @param versionPrefix
 	 * @return
 	 */
-	protected static String getEAP6Version(File location,  String versionPrefix) {
+	protected static String getEAP6xVersion(File location,  String metaInfPath,
+			String versionPrefix, String slot, String releaseName) {
 		IPath rootPath = new Path(location.getAbsolutePath());
 		IPath productConf = rootPath.append("bin/product.conf"); //$NON-NLS-1$
 		if( productConf.toFile().exists()) {
-			try {
-				Properties p = new Properties();
-				p.load(new FileInputStream(productConf.toFile()));
-				String product = (String) p.get("slot"); //$NON-NLS-1$
-				if("eap".equals(product)) { //$NON-NLS-1$
-					IPath eapDir = rootPath.append("modules/org/jboss/as/product/eap/dir/META-INF"); //$NON-NLS-1$
-					if( eapDir.toFile().exists()) {
-						IPath manifest = eapDir.append("MANIFEST.MF"); //$NON-NLS-1$
-						Properties p2 = new Properties();
-						p2.load(new FileInputStream(manifest.toFile()));
-						String type = p2.getProperty("JBoss-Product-Release-Name"); //$NON-NLS-1$
-						String version = p2.getProperty("JBoss-Product-Release-Version"); //$NON-NLS-1$
-						if( "EAP".equals(type) && version.startsWith(versionPrefix)) //$NON-NLS-1$
-							return version;
-					}
+			Properties p = loadProperties(productConf.toFile());
+			String product = (String) p.get("slot"); //$NON-NLS-1$
+			if(slot.equals(product)) { //$NON-NLS-1$
+				IPath eapDir = rootPath.append(metaInfPath); //$NON-NLS-1$
+				if( eapDir.toFile().exists()) {
+					IPath manifest = eapDir.append("MANIFEST.MF"); //$NON-NLS-1$
+					Properties p2 = loadProperties(manifest.toFile());
+					String type = p2.getProperty("JBoss-Product-Release-Name"); //$NON-NLS-1$
+					String version = p2.getProperty("JBoss-Product-Release-Version"); //$NON-NLS-1$
+					if( releaseName.equals(type) && version.startsWith(versionPrefix)) //$NON-NLS-1$
+						return version;
 				}
-			} catch(IOException ioe) {
-				// I would let it fall through, but hudson doesn't like empty catch blocks
-				return null;
 			}
 		}
 		return null;
 	}
 
+	private static Properties loadProperties(File f) {
+		Properties p = new Properties();
+		FileInputStream stream = null;
+		try {
+			stream = new FileInputStream(f); 
+			p.load(stream);
+			return p;
+		} catch(IOException ioe) {
+			return p;
+		} finally {
+			if( stream != null ) {
+				try {
+					stream.close();
+				} catch(IOException ioe) {
+					// Do nothing
+				}
+			}
+		}
+		
+	}
+	
 	public static class EAPStandaloneServerTypeCondition extends AbstractEAPTypeCondition {
 		public boolean isServerRoot(File location) {
 			File asSystemJar = new File(location, JBossServerType.EAP_STD.getSystemJarPath());
@@ -364,12 +462,34 @@ public class JBossServerType implements IJBossToolingConstants {
 		public String getServerTypeId(String version) {
 			if( version.equals(V7_0)) return IJBossToolingConstants.SERVER_AS_70;
 			if( version.equals(V7_1)) return IJBossToolingConstants.SERVER_AS_71;
+			if( version.equals(V7_2)) return IJBossToolingConstants.SERVER_AS_71;
 			return null;
 		}
 	}
 	
+	public static class AS72ServerTypeCondition extends AbstractCondition {
+		public boolean isServerRoot(File location) {
+			return checkAS72Version(location, JBAS7_RELEASE_VERSION, "7.2"); //$NON-NLS-1$
+		}
+
+		public String getServerTypeId(String version) {
+			if( version.equals(V7_2)) return IJBossToolingConstants.SERVER_EAP_61;
+			return null;
+		}
+	}
+
+	
 	protected static boolean checkAS7Version(File location, String property, String propPrefix) {
 		String mainFolder = JBossServerType.AS7.jbossSystemJarPath;
+		return checkAS7StyleVersion(location, mainFolder, property, propPrefix);
+	}
+	
+	protected static boolean checkAS72Version(File location, String property, String propPrefix) {
+		String mainFolder = JBossServerType.AS72.jbossSystemJarPath;
+		return checkAS7StyleVersion(location, mainFolder, property, propPrefix);
+	}
+	
+	protected static boolean checkAS7StyleVersion(File location, String mainFolder, String property, String propPrefix) {
 		File f = new File(location, mainFolder);
 		if( f.exists() ) {
 			File[] children = f.listFiles();
@@ -414,10 +534,9 @@ public class JBossServerType implements IJBossToolingConstants {
 		public boolean isServerRoot(File location) {
 			File jbpmFolder = new File(location, SOAP_JBPM_JPDL_PATH);
 			File soaStdSystemJar = new File(location,JBOSS_ESB_PATH + File.separatorChar + BIN_PATH + File.separatorChar + RUN_JAR_NAME);			
-			return 
-				jbpmFolder.exists() && jbpmFolder.isDirectory() 
-					&& 
-				soaStdSystemJar.exists() && soaStdSystemJar.isFile();
+			boolean sysJarIsFile = soaStdSystemJar.exists() && soaStdSystemJar.isFile();
+			boolean jbpmFolderIsDir = jbpmFolder.exists() && jbpmFolder.isDirectory(); 
+			return jbpmFolderIsDir && sysJarIsFile;
 		}
 	}
 	
@@ -435,14 +554,17 @@ public class JBossServerType implements IJBossToolingConstants {
 			
 			File portletBridgeFolder = new File(location, JBOSS_PORTLETBRIDGE_PATH);
 			IJBossRuntimeResourceConstants CONSTANTS = new IJBossRuntimeResourceConstants(){}; 
-			File portlalSarFolder = new File(location, JBOSS_AS_PATH + File.separatorChar + CONSTANTS.SERVER + File.separatorChar + CONSTANTS.DEFAULT_CONFIGURATION + File.separatorChar + CONSTANTS.DEPLOY + File.separatorChar + JBOSS_PORTAL_SAR );			
-			File asStdSystemJar = new File(location,JBOSS_AS_PATH + File.separatorChar + BIN_PATH + File.separatorChar + RUN_JAR_NAME);			
-			return 
-				(portletBridgeFolder.exists() && portletBridgeFolder.isDirectory() 
-					||
-					portlalSarFolder.exists() && portlalSarFolder.isDirectory())
-					&& 
-				asStdSystemJar.exists() && asStdSystemJar.isFile();
+			File portlalSarFolder = new File(location, 
+					asPath(
+					JBOSS_AS_PATH, CONSTANTS.SERVER,
+					CONSTANTS.DEFAULT_CONFIGURATION,
+					CONSTANTS.DEPLOY, JBOSS_PORTAL_SAR));			
+			File asStdSystemJar = new File(location,
+					asPath(JBOSS_AS_PATH,BIN_PATH, RUN_JAR_NAME));
+			boolean pbfIsDir = portletBridgeFolder.exists() && portletBridgeFolder.isDirectory(); 
+			boolean psfIsDir = portlalSarFolder.exists() && portlalSarFolder.isDirectory(); 
+			boolean sysJarIsFile = asStdSystemJar.exists() && asStdSystemJar.isFile(); 
+			return ( pbfIsDir || psfIsDir ) && sysJarIsFile; 
 		}
 	}
 

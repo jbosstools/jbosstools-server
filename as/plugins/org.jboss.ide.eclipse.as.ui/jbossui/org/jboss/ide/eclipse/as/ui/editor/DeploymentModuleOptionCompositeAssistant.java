@@ -204,19 +204,19 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		return currentSelection;
 	}
 	
-	public boolean showMetadataRadio() {
+	protected boolean shouldCreateMetadataRadio() {
 		return true;
 	}
 
-	public boolean showCustomRadio() {
+	protected boolean shouldCreateCustomRadio() {
 		return true;
 	}
 
-	public boolean showServerRadio() {
+	protected boolean shouldCreateServerRadio() {
 		return true;
 	}
 
-	public boolean enableMetadataRadio() {
+	protected boolean shouldEnableMetadataRadio() {
 		String mode = getHelper().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
 		if(!LocalPublishMethod.LOCAL_PUBLISH_METHOD.equals(mode))
 			return false;
@@ -227,7 +227,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		return props.getMultipleDeployFolderSupport() != ServerExtendedProperties.DEPLOYMENT_SCANNER_NO_SUPPORT;
 	}
 	
-	public boolean showTempAndDeployTexts() {
+	protected boolean showTempAndDeployTexts() {
 		return true;
 	}
 
@@ -306,13 +306,13 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		Composite inner = toolkit.createComposite(parent);
 		inner.setLayout(new GridLayout(1, false));
 
-		if( showMetadataRadio() )
+		if( shouldCreateMetadataRadio() )
 			metadataRadio = toolkit.createButton(inner,
 					Messages.EditorUseWorkspaceMetadata, SWT.RADIO);
-		if( showServerRadio())
+		if( shouldCreateServerRadio())
 			serverRadio = toolkit.createButton(inner,
 					Messages.EditorUseServersDeployFolder, SWT.RADIO);
-		if( showCustomRadio())
+		if( shouldCreateCustomRadio())
 			customRadio = toolkit.createButton(inner,
 					Messages.EditorUseCustomDeployFolder, SWT.RADIO);
 
@@ -325,14 +325,14 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 				radioSelected(e.getSource());
 			}
 		};
-		if( showMetadataRadio())
+		if( shouldCreateMetadataRadio())
 			metadataRadio.addSelectionListener(radioListener);
-		if( showServerRadio())
+		if( shouldCreateServerRadio())
 			serverRadio.addSelectionListener(radioListener);
-		if( showCustomRadio()) 
+		if( shouldCreateCustomRadio()) 
 			customRadio.addSelectionListener(radioListener);
 		
-		metadataRadio.setEnabled(enableMetadataRadio());
+		metadataRadio.setEnabled(shouldEnableMetadataRadio());
 		return inner;
 	}
 	
@@ -440,13 +440,13 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		
 	private void updateWidgets() {
 		if( getShowRadios()) {
-			if( showMetadataRadio())
+			if( shouldCreateMetadataRadio())
 				metadataRadio.setSelection(getDeployType().equals(
 						IDeployableServer.DEPLOY_METADATA));
-			if( showServerRadio())
+			if( shouldCreateServerRadio())
 				serverRadio.setSelection(getDeployType().equals(
 						IDeployableServer.DEPLOY_SERVER));
-			if( showCustomRadio())
+			if( shouldCreateCustomRadio())
 				customRadio.setSelection(getDeployType().equals(
 						IDeployableServer.DEPLOY_CUSTOM));
 			
@@ -472,11 +472,22 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 				tempDeployText.setText(newTemp);
 			tempDeployText.addModifyListener(tempDeployListener);
 			
-			deployText.setEnabled(getDeployType().equals(IDeployableServer.DEPLOY_CUSTOM));
-			tempDeployText.setEnabled(getDeployType().equals(IDeployableServer.DEPLOY_CUSTOM));
-			deployButton.setEnabled(getDeployType().equals(IDeployableServer.DEPLOY_CUSTOM));
-			tempDeployButton.setEnabled(getDeployType().equals(IDeployableServer.DEPLOY_CUSTOM));
+			deployText.setEnabled(shouldEnableControl(deployText));
+			tempDeployText.setEnabled(shouldEnableControl(tempDeployText));
+			deployButton.setEnabled(shouldEnableControl(deployButton));
+			tempDeployButton.setEnabled(shouldEnableControl(tempDeployButton));
 		}
+	}
+	
+	protected boolean shouldEnableControl(Control c) {
+		if( c == null || c.isDisposed())
+			return false;
+		
+		if( c == deployText || c == tempDeployText || c == deployButton || c == tempDeployButton)
+			return getDeployType().equals(IDeployableServer.DEPLOY_CUSTOM);
+		if( c == metadataRadio)
+			return shouldEnableMetadataRadio();
+		return true;
 	}
 	
 	public void radioSelected(Object c) {
@@ -967,8 +978,8 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 
 	public void propertyChange(PropertyChangeEvent evt) {
 		if( getShowRadios() && evt.getPropertyName().equals( IDeployableServer.SERVER_MODE)) { 
-			if( showMetadataRadio() ) {
-				metadataRadio.setEnabled(enableMetadataRadio());
+			if( shouldCreateMetadataRadio() ) {
+				metadataRadio.setEnabled(shouldEnableMetadataRadio());
 				if(!metadataRadio.isEnabled() && metadataRadio.getSelection()) {
 					page.execute(new RadioClickedCommand(serverRadio, currentSelection));
 				}
@@ -1004,7 +1015,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 				deployButton, tempDeployButton
 		};
 		for( int i = 0; i < c.length; i++ ) {
-			if( c[i] != null && !c[i].isDisposed()) {
+			if( shouldEnableControl(c[i])) {
 				c[i].setEnabled(enabled);
 			}
 		}

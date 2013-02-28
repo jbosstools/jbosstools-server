@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
@@ -54,8 +53,7 @@ public class LocalStopLaunchConfigurator extends AbstractLaunchConfigurator {
 
 	@Override
 	protected String getDefaultProgramArguments(JBossServer server, IJBossServerRuntime runtime) throws CoreException {
-		IJBossBehaviourDelegate delegate = ServerUtil.checkedGetBehaviorDelegate(server.getServer());
-		return delegate.getDefaultStopArguments();
+		return server.getExtendedProperties().getDefaultLaunchArguments().getDefaultStopArgs();
 	}
 
 	@Override

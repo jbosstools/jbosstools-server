@@ -21,11 +21,13 @@ import org.eclipse.osgi.util.NLS;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver;
+import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossLT6ModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 /**
@@ -38,7 +40,15 @@ public class JBossExtendedProperties extends ServerExtendedProperties {
 	public JBossExtendedProperties(IAdaptable adaptable) {
 		super(adaptable);
 	}
-
+	
+	/* 
+	 * Get the version string for this runtime type. 
+	 * Some subclasses may choose to respond with a .x suffix. 
+	 */
+	public String getRuntimeTypeVersionString() {
+		return runtime.getRuntimeType().getVersion();
+	}
+	
 	public boolean runtimeSupportsBindingToAllInterfaces() {
 		return true;
 	}
@@ -117,4 +127,25 @@ public class JBossExtendedProperties extends ServerExtendedProperties {
 		return new JBossLT6ModuleStateVerifier();
 	}
 
+	public IDefaultLaunchArguments getDefaultLaunchArguments() {
+		// to avoid making too many classes with one method, 
+		// we'll handle below 6 here. Otherwise we need another 
+		// almost-empty extended properties class
+		String rtType = runtime.getRuntimeType().getId();
+		boolean isAS5 = (IJBossToolingConstants.AS_50.equals(rtType) ||
+				 IJBossToolingConstants.AS_51.equals(rtType) ||
+				 IJBossToolingConstants.EAP_50.equals(rtType));
+		
+		// IF we're AS 5, return the 5x args
+		if( isAS5 ) {
+			if( server != null)
+				return new JBoss5xDefaultLaunchArguments(server);
+			return new JBoss5xDefaultLaunchArguments(runtime);
+		}
+		
+		// else return the < 5 launch args
+		if( server != null)
+			return new JBossDefaultLaunchArguments(server);
+		return new JBossDefaultLaunchArguments(runtime);
+	}
 }

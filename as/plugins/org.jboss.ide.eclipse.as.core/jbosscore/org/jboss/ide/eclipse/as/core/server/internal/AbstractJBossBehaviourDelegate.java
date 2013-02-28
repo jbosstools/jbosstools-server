@@ -14,11 +14,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.server.IJBoss6Server;
+import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.IPollResultListener;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
-import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
@@ -56,29 +54,8 @@ public abstract class AbstractJBossBehaviourDelegate extends AbstractBehaviourDe
 
 	@Override
 	public String getDefaultStopArguments() throws CoreException {
-		
-		String runtimeTypeId = getServer().getRuntime().getRuntimeType().getId();
-		JBossServer jbs = ServerConverter.checkedGetJBossServer(getServer(), JBossServer.class);
-		String serverUrl;
-		if (runtimeTypeId.equals(IJBossToolingConstants.AS_60)){
-			IJBoss6Server server6 = ServerConverter.checkedGetJBossServer(getServer(), IJBoss6Server.class);
-			serverUrl = "service:jmx:rmi:///jndi/rmi://" + jbs.getHost() + ":" + server6.getJMXRMIPort() + "/jmxrmi"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		} else {
-			serverUrl = jbs.getHost() + ":" + jbs.getJNDIPort(); //$NON-NLS-1$
-		}
-		String args = IJBossRuntimeConstants.SHUTDOWN_STOP_ARG 
-				+ IJBossRuntimeConstants.SPACE;
-		args += IJBossRuntimeConstants.SHUTDOWN_SERVER_ARG 
-				+ IJBossRuntimeConstants.SPACE 
-				+ serverUrl 
-				+ IJBossRuntimeConstants.SPACE;
-		if( jbs.getUsername() != null && !jbs.getUsername().equals(""))  //$NON-NLS-1$
-			args += IJBossRuntimeConstants.SHUTDOWN_USER_ARG 
-			+ IJBossRuntimeConstants.SPACE + jbs.getUsername() + IJBossRuntimeConstants.SPACE;
-		if( jbs.getPassword() != null && !jbs.getPassword().equals(""))  //$NON-NLS-1$
-			args += IJBossRuntimeConstants.SHUTDOWN_PASS_ARG 
-			+ IJBossRuntimeConstants.SPACE + jbs.getPassword() + IJBossRuntimeConstants.SPACE;
-		return args;
+		JBossServer jbs = (JBossServer)ServerConverter.getJBossServer(getServer());
+		return jbs.getExtendedProperties().getDefaultLaunchArguments().getDefaultStopArgs();
 	}
 
 	protected void pollServer(final boolean expectedState) {
@@ -103,9 +80,9 @@ public abstract class AbstractJBossBehaviourDelegate extends AbstractBehaviourDe
 			@Override
 			public void stateAsserted(boolean expectedState, boolean currentState) {
 				if (currentState == IServerStatePoller.SERVER_UP) {
-					setServerStarted();
+					getActualBehavior().setServerStarted();
 				} else {
-					setServerStopped();
+					getActualBehavior().setServerStopped();
 				}
 			}
 		};
@@ -120,19 +97,32 @@ public abstract class AbstractJBossBehaviourDelegate extends AbstractBehaviourDe
 		this.pollThread = null;
 	}
 
+	protected IDelegatingServerBehavior getActualBehavior() {
+		return actualBehavior;
+	}
+	
+	/* 
+	 * The following 4 methods are not interface methods and should not be used anymore.
+	 * They were convenience methods, but now seem only to confuse which level of delegation
+	 * is in charge of doing what exactly.  
+	 */
+	@Deprecated
 	protected void setServerStopping() {
-		actualBehavior.setServerStopping();
+		getActualBehavior().setServerStopping();
 	}
 
+	@Deprecated
 	protected void setServerStopped() {
-		actualBehavior.setServerStopped();
+		getActualBehavior().setServerStopped();
 	}
 
+	@Deprecated
 	protected void setServerStarted() {
-		actualBehavior.setServerStarted();
+		getActualBehavior().setServerStarted();
 	}
 
+	@Deprecated
 	protected void setServerStarting() {
-		actualBehavior.setServerStarting();
+		getActualBehavior().setServerStarting();
 	}
 }

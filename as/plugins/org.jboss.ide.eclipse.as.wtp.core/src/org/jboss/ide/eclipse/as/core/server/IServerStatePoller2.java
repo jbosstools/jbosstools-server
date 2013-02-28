@@ -31,7 +31,9 @@ public interface IServerStatePoller2 extends IServerStatePoller {
 	 * This method, in contrast, initiates an immediate and synchronous 
 	 * poll attempt to determine the current state. 
 	 * 
-	 * @return IServerStatePoller.SERVER_UP or SERVER_DOWN
+	 * @return IStatus.OK if a server is completely started,
+	 * 			IStatus.INFO if a server is in various states of startup / shutdown or unknown,
+	 * 			or IStatus.ERROR if a server is definitely not up. 
 	 */
 	public IStatus getCurrentStateSynchronous(IServer server);
 }

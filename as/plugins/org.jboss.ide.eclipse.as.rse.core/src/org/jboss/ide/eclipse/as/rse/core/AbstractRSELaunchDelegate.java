@@ -24,13 +24,10 @@ import org.eclipse.rse.services.shells.IHostShell;
 import org.eclipse.rse.services.shells.IHostShellChangeEvent;
 import org.eclipse.rse.services.shells.IHostShellOutputListener;
 import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.IDeployableServerBehaviour;
 import org.jboss.ide.eclipse.as.core.server.IJBossBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.server.IJBossLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.AbstractJBossStartLaunchConfiguration;
-import org.jboss.ide.eclipse.as.core.util.ThreadUtils;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 
 public abstract class AbstractRSELaunchDelegate extends AbstractJBossStartLaunchConfiguration 
@@ -77,11 +74,5 @@ public abstract class AbstractRSELaunchDelegate extends AbstractJBossStartLaunch
 			}
 		};
 		shell.addOutputListener(listener);
-	}
-	
-	protected void launchPingThread(IDeployableServerBehaviour beh) {
-		// TODO do it properly here
-		ThreadUtils.sleepFor(30000);
-		((DeployableServerBehavior)beh).setServerStarted();
 	}
 }

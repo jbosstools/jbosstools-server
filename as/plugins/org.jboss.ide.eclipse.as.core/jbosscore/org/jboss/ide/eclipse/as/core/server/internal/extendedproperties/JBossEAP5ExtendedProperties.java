@@ -11,27 +11,20 @@
 package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
 import org.eclipse.core.runtime.IAdaptable;
-import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
+import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
+import org.jboss.ide.eclipse.as.core.server.internal.JBoss6ModuleStateVerifier;
 
-public class JBossAS710ExtendedProperties extends JBossAS7ExtendedProperties {
+public class JBossEAP5ExtendedProperties extends JBossExtendedProperties {
 
-	public JBossAS710ExtendedProperties(IAdaptable obj) {
-		super(obj);
+	public JBossEAP5ExtendedProperties(IAdaptable adaptable) {
+		super(adaptable);
 	}
 	
 	public String getRuntimeTypeVersionString() {
-		return "7.1"; //$NON-NLS-1$
+		return "5.x"; //$NON-NLS-1$
 	}
 
-	public int getJMXProviderType() {
-		return JMX_OVER_AS_MANAGEMENT_PORT_PROVIDER;
-	}
-	public boolean runtimeSupportsBindingToAllInterfaces() {
-		return true;
-	}
-	public IDefaultLaunchArguments getDefaultLaunchArguments() {
-		if( server != null)
-			return new JBoss71DefaultLaunchArguments(server);
-		return new JBoss71DefaultLaunchArguments(runtime);
+	public IServerModuleStateVerifier getModuleStateVerifier() {
+		return new JBoss6ModuleStateVerifier();
 	}
 }

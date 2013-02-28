@@ -57,7 +57,6 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 			throw new CoreException(jbsBehavior.canStart(mode));
 		if (LaunchCommandPreferences.isIgnoreLaunchCommand(jbsBehavior.getServer())) {
 			Trace.trace(Trace.STRING_FINEST, "Server is marked as ignore Launch. Marking as started."); //$NON-NLS-1$
-			((DelegatingServerBehavior)jbsBehavior).setServerStarting();
 			((DelegatingServerBehavior)jbsBehavior).setServerStarted();
 			return false;
 		}

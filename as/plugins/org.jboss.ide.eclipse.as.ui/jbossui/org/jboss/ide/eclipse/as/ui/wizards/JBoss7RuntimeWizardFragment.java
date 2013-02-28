@@ -37,7 +37,6 @@ import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.TaskModel;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
-import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
@@ -194,12 +193,8 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 		updateErrorMessage();
 		saveDetailsInRuntime();
 	}
-	protected String getWarningString() {
-		if( getHomeVersionWarning() != null )
-			return getHomeVersionWarning();
-		return null;
-	}
-
+	
+	@Override
 	protected String getErrorString() {
 		if (nameText == null)
 			// not yet initialized. no errors
@@ -208,11 +203,14 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 		if (getRuntime(name) != null)
 			return Messages.rwf_NameInUse;
 
-		if (!isHomeValid())
-			return NLS.bind(Messages.rwf_homeMissingFiles, getSystemJarPath());
-
 		if (name == null || name.equals("")) //$NON-NLS-1$
 			return Messages.rwf_nameTextBlank;
+		
+		if( !homeDirectoryIsDirectory()) 
+			return Messages.rwf_homeIsNotDirectory;
+		
+		if( !jbossModulesJarExists())
+			return NLS.bind(Messages.rwf_homeMissingFiles2, getJBossModulesJar());
 		
 		if( configDirTextVal != null) {
 			IPath p = new Path(configDirTextVal);
@@ -226,34 +224,40 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 				return Messages.bind(Messages.rwf7_ConfigFileError, actualPath.toString());
 			}
 		}
-		
-		// Forced error strings for as7.0 and 7.1 incompatabilities. 
-		String version = getVersionString(new File(homeDir));
-		IRuntime rt = (IRuntime) getTaskModel().getObject(
-				TaskModel.TASK_RUNTIME);
-		String adapterVersion = rt.getRuntimeType().getVersion();
-		
-		if(!isEAP() && ((adapterVersion.equals("7.0") && !version.startsWith("7.0."))
-				|| (adapterVersion.equals("7.1") && version.startsWith("7.0."))) ) {
-			return NLS.bind(Messages.rwf_homeIncorrectVersionError, adapterVersion, version);
-		}
-		if( isEAP() && !adapterVersion.equals("6.0") )
-				return NLS.bind(Messages.rwf_homeIncorrectVersionError, adapterVersion, version);
-		
 		return null;
 	}
-
+	
+	
 	@Override
-	protected boolean isHomeValid() {
-		if (homeDir == null || homeDir.length() == 0 || !(new File(homeDir).exists()))
-			return false;
-		return standaloneScriptExists();
+	public String getWarningString() {
+		if (!systemJarExists())
+			return NLS.bind(Messages.rwf_homeMissingFiles2, getSystemJarPath());
+		// superclass handles the version warning
+		return super.getWarningString();
 	}
 
-	private boolean standaloneScriptExists() {
-		ServerBeanLoader loader = new ServerBeanLoader(new File(homeDir));
-		String version = loader.getFullServerVersion();
-		String s = JBossServerType.AS7.getSystemJarPath();
+	protected boolean homeDirectoryIsDirectory() {
+		if (homeDir == null || homeDir.length() == 0 )
+			return false;
+		File home = new File(homeDir);
+		if( !home.exists() || !home.isDirectory()) {
+			return false;
+		}
+		return true;
+	}
+
+	protected boolean jbossModulesJarExists() {
+		return getJBossModulesJar().toFile().exists();
+	}
+	
+	protected IPath getJBossModulesJar() {
+		return new Path(homeDir).append("jboss-modules.jar");
+	}
+	
+	
+	
+	protected boolean systemJarExists() {
+		String s = getSystemJarPath();
 		IPath p = new Path(homeDir).append(s);
 		return p.toFile().exists();
 	}
@@ -271,23 +275,13 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 		saveRuntimeLocationInPreferences(rt);
 	}
 
+	
 	@Override
-	protected void saveDetailsInRuntime() {
-		IRuntime r = (IRuntime) getTaskModel()
-				.getObject(TaskModel.TASK_RUNTIME);
-		IRuntimeWorkingCopy runtimeWC = r.isWorkingCopy() ? ((IRuntimeWorkingCopy) r)
-				: r.createWorkingCopy();
-
-		if( name != null )
-			runtimeWC.setName(name);
-		if( homeDir != null )
-			runtimeWC.setLocation(new Path(homeDir));
-		LocalJBoss7ServerRuntime srt = (LocalJBoss7ServerRuntime) runtimeWC.loadAdapter(
+	protected void saveConfigurationDetailsInRuntime(IRuntimeWorkingCopy wc) {
+		LocalJBoss7ServerRuntime srt = (LocalJBoss7ServerRuntime) wc.loadAdapter(
 				LocalJBoss7ServerRuntime.class, new NullProgressMonitor());
-		if( selectedVM != null )
-			srt.setVM(selectedVM);
 		if( configDirTextVal != null && !"".equals(configDirTextVal))
 			srt.setConfigurationFile(configDirTextVal);
-		getTaskModel().putObject(TaskModel.TASK_RUNTIME, runtimeWC);
 	}
+
 }
