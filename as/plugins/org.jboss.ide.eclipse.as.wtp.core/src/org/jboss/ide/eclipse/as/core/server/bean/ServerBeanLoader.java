@@ -25,7 +25,7 @@ import java.util.zip.ZipFile;
 public class ServerBeanLoader {
 	
 	// NEW_SERVER_ADAPTER
-	static JBossServerType[] typesInOrder = {
+	public static JBossServerType[] typesInOrder = {
 		JBossServerType.AS, 
 		JBossServerType.EAP61, JBossServerType.AS72, 
 		JBossServerType.JPP6, JBossServerType.EAP6, 
