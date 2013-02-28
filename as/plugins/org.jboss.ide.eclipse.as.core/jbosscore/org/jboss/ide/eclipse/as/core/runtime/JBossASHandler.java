@@ -71,7 +71,9 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 		SERVER_DEFAULT_NAME.put(IJBossToolingConstants.SERVER_AS_70, Messages.JBossRuntimeStartup_JBoss_Application_Server_7_0);
 		SERVER_DEFAULT_NAME.put(IJBossToolingConstants.SERVER_AS_71, Messages.JBossRuntimeStartup_JBoss_Application_Server_7_1);
 		SERVER_DEFAULT_NAME.put(IJBossToolingConstants.SERVER_EAP_60, Messages.JBossRuntimeStartup_JBoss_EAP_Server_6_0);
-		
+		SERVER_DEFAULT_NAME.put(IJBossToolingConstants.SERVER_EAP_61, Messages.JBossRuntimeStartup_JBoss_EAP_Server_6_0);
+		// NEW_SERVER_ADAPTER add logic for new adapter here
+
 		// See also JBIDE-12603 (fileset not added for first runtime)
 		Bundle bundle = Platform.getBundle("org.jboss.ide.eclipse.archives.webtools"); //$NON-NLS-1$
 		if (bundle != null) {
@@ -91,24 +93,23 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 	}
 		
 	private static File getLocation(RuntimeDefinition runtimeDefinitions) {
+		// TODO - unify this somehwere in the jboss-server-bean api?
+		
 		String type = runtimeDefinitions.getType();
 		String version = runtimeDefinitions.getVersion();
-		if (EAP.equals(type) && version != null && version.startsWith("6") ) {//$NON-NLS-1$
-			return runtimeDefinitions.getLocation();
-		}
-		if (SOA_P.equals(type) || EAP.equals(type) || EPP.equals(type)) {
-			return new File(runtimeDefinitions.getLocation(), "jboss-as");//$NON-NLS-1$
-		}
-		if (SOA_P_STD.equals(type)) {
-			return new File(runtimeDefinitions.getLocation(),"jboss-esb"); //$NON-NLS-1$					
-		}
-		if(EWP.equals(type)) {
+		boolean isEAP6 = EAP.equals(type) && version != null && version.startsWith("6");  //$NON-NLS-1$
+		if( !isEAP6 ) {
+			if (SOA_P.equals(type) || EAP.equals(type) || EPP.equals(type)) {
+				return new File(runtimeDefinitions.getLocation(), "jboss-as");//$NON-NLS-1$
+			}
+			if (SOA_P_STD.equals(type)) {
+				return new File(runtimeDefinitions.getLocation(),"jboss-esb"); //$NON-NLS-1$					
+			}
+			if(EWP.equals(type)) {
 				return new File(runtimeDefinitions.getLocation(),"jboss-as-web"); //$NON-NLS-1$
+			}
 		}
-		if (AS.equals(type) || EAP_STD.equals(type)) {
-			return runtimeDefinitions.getLocation();
-		}
-		return null;
+		return runtimeDefinitions.getLocation();
 	}
 	
 	public static void createJBossServerFromDefinitions(List<RuntimeDefinition> runtimeDefinitions) {
@@ -118,10 +119,17 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 				if (asLocation == null || !asLocation.isDirectory()) {
 					continue;
 				}
+				
+				// THIS needs to be cleaned up, but would probably require
+				// changes to runtime API. UGH. 
 				String type = runtimeDefinition.getType();
-				if (SOA_P.equals(type) || EAP.equals(type) || EPP.equals(type)
-						|| SOA_P_STD.equals(type) || EWP.equals(type)
-						|| EAP_STD.equals(type) || AS.equals(type)) {
+				boolean found = false;
+				JBossServerType[] all = ServerBeanLoader.typesInOrder;
+				for( int i = 0; i < all.length && !found; i++ ) {
+					if( all[i].getId().equals(type))
+						found = true;
+				}
+				if (found) {
 					String typeId = new ServerBeanLoader(asLocation).getServerAdapterId();
 					String name = runtimeDefinition.getName();
 					String runtimeName = name + " " + RUNTIME; //$NON-NLS-1$
