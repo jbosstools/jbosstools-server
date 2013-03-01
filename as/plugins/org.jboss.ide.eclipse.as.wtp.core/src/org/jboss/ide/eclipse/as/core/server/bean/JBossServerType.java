@@ -37,6 +37,7 @@ public class JBossServerType implements IJBossToolingConstants {
 	public static final JBossServerType EAP_STD = new ServerBeanTypeEAPStandalone();
 	public static final JBossServerType EAP = new ServerBeanTypeEAP();
 	public static final JBossServerType EAP6 = new ServerBeanTypeEAP6();
+	public static final JBossServerType UNKNOWN_AS72_PRODUCT = new ServerBeanTypeUnknownAS72Product();
 	public static final JBossServerType AS72 = new ServerBeanTypeAS72();
 	public static final JBossServerType EAP61 = new ServerBeanTypeEAP61();
 	public static final JBossServerType JPP6 = new ServerBeanTypeJPP6();

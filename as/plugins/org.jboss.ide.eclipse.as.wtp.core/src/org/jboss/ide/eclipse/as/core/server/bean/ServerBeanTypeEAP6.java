@@ -51,20 +51,27 @@ public class ServerBeanTypeEAP6 extends JBossServerType {
 				Properties p = JBossServerType.loadProperties(productConf.toFile());
 				String product = (String) p.get("slot"); //$NON-NLS-1$
 				if(slot.equals(product)) { //$NON-NLS-1$
-					IPath eapDir = rootPath.append(metaInfPath); //$NON-NLS-1$
-					if( eapDir.toFile().exists()) {
-						IPath manifest = eapDir.append("MANIFEST.MF"); //$NON-NLS-1$
-						Properties p2 = JBossServerType.loadProperties(manifest.toFile());
-						String type = p2.getProperty("JBoss-Product-Release-Name"); //$NON-NLS-1$
-						String version = p2.getProperty("JBoss-Product-Release-Version"); //$NON-NLS-1$
-						if( releaseName.equals(type) && version.startsWith(versionPrefix)) //$NON-NLS-1$
-							return version;
-					}
+					return getEAP6xVersionNoSlotCheck(location, metaInfPath, versionPrefix, releaseName);
 				}
 			}
 			return null;
 		}
-
+		public static String getEAP6xVersionNoSlotCheck(File location,  String metaInfPath,
+				String versionPrefix, String releaseName) {
+			IPath rootPath = new Path(location.getAbsolutePath());
+			IPath eapDir = rootPath.append(metaInfPath); //$NON-NLS-1$
+			if( eapDir.toFile().exists()) {
+				IPath manifest = eapDir.append("MANIFEST.MF"); //$NON-NLS-1$
+				Properties p2 = JBossServerType.loadProperties(manifest.toFile());
+				String type = p2.getProperty("JBoss-Product-Release-Name"); //$NON-NLS-1$
+				String version = p2.getProperty("JBoss-Product-Release-Version"); //$NON-NLS-1$
+				boolean matchesName = releaseName == null || releaseName.equals(type);
+				boolean matchesVersion = versionPrefix == null || version.startsWith(versionPrefix);
+				if( matchesName && matchesVersion )
+					return version;
+			}
+			return null;
+		}
 	}
 
 }

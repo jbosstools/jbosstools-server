@@ -17,7 +17,7 @@ public class ServerBeanTypeEAP61 extends JBossServerType {
 	public ServerBeanTypeEAP61() {
 		super(
 				"EAP", //$NON-NLS-1$
-				"Application Server", //$NON-NLS-1$
+				"Enterprise Application Platform", //$NON-NLS-1$
 				asPath("modules","system","layers","base",
 						"org","jboss","as","server","main"),
 				new String[]{V6_1}, new EAP61ServerTypeCondition());

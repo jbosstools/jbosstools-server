@@ -27,7 +27,9 @@ public class ServerBeanLoader {
 	// NEW_SERVER_ADAPTER
 	public static JBossServerType[] typesInOrder = {
 		JBossServerType.AS, 
-		JBossServerType.EAP61, JBossServerType.AS72, 
+		JBossServerType.EAP61,
+		JBossServerType.UNKNOWN_AS72_PRODUCT,
+		JBossServerType.AS72, 
 		JBossServerType.JPP6, JBossServerType.EAP6, 
 		JBossServerType.AS7GateIn, JBossServerType.AS7, JBossServerType.EAP_STD, 
 		JBossServerType.SOAP, JBossServerType.SOAP_STD, JBossServerType.EPP, JBossServerType.EAP, 
@@ -89,6 +91,14 @@ public class ServerBeanLoader {
 		return bean.getType().getServerAdapterTypeId(bean.getVersion());
 	}
 	
+	/**
+	 * This method does NOT belong here. The two users are both of the 
+	 * Condition interface, and so this more likely belongs in 
+	 * AbstractCondition
+	 * 
+	 * @param systemJarFile
+	 * @return
+	 */
 	public static String getFullServerVersionFromZip(File systemJarFile) {
 		if (systemJarFile.isDirectory()) {
 			File[] files = systemJarFile.listFiles(new FilenameFilter() {
@@ -158,9 +168,33 @@ public class ServerBeanLoader {
 				}
 			}
 		}
+		
+		// Try to just return a major.minor 
+		if( adapterVersion != null && !"".equals(adapterVersion))
+			return adapterVersion;
+		int firstDot = version.indexOf(".");
+		int secondDot = firstDot == -1 ? -1 : version.indexOf(".", firstDot + 1);
+		if( secondDot == -1)
+			return adapterVersion;
+		String currentVersion = version.substring(0, secondDot);
+		String pattern = currentVersion.substring(0, 2).replace(".", "\\.") + ".*";//$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+		if(version.matches(pattern)) {
+			adapterVersion = currentVersion;
+		}
 		return adapterVersion;
 	}
 	
+	/*
+	 * My best guess so far is that this method is not used. 
+	 * Given some version string, it tries to get the best match. 
+	 * 
+	 * For example, given a version "4.3.1", if this server bean type
+	 * has versions of "4.3" and "4.2", will return "4.2".
+	 * 
+	 * However, if this server bean type has versions "4.2" and
+	 * "4.4", given "4.3" this will return "4.2". 
+	 */
+	@Deprecated
 	public static String getAdapterVersion(String version) {
 		String[] versions = JBossServerType.UNKNOWN.getVersions();
 		String adapterVersion = "";//$NON-NLS-1$
