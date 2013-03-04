@@ -149,7 +149,14 @@ public class JBossServerType implements IJBossToolingConstants {
 					"org","jboss","as","server","main"),
 			new String[]{}, 
 			new UnknownAS72ProductServerTypeCondition());
-	
+
+	public static final JBossServerType UNKNOWN_AS71_PRODUCT = new JBossServerType( 
+			"EAP-Product",
+			"Application Server", //$NON-NLS-1$
+			asPath("modules","org","jboss","as","server","main"),
+			new String[]{}, 
+			new UnknownAS71ProductServerTypeCondition());
+
 	public static final JBossServerType UNKNOWN = new JBossServerType(
 			UNKNOWN_STR,
 			UNKNOWN_STR,
@@ -596,15 +603,37 @@ public class JBossServerType implements IJBossToolingConstants {
 				Properties p = JBossServerType.loadProperties(productConf.toFile());
 				String product = (String) p.get("slot"); //$NON-NLS-1$
 				return getEAP6xVersionNoSlotCheck(location, 
-						getMetaInfFolderForSlot(product),
+						getMetaInfFolderForSlot(product, true),
 						null, null);
 			}
 			return null;
 		}
 
-		private static String getMetaInfFolderForSlot(String slot) {
+	}
+	private static String getMetaInfFolderForSlot(String slot, boolean includesSystemLayers) {
+		if( includesSystemLayers)
 			return "modules/system/layers/base/org/jboss/as/product/" + slot + "/dir/META-INF"; //$NON-NLS-1$
+		return "modules/org/jboss/as/product/" + slot + "/dir/META-INF"; //$NON-NLS-1$
+	}
 
+	public static class UnknownAS71ProductServerTypeCondition extends EAP6ServerTypeCondition {
+		public String getServerTypeId(String version) {
+			return IJBossToolingConstants.SERVER_EAP_60;
+		}
+		public boolean isServerRoot(File location) {
+			return getFullVersion(location, null) != null;
+		}
+		public String getFullVersion(File location, File systemJarFile) {
+			IPath rootPath = new Path(location.getAbsolutePath());
+			IPath productConf = rootPath.append("bin/product.conf"); //$NON-NLS-1$
+			if( productConf.toFile().exists()) {
+				Properties p = JBossServerType.loadProperties(productConf.toFile());
+				String product = (String) p.get("slot"); //$NON-NLS-1$
+				return getEAP6xVersionNoSlotCheck(location, 
+						getMetaInfFolderForSlot(product, false),
+						null, null);
+			}
+			return null;
 		}
 	}
 	

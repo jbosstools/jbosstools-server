@@ -31,7 +31,8 @@ public class ServerBeanLoader {
 		JBossServerType.UNKNOWN_AS72_PRODUCT,
 		JBossServerType.AS72, 
 		JBossServerType.JPP6, JBossServerType.EAP6, 
-		JBossServerType.AS7, JBossServerType.EAP_STD, 
+		JBossServerType.UNKNOWN_AS71_PRODUCT, JBossServerType.AS7, 
+		JBossServerType.EAP_STD, 
 		JBossServerType.SOAP, JBossServerType.SOAP_STD, JBossServerType.EPP, JBossServerType.EAP, 
 		JBossServerType.EWP
 	};
