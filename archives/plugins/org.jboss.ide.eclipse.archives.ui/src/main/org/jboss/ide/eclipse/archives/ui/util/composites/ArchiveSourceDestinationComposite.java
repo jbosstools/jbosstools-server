@@ -223,7 +223,8 @@ public class ArchiveSourceDestinationComposite {
 		// clear old status
 		statusType = IStatus.OK;
 		message = null;
-
+		if( parent.isDisposed())
+			return;
 
 		wsRadioButton.setEnabled(destinationNode == null);
 		fsRadioButton.setEnabled(destinationNode == null);
