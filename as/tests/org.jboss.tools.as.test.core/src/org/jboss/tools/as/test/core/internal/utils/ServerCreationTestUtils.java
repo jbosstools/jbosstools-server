@@ -217,28 +217,6 @@ public class ServerCreationTestUtils extends Assert {
 		}
 		return loc;
 	}
-	
-	private static IPath createAS72EAP61StyleMockServerDirectory(String name, String serverTypeId, String serverJar) {
-		IPath loc = mockedServers.append(name);
-		try {
-			loc.toFile().mkdirs();
-			IPath productConf = loc.append("bin/product.conf");
-			loc.append("bin").toFile().mkdirs();
-			IOUtil.setContents(productConf.toFile(), "slot=eap");
-			IPath metainf = loc.append("modules/system/layers/base/org/jboss/as/product/eap/dir/META-INF");
-			metainf.toFile().mkdirs();
-			IPath manifest = metainf.append("MANIFEST.MF");
-			String manString = "JBoss-Product-Release-Name: EAP\nJBoss-Product-Release-Version: 6.1.0.Alpha\nJBoss-Product-Console-Slot: eap";
-			IOUtil.setContents(manifest.toFile(), manString);
-		} catch(CoreException ce) {
-			FileUtil.completeDelete(loc.toFile());
-			return null;
-		} catch(IOException ioe) {
-			FileUtil.completeDelete(loc.toFile());
-			return null;
-		}
-		return loc;
-	}
 
 	private static IPath createEAP6StyleMockServerDirectory(String name, String serverTypeId, String serverJar) {
 		IPath loc = mockedServers.append(name);
