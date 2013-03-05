@@ -149,6 +149,16 @@ public class ServerBeanLoader {
 	/**
 	 * Please use getMajorMinorVersion(version) instead. 
 	 * 
+	 * There are differences in implementation to be aware of. 
+	 * This method will first attempt to match either major.minor, 
+	 * or simply major, against all versions listed in 
+	 * JBossServerType.UNKNOWN's list of versions. 
+	 * 
+	 * getMajorMinorVersion(version) will do no such comparisons, 
+	 * will not involve JBossServerType.UNKNOWN at all,
+	 * and will simply attempt to return a major.minor from the string passed in. 
+	 * 
+	 * 
 	 * @param version
 	 * @return
 	 */
@@ -170,6 +180,9 @@ public class ServerBeanLoader {
 	 * @return
 	 */
 	public static String getMajorMinorVersion(String version) {
+		if(version==null) 
+			return "";//$NON-NLS-1$
+
 		int firstDot = version.indexOf(".");
 		int secondDot = firstDot == -1 ? -1 : version.indexOf(".", firstDot + 1);
 		if( secondDot != -1) {
@@ -177,7 +190,7 @@ public class ServerBeanLoader {
 			return currentVersion;
 		}
 		if( firstDot != -1)
-			// String is already "x.y"
+			// String only has one ".", and is assumed to be already in "x.y" form
 			return version;
 		return "";
 	}

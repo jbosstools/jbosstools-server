@@ -406,7 +406,8 @@ public class JBossServerType implements IJBossToolingConstants {
 		}
 		return null;
 	}
-	public static String getEAP6xVersionNoSlotCheck(File location,  String metaInfPath,
+	
+	static String getEAP6xVersionNoSlotCheck(File location,  String metaInfPath,
 			String versionPrefix, String releaseName) {
 		IPath rootPath = new Path(location.getAbsolutePath());
 		IPath eapDir = rootPath.append(metaInfPath); //$NON-NLS-1$
