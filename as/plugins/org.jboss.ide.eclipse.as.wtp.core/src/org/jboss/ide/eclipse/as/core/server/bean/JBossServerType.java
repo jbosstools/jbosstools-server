@@ -44,7 +44,6 @@ public class JBossServerType implements IJBossToolingConstants {
 	private String name;
 	private String jbossSystemJarPath;
 	private String[] versions = new String[0];
-	
 	private JBossServerType.Condition condition = null;
 	private String id=UNKNOWN_STR;
 	
@@ -142,7 +141,22 @@ public class JBossServerType implements IJBossToolingConstants {
 			"JBoss Portal Platform",//$NON-NLS-1$
 			asPath("modules", "org", "jboss", "as", "server", "main"),
 			new String[]{V6_0}, new JPP6ServerTypeCondition());
-	
+
+	public static final JBossServerType UNKNOWN_AS72_PRODUCT = new JBossServerType( 
+			"AS-Product",
+			"Application Server Product", //$NON-NLS-1$
+			asPath("modules","system","layers","base",
+					"org","jboss","as","server","main"),
+			new String[]{}, 
+			new UnknownAS72ProductServerTypeCondition());
+
+	public static final JBossServerType UNKNOWN_AS71_PRODUCT = new JBossServerType( 
+			"AS-Product",
+			"Application Server Product", //$NON-NLS-1$
+			asPath("modules","org","jboss","as","server","main"),
+			new String[]{}, 
+			new UnknownAS71ProductServerTypeCondition());
+
 	public static final JBossServerType UNKNOWN = new JBossServerType(
 			UNKNOWN_STR,
 			UNKNOWN_STR,
@@ -387,20 +401,28 @@ public class JBossServerType implements IJBossToolingConstants {
 			Properties p = loadProperties(productConf.toFile());
 			String product = (String) p.get("slot"); //$NON-NLS-1$
 			if(slot.equals(product)) { //$NON-NLS-1$
-				IPath eapDir = rootPath.append(metaInfPath); //$NON-NLS-1$
-				if( eapDir.toFile().exists()) {
-					IPath manifest = eapDir.append("MANIFEST.MF"); //$NON-NLS-1$
-					Properties p2 = loadProperties(manifest.toFile());
-					String type = p2.getProperty("JBoss-Product-Release-Name"); //$NON-NLS-1$
-					String version = p2.getProperty("JBoss-Product-Release-Version"); //$NON-NLS-1$
-					if( releaseName.equals(type) && version.startsWith(versionPrefix)) //$NON-NLS-1$
-						return version;
-				}
+				return getEAP6xVersionNoSlotCheck(location, metaInfPath, versionPrefix, releaseName);
 			}
 		}
 		return null;
 	}
-
+	
+	static String getEAP6xVersionNoSlotCheck(File location,  String metaInfPath,
+			String versionPrefix, String releaseName) {
+		IPath rootPath = new Path(location.getAbsolutePath());
+		IPath eapDir = rootPath.append(metaInfPath); //$NON-NLS-1$
+		if( eapDir.toFile().exists()) {
+			IPath manifest = eapDir.append("MANIFEST.MF"); //$NON-NLS-1$
+			Properties p2 = JBossServerType.loadProperties(manifest.toFile());
+			String type = p2.getProperty("JBoss-Product-Release-Name"); //$NON-NLS-1$
+			String version = p2.getProperty("JBoss-Product-Release-Version"); //$NON-NLS-1$
+			boolean matchesName = releaseName == null || releaseName.equals(type);
+			boolean matchesVersion = versionPrefix == null || version.startsWith(versionPrefix);
+			if( matchesName && matchesVersion )
+				return version;
+		}
+		return null;
+	}
 	private static Properties loadProperties(File f) {
 		Properties p = new Properties();
 		FileInputStream stream = null;
@@ -568,6 +590,54 @@ public class JBossServerType implements IJBossToolingConstants {
 		}
 	}
 
+	public static class UnknownAS72ProductServerTypeCondition extends EAP6ServerTypeCondition {
+		public String getServerTypeId(String version) {
+			return IJBossToolingConstants.SERVER_EAP_61;
+		}
+		public boolean isServerRoot(File location) {
+			return getFullVersion(location, null) != null;
+		}
+		public String getFullVersion(File location, File systemJarFile) {
+			IPath rootPath = new Path(location.getAbsolutePath());
+			IPath productConf = rootPath.append("bin/product.conf"); //$NON-NLS-1$
+			if( productConf.toFile().exists()) {
+				Properties p = JBossServerType.loadProperties(productConf.toFile());
+				String product = (String) p.get("slot"); //$NON-NLS-1$
+				return getEAP6xVersionNoSlotCheck(location, 
+						getMetaInfFolderForSlot(product, true),
+						null, null);
+			}
+			return null;
+		}
+
+	}
+	private static String getMetaInfFolderForSlot(String slot, boolean includesSystemLayers) {
+		if( includesSystemLayers)
+			return "modules/system/layers/base/org/jboss/as/product/" + slot + "/dir/META-INF"; //$NON-NLS-1$
+		return "modules/org/jboss/as/product/" + slot + "/dir/META-INF"; //$NON-NLS-1$
+	}
+
+	public static class UnknownAS71ProductServerTypeCondition extends EAP6ServerTypeCondition {
+		public String getServerTypeId(String version) {
+			return IJBossToolingConstants.SERVER_EAP_60;
+		}
+		public boolean isServerRoot(File location) {
+			return getFullVersion(location, null) != null;
+		}
+		public String getFullVersion(File location, File systemJarFile) {
+			IPath rootPath = new Path(location.getAbsolutePath());
+			IPath productConf = rootPath.append("bin/product.conf"); //$NON-NLS-1$
+			if( productConf.toFile().exists()) {
+				Properties p = JBossServerType.loadProperties(productConf.toFile());
+				String product = (String) p.get("slot"); //$NON-NLS-1$
+				return getEAP6xVersionNoSlotCheck(location, 
+						getMetaInfFolderForSlot(product, false),
+						null, null);
+			}
+			return null;
+		}
+	}
+	
 	public String getId() {
 		return id;
 	}
