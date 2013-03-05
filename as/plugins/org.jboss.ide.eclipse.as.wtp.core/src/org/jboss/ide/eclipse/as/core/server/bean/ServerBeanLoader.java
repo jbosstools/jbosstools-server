@@ -146,78 +146,71 @@ public class ServerBeanLoader {
 		return version;
 	}
 	
+	/**
+	 * Please use getMajorMinorVersion(version) instead. 
+	 * 
+	 * @param version
+	 * @return
+	 */
+	@Deprecated
 	public static String getServerVersion(String version) {
-		if(version==null) return "";//$NON-NLS-1$
-		String[] versions = JBossServerType.UNKNOWN.getVersions();
-		String adapterVersion = "";//$NON-NLS-1$
-		//  trying to match adapter version by X.X version
-		for (String currentVersion : versions) {
-			String pattern = currentVersion.replace(".", "\\.") + ".*";//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			if(version.matches(pattern)) {
-				adapterVersion = currentVersion;
-				break;
-			}
-		}
-		
-		if("".equals(adapterVersion)) {//$NON-NLS-1$
-			// trying to match by major version
-			for (String currentVersion : versions) {
-				String pattern = currentVersion.substring(0, 2).replace(".", "\\.") + ".*";//$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
-				if(version.matches(pattern)) {
-					adapterVersion = currentVersion;
-					break;
-				}
-			}
-		}
-		
-		// Try to just return a major.minor 
-		if( adapterVersion != null && !"".equals(adapterVersion))
-			return adapterVersion;
-		int firstDot = version.indexOf(".");
-		int secondDot = firstDot == -1 ? -1 : version.indexOf(".", firstDot + 1);
-		if( secondDot == -1)
-			return adapterVersion;
-		String currentVersion = version.substring(0, secondDot);
-		String pattern = currentVersion.substring(0, 2).replace(".", "\\.") + ".*";//$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
-		if(version.matches(pattern)) {
-			adapterVersion = currentVersion;
-		}
-		return adapterVersion;
+		if(version==null) 
+			return "";//$NON-NLS-1$
+		String adapterVersion = getAdapterVersion(version);
+		boolean isEmpty = adapterVersion == null || "".equals(adapterVersion);
+		return isEmpty ? getMajorMinorVersion(version) : adapterVersion;
 	}
 	
-	/*
-	 * My best guess so far is that this method is not used. 
-	 * Given some version string, it tries to get the best match. 
+	/**
+	 * Turn a version string into a major.minor version string. 
+	 * Example:
+	 *    getMajorMinorVersion("4.1.3.Alpha3") -> "4.1"
+	 *    
+	 * @param version
+	 * @return
+	 */
+	public static String getMajorMinorVersion(String version) {
+		int firstDot = version.indexOf(".");
+		int secondDot = firstDot == -1 ? -1 : version.indexOf(".", firstDot + 1);
+		if( secondDot != -1) {
+			String currentVersion = version.substring(0, secondDot);
+			return currentVersion;
+		}
+		if( firstDot != -1)
+			// String is already "x.y"
+			return version;
+		return "";
+	}
+	
+	/**
+	 * This method should NOT BE USED. The symantics are unclear,
+	 * and it requires checking the JBossServerType.UNKNOWN list of versions, 
+	 * which may not be always updated or include all possible version strings. 
 	 * 
-	 * For example, given a version "4.3.1", if this server bean type
-	 * has versions of "4.3" and "4.2", will return "4.2".
+	 * Furthermore, this method will NOT return a proper server adapter
+	 * version which can be used in any way. 
 	 * 
-	 * However, if this server bean type has versions "4.2" and
-	 * "4.4", given "4.3" this will return "4.2". 
+	 * To properly discover a server bean's server adapter id, please use:
+	 *    JBossServerType.getServerAdapterTypeId(version)
 	 */
 	@Deprecated
 	public static String getAdapterVersion(String version) {
 		String[] versions = JBossServerType.UNKNOWN.getVersions();
-		String adapterVersion = "";//$NON-NLS-1$
 		//  trying to match adapter version by X.X version
 		for (String currentVersion : versions) {
 			String pattern = currentVersion.replace(".", "\\.") + ".*";//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			if(version.matches(pattern)) {
-				adapterVersion = currentVersion;
-				break;
+				return currentVersion;
 			}
 		}
 		
-		if("".equals(adapterVersion)) { //$NON-NLS-1$
-			// trying to match by major version
-			for (String currentVersion : versions) {
-				String pattern = currentVersion.substring(0, 2).replace(".", "\\.") + ".*";//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				if(version.matches(pattern)) {
-					adapterVersion = currentVersion;
-					break;
-				}
+		// trying to match by major version
+		for (String currentVersion : versions) {
+			String pattern = currentVersion.substring(0, 2).replace(".", "\\.") + ".*";//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			if(version.matches(pattern)) {
+				return currentVersion;
 			}
 		}
-		return adapterVersion;
+		return "";
 	}
 }

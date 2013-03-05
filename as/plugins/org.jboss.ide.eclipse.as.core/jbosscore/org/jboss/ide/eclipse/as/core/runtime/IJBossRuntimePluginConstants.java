@@ -12,11 +12,14 @@ package org.jboss.ide.eclipse.as.core.runtime;
 
 import org.jboss.ide.eclipse.as.core.Messages;
 
-
+/**
+ * This class is internal and is not intended to be 
+ * referenced in any way by clients outside of this package. 
+ */
 public interface IJBossRuntimePluginConstants {
 	public static final String DEFAULT_DS = "DefaultDS";//$NON-NLS-1$
 	public static final String RUNTIME = Messages.JBossRuntimeStartup_Runtime;
-	public static final String EAPProduct = "EAP-Product"; //$NON-NLS-1$
+	public static final String ASProduct = "AS-Product"; //$NON-NLS-1$
 	public static final String EAP = "EAP"; //$NON-NLS-1$
 	public static final String EAP_STD = "EAP_STD"; //$NON-NLS-1$
 	public static final String SOA_P = "SOA-P"; //$NON-NLS-1$

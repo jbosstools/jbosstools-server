@@ -143,16 +143,16 @@ public class JBossServerType implements IJBossToolingConstants {
 			new String[]{V6_0}, new JPP6ServerTypeCondition());
 
 	public static final JBossServerType UNKNOWN_AS72_PRODUCT = new JBossServerType( 
-			"EAP-Product",
-			"Application Server", //$NON-NLS-1$
+			"AS-Product",
+			"Application Server Product", //$NON-NLS-1$
 			asPath("modules","system","layers","base",
 					"org","jboss","as","server","main"),
 			new String[]{}, 
 			new UnknownAS72ProductServerTypeCondition());
 
 	public static final JBossServerType UNKNOWN_AS71_PRODUCT = new JBossServerType( 
-			"EAP-Product",
-			"Application Server", //$NON-NLS-1$
+			"AS-Product",
+			"Application Server Product", //$NON-NLS-1$
 			asPath("modules","org","jboss","as","server","main"),
 			new String[]{}, 
 			new UnknownAS71ProductServerTypeCondition());
