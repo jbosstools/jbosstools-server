@@ -36,7 +36,8 @@ public class ServerBeanTypeSOAP extends JBossServerType {
 				// SOA-P 5.2, SOA-P 5.3 ...
 				String check = fullVersion.substring(0,5); 
 				Pattern pattern = Pattern.compile("5\\.1\\.[1-9]");
-				if (pattern.matcher(check).matches()) {
+				Pattern pattern531 = Pattern.compile("5\\.2\\.[0-9]");
+				if (pattern.matcher(check).matches() || pattern531.matcher(check).matches()) {
 					String runJar = JBossServerType.JBOSS_AS_PATH + File.separatorChar + 
 						JBossServerType.BIN_PATH+ File.separatorChar + JBossServerType.RUN_JAR_NAME;
 					fullVersion = super.getFullVersion(location,new File(location, runJar));
