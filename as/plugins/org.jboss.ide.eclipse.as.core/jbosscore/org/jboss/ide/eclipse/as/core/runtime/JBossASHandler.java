@@ -98,7 +98,7 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 		String type = runtimeDefinitions.getType();
 		String version = runtimeDefinitions.getVersion();
 		
-		boolean isEAP6 = ASProduct.equals(type) || (EAP.equals(type) && version != null && version.startsWith("6"));  //$NON-NLS-1$
+		boolean isEAP6 = ASPRODUCT.equals(type) || (EAP.equals(type) && version != null && version.startsWith("6"));  //$NON-NLS-1$
 		if( !isEAP6 ) {
 			if (SOA_P.equals(type) || EAP.equals(type) || EPP.equals(type)) {
 				return new File(runtimeDefinitions.getLocation(), "jboss-as");//$NON-NLS-1$
