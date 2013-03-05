@@ -10,7 +10,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	ArgsUtilTest.class,
 	ExpressionResolverUtilTest.class,
 	UnitedServerListenerTest.class,
-	RSEUtilsTest.class
+	RSEUtilsTest.class,
+	VersionStringUtilTest.class
 })
 public class UtilsSuite {
 }

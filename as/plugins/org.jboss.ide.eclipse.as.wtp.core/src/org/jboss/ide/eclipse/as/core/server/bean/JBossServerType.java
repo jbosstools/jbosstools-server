@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.core.server.bean;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
@@ -41,6 +42,7 @@ public class JBossServerType implements IJBossToolingConstants {
 	public static final JBossServerType AS72 = new ServerBeanTypeAS72();
 	public static final JBossServerType EAP61 = new ServerBeanTypeEAP61();
 	public static final JBossServerType JPP6 = new ServerBeanTypeJPP6();
+	public static final JBossServerType UNKNOWN_AS71_PRODUCT = new ServerBeanTypeUnknownAS71Product();
 	public static final JBossServerType SOAP = new ServerBeanTypeSOAP(); 
 	public static final JBossServerType SOAP_STD = new ServerBeanTypeSOAPStandalone();
 	public static final JBossServerType EWP = new ServerBeanTypeEWP();
@@ -148,6 +150,63 @@ public class JBossServerType implements IJBossToolingConstants {
 	public static abstract class AbstractCondition implements Condition {
 		public String getFullVersion(File location, File systemFile) {
 			return ServerBeanLoader.getFullServerVersionFromZip(systemFile);
+		}
+		
+		/**
+		 * This method is an older implementation on how to discover 
+		 * the version of your server type. 
+		 * 
+		 * Only legacy code should call this. All new clients 
+		 * should properly implement their own method. The method
+		 * is still public for legacy and backwards compatability reasons.
+		 * 
+		 * @param systemJarFile
+		 * @return
+		 */
+		public static String getFullServerVersionFromZipLegacy(File systemJarFile) {
+			if (systemJarFile.isDirectory()) {
+				File[] files = systemJarFile.listFiles(new FilenameFilter() {
+					
+					public boolean accept(File dir, String name) {
+						return name.endsWith(".jar"); //$NON-NLS-1$
+					}
+				});
+				if (files != null && files.length == 1) {
+					systemJarFile = files[0];
+				}
+			}
+			
+			String version = null;
+			ZipFile jar = null;
+			if(systemJarFile.canRead()) {
+				try {
+					jar = new ZipFile(systemJarFile);
+					ZipEntry manifest = jar.getEntry("META-INF/MANIFEST.MF");//$NON-NLS-1$
+					Properties props = new Properties();
+					props.load(jar.getInputStream(manifest));
+					version = props.getProperty("JBossEAP-Release-Version"); //$NON-NLS-1$
+					if (version != null) {
+						return version;
+					}
+					version = (String)props.get("Specification-Version");//$NON-NLS-1$
+					if (version == null || version.trim().length() == 0 || !(version.charAt(0) >= '0' && version.charAt(0) <= '9')) {
+						version = (String)props.get("Implementation-Version");//$NON-NLS-1$
+					}
+				} catch (IOException e) {
+					// It's already null, and would fall through to return null,
+					// but hudson doesn't like empty catch blocks.
+					return null;  
+				} finally {
+					if (jar != null) {
+						try {
+							jar.close();
+						} catch (IOException e) {
+							// ignore
+						}
+					}
+				}
+			}
+			return version;
 		}
 	}
 	

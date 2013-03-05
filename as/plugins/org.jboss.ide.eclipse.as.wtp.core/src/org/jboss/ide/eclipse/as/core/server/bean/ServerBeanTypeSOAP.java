@@ -31,7 +31,7 @@ public class ServerBeanTypeSOAP extends JBossServerType {
 		}
 		
 		public String getFullVersion(File location, File systemFile) {
-			String fullVersion = ServerBeanLoader.getFullServerVersionFromZip(systemFile);
+			String fullVersion = super.getFullVersion(location, systemFile);
 			if (fullVersion != null && fullVersion.length() >= 5) {
 				// SOA-P 5.2, SOA-P 5.3 ...
 				String check = fullVersion.substring(0,5); 
@@ -39,7 +39,7 @@ public class ServerBeanTypeSOAP extends JBossServerType {
 				if (pattern.matcher(check).matches()) {
 					String runJar = JBossServerType.JBOSS_AS_PATH + File.separatorChar + 
 						JBossServerType.BIN_PATH+ File.separatorChar + JBossServerType.RUN_JAR_NAME;
-					fullVersion = ServerBeanLoader.getFullServerVersionFromZip(new File(location, runJar));
+					fullVersion = super.getFullVersion(location,new File(location, runJar));
 				}
 			}
 			return fullVersion;
