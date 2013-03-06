@@ -20,7 +20,7 @@ public class ServerBeanTypeAS7 extends JBossServerType {
 	protected ServerBeanTypeAS7() {
 		super(
 			"AS", //$NON-NLS-1$
-			"Application Server", //$NON-NLS-1$
+			"JBoss Application Server", //$NON-NLS-1$
 			asPath( "modules","org","jboss","as","server","main"),
 			new String[]{V7_0,V7_1}, new AS7ServerTypeCondition());
 	}

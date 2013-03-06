@@ -20,7 +20,7 @@ public class ServerBeanTypeAS extends JBossServerType {
 	protected ServerBeanTypeAS() {
 		super(
 				"AS",
-				"Application Server", //$NON-NLS-1$
+				"JBoss Application Server", //$NON-NLS-1$
 				asPath(BIN_PATH, TWIDDLE_JAR_NAME),
 				new String[]{V6_0, V6_1, V5_1, V5_0, V4_2, V4_0, V3_2}, 
 				new ASServerTypeCondition());

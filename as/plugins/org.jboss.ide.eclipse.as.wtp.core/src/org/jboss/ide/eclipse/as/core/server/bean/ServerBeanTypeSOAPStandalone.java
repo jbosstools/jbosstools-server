@@ -22,6 +22,11 @@ public class ServerBeanTypeSOAPStandalone extends JBossServerType {
 				asPath(JBOSS_ESB_PATH,BIN_PATH,RUN_JAR_NAME),
 				new String[]{V4_3, V5_0, V5_1 }, new SOAPStandaloneServerTypeCondition());
 	}
+	@Override
+	public String getRootToAdapterRelativePath(String version) {
+		return "jboss-esb";
+	}
+
 	public static class SOAPStandaloneServerTypeCondition extends org.jboss.ide.eclipse.as.core.server.bean.ServerBeanTypeEAP.EAPServerTypeCondition {
 		
 		public boolean isServerRoot(File location) {

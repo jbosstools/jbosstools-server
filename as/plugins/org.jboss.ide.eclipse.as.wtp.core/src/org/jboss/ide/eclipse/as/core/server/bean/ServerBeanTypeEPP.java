@@ -24,6 +24,10 @@ public class ServerBeanTypeEPP extends JBossServerType {
 				asPath(JBOSS_AS_PATH,BIN_PATH,RUN_JAR_NAME),
 				new String[]{V4_3, V5_0}, new EPPTypeCondition());
 	}
+	@Override
+	public String getRootToAdapterRelativePath(String version) {
+		return "jboss-as";
+	}
 	public static class EPPTypeCondition extends org.jboss.ide.eclipse.as.core.server.bean.ServerBeanTypeEAP.EAPServerTypeCondition {
 		public boolean isServerRoot(File location) {
 			if( !super.isServerRoot(location))

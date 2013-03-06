@@ -23,6 +23,11 @@ public class ServerBeanTypeEAP extends JBossServerType {
 			asPath(JBOSS_AS_PATH,BIN_PATH,TWIDDLE_JAR_NAME),
 			new String[]{V4_2,V4_3,V5_0,V5_1}, new EAPServerTypeCondition());
 	}
+	@Override
+	public String getRootToAdapterRelativePath(String version) {
+		return "jboss-as";
+	}
+
 	public static abstract class AbstractEAPTypeCondition extends AbstractCondition {
 		public String getServerTypeId(String version) {
 			// TODO this needs to be split up, does not belong here

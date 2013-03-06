@@ -24,6 +24,12 @@ public class ServerBeanTypeSOAP extends JBossServerType {
 		new String[]{V4_3, V5_0, V5_1 }, new SOAPServerTypeCondition());
 	}
 
+	@Override
+	public String getRootToAdapterRelativePath(String version) {
+		return "jboss-as";
+	}
+
+	
 	public static class SOAPServerTypeCondition extends org.jboss.ide.eclipse.as.core.server.bean.ServerBeanTypeEAP.EAPServerTypeCondition{
 		public boolean isServerRoot(File location) {
 			File jbpmFolder = new File(location, SOAP_JBPM_JPDL_PATH);

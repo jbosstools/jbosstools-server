@@ -117,6 +117,17 @@ public class JBossServerType implements IJBossToolingConstants {
 	}
 	
 	
+	/**
+	 * Get the relative path from what is the server bean's root
+	 * to what would be it's server adapter's root, or null if equal. 
+	 * 
+	 * @param version
+	 * @return
+	 */
+	public String getRootToAdapterRelativePath(String version) {
+		return null;
+	}
+	
 	
 	static interface Condition {
 		/**

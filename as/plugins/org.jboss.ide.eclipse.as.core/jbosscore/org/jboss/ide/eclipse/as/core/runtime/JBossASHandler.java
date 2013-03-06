@@ -14,8 +14,10 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -33,9 +35,7 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
-import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.runtime.DriverUtility.DriverUtilityException;
-import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBean;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
@@ -48,32 +48,22 @@ import org.jboss.tools.runtime.core.model.RuntimeDefinition;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 
+/**
+ * This class is INTERNAL and is not expected to be called or implemented directly 
+ * by ANY clients!
+ */
 public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements IJBossRuntimePluginConstants {
 	
 	private static String[] hasIncludedRuntimes = new String[] {SOA_P, EAP, EPP, EWP, SOA_P_STD};
 	private static final String DROOLS = "DROOLS";  //$NON-NLS-1$
 	private static final String ESB = "ESB"; //$NON-NLS-1$
 	
-	// This constants are made to avoid dependency with org.jboss.ide.eclipse.as.core plugin
+	@Deprecated 
 	public static final String RUNTIME_TYPES[] = IJBossToolingConstants.ALL_JBOSS_RUNTIMES;
+	@Deprecated 
 	public static final String SERVER_TYPES[] = IJBossToolingConstants.ALL_JBOSS_SERVERS;
 	
-	public static final HashMap<String,String> SERVER_DEFAULT_NAME = new HashMap<String, String>();
 	static {
-		SERVER_DEFAULT_NAME.put(IJBossToolingConstants.SERVER_AS_32, Messages.JBossRuntimeStartup_JBoss_Application_Server_3_2);
-		SERVER_DEFAULT_NAME.put(IJBossToolingConstants.SERVER_AS_40, Messages.JBossRuntimeStartup_JBoss_Application_Server_4_0);
-		SERVER_DEFAULT_NAME.put(IJBossToolingConstants.SERVER_AS_42, Messages.JBossRuntimeStartup_JBoss_Application_Server_4_2);
-		SERVER_DEFAULT_NAME.put(IJBossToolingConstants.SERVER_AS_50, Messages.JBossRuntimeStartup_JBoss_Application_Server_5_0);
-		SERVER_DEFAULT_NAME.put(IJBossToolingConstants.SERVER_AS_51, Messages.JBossRuntimeStartup_JBoss_Application_Server_5_1);
-		SERVER_DEFAULT_NAME.put(IJBossToolingConstants.SERVER_AS_60, Messages.JBossRuntimeStartup_JBoss_Application_Server_6_0);
-		SERVER_DEFAULT_NAME.put(IJBossToolingConstants.SERVER_EAP_43, Messages.JBossRuntimeStartup_JBoss_EAP_Server_4_3);
-		SERVER_DEFAULT_NAME.put(IJBossToolingConstants.SERVER_EAP_50, Messages.JBossRuntimeStartup_JBoss_EAP_Server_5_0);
-		SERVER_DEFAULT_NAME.put(IJBossToolingConstants.SERVER_AS_70, Messages.JBossRuntimeStartup_JBoss_Application_Server_7_0);
-		SERVER_DEFAULT_NAME.put(IJBossToolingConstants.SERVER_AS_71, Messages.JBossRuntimeStartup_JBoss_Application_Server_7_1);
-		SERVER_DEFAULT_NAME.put(IJBossToolingConstants.SERVER_EAP_60, Messages.JBossRuntimeStartup_JBoss_EAP_Server_6_0);
-		SERVER_DEFAULT_NAME.put(IJBossToolingConstants.SERVER_EAP_61, Messages.JBossRuntimeStartup_JBoss_EAP_Server_6_0);
-		// NEW_SERVER_ADAPTER add logic for new adapter here
-
 		// See also JBIDE-12603 (fileset not added for first runtime)
 		Bundle bundle = Platform.getBundle("org.jboss.ide.eclipse.archives.webtools"); //$NON-NLS-1$
 		if (bundle != null) {
@@ -92,53 +82,37 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 		createJBossServerFromDefinitions(runtimeDefinitions);
 	}
 		
-	private static File getLocation(RuntimeDefinition runtimeDefinitions) {
-		// TODO - unify this somehwere in the jboss-server-bean api?
-		
-		String type = runtimeDefinitions.getType();
-		String version = runtimeDefinitions.getVersion();
-		
-		boolean isEAP6 = ASProduct.equals(type) || (EAP.equals(type) && version != null && version.startsWith("6"));  //$NON-NLS-1$
-		if( !isEAP6 ) {
-			if (SOA_P.equals(type) || EAP.equals(type) || EPP.equals(type)) {
-				return new File(runtimeDefinitions.getLocation(), "jboss-as");//$NON-NLS-1$
-			}
-			if (SOA_P_STD.equals(type)) {
-				return new File(runtimeDefinitions.getLocation(),"jboss-esb"); //$NON-NLS-1$					
-			}
-			if(EWP.equals(type)) {
-				return new File(runtimeDefinitions.getLocation(),"jboss-as-web"); //$NON-NLS-1$
-			}
-		}
-		return runtimeDefinitions.getLocation();
-	}
-	
 	public static void createJBossServerFromDefinitions(List<RuntimeDefinition> runtimeDefinitions) {
 		for (RuntimeDefinition runtimeDefinition:runtimeDefinitions) {
 			if (runtimeDefinition.isEnabled()) {
-				File asLocation = getLocation(runtimeDefinition);
-				if (asLocation == null || !asLocation.isDirectory()) {
-					continue;
-				}
-				
-				// THIS needs to be cleaned up, but would probably require
-				// changes to runtime API. UGH. 
-				String type = runtimeDefinition.getType();
-				boolean found = false;
-				JBossServerType[] all = ServerBeanLoader.typesInOrder;
-				for( int i = 0; i < all.length && !found; i++ ) {
-					if( all[i].getId().equals(type))
-						found = true;
-				}
-				if (found) {
-					String typeId = new ServerBeanLoader(asLocation).getServerAdapterId();
-					String name = runtimeDefinition.getName();
-					String runtimeName = name + " " + RUNTIME; //$NON-NLS-1$
-					createJBossServer(asLocation, typeId, name, runtimeName);
+				File asLocation = getServerAdapterRuntimeLocation(runtimeDefinition);
+				if (asLocation != null && asLocation.isDirectory()) {
+					String type = runtimeDefinition.getType();
+					if (serverBeanTypeExists(type)) {
+						String typeId = new ServerBeanLoader(asLocation).getServerAdapterId();
+						String name = runtimeDefinition.getName();
+						String runtimeName = name + " " + RUNTIME; //$NON-NLS-1$
+						createJBossServer(asLocation, typeId, name, runtimeName);
+					}
 				}
 			}
 			createJBossServerFromDefinitions(runtimeDefinition.getIncludedRuntimeDefinitions());
 		}	
+	}
+	
+	/*
+	 * This needs to be cleaned up, but current issues are that
+	 * a serverbean type's id and name are not unique. 
+	 * 
+	 * This method is of questionable utility.
+	 */
+	private static boolean serverBeanTypeExists(String type) {
+		JBossServerType[] all = ServerBeanLoader.typesInOrder;
+		for( int i = 0; i < all.length; i++ ) {
+			if( all[i].getId().equals(type))
+				return true;
+		}
+		return false;
 	}
 
 	private static boolean serverExistsForPath(IPath locPath) {
@@ -234,15 +208,12 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 	 */
 	private static void createServer(IProgressMonitor progressMonitor, IRuntime runtime,
 			IServerType serverType, String name) throws CoreException {
-		if (name == null)
-			name = SERVER_DEFAULT_NAME.get(serverType.getId());
 		if( !serverWithNameExists(name)) {
 			IServerWorkingCopy serverWC = serverType.createServer(null, null,
 					new NullProgressMonitor());
 			serverWC.setRuntime(runtime);
-			serverWC.setName(name);
-			serverWC.setServerConfiguration(null);
-			serverWC.setAttribute(IDeployableServer.SERVER_MODE,  LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
+			if( name != null )
+				serverWC.setName(name);
 			serverWC.save(true, new NullProgressMonitor());
 		}
 	}
@@ -259,13 +230,13 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 	
 	public RuntimeDefinition getRuntimeDefinition(File root,
 			IProgressMonitor monitor) {
-		if (monitor.isCanceled() || root == null || !isEnabled()) {
+		if (monitor.isCanceled() || root == null) {
 			return null;
 		}
 		ServerBeanLoader loader = new ServerBeanLoader(root);
 		ServerBean serverBean = loader.getServerBean();
 		
-		if (!JBossServerType.UNKNOWN.equals(serverBean.getType())) {
+		if (serverBean.getType() != null && !JBossServerType.UNKNOWN.equals(serverBean.getType())) {
 			RuntimeDefinition runtimeDefinition = new RuntimeDefinition(serverBean.getName(), 
 					serverBean.getVersion(), serverBean.getType().getId(), new File(serverBean.getLocation()));
 			calculateIncludedRuntimeDefinition(runtimeDefinition, monitor);
@@ -274,47 +245,68 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 		return null;
 	}
 	
+	private File[] getChildFolders(File root, final File ignore) {
+		return root.listFiles(new FileFilter() {
+			public boolean accept(File file) {
+				if (!file.isDirectory() || file.equals(ignore)) {
+					return false;
+				}
+				return true;
+			}
+		});
+	}
+	
 	private void calculateIncludedRuntimeDefinition(
 			RuntimeDefinition runtimeDefinition, IProgressMonitor monitor) {
-		if (runtimeDefinition == null || runtimeDefinition.getType() == null) {
+		// Sanity check
+		if (runtimeDefinition == null || runtimeDefinition.getType() == null ||
+				!hasIncludedRuntimes(runtimeDefinition.getType())) {
 			return;
 		}
-		String type = runtimeDefinition.getType();
-		if (!hasIncludedRuntimes(type)) {
-			return;
-		}
+		
 		runtimeDefinition.getIncludedRuntimeDefinitions().clear();
-		List<RuntimeDefinition> runtimeDefinitions = runtimeDefinition
-				.getIncludedRuntimeDefinitions();
-		JBossRuntimeLocator locator = new JBossRuntimeLocator();
-		final File location = getLocation(runtimeDefinition);
-		File[] directories = runtimeDefinition.getLocation().listFiles(
-				new FileFilter() {
-					public boolean accept(File file) {
-						if (!file.isDirectory() || file.equals(location)) {
-							return false;
-						}
-						return true;
-					}
-				});
-		boolean saved = isEnabled();
-		try {
-			setEnabled(false);
-			for (File directory : directories) {
-				List<RuntimeDefinition> definitions = new ArrayList<RuntimeDefinition>();
-				locator.searchDirectory(directory, definitions, 1, monitor);
-				for (RuntimeDefinition definition:definitions) {
-					definition.setParent(runtimeDefinition);
-				}
-				runtimeDefinitions.addAll(definitions);
-			}
-			if (SOA_P.equals(type) || SOA_P_STD.equals(type)) {
-				addDrools(runtimeDefinition);
-				addEsb(runtimeDefinition);
-			}
-		} finally {
-			setEnabled(saved);
+		File[] directories = getChildFolders(runtimeDefinition.getLocation(), getServerAdapterRuntimeLocation(runtimeDefinition));
+		
+		String type = runtimeDefinition.getType();
+		List<RuntimeDefinition> nested = searchForNestedRuntimes(runtimeDefinition, directories, monitor);
+		runtimeDefinition.getIncludedRuntimeDefinitions().addAll(nested);
+		
+		// Why do these types need to be specifically handled? 
+		// Do the esb / drools plugin not have valid detectors?
+		if (SOA_P.equals(type) || SOA_P_STD.equals(type)) {
+			addDrools(runtimeDefinition);
+			addEsb(runtimeDefinition);
 		}
+	}
+	
+	/*
+	 * Scan through a JBossRuntimeLocator for other runtime definitions. 
+	 * This allows other handlers a chance to scan the same folders, and lets
+	 * us mark them as nested. 
+	 */
+	private List<RuntimeDefinition> searchForNestedRuntimes(RuntimeDefinition parent, File[] directoriesToSearch, IProgressMonitor monitor) {
+		JBossRuntimeLocator locator = new JBossRuntimeLocator();
+		ArrayList<RuntimeDefinition> defs = new ArrayList<RuntimeDefinition>();
+		for (File directory : directoriesToSearch) {
+			List<RuntimeDefinition> definitions = new ArrayList<RuntimeDefinition>();
+			locator.searchDirectory(directory, definitions, 1, getNestedSearchRuntimeDetectors(), monitor);
+			for (RuntimeDefinition definition:definitions) {
+				definition.setParent(parent);
+			}
+			defs.addAll(definitions);
+		}
+		return defs;
+	}
+	
+	/*
+	 * This method must clone the core model's set, because otherwise we will be modifying 
+	 * the actual model's set. Also, want to remove ourself from the list of acceptable handlers.
+	 */
+	private Set<IRuntimeDetector> getNestedSearchRuntimeDetectors() {
+		Set<IRuntimeDetector> runtimeDetectors = RuntimeCoreActivator.getDefault().getRuntimeDetectors();
+		TreeSet<IRuntimeDetector> cloned = new TreeSet<IRuntimeDetector>(runtimeDetectors);
+		cloned.remove(findMyDetector());
+		return cloned;
 	}
 
 	private void addDrools(RuntimeDefinition runtimeDefinition) {
@@ -373,62 +365,60 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 	}
 
 	private boolean hasIncludedRuntimes(String type) {
-		for (String t:hasIncludedRuntimes) {
-			if (t.equals(type)) {
-				return true;
+		return Arrays.asList(hasIncludedRuntimes).contains(type);
+	}
+
+	private String getLocationForRuntimeDefinition(RuntimeDefinition runtimeDefinition) {
+		String path = null;
+		if (runtimeDefinition != null && runtimeDefinition.getLocation() != null) {
+			File location = getServerAdapterRuntimeLocation(runtimeDefinition);
+			if (location != null && location.isDirectory()) {
+				try {
+					path = location.getCanonicalPath();
+				} catch (IOException e) {
+					JBossServerCorePlugin.log(e);
+					path = location.getAbsolutePath();
+				}
+			}
+		}
+		return path;
+	}
+	
+	private static File getServerAdapterRuntimeLocation(RuntimeDefinition runtimeDefinitions) {
+		ServerBeanLoader loader = new ServerBeanLoader( runtimeDefinitions.getLocation() );
+		String version = runtimeDefinitions.getVersion();
+		String relative = loader.getServerBean().getType().getRootToAdapterRelativePath(version);
+		if( relative == null )
+			return runtimeDefinitions.getLocation();
+		return new File(runtimeDefinitions.getLocation(), relative);
+	}
+	
+	@Override
+	public boolean exists(RuntimeDefinition runtimeDefinition) {
+		// Does a wtp-style runtime with this location already exist?
+		String path = getLocationForRuntimeDefinition(runtimeDefinition);
+		if (path != null) {
+			IServer[] servers = ServerCore.getServers();
+			for (int i = 0; i < servers.length; i++) {
+				IRuntime runtime = servers[i].getRuntime();
+				if (runtime != null && runtime.getLocation() != null) {
+					String loc = runtime.getLocation().toOSString();
+					try {
+						loc = new File(loc).getCanonicalPath();
+					} catch (IOException e) {
+						JBossServerCorePlugin.log(e);
+					}
+					if(path.equals(loc)) {
+						return true;
+					}
+				}
 			}
 		}
 		return false;
 	}
 
 	@Override
-	public boolean exists(RuntimeDefinition serverDefinition) {
-		if (serverDefinition == null || serverDefinition.getLocation() == null) {
-			return false;
-		}
-		File location = getLocation(serverDefinition);
-		if (location == null || !location.isDirectory()) {
-			return false;
-		}
-		String path;
-		try {
-			path = location.getCanonicalPath();
-		} catch (IOException e) {
-			JBossServerCorePlugin.log(e);
-			path = location.getAbsolutePath();
-		}
-		if (path == null) {
-			return false;
-		}
-		IServer[] servers = ServerCore.getServers();
-		for (int i = 0; i < servers.length; i++) {
-			IRuntime runtime = servers[i].getRuntime();
-			if (runtime == null || runtime.getLocation() == null) {
-				continue;
-			}
-			String loc = runtime.getLocation().toOSString();
-			try {
-				loc = new File(loc).getCanonicalPath();
-			} catch (IOException e) {
-				JBossServerCorePlugin.log(e);
-			}
-			if(path.equals(loc)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@Override
-	public void computeIncludedRuntimeDefinition(
-			RuntimeDefinition runtimeDefinition) {
-		if (runtimeDefinition == null) {
-			return;
-		}
-		String type = runtimeDefinition.getType();
-		if (AS.equals(type)) {
-			return;
-		}
+	public void computeIncludedRuntimeDefinition(RuntimeDefinition runtimeDefinition) {
 		calculateIncludedRuntimeDefinition(runtimeDefinition, new NullProgressMonitor());
 	}
 
