@@ -18,9 +18,12 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jdt.launching.IVMInstall;
@@ -58,6 +61,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
@@ -71,6 +75,7 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
+import org.jboss.ide.eclipse.as.core.runtime.DownloadRuntimeToWTPRuntime;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
@@ -85,6 +90,7 @@ import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.tools.runtime.core.RuntimeCoreActivator;
+import org.jboss.tools.runtime.core.model.DownloadRuntime;
 import org.jboss.tools.runtime.core.model.IDownloadRuntimes;
 import org.jboss.tools.runtime.ui.download.DownloadRuntimes;
 import org.osgi.service.prefs.BackingStoreException;
@@ -138,7 +144,33 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		createWidgets(main);
 		fillWidgets();
 		updateWizardHandle(parent);
+		fireInitialWidgetUpdates();
 		return main;
+	}
+	
+	/*
+	 * This will update the 'download' hyperlink to be enabled
+	 * or disabled depending on if this runtime type has runtimes
+	 * for download or not. 
+	 */
+	private void fireInitialWidgetUpdates() {
+		new Job("Update Download Runtimes Hyperlink") {
+			protected IStatus run(IProgressMonitor monitor) {
+				DownloadRuntime[] downloads = DownloadRuntimeToWTPRuntime.getDownloadRuntimes(getRuntimeType());
+				if( downloads != null && downloads.length > 0 ) {
+					Display.getDefault().asyncExec(new Runnable() { 
+						public void run() {
+							try {
+								downloadAndInstallButton.setEnabled(true);
+							} catch(Throwable t) {
+								t.printStackTrace();
+							}
+						}
+					});
+				}
+				return Status.OK_STATUS;
+			}
+		}.schedule();
 	}
 	
 	protected void updateModels() {
@@ -346,7 +378,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		downloadAndInstallButton = new Link(homeDirComposite, SWT.NONE);
 		downloadAndInstallButton.setText("<a href=\"\">" + Messages.rwf_DownloadRuntime + "</a>");
 		downloadAndInstallButton.addSelectionListener(new DownloadAndInstallListener());
-		downloadAndInstallButton.setEnabled(true); 
+		downloadAndInstallButton.setEnabled(false); 
 		
 		// Add listeners
 		homeDirText.addModifyListener(new ModifyListener() {
