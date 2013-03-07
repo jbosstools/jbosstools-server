@@ -10,14 +10,18 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.ui.editor;
 
+import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.wst.server.core.IServerAttributes;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.IBrowseBehavior;
 
 public class LocalBrowseBehavior implements IBrowseBehavior {
-	public String openBrowseDialog(ModuleDeploymentPage page, String original) {
+	public String openBrowseDialog(IServerAttributes server, String original) {
 		DirectoryDialog d = new DirectoryDialog(new Shell());
-		d.setFilterPath(page.makeGlobal(original));
+		String filterPath = ServerUtil.makeGlobal(server.getRuntime(), new Path(original)).toString();
+		d.setFilterPath(filterPath);
 		return d.open();
 	}
 }
