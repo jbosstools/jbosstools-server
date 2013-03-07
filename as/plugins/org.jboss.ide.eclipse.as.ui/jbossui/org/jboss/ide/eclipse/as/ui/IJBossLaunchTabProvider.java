@@ -12,6 +12,10 @@ package org.jboss.ide.eclipse.as.ui;
 
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
 
+/**
+ * AN extracted interface from a previously nested class. 
+ * Simply return a number of ILaunchConfigurationTab objects. 
+ */
 public interface IJBossLaunchTabProvider {
 	public ILaunchConfigurationTab[] createTabs();
 }

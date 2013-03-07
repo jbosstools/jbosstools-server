@@ -13,7 +13,29 @@ package org.jboss.ide.eclipse.as.ui;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 
+/**
+ * This class represents a way to explore a given server/module
+ * combination. This is necessary because local and remote servers
+ * require different dialogs or perhaps even initialization 
+ * of connections. 
+ */
 public interface IExploreBehavior {
+	/**
+	 * Can this behavior properly explore the given server / module?
+	 * @param server
+	 * @param module
+	 * @return true if yes, false if no
+	 */
 	public boolean canExplore(IServer server, IModule[] module);
+	
+	
+	/**
+	 * Opens some type of file-system browsing UI 
+	 * suitable for the given server / module / server-mode 
+	 * combination. 
+	 * 
+	 * @param server
+	 * @param module
+	 */
 	public void openExplorer(IServer server, IModule[] module);
 }

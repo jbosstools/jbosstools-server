@@ -43,10 +43,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
@@ -120,7 +118,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		org.jboss.ide.eclipse.as.ui.IBrowseBehavior beh = EditorExtensionManager.getDefault().getBrowseBehavior(mode);
 		if( beh == null )
 			beh = EditorExtensionManager.getDefault().getBrowseBehavior(LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
-		return beh.openBrowseDialog(page, original);
+		return beh.openBrowseDialog(page.getServer(), original);
 	}
 
 	// Combo strings - TODO extract to messages
@@ -1005,29 +1003,4 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 			}
 		}
 	}
-
-	
-	
-	/* 
-	 * This code should be removed. It remains here for compilation compatability. It was internal code 
-	 * which was used as api, and is now moved to part of the extension points. 
-	 */
-	
-	@Deprecated
-	public static interface IBrowseBehavior extends org.jboss.ide.eclipse.as.ui.IBrowseBehavior {
-		public String openBrowseDialog(ModuleDeploymentPage page, String original);
-	}
-	
-	@Deprecated
-	public static HashMap<String, IBrowseBehavior> browseBehaviorMap = new HashMap<String, IBrowseBehavior>();
-	static {
-		browseBehaviorMap.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new IBrowseBehavior() { 
-			public String openBrowseDialog(ModuleDeploymentPage page, String original) {
-				DirectoryDialog d = new DirectoryDialog(new Shell());
-				d.setFilterPath(page.makeGlobal(original));
-				return d.open();
-			} 
-		});
-	}
-
 }

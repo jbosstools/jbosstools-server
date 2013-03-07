@@ -14,25 +14,16 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.rse.core.RSECorePlugin;
 import org.eclipse.rse.core.events.ISystemModelChangeEvent;
 import org.eclipse.rse.core.events.ISystemModelChangeListener;
 import org.eclipse.rse.core.model.IHost;
-import org.eclipse.rse.files.ui.dialogs.SystemRemoteFileDialog;
-import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
-import org.eclipse.rse.services.files.IHostFile;
-import org.eclipse.rse.subsystems.files.core.model.RemoteFileUtility;
-import org.eclipse.rse.subsystems.files.core.subsystems.IRemoteFile;
-import org.eclipse.rse.subsystems.files.core.subsystems.IRemoteFileSubSystem;
 import org.eclipse.rse.ui.wizards.newconnection.RSEMainNewConnectionWizard;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -57,30 +48,21 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
-import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManagerServicePoller;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
-import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
-import org.jboss.ide.eclipse.as.ui.editor.DeploymentModuleOptionCompositeAssistant;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI;
-import org.jboss.ide.eclipse.as.ui.editor.ModuleDeploymentPage;
 import org.jboss.ide.eclipse.as.ui.editor.ServerModeSectionComposite.ChangeServerPropertyCommand;
-import org.jboss.tools.as.wst.server.ui.xpl.ExploreActionProvider;
 
 public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 
@@ -310,7 +292,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			}
 			
 			public IHost findHost(String name) {
-				return RSEUIUtils.findHost(name, hosts);
+				return RSEUtils.findHost(name, hosts);
 			}
 
 			public Combo getCombo() {
@@ -414,6 +396,11 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 	}
 	
 
+	@Deprecated
+	public static IHost findHost(String name, IHost[] hosts) {
+		return RSEUtils.findHost(name, hosts);
+	}
+	
 	@Deprecated
 	public static String browseClicked4(Shell s, IHost host) {
 		return RSEBrowseBehavior.browseClicked(s,host,null);

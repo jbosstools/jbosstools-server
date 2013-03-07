@@ -10,8 +10,23 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.ui;
 
-import org.jboss.ide.eclipse.as.ui.editor.ModuleDeploymentPage;
+import org.eclipse.wst.server.core.IServerAttributes;
 
+/**
+ * A previously internal interface, this is in charge
+ * of IN-WORKBENCH browsing of a server. 
+ * 
+ * @author rob
+ *
+ */
 public interface IBrowseBehavior {
-	public String openBrowseDialog(ModuleDeploymentPage page, String original);
+	/**
+	 * Open a browse dialog of some sort inside the workspace
+	 * to display the contents of the given path on the given server.
+	 * 
+	 * @param server
+	 * @param original
+	 * @return
+	 */
+	public String openBrowseDialog(IServerAttributes server, String original);
 }
