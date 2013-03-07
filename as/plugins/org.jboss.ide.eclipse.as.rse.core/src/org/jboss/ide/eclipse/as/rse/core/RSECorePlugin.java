@@ -43,7 +43,7 @@ public class RSECorePlugin implements BundleActivator {
 	}
 	
 	public static ILog getLog() {
-		return plugin.getLog();
+		return RSECorePlugin.getLog();
 	}
 
 }
