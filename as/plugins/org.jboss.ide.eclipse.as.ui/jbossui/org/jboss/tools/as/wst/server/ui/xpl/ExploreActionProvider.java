@@ -129,27 +129,5 @@ public class ExploreActionProvider extends CommonActionProvider {
 				return selection.getFirstElement();
 		}
 		return null;
-	}	
-	
-	
-	
-	/*
-	 * These old embedded interfaces were not clean or proper api. They are no longer referenced. 
-	 * Please make use of the new fields int he deploymentUI extension point. 
-	 */
-	@Deprecated
-	public static interface IExploreBehavior extends org.jboss.ide.eclipse.as.ui.IExploreBehavior {
-		public boolean canExplore(IServer server, IModule[] module);
-		public void openExplorer(IServer server, IModule[] module);
 	}
-	
-	@Deprecated
-	public static HashMap<String, IExploreBehavior> exploreBehaviorMap = new HashMap<String, IExploreBehavior>();
-	static {
-		exploreBehaviorMap.put(
-				LocalPublishMethod.LOCAL_PUBLISH_METHOD,
-				new LocalExploreBehavior());
-	}
-
-
 }
