@@ -115,26 +115,11 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		}
 	}
 	
-
-	public static interface IBrowseBehavior {
-		public String openBrowseDialog(ModuleDeploymentPage page, String original);
-	}
-	public static HashMap<String, IBrowseBehavior> browseBehaviorMap = new HashMap<String, IBrowseBehavior>();
-	static {
-		browseBehaviorMap.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new IBrowseBehavior() { 
-			public String openBrowseDialog(ModuleDeploymentPage page, String original) {
-				DirectoryDialog d = new DirectoryDialog(new Shell());
-				d.setFilterPath(page.makeGlobal(original));
-				return d.open();
-			} 
-		});
-	}
-		
 	protected String openBrowseDialog(String original) {
 		String mode = getServer().getAttributeHelper().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
-		IBrowseBehavior beh = browseBehaviorMap.get(mode);
+		org.jboss.ide.eclipse.as.ui.IBrowseBehavior beh = EditorExtensionManager.getDefault().getBrowseBehavior(mode);
 		if( beh == null )
-			beh = browseBehaviorMap.get(LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
+			beh = EditorExtensionManager.getDefault().getBrowseBehavior(LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
 		return beh.openBrowseDialog(page, original);
 	}
 
@@ -1020,4 +1005,29 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 			}
 		}
 	}
+
+	
+	
+	/* 
+	 * This code should be removed. It remains here for compilation compatability. It was internal code 
+	 * which was used as api, and is now moved to part of the extension points. 
+	 */
+	
+	@Deprecated
+	public static interface IBrowseBehavior extends org.jboss.ide.eclipse.as.ui.IBrowseBehavior {
+		public String openBrowseDialog(ModuleDeploymentPage page, String original);
+	}
+	
+	@Deprecated
+	public static HashMap<String, IBrowseBehavior> browseBehaviorMap = new HashMap<String, IBrowseBehavior>();
+	static {
+		browseBehaviorMap.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new IBrowseBehavior() { 
+			public String openBrowseDialog(ModuleDeploymentPage page, String original) {
+				DirectoryDialog d = new DirectoryDialog(new Shell());
+				d.setFilterPath(page.makeGlobal(original));
+				return d.open();
+			} 
+		});
+	}
+
 }

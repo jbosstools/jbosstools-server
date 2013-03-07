@@ -9,6 +9,7 @@ public class AsUiAllTests {
 	
 	public static Test suite() {
 		TestSuite suite = new TestSuite(AsUiAllTests.class.getName());
+		suite.addTestSuite(ServerModeUIExtensionTest.class);
 		suite.addTestSuite(NewServerWizardTest.class);
 		return suite;
 	}
