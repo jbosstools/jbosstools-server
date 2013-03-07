@@ -4,8 +4,14 @@
    <extension
          point="org.jboss.ide.eclipse.as.ui.DeployMethodUI">
       <ui
+            browseBehavior="org.jboss.ide.eclipse.as.rse.ui.RSEBrowseBehavior"
             class="org.jboss.ide.eclipse.as.rse.ui.RSEDeploymentPreferenceUI"
-            deployMethodId="rse">
+            deployMethodId="rse"
+            exploreBehavior="org.jboss.ide.eclipse.as.rse.ui.RSEExploreBehavior">
+         <launchTabProvider
+               class="org.jboss.ide.eclipse.as.rse.ui.RSELaunchTabProvider"
+               serverTypes="%AllJBossServerTypes">
+         </launchTabProvider>
       </ui>
    </extension>
 </plugin>
