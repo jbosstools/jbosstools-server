@@ -14,25 +14,16 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.rse.core.RSECorePlugin;
 import org.eclipse.rse.core.events.ISystemModelChangeEvent;
 import org.eclipse.rse.core.events.ISystemModelChangeListener;
 import org.eclipse.rse.core.model.IHost;
-import org.eclipse.rse.files.ui.dialogs.SystemRemoteFileDialog;
-import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
-import org.eclipse.rse.services.files.IHostFile;
-import org.eclipse.rse.subsystems.files.core.model.RemoteFileUtility;
-import org.eclipse.rse.subsystems.files.core.subsystems.IRemoteFile;
-import org.eclipse.rse.subsystems.files.core.subsystems.IRemoteFileSubSystem;
 import org.eclipse.rse.ui.wizards.newconnection.RSEMainNewConnectionWizard;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -57,76 +48,24 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
-import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManagerServicePoller;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
-import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
-import org.jboss.ide.eclipse.as.ui.editor.DeploymentModuleOptionCompositeAssistant;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI;
-import org.jboss.ide.eclipse.as.ui.editor.ModuleDeploymentPage;
 import org.jboss.ide.eclipse.as.ui.editor.ServerModeSectionComposite.ChangeServerPropertyCommand;
-import org.jboss.tools.as.wst.server.ui.xpl.ExploreActionProvider;
 
 public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
-	static {
-		DeploymentModuleOptionCompositeAssistant.browseBehaviorMap.put("rse", new DeploymentModuleOptionCompositeAssistant.IBrowseBehavior() {
-			public String openBrowseDialog(ModuleDeploymentPage page, String original) {
-				String current = page.getServer().getAttribute(RSEUtils.RSE_SERVER_HOST, (String)null);
-				IHost h = findHost(current, null);
-				return browseClicked4(new Shell(), h);
-			}
-		});
-		ExploreActionProvider.exploreBehaviorMap.put("rse", new ExploreActionProvider.IExploreBehavior() {
-			public void openExplorer(IServer server, IModule[] module) {
-				IDeployableServer ds = ServerConverter.getDeployableServer(server);
-				String remote = RSEUtils.getDeployRootFolder(ds);
-				IPath remoteFolder = new Path(remote == null ? "/" : remote);
-				IJBossServerPublishMethodType type = DeploymentPreferenceLoader.getCurrentDeploymentMethodType(server);
-				RSEPublishMethod method = (RSEPublishMethod)type.createPublishMethod();
-				method.setBehaviour(ServerConverter.getDeployableServerBehavior(server));
-				if( module != null ) {
-					remoteFolder = ds.getDeploymentLocation(module, true);
-				}
-				try {
-					method.getFileService();
-					method.ensureConnection(new NullProgressMonitor());
-					IHostFile file = method.getFileService().getFile(remoteFolder.removeLastSegments(1).toOSString(), remoteFolder.lastSegment(), new NullProgressMonitor());
-					String path = remoteFolder.toString();
-					
-					IRemoteFile rf = method.getFileServiceSubSystem().getRemoteFileObject(path, null);
-					
-					SystemShowInTableAction act = new SystemShowInTableAction(Display.getDefault().getActiveShell()); 
-					act.setSelectedObject(rf);
-					act.run();
-				} catch(SystemMessageException e) {
-					
-				} catch(CoreException ce) {
-					
-				}
-			}
 
-			@Override
-			public boolean canExplore(IServer server, IModule[] module) {
-				return true;
-			}
-		});
-	}
-	
 	public RSEDeploymentPreferenceUI() {
 		// Do nothing
 	}
@@ -182,7 +121,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 		}
 
 		protected String browseClicked3(Shell shell) {
-			return browseClicked4(getShell(), combo.getHost());
+			return RSEBrowseBehavior.browseClicked(getShell(), combo.getHost());
 		}
 		
 		protected IJBossServerRuntime getRuntime() {
@@ -353,7 +292,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			}
 			
 			public IHost findHost(String name) {
-				return RSEDeploymentPreferenceUI.findHost(name, hosts);
+				return RSEUtils.findHost(name, hosts);
 			}
 
 			public Combo getCombo() {
@@ -436,44 +375,6 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			}
 		}
 	}
-	
-	
-	public static IHost findHost(String name, IHost[] hosts) {
-		if( hosts == null )
-			hosts = RSECorePlugin.getTheSystemRegistry().getHostsBySubSystemConfigurationCategory("files");
-		for( int i = 0; i < hosts.length; i++ ) {
-			if( hosts[i].getAliasName().equals(name))
-				return hosts[i];
-		}
-		return null;
-	}
-
-	public static String browseClicked4(Shell s, IHost host) {
-		return browseClicked4(s,host,null);
-	}
-
-	public static String browseClicked4(Shell s, IHost host, String path) {
-		SystemRemoteFileDialog d = new SystemRemoteFileDialog(
-				s, RSEUIMessages.BROWSE_REMOTE_SYSTEM, host);
-		if( path != null ) {
-			try {
-				IRemoteFileSubSystem ss  =	RemoteFileUtility.getFileSubSystem(host);
-				IRemoteFile rootFolder = ss.getRemoteFileObject(path, new NullProgressMonitor());
-				d.setPreSelection(rootFolder);
-			} catch(SystemMessageException sme) {
-				// Ignore
-			}
-		}
-		
-		if( d.open() == Dialog.OK) {
-			Object o = d.getOutputObject();
-			if( o instanceof IRemoteFile ) {
-				String path2 = ((IRemoteFile)o).getAbsolutePath();
-				return path2;
-			}
-		}
-		return null;
-	}
 
 	@Override
 	public void performFinish(IServerModeUICallback callback, IProgressMonitor monitor) throws CoreException {
@@ -492,5 +393,21 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			wc.setAttribute(IJBossToolingConstants.STARTUP_POLLER_KEY, JBoss7ManagerServicePoller.POLLER_ID);
 			wc.setAttribute(IJBossToolingConstants.SHUTDOWN_POLLER_KEY, JBoss7ManagerServicePoller.POLLER_ID);
 		}
+	}
+	
+
+	@Deprecated
+	public static IHost findHost(String name, IHost[] hosts) {
+		return RSEUtils.findHost(name, hosts);
+	}
+	
+	@Deprecated
+	public static String browseClicked4(Shell s, IHost host) {
+		return RSEBrowseBehavior.browseClicked(s,host,null);
+	}
+
+	@Deprecated
+	public static String browseClicked4(Shell s, IHost host, String path) {
+		return RSEBrowseBehavior.browseClicked(s, host, path);
 	}
 }

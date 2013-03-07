@@ -651,8 +651,18 @@
  <extension
          point="org.jboss.ide.eclipse.as.ui.DeployMethodUI">
       <ui
+            browseBehavior="org.jboss.ide.eclipse.as.ui.editor.LocalBrowseBehavior"
             class="org.jboss.ide.eclipse.as.ui.editor.LocalBehaviorUI"
-            deployMethodId="local">
+            deployMethodId="local"
+            exploreBehavior="org.jboss.tools.as.wst.server.ui.xpl.LocalExploreBehavior">
+         <launchTabProvider
+               class="org.jboss.ide.eclipse.as.ui.launch.JBossLaunchConfigurationTabGroup$JBossStandardTabProvider"
+               serverTypes="%ServerTypesJBoss6OrLower">
+         </launchTabProvider>
+         <launchTabProvider
+               class="org.jboss.ide.eclipse.as.ui.launch.JBoss7LaunchConfigurationTabGroup$JBoss7StandardTabProvider"
+               serverTypes="%ServerTypesJBoss7">
+         </launchTabProvider>
       </ui>
    </extension>
  

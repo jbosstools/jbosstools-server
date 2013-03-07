@@ -49,6 +49,9 @@
 
    <element name="ui">
       <complexType>
+         <sequence minOccurs="0" maxOccurs="unbounded">
+            <element ref="launchTabProvider"/>
+         </sequence>
          <attribute name="deployMethodId" type="string" use="required">
             <annotation>
                <documentation>
@@ -63,6 +66,52 @@
                </documentation>
                <appInfo>
                   <meta.attribute kind="java" basedOn=":org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+
+         <attribute name="browseBehavior" type="string" use="optional">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn=":org.jboss.ide.eclipse.as.ui.IBrowseBehavior"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+
+         <attribute name="exploreBehavior" type="string" use="optional">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn=":org.jboss.ide.eclipse.as.ui.IExploreBehavior"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+
+
+   <element name="launchTabProvider">
+      <complexType>
+         <attribute name="serverTypes" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn=":org.jboss.ide.eclipse.as.ui.IJBossLaunchTabProvider"/>
                </appInfo>
             </annotation>
          </attribute>

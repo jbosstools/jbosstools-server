@@ -32,19 +32,10 @@ import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.actions.ExploreUtils;
+import org.jboss.ide.eclipse.as.ui.editor.EditorExtensionManager;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.CommonActionProviderUtils;
 public class ExploreActionProvider extends CommonActionProvider {
-	public static interface IExploreBehavior {
-		public boolean canExplore(IServer server, IModule[] module);
-		public void openExplorer(IServer server, IModule[] module);
-	}
-	public static HashMap<String, IExploreBehavior> exploreBehaviorMap = new HashMap<String, IExploreBehavior>();
-	static {
-		exploreBehaviorMap.put(
-				LocalPublishMethod.LOCAL_PUBLISH_METHOD,
-				new LocalExploreBehavior());
-	}
-
+	
 	
 	private ICommonActionExtensionSite actionSite;
 	private CommonViewer cv;
@@ -83,17 +74,22 @@ public class ExploreActionProvider extends CommonActionProvider {
 		runExplore(getServer(), getModuleServer());
 	}
 	
+	private org.jboss.ide.eclipse.as.ui.IExploreBehavior getExploreBehavior(String mode) {
+		return EditorExtensionManager.getDefault().getExploreBehavior(mode);
+	}
+	
 	private void runExplore(IServer server, ModuleServer ms) {
 		String mode = getServer().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
-		IExploreBehavior beh = exploreBehaviorMap.get(mode);
-		beh.openExplorer(server, ms == null ? null : ms.module);
+		org.jboss.ide.eclipse.as.ui.IExploreBehavior beh = getExploreBehavior(mode);
+		if( beh != null )
+			beh.openExplorer(server, ms == null ? null : ms.module);
 	}
 	
 	public void fillContextMenu(IMenuManager menu) {
 		IServer server = getServer();
 		if(server!=null) {
 			String mode = server.getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
-			IExploreBehavior beh = exploreBehaviorMap.get(mode);
+			org.jboss.ide.eclipse.as.ui.IExploreBehavior beh = getExploreBehavior(mode);
 			if( beh == null || !beh.canExplore(getServer(), getModuleServer() == null ? null : getModuleServer().module))
 				return;
 			if( getModuleServer() != null || getServer() != null ) {
@@ -102,10 +98,6 @@ public class ExploreActionProvider extends CommonActionProvider {
 					((MenuManager) menuItem).add(exploreAction);
 				}
 			}
-	//		if( getModuleServer() != null )
-	//			menu.insertBefore(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR, exploreAction);
-	//		else if( getServer() != null )
-	//			menu.insertBefore(ServerActionProvider.SERVER_ETC_SECTION_END_SEPARATOR, exploreAction);
 			exploreAction.setEnabled(true);
 		}
 	}
@@ -137,5 +129,5 @@ public class ExploreActionProvider extends CommonActionProvider {
 				return selection.getFirstElement();
 		}
 		return null;
-	}	
+	}
 }

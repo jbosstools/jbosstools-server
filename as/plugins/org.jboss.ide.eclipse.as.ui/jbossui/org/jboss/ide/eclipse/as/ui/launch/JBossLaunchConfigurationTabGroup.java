@@ -11,8 +11,8 @@
 package org.jboss.ide.eclipse.as.ui.launch;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -41,8 +41,11 @@ import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.internal.RecentlyUpdatedServerLaunches;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.ui.IJBossLaunchTabProvider;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
+import org.jboss.ide.eclipse.as.ui.editor.EditorExtensionManager;
 import org.jboss.ide.eclipse.as.ui.xpl.JavaMainTabClone;
 
 /**
@@ -52,35 +55,6 @@ import org.jboss.ide.eclipse.as.ui.xpl.JavaMainTabClone;
  */
 public class JBossLaunchConfigurationTabGroup extends
 		AbstractLaunchConfigurationTabGroup {
-
-	/*
-	 * Unfortunately the jdt api does not allow me to add a set number
-	 * of tabs based on what is in the launch configuration already.
-	 * Each server type / launch config type must have a standard set of tabs.
-	 * This means that even a standard jboss server must have all tabs that might 
-	 * be used, whether they are used now or not. 
-	 *   Ex - if RSE is installed, all jboss servers need an RSE start / stop command tab
-	 */
-	
-	public static interface IJBossLaunchTabProvider {
-		public ILaunchConfigurationTab[] createTabs();
-	}
-	public static HashMap<String, ArrayList<IJBossLaunchTabProvider>> providers = 
-			new HashMap<String, ArrayList<IJBossLaunchTabProvider>>();
-	static {
-		ArrayList<IJBossLaunchTabProvider> l = new ArrayList<IJBossLaunchTabProvider>();
-		l.add(new JBossStandardTabProvider());
-		providers.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, l);
-	}
-	
-	public static void addTabProvider(String behaviorType, IJBossLaunchTabProvider provider) {
-		ArrayList<IJBossLaunchTabProvider> l = providers.get(behaviorType);
-		if( l == null ) {
-			l = l == null ? new ArrayList<IJBossLaunchTabProvider>() : l;
-			providers.put(behaviorType, l);
-		}
-		l.add(provider);
-	}
 	
 	public static class JBossStandardTabProvider implements IJBossLaunchTabProvider {
 		public ILaunchConfigurationTab[] createTabs() {
@@ -96,15 +70,16 @@ public class JBossLaunchConfigurationTabGroup extends
 		}
 	}
 	
-	public ArrayList<IJBossLaunchTabProvider> getProvider(String type) {
-		return providers.get(type) == null ? new ArrayList<IJBossLaunchTabProvider>() : providers.get(type);
+	protected List<IJBossLaunchTabProvider> getProviders(String mode, String typeId) {
+		return EditorExtensionManager.getDefault().getLaunchTabProviders(mode, typeId);
 	}
 	
 	public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
 		IServer s = RecentlyUpdatedServerLaunches.getDefault().getRecentServer();
 		String behaviorType = s == null ? LocalPublishMethod.LOCAL_PUBLISH_METHOD :
 			DeploymentPreferenceLoader.getCurrentDeploymentMethodType(s, LocalPublishMethod.LOCAL_PUBLISH_METHOD).getId();
-		ArrayList<IJBossLaunchTabProvider> p = getProvider(behaviorType);
+		String type = s == null ? IJBossToolingConstants.SERVER_AS_60 : s.getServerType().getId();
+		List<IJBossLaunchTabProvider> p = getProviders(behaviorType, type);
 
 		Iterator<IJBossLaunchTabProvider> i = p.iterator();
 		ArrayList<ILaunchConfigurationTab> tabs = new ArrayList<ILaunchConfigurationTab>();

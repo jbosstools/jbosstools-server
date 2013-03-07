@@ -43,10 +43,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
@@ -115,27 +113,12 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		}
 	}
 	
-
-	public static interface IBrowseBehavior {
-		public String openBrowseDialog(ModuleDeploymentPage page, String original);
-	}
-	public static HashMap<String, IBrowseBehavior> browseBehaviorMap = new HashMap<String, IBrowseBehavior>();
-	static {
-		browseBehaviorMap.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new IBrowseBehavior() { 
-			public String openBrowseDialog(ModuleDeploymentPage page, String original) {
-				DirectoryDialog d = new DirectoryDialog(new Shell());
-				d.setFilterPath(page.makeGlobal(original));
-				return d.open();
-			} 
-		});
-	}
-		
 	protected String openBrowseDialog(String original) {
 		String mode = getServer().getAttributeHelper().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
-		IBrowseBehavior beh = browseBehaviorMap.get(mode);
+		org.jboss.ide.eclipse.as.ui.IBrowseBehavior beh = EditorExtensionManager.getDefault().getBrowseBehavior(mode);
 		if( beh == null )
-			beh = browseBehaviorMap.get(LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
-		return beh.openBrowseDialog(page, original);
+			beh = EditorExtensionManager.getDefault().getBrowseBehavior(LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
+		return beh.openBrowseDialog(page.getServer(), original);
 	}
 
 	// Combo strings - TODO extract to messages

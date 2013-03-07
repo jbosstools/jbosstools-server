@@ -1,3 +1,13 @@
+/******************************************************************************* 
+ * Copyright (c) 2013 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.tools.as.wst.server.ui.xpl;
 
 import java.io.File;
@@ -6,12 +16,11 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.ui.IExploreBehavior;
 import org.jboss.ide.eclipse.as.ui.actions.ExploreUtils;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
-import org.jboss.tools.as.wst.server.ui.xpl.ExploreActionProvider.IExploreBehavior;
 
 public class LocalExploreBehavior implements IExploreBehavior {
 	public boolean canExplore(IServer server, IModule[] module) {
