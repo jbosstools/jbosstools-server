@@ -208,6 +208,13 @@ public class ServerCreationTestUtils extends Assert {
 			IPath manifest = metainf.append("MANIFEST.MF");
 			String manString = "JBoss-Product-Release-Name: EAP\nJBoss-Product-Release-Version: 6.1.0.Alpha\nJBoss-Product-Console-Slot: eap";
 			IOUtil.setContents(manifest.toFile(), manString);
+			IPath standalonexml = loc.append("standalone").append("configuration").append("standalone.xml");
+			standalonexml.toFile().getParentFile().mkdirs();
+			standalonexml.toFile().createNewFile();
+			
+			loc.append("jboss-modules.jar").toFile().createNewFile();
+			loc.append("bin").toFile().mkdirs();
+
 		} catch(CoreException ce) {
 			FileUtil.completeDelete(loc.toFile());
 			return null;

@@ -3,7 +3,7 @@ package org.jboss.ide.eclipse.as.ui.test;
 import java.util.Collection;
 import java.util.List;
 
-import junit.framework.TestCase;
+import junit.framework.Assert;
 
 import org.jboss.ide.eclipse.as.ui.IBrowseBehavior;
 import org.jboss.ide.eclipse.as.ui.IExploreBehavior;
@@ -28,7 +28,7 @@ import org.junit.runners.Parameterized.Parameters;
  *
  */
 @RunWith(value = Parameterized.class)
-public class ServerModeUIExtensionTest extends TestCase {
+public class ServerModeUIExtensionTest extends Assert {
 	
 	private String serverType;
 	private String mode;
