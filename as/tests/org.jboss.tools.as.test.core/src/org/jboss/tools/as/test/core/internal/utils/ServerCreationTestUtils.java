@@ -90,7 +90,7 @@ public class ServerCreationTestUtils extends Assert {
 		boolean isEap = false;
 		if(serverType.startsWith(IJBossToolingConstants.EAP_SERVER_PREFIX))
 			isEap = true;
-		String name = serverType + (isEap ? "/jbossas" : "");
+		String name = serverType;
 		IPath serverDir = null;
 		if( IJBossToolingConstants.SERVER_AS_32.equals(serverType) ||
 				IJBossToolingConstants.SERVER_AS_40.equals(serverType) ||
@@ -100,6 +100,7 @@ public class ServerCreationTestUtils extends Assert {
 				IJBossToolingConstants.SERVER_AS_60.equals(serverType) ||
 				IJBossToolingConstants.SERVER_EAP_43.equals(serverType) ||
 				IJBossToolingConstants.SERVER_EAP_50.equals(serverType)) {
+			name += (isEap ? "/jbossas" : "");
 			serverDir = createAS6AndBelowMockServerDirectory(serverType + getRandomString(), 
 					asSystemJar.get(serverType), "default");
 		} else if( IJBossToolingConstants.SERVER_AS_70.equals(serverType) ||
@@ -141,7 +142,7 @@ public class ServerCreationTestUtils extends Assert {
 		if( f != null ) {
 			IServerType type = ServerCore.findServerType(serverType);
 			if( ServerUtil.isJBoss7(type)) {
-				return createJBoss7IServer(f.getAbsolutePath(), name);
+				return createJBoss7IServer(type, f.getAbsolutePath(), name);
 			}
 			return createServer(serverType, f.getAbsolutePath(), "default", name);
 		}
@@ -178,7 +179,17 @@ public class ServerCreationTestUtils extends Assert {
 			serverJarBelongs.toFile().mkdirs();
 			File serverJarLoc = BundleUtils.getFileLocation("serverMock/" + serverJar);
 			FileUtil.fileSafeCopy(serverJarLoc, serverJarBelongs.append("anything.jar").toFile());
+			
+			IPath standalonexml = loc.append("standalone").append("configuration").append("standalone.xml");
+			standalonexml.toFile().getParentFile().mkdirs();
+			standalonexml.toFile().createNewFile();
+			
+			loc.append("jboss-modules.jar").toFile().createNewFile();
+			loc.append("bin").toFile().mkdirs();
 		} catch(CoreException ce) {
+			FileUtil.completeDelete(loc.toFile());
+			return null;
+		} catch(IOException ioe) {
 			FileUtil.completeDelete(loc.toFile());
 			return null;
 		}
@@ -197,6 +208,13 @@ public class ServerCreationTestUtils extends Assert {
 			IPath manifest = metainf.append("MANIFEST.MF");
 			String manString = "JBoss-Product-Release-Name: EAP\nJBoss-Product-Release-Version: 6.1.0.Alpha\nJBoss-Product-Console-Slot: eap";
 			IOUtil.setContents(manifest.toFile(), manString);
+			IPath standalonexml = loc.append("standalone").append("configuration").append("standalone.xml");
+			standalonexml.toFile().getParentFile().mkdirs();
+			standalonexml.toFile().createNewFile();
+			
+			loc.append("jboss-modules.jar").toFile().createNewFile();
+			loc.append("bin").toFile().mkdirs();
+
 		} catch(CoreException ce) {
 			FileUtil.completeDelete(loc.toFile());
 			return null;
@@ -219,6 +237,13 @@ public class ServerCreationTestUtils extends Assert {
 			IPath manifest = metainf.append("MANIFEST.MF");
 			String manString = "JBoss-Product-Release-Name: EAP\nJBoss-Product-Release-Version: 6.0.0.Alpha\nJBoss-Product-Console-Slot: eap";
 			IOUtil.setContents(manifest.toFile(), manString);
+			
+			IPath standalonexml = loc.append("standalone").append("configuration").append("standalone.xml");
+			standalonexml.toFile().getParentFile().mkdirs();
+			standalonexml.toFile().createNewFile();
+			
+			loc.append("jboss-modules.jar").toFile().createNewFile();
+			loc.append("bin").toFile().mkdirs();
 		} catch(CoreException ce) {
 			FileUtil.completeDelete(loc.toFile());
 			return null;
@@ -247,9 +272,9 @@ public class ServerCreationTestUtils extends Assert {
 		wc.setAttribute(Server.PROP_AUTO_PUBLISH_SETTING, Server.AUTO_PUBLISH_DISABLE);
 		return wc.save(true, new NullProgressMonitor());
 	}
-	private static IServer createJBoss7IServer(String rtLoc, String name) throws CoreException {
-		IRuntime runtime = RuntimeUtils.createRuntime(IJBossToolingConstants.AS_70, rtLoc, null);
-		IServerType serverType = ServerCore.findServerType(IJBossToolingConstants.SERVER_AS_70);
+	
+	private static IServer createJBoss7IServer(IServerType serverType, String rtLoc, String name) throws CoreException {
+		IRuntime runtime = RuntimeUtils.createRuntime(serverType.getRuntimeType().getId(), rtLoc, null);
 		IServerWorkingCopy swc = ServerCreationUtils.createServerWorkingCopy(runtime, serverType, name, "local");
 		swc.setServerConfiguration(null);
 		swc.setAttribute(Server.PROP_AUTO_PUBLISH_SETTING, Server.AUTO_PUBLISH_DISABLE);

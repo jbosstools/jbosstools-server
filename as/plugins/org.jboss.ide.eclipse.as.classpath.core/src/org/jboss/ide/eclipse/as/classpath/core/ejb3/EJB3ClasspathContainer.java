@@ -147,6 +147,8 @@ public class EJB3ClasspathContainer implements IClasspathContainer, IJBossServer
 		    	  ret = get70Jars(homePath);
 		      else if( id.equals(EAP_60)) 
 		    	  ret = get70Jars(homePath);
+		      else if( id.equals(EAP_61)) 
+		    	  ret = getEap61Jars(homePath);
 		   } catch( FileNotFoundException fnfe ) {}
 	   }
 	   return ret;
@@ -246,11 +248,18 @@ public class EJB3ClasspathContainer implements IClasspathContainer, IJBossServer
 		if( homePath.append(CLIENT).append(JB50_HIBERNATE_ANNOTATIONS_JAR).toFile().exists())
 			list.add(getEntry(homePath.append(CLIENT).append(JB50_HIBERNATE_ANNOTATIONS_JAR)));
 		return (IClasspathEntry[]) list.toArray(new IClasspathEntry[list.size()]);
-   }   
+   }
    protected static IClasspathEntry[] get70Jars(IPath homePath)  throws FileNotFoundException {
-	   IPath apiFolder = homePath.append(MODULES).append("javax").append("ejb").append("api").append("main");
-	   IPath jbossEjb3Folder = homePath.append(MODULES).append("org").append("jboss").append("ejb3").append("main");
-	   IPath jbossASEjb3Folder = homePath.append(MODULES).append("org").append("jboss").append("as").append("ejb3").append("main");
+	   return get70JarsFromBase(homePath.append(MODULES));
+   }
+   protected static IClasspathEntry[] getEap61Jars(IPath homePath)  throws FileNotFoundException {
+	   return get70JarsFromBase(homePath.append(MODULES).append("system").append("layers").append("base"));
+   }
+   
+   protected static IClasspathEntry[] get70JarsFromBase(IPath base)  throws FileNotFoundException {
+	   IPath apiFolder = base.append("javax").append("ejb").append("api").append("main");
+	   IPath jbossEjb3Folder = base.append("org").append("jboss").append("ejb3").append("main");
+	   IPath jbossASEjb3Folder = base.append("org").append("jboss").append("as").append("ejb3").append("main");
 		
 	   IPath api = findJarFile(apiFolder);
 	   IPath jbossEjb3 = findJarFile(jbossEjb3Folder);
@@ -264,6 +273,7 @@ public class EJB3ClasspathContainer implements IClasspathContainer, IJBossServer
 		   list.add(getEntry(jbossASEjb3));
 		return (IClasspathEntry[]) list.toArray(new IClasspathEntry[list.size()]);
    }
+
    
    protected static IPath findJarFile(IPath folder) {
 	   String[]  names = folder.toFile().list();
