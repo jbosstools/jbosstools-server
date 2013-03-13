@@ -149,6 +149,7 @@ public class EJB3ClasspathContainer implements IClasspathContainer, IJBossServer
 		    	  ret = get70Jars(homePath);
 		      else if( id.equals(EAP_61)) 
 		    	  ret = getEap61Jars(homePath);
+		      // NEW_SERVER_ADAPTER
 		   } catch( FileNotFoundException fnfe ) {}
 	   }
 	   return ret;
