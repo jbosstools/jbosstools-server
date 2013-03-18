@@ -40,7 +40,7 @@ This command will run the build:
 
 If you just want to check if things compiles/builds you can run:
 
-    $ mvn clean verify -DskipTest=true
+    $ mvn clean verify -DskipTests
 
 But *do not* push changes without having the new and existing unit tests pass!
  
