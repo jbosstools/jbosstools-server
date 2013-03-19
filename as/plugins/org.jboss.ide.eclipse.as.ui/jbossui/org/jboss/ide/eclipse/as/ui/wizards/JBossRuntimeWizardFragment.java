@@ -52,6 +52,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -112,6 +113,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	protected Button homeDirButton, jreButton;
 	protected Composite nameComposite, homeDirComposite, jreComposite;
 	protected Link downloadAndInstallButton;
+	protected Composite downloadAndInstallButtonWrapper;
 	protected String name, homeDir;
 
 	// Configuration stuff
@@ -156,18 +158,21 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	private void fireInitialWidgetUpdates() {
 		new Job("Update Download Runtimes Hyperlink") {
 			protected IStatus run(IProgressMonitor monitor) {
-				DownloadRuntime[] downloads = DownloadRuntimeToWTPRuntime.getDownloadRuntimes(getRuntimeType());
-				if( downloads != null && downloads.length > 0 ) {
-					Display.getDefault().asyncExec(new Runnable() { 
-						public void run() {
+				final DownloadRuntime[] downloads = DownloadRuntimeToWTPRuntime.getDownloadRuntimes(getRuntimeType());
+				Display.getDefault().asyncExec(new Runnable() { 
+					public void run() {
+						if( downloads != null && downloads.length > 0 ) {
 							try {
 								downloadAndInstallButton.setEnabled(true);
+								downloadAndInstallButtonWrapper.setToolTipText(null);
 							} catch(Throwable t) {
 								t.printStackTrace();
 							}
+						} else {
+							downloadAndInstallButtonWrapper.setToolTipText(Messages.rwf_downloadTooltipEmpty);
 						}
-					});
-				}
+					}
+				});
 				return Status.OK_STATUS;
 			}
 		}.schedule();
@@ -375,10 +380,13 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		homeDirButton = new Button(homeDirComposite, SWT.NONE);
 		homeDirButton.setText(Messages.browse);
 
-		downloadAndInstallButton = new Link(homeDirComposite, SWT.NONE);
+		downloadAndInstallButtonWrapper = new Composite(homeDirComposite, SWT.NONE);
+		downloadAndInstallButtonWrapper.setLayout(new FillLayout());
+		downloadAndInstallButton = new Link(downloadAndInstallButtonWrapper, SWT.NONE);
 		downloadAndInstallButton.setText("<a href=\"\">" + Messages.rwf_DownloadRuntime + "</a>");
 		downloadAndInstallButton.addSelectionListener(new DownloadAndInstallListener());
-		downloadAndInstallButton.setEnabled(false); 
+		downloadAndInstallButton.setEnabled(false);
+		downloadAndInstallButtonWrapper.setToolTipText(Messages.rwf_downloadTooltipLoading);
 		
 		// Add listeners
 		homeDirText.addModifyListener(new ModifyListener() {
@@ -403,7 +411,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		homeDirLabel.setLayoutData(UIUtil.createFormData2(null,0,homeDirText,-5,0,5,null,0));
 		homeDirText.setLayoutData(UIUtil.createFormData2(homeDirLabel,5,null,0,0,5,homeDirButton,-5));
 		homeDirButton.setLayoutData(UIUtil.createFormData2(homeDirLabel,5,null,0,null,0,100,0));
-		downloadAndInstallButton.setLayoutData(UIUtil.createFormData2(0,0,homeDirButton,-5,null,0,100,-10));
+		downloadAndInstallButtonWrapper.setLayoutData(UIUtil.createFormData2(0,0,homeDirButton,-5,null,0,100,-10));
 	}
 
 	protected class DownloadAndInstallListener extends SelectionAdapter {
