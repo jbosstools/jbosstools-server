@@ -87,12 +87,12 @@ public class DeploymentAssemblyFilesetReferenceTest extends TestCase  {
 
 	@Test
 	public void testRootFolder() throws Exception {
-		runTest(MY_PROJECT_NAME, "**", ".settings/**", "/", 10);
+		runTest(MY_PROJECT_NAME, "**", ".settings/**", "/", 9);
 	}
 
 	@Test
 	public void testRootFolderExcludeZ() throws Exception {
-		runTest(MY_PROJECT_NAME, "**", ".settings/**,**/z*", "/", 7);
+		runTest(MY_PROJECT_NAME, "**", ".settings/**,**/z*", "/", 6);
 	}
 
 	@Test
@@ -124,7 +124,19 @@ public class DeploymentAssemblyFilesetReferenceTest extends TestCase  {
 		ComponentReferenceUtils.addReferenceToComponent(root, ref, new AddReferenceToEnterpriseApplicationDataModelProvider());
 		IModule module = ServerUtil.getModule(p);
 		IModuleFile[] allFiles = ResourceUtils.findAllIModuleFiles(module);
-		assertEquals(allFiles.length, expectedCount);
+		String errorMsg = null;
+		if( allFiles.length == expectedCount + 1 && containsFile(".project", allFiles)) {
+			errorMsg = ".project file should not be included. Fixed in WTP 3.4.1 / Juno SR1";
+		}
+		assertEquals(errorMsg, expectedCount,allFiles.length);
 	}
 	
+	private boolean containsFile(String s, IModuleFile[] allFiles) {
+		for( int i = 0; i < allFiles.length; i++ ) {
+			if( allFiles[i].getName().equals(s)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
