@@ -19,6 +19,7 @@ import java.io.StringWriter;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -94,12 +95,14 @@ public class AS7ManagerTestUtils {
 		URL url = new URL("http://" + host + ":" + port + "/" + name);
 		HttpURLConnection connection = connect(url);
 		return toString(new BufferedInputStream(connection.getInputStream()));
+
 	}
 
 	public static HttpURLConnection waitForResponseCode(int code, String name, String host, int port)
 			throws IOException {
 		URL url = new URL("http://" + host + ":" + port + "/" + name);
 		long until = System.currentTimeMillis() + WAIT_TIMEOUT;
+		int resetCount = 0;
 		while (System.currentTimeMillis() < until) {
 			HttpURLConnection connection = connect(url);
 			try {
@@ -111,6 +114,10 @@ public class AS7ManagerTestUtils {
 					return connection;
 				}
 				throw e;
+			} catch( SocketException se ) {
+				resetCount++;
+				if( resetCount >= 10 )
+					throw se;
 			}
 		}
 		throw new RuntimeException("wait on url " + url + " for response code " + code + " timed out.");

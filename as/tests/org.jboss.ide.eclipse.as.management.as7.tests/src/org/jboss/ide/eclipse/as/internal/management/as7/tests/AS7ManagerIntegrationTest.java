@@ -10,8 +10,6 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.internal.management.as7.tests;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -19,6 +17,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.concurrent.ExecutionException;
@@ -56,7 +55,6 @@ public class AS7ManagerIntegrationTest {
 		manager.dispose();
 	}
 
-	@Ignore
 	@Test
 	public void canDeploy() throws Exception {
 		File warFile = AS7ManagerTestUtils.getWarFile(AS7ManagerTestUtils.MINIMALISTIC_WAR);
@@ -72,7 +70,6 @@ public class AS7ManagerIntegrationTest {
 		}
 	}
 
-	@Ignore
 	@Test
 	public void deployedWarIsResponding() throws Exception {
 		File warFile = AS7ManagerTestUtils.getWarFile(AS7ManagerTestUtils.MINIMALISTIC_WAR);
@@ -89,7 +86,6 @@ public class AS7ManagerIntegrationTest {
 		}
 	}
 
-	@Ignore
 	@Test(expected = JBoss7ManangerException.class)
 	public void cannotDeployWarTwice() throws Exception {
 		File warFile = AS7ManagerTestUtils.getWarFile(AS7ManagerTestUtils.MINIMALISTIC_WAR);
@@ -101,13 +97,11 @@ public class AS7ManagerIntegrationTest {
 		}
 	}
 
-	@Ignore
 	@Test(expected = JBoss7ManangerException.class)
 	public void cannotUndeployNondeployed() throws JBoss7ManangerException, InterruptedException, ExecutionException {
 		AS7ManagerTestUtils.waitUntilFinished(manager.undeploy("inexistant"));
 	}
 
-	@Ignore
 	@Test
 	public void canReplaceWar() throws Exception {
 		File warFile = AS7ManagerTestUtils.getWarFile(AS7ManagerTestUtils.MINIMALISTIC_WAR);
@@ -133,7 +127,7 @@ public class AS7ManagerIntegrationTest {
 			AS7ManagerTestUtils.waitUntilFinished(manager.deploy(deploymentName, warFile));
 			JBoss7DeploymentState state = manager.getDeploymentState(deploymentName);
 			assertNotNull(state);
-			assertThat(state, equalTo(JBoss7DeploymentState.STARTED));
+			assertTrue(areEqual(state, JBoss7DeploymentState.STARTED));
 		} finally {
 			AS7ManagerTestUtils.quietlyUndeploy(deploymentName, manager);
 		}
@@ -148,7 +142,7 @@ public class AS7ManagerIntegrationTest {
 			AS7ManagerTestUtils.waitUntilFinished(manager.add(deploymentName, warFile));
 			JBoss7DeploymentState state = manager.getDeploymentState(deploymentName);
 			assertNotNull(state);
-			assertThat(state, equalTo(JBoss7DeploymentState.STOPPED));
+			assertTrue(areEqual(state, JBoss7DeploymentState.STOPPED));
 		} finally {
 			AS7ManagerTestUtils.quietlyRemove(deploymentName, manager);
 		}
@@ -164,7 +158,6 @@ public class AS7ManagerIntegrationTest {
 		}
 	}
 
-	@Ignore
 	@Test
 	public void canAddDeploymentDirectory() throws URISyntaxException, IOException, JBoss7ManangerException {
 		String deploymentName = getRandomDeploymentName();
@@ -195,4 +188,36 @@ public class AS7ManagerIntegrationTest {
 	private String getRandomDeploymentName() {
 		return String.valueOf(System.currentTimeMillis());
 	}
+	
+	
+    private static boolean areArraysEqual(Object o1, Object o2) {
+        return areArrayLengthsEqual(o1, o2)
+            && areArrayElementsEqual(o1, o2);
+    }
+
+    private static boolean areArrayLengthsEqual(Object o1, Object o2) {
+        return Array.getLength(o1) == Array.getLength(o2);
+    }
+
+    private static boolean areArrayElementsEqual(Object o1, Object o2) {
+        for (int i = 0; i < Array.getLength(o1); i++) {
+            if (!areEqual(Array.get(o1, i), Array.get(o2, i))) return false;
+        }
+        return true;
+    }
+
+    private static boolean isArray(Object o) {
+        return o.getClass().isArray();
+    }
+
+    private static boolean areEqual(Object o1, Object o2) {
+        if (o1 == null) {
+            return o2 == null;
+        } else if (o2 != null && isArray(o1)) {
+            return isArray(o2) && areArraysEqual(o1, o2);
+        } else {
+            return o1.equals(o2);
+        }
+    }
+
 }
