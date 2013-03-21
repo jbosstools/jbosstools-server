@@ -15,6 +15,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -245,17 +246,6 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 		return null;
 	}
 	
-	private File[] getChildFolders(File root, final File ignore) {
-		return root.listFiles(new FileFilter() {
-			public boolean accept(File file) {
-				if (!file.isDirectory() || file.equals(ignore)) {
-					return false;
-				}
-				return true;
-			}
-		});
-	}
-	
 	private void calculateIncludedRuntimeDefinition(
 			RuntimeDefinition runtimeDefinition, IProgressMonitor monitor) {
 		// Sanity check
@@ -265,37 +255,12 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 		}
 		
 		runtimeDefinition.getIncludedRuntimeDefinitions().clear();
-		File[] directories = getChildFolders(runtimeDefinition.getLocation(), getServerAdapterRuntimeLocation(runtimeDefinition));
-		
-		String type = runtimeDefinition.getType();
-		List<RuntimeDefinition> nested = searchForNestedRuntimes(runtimeDefinition, directories, monitor);
-		runtimeDefinition.getIncludedRuntimeDefinitions().addAll(nested);
-		
-		// Why do these types need to be specifically handled? 
-		// Do the esb / drools plugin not have valid detectors?
-		if (SOA_P.equals(type) || SOA_P_STD.equals(type)) {
-			addDrools(runtimeDefinition);
-			addEsb(runtimeDefinition);
+		Set<IRuntimeDetector> s = getNestedSearchRuntimeDetectors();
+		for(Iterator<IRuntimeDetector> i = s.iterator(); i.hasNext(); ) {
+			IRuntimeDetector iNext = i.next();
+			if( iNext.isEnabled() )
+				iNext.computeIncludedRuntimeDefinition(runtimeDefinition);
 		}
-	}
-	
-	/*
-	 * Scan through a JBossRuntimeLocator for other runtime definitions. 
-	 * This allows other handlers a chance to scan the same folders, and lets
-	 * us mark them as nested. 
-	 */
-	private List<RuntimeDefinition> searchForNestedRuntimes(RuntimeDefinition parent, File[] directoriesToSearch, IProgressMonitor monitor) {
-		JBossRuntimeLocator locator = new JBossRuntimeLocator();
-		ArrayList<RuntimeDefinition> defs = new ArrayList<RuntimeDefinition>();
-		for (File directory : directoriesToSearch) {
-			List<RuntimeDefinition> definitions = new ArrayList<RuntimeDefinition>();
-			locator.searchDirectory(directory, definitions, 1, getNestedSearchRuntimeDetectors(), monitor);
-			for (RuntimeDefinition definition:definitions) {
-				definition.setParent(parent);
-			}
-			defs.addAll(definitions);
-		}
-		return defs;
 	}
 	
 	/*
@@ -307,61 +272,6 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 		TreeSet<IRuntimeDetector> cloned = new TreeSet<IRuntimeDetector>(runtimeDetectors);
 		cloned.remove(findMyDetector());
 		return cloned;
-	}
-
-	private void addDrools(RuntimeDefinition runtimeDefinition) {
-		if (runtimeDefinition == null) {
-			return;
-		}
-		Bundle drools = Platform.getBundle("org.drools.eclipse"); //$NON-NLS-1$
-		Bundle droolsDetector = Platform
-				.getBundle("org.jboss.tools.runtime.drools.detector");//$NON-NLS-1$
-		if (drools != null && droolsDetector != null) {
-			File droolsRoot = runtimeDefinition.getLocation();
-			if (droolsRoot.isDirectory()) {
-				String name = "Drools - " + runtimeDefinition.getName();//$NON-NLS-1$
-				RuntimeDefinition droolsDefinition = new RuntimeDefinition(
-						name, runtimeDefinition.getVersion(), DROOLS,
-						droolsRoot);
-				droolsDefinition.setParent(runtimeDefinition);
-				runtimeDefinition.getIncludedRuntimeDefinitions().add(
-						droolsDefinition);
-			}
-		}
-	}
-	
-	private void addEsb(RuntimeDefinition runtimeDefinition) {
-		if (runtimeDefinition == null) {
-			return;
-		}
-		Bundle esb = Platform.getBundle("org.jboss.tools.esb.project.core");//$NON-NLS-1$
-		Bundle esbDetectorPlugin = Platform
-				.getBundle("org.jboss.tools.runtime.esb.detector");//$NON-NLS-1$
-		if (esb != null && esbDetectorPlugin != null) {
-			String type = runtimeDefinition.getType();
-			File esbRoot;
-			if (SOA_P.equals(type)) {
-				esbRoot = runtimeDefinition.getLocation();
-			} else {
-				esbRoot = new File(runtimeDefinition.getLocation(), "jboss-esb"); //$NON-NLS-1$
-			}
-			if (esbRoot.isDirectory()) {
-				String name = "ESB - " + runtimeDefinition.getName();//$NON-NLS-1$
-				String version="";//$NON-NLS-1$
-				RuntimeDefinition esbDefinition = new RuntimeDefinition(
-						name, version, ESB,
-						esbRoot);
-				IRuntimeDetector esbDetector = RuntimeCoreActivator.getDefault().getEsbDetector();
-				if (esbDetector != null) {
-					version = esbDetector.getVersion(esbDefinition);
-					esbDefinition.setVersion(version);
-				}
-				
-				esbDefinition.setParent(runtimeDefinition);
-				runtimeDefinition.getIncludedRuntimeDefinitions().add(
-						esbDefinition);
-			}
-		}
 	}
 
 	private boolean hasIncludedRuntimes(String type) {
@@ -419,7 +329,7 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 
 	@Override
 	public void computeIncludedRuntimeDefinition(RuntimeDefinition runtimeDefinition) {
-		calculateIncludedRuntimeDefinition(runtimeDefinition, new NullProgressMonitor());
+		// We are not currently included in any other larger entities, so we do nothing here
 	}
 
 	@Override
