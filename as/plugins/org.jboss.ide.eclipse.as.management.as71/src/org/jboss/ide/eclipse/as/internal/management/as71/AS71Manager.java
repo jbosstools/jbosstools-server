@@ -223,6 +223,7 @@ public class AS71Manager {
 		}
 	}
 
+	@Deprecated
 	public void addDeploymentDirectory(String path) {
 		
 	}

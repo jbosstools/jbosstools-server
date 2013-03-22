@@ -9,20 +9,85 @@
 	<groupId>org.jboss.tools.as.tests</groupId>
 	<artifactId>org.jboss.ide.eclipse.as.management.as7.tests</artifactId> 
 	<packaging>eclipse-test-plugin</packaging>
-	
+	<properties>
+		<jbosstools.test.jboss.home.7.0>${requirementsDirectory}/jboss-as-7.0.0.Final</jbosstools.test.jboss.home.7.0>
+		<jbosstools.test.jboss.home.7.1>${requirementsDirectory}/jboss-as-7.1.0.Final</jbosstools.test.jboss.home.7.1>
+		<jbosstools.test.jboss.home.eap.6.0>${requirementsDirectory}/jboss-eap-6.0</jbosstools.test.jboss.home.eap.6.0>
+                <jbosstools.test.jboss.home.eap.6.1>${requirementsDirectory}/jboss-eap-6.1</jbosstools.test.jboss.home.eap.6.1>
+
+
+		<systemProperties>-Djbosstools.test.jboss.home.7.0=${jbosstools.test.jboss.home.7.0} -Djbosstools.test.jboss.home.7.1=${jbosstools.test.jboss.home.7.1} -Djbosstools.test.jboss.home.eap.6.0=${jbosstools.test.jboss.home.eap.6.0}  -Djbosstools.test.jboss.home.eap.6.1=${jbosstools.test.jboss.home.eap.6.1} -Dorg.jboss.tools.tests.skipPrivateRequirements=${skipPrivateRequirements}  </systemProperties>
+	</properties>	
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
 				<configuration>
-					<includes>
-					 		<include>**/*Test.class</include>
-				 	</includes>
-					<excludes>
-					 		<exclude>**/*IntegrationTest*.class</exclude>
-				 	</excludes>
-				 </configuration>
+					<testSuite>org.jboss.ide.eclipse.as.management.as7.tests</testSuite>
+					<testClass>org.jboss.ide.eclipse.as.internal.management.as7.tests.AS7IntegrationTestSuite</testClass>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>install-as</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.jboss.as</groupId>
+									<artifactId>jboss-as-dist</artifactId>
+									<version>7.0.0.Final</version>
+									<type>zip</type>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.jboss.as</groupId>
+									<artifactId>jboss-as-dist</artifactId>
+									<version>7.1.0.Final</version>
+									<type>zip</type>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.googlecode.maven-download-plugin</groupId>
+				<artifactId>maven-download-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>install-eap-6.0.0</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>wget</goal>
+						</goals>
+						<configuration>
+							<url>http://download.devel.redhat.com/released/JBEAP-6/6.0.0/zip/jboss-eap-6.0.0.zip</url>
+							<md5>ca0e20c5523281233888c296689b7172</md5>
+							<unpack>true</unpack>
+							<skip>${skipPrivateRequirements}</skip>
+						</configuration>
+					</execution>
+					<execution>
+						<id>install-eap-6.1.0</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>wget</goal>
+						</goals>
+						<configuration>
+							<url>http://download.lab.bos.redhat.com/devel/candidates/JBEAP/JBEAP-6.1.0.ER1/jboss-eap-6.1.0.ER1.zip</url>
+							<md5>99f73b384c1978e6a7024c89dd2e6e2e</md5>
+							<unpack>true</unpack>
+							<skip>${skipPrivateRequirements}</skip>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

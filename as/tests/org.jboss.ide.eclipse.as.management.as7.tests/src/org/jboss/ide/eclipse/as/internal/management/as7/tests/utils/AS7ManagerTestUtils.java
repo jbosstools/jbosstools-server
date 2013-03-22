@@ -59,8 +59,10 @@ public class AS7ManagerTestUtils {
 	}
 
 	public static String waitForRespose(String name, String host, int port) throws IOException {
-		waitForResponseCode(200, name, host, port);
-		return getResponse(name, host, port);
+		HttpURLConnection response1 = waitForResponseCode(200, name, host, port);
+		response1.disconnect();
+		String result = getResponse(name, host, port);
+		return result;
 	}
 
 	public static void quietlyUndeploy(File file, AS71Manager manager) {
@@ -94,8 +96,9 @@ public class AS7ManagerTestUtils {
 	public static String getResponse(String name, String host, int port) throws IOException {
 		URL url = new URL("http://" + host + ":" + port + "/" + name);
 		HttpURLConnection connection = connect(url);
-		return toString(new BufferedInputStream(connection.getInputStream()));
-
+		String s = toString(new BufferedInputStream(connection.getInputStream()));
+		connection.disconnect();
+		return s;
 	}
 
 	public static HttpURLConnection waitForResponseCode(int code, String name, String host, int port)
@@ -118,6 +121,8 @@ public class AS7ManagerTestUtils {
 				resetCount++;
 				if( resetCount >= 10 )
 					throw se;
+			} finally {
+				connection.disconnect();
 			}
 		}
 		throw new RuntimeException("wait on url " + url + " for response code " + code + " timed out.");
