@@ -123,12 +123,16 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 		setModuleState(module, IServer.STATE_STARTING);
 		ServerExtendedProperties props = (ServerExtendedProperties)getServer()
 				.loadAdapter(ServerExtendedProperties.class, new NullProgressMonitor());
+		int result = IServer.STATE_STARTED;
 		if( props != null && props.canVerifyRemoteModuleState()) {
 			IServerModuleStateVerifier verifier = props.getModuleStateVerifier();
 			if( verifier != null ) {
 				verifier.waitModuleStarted(getServer(), module, 20000);
+				boolean started = verifier.isModuleStarted(getServer(), module, new NullProgressMonitor());
+				result = started ? IServer.STATE_STARTED : IServer.STATE_STOPPED;
 			}
 		}
+		setModuleState(module, result);
 	}
 
 	@Override
