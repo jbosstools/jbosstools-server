@@ -15,6 +15,7 @@ import org.jboss.ide.eclipse.as.test.server.JBossManagerTest.MockAS7ManagementDe
 
 public class StartupUtility extends Assert {
 	public static Process runServer(String homeDir) {
+		System.out.println("Running server " + homeDir);
 		String scriptName = null;
 		String cmd = null;
 		IPath bin = new Path(homeDir).append("bin");
@@ -65,8 +66,10 @@ public class StartupUtility extends Assert {
 			try {
 				process.exitValue();
 				// Process has exited already, so no need to shutdown server
+				System.out.println("Server has already shutdown");
 			} catch( IllegalThreadStateException itse) {
 				// Process has not yet exited, so shutdown the server
+				System.out.println("Shutting down server");
 				shutdownServer(process);
 			}
 		}
@@ -74,6 +77,7 @@ public class StartupUtility extends Assert {
 	}
 	
 	private void waitForStarted(Process p) {
+		System.out.println("Waiting for server to complete startup");
 		Exception ex = null;
 		AS71Manager manager = null;
 		try {

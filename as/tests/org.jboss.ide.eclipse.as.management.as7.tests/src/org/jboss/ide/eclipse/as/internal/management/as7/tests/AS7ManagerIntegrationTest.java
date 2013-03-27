@@ -67,6 +67,7 @@ public class AS7ManagerIntegrationTest extends AssertUtility {
 
 	@Before
 	public void before()  throws IOException  {
+		System.out.println("Beginning a new management test");
 		if( !homeDir.equals(util.getHomeDir())) {
 			util.dispose();
 			util.setHomeDir(homeDir);
