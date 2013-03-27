@@ -176,7 +176,8 @@ public class AS7ManagerIntegrationTest extends AssertUtility {
 		}
 	}
 
-	// TODO fix this test
+	// TODO This test is an issue with upstream. 
+	// https://issues.jboss.org/browse/AS7-6779
 //	@Test
 //	public void canAddDeploymentDirectory() throws URISyntaxException, IOException, JBoss7ManangerException {
 //		String deploymentName = getRandomDeploymentName();
@@ -196,18 +197,4 @@ public class AS7ManagerIntegrationTest extends AssertUtility {
 	public void canGetServerState() throws JBoss7ManangerException {
 		assertEquals(JBoss7ServerState.RUNNING, manager.getServerState());
 	}
-//
-//	@Test
-//	public void canStopServer() throws JBoss7ManangerException, UnknownHostException, IOException {
-//		manager.stopServer();
-//		assertFalse(
-//				AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.LOCALHOST, AS71Manager.MGMT_PORT));
-//	}
-
-	private String getRandomDeploymentName() {
-		return String.valueOf(System.currentTimeMillis());
-	}
-	
-	
- 
 }
