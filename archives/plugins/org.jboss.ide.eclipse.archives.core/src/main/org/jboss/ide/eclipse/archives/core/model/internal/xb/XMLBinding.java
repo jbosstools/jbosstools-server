@@ -282,22 +282,22 @@ public class XMLBinding {
 
 			// package
 			IMemento[] inner = packageChildren[i].getChildren("package"); //$NON-NLS-1$
-			if( inner != null && inner.length == 1)
+			if( inner != null && inner.length > 0)
 				unmarshallPackageList(pack, inner);
 
 			// fileset
 			IMemento[] fsets = packageChildren[i].getChildren("fileset"); //$NON-NLS-1$
-			if( fsets != null && fsets.length == 1)
+			if( fsets != null && fsets.length > 0)
 				unmarshallFilesets(pack, fsets);
 
 			// lib-fileset
 			IMemento[] libfsets = packageChildren[i].getChildren("lib-fileset"); //$NON-NLS-1$
-			if( libfsets != null && libfsets.length == 1)
+			if( libfsets != null && libfsets.length > 0)
 				unmarshallLibFilesets(pack, libfsets);
 
 			// folder
 			IMemento[] folders = packageChildren[i].getChildren("folder"); //$NON-NLS-1$
-			if( folders != null && folders.length == 1)
+			if( folders != null && folders.length > 0)
 				unmarshallFolders(pack, folders);
 
 			// properties
@@ -319,22 +319,22 @@ public class XMLBinding {
 
 			// package
 			IMemento[] inner = folders[i].getChildren("package"); //$NON-NLS-1$
-			if( inner != null && inner.length == 1)
+			if( inner != null && inner.length > 0)
 				unmarshallPackageList(folder, inner);
 
 			// fileset
 			IMemento[] fsets = folders[i].getChildren("fileset"); //$NON-NLS-1$
-			if( fsets != null && fsets.length == 1)
+			if( fsets != null && fsets.length > 0)
 				unmarshallFilesets(folder, fsets);
 
 			// lib-fileset
 			IMemento[] libfsets = folders[i].getChildren("lib-fileset"); //$NON-NLS-1$
-			if( libfsets != null && libfsets.length == 1)
+			if( libfsets != null && libfsets.length > 0)
 				unmarshallLibFilesets(folder, libfsets);
 
 			// folder
 			IMemento[] folders2 = folders[i].getChildren("folder"); //$NON-NLS-1$
-			if( folders2 != null && folders2.length == 1)
+			if( folders2 != null && folders2.length > 0)
 				unmarshallFolders(folder, folders2);
 
 			// properties
