@@ -10,6 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server;
 
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.server.core.IServer;
 
 public interface IDeploymentScannerModifier {
@@ -19,4 +20,12 @@ public interface IDeploymentScannerModifier {
 	 * @param server the server we wish to update scanners for
 	 */
 	public void updateDeploymentScanners(IServer server);
+	
+	/**
+	 * Get the job which can Update the deployment scanners for this server
+	 * @param server
+	 * @return
+	 */
+	public Job getUpdateDeploymentScannerJob(IServer server);	
+	
 }

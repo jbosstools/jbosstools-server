@@ -38,16 +38,19 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 
 	public void updateDeploymentScanners(final IServer server) {
 		if( accepts(server)) {
-			new Job(getJobName(server)) {
-				protected IStatus run(IProgressMonitor monitor) {
-					String[] folders = getDeployLocationFolders(server);
-					ensureScannersAdded(server, folders);
-					return Status.OK_STATUS;
-				}
-			}.schedule();
+			getUpdateDeploymentScannerJob(server).schedule();
 		}
 	}
 
+	public Job getUpdateDeploymentScannerJob(final IServer server) {
+		return new Job(getJobName(server)) {
+			protected IStatus run(IProgressMonitor monitor) {
+				String[] folders = getDeployLocationFolders(server);
+				ensureScannersAdded(server, folders);
+				return Status.OK_STATUS;
+			}
+		};
+	}
 	
 	protected String getServerMode(IServer server) {
 		IJBossServerPublishMethodType publishType = DeploymentPreferenceLoader.getCurrentDeploymentMethodType(server);

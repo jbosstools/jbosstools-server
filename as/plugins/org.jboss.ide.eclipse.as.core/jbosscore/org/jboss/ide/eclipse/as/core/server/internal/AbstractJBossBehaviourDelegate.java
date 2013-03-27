@@ -13,9 +13,13 @@ package org.jboss.ide.eclipse.as.core.server.internal;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.IPollResultListener;
+import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
@@ -108,10 +112,29 @@ public abstract class AbstractJBossBehaviourDelegate extends AbstractBehaviourDe
 		IServer s = getActualBehavior().getServer();
 		JBossExtendedProperties properties = (JBossExtendedProperties)s.loadAdapter(JBossExtendedProperties.class, null);
 		if( properties != null ) {
-			properties.getDeploymentScannerModifier().updateDeploymentScanners(s);
+			Job scannerJob = properties.getDeploymentScannerModifier().getUpdateDeploymentScannerJob(s);
+			IServerModuleStateVerifier verifier = properties.getModuleStateVerifier();
+			if( verifier != null ) {
+				Job moduleStateJob = new UpdateModuleStateJob(s, verifier);
+				chainJobs(scannerJob, moduleStateJob);
+			}
+			scannerJob.schedule();
 		}
 	}
-
+	
+	// TODO move to common, job utils
+	private void chainJobs(final Job job1, final Job job2) {
+		JobChangeAdapter listener = new JobChangeAdapter() {
+			public void done(IJobChangeEvent event) {
+				job1.removeJobChangeListener(this);
+				if (job2 != null && event.getResult() != null 
+						&& event.getResult().getSeverity() != IStatus.ERROR
+						&& event.getResult().getSeverity() != IStatus.CANCEL)
+					job2.schedule();
+			}
+		};
+		job1.addJobChangeListener(listener);
+	}
 	
 	/* 
 	 * The following 4 methods are not interface methods and should not be used anymore.
