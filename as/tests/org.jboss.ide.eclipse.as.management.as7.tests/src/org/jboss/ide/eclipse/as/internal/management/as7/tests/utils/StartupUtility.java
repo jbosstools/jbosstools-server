@@ -8,8 +8,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.jboss.ide.eclipse.as.core.util.ThreadUtils;
-import org.jboss.ide.eclipse.as.internal.management.as7.tests.AS7ManagerIntegrationTest.MockAS7ManagementDetails;
-import org.jboss.ide.eclipse.as.internal.management.as71.AS71Manager;
+import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
 
@@ -39,16 +38,23 @@ public class StartupUtility extends Assert {
 		return null;
 	}
 	
-	private String homeDir;
+	private String homeDir, runtimeType;
 	private Process process;
 	private boolean started = false;
 	public StartupUtility() {
 	}
 	public void setHomeDir(String homeDir) {
 		this.homeDir = homeDir;
+		setRuntimeType(ParameterUtils.serverHomeToRuntimeType.get(homeDir));
 	}
 	public String getHomeDir() {
 		return homeDir;
+	}
+	public void setRuntimeType(String runtimeType) {
+		this.runtimeType= runtimeType;
+	}
+	public String getRuntimeType() {
+		return runtimeType;
 	}
 	public void startIfNotStarted(boolean wait) {
 		if( !started )
@@ -79,14 +85,12 @@ public class StartupUtility extends Assert {
 	private void waitForStarted(Process p) {
 		System.out.println("Waiting for server to complete startup");
 		Exception ex = null;
-		AS71Manager manager = null;
+		IJBoss7ManagerService service = AS7ManagerTestUtils.findService(runtimeType);
 		try {
 			Thread.sleep(3000);
 		} catch(InterruptedException ie){}
 		
 		try {
-			manager = new AS71Manager( new MockAS7ManagementDetails(
-					AS7ManagerTestUtils.LOCALHOST, AS71Manager.MGMT_PORT));
 			JBoss7ServerState state = null;
 			long startTime = System.currentTimeMillis();
 			long endTime = startTime + (1000*60);
@@ -95,7 +99,7 @@ public class StartupUtility extends Assert {
 					Thread.sleep(1000);
 				} catch(InterruptedException ie){}
 				try {
-					state = manager.getServerState(); 
+					state = service.getServerState(AS7ManagerTestUtils.createStandardDetails()); 
 					ex = null;
 				} catch(JBoss7ManangerException ioe) {
 					ex = ioe;
@@ -104,36 +108,34 @@ public class StartupUtility extends Assert {
 		} catch(Exception e) {
 			ex = e;
 		} finally {
-			if( manager != null )
-				manager.dispose();
+			if( service != null )
+				service.dispose();
 			if( ex != null ) {
 				if( p != null)
 					p.destroy();
 				if( ex != null )
-					fail("Could not stop server " + homeDir + ": " + ex.getMessage());
+					fail("Could not correctly discover if server has started: " + homeDir + ": " + ex.getMessage());
 			}
 		}
 	}
 		
 	private void shutdownServer(Process p) {
-		AS71Manager manager = null;
+		IJBoss7ManagerService service = AS7ManagerTestUtils.findService(runtimeType);
 		Exception ex = null;
 		try {
 			boolean isListening = (AS7ManagerTestUtils.isListening(
-					AS7ManagerTestUtils.LOCALHOST, AS71Manager.MGMT_PORT));
+					AS7ManagerTestUtils.LOCALHOST, AS7ManagerTestUtils.MGMT_PORT));
 			assertTrue(isListening);
-			manager = new AS71Manager( new MockAS7ManagementDetails(
-					AS7ManagerTestUtils.LOCALHOST, AS71Manager.MGMT_PORT));
-			manager.stopServer();
+			service.stop(AS7ManagerTestUtils.createStandardDetails());
 			ThreadUtils.sleepFor(3000);
 			isListening = (AS7ManagerTestUtils.isListening(
-					AS7ManagerTestUtils.LOCALHOST, AS71Manager.MGMT_PORT));
+					AS7ManagerTestUtils.LOCALHOST, AS7ManagerTestUtils.MGMT_PORT));
 			assertFalse(isListening);
 		} catch(Exception e) {
 			ex = e;
 		} finally {
-			if( manager != null )
-				manager.dispose();
+			if( service != null )
+				service.dispose();
 			if( p != null )
 				p.destroy();
 			if( ex != null )

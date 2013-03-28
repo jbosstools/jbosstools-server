@@ -11,7 +11,6 @@
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,7 +18,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.debug.core.DebugEvent;
@@ -32,15 +30,18 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
-import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
-import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
-import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
+import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
 import org.jboss.ide.eclipse.as.core.util.IEventCodes;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.management.core.IJBoss7DeploymentResult;
+import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
+import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
+import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 
 public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 
@@ -97,42 +98,50 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 	
 	@Override
 	public void stopModule(IModule[] module, IProgressMonitor monitor) throws CoreException  {
-		IDeployableServer ds = ServerConverter.getDeployableServer(getServer());
-		if( ds == null ) 
-			return;
-
-		IJBossServerPublishMethod method = createPublishMethod();
-		DeploymentMarkerUtils.removeDeployedMarkerIfExists(method, ds, module, monitor);
-		setModuleState(module, IServer.STATE_STOPPED );
+		AS7ManagementDetails details = new AS7ManagementDetails(getServer());
+		IJBossServer jbs = ServerConverter.getJBossServer(getServer());
+		String deploymentName = jbs.getDeploymentLocation(module, true).lastSegment();
+		int preState = getServer().getModuleState(module);
+		IJBoss7ManagerService service = JBoss7ManagerUtil.getService(getServer());
+		if( service != null ) {
+			try {
+				service.undeploySync(details, deploymentName, false, monitor);
+				setModuleState(module, IServer.STATE_STOPPED );
+			} catch(JBoss7ManangerException j7me) {
+				setModuleState(module,preState );
+				throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Unable to stop module via remote management")); //$NON-NLS-1$
+			}
+		} else {
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Management service for server not found.")); //$NON-NLS-1$
+		}
 	}
 	
 	@Override
 	public void startModule(IModule[] module, IProgressMonitor monitor) throws CoreException {
-		restartModule(module, monitor);
+		AS7ManagementDetails details = new AS7ManagementDetails(getServer());
+		IJBossServer jbs = ServerConverter.getJBossServer(getServer());
+		IPath loc = jbs.getDeploymentLocation(module, true);
+		String deploymentName = loc.lastSegment();
+		int preState = getServer().getModuleState(module);
+		IJBoss7ManagerService service = JBoss7ManagerUtil.getService(getServer());
+		if( service != null ) {
+			try {
+				IJBoss7DeploymentResult result = service.deploySync(details, deploymentName, null, false, monitor);
+				IStatus s = result.getStatus();
+				setModuleState(module, IServer.STATE_STARTED);
+			} catch(JBoss7ManangerException j7me) {
+				setModuleState(module,preState );
+				throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Unable to start module via remote management")); //$NON-NLS-1$
+			}
+		} else {
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Management service for server not found.")); //$NON-NLS-1$
+		}
 	}
 
 	@Override
 	public void restartModule(IModule[] module, IProgressMonitor monitor) throws CoreException {
-		IDeployableServer ds = ServerConverter.getDeployableServer(getServer());
-		if( ds == null ) 
-			return;
-
-		IJBossServerPublishMethod method = createPublishMethod();
-		IPath depPath = ds.getDeploymentLocation(module, true);
-		createDoDeployMarker(method, Arrays.asList(new IPath[]{depPath}), monitor);
-		setModuleState(module, IServer.STATE_STARTING);
-		ServerExtendedProperties props = (ServerExtendedProperties)getServer()
-				.loadAdapter(ServerExtendedProperties.class, new NullProgressMonitor());
-		int result = IServer.STATE_STARTED;
-		if( props != null && props.canVerifyRemoteModuleState()) {
-			IServerModuleStateVerifier verifier = props.getModuleStateVerifier();
-			if( verifier != null ) {
-				verifier.waitModuleStarted(getServer(), module, 20000);
-				boolean started = verifier.isModuleStarted(getServer(), module, new NullProgressMonitor());
-				result = started ? IServer.STATE_STARTED : IServer.STATE_STOPPED;
-			}
-		}
-		setModuleState(module, result);
+		stopModule(module, monitor);
+		startModule(module, monitor);
 	}
 
 	@Override

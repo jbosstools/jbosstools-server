@@ -20,7 +20,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate;
 import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
-import org.osgi.framework.InvalidSyntaxException;
+import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 
 public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
 
@@ -56,7 +56,7 @@ public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
 		this.service = null;
 	}
 
-	protected IJBoss7ManagerService getService() throws InvalidSyntaxException {
+	protected IJBoss7ManagerService getService() throws JBoss7ManangerException {
 		if (service == null) {
 			this.service = JBoss7ManagerUtil.getService(getServer());
 		}

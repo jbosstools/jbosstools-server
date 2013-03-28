@@ -28,7 +28,9 @@ import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
 import org.jboss.dmr.ModelNode;
-import org.jboss.ide.eclipse.as.internal.management.as71.OperationRequestAddress.Node;
+import org.jboss.ide.eclipse.as.management.core.OperationFormatException;
+import org.jboss.ide.eclipse.as.management.core.OperationRequestAddress;
+import org.jboss.ide.eclipse.as.management.core.ValidatingOperationCallbackHandler;
 
 /**
  *
@@ -165,7 +167,7 @@ public class DefaultOperationRequestBuilder  extends ValidatingOperationCallback
         if(prefix.isEmpty()) {
             address.setEmptyList();
         } else {
-            Iterator<Node> iterator = prefix.iterator();
+            Iterator<OperationRequestAddress.Node> iterator = prefix.iterator();
             while (iterator.hasNext()) {
                 OperationRequestAddress.Node node = iterator.next();
                 if (node.getName() != null) {

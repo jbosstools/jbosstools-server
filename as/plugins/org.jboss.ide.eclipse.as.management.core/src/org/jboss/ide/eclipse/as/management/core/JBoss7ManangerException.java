@@ -13,7 +13,7 @@ package org.jboss.ide.eclipse.as.management.core;
 /**
  * @author André Dietisheim
  */
-public class JBoss7ManangerException extends Exception {
+public class JBoss7ManangerException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 

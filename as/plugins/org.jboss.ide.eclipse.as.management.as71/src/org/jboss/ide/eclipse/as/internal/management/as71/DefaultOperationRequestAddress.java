@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.jboss.ide.eclipse.as.management.core.OperationRequestAddress;
+
 /**
  * This implementation is not thread-safe.
  *
