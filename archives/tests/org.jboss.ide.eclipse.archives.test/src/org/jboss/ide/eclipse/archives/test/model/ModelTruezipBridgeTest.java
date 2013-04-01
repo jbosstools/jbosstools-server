@@ -53,6 +53,7 @@ public class ModelTruezipBridgeTest extends ModelTest {
 	private IPath bundlePath;
 	private IPath outputs;
 	protected void setUp() throws Exception {
+		System.out.println("Running ModelTruezipBridgeTest");
 		if( bundlePath == null ) {
 			try {
 				bundle = ArchivesTest.getDefault().getBundle();

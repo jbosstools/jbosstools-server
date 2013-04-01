@@ -72,7 +72,8 @@ public class XBMarshallTest extends TestCase {
 			File expected = expectedOutputs.append("emptyPackages.xml").toFile();
 			String expectedContents = FileIOUtil.getFileContents(expected);
 			String asString = XMLBinding.serializePackages(packs, new NullProgressMonitor());
-			assertEquals(asString, expectedContents);
+			// Ignore newlines
+			assertEquals(expectedContents.replace("\n", ""), asString.replace("\n", ""));
 		} catch( XbException xbe ) {
 			fail(xbe.getMessage());
 		}
@@ -87,8 +88,8 @@ public class XBMarshallTest extends TestCase {
 
 			XMLBinding.marshallToFile(packs, out, new NullProgressMonitor());
 			String actualContents = FileIOUtil.getFileContents(out.toFile());
-			
-			assertEquals(expectedContents, actualContents);
+			// Ignore newlines
+			assertEquals(expectedContents.replace("\n", ""), actualContents.replace("\n", ""));
 		} catch( XbException xbe ) {
 			xbe.printStackTrace();
 			fail(xbe.getMessage());
