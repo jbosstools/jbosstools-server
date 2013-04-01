@@ -38,6 +38,7 @@ import org.jboss.ide.eclipse.archives.core.util.PathUtils;
 import org.jboss.ide.eclipse.archives.core.util.internal.ModelTruezipBridge;
 import org.jboss.ide.eclipse.archives.core.util.internal.TrueZipUtil;
 import org.jboss.ide.eclipse.archives.test.ArchivesTest;
+import org.jboss.tools.test.util.JobUtils;
 import org.jboss.tools.test.util.ResourcesUtils;
 import org.osgi.framework.Bundle;
 
@@ -65,6 +66,7 @@ public class ModelTruezipBridgeTest extends ModelTest {
 			}
 		}
 
+		JobUtils.waitForIdle();
 		proj = ResourcesUtils.importProject("org.jboss.ide.eclipse.archives.test", "/inputs/projects/GenericProject");
 //		proj.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 	}
