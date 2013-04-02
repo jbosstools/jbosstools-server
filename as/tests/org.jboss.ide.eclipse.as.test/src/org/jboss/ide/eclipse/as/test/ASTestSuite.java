@@ -57,7 +57,7 @@ public class ASTestSuite extends TestSuite {
     public static Test suite() { 
         ValidationFramework.getDefault().suspendAllValidation(true);
         TestSuite suite = new TestSuite("ASTools Test Suite");
-//        suite.addTestSuite(ArgsUtilTest.class);
+        suite.addTestSuite(ArgsUtilTest.class);
 //        suite.addTestSuite(ExpressionResolverUtilTest.class);
 //        suite.addTestSuite(PreReqTest.class);
 //        suite.addTestSuite(ServerBeanLoaderTest.class);
@@ -74,7 +74,7 @@ public class ASTestSuite extends TestSuite {
 //        suite.addTestSuite(StringSubstitutionTest.class);
         
         // Publishing tests
-        suite.addTestSuite(DeployAndTempDeployFolderTest.class);
+//        suite.addTestSuite(DeployAndTempDeployFolderTest.class);
 //        suite.addTestSuite(BehaviourModelDefectTest.class);
 //        suite.addTestSuite(WebDeployableArtifactUtilDefectTest.class);
 //        suite.addTestSuite(MockJSTPublisherTest.class);
