@@ -16,6 +16,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
 import org.jboss.ide.eclipse.as.internal.management.as7.tests.utils.AS7ManagerTestUtils;
 import org.jboss.ide.eclipse.as.internal.management.as7.tests.utils.AssertUtility;
 import org.jboss.ide.eclipse.as.internal.management.as7.tests.utils.ParameterUtils;
@@ -24,7 +25,6 @@ import org.jboss.ide.eclipse.as.internal.management.as71.AS71Manager;
 import org.jboss.ide.eclipse.as.management.core.JBoss7DeploymentState;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
-import org.jboss.ide.eclipse.as.test.server.JBossManagerTest.MockAS7ManagementDetails;
 import org.jboss.tools.as.test.core.internal.utils.MatrixUtils;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -64,6 +64,25 @@ public class AS7ManagerIntegrationTest extends AssertUtility {
 	public AS7ManagerIntegrationTest(String home) {
 		homeDir = home;
 	}
+    public static class MockAS7ManagementDetails extends AS7ManagementDetails {
+        private String host;
+        private int port;
+        public MockAS7ManagementDetails(String host, int port) {
+                super(null);
+                this.host = host;
+                this.port = port;
+        }
+        public String getHost() {
+                return host;
+        }
+
+        public int getManagementPort() {
+                return port;
+        }
+        public String[] handleCallbacks(String[] prompts) throws UnsupportedOperationException {
+                return new String[]{};
+        }
+    }
 
 	@Before
 	public void before()  throws IOException  {

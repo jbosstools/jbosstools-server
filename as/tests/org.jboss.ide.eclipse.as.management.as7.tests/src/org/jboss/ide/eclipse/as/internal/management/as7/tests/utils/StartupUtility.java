@@ -8,10 +8,10 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.jboss.ide.eclipse.as.core.util.ThreadUtils;
+import org.jboss.ide.eclipse.as.internal.management.as7.tests.AS7ManagerIntegrationTest.MockAS7ManagementDetails;
 import org.jboss.ide.eclipse.as.internal.management.as71.AS71Manager;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
-import org.jboss.ide.eclipse.as.test.server.JBossManagerTest.MockAS7ManagementDetails;
 
 public class StartupUtility extends Assert {
 	public static Process runServer(String homeDir) {

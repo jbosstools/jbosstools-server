@@ -79,7 +79,7 @@ public class BuildDeployTest extends TestCase {
 	private IArchive rootArchive;
 	
 	
-	public void testAll() throws Exception {
+	public void testBuildDeploy() throws Exception {
 		// Builder is off, auto-deploy is off
 		enableAutomaticBuilder(false);
 		createProject();

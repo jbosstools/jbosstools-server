@@ -13,7 +13,7 @@ package org.jboss.tools.as.test.core;
 import java.io.File;
 
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.core.runtime.Plugin;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
 import org.jboss.tools.as.test.core.internal.utils.wtp.ProjectUtility;
@@ -23,7 +23,7 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class ASMatrixTests extends AbstractUIPlugin {
+public class ASMatrixTests extends Plugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.jboss.tools.as.test.core"; //$NON-NLS-1$

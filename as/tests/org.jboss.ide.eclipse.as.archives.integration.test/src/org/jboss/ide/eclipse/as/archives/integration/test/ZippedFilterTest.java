@@ -27,36 +27,38 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.ServerPreferences;
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.jboss.ide.eclipse.as.core.publishers.patterns.PublishFilterDirectoryScanner;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-import org.jboss.ide.eclipse.as.test.ASTest;
-import org.jboss.ide.eclipse.as.test.publishing.v2.Mock2BehaviourDelegate;
-import org.jboss.ide.eclipse.as.test.publishing.v2.MockPublishMethod;
-import org.jboss.ide.eclipse.as.test.publishing.v2.PublishFilterDirectoryScannerTest;
-import org.jboss.ide.eclipse.as.test.util.IOUtil;
-import org.jboss.ide.eclipse.as.test.util.ServerRuntimeUtils;
-import org.jboss.ide.eclipse.as.test.util.wtp.JavaEEFacetConstants;
-import org.jboss.ide.eclipse.as.test.util.wtp.OperationTestCase;
-import org.jboss.ide.eclipse.as.test.util.wtp.ProjectCreationUtil;
-import org.jboss.ide.eclipse.as.test.util.wtp.ProjectUtility;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.tools.as.test.core.ASMatrixTests;
+import org.jboss.tools.as.test.core.internal.MockPublishMethod4;
+import org.jboss.tools.as.test.core.internal.utils.IOUtil;
+import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
+import org.jboss.tools.as.test.core.internal.utils.wtp.CreateProjectOperationsUtility;
+import org.jboss.tools.as.test.core.internal.utils.wtp.JavaEEFacetConstants;
+import org.jboss.tools.as.test.core.internal.utils.wtp.OperationTestCase;
+import org.jboss.tools.as.test.core.internal.utils.wtp.ProjectUtility;
 
 public class ZippedFilterTest extends TestCase {
 	public void tearDown() throws Exception {
-		ServerRuntimeUtils.deleteAllServers();
-		ServerRuntimeUtils.deleteAllRuntimes();
+		ServerCreationTestUtils.deleteAllServers();
+		ServerCreationTestUtils.deleteAllRuntimes();
 		ProjectUtility.deleteAllProjects();
-		ASTest.clearStateLocation();
+		ASMatrixTests.clearStateLocation();
 	}
 	
 	private IProject createProject(String name) throws Exception {
-		IDataModel dm = ProjectCreationUtil.getWebDataModel("module1", null, null, 
+		IDataModel dm = CreateProjectOperationsUtility.getWebDataModel("module1", null, null, 
 				"myContent", null, JavaEEFacetConstants.WEB_25, false);
 		OperationTestCase.runAndVerify(dm);
 		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(name);
@@ -67,27 +69,46 @@ public class ZippedFilterTest extends TestCase {
 		return p;
 	}
 
+	protected void setMockPublishMethod4(IServerWorkingCopy wc) {
+		MockPublishMethod4.reset();
+		wc.setAttribute(IDeployableServer.SERVER_MODE, "mock4");
+	}
+
+	protected void setZipped(IServerWorkingCopy wc, boolean val) {
+		ServerConverter.getDeployableServer(wc).setZipWTPDeployments(val);
+	}
+	
+    public static IServer addModule(IServer server, IModule module) throws CoreException  {
+        IServerWorkingCopy copy = server.createWorkingCopy();
+        copy.modifyModules(new IModule[]{module}, new IModule[0], new NullProgressMonitor());
+        return copy.save(false, new NullProgressMonitor());
+    }
+
 	public void testServerIntegration() throws CoreException, IOException, Exception {
-		IServer server = ServerRuntimeUtils.createMockServerWithRuntime(IJBossToolingConstants.SERVER_AS_60, 
-				"name1", "default");
-		server = ServerRuntimeUtils.useMock2PublishMethod(server);
-		server = ServerRuntimeUtils.setZipped(server, true);
+		IServer server = ServerCreationTestUtils.createMockServerWithRuntime(IJBossToolingConstants.SERVER_AS_60, "name1");
+		IServerWorkingCopy wc = server.createWorkingCopy();
+		setMockPublishMethod4(wc);
+		setZipped(wc, true);
+		server = wc.save(true,  null);
 		IProject project = createProject("module1");
-		MockPublishMethod.reset();
-		
+		MockPublishMethod4.reset();
 		ServerPreferences.getInstance().setAutoPublishing(false);
+		IDeployableServer ds = ServerConverter.getDeployableServer(server);
 		IModule mod = ServerUtil.getModule(project);
-		server = ServerRuntimeUtils.addModule(server, mod);
+		String depRoot = ds.getDeploymentLocation(new IModule[]{mod}, false).toString();
+		MockPublishMethod4.setExpectedRoot(depRoot);
+
+		server = addModule(server, mod);
 		ModuleDelegate md = (ModuleDelegate)mod.loadAdapter(ModuleDelegate.class, null);
 		
 		DelegatingServerBehavior beh = (DelegatingServerBehavior)server.loadAdapter(DelegatingServerBehavior.class, null);
-		Mock2BehaviourDelegate del = (Mock2BehaviourDelegate)beh.getDelegate();
-		del.setUseSuperclassBehaviour(true);
+		IJBossBehaviourDelegate del = (IJBossBehaviourDelegate)beh.getDelegate();
+//		del.setUseSuperclassBehaviour(true);
 		IModulePathFilter filter = del.getPathFilter(new IModule[]{mod});
 		IModuleResource[] originalMembers = md.members();
 		IModuleResource[] filteredMembers = filter == null ? originalMembers : filter.getFilteredMembers();
-		int oCount = PublishFilterDirectoryScannerTest.countAllResources(originalMembers);
-		int fCount = PublishFilterDirectoryScannerTest.countAllResources(filteredMembers);
+		int oCount = IOUtil.countAllResources(originalMembers);
+		int fCount = IOUtil.countAllResources(filteredMembers);
 		assertEquals(oCount, fCount);
 		
 		IVirtualComponent vc = ComponentCore.createComponent(mod.getProject());
@@ -98,8 +119,8 @@ public class ZippedFilterTest extends TestCase {
 		filter = del.getPathFilter(new IModule[]{mod});
 		originalMembers = md.members();
 		filteredMembers = filter.getFilteredMembers();
-		oCount = PublishFilterDirectoryScannerTest.countAllResources(originalMembers);
-		fCount = PublishFilterDirectoryScannerTest.countAllResources(filteredMembers);
+		oCount = IOUtil.countAllResources(originalMembers);
+		fCount = IOUtil.countAllResources(filteredMembers);
 		assertEquals(oCount, fCount+2);
 
 		vc.setMetaProperty("component.inclusion.patterns", "**/*");
@@ -108,8 +129,8 @@ public class ZippedFilterTest extends TestCase {
 		filter = del.getPathFilter(new IModule[]{mod});
 		originalMembers = md.members();
 		filteredMembers = filter.getFilteredMembers();
-		oCount = PublishFilterDirectoryScannerTest.countAllResources(originalMembers);
-		fCount = PublishFilterDirectoryScannerTest.countAllResources(filteredMembers);
+		oCount = IOUtil.countAllResources(originalMembers);
+		fCount = IOUtil.countAllResources(filteredMembers);
 		assertEquals(oCount, fCount+1);
 
 		
@@ -122,15 +143,16 @@ public class ZippedFilterTest extends TestCase {
 		assertNotNull(r);
 		assertTrue(filter.shouldInclude(r));
 		
-		MockPublishMethod.reset();
+		MockPublishMethod4.reset();
+		MockPublishMethod4.setExpectedRoot(depRoot);
 		server.publish(IServer.PUBLISH_FULL, new NullProgressMonitor());
 	
-		IModuleFile[] copied = MockPublishMethod.getChangedFiles();
+		IModuleFile[] copied = MockPublishMethod4.getChangedFiles();
 		assertTrue(copied.length == 1);
 		IModuleFile f1 = copied[0];
 		File f2 = (File)f1.getAdapter(File.class);
 		
-		IPath unzip3 = ASTest.getDefault().getStateLocation().append("unzip3");
+		IPath unzip3 = ASMatrixTests.getDefault().getStateLocation().append("unzip3");
 		IOUtil.unzipFile(new Path(f2.getAbsolutePath()),unzip3);
 		assertEquals(IOUtil.countAllResources(unzip3.toFile()), fCount+1);
 

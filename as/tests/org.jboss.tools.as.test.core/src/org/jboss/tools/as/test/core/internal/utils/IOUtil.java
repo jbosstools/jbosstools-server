@@ -23,10 +23,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.model.IModuleFile;
+import org.eclipse.wst.server.core.model.IModuleFolder;
+import org.eclipse.wst.server.core.model.IModuleResource;
 import org.jboss.tools.test.util.JobUtils;
 
 public class IOUtil {
@@ -47,7 +51,18 @@ public class IOUtil {
 		} catch(IOException ioe) {
 			return null;
 		}
-    }
+    }      
+	public static void setContents(IFile file, String val) throws IOException , CoreException{
+        if( !file.exists())
+            file.create(new ByteArrayInputStream((val).getBytes()), false, null);
+        else
+            file.setContents(new ByteArrayInputStream((val).getBytes()), false, false, new NullProgressMonitor());
+        try {
+            Thread.sleep(2000);
+        } catch( InterruptedException ie) {}
+        JobUtils.waitForIdle();
+	}
+
 
 	public static void setContents(File file, String contents) throws IOException, CoreException {
 		byte[] buffer = new byte[65536];
@@ -93,7 +108,18 @@ public class IOUtil {
 			count += countFiles(children[i]);
 		return count;
 	}
-	
+    // deep count
+    public static int countAllResources(IModuleResource[] members) {
+            int total = 0;
+            for( int i = 0; i < members.length; i++ ) {
+                    total++;
+                    if( members[i] instanceof IModuleFolder ) {
+                            total += countAllResources(((IModuleFolder)members[i]).members());
+                    }
+            }
+            return total;
+    }
+
 	public static int countAllResources(File root) {
 		int count = 0;
 		if( !root.isDirectory() )

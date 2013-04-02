@@ -68,4 +68,6 @@ Require-Bundle: org.eclipse.ui,
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.jboss.tools.as.test.core,
- org.jboss.tools.as.test.core.internal.utils
+ org.jboss.tools.as.test.core.internal,
+ org.jboss.tools.as.test.core.internal.utils,
+ org.jboss.tools.as.test.core.internal.utils.wtp

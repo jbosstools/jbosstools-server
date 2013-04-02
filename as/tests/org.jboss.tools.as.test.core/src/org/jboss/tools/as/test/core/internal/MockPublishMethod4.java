@@ -113,6 +113,7 @@ public class MockPublishMethod4 extends AbstractPublishMethod {
 	public class MockCopyCallbackHandler implements IPublishCopyCallbackHandler {
 		private IPath root, tempRoot;
 		public MockCopyCallbackHandler(IPath root, IPath tempRoot) {
+			System.out.println(expectedRoot);
 			if( !(new Path(expectedRoot).isPrefixOf(root))) {
 				String e = "Expected " + new Path(expectedRoot) + " but got: " + root.toString();
 				System.out.println(e);
