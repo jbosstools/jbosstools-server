@@ -190,6 +190,7 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 	 */
 	private static IRuntime createRuntime(String runtimeName, String jbossASLocation, 
 			IProgressMonitor progressMonitor, IRuntimeType rtType) throws CoreException {
+		runtimeName = getUniqueRuntimeName(runtimeName, rtType);
 		IRuntimeWorkingCopy runtime = null;
 		IPath jbossAsLocationPath = new Path(jbossASLocation);
 		runtime = rtType.createRuntime(null, progressMonitor);
@@ -198,6 +199,29 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 			runtime.setName(runtimeName);				
 		}
 		return runtime.save(false, progressMonitor);
+	}
+
+	private static String getUniqueRuntimeName(String runtimeName, IRuntimeType type) {
+		String name = runtimeName;
+		int i = 2;
+		while (getRuntime(name, type) != null) {
+			name = name + " (" + i++ + ")";  //$NON-NLS-1$//$NON-NLS-2$
+		}
+		return name;
+	}
+
+	private static IRuntime getRuntime(String name, IRuntimeType type) {
+		if (name == null || type == null) {
+			return null;
+		}
+		IRuntime[] runtimes = ServerCore.getRuntimes();
+		for (int i = 0; i < runtimes.length; i++) {
+			if (runtimes[i] != null && runtimes[i].getRuntimeType() != null 
+					&& name.equals(runtimes[i].getName()) &&  type.equals(runtimes[i].getRuntimeType())) {
+				return runtimes[i];
+			}
+		}
+		return null;
 	}
 
 	/**
