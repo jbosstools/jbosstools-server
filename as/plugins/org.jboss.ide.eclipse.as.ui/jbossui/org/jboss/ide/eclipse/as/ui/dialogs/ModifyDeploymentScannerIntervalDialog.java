@@ -32,6 +32,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -78,13 +79,13 @@ public class ModifyDeploymentScannerIntervalDialog extends TitleAreaDialog {
 					IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(JBossServerUIPlugin.PLUGIN_ID);
 					boolean ignore = prefs.getBoolean(AS7_IGNORE_ZERO_INTERVAL_SCANNER_SETTING, false);
 					if( !ignore ) {
-						final HashMap<String, Integer> map = 
-								new AS7DeploymentScannerUtility().getDeploymentScannerIntervals(server);
-						if( hasScannersAtZero(server,map)) {
+						final AS7DeploymentScannerUtility.Scanner[] scanners =
+								new AS7DeploymentScannerUtility().getDeploymentScanners(server);
+						if( hasScannersAtZero(server,scanners)) {
 							Display.getDefault().asyncExec(new Runnable() {
 								public void run() {
 									// NOW launch the dialog
-									launchDialog(server, map);
+									launchDialog(server, scanners);
 								}
 							});
 						}
@@ -94,15 +95,14 @@ public class ModifyDeploymentScannerIntervalDialog extends TitleAreaDialog {
 			}.schedule();
 		}
 		
-		private void launchDialog(final IServer server, HashMap<String, Integer> map) {
+		private void launchDialog(final IServer server, AS7DeploymentScannerUtility.Scanner[] scanners) {
 			ModifyDeploymentScannerIntervalDialog d = 
 					new ModifyDeploymentScannerIntervalDialog(
-							server, map,
+							server, scanners,
 							Display.getDefault().getActiveShell());
-			d.open();
+			int ret = d.open();
 			
-			final ArrayList<String> changed = d.getChanged();
-			final HashMap<String, Integer> changedMap = d.getChangedMap();
+			final AS7DeploymentScannerUtility.Scanner[] changedArray = d.getChangedScanners();
 			boolean neverAskAgainSetting = d.getAskAgainSelection();
 			
 			if( neverAskAgainSetting ) {
@@ -114,58 +114,50 @@ public class ModifyDeploymentScannerIntervalDialog extends TitleAreaDialog {
 				}
 			}
 			
-			if( changed.size() > 0 ) {
+			if( ret == Window.OK && changedArray.length > 0 ) {
 				new Job("Updating server's deployment scanners") {
 					protected IStatus run(IProgressMonitor monitor) {
-						return updateServersScanners(server, changed, changedMap);
+						return updateServersScanners(server, changedArray);
 					}
 				}.schedule();
 			}
 		}
 		
-		private IStatus updateServersScanners(IServer server, ArrayList<String> changed, HashMap<String, Integer> changedMap) {
+		private IStatus updateServersScanners(IServer server, AS7DeploymentScannerUtility.Scanner[] changed) {
 			AS7DeploymentScannerUtility util = new AS7DeploymentScannerUtility();
-			Iterator<String> i = changed.iterator();
-			while(i.hasNext()) {
-				String t = i.next();
-				util.updateDeploymentScannerInterval(server, t, changedMap.get(t).intValue());
+			for( int i = 0; i < changed.length; i++ ) {
+				util.updateDeploymentScannerInterval(server, changed[i].getName(), changed[i].getInterval());
 			}
 			return Status.OK_STATUS;
 		}
 		
-		private boolean hasScannersAtZero(IServer server, HashMap<String, Integer> map ) {
+		private boolean hasScannersAtZero(IServer server, AS7DeploymentScannerUtility.Scanner[] scanners ) {
 			// check if any have 0
-			Iterator<Integer> it = map.values().iterator();
-			while(it.hasNext()) {
-				if( it.next().intValue() <= 0) {
+			for( int i = 0; i < scanners.length; i++ ) {
+				if( scanners[i].getInterval() <= 0 )
 					return true;
-				}
 			}
 			return false;
 		}
 	}
 	
 	private IServer server;
-	private HashMap<String, Integer> map;
+	private AS7DeploymentScannerUtility.Scanner[] scanners;
 	private TableViewer tv;
-	private ArrayList<String> changed = new ArrayList<String>();
 	private boolean askAgainSelected = false;
     private String[] headings = new String[]{
-    		"Scanner Name", "Scanner Interval"
+    		"Scanner Name", "Path", "Scanner Interval"
     };
+    private ArrayList<AS7DeploymentScannerUtility.Scanner> changed = new ArrayList<AS7DeploymentScannerUtility.Scanner>();
 	public ModifyDeploymentScannerIntervalDialog(
-			IServer server, HashMap<String, Integer> map, Shell parentShell) {
+			IServer server, AS7DeploymentScannerUtility.Scanner[] scanners, Shell parentShell) {
 		super(parentShell);
-		this.map = map;
+		this.scanners = scanners;
 		this.server = server;
 	}
-	
-	public ArrayList<String> getChanged() {
-		return changed;
-	}
-	
-	public HashMap<String, Integer> getChangedMap() {
-		return map;
+		
+	public AS7DeploymentScannerUtility.Scanner[] getChangedScanners() {
+		return (AS7DeploymentScannerUtility.Scanner[]) changed.toArray(new AS7DeploymentScannerUtility.Scanner[changed.size()]);
 	}
 	
 	public boolean getAskAgainSelection() {
@@ -174,14 +166,15 @@ public class ModifyDeploymentScannerIntervalDialog extends TitleAreaDialog {
 	
 	protected Control createContents(Composite parent) {
 		Control c = super.createContents(parent);
-		setMessage("One or more deployment scanners have a scan-interval of 0.\nThese scanners are inactive. If this is intentional, press 'OK'.", IMessageProvider.WARNING );
-		setTitle("Inactive Deployment Scanner?");
-		getShell().setText("Inactive Deployment Scanner?");
+		setMessage(server.getName()+" contains one or more deployment scanners that are currently inactive. This means their folders will not be scanned for new deployments or changes. If this is not intentional, please update the scanner's value in the table below.", IMessageProvider.WARNING );
+		setTitle("Inactive Deployment scanner found");
+		getShell().setText("Inactive Deployment scanner(s) found");
+		getShell().setSize(500, 300);
 		return c;
 	}
 
-	protected void createButtonsForButtonBar(Composite parent) {
-		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
+	protected boolean isResizable() {
+	    return true;
 	}
 
 	protected Control createDialogArea(Composite parent) {
@@ -203,6 +196,10 @@ public class ModifyDeploymentScannerIntervalDialog extends TitleAreaDialog {
 	    tc1.setWidth(150);
 	    TableColumn tc2 = new TableColumn(table, SWT.CENTER);
 	    tc2.setText(headings[1]);
+	    tc2.setWidth(150);
+	    TableColumn tc3 = new TableColumn(table, SWT.CENTER);
+	    tc3.setText(headings[2]);
+	    
 
 	    for (int i = 0, n = table.getColumnCount(); i < n; i++) {
 	      table.getColumn(i).pack();
@@ -214,14 +211,15 @@ public class ModifyDeploymentScannerIntervalDialog extends TitleAreaDialog {
 	    // Create the cell editors
 	    CellEditor[] editors = new CellEditor[4];
 	    editors[0] = null;
-	    editors[1] = new TextCellEditor(table);
+	    editors[1] = null;
+	    editors[2] = new TextCellEditor(table);
 
 	    // Set the editors, cell modifier, and column properties
 	    tv.setColumnProperties(headings);
 	    tv.setCellModifier(new ScannerCellModifier());
 	    tv.setCellEditors(editors);
 
-	    tv.setInput(map);
+	    tv.setInput(scanners);
 	    
 	    final Button askAgain = new Button(main, SWT.CHECK);
 	    askAgain.setText("Don't ask this again.");
@@ -242,16 +240,19 @@ public class ModifyDeploymentScannerIntervalDialog extends TitleAreaDialog {
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		}
 		public Object[] getElements(Object inputElement) {
-			Set<String> s = map.keySet();
-			return s.toArray(new String[s.size()]);
+			return scanners;
 		}
 	}
 	
 	private class ScannerLabelProvider implements ITableLabelProvider {
 		public String getColumnText(Object element, int columnIndex) {
 			if( columnIndex == 0 )
-				return element.toString();
-			return map.get(element).toString();
+				return ((AS7DeploymentScannerUtility.Scanner)element).getName();
+			if( columnIndex == 1 )
+				return ((AS7DeploymentScannerUtility.Scanner)element).getAddress();
+			if( columnIndex == 2 )
+				return "" + ((AS7DeploymentScannerUtility.Scanner)element).getInterval();
+			return null;
 		}
 		public void addListener(ILabelProviderListener listener) {
 		}
@@ -269,21 +270,33 @@ public class ModifyDeploymentScannerIntervalDialog extends TitleAreaDialog {
 	
 	private class ScannerCellModifier implements ICellModifier {
 		public boolean canModify(Object element, String property) {
-			return property.equals(headings[1]);
+			return property.equals(headings[2]);
 		}
 		public Object getValue(Object element, String property) {
-			return map.get(element).toString();
+			int i = ((AS7DeploymentScannerUtility.Scanner)element).getInterval();
+			return new Integer(i).toString();
 		}
 		public void modify(Object element, String property, Object value) {
 			String element2 = ((TableItem)element).getText();
-			if( !value.toString().equals(map.get(element2).toString())) {
-				if( !changed.contains(element2))
-					changed.add(element2);
+			AS7DeploymentScannerUtility.Scanner e = null;
+			for( int i = 0; i < scanners.length; i++ ) {
+				if( scanners[i].getName().equals(element2)) {
+					e = scanners[i];
+					break;
+				}
+			}
+			if( !value.toString().equals(e.getInterval())) {
+				Integer i = null;
 				try {
-					map.put(element2, Integer.parseInt(value.toString()));
-					tv.refresh();
+					i = Integer.parseInt(value.toString());
 				} catch(NumberFormatException nfe) {
-					// intentionally ignore. Do NOTHING. 
+					// Ignore
+				}
+				if( i != null ) {
+					e.setInterval(i);
+					if( !changed.contains(e))
+						changed.add(e);
+					tv.refresh();
 				}
 			}
 		}

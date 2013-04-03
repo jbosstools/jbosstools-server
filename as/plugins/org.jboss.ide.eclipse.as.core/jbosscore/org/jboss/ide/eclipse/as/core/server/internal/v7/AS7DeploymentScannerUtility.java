@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -64,6 +65,42 @@ public class AS7DeploymentScannerUtility {
 	}
 	
 	public HashMap<String, Integer> getDeploymentScannerIntervals(final IServer server) {
+		Scanner[] scanners = getDeploymentScanners(server);
+		HashMap<String, Integer> retval=new HashMap<String, Integer>();
+		for( int i = 0; i < scanners.length; i++ ) {
+			retval.put(scanners[i].name, scanners[i].interval);
+		}
+		return retval;
+	}
+
+	public Scanner[] getDeploymentScanners(final IServer server) {
+		
+		ModelNode op2 = new ModelNode();
+		op2.get("operation").set("read-attribute"); //$NON-NLS-1$ //$NON-NLS-2$
+		op2.get("name").set("path"); //$NON-NLS-1$ //$NON-NLS-2$
+		ModelNode addr2 = op2.get("address"); //$NON-NLS-1$
+		addr2.add("subsystem", "deployment-scanner");  //$NON-NLS-1$//$NON-NLS-2$
+		addr2.add("scanner", "*"); //$NON-NLS-1$ //$NON-NLS-2$
+		final String request2 = op2.toJSONString(true);
+		ModelNode response2 = null;
+		try {
+			response2 = executeWithResult(server, request2);
+		} catch(Exception e) {
+			return new Scanner[]{};
+		}
+		// Map name to path
+		List<ModelNode> list2 = response2.asList();
+		HashMap<String, String> nameToPath = new HashMap<String, String>();
+		for( int i = 0; i <list2.size(); i++ ) {
+			ModelNode address = list2.get(i).get("address"); //$NON-NLS-1$
+			String scannerName = address.asList().get(1).get("scanner").asString(); //$NON-NLS-1$
+			ModelNode path = list2.get(i).get("result"); //$NON-NLS-1$
+			String path2 = path.asString();
+			nameToPath.put(scannerName, path2);
+		}
+		
+		//Load intervals
+		ArrayList<Scanner> scanners = new ArrayList<Scanner>();
 		ModelNode op = new ModelNode();
 		op.get("operation").set("read-attribute"); //$NON-NLS-1$ //$NON-NLS-2$
 		op.get("name").set("scan-interval"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -75,21 +112,41 @@ public class AS7DeploymentScannerUtility {
 		try {
 			response = executeWithResult(server, request);
 		} catch(Exception e) {
-			return new HashMap<String, Integer>();
+			return new Scanner[]{};
 		}
 		
-		HashMap<String, Integer> retval=new HashMap<String, Integer>();
 		List<ModelNode> list = response.asList();
 		for( int i = 0; i <list.size(); i++ ) {
 			ModelNode address = list.get(i).get("address"); //$NON-NLS-1$
 			String scannerName = address.asList().get(1).get("scanner").asString(); //$NON-NLS-1$
 			ModelNode intVal = list.get(i).get("result"); //$NON-NLS-1$
 			int intVal2 = intVal.asBigInteger().intValue();
-			retval.put(scannerName, new Integer(intVal2));
+			Scanner s = new Scanner();
+			s.name = scannerName;
+			s.interval = intVal2;
+			s.address = nameToPath.get(scannerName);
+			scanners.add(s);
 		}
-		return retval;
+		return (Scanner[]) scanners.toArray(new Scanner[scanners.size()]);
 	}
-
+	
+	public static final class Scanner {
+		private String name;
+		private int interval;
+		private String address;
+		public String getName() {
+			return name;
+		}
+		public int getInterval() {
+			return interval;
+		}
+		public void setInterval(int interval) {
+			this.interval = interval;
+		}
+		public String getAddress() {
+			return address;
+		}
+	}
 	
 	public HashMap<String, String> getDeploymentScannersFromServer(final IServer server, boolean all) {
 		ModelNode op = new ModelNode();
