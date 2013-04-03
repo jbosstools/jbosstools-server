@@ -168,8 +168,8 @@
 							<goal>wget</goal>
 						</goals>
 						<configuration>
-							<url>http://download.devel.redhat.com/released/JBEAP-6/6.0.0/zip/jboss-eap-6.0.0.zip</url>
-							<md5>ca0e20c5523281233888c296689b7172</md5>
+							<url>http://download.devel.redhat.com/released/JBEAP-6/6.0.1/zip/jboss-eap-6.0.1.zip</url>
+							<md5>0d025d640eb6babd2c3d9484f89ccf3f</md5>
 							<unpack>true</unpack>
 							<skip>${skipPrivateRequirements}</skip>
 						</configuration>
@@ -181,8 +181,8 @@
 							<goal>wget</goal>
 						</goals>
 						<configuration>
-							<url>http://download.lab.bos.redhat.com/devel/candidates/JBEAP/JBEAP-6.1.0.ER1/jboss-eap-6.1.0.ER1.zip</url>
-							<md5>99f73b384c1978e6a7024c89dd2e6e2e</md5>
+							<url>http://download.lab.bos.redhat.com/devel/candidates/JBEAP/JBEAP-6.1.0-ER4/jboss-eap-6.1.0.ER4.zip</url>
+							<md5>b396c0b5234264f09ed2db5eef4ad48c</md5>
 							<unpack>true</unpack>
 							<skip>${skipPrivateRequirements}</skip>
 						</configuration>
