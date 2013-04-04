@@ -26,6 +26,7 @@ public class PortalUtil {
 	public static int TYPE_PORTAL_CLUSTER = 2;
 	public static int TYPE_PORTLET_CONTAINER = 3;
 	public static int TYPE_GATE_IN = 4;
+	public static int TYPE_JPP6 = 5;
 	
 	private static final String SERVER_DEFAULT_DEPLOY_JBOSS_PORTAL_SAR = "deploy/jboss-portal.sar"; //$NON-NLS-1$
 	private static final String SERVER_DEFAULT_DEPLOY_JBOSS_PORTAL_HA_SAR = "deploy/jboss-portal-ha.sar"; //$NON-NLS-1$
@@ -62,6 +63,14 @@ public class PortalUtil {
 		// GateIn Portal Server
 		if (exists(configFile, SERVER_DEFAULT_DEPLOY_GATEIN)) {
 			return TYPE_GATE_IN;
+		}
+		
+		// JPP 6.0
+		if (runtime.getRuntime() != null) {
+			IPath location = runtime.getRuntime().getLocation();
+			if (exists (location.toFile(), "gatein")) {
+				return TYPE_JPP6;
+			}
 		}
 		return TYPE_PORTAL_UNKNOWN;
 	}
