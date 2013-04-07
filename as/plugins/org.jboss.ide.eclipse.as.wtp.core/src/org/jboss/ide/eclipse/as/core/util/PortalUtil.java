@@ -21,6 +21,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 
 
 public class PortalUtil {
+	public static final String GATEIN = "gatein";
 	public static int TYPE_PORTAL_UNKNOWN = 0;
 	public static int TYPE_PORTAL = 1;
 	public static int TYPE_PORTAL_CLUSTER = 2;
@@ -68,7 +69,7 @@ public class PortalUtil {
 		// JPP 6.0
 		if (runtime.getRuntime() != null) {
 			IPath location = runtime.getRuntime().getLocation();
-			if (exists (location.toFile(), "gatein")) {
+			if (exists (location.toFile(), GATEIN)) {
 				return TYPE_JPP6;
 			}
 		}
