@@ -246,6 +246,9 @@ public class FilesetInfoWizardPage extends WizardPage {
 	}
 
 	private void fillDefaults () {
+		if( mainComposite.isDisposed())
+			return;
+
 		if (fileset != null) {
 			flattened = fileset.isFlattened();
 			flattenedYes.setSelection(flattened);
