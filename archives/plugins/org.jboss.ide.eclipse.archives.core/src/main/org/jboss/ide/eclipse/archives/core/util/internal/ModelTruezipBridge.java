@@ -75,7 +75,12 @@ public class ModelTruezipBridge {
 	 */
 	public static FileWrapperStatusPair fullFilesetRemove(final IArchiveFileSet fileset, IProgressMonitor monitor, boolean sync) {
 		monitor.beginTask(ArchivesCore.bind(ArchivesCoreMessages.RemovingFileset,fileset.toString()), 2500);
-		FileWrapper[] files = fileset.findMatchingPaths();
+		FileWrapper[] files = null;
+		try {
+			files = fileset.findMatchingPaths();
+		} catch(RuntimeException re) {
+			throw new RuntimeException("Unable to incrementally remove fileset. A full build may be required.", re); //$NON-NLS-1$
+		}
 		final ArrayList<IStatus> errors = new ArrayList<IStatus>();
 		final ArrayList<FileWrapper> list = new ArrayList<FileWrapper>();
 		list.addAll(Arrays.asList(files));

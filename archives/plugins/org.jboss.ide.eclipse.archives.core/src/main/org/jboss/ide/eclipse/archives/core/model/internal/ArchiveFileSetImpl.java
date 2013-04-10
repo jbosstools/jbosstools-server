@@ -91,8 +91,9 @@ public class ArchiveFileSetImpl extends ArchiveNodeImpl implements
 		return matchesPath(globalPath, false);
 	}
 
-	public boolean matchesPath(IPath path, boolean inWorkspace) {
-		getScanner();
+	public boolean matchesPath(IPath path, boolean inWorkspace) throws IllegalStateException {
+		DirectoryScannerExtension scanner = null;
+		scanner = getScanner(false, true);
 		IPath globalPath = path;
 		if( inWorkspace )
 			globalPath = ArchivesCore.getInstance().getVFS().workspacePathToAbsolutePath(path);
@@ -102,11 +103,11 @@ public class ArchiveFileSetImpl extends ArchiveNodeImpl implements
 			if( result.size() > 0 )
 				return true;
 
-		return getScanner() == null ? false : getScanner().couldBeIncluded(path.toString(), inWorkspace);
+		return scanner == null ? false : scanner.couldBeIncluded(path.toString(), inWorkspace);
 	}
 
 	public FileWrapper[] getMatches(IPath path) {
-		getScanner();
+		getScanner(true, false);
 		ArrayList<FileWrapper> l = matchingMap.get(path.toFile().getAbsolutePath());
 		if( l != null )
 			return (FileWrapper[]) l.toArray(new FileWrapper[l.size()]);
@@ -116,16 +117,21 @@ public class ArchiveFileSetImpl extends ArchiveNodeImpl implements
 	/*
 	 * @see IArchiveFileSet#findMatchingPaths()
 	 */
-	public synchronized FileWrapper[] findMatchingPaths () {
-		getScanner();
+	public synchronized FileWrapper[] findMatchingPaths () throws IllegalStateException {
+		getScanner(false, true);
 		return matchingPaths;
 	}
 
 	/*
-	 * Will re-scan if required, or use cached scanner
+	 * Will re-scan if required, or use cached scanner.
+	 * This will not log any errors or throw any exceptions. 
 	 * @return
 	 */
 	public synchronized DirectoryScannerExtension getScanner() {
+		return getScanner(true, false);
+	}
+	
+	public synchronized DirectoryScannerExtension getScanner(boolean logError, boolean rethrow) throws IllegalStateException {
 		if( scanner == null || rescanRequired) {
 			rescanRequired = false;
 
@@ -136,10 +142,14 @@ public class ArchiveFileSetImpl extends ArchiveNodeImpl implements
 					matchingMap = scanner.getMatchedMap();
 				}
 			} catch( IllegalStateException ise ) {
-				ArchivesCore.getInstance().getLogger().log(IStatus.WARNING, 
-						AntNLS.bind(ArchivesCoreMessages.CouldNotCreateScanner, ise.getMessage()), ise);
+				if( logError ) {
+					ArchivesCore.getInstance().getLogger().log(IStatus.WARNING, 
+							AntNLS.bind(ArchivesCoreMessages.CouldNotCreateScanner, ise.getMessage()), ise);
+				}
 				matchingPaths = new FileWrapper[0];
 				matchingMap = new HashMap<String, ArrayList<FileWrapper>>();
+				if( rethrow ) 
+					throw ise;
 			}
 		}
 		return scanner;

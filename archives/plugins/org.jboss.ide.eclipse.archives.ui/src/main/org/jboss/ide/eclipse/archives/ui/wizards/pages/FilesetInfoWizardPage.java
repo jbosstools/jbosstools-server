@@ -310,7 +310,12 @@ public class FilesetInfoWizardPage extends WizardPage {
 				ds = DirectoryScannerFactory.createDirectoryScanner( 
 						replaceVariables(), parentRelativeToRoot, includes, effectiveExcludes, parentNode.getProjectName(),
 						srcDestComposite.isWorkspaceRelative(), parentNode.getModelRootNode().getDescriptorVersion(), false);
-				Iterator<File> it = ds.iterator();
+				Iterator<File> it = null;
+				try {
+					it = ds.iterator();
+				} catch(IllegalStateException ise) {
+					it = new ArrayList<File>().iterator();
+				}
 				ArrayList<String> paths2 = new ArrayList<String>();
 				while(it.hasNext() && paths2.size() < 30) {
 					FileWrapper fw = (FileWrapper)it.next();

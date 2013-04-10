@@ -189,4 +189,8 @@ public class ArchiveModelNode extends ArchiveNodeImpl implements IArchiveModelRo
 
 		return super.validateModel();
 	}
+	
+	public String toString() {
+		return project.toString();
+	}
 }

@@ -32,6 +32,7 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveModel;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModelRootNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeVisitor;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
 import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveModelNode;
 import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveNodeImpl;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbPackageNode;
@@ -60,9 +61,17 @@ public class ModelUtil {
 		final ArrayList<IArchiveFileSet> rets = new ArrayList<IArchiveFileSet>();
 		IArchiveNodeVisitor visitor = new IArchiveNodeVisitor() {
 			public boolean visit(IArchiveNode node) {
-				if( node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET &&
-						((IArchiveFileSet)node).matchesPath(path, inWorkspace)) {
-					rets.add((IArchiveFileSet)node);
+				if( node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET ) {
+					boolean matches = false;
+					try {
+						matches = ((IArchiveFileSet)node).matchesPath(path, inWorkspace);
+					} catch(IllegalStateException ise) {
+						// The fileset is broken somehow, so do some raw checks. 
+						IArchiveStandardFileSet std = node instanceof IArchiveStandardFileSet ? (IArchiveStandardFileSet)node : null;
+						matches =  std != null && new Path(std.getRawSourcePath()).equals(path) && std.isInWorkspace() == inWorkspace;
+					}
+					if( matches ) 
+						rets.add((IArchiveFileSet)node);
 				}
 				return true;
 			}

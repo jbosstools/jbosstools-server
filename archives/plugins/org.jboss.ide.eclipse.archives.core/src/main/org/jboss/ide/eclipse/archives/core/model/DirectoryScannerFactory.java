@@ -62,12 +62,7 @@ public class DirectoryScannerFactory {
 		fs.version = version;
 		DirectoryScannerExtension scanner = new DirectoryScannerExtension(fs);
 		if (scan) {
-			try {
-				scanner.scan();
-			} catch(IllegalStateException ise) {
-				IStatus status = new Status(IStatus.WARNING, ArchivesCore.PLUGIN_ID, ise.getMessage(), ise);
-				ArchivesCore.getInstance().getLogger().log(status);
-			}
+			scanner.scan();
 		}
 		return scanner;
 	}
