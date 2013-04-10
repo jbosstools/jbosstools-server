@@ -11,11 +11,14 @@
 package org.jboss.ide.eclipse.archives.ui.providers;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
@@ -87,7 +90,7 @@ public class ArchivesActionProvider extends CommonActionProvider {
 		deleteKeyListener = new KeyListener() {
 			public void keyPressed(KeyEvent e) {
 				if( e.keyCode == SWT.DEL ) {
-					deleteSelectedNode();
+					deleteSelectedNodes();
 				}
 			}
 			public void keyReleased(KeyEvent e) {
@@ -194,7 +197,7 @@ public class ArchivesActionProvider extends CommonActionProvider {
 
 		deleteAction = new Action (ArchivesUIMessages.ProjectPackagesView_deletePackageAction_label, platformDescriptor(ISharedImages.IMG_TOOL_DELETE)) {
 			public void run () {
-				deleteSelectedNode();
+				deleteSelectedNodes();
 			}
 		};
 
@@ -396,17 +399,24 @@ public class ArchivesActionProvider extends CommonActionProvider {
 		}
 	}
 
-	private void deleteSelectedNode () {
-		IArchiveNode node = getSelectedNode(site);
+	private void deleteSelectedNodes() {
+		IArchiveNode[] node = getSelectedNodes(site);
 		if (node != null && approveDeletion(node)) {
-			final IArchiveNode parent = (IArchiveNode) node.getParent();
-			parent.removeChild(node);
-			SaveArchivesJob job = new SaveArchivesJob(parent.getProjectPath());
-			job.schedule();
+			ArrayList<IPath> paths = new ArrayList<IPath>();
+			for( int i = 0; i < node.length; i++ ) {
+				final IArchiveNode parent = (IArchiveNode) node[i].getParent();
+				parent.removeChild(node[i]);
+				if( !paths.contains(parent.getProjectPath()))
+					paths.add(parent.getProjectPath());
+			}
+			Iterator<IPath> pit = paths.iterator();
+			while(pit.hasNext()) {
+				new SaveArchivesJob(pit.next()).schedule();
+			}
 		}
 	}
 
-	private boolean approveDeletion(IArchiveNode node) {
+	private boolean approveDeletion(IArchiveNode[] node) {
 		if( node != null ) {
 			IPreferenceStore store = PackagesUIPlugin.getDefault().getPreferenceStore();
 			String current = store.getString(DELETE_NODE_PERMISSION_TOGGLE);
@@ -434,6 +444,21 @@ public class ArchivesActionProvider extends CommonActionProvider {
 		return false;
 	}
 
+	public static IArchiveNode[] getSelectedNodes(ICommonViewerSite site) {
+		ArrayList<IArchiveNode> list = new ArrayList<IArchiveNode>();
+		IStructuredSelection selection = getSelection(site);
+		if (selection != null && !selection.isEmpty()) {
+			Iterator<Object> it = selection.iterator();
+			while(it.hasNext() ) {
+				Object o = it.next();
+				if( o instanceof IArchiveNode )
+					list.add((IArchiveNode)o);
+			}
+		}
+		return (IArchiveNode[]) list.toArray(new IArchiveNode[list.size()]);
+	}
+
+	
 	public static IArchiveNode getSelectedNode (ICommonViewerSite site) {
 		Object selected = getSelectedObject(site);
 		if( selected instanceof IArchiveNode )
