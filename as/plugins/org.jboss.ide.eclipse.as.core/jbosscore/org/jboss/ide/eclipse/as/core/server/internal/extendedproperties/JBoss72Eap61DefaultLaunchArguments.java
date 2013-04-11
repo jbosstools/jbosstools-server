@@ -25,4 +25,7 @@ public class JBoss72Eap61DefaultLaunchArguments extends
 		return super.getStartDefaultVMArgs() 
 				+ "-Dorg.jboss.logmanager.nocolor=true "; //$NON-NLS-1$
 	}
+	protected String getMemoryArgs() {
+		return "-Xms1303m -Xmx1303m -XX:MaxPermSize=256m "; //$NON-NLS-1$
+	}
 }

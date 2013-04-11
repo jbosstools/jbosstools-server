@@ -11,6 +11,9 @@
 package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
 
 /**
  *
@@ -24,5 +27,22 @@ public class JBossEAP60ExtendedProperties extends JBossAS710ExtendedProperties {
 	public String getRuntimeTypeVersionString() {
 		return "6.0"; //$NON-NLS-1$
 	}
+	public IDefaultLaunchArguments getDefaultLaunchArguments() {
+		if( server != null) {
+			return new JBossEAP60LaunchArgs(server);
+		}
+		return new JBossEAP60LaunchArgs(runtime);
+	}
 
+	private class JBossEAP60LaunchArgs extends JBoss71DefaultLaunchArguments {
+		public JBossEAP60LaunchArgs(IRuntime rt) {
+			super(rt);
+		}
+		public JBossEAP60LaunchArgs(IServer rt) {
+			super(rt);
+		}
+		protected String getMemoryArgs() {
+			return "-Xms1303m -Xmx1303m -XX:MaxPermSize=256m "; //$NON-NLS-1$
+		}
+	}
 }
