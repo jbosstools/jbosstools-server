@@ -263,10 +263,10 @@ hello, world</screen>
 	</section> -->
 	
 	<section>
-		<title>Managing a JBoss application server Remotely</title>
+		<title>Managing a JBoss application server remotely</title>
 		<important>
 			<para>
-				If you are running JBos Enterprise Application Platform 6, JBoss Application Server 7 or later, you can connect automatically to a remote server through the <guilabel>Server Behaviour</guilabel> tab in the server settings. For further information on this see the <emphasis>JBoss Server Manager Reference Guide</emphasis>  for this release.
+				If you are running JBoss Enterprise Application Platform 6, JBoss Application Server 7 or later, you can connect automatically to a remote server through the <guilabel>Server Behaviour</guilabel> tab in the server settings. For further information on this see the <emphasis>JBoss Server Manager Reference Guide</emphasis>  for this release.
 			</para>
 		</important>
 		<para>
