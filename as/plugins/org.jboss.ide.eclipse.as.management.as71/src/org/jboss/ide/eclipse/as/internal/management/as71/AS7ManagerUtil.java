@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.internal.management.as71.util;
+package org.jboss.ide.eclipse.as.internal.management.as71;
 
 import static org.jboss.ide.eclipse.as.internal.management.as71.ModelDescriptionConstants.CHILD_TYPE;
 import static org.jboss.ide.eclipse.as.internal.management.as71.ModelDescriptionConstants.DEPLOYMENT;
@@ -30,10 +30,8 @@ import org.jboss.as.controller.client.Operation;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.jboss.dmr.Property;
-import org.jboss.ide.eclipse.as.internal.management.as71.AS7Messages;
-import org.jboss.ide.eclipse.as.internal.management.as71.DefaultOperationRequestBuilder;
-import org.jboss.ide.eclipse.as.internal.management.as71.OperationFormatException;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
+import org.jboss.ide.eclipse.as.management.core.OperationFormatException;
 
 /**
  * Various utility methods to deal with the as7 management api.

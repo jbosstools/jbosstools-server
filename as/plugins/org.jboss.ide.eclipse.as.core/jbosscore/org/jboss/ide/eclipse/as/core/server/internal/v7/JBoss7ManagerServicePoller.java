@@ -30,8 +30,8 @@ import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerConnectException;
+import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
-import org.osgi.framework.InvalidSyntaxException;
 
 /**
  * @author André Dietisheim
@@ -57,7 +57,7 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 			this.managementDetails = createManagementDetails();
 			this.expectedState = expectedState;
 			launchPollingThread();
-		} catch(InvalidSyntaxException e) {
+		} catch(JBoss7ManangerException e) {
 			throw new PollingException(NLS.bind(Messages.CouldNotBeginPolling,server.getName()), e);
 		}
 	}

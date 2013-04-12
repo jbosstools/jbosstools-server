@@ -25,9 +25,13 @@ import java.net.URL;
 import java.net.UnknownHostException;
 
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
-import org.jboss.ide.eclipse.as.internal.management.as71.AS71Manager;
+import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
+import org.jboss.ide.eclipse.as.management.core.IAS7ManagementDetails;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7DeploymentResult;
+import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
+import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 import org.osgi.framework.Bundle;
 
@@ -41,6 +45,7 @@ public class AS7ManagerTestUtils {
 
 	public static final String LOCALHOST = "localhost";
 	public static final int WEB_PORT = 8080;
+	public static final int MGMT_PORT = 9999;
 
 	private static final String WAR_FOLDER = "/wars/";
 	private static final String BUNDLE_ID = "org.jboss.ide.eclipse.as.management.as7.tests";
@@ -65,25 +70,23 @@ public class AS7ManagerTestUtils {
 		return result;
 	}
 
-	public static void quietlyUndeploy(File file, AS71Manager manager) {
+	public static void quietlyUndeploy(File file, IJBoss7ManagerService manager) {
 		quietlyUndeploy(file.getName(), manager);
 	}
 
-	public static void quietlyUndeploy(String name, AS71Manager manager) {
+	public static void quietlyUndeploy(String name, IJBoss7ManagerService manager) {
 		try {
-			// DetypedDeployer.undeploy(name, AS7ManagerTestUtils.LOCALHOST,
-			// AS7ManagerTestUtils.MGMT_PORT);
-			waitUntilFinished(manager.undeploy(name));
+			waitUntilFinished(manager.undeploySync(createStandardDetails(), 
+					name, true, new NullProgressMonitor()));
 		} catch (Exception e) {
 			// ignore
 		}
 	}
 
-	public static void quietlyRemove(String name, AS71Manager manager) {
+	public static void quietlyRemove(String name, IJBoss7ManagerService manager) {
 		try {
-			// DetypedDeployer.remove(name, AS7ManagerTestUtils.LOCALHOST,
-			// AS7ManagerTestUtils.MGMT_PORT);
-			waitUntilFinished(manager.remove(name));
+			waitUntilFinished(manager.removeDeployment(
+					createStandardDetails(), name, new NullProgressMonitor()));
 		} catch (Exception e) {
 			// ignore
 		}
@@ -158,6 +161,38 @@ public class AS7ManagerTestUtils {
 			if (socket != null) {
 				socket.close();
 			}
+		}
+	}
+	
+	public static IAS7ManagementDetails createStandardDetails() {
+		return new MockAS7ManagementDetails(LOCALHOST, MGMT_PORT);
+	}
+	
+	public static class MockAS7ManagementDetails extends AS7ManagementDetails {
+		private String host;
+		private int port;
+		public MockAS7ManagementDetails(String host, int port) {
+			super(null);
+			this.host = host;
+			this.port = port;
+		}
+		public String getHost() {
+			return host;
+		}
+		
+		public int getManagementPort() {
+			return port;
+		}
+		public String[] handleCallbacks(String[] prompts) throws UnsupportedOperationException {
+			return new String[]{};
+		}
+	}
+
+	public static IJBoss7ManagerService findService(String runtimeType) {
+		try {
+			return JBoss7ManagerUtil.getService(runtimeType);
+		} catch(JBoss7ManangerException ise) {
+			return null;
 		}
 	}
 }

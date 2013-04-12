@@ -24,46 +24,54 @@ import org.osgi.util.tracker.ServiceTracker;
 public class JBoss7ManagerServiceProxy extends ServiceTracker<IJBoss7ManagerService, IJBoss7ManagerService>
 		implements IJBoss7ManagerService {
 
-	public JBoss7ManagerServiceProxy(BundleContext context, String asVersion) throws InvalidSyntaxException {
+	private String serviceVersion;
+	public JBoss7ManagerServiceProxy(BundleContext context, String serviceVersion) throws InvalidSyntaxException {
 		super(
 				context,
 				context.createFilter(MessageFormat
-						.format("(&(objectClass={0})(as.version={1}))", IJBoss7ManagerService.class.getCanonicalName(), asVersion)), null); //$NON-NLS-1$
+						.format("(&(objectClass={0})(as.version={1}))", IJBoss7ManagerService.class.getCanonicalName(), serviceVersion)), null); //$NON-NLS-1$
+		this.serviceVersion = serviceVersion;
+	}
+	
+	public String getServiceVersion() {
+		return serviceVersion;
 	}
 
-	public void init() throws Exception {
+	public void init() throws JBoss7ManangerException {
 		checkedGetService().init();
 	}
 
-	public IJBoss7DeploymentResult deployAsync(IAS7ManagementDetails details, String deploymentName, File file,
-			IProgressMonitor monitor) throws Exception {
-		return checkedGetService().deployAsync(details, deploymentName, file, monitor);
+	public IJBoss7DeploymentResult deployAsync(IAS7ManagementDetails details, String deploymentName, 
+			File file, boolean add,
+			IProgressMonitor monitor) throws JBoss7ManangerException {
+		return checkedGetService().deployAsync(details, deploymentName, file, add, monitor);
 	}
 
-	public IJBoss7DeploymentResult deploySync(IAS7ManagementDetails details, String deploymentName, File file,
-			IProgressMonitor monitor) throws Exception {
-		return checkedGetService().deployAsync(details, deploymentName, file, monitor);
+	public IJBoss7DeploymentResult deploySync(IAS7ManagementDetails details, String deploymentName,
+			File file, boolean add,
+			IProgressMonitor monitor) throws JBoss7ManangerException {
+		return checkedGetService().deploySync(details, deploymentName, file, add, monitor);
 	}
 
 	public IJBoss7DeploymentResult undeployAsync(IAS7ManagementDetails details, String deploymentName, boolean removeFile,
-			IProgressMonitor monitor) throws Exception {
+			IProgressMonitor monitor) throws JBoss7ManangerException {
 		return checkedGetService().undeployAsync(details, deploymentName, removeFile, monitor);
 	}
 
-	public IJBoss7DeploymentResult syncUndeploy(IAS7ManagementDetails details, String deploymentName, boolean removeFile,
-			IProgressMonitor monitor) throws Exception {
-		return checkedGetService().syncUndeploy(details, deploymentName, removeFile, monitor);
+	public IJBoss7DeploymentResult undeploySync(IAS7ManagementDetails details, String deploymentName, boolean removeFile,
+			IProgressMonitor monitor) throws JBoss7ManangerException {
+		return checkedGetService().undeploySync(details, deploymentName, removeFile, monitor);
 	}
 
-	public JBoss7DeploymentState getDeploymentState(IAS7ManagementDetails details, String deploymentName) throws Exception {
+	public JBoss7DeploymentState getDeploymentState(IAS7ManagementDetails details, String deploymentName) throws JBoss7ManangerException {
 		return checkedGetService().getDeploymentState(details, deploymentName);
 	}
 
-	public JBoss7ServerState getServerState(IAS7ManagementDetails details) throws Exception {
+	public JBoss7ServerState getServerState(IAS7ManagementDetails details) throws JBoss7ManangerException {
 		return checkedGetService().getServerState(details);
 	}
 
-	public boolean isRunning(IAS7ManagementDetails details) throws Exception {
+	public boolean isRunning(IAS7ManagementDetails details) throws JBoss7ManangerException {
 		try {
 			return checkedGetService().isRunning(details);
 		} catch (Exception e) {
@@ -71,11 +79,11 @@ public class JBoss7ManagerServiceProxy extends ServiceTracker<IJBoss7ManagerServ
 		}
 	}
 
-	public void stop(IAS7ManagementDetails details) throws Exception {
+	public void stop(IAS7ManagementDetails details) throws JBoss7ManangerException {
 		checkedGetService().stop(details);
 	}
 
-    public String execute(IAS7ManagementDetails details, String request) throws Exception {
+    public String execute(IAS7ManagementDetails details, String request) throws JBoss7ManangerException {
         return checkedGetService().execute(details, request);
     }
 
@@ -92,6 +100,24 @@ public class JBoss7ManagerServiceProxy extends ServiceTracker<IJBoss7ManagerServ
 		if( service != null )
 			service.dispose();
 		close();
+	}
+
+	public IJBoss7DeploymentResult addDeployment(IAS7ManagementDetails details,
+			String deploymentName, File file, IProgressMonitor monitor)
+			throws JBoss7ManangerException {
+		return checkedGetService().addDeployment(details, deploymentName, file, monitor);
+	}
+
+	public IJBoss7DeploymentResult removeDeployment(
+			IAS7ManagementDetails details, String deploymentName,
+			IProgressMonitor monitor) throws JBoss7ManangerException {
+		return checkedGetService().removeDeployment(details, deploymentName, monitor);
+	}
+
+	public IJBoss7DeploymentResult replaceDeployment(
+			IAS7ManagementDetails details, String deploymentName, File file,
+			IProgressMonitor monitor) throws JBoss7ManangerException {
+		return checkedGetService().replaceDeployment(details, deploymentName, file, monitor);
 	}
 
 }

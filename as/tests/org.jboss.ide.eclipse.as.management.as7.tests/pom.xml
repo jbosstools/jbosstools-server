@@ -26,6 +26,13 @@
 				<configuration>
 					<testSuite>org.jboss.ide.eclipse.as.management.as7.tests</testSuite>
 					<testClass>org.jboss.ide.eclipse.as.internal.management.as7.tests.AS7IntegrationTestSuite</testClass>
+					<dependencies>
+						<dependency>
+							<type>eclipse-plugin</type>
+							<artifactId>org.jboss.ide.eclipse.as.management.as71</artifactId>
+							<version>0.0.0</version>
+						</dependency>
+					</dependencies>
 				</configuration>
 			</plugin>
 			<plugin>

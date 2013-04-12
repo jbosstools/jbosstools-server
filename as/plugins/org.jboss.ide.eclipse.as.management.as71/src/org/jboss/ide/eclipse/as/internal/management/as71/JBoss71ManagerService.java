@@ -18,6 +18,7 @@ import org.jboss.ide.eclipse.as.management.core.IAS7ManagementDetails;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7DeploymentState;
+import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
 
 /**
@@ -25,14 +26,78 @@ import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
  */
 public class JBoss71ManagerService implements IJBoss7ManagerService {
 
-	public void init() throws Exception {
+	public void init() throws JBoss7ManangerException {
 	}
 
-	public IJBoss7DeploymentResult deployAsync(IAS7ManagementDetails details, String deploymentName,
-			File file, IProgressMonitor monitor) throws Exception {
+	/**
+	 * Add a deployment but do not deploy it
+	 */
+	public IJBoss7DeploymentResult addDeployment(IAS7ManagementDetails details, String deploymentName,
+			File file, IProgressMonitor monitor) throws JBoss7ManangerException {
 		AS71Manager manager = new AS71Manager(details);
 		try {
-			IJBoss7DeploymentResult result = manager.deploy(deploymentName, file);
+			IJBoss7DeploymentResult result = manager.add(deploymentName, file);
+			result.getStatus();
+			return result;
+		} finally {
+			manager.dispose();
+		}
+	}
+
+	/**
+	 * Remove a deployment which has been undeployed
+	 */
+	public IJBoss7DeploymentResult removeDeployment(IAS7ManagementDetails details, String deploymentName,
+			IProgressMonitor monitor) throws JBoss7ManangerException {
+		AS71Manager manager = new AS71Manager(details);
+		try {
+			IJBoss7DeploymentResult result = manager.remove(deploymentName);
+			result.getStatus();
+			return result;
+		} finally {
+			manager.dispose();
+		}
+	}
+
+	/**
+	 * replace a deployment
+	 */
+	public IJBoss7DeploymentResult replaceDeployment(IAS7ManagementDetails details, String deploymentName,
+			File file, IProgressMonitor monitor) throws JBoss7ManangerException {
+		AS71Manager manager = new AS71Manager(details);
+		try {
+			IJBoss7DeploymentResult result = manager.replace(deploymentName, file);
+			result.getStatus();
+			return result;
+		} finally {
+			manager.dispose();
+		}
+	}
+
+	
+	/* 
+	 * This asynch method does not really work. 
+	 * They dispose the manager before the result has come through
+	 */
+	public IJBoss7DeploymentResult deployAsync(IAS7ManagementDetails details, String deploymentName,
+			File file, boolean add, IProgressMonitor monitor) throws JBoss7ManangerException {
+		AS71Manager manager = new AS71Manager(details);
+		try {
+			IJBoss7DeploymentResult result = manager.deploy(deploymentName, file, add);
+			return result;
+		} finally {
+			manager.dispose();
+		}
+	}
+	/* 
+	 * This asynch method does not really work. 
+	 * They dispose the manager before the result has come through
+	 */
+	public IJBoss7DeploymentResult undeployAsync(IAS7ManagementDetails details, String deploymentName,
+			boolean removeFile, IProgressMonitor monitor) throws JBoss7ManangerException {
+		AS71Manager manager = new AS71Manager(details);
+		try {
+			IJBoss7DeploymentResult result = manager.undeploy(deploymentName, removeFile);
 			return result;
 		} finally {
 			manager.dispose();
@@ -40,39 +105,28 @@ public class JBoss71ManagerService implements IJBoss7ManagerService {
 	}
 
 	public IJBoss7DeploymentResult deploySync(IAS7ManagementDetails details, String deploymentName,
-			File file, IProgressMonitor monitor) throws Exception {
+			File file, boolean add, IProgressMonitor monitor) throws JBoss7ManangerException {
 		AS71Manager manager = new AS71Manager(details);
 		try {
-			IJBoss7DeploymentResult result = manager.deploySync(deploymentName, file, monitor);
+			IJBoss7DeploymentResult result = manager.deploySync(deploymentName, file, add, monitor);
 			return result;
 		} finally {
 			manager.dispose();
 		}
 	}
 
-	public IJBoss7DeploymentResult undeployAsync(IAS7ManagementDetails details, String deploymentName,
-			boolean removeFile, IProgressMonitor monitor) throws Exception {
+	public IJBoss7DeploymentResult undeploySync(IAS7ManagementDetails details, String deploymentName,
+			boolean removeFile, IProgressMonitor monitor) throws JBoss7ManangerException {
 		AS71Manager manager = new AS71Manager(details);
 		try {
-			IJBoss7DeploymentResult result = manager.undeploy(deploymentName);
+			IJBoss7DeploymentResult result = manager.undeploySync(deploymentName, removeFile, monitor);
 			return result;
 		} finally {
 			manager.dispose();
 		}
 	}
 
-	public IJBoss7DeploymentResult syncUndeploy(IAS7ManagementDetails details, String deploymentName,
-			boolean removeFile, IProgressMonitor monitor) throws Exception {
-		AS71Manager manager = new AS71Manager(details);
-		try {
-			IJBoss7DeploymentResult result = manager.undeploySync(deploymentName, monitor);
-			return result;
-		} finally {
-			manager.dispose();
-		}
-	}
-
-	public JBoss7DeploymentState getDeploymentState(IAS7ManagementDetails details, String deploymentName) throws Exception {
+	public JBoss7DeploymentState getDeploymentState(IAS7ManagementDetails details, String deploymentName) throws JBoss7ManangerException {
 		AS71Manager manager = new AS71Manager(details);
 		try {
 			JBoss7DeploymentState result = manager.getDeploymentStateSafe(deploymentName);
@@ -82,7 +136,7 @@ public class JBoss71ManagerService implements IJBoss7ManagerService {
 		}
 	}
 	
-	public JBoss7ServerState getServerState(IAS7ManagementDetails details) throws Exception {
+	public JBoss7ServerState getServerState(IAS7ManagementDetails details) throws JBoss7ManangerException {
 		AS71Manager manager = new AS71Manager(details);
 		try {
 			JBoss7ServerState state = manager.getServerState();
@@ -92,7 +146,7 @@ public class JBoss71ManagerService implements IJBoss7ManagerService {
 		}
 	}
 
-	public boolean isRunning(IAS7ManagementDetails details) throws Exception {
+	public boolean isRunning(IAS7ManagementDetails details) throws JBoss7ManangerException {
 		AS71Manager manager = new AS71Manager(details);
 		try {
 			boolean ret = manager.isRunning();
@@ -102,7 +156,7 @@ public class JBoss71ManagerService implements IJBoss7ManagerService {
 		}
 	}
 
-	public void stop(IAS7ManagementDetails details) throws Exception {
+	public void stop(IAS7ManagementDetails details) throws JBoss7ManangerException {
 		AS71Manager manager = new AS71Manager(details);
 		try {
 			manager.stopServer();
@@ -111,7 +165,7 @@ public class JBoss71ManagerService implements IJBoss7ManagerService {
 		}
 	}
 
-    public String execute(IAS7ManagementDetails details, String request) throws Exception {
+    public String execute(IAS7ManagementDetails details, String request) throws JBoss7ManangerException {
         AS71Manager manager = new AS71Manager(details);
         try {
             return manager.execute(ModelNode.fromJSONString(request)).toJSONString(true);

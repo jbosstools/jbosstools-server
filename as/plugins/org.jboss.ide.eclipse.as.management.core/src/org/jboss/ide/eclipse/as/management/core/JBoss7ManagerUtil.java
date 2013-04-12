@@ -22,24 +22,38 @@ public class JBoss7ManagerUtil {
 	private static final String EAP61_RUNTIME = "org.jboss.ide.eclipse.as.runtime.eap.61"; //$NON-NLS-1$
 	
 	
-	public static IJBoss7ManagerService getService(IServer server) throws InvalidSyntaxException  {
-		BundleContext context = AS7ManagementActivator.getContext();
-		JBoss7ManagerServiceProxy proxy = new JBoss7ManagerServiceProxy(context, getRequiredVersion(server));
-		proxy.open();
-		return proxy;
+	public static IJBoss7ManagerService getService(IServer server) throws JBoss7ManangerException  {
+		return getService(server.getRuntime().getRuntimeType().getId());
+	}
+
+	public static IJBoss7ManagerService getService(String runtimeType) throws JBoss7ManangerException  {
+		try {
+			BundleContext context = AS7ManagementActivator.getContext();
+			JBoss7ManagerServiceProxy proxy = new JBoss7ManagerServiceProxy(context, getRequiredServiceVersion(runtimeType));
+			proxy.open();
+			return proxy;
+		} catch(InvalidSyntaxException ise) {
+			throw new JBoss7ManangerException(ise);
+		}
+	}
+
+	public static String getRequiredVersion(IServer server) {
+		String id = server.getRuntime().getRuntimeType().getId();
+		return getRequiredServiceVersion(id);
 	}
 	
 	// This may need to be updated for as7-style servers NEW_SERVER_ADAPTER
-	private static String getRequiredVersion(IServer server) {
-		String id = server.getRuntime().getRuntimeType().getId();
-		if (JBOSS7_RUNTIME.equals(id)
-				|| EAP6_RUNTIME.equals(id)) {
-			// This is the proper fix for now. See JBIDE-10293
+	// TODO  move this to extended properties
+	public static String getRequiredServiceVersion(String runtimeId) {
+		if (JBOSS7_RUNTIME.equals(runtimeId)
+				|| EAP6_RUNTIME.equals(runtimeId)) {
 			return IJBoss7ManagerService.AS_VERSION_710_Beta; 
 		}
-		if( JBOSS71_RUNTIME.equals(id))
+		if( JBOSS71_RUNTIME.equals(runtimeId))
 			return IJBoss7ManagerService.AS_VERSION_710_Beta;
-		if( EAP61_RUNTIME.equals(id)) 
+		// This service fails for some tests, but it must be enabled here 
+		// for querying server state. TODO change this if new service bundle is required
+		if( EAP61_RUNTIME.equals(runtimeId)) 
 			return IJBoss7ManagerService.AS_VERSION_710_Beta;
 		return null;
 	}

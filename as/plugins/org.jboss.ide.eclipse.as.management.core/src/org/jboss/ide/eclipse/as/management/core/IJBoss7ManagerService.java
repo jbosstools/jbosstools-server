@@ -18,11 +18,12 @@ public interface IJBoss7ManagerService {
 
 	public static final String AS_VERSION_PROPERTY = "as.version"; //$NON-NLS-1$
 
-	public static final String AS_VERSION_700 = "700"; //$NON-NLS-1$
+	@Deprecated public static final String AS_VERSION_700 = "700"; //$NON-NLS-1$
 	public static final String AS_VERSION_710_Beta = "710.beta1"; //$NON-NLS-1$
+	public static final String AS_VERSION_720 = "720"; //$NON-NLS-1$
 	public static final int MGMT_PORT = 9999;
 
-	public void init() throws Exception;
+	public void init() throws JBoss7ManangerException;
 	
 	/**
 	 * Asynchronously deploy a file to a server
@@ -30,13 +31,15 @@ public interface IJBoss7ManagerService {
 	 * @param port     The port
 	 * @param name     The deployment's name
 	 * @param file     The file to be deployed
+	 * @param add      Add the deployment? True if the deployment is not 
+	 * 				   already added, false if you just want to start the existing deployment
 	 * @param monitor  The progress monitor
 	 * 
 	 * @return Not sure what to return yet
-	 * @throws Exception
+	 * @throws JBoss7ManangerException
 	 */
 	public IJBoss7DeploymentResult deployAsync(IAS7ManagementDetails details,
-			String deploymentName, File file, IProgressMonitor monitor) throws Exception;
+			String deploymentName, File file, boolean add, IProgressMonitor monitor) throws JBoss7ManangerException;
 
 	/**
 	 * Synchronously deploy a file to a server
@@ -45,13 +48,15 @@ public interface IJBoss7ManagerService {
 	 * @param port    The port
 	 * @param name    The deployment's name
 	 * @param file    The file to be deployed
+	 * @param add     Add the deployment? True if the deployment is not 
+	 * 				  already added, false if you just want to start the existing deployment
 	 * @param monitor The progress monitor
 	 * 
 	 * @return Not sure what to return yet
-	 * @throws Exception
+	 * @throws JBoss7ManangerException
 	 */
 	public IJBoss7DeploymentResult deploySync(IAS7ManagementDetails details,
-			String deploymentName, File file, IProgressMonitor monitor) throws Exception;
+			String deploymentName, File file, boolean add, IProgressMonitor monitor) throws JBoss7ManangerException;
 
 	/**
 	 * Asynchronously undeploy a file to a server
@@ -63,10 +68,10 @@ public interface IJBoss7ManagerService {
 	 * @param monitor The progress monitor
 	 * 
 	 * @return Not sure what to return yet
-	 * @throws Exception
+	 * @throws JBoss7ManangerException
 	 */
 	public IJBoss7DeploymentResult undeployAsync(IAS7ManagementDetails details,
-			String deploymentName, boolean removeFile, IProgressMonitor monitor) throws Exception;
+			String deploymentName, boolean removeFile, IProgressMonitor monitor) throws JBoss7ManangerException;
 
 	/**
 	 * Synchronously undeploy a file to a server
@@ -78,10 +83,10 @@ public interface IJBoss7ManagerService {
 	 * @param monitor The progress monitor
 	 * 
 	 * @return Not sure what to return yet
-	 * @throws Exception
+	 * @throws JBoss7ManangerException
 	 */
-	public IJBoss7DeploymentResult syncUndeploy(IAS7ManagementDetails details,
-			String deploymentName, boolean removeFile, IProgressMonitor monitor) throws Exception;
+	public IJBoss7DeploymentResult undeploySync(IAS7ManagementDetails details,
+			String deploymentName, boolean removeFile, IProgressMonitor monitor) throws JBoss7ManangerException;
 
 	/**
 	 * Returns the state for a given deployment name on a given host and port.
@@ -91,9 +96,9 @@ public interface IJBoss7ManagerService {
 	 * @param deploymentName  the name of the deployment that shall be queried
 	 * 
 	 * @return the state of the deployment
-	 * @throws Exception
+	 * @throws JBoss7ManangerException
 	 */
-	public JBoss7DeploymentState getDeploymentState(IAS7ManagementDetails details, String deploymentName) throws Exception;
+	public JBoss7DeploymentState getDeploymentState(IAS7ManagementDetails details, String deploymentName) throws JBoss7ManangerException;
 
 	/**
 	 * Returns the state of the server 
@@ -102,9 +107,9 @@ public interface IJBoss7ManagerService {
 	 * @param port the port to communicate on
 	 * @return the state of the server
 	 * 
-	 * @throws Exception
+	 * @throws JBoss7ManangerException
 	 */
-	public JBoss7ServerState getServerState(IAS7ManagementDetails details) throws Exception;
+	public JBoss7ServerState getServerState(IAS7ManagementDetails details) throws JBoss7ManangerException;
 
 	/**
 	 * Returns <code>true</code> if the server is running, <code>false</code>
@@ -113,18 +118,57 @@ public interface IJBoss7ManagerService {
 	 * @param host the server to to query
 	 * @param port the port to communicate on
 	 * @return true if it's running, false otherwise
-	 * @throws Exception
+	 * @throws JBoss7ManangerException
 	 */
-	public boolean isRunning(IAS7ManagementDetails details) throws Exception;
+	public boolean isRunning(IAS7ManagementDetails details) throws JBoss7ManangerException;
 
 	/**
 	 * Stops the given server
 	 * 
 	 * @throws JBoss7ManangerException
-	 * @throws Exception 
+	 * @throws JBoss7ManangerException 
 	 */
-	public void stop(IAS7ManagementDetails details) throws Exception;
+	public void stop(IAS7ManagementDetails details) throws JBoss7ManangerException;
 	
+	
+	/**
+	 * Add a deployment but do not deploy it
+	 * @param details
+	 * @param deploymentName
+	 * @param file
+	 * @param monitor
+	 * @return
+	 * @throws JBoss7ManangerException
+	 */
+	public IJBoss7DeploymentResult addDeployment(IAS7ManagementDetails details, String deploymentName,
+			File file, IProgressMonitor monitor) throws JBoss7ManangerException;
+	
+	
+	/**
+	 * Remove a deployment 
+	 * @param details
+	 * @param deploymentName
+	 * @param monitor
+	 * @return
+	 * @throws JBoss7ManangerException
+	 */
+	public IJBoss7DeploymentResult removeDeployment(IAS7ManagementDetails details, String deploymentName,
+			IProgressMonitor monitor) throws JBoss7ManangerException;
+
+	
+	/**
+	 * Replace a deployment with a new version
+	 * @param details
+	 * @param deploymentName
+	 * @param file
+	 * @param monitor
+	 * @return
+	 * @throws JBoss7ManangerException
+	 */
+	public IJBoss7DeploymentResult replaceDeployment(IAS7ManagementDetails details, String deploymentName,
+			File file, IProgressMonitor monitor) throws JBoss7ManangerException;
+	
+
     /**
      * Execute a management command. Note, this method returns the "result" node
      * from the execution.
@@ -132,9 +176,9 @@ public interface IJBoss7ManagerService {
      * @param details connection details.
      * @param request a JSON request to process.
      * @return the JSON response from the server.
-     * @throws Exception
+     * @throws JBoss7ManangerException
      */
-	public String execute(IAS7ManagementDetails details, String request) throws Exception;
+	public String execute(IAS7ManagementDetails details, String request) throws JBoss7ManangerException;
 
 	public void dispose();
 }

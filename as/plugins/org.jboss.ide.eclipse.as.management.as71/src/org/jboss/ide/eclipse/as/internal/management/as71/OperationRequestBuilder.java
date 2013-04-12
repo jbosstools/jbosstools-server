@@ -22,6 +22,7 @@
 package org.jboss.ide.eclipse.as.internal.management.as71;
 
 import org.jboss.dmr.ModelNode;
+import org.jboss.ide.eclipse.as.management.core.OperationFormatException;
 
 /**
  * TODO this is not used for now...
