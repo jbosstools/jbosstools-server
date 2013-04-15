@@ -304,6 +304,15 @@ public class Messages extends NLS {
     public static String ServerContent_Job_Title;
     
     public static String ServerBehavior;
+    
+    public static String DeploymentScannerCheckJobTitle;
+    public static String DeploymentScannerUpdateJobTitle;
+    public static String DeploymentScannerColumnName;
+    public static String DeploymentScannerColumnPath;
+    public static String DeploymentScannerColumnInterval;
+    public static String DeploymentScannerDialogTitle;
+    public static String DeploymentScannerDialogWarning;
+    public static String DontAskThisAgain;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME,

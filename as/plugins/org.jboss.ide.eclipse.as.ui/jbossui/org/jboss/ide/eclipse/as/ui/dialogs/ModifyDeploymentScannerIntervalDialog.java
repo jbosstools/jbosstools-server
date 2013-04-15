@@ -11,9 +11,6 @@
 package org.jboss.ide.eclipse.as.ui.dialogs;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -21,7 +18,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.viewers.CellEditor;
@@ -33,6 +29,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -54,6 +51,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExt
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.AS7DeploymentScannerUtility;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
+import org.jboss.ide.eclipse.as.ui.Messages;
 import org.osgi.service.prefs.BackingStoreException;
 
 public class ModifyDeploymentScannerIntervalDialog extends TitleAreaDialog {
@@ -74,7 +72,7 @@ public class ModifyDeploymentScannerIntervalDialog extends TitleAreaDialog {
 		}
 		
 		private void launchJob(final IServer server) {
-			new Job("Checking Deployment Scanners for server") {
+			new Job(Messages.DeploymentScannerCheckJobTitle) {
 				protected IStatus run(IProgressMonitor monitor) {
 					IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(JBossServerUIPlugin.PLUGIN_ID);
 					boolean ignore = prefs.getBoolean(AS7_IGNORE_ZERO_INTERVAL_SCANNER_SETTING, false);
@@ -115,7 +113,7 @@ public class ModifyDeploymentScannerIntervalDialog extends TitleAreaDialog {
 			}
 			
 			if( ret == Window.OK && changedArray.length > 0 ) {
-				new Job("Updating server's deployment scanners") {
+				new Job(Messages.DeploymentScannerUpdateJobTitle) {
 					protected IStatus run(IProgressMonitor monitor) {
 						return updateServersScanners(server, changedArray);
 					}
@@ -146,7 +144,9 @@ public class ModifyDeploymentScannerIntervalDialog extends TitleAreaDialog {
 	private TableViewer tv;
 	private boolean askAgainSelected = false;
     private String[] headings = new String[]{
-    		"Scanner Name", "Path", "Scanner Interval"
+    		Messages.DeploymentScannerColumnName, 
+    		Messages.DeploymentScannerColumnPath, 
+    		Messages.DeploymentScannerColumnInterval
     };
     private ArrayList<AS7DeploymentScannerUtility.Scanner> changed = new ArrayList<AS7DeploymentScannerUtility.Scanner>();
 	public ModifyDeploymentScannerIntervalDialog(
@@ -166,9 +166,9 @@ public class ModifyDeploymentScannerIntervalDialog extends TitleAreaDialog {
 	
 	protected Control createContents(Composite parent) {
 		Control c = super.createContents(parent);
-		setMessage(server.getName()+" contains one or more deployment scanners that are currently inactive. This means their folders will not be scanned for new deployments or changes. If this is not intentional, please update the scanner's value in the table below.", IMessageProvider.WARNING );
-		setTitle("Inactive Deployment scanner found");
-		getShell().setText("Inactive Deployment scanner(s) found");
+		setMessage(NLS.bind(Messages.DeploymentScannerDialogWarning, server.getName()), IMessageProvider.WARNING);
+		setTitle(Messages.DeploymentScannerDialogTitle);
+		getShell().setText(Messages.DeploymentScannerDialogTitle);
 		getShell().setSize(500, 300);
 		return c;
 	}
@@ -192,18 +192,16 @@ public class ModifyDeploymentScannerIntervalDialog extends TitleAreaDialog {
 	    table.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 	    TableColumn tc1 = new TableColumn(table, SWT.CENTER);
-	    tc1.setText(headings[0]);
-	    tc1.setWidth(150);
 	    TableColumn tc2 = new TableColumn(table, SWT.CENTER);
-	    tc2.setText(headings[1]);
-	    tc2.setWidth(150);
 	    TableColumn tc3 = new TableColumn(table, SWT.CENTER);
-	    tc3.setText(headings[2]);
-	    
 
 	    for (int i = 0, n = table.getColumnCount(); i < n; i++) {
-	      table.getColumn(i).pack();
+	    	table.getColumn(i).setText(headings[i]);
+	    	table.getColumn(i).pack();
 	    }
+	    tc1.setWidth(150);
+	    tc2.setWidth(180);
+	    tc3.setWidth(70);
 	    
 	    table.setHeaderVisible(true);
 	    table.setLinesVisible(true);
