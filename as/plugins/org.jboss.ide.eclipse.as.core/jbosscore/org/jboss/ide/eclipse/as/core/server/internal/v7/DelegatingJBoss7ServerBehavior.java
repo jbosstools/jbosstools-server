@@ -98,43 +98,34 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 	
 	@Override
 	public void stopModule(IModule[] module, IProgressMonitor monitor) throws CoreException  {
-		AS7ManagementDetails details = new AS7ManagementDetails(getServer());
-		IJBossServer jbs = ServerConverter.getJBossServer(getServer());
-		String deploymentName = jbs.getDeploymentLocation(module, true).lastSegment();
-		int preState = getServer().getModuleState(module);
-		IJBoss7ManagerService service = JBoss7ManagerUtil.getService(getServer());
-		if( service != null ) {
-			try {
-				service.undeploySync(details, deploymentName, false, monitor);
-				setModuleState(module, IServer.STATE_STOPPED );
-			} catch(JBoss7ManangerException j7me) {
-				setModuleState(module,preState );
-				throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Unable to stop module via remote management")); //$NON-NLS-1$
-			}
-		} else {
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Management service for server not found.")); //$NON-NLS-1$
-		}
+		changeModuleStateTo(module, IServer.STATE_STOPPED, monitor);	
 	}
 	
 	@Override
 	public void startModule(IModule[] module, IProgressMonitor monitor) throws CoreException {
+		changeModuleStateTo(module, IServer.STATE_STARTED, monitor);
+	}
+	
+	public void changeModuleStateTo(IModule[] module, int state, IProgressMonitor monitor) throws CoreException {
 		AS7ManagementDetails details = new AS7ManagementDetails(getServer());
 		IJBossServer jbs = ServerConverter.getJBossServer(getServer());
-		IPath loc = jbs.getDeploymentLocation(module, true);
-		String deploymentName = loc.lastSegment();
+		String deploymentName = jbs.getDeploymentLocation(module, true).lastSegment();
 		int preState = getServer().getModuleState(module);
-		IJBoss7ManagerService service = JBoss7ManagerUtil.getService(getServer());
-		if( service != null ) {
-			try {
-				IJBoss7DeploymentResult result = service.deploySync(details, deploymentName, null, false, monitor);
-				IStatus s = result.getStatus();
-				setModuleState(module, IServer.STATE_STARTED);
-			} catch(JBoss7ManangerException j7me) {
-				setModuleState(module,preState );
-				throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Unable to start module via remote management")); //$NON-NLS-1$
+		try {
+			IJBoss7ManagerService service = JBoss7ManagerUtil.getService(getServer());
+			if( service == null ) {
+				throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Management service for server not found.")); //$NON-NLS-1$
+			} else if(state == IServer.STATE_STARTED ) {
+				service.deploySync(details, deploymentName, null, false, monitor);
+			} else if (state == IServer.STATE_STOPPED) {
+				service.undeploySync(details, deploymentName, false, monitor);
+			} else {
+				throw new IllegalArgumentException("Only states IServer.STATE_STARTED and IServer.STATE_STOPPED are supported"); //$NON-NLS-1$
 			}
-		} else {
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Management service for server not found.")); //$NON-NLS-1$
+			setModuleState(module, state);
+		} catch(JBoss7ManangerException j7me) {
+			setModuleState(module,preState);
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, j7me.getMessage(),j7me));
 		}
 	}
 
