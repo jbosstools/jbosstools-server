@@ -22,6 +22,7 @@ import org.jboss.ide.eclipse.as.core.server.IPollResultListener;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
@@ -42,6 +43,13 @@ public abstract class AbstractJBossBehaviourDelegate extends AbstractBehaviourDe
 		if( LaunchCommandPreferences.isIgnoreLaunchCommand(getServer())) {
 			actualBehavior.setServerStopped();
 			return;
+		}
+		boolean removeScanners = getServer().getAttribute(IJBossToolingConstants.PROPERTY_REMOVE_DEPLOYMENT_SCANNERS, false);
+		if( removeScanners ) {
+			JBossExtendedProperties properties = (JBossExtendedProperties)getServer().loadAdapter(JBossExtendedProperties.class, null);
+			if( properties != null ) {
+				properties.getDeploymentScannerModifier().removeAddedDeploymentScanners(getServer());
+			}		
 		}
 		stopImpl(force);
 	}
@@ -112,18 +120,35 @@ public abstract class AbstractJBossBehaviourDelegate extends AbstractBehaviourDe
 		IServer s = getActualBehavior().getServer();
 		JBossExtendedProperties properties = (JBossExtendedProperties)s.loadAdapter(JBossExtendedProperties.class, null);
 		if( properties != null ) {
-			Job scannerJob = properties.getDeploymentScannerModifier().getUpdateDeploymentScannerJob(s);
+			Job scannerJob = null;
+			boolean addScanner = s.getAttribute(IJBossToolingConstants.PROPERTY_ADD_DEPLOYMENT_SCANNERS, true);
+			if( addScanner )
+				scannerJob = properties.getDeploymentScannerModifier().getUpdateDeploymentScannerJob(s);
+			
 			IServerModuleStateVerifier verifier = properties.getModuleStateVerifier();
+			Job moduleStateJob = null;
 			if( verifier != null ) {
-				Job moduleStateJob = new UpdateModuleStateJob(s, verifier);
-				chainJobs(scannerJob, moduleStateJob);
+				moduleStateJob = new UpdateModuleStateJob(s, verifier);
 			}
-			scannerJob.schedule();
+			
+			Job rootJob = chainJobs(scannerJob, moduleStateJob);
+			if( rootJob != null )
+				rootJob.schedule();
 		}
 	}
 	
 	// TODO move to common, job utils
-	private void chainJobs(final Job job1, final Job job2) {
+	/**
+	 * Chain two jobs together, and return the root job which should be scheduled. 
+	 * @param job1 The job to launch first, or possible null 
+	 * @param job2 The job to launch second, or possible null
+	 * @return The job to launch... either job1 or, if null, job2
+	 */
+	private Job chainJobs(final Job job1, final Job job2) {
+		if( job1 == null )
+			return job2;
+		if( job2 == null )
+			return job1;
 		JobChangeAdapter listener = new JobChangeAdapter() {
 			public void done(IJobChangeEvent event) {
 				job1.removeJobChangeListener(this);
@@ -134,6 +159,7 @@ public abstract class AbstractJBossBehaviourDelegate extends AbstractBehaviourDe
 			}
 		};
 		job1.addJobChangeListener(listener);
+		return job1;
 	}
 	
 	/* 

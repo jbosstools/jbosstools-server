@@ -19,8 +19,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.ServerEvent;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.ExtensionManager.IServerJMXRunnable;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
@@ -48,14 +48,6 @@ public class JMXServerDeploymentScannerAdditions extends AbstractDeploymentScann
 			return true;
 		}
 		return false;
-	}
-	
-	protected void modifyDeploymentScanners(ServerEvent event){
-		String[] folders = getDeployLocationFolders(event.getServer());
-		Trace.trace(Trace.STRING_FINER, "Adding " + folders.length + " Deployment Scanners via JMX"); //$NON-NLS-1$ //$NON-NLS-2$
-		if( folders.length > 0 ) 
-			ensureScannersAdded(event.getServer(), folders);
-		Trace.trace(Trace.STRING_FINER, "Finished Adding Deployment Scanners via JMX"); //$NON-NLS-1$
 	}
 
 	protected void ensureScannersAdded(final IServer server, final String[] folders) {
@@ -94,5 +86,12 @@ public class JMXServerDeploymentScannerAdditions extends AbstractDeploymentScann
 		URI uri = new URI("file", null, folder, null); //$NON-NLS-1$
 		//return URLEncoder.encode(uri.toASCIIString());
 		return uri.toASCIIString();
+	}
+	public void removeAddedDeploymentScanners(IServer server) {
+		// Unsupported
+	}
+	public Job getRemoveDeploymentScannerJob(IServer server) {
+		// Unsupported
+		return null;
 	}
 }

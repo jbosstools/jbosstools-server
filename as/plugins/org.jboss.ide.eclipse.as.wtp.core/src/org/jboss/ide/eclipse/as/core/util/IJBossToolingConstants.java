@@ -154,6 +154,16 @@ public interface IJBossToolingConstants {
 	public static final int    PORT_OFFSET_DEFAULT_PORT = 0;
 	
 	
+	/*
+	 * Should we add deployment scanners on startup?
+	 */
+	public static final String PROPERTY_ADD_DEPLOYMENT_SCANNERS = "org.jboss.ide.eclipse.as.core.server.addDeploymentScanner";
+	/*
+	 * Should we remove deployment scanners on shutdown?
+	 */
+	public static final String PROPERTY_REMOVE_DEPLOYMENT_SCANNERS = "org.jboss.ide.eclipse.as.core.server.removeDeploymentScanner";
+	
+	
 	
 	public static final String IGNORE_LAUNCH_COMMANDS = "org.jboss.ide.eclipse.as.core.server.IGNORE_LAUNCH_COMMANDS"; //$NON-NLS-1$
 	public static final String LISTEN_ALL_HOSTS = "org.jboss.ide.eclipse.as.core.server.LISTEN_ON_ALL_HOSTS"; //$NON-NLS-1$

@@ -15,7 +15,8 @@ import org.eclipse.wst.server.core.IServer;
 
 public interface IDeploymentScannerModifier {
 	/**
-	 * Update the deployment scanners for this server
+	 * Update the deployment scanners for this server. 
+	 * This will be done synchronously in the current thread. 
 	 * 
 	 * @param server the server we wish to update scanners for
 	 */
@@ -28,4 +29,19 @@ public interface IDeploymentScannerModifier {
 	 */
 	public Job getUpdateDeploymentScannerJob(IServer server);	
 	
+	/**
+	 * Remove scanners which have been added
+	 * This will be done synchronously in the current thread. 
+	 * @param server
+	 */
+	public void removeAddedDeploymentScanners(IServer server);
+	
+	/**
+	 * Get a job which may remove scanners that have been added, 
+	 * or null if unsupported. 
+	 * 
+	 * @param server
+	 * @return
+	 */
+	public Job getRemoveDeploymentScannerJob(IServer server);
 }

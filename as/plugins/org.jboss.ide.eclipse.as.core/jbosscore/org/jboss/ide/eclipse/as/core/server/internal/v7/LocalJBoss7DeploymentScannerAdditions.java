@@ -101,6 +101,18 @@ public class LocalJBoss7DeploymentScannerAdditions extends AbstractDeploymentSca
 		Trace.trace(Trace.STRING_FINER, "Finished Adding AS7 Deployment Scanners"); //$NON-NLS-1$
 	}
 	
+	protected void ensureScannersRemoved(final IServer server, final String[] folders) {
+		Map<String, String> props = loadScannersFromServer(server);
+		AS7DeploymentScannerUtility util = new AS7DeploymentScannerUtility(); 
+		Iterator<String> i = props.keySet().iterator();
+		while(i.hasNext()) {
+			String scannerName = i.next();
+			if( scannerName.startsWith(AS7DeploymentScannerUtility.SCANNER_PREFIX)) {
+				util.removeDeploymentScanner(server, scannerName);
+			}
+		}
+	}
+
 	protected Map<String, String> loadScannersFromServer(IServer server) {
 		return new AS7DeploymentScannerUtility().getDeploymentScannersFromServer(server, false);
 	}
@@ -113,4 +125,13 @@ public class LocalJBoss7DeploymentScannerAdditions extends AbstractDeploymentSca
 		return AS7DeploymentScannerUtility.SCANNER_PREFIX + i;
 	}
 	
+	/*
+	 * An internal method which lets us know whether this app server version
+	 * persists changes made to the deployment scanner model or not. 
+	 */
+	@Override
+	public boolean persistsScannerChanges() {
+		return true;
+	}
+
 }

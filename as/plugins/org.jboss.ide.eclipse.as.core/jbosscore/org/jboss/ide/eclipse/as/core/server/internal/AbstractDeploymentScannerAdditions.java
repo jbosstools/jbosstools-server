@@ -38,19 +38,42 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 
 	public void updateDeploymentScanners(final IServer server) {
 		if( accepts(server)) {
-			getUpdateDeploymentScannerJob(server).schedule();
+			String[] folders = getDeployLocationFolders(server);
+			ensureScannersAdded(server, folders);
 		}
 	}
 
 	public Job getUpdateDeploymentScannerJob(final IServer server) {
 		return new Job(getJobName(server)) {
 			protected IStatus run(IProgressMonitor monitor) {
-				String[] folders = getDeployLocationFolders(server);
-				ensureScannersAdded(server, folders);
+				updateDeploymentScanners(server);
 				return Status.OK_STATUS;
 			}
 		};
 	}
+	
+	public void removeAddedDeploymentScanners(IServer server) {
+		if( accepts(server)) {
+			String[] folders = getDeployLocationFolders(server);
+			ensureScannersRemoved(server, folders);
+		}
+	}
+	
+	public Job getRemoveDeploymentScannerJob(final IServer server) {
+		return new Job(getJobName(server)) {
+			protected IStatus run(IProgressMonitor monitor) {
+				removeAddedDeploymentScanners(server);
+				return Status.OK_STATUS;
+			}
+		};
+	}
+	/* 
+	 * Do whatever action you need to do to remove the scanners (if they exist) for the following folders 
+	 * SUBCLASSES that support this must override!
+	 */
+	protected void ensureScannersRemoved(final IServer server, final String[] folders) {
+	}
+
 	
 	protected String getServerMode(IServer server) {
 		IJBossServerPublishMethodType publishType = DeploymentPreferenceLoader.getCurrentDeploymentMethodType(server);
@@ -116,5 +139,13 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 	protected String getInsideServerDeployFolder(IServer server) {
 		JBossServer ds = (JBossServer)ServerConverter.getJBossServer(server);
 		return 	ds.getDeployFolder(IDeployableServer.DEPLOY_SERVER);
+	}
+
+	/*
+	 * An internal method which lets us know whether this app server version
+	 * persists changes made to the deployment scanner model or not. 
+	 */
+	public boolean persistsScannerChanges() {
+		return false;
 	}
 }
