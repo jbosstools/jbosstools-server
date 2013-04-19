@@ -37,6 +37,7 @@ public class RequiredCredentialsDialog extends Dialog {
 	private String user, pass;
 	private boolean save;
 	private boolean canModifyUser = true;
+	private boolean neverAgain = false;
 	private String description;
 	public RequiredCredentialsDialog(Shell parentShell, String initialUser, String initialPass) {
 		super(parentShell);
@@ -74,6 +75,7 @@ public class RequiredCredentialsDialog extends Dialog {
 		userText.setEditable(true);
 		passText.setEditable(true);
 		final Button saveCredentials = new Button(main, SWT.CHECK);
+		final Button neverAskAgain = new Button(main, SWT.CHECK);
 		
 		UIUtil u = new UIUtil();
 		top.setLayoutData(u.createFormData(0,5,null,0,0,5,100,-5));
@@ -82,11 +84,13 @@ public class RequiredCredentialsDialog extends Dialog {
 		passLabel.setLayoutData(u.createFormData(userText, 10, null, 0, 0,5, 100, -5));
 		passText.setLayoutData(u.createFormData(passLabel, 5, null, 0, 0,5, 100, -5));
 		saveCredentials.setLayoutData(u.createFormData(passText, 10, null, 0, 0,5, 100, -5));
+		neverAskAgain.setLayoutData(u.createFormData(saveCredentials, 7, null, 0, 0,5, 100, -5));
 		
 		top.setText(description);
 		userLabel.setText(Messages.swf_Username);
 		passLabel.setText(Messages.swf_Password);
 		saveCredentials.setText(Messages.credentials_save);
+		neverAskAgain.setText(Messages.credentials_neverAsk);
 		
 		// defaults
 		userText.setText(user);
@@ -99,6 +103,7 @@ public class RequiredCredentialsDialog extends Dialog {
 				user = userText.getText();
 				pass = passText.getText();
 				save = saveCredentials.getSelection();
+				neverAgain = neverAskAgain.getSelection();
 			}
 		};
 		SelectionListener listener2 = new SelectionListener() {
@@ -109,11 +114,13 @@ public class RequiredCredentialsDialog extends Dialog {
 				user = userText.getText();
 				pass = passText.getText();
 				save = saveCredentials.getSelection();
+				neverAgain = neverAskAgain.getSelection();
 			}
 		};
 		userText.addModifyListener(listener);
 		passText.addModifyListener(listener);
 		saveCredentials.addSelectionListener(listener2);
+		neverAskAgain.addSelectionListener(listener2);
 		
 		// save by default
 		saveCredentials.setSelection(true);
@@ -149,5 +156,12 @@ public class RequiredCredentialsDialog extends Dialog {
 	 */
 	public boolean getSave() {
 		return save;
+	}
+	
+	/**
+	 * @return true to never ask again,  false to always ask.
+	 */
+	public boolean getNeverAskAgain() {
+		return neverAgain;
 	}
 }

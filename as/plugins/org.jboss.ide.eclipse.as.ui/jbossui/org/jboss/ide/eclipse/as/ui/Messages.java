@@ -105,6 +105,7 @@ public class Messages extends NLS {
 	public static String ServerLogView_NoLogSelected;
 	public static String credentials_warning;
 	public static String credentials_save;
+	public static String credentials_neverAsk;
 
 
 	public static String property;

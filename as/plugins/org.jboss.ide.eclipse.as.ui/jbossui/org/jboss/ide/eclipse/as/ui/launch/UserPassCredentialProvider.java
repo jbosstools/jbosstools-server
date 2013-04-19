@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -28,6 +30,7 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.dialogs.RequiredCredentialsDialog;
+import org.osgi.service.prefs.BackingStoreException;
 
 /**
  * 
@@ -36,6 +39,8 @@ import org.jboss.ide.eclipse.as.ui.dialogs.RequiredCredentialsDialog;
  */
 public class UserPassCredentialProvider implements IProvideCredentials {
 
+	public static final String NEVER_ASK_AGAIN_KEY = "org.jboss.ide.eclipse.as.ui.launch.credentials.neverAsk"; //$NON-NLS-1$
+	
 	public boolean accepts(IServerProvider serverProvider,
 			List<String> requiredProperties) {
 		if( requiredProperties.size() > 2)
@@ -54,16 +59,37 @@ public class UserPassCredentialProvider implements IProvideCredentials {
 	 */
 	public void handle(final INeedCredentials inNeed,
 			final List<String> requiredProperties) {
+		final IServer server = inNeed.getServer();
+		final IServerWorkingCopy copy = server.createWorkingCopy();
+		final JBossServer jbs = (JBossServer)ServerConverter.getJBossServer(copy);
+		final String initialUser = jbs.getUsername();
+		final String initialPass = jbs.getPassword();
+		IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(JBossServerUIPlugin.PLUGIN_ID);
+		boolean ignore = prefs.getBoolean(NEVER_ASK_AGAIN_KEY, false);
+		if( ignore ) {
+			Properties p = new Properties();
+			p.put(requiredProperties.get(0), initialUser);
+			p.put(requiredProperties.get(1), initialPass);
+			inNeed.provideCredentials(p);
+			return;
+		}
+
 		Display.getDefault().syncExec(new Runnable() { 
 			public void run() {
-				IServer server = inNeed.getServer();
-				IServerWorkingCopy copy = server.createWorkingCopy();
-				JBossServer jbs = (JBossServer)ServerConverter.getJBossServer(copy);
-				String initialUser = jbs.getUsername();
-				String initialPass = jbs.getPassword();
 				RequiredCredentialsDialog d = new RequiredCredentialsDialog(
 						new Shell(), initialUser, initialPass);
 				if( d.open() == Window.OK) {
+					if( d.getNeverAskAgain() ) {
+						// persist this setting 
+						IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(JBossServerUIPlugin.PLUGIN_ID);
+						prefs.putBoolean(NEVER_ASK_AGAIN_KEY, true);
+						try {
+							prefs.flush();
+						} catch (BackingStoreException e) {
+							JBossServerUIPlugin.log("Unable to save dialog settings", e);
+						}
+					}
+					
 					if( d.getSave() ) {
 						jbs.setPassword(d.getPass());
 						jbs.setUsername(d.getUser());
