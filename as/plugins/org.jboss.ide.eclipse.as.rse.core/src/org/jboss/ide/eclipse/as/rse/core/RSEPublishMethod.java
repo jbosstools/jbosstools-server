@@ -240,6 +240,7 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 	}
 	
 	public IPublishCopyCallbackHandler getCallbackHandler(IPath path, IServer server) {
+		this.behaviour = ServerConverter.getDeployableServerBehavior(server);
 		return new RSERemotePublishHandler(path, this);
 	}
 
