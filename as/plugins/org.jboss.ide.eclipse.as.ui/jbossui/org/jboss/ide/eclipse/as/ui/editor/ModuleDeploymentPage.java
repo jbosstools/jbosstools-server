@@ -12,11 +12,11 @@ package org.jboss.ide.eclipse.as.ui.editor;
 
 import java.util.ArrayList;
 
-import org.apache.tools.ant.taskdefs.optional.j2ee.ServerDeploy;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -39,11 +39,14 @@ import org.eclipse.wst.server.ui.editor.ServerEditorPart;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.eclipse.wst.server.ui.internal.editor.ServerEditorPartInput;
 import org.eclipse.wst.server.ui.internal.editor.ServerResourceCommandManager;
+import org.jboss.ide.eclipse.as.core.server.IDeploymentScannerModifier;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -265,8 +268,21 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 	public void setFocus() {
 	}
 
-	// Currently inactive!!! See bug 286699
 	public void doSave(IProgressMonitor monitor) {
 		tab.updateListeners();
+		IServer s = getServer().getOriginal();
+		if( s.getServerState() == IServer.STATE_STARTED ) {
+			JBossExtendedProperties properties = (JBossExtendedProperties)s.loadAdapter(JBossExtendedProperties.class, null);
+			if( properties != null ) {
+				boolean addScanner = s.getAttribute(IJBossToolingConstants.PROPERTY_ADD_DEPLOYMENT_SCANNERS, true);
+				if( addScanner ) {
+					IDeploymentScannerModifier modifier = properties.getDeploymentScannerModifier();
+					if( modifier != null ) {
+						Job scannerJob = modifier.getUpdateDeploymentScannerJob(s);
+						scannerJob.schedule();
+					}
+				}
+			}
+		}
 	}
 }
