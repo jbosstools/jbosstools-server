@@ -12,10 +12,15 @@ package org.jboss.ide.eclipse.archives.webtools.modules;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IModuleArtifact;
+import org.eclipse.wst.server.core.internal.ModuleFactory;
+import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.ModuleArtifactAdapterDelegate;
+import org.jboss.ide.eclipse.archives.core.model.IArchive;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 /**
  * 
  * @author Rob Stryker rob.stryker@redhat.com
@@ -39,22 +44,35 @@ public class PackagedArtifactAdapter extends ModuleArtifactAdapterDelegate {
 				}
 			}
 		} 
-		
-		if( obj instanceof IProject ) {
-			PackageModuleFactory factory = PackageModuleFactory.getFactory();
-			if( factory != null ) {
-//				IModule[] mods = factory.getModulesFromProject((IProject)obj);
-//				if( mods != null && mods.length != 0) {
-//					return getArtifact(mods);
-//				}
+
+		PackageModuleFactory factory = PackageModuleFactory.getFactory();
+		if( factory != null ) {
+			if( obj instanceof IProject ) {
+				IModule[] mods = factory.getModules((IProject)obj);
+				if( mods != null && mods.length != 0) {
+					return getArtifact(mods);
+				}
+			}
+			if( obj instanceof IArchiveNode ) {
+				obj = ((IArchiveNode)obj).getRootArchive();
+			}
+			if( obj != null && obj instanceof IArchive ) {
+				return getArtifact(getModule(((IArchive)obj)));
 			}
 		}
 		return null;
 	}
-		
+	
+
+	protected IModule[] getModule(IArchive node) {
+		ModuleFactory factory = ServerPlugin.findModuleFactory(PackageModuleFactory.FACTORY_TYPE_ID);
+		IModule mod = factory.findModule(PackageModuleFactory.getId(node), new NullProgressMonitor());
+		return mod == null ? null : new IModule[] { mod };
+	}
+	
 	protected IModuleArtifact getArtifact(IModule[] mod) {
-		//return new PackagedArtifact(mod);
-		// TODO Blocking on eclipse bug 174372 
+		if( mod != null && mod.length == 1 && mod[0] != null)
+			return new PackagedArtifact(mod[0]);
 		return null;
 	}
 	
