@@ -16,7 +16,6 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.internal.Base;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
@@ -69,7 +68,7 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 	protected String getShutdownCommand(JBossServer jbossServer, IJBossServerRuntime jbossRuntime) throws CoreException {
 		String rseHome = RSEUtils.getRSEHomeDir(jbossServer.getServer());
 		IPath p = new Path(rseHome).append(IJBossRuntimeResourceConstants.BIN);
-		String ret = p.toString() + "/" + getManagementScript(jbossServer);
+		String ret = p.toString() + "/" + getManagementScript(jbossServer.getServer());
 		
 		boolean exposeManagement = LaunchCommandPreferences.exposesManagement(jbossServer.getServer());
 		if( exposeManagement ) {

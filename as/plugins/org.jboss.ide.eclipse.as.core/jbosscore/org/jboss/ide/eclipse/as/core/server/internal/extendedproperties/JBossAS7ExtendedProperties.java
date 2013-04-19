@@ -83,11 +83,6 @@ public class JBossAS7ExtendedProperties extends JBossExtendedProperties {
 		return new JBoss70DefaultLaunchArguments(runtime);
 	}
 
-	public IDeploymentScannerModifier getDeploymentScannerModifier() {
-		return new LocalJBoss7DeploymentScannerAdditions();
-	}
-
-	
 	public String getJBossAdminScript() {
 		return IJBossRuntimeResourceConstants.AS_70_MANAGEMENT_SCRIPT;
 	}
