@@ -13,6 +13,8 @@ package org.jboss.ide.eclipse.as.ui.editor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -31,10 +33,14 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.ui.editor.ServerEditorSection;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
+import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePollerType;
+import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 /**
@@ -99,16 +105,42 @@ public class PollerSection extends ServerEditorSection implements PropertyChange
 		stopPollerCombo.setEnabled(true);
 		String currentStartId = helper.getAttribute(IJBossServerConstants.STARTUP_POLLER_KEY, IJBossServerConstants.DEFAULT_STARTUP_POLLER);
 		String currentStopId = helper.getAttribute(IJBossServerConstants.SHUTDOWN_POLLER_KEY, IJBossServerConstants.DEFAULT_SHUTDOWN_POLLER);
-		startPollerCombo.select(startPollerCombo.indexOf(ExtensionManager.getDefault().getPollerType(currentStartId).getName()));
-		stopPollerCombo.select(stopPollerCombo.indexOf(ExtensionManager.getDefault().getPollerType(currentStopId).getName()));
+		int startIndex = startPollerCombo.indexOf(ExtensionManager.getDefault().getPollerType(currentStartId).getName());
+		int stopIndex = stopPollerCombo.indexOf(ExtensionManager.getDefault().getPollerType(currentStopId).getName());
+		
+		if( startIndex >= 0 )
+			startPollerCombo.select(startIndex);
+		if( stopIndex >= 0 )
+			stopPollerCombo.select(stopIndex);
 		
 		toolkit.paintBordersFor(composite);
 		section.setClient(composite);
 	}
 	
+	protected void refreshUI() {
+		startPollerCombo.removeModifyListener(startPollerListener);
+		stopPollerCombo.removeModifyListener(stopPollerListener);
+		
+		findPossiblePollers();
+		startPollerCombo.setItems(startupTypesStrings);
+		stopPollerCombo.setItems(shutdownTypesStrings);
+		String currentStartId = helper.getAttribute(IJBossServerConstants.STARTUP_POLLER_KEY, IJBossServerConstants.DEFAULT_STARTUP_POLLER);
+		String currentStopId = helper.getAttribute(IJBossServerConstants.SHUTDOWN_POLLER_KEY, IJBossServerConstants.DEFAULT_SHUTDOWN_POLLER);
+		int startIndex = startPollerCombo.indexOf(ExtensionManager.getDefault().getPollerType(currentStartId).getName());
+		int stopIndex = stopPollerCombo.indexOf(ExtensionManager.getDefault().getPollerType(currentStopId).getName());
+		if( startIndex >= 0 )
+			startPollerCombo.select(startIndex);
+		if( stopIndex >= 0 )
+			stopPollerCombo.select(stopIndex);
+		
+		startPollerCombo.addModifyListener(startPollerListener);
+		stopPollerCombo.addModifyListener(stopPollerListener);
+	}
+	
 	protected void findPossiblePollers() {
-		startupTypes = ExtensionManager.getDefault().getStartupPollers(server.getServerType());
-		shutdownTypes = ExtensionManager.getDefault().getShutdownPollers(server.getServerType());
+		String currentMode = DeploymentPreferenceLoader.getCurrentServerBehaviorModeTypeId(server, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
+		startupTypes = ExtensionManager.getDefault().getStartupPollers(server.getServerType(), currentMode);
+		shutdownTypes = ExtensionManager.getDefault().getShutdownPollers(server.getServerType(), currentMode);
 		startupTypesStrings = new String[startupTypes.length];
 		shutdownTypesStrings = new String[shutdownTypes.length];
 		
@@ -123,12 +155,14 @@ public class PollerSection extends ServerEditorSection implements PropertyChange
 	protected void addListeners() {
 		startPollerListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				execute(new SetStartupPollerCommand(server));
+				if( startPollerCombo.getSelectionIndex() != -1 )
+					execute(new SetStartupPollerCommand(server));
 			}
 		};
 		stopPollerListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				execute(new SetStopPollerCommand(server));
+				if( stopPollerCombo.getSelectionIndex() != -1 )
+					execute(new SetStopPollerCommand(server));
 			}
 		};
 
@@ -201,6 +235,7 @@ public class PollerSection extends ServerEditorSection implements PropertyChange
 		server.removePropertyChangeListener(this);
 	}
 
+	// Pollers aren't launched if server is assumed externally controlled
 	public void propertyChange(PropertyChangeEvent evt) {
 		String propertyName = evt.getPropertyName();
 		if( propertyName.equals(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS)) {
@@ -209,6 +244,22 @@ public class PollerSection extends ServerEditorSection implements PropertyChange
 			startPollerCombo.setEnabled(!b.booleanValue());
 			stopPollerCombo.setEnabled(!b.booleanValue());
 		}
+		if( propertyName.equals(IDeployableServer.SERVER_MODE)) {
+			refreshUI();
+		}
+	}
+
+	public IStatus[] getSaveStatus() {
+		IStatus s = Status.OK_STATUS;
+		if( !server.getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, false)) {
+			if( startPollerCombo.getSelectionIndex() == -1 ) {
+				s = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, "Your server must have a valid startup poller selected.");
+			}
+			if( stopPollerCombo.getSelectionIndex() == -1 ) {
+				s = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, "Your server must have a valid shutdown poller selected.");
+			}
+		}
+		return new IStatus[] {s};
 	}
 
 }

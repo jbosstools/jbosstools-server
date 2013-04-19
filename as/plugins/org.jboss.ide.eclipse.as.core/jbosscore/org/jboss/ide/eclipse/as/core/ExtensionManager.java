@@ -34,7 +34,6 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IProvideCredentials;
 import org.jboss.ide.eclipse.as.core.server.IServerAlreadyStartedHandler;
 import org.jboss.ide.eclipse.as.core.server.IServerProvider;
-import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePollerType;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 
@@ -81,8 +80,13 @@ public class ExtensionManager {
 		return pollers.get(id);
 	}
 	
-	/** Get only the pollers that can poll for startups */
-	public IServerStatePollerType[] getStartupPollers(IServerType serverType) {
+	/**
+	 * Get only the pollers that can poll for startups for this server type and mode
+	 * @param serverType the server type to be polled
+	 * @param mode The mode this server is in (local, rse, etc)
+	 * @return
+	 */
+	public IServerStatePollerType[] getStartupPollers(IServerType serverType, String mode) {
 		if( pollers == null ) 
 			loadPollers();
 		ArrayList<ServerStatePollerType> list = new ArrayList<ServerStatePollerType>();
@@ -90,14 +94,30 @@ public class ExtensionManager {
 		ServerStatePollerType type;
 		while(i.hasNext()) {
 			type = i.next();
-			if( type.supportsStartup() && pollerSupportsServerType(type, serverType))
-				list.add(type);
+			if( type.supportsStartup() && pollerSupportsServerType(type, serverType)) {
+				if( mode == null || pollerSupportsServerMode(type, mode))
+					list.add(type);
+			}
 		}
 		return list.toArray(new ServerStatePollerType[list.size()]);
 	}
 	
-	/** Get only the pollers that can poll for shutdowns */
-	public IServerStatePollerType[] getShutdownPollers(IServerType serverType) {
+	/**
+	 * Get only the pollers that can poll for startups for this server type
+	 * @param serverType the server type to be polled
+	 * @return
+	 */
+	public IServerStatePollerType[] getStartupPollers(IServerType serverType) {
+		return getShutdownPollers(serverType, null);
+	}
+	
+	/**
+	 * Get only the pollers that can poll for shutdowns for this server type and mode
+	 * @param serverType the server type to be polled
+	 * @param mode The mode this server is in (local, rse, etc)
+	 * @return
+	 */
+	public IServerStatePollerType[] getShutdownPollers(IServerType serverType, String mode) {
 		if( pollers == null ) 
 			loadPollers();
 		ArrayList<ServerStatePollerType> list = new ArrayList<ServerStatePollerType>();
@@ -105,26 +125,44 @@ public class ExtensionManager {
 		ServerStatePollerType type;
 		while(i.hasNext()) {
 			type = i.next();
-			if( type.supportsShutdown()  && pollerSupportsServerType(type, serverType))
-				list.add(type);
+			if( type.supportsShutdown()  && pollerSupportsServerType(type, serverType)) {
+				if( mode == null || pollerSupportsServerMode(type, mode))
+					list.add(type);
+			}
 		}
 		return list.toArray(new ServerStatePollerType[list.size()]);
+	}
+	
+	/**
+	 * Get only the pollers that can poll for shutdowns for this server type
+	 * @param serverType the server type to be polled
+	 * @return
+	 */
+	public IServerStatePollerType[] getShutdownPollers(IServerType serverType) {
+		return getShutdownPollers(serverType, null);
 	}
 	
 
 	protected boolean pollerSupportsServerType(IServerStatePollerType type, IServerType serverType) {
-		String sTypes = type.getServerTypes();
-		if(sTypes == null || sTypes.equals("")) //$NON-NLS-1$
+		return commaSeparatedContains(type.getServerTypes(), serverType.getId());
+	}
+
+	protected boolean pollerSupportsServerMode(IServerStatePollerType type, String mode) {
+		return commaSeparatedContains(type.getServerModes(), mode);
+	}
+	
+	private boolean commaSeparatedContains(String cs, String val) {
+		if(cs == null || cs.equals("")) //$NON-NLS-1$
 			return true;
-		String[] allTypes = sTypes.split(","); //$NON-NLS-1$
-		for( int i = 0; i < allTypes.length; i++ ) {
-			if( allTypes[i].trim().equals(serverType.getId())) {
+		String[] arr = cs.split(","); //$NON-NLS-1$
+		for( int i = 0; i < arr.length; i++ ) {
+			if( arr[i].trim().equals(val)) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	/** The method used to load / instantiate the failure handlers */
 	public void loadCredentialProviders() {
 		credentialProviders = new HashMap<String, IProvideCredentials>();

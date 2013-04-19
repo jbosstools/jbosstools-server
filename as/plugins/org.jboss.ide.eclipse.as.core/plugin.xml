@@ -606,6 +606,7 @@
             supportsStartup="true"
             supportsShutdown="true"/>
       <serverPoller
+            behaviorModes="local"
             class="org.jboss.ide.eclipse.as.core.extensions.polling.ProcessTerminatedPoller"
             id="org.jboss.ide.eclipse.as.core.runtime.server.processTerminatedPoller"
             name="Process Terminated"

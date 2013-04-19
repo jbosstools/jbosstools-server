@@ -94,8 +94,24 @@
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="behaviorModes" type="string">
+            <annotation>
+               <documentation>
+                  A comma-separated list of strings which correspond to server modes (local, rse, etc). If this attribute is not included, it is assumed to work for all server modes.
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="apiInfo"/>
+      </appInfo>
+      <documentation>
+         [Enter API information here.]
+      </documentation>
+   </annotation>
 
    <annotation>
       <appInfo>
@@ -112,15 +128,6 @@
       </appInfo>
       <documentation>
          [Enter extension point usage example here.]
-      </documentation>
-   </annotation>
-
-   <annotation>
-      <appInfo>
-         <meta.section type="apiInfo"/>
-      </appInfo>
-      <documentation>
-         [Enter API information here.]
       </documentation>
    </annotation>
 

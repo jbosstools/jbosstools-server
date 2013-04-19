@@ -45,6 +45,9 @@ public class ServerStatePollerType implements IServerStatePollerType {
 	public String getServerTypes() {
 		return el.getAttribute("serverTypes"); //$NON-NLS-1$
 	}
+	public String getServerModes() {
+		return el.getAttribute("behaviorModes"); //$NON-NLS-1$
+	}
 	
 	public IServerStatePoller createPoller() {
 		try {

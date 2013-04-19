@@ -41,6 +41,7 @@ public class DeploymentPreferenceLoader {
 	 * To get a more accurate version (with a default) please use
 	 * {@link DeployableServerBehavior#createPublishMethod()#getPublishMethodType()}
 	 * 
+	 * @deprecated use BehaviourModel.getPublishMethodType
 	 * @param server
 	 * @return
 	 */
@@ -48,16 +49,26 @@ public class DeploymentPreferenceLoader {
 		return getCurrentDeploymentMethodType(server, null);
 	}
 
+	/**
+	 * @deprecated use BehaviourModel.getPublishMethodType
+	 * @param server
+	 * @param defaultType
+	 * @return
+	 */
 	public static IJBossServerPublishMethodType getCurrentDeploymentMethodType(IServer server, String defaultType) {
 		return BehaviourModel.getPublishMethodType(server, defaultType);
 	}
 
 	public static String getCurrentDeploymentMethodTypeId(IServerAttributes server) {
-		return getCurrentDeploymentMethodTypeId(server, null);
+		return getCurrentServerBehaviorModeTypeId(server, null);
 	}
 	
 	public static String getCurrentDeploymentMethodTypeId(IServerAttributes server, String defaultType) {
-		return 	server.getAttribute(IDeployableServer.SERVER_MODE, defaultType);
+		return getCurrentServerBehaviorModeTypeId(server, defaultType);
+	}
+
+	public static String getCurrentServerBehaviorModeTypeId(IServerAttributes server, String defaultType) {
+		return server.getAttribute(IDeployableServer.SERVER_MODE, defaultType);
 	}
 
 	public static DeploymentPreferences loadPreferencesFromServer(IServerAttributes server) {
