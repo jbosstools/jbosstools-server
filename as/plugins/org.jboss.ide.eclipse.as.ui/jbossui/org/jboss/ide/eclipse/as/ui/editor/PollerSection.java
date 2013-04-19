@@ -253,10 +253,10 @@ public class PollerSection extends ServerEditorSection implements PropertyChange
 		IStatus s = Status.OK_STATUS;
 		if( !server.getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, false)) {
 			if( startPollerCombo.getSelectionIndex() == -1 ) {
-				s = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, "Your server must have a valid startup poller selected.");
+				s = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, Messages.EditorStartupPollerNotSet);
 			}
 			if( stopPollerCombo.getSelectionIndex() == -1 ) {
-				s = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, "Your server must have a valid shutdown poller selected.");
+				s = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, Messages.EditorShutdownPollerNotSet);
 			}
 		}
 		return new IStatus[] {s};

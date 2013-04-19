@@ -211,6 +211,8 @@ public class Messages extends NLS {
 	public static String EditorTempDeployDNE;
 	public static String EditorStartupPollerLabel;
 	public static String EditorShutdownPollerLabel;
+	public static String EditorStartupPollerNotSet;
+	public static String EditorShutdownPollerNotSet;
 	public static String EditorChangeStartPollerCommandName;
 	public static String EditorChangeStopPollerCommandName;
 	public static String EditorServerPorts;
