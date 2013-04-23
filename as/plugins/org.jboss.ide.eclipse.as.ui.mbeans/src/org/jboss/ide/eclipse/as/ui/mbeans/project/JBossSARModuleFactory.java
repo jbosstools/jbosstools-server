@@ -29,7 +29,7 @@ import org.jboss.ide.eclipse.as.wtp.core.modules.JBTFlatProjectModuleFactory;
 
 public class JBossSARModuleFactory extends JBTFlatProjectModuleFactory {
 	public static final String FACTORY_ID = "org.jboss.ide.eclipse.as.core.modules.sar.moduleFactory"; //$NON-NLS-1$
-	public static final String MODULE_TYPE = IJBossSARFacetDataModelProperties.JBOSS_SAR_FACET_ID;
+	public static final String MODULE_TYPE = IJBossSARFacetDataModelProperties.SAR_PROJECT_FACET;
 	public static final String V1_0 = "1.0"; //$NON-NLS-1$
 	
 	public String getFactoryId() {
@@ -46,33 +46,11 @@ public class JBossSARModuleFactory extends JBTFlatProjectModuleFactory {
 
 	@Override
 	protected boolean canHandleProject(IProject project) {
-		IProjectFacet facet = ProjectFacetsManager
-				.getProjectFacet(MODULE_TYPE);
-		IFacetedProject facetedProject = null;
-		try {
-			facetedProject = ProjectFacetsManager.create(project);
-			if (facetedProject.hasProjectFacet(facet)) {
-				return true;
-			}
-		} catch (CoreException e) {
-			/*
-			 *  Ignore. No matter what problem occurs here, 
-			 *  if the project is closed, inaccessible, is not
-			 *  a faceted project, etc, it is not an error. The 
-			 *  project simply cannot be handled by this factory. 
-			 *  
-			 *  But I'll log it anyway :/
-			 */
-			Platform.getLog(Platform.getBundle(Activator.PLUGIN_ID)).log( 
-					new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e));
-		}
-
-		return false;
+		return hasProjectFacet(project, MODULE_TYPE);
 	}
 
 	@Override
 	protected String getModuleType(IProject project) {
-		// TODO Auto-generated method stub
 		return MODULE_TYPE;
 	}
 
@@ -83,18 +61,19 @@ public class JBossSARModuleFactory extends JBTFlatProjectModuleFactory {
 
 	@Override
 	protected String getModuleType(File binaryFile) {
-		// TODO Auto-generated method stub
+		// sar allows no child modules
 		return null;
 	}
 
 	@Override
 	protected String getModuleVersion(File binaryFile) {
-		// TODO Auto-generated method stub
+		// sar allows no child modules
 		return null;
 	}
 
 	@Override 
 	public IModule createChildModule(FlatComponentDeployable parent, IChildModuleReference child) {
+		// sar allows no child modules
 		return null;
 	}
 }

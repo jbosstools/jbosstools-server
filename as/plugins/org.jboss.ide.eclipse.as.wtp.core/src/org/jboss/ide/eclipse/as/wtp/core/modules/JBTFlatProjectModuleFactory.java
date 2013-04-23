@@ -21,15 +21,22 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jst.j2ee.internal.deployables.BinaryFileModuleDelegate;
-import org.eclipse.jst.j2ee.internal.plugin.J2EEPlugin;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.flat.IChildModuleReference;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.IProjectFacet;
+import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.internal.Module;
 import org.eclipse.wst.server.core.internal.ModuleFactory;
@@ -37,6 +44,7 @@ import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.util.ProjectModuleFactoryDelegate;
 import org.eclipse.wst.web.internal.deployables.FlatComponentDeployable;
+import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
 
 public abstract class JBTFlatProjectModuleFactory extends ProjectModuleFactoryDelegate implements IResourceChangeListener {
 	public static final String BINARY_PREFIX = "/binary:"; //$NON-NLS-1$
@@ -190,6 +198,50 @@ public abstract class JBTFlatProjectModuleFactory extends ProjectModuleFactoryDe
 				moduleDelegates.remove(module);
 			}
 		}
+	}
+	
+	/**
+	 * Return the facet version if the project has this facet.
+	 * Otherwise return null.
+	 * 
+	 * @param project
+	 * @param facetName
+	 * @return
+	 */
+	protected String getFacetVersion(IProject project, String facetName) {
+		IProjectFacet facet = ProjectFacetsManager.getProjectFacet(facetName);
+		IFacetedProject facetedProject = null;
+		try {
+			facetedProject = ProjectFacetsManager.create(project);
+			if (facetedProject.hasProjectFacet(facet)) {
+				IProjectFacetVersion version = facetedProject.getProjectFacetVersion(facet);
+				return version.getVersionString();
+			}
+		} catch(CoreException ce) {
+			// DO NOT LOG. Simply return null
+		}
+		return null;
+	}
+	
+	protected boolean hasProjectFacet(IProject project, String facetName) {
+		return verifyFacetExists(project, facetName);
+	}
+	
+	@Deprecated
+	protected boolean verifyFacetExists(IProject project, String facetName) {
+		IProjectFacet facet = ProjectFacetsManager.getProjectFacet(facetName);
+		IFacetedProject facetedProject = null;
+		try {
+			facetedProject = ProjectFacetsManager.create(project);
+			if (facetedProject.hasProjectFacet(facet)) {
+				return true;
+			}
+		} catch (CoreException e) {
+			// DO NOT LOG HERE. Any project could be provided at any time. 
+			// Do not want to flood users with errors
+		}
+
+		return false;
 	}
 
 	
