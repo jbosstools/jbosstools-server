@@ -14,6 +14,8 @@ package org.jboss.ide.eclipse.as.rse.core;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
@@ -42,6 +44,13 @@ public class RSEJBossStartLaunchDelegate extends AbstractRSELaunchDelegate {
 			((DelegatingServerBehavior)beh).setServerStarted();
 			return false;
 		}
+		IDelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
+		String currentHost = jbsBehavior.getServer().getAttribute(RSEUtils.RSE_SERVER_HOST, (String)null);
+		if( currentHost == null || RSEUtils.findHost(currentHost) == null ) {
+			throw new CoreException(new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, 
+					"Host \"" + currentHost + "\" not found. Host may have been deleted or RSE model may not be completely loaded"));
+		}
+		
 		return true;
 	}
 

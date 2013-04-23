@@ -234,7 +234,7 @@ public class RSEHostShellModel {
 			IHost host = RSEUtils.findHost(connectionName);
 			if( host == null ) {
 				throw new CoreException(new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, 
-						"Host not found. Host may have been deleted or RSE model may not be completely loaded"));
+						"Host \"" + connectionName + "\" not found. Host may have been deleted or RSE model may not be completely loaded"));
 			}
 			
 			// ensure connections 
