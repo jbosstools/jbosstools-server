@@ -40,6 +40,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -141,6 +142,7 @@ public class ModifyDeploymentScannerIntervalDialog extends TitleAreaDialog {
 	
 	private IServer server;
 	private AS7DeploymentScannerUtility.Scanner[] scanners;
+	private Label extraInfo;
 	private TableViewer tv;
 	private boolean askAgainSelected = false;
     private String[] headings = new String[]{
@@ -169,7 +171,7 @@ public class ModifyDeploymentScannerIntervalDialog extends TitleAreaDialog {
 		setMessage(NLS.bind(Messages.DeploymentScannerDialogWarning, server.getName()), IMessageProvider.WARNING);
 		setTitle(Messages.DeploymentScannerDialogTitle);
 		getShell().setText(Messages.DeploymentScannerDialogTitle);
-		getShell().setSize(500, 300);
+		getShell().setSize(500,400);
 		return c;
 	}
 
@@ -181,7 +183,10 @@ public class ModifyDeploymentScannerIntervalDialog extends TitleAreaDialog {
 		Composite main = new Composite((Composite)super.createDialogArea(parent), SWT.NONE);
 		main.setLayoutData(new GridData(GridData.FILL_BOTH));
 		main.setLayout(new GridLayout(1,false));
-
+		extraInfo = new Label(main, SWT.WRAP);
+		extraInfo.setText(Messages.DeploymentScannerDialogWarningExplained);
+		
+		
 	    // Add the TableViewer
 	    tv = new TableViewer(main, SWT.FULL_SELECTION);
 	    tv.setContentProvider(new ScannerContentProvider());

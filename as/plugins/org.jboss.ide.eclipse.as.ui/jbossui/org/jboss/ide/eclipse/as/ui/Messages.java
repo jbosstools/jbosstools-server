@@ -315,6 +315,7 @@ public class Messages extends NLS {
     public static String DeploymentScannerColumnInterval;
     public static String DeploymentScannerDialogTitle;
     public static String DeploymentScannerDialogWarning;
+    public static String DeploymentScannerDialogWarningExplained;
     public static String DontAskThisAgain;
 
 	static {
