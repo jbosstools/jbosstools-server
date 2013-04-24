@@ -45,8 +45,10 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 	public Job getUpdateDeploymentScannerJob(final IServer server) {
 		return new Job(getJobName(server)) {
 			protected IStatus run(IProgressMonitor monitor) {
-				String[] folders = getDeployLocationFolders(server);
-				ensureScannersAdded(server, folders);
+				if( accepts(server)) {
+					String[] folders = getDeployLocationFolders(server);
+					ensureScannersAdded(server, folders);
+				}
 				return Status.OK_STATUS;
 			}
 		};
