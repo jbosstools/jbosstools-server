@@ -120,10 +120,7 @@ public abstract class AbstractJBossBehaviourDelegate extends AbstractBehaviourDe
 		IServer s = getActualBehavior().getServer();
 		JBossExtendedProperties properties = (JBossExtendedProperties)s.loadAdapter(JBossExtendedProperties.class, null);
 		if( properties != null ) {
-			Job scannerJob = null;
-			boolean addScanner = s.getAttribute(IJBossToolingConstants.PROPERTY_ADD_DEPLOYMENT_SCANNERS, true);
-			if( addScanner )
-				scannerJob = properties.getDeploymentScannerModifier().getUpdateDeploymentScannerJob(s);
+			Job scannerJob = properties.getDeploymentScannerModifier().getUpdateDeploymentScannerJob(s);
 			
 			IServerModuleStateVerifier verifier = properties.getModuleStateVerifier();
 			Job moduleStateJob = null;

@@ -23,7 +23,9 @@ public interface IDeploymentScannerModifier {
 	public void updateDeploymentScanners(IServer server);
 	
 	/**
-	 * Get the job which can Update the deployment scanners for this server
+	 * Get the job which can Update the deployment scanners for this server,
+	 * or null if unsupported. 
+	 * 
 	 * @param server
 	 * @return
 	 */

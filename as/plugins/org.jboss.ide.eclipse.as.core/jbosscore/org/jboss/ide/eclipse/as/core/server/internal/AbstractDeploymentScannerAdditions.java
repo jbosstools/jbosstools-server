@@ -23,11 +23,16 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IDeploymentScannerModifier;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public abstract class AbstractDeploymentScannerAdditions implements IDeploymentScannerModifier {
 	// Can this listener handle this server?
 	public abstract boolean accepts(IServer server);
+	
+	protected boolean acceptsSetting(IServer server, String setting, boolean defaultVal) {
+		return accepts(server) && server.getAttribute(setting, defaultVal);
+	}
 	
 	/* Do whatever action you need to do to add the scanners (if they don't already exist) for the following folders */
 	protected abstract void ensureScannersAdded(final IServer server, final String[] folders);
@@ -37,13 +42,16 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 	}
 
 	public void updateDeploymentScanners(final IServer server) {
-		if( accepts(server)) {
+		if( acceptsSetting(server, IJBossToolingConstants.PROPERTY_ADD_DEPLOYMENT_SCANNERS, true)) {
 			String[] folders = getDeployLocationFolders(server);
 			ensureScannersAdded(server, folders);
 		}
 	}
 
 	public Job getUpdateDeploymentScannerJob(final IServer server) {
+		if( !acceptsSetting(server, IJBossToolingConstants.PROPERTY_ADD_DEPLOYMENT_SCANNERS, true))
+			return null;
+		
 		return new Job(getJobName(server)) {
 			protected IStatus run(IProgressMonitor monitor) {
 				updateDeploymentScanners(server);
@@ -53,13 +61,16 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 	}
 	
 	public void removeAddedDeploymentScanners(IServer server) {
-		if( accepts(server)) {
+		if( !acceptsSetting(server, IJBossToolingConstants.PROPERTY_REMOVE_DEPLOYMENT_SCANNERS, false)) {
 			String[] folders = getDeployLocationFolders(server);
 			ensureScannersRemoved(server, folders);
 		}
 	}
 	
 	public Job getRemoveDeploymentScannerJob(final IServer server) {
+		if( !acceptsSetting(server, IJBossToolingConstants.PROPERTY_REMOVE_DEPLOYMENT_SCANNERS, false))
+			return null;
+		
 		return new Job(getJobName(server)) {
 			protected IStatus run(IProgressMonitor monitor) {
 				removeAddedDeploymentScanners(server);

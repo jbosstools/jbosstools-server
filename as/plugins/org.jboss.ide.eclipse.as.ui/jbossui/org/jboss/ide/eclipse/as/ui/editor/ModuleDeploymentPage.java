@@ -274,13 +274,11 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 		if( s.getServerState() == IServer.STATE_STARTED ) {
 			JBossExtendedProperties properties = (JBossExtendedProperties)s.loadAdapter(JBossExtendedProperties.class, null);
 			if( properties != null ) {
-				boolean addScanner = s.getAttribute(IJBossToolingConstants.PROPERTY_ADD_DEPLOYMENT_SCANNERS, true);
-				if( addScanner ) {
-					IDeploymentScannerModifier modifier = properties.getDeploymentScannerModifier();
-					if( modifier != null ) {
-						Job scannerJob = modifier.getUpdateDeploymentScannerJob(s);
+				IDeploymentScannerModifier modifier = properties.getDeploymentScannerModifier();
+				if( modifier != null ) {
+					Job scannerJob = modifier.getUpdateDeploymentScannerJob(s);
+					if( scannerJob != null )
 						scannerJob.schedule();
-					}
 				}
 			}
 		}

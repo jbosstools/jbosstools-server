@@ -16,6 +16,7 @@ import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
@@ -24,7 +25,9 @@ import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractDeploymentScannerAdditions;
 import org.jboss.ide.eclipse.as.core.server.internal.JMXServerDeploymentScannerAdditions;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7DeploymentScannerAdditions;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.internal.utils.ResourceUtils;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
@@ -141,7 +144,7 @@ public class DeploymentScannerAdditionsTest extends TestCase  {
 	}
 	
 	@Test
-	public void testRemoteGetsNoAdditions() {
+	public void testRemoteGetsNoAdditionsInvalidMode() {
 		// This test ensures that 'remote' servers are not handled by the standard listeners
 		IServer s = ServerCreationTestUtils.createMockServerWithRuntime(serverType, serverType);
 		try {
@@ -155,6 +158,47 @@ public class DeploymentScannerAdditionsTest extends TestCase  {
 		assertFalse(accepts);
 		accepts = new JMXServerDeploymentScannerAdditions().accepts(s);
 		assertFalse(accepts);
+
+		Job j1 = new LocalJBoss7DeploymentScannerAdditions().getUpdateDeploymentScannerJob(s);
+		assertNull(j1);
+		Job j2 = new JMXServerDeploymentScannerAdditions().getUpdateDeploymentScannerJob(s);
+		assertNull(j2);
+	}
+
+	@Test
+	public void testNoAdditionsRemovalsFromSettings() {
+		// This test ensures that 'remote' servers are not handled by the standard listeners
+		IServer s = ServerCreationTestUtils.createMockServerWithRuntime(serverType, serverType);
+		try {
+			IServerWorkingCopy wc = s.createWorkingCopy();
+			wc.setAttribute(IJBossToolingConstants.PROPERTY_ADD_DEPLOYMENT_SCANNERS, false);
+			wc.setAttribute(IJBossToolingConstants.PROPERTY_REMOVE_DEPLOYMENT_SCANNERS, false);
+			s = wc.save(true, null);
+		} catch(CoreException ce) {
+			fail("Could not set server mode to non-local");
+		}
+		
+		// Accepts will also check if the proper server type is here
+		ServerExtendedProperties props = (ServerExtendedProperties)s.loadAdapter(ServerExtendedProperties.class, null);
+		boolean usesManagement = props != null && 
+				props.getMultipleDeployFolderSupport() == ServerExtendedProperties.DEPLOYMENT_SCANNER_AS7_MANAGEMENT_SUPPORT;
+		boolean usesJMX = props != null && 
+				props.getMultipleDeployFolderSupport() == ServerExtendedProperties.DEPLOYMENT_SCANNER_JMX_SUPPORT;
+
+		
+		boolean accepts = new LocalJBoss7DeploymentScannerAdditions().accepts(s);
+		assertEquals(accepts, usesManagement);
+		accepts = new JMXServerDeploymentScannerAdditions().accepts(s);
+		assertEquals(accepts, usesJMX);
+
+		Job j1 = new LocalJBoss7DeploymentScannerAdditions().getUpdateDeploymentScannerJob(s);
+		assertNull(j1);
+		Job j2 = new JMXServerDeploymentScannerAdditions().getUpdateDeploymentScannerJob(s);
+		assertNull(j2);
+		Job j3 = new LocalJBoss7DeploymentScannerAdditions().getRemoveDeploymentScannerJob(s);
+		assertNull(j3);
+		Job j4 = new JMXServerDeploymentScannerAdditions().getRemoveDeploymentScannerJob(s);
+		assertNull(j4);
 	}
 
 	private AbstractDeploymentScannerAdditions getAdditions() {
