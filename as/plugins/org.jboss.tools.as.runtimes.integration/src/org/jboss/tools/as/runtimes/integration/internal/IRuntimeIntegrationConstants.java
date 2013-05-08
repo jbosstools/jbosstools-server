@@ -8,60 +8,26 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.core.runtime;
+package org.jboss.tools.as.runtimes.integration.internal;
 
-import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.tools.as.runtimes.integration.Messages;
 
 /**
- * This class was never intended for use by clients
- * @deprecated
+ * Please note this interface is in an internal package
+ * @noimplement 
  */
-public interface IJBossRuntimePluginConstants {
-	
-	/**
-	 * Please use JBossServerType.EAP.getId()
-	 * @deprecated
-	 */
-	public static final String EAP = "EAP"; //$NON-NLS-1$
-	/**
-	 * Please use JBossServerType.EAP_STD.getId()
-	 * @deprecated
-	 */
-	public static final String EAP_STD = "EAP_STD"; //$NON-NLS-1$
-	/**
-	 * Please use JBossServerType.SOA-P.getId()
-	 * @deprecated
-	 */
-	public static final String SOA_P = "SOA-P"; //$NON-NLS-1$
-	/**
-	 * Please use JBossServerType.SOA-P_STD.getId()
-	 * @deprecated
-	 */
-	public static final String SOA_P_STD = "SOA-P-STD"; //$NON-NLS-1$
-	/**
-	 * Please use JBossServerType.EPP.getId()
-	 * @deprecated
-	 */
-	public static final String EPP = "EPP"; //$NON-NLS-1$
-	/**
-	 * Please use JBossServerType.EWP.getId()
-	 * @deprecated
-	 */
-	public static final String EWP = "EWP"; //$NON-NLS-1$
-	/**
-	 * Please use JBossServerType.AS.getId()
-	 * @deprecated
-	 */
-	public static final String AS = "AS"; //$NON-NLS-1$
-	
-	
-	/*
-	 * The following constnats are all private and should not be exposed
-	 */
-	
-	public static final String ASProduct = "AS-Product"; //$NON-NLS-1$
+public interface IRuntimeIntegrationConstants {
 	public static final String DEFAULT_DS = "DefaultDS";//$NON-NLS-1$
 	public static final String RUNTIME = Messages.JBossRuntimeStartup_Runtime;
+	public static final String ASProduct = "AS-Product"; //$NON-NLS-1$
+	public static final String EAP = "EAP"; //$NON-NLS-1$
+	public static final String EAP_STD = "EAP_STD"; //$NON-NLS-1$
+	public static final String SOA_P = "SOA-P"; //$NON-NLS-1$
+	public static final String SOA_P_STD = "SOA-P-STD"; //$NON-NLS-1$
+	public static final String EPP = "EPP"; //$NON-NLS-1$
+	public static final String EWP = "EWP"; //$NON-NLS-1$
+	public static final String AS = "AS"; //$NON-NLS-1$
+	
 	public static final String HSQLDB_DRIVER_JAR_NAME = "hsqldb.jar"; //$NON-NLS-1$
 	
 	public static final String HSQLDB_DRIVER_3X_4X_LOCATION = "/server/default/lib/" + HSQLDB_DRIVER_JAR_NAME; //$NON-NLS-1$

@@ -30,7 +30,7 @@ Require-Bundle: org.apache.ant;bundle-version="1.7.1",
  org.jboss.ide.eclipse.as.management.core,
  org.jboss.ide.eclipse.as.dmr;bundle-version="2.3.0",
  org.jboss.tools.runtime.core;bundle-version="2.0.0",
- org.jboss.tools.runtime.ui;bundle-version="2.0.0"
+ org.jboss.tools.as.runtimes.integration;bundle-version="2.4.100"
 Bundle-ActivationPolicy: lazy
 Export-Package: org.jboss.ide.eclipse.as.core,
  org.jboss.ide.eclipse.as.core.extensions.descriptors,
