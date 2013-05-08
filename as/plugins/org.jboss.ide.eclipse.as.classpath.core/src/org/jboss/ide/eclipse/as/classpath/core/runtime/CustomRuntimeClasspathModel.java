@@ -88,7 +88,6 @@ public class CustomRuntimeClasspathModel implements IJBossToolingConstants, IJBo
 			return getDefaultAS50Entries();
 		if(EAP_43.equals(rtID))
 			return getDefaultEAP43Entries();
-		// Added cautiously, not sure on changes, may change
 		if(AS_51.equals(rtID)) 
 			return getDefaultAS50Entries();
 		if(AS_60.equals(rtID)) 
@@ -102,6 +101,10 @@ public class CustomRuntimeClasspathModel implements IJBossToolingConstants, IJBo
 			return getDefaultAS71Entries();
 		if(EAP_60.equals(type.getId()))
 			return getDefaultAS71Entries();
+		
+		// This will change if jboss-as ever gets us an api
+		if(EAP_61.equals(type.getId()))
+			return getDefaultEAP61Entries();
 		
 		// NEW_SERVER_ADAPTER add logic for new adapter here
 		return new IDefaultPathProvider[]{};
@@ -173,26 +176,39 @@ public class CustomRuntimeClasspathModel implements IJBossToolingConstants, IJBo
 		return sets.toArray(new PathProviderFileset[sets.size()]);
 	}
 	public IDefaultPathProvider[] getDefaultAS70Entries() {
-		ArrayList<IDefaultPathProvider> sets = new ArrayList<IDefaultPathProvider>();
-		sets.add(new PathProviderFileset("", "modules/javax", "**/*.jar", "**/jsf-api-1.2*.jar"));
-		sets.add(new PathProviderFileset("modules/org/hibernate/validator"));
-		sets.add(new PathProviderFileset("modules/org/resteasy"));
-		sets.add(new PathProviderFileset("modules/org/picketbox"));
-		sets.add(new PathProviderFileset("modules/org/jboss/as/controller-client/main/"));
-		sets.add(new PathProviderFileset("modules/org/jboss/dmr/main/"));
-		sets.add(new PathProviderFileset("modules/org/jboss/logging/main"));
-		sets.add(new PathProviderFileset("modules/org/jboss/resteasy/resteasy-jaxb-provider/main"));
-		sets.add(new PathProviderFileset("modules/org/jboss/resteasy/resteasy-jaxrs/main"));
-		sets.add(new PathProviderFileset("modules/org/jboss/resteasy/resteasy-multipart-provider/main"));
+		return getDefaultAS7xEntries("modules");
+	}
+	
+	/*
+	 * Temporary method where we pass in which folder as a prefix. 
+	 * This does not support layering and will need to change once
+	 * a proper api is provided.
+	 */
+	private IDefaultPathProvider[] getDefaultAS7xEntries(String modulesPrefix) {
 		
-		sets.add(new PathProviderFileset("modules/org/jboss/ejb3/main"));
+		ArrayList<IDefaultPathProvider> sets = new ArrayList<IDefaultPathProvider>();
+		sets.add(new PathProviderFileset("", modulesPrefix + "/javax", "**/*.jar", "**/jsf-api-1.2*.jar"));
+		sets.add(new PathProviderFileset(modulesPrefix + "/org/hibernate/validator"));
+		sets.add(new PathProviderFileset(modulesPrefix + "/org/resteasy"));
+		sets.add(new PathProviderFileset(modulesPrefix + "/org/picketbox"));
+		sets.add(new PathProviderFileset(modulesPrefix + "/org/jboss/as/controller-client/main/"));
+		sets.add(new PathProviderFileset(modulesPrefix + "/org/jboss/dmr/main/"));
+		sets.add(new PathProviderFileset(modulesPrefix + "/org/jboss/logging/main"));
+		sets.add(new PathProviderFileset(modulesPrefix + "/org/jboss/resteasy/resteasy-jaxb-provider/main"));
+		sets.add(new PathProviderFileset(modulesPrefix + "/org/jboss/resteasy/resteasy-jaxrs/main"));
+		sets.add(new PathProviderFileset(modulesPrefix + "/org/jboss/resteasy/resteasy-multipart-provider/main"));
+		sets.add(new PathProviderFileset(modulesPrefix + "/org/jboss/ejb3/main"));
 		return (IDefaultPathProvider[]) sets.toArray(new IDefaultPathProvider[sets.size()]);
 	}
 	
 	public IDefaultPathProvider[] getDefaultAS71Entries() {
 		return getDefaultAS70Entries();
 	}
-	
+
+	public IDefaultPathProvider[] getDefaultEAP61Entries() {
+		return getDefaultAS7xEntries("modules/system/layers/base");
+	}
+
 	public IPath[] getAllEntries(IRuntime runtime, IDefaultPathProvider[] sets) {
 		ArrayList<IPath> retval = new ArrayList<IPath>();
 		for( int i = 0; i < sets.length; i++ ) {
