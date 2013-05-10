@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.core.runtime;
+package org.jboss.tools.as.runtimes.integration.internal;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -18,7 +18,6 @@ import java.util.Properties;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.datatools.connectivity.ConnectionProfileConstants;
 import org.eclipse.datatools.connectivity.ConnectionProfileException;
@@ -32,17 +31,11 @@ import org.eclipse.datatools.connectivity.drivers.IPropertySet;
 import org.eclipse.datatools.connectivity.drivers.PropertySetImpl;
 import org.eclipse.datatools.connectivity.drivers.models.TemplateDescriptor;
 import org.eclipse.wst.server.core.IServerType;
-import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-import org.osgi.framework.Bundle;
+import org.jboss.tools.as.runtimes.integration.Messages;
+import org.jboss.tools.as.runtimes.integration.ServerRuntimesIntegrationActivator;
 
-/**
- * This class is deprecated. The functionality has moved to a private
- * location inside org.jboss.tools.as.runtimes.integration
- * @deprecated
- */
-public class DriverUtility implements IJBossRuntimePluginConstants {
+public class DriverUtility implements IRuntimeIntegrationConstants {
 	public static final HashMap<String,String> SERVER_DRIVER_LOCATION = new HashMap<String, String>();
 	static {
 		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_AS_32, HSQLDB_DRIVER_3X_4X_LOCATION);
@@ -78,13 +71,13 @@ public class DriverUtility implements IJBossRuntimePluginConstants {
 		try {
 			driverPath = getDriverPath(jbossASLocation, serverType);
 		} catch (IOException e) {
-			JBossServerCorePlugin.getDefault().getLog().log(new Status(IStatus.ERROR,
-					JBossServerCorePlugin.PLUGIN_ID, Messages.JBossRuntimeStartup_Cannott_create_new_HSQL_DB_Driver, e));
+			ServerRuntimesIntegrationActivator.getDefault().getLog().log(new Status(IStatus.ERROR,
+					ServerRuntimesIntegrationActivator.PLUGIN_ID, Messages.JBossRuntimeStartup_Cannott_create_new_HSQL_DB_Driver, e));
 			return;
 		}
 		if (driverPath == null) {
-			JBossServerCorePlugin.getDefault().getLog().log(new Status(IStatus.ERROR,
-					JBossServerCorePlugin.PLUGIN_ID, Messages.JBossRuntimeStartup_Cannot_create_new_DB_Driver));
+			ServerRuntimesIntegrationActivator.getDefault().getLog().log(new Status(IStatus.ERROR,
+					ServerRuntimesIntegrationActivator.PLUGIN_ID, Messages.JBossRuntimeStartup_Cannot_create_new_DB_Driver));
 		}
 
 		DriverInstance driver = getDriver(serverType);
