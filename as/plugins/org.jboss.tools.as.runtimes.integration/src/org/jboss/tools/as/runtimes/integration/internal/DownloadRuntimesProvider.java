@@ -11,6 +11,7 @@
 package org.jboss.tools.as.runtimes.integration.internal;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -68,11 +69,17 @@ public class DownloadRuntimesProvider implements IDownloadRuntimesProvider {
 					String fileSize = workingRT.getLabels().getProperty(LABEL_FILE_SIZE);
 					String license = workingRT.getLicense();
 					String id = workingRT.getId();
+					String legacyId = getLegacyId(id);
+					String effectiveId = legacyId == null ? id : legacyId;
+					
 					String name = workingRT.getName();
 					String version = workingRT.getVersion();
-					DownloadRuntime dr = new DownloadRuntime(id, name, version, url);
+					DownloadRuntime dr = new DownloadRuntime(effectiveId, name, version, url);
 					dr.setLicenseURL(license);
 					dr.setSize(fileSize);
+					dr.setProperty(PROP_WTP_RUNTIME, wtpRT);
+					if( legacyId != null )
+						dr.setProperty(DownloadRuntime.PROPERTY_ALTERNATE_ID, id);
 					tmp.add(dr);
 				}
 				creationMonitor.worked(100);
@@ -82,6 +89,31 @@ public class DownloadRuntimesProvider implements IDownloadRuntimesProvider {
 			downloads = tmp;
 		}
 	}
+	
+	private HashMap<String, String> LEGACY_HASHMAP = null;
+	
+	// Given a stacks.yaml runtime id, get the legacy 
+	// downloadRuntimes id that's required
+	private synchronized String getLegacyId(String id) {
+		if( LEGACY_HASHMAP == null )
+			loadLegacy();
+		return LEGACY_HASHMAP.get(id);
+	}
+	
+	private synchronized void loadLegacy() {
+		LEGACY_HASHMAP = new HashMap<String, String>();
+		LEGACY_HASHMAP.put("jboss-as328SP1runtime", "org.jboss.tools.runtime.core.as.328" );
+		LEGACY_HASHMAP.put("jboss-as405runtime", "org.jboss.tools.runtime.core.as.405" );
+		LEGACY_HASHMAP.put("jboss-as423runtime", "org.jboss.tools.runtime.core.as.423" );
+		LEGACY_HASHMAP.put("jboss-as501runtime", "org.jboss.tools.runtime.core.as.501" );
+		LEGACY_HASHMAP.put("jboss-as510runtime", "org.jboss.tools.runtime.core.as.510" );
+		LEGACY_HASHMAP.put("jboss-as610runtime", "org.jboss.tools.runtime.core.as.610" );
+		LEGACY_HASHMAP.put("jboss-as701runtime", "org.jboss.tools.runtime.core.as.701" );
+		LEGACY_HASHMAP.put("jboss-as702runtime", "org.jboss.tools.runtime.core.as.702" );
+		LEGACY_HASHMAP.put("jboss-as710runtime", "org.jboss.tools.runtime.core.as.710" );
+		LEGACY_HASHMAP.put("jboss-as711runtime", "org.jboss.tools.runtime.core.as.711" );
+	}
+	
 	
 	// Let's pull from my topic branch for now
 	// This is almost no different than us pulling from my hard-coded plugin.xml. 
