@@ -4,7 +4,7 @@
    xmlns:jboss="http://www.jboss.com/xml/ns/javaee"
    xmlns:jee="http://java.sun.com/xml/ns/javaee"
    targetNamespace="http://www.jboss.com/xml/ns/javaee"
-   version="5.1"
+   version="6.0"
    elementFormDefault="qualified"
    >
 
@@ -12,7 +12,7 @@
       <xsd:documentation>
          <![CDATA[
 
-	This is the XML Schema for the JBoss 5.1 application client deployment descriptor.
+	This is the XML Schema for the JBoss 6.0 application client deployment descriptor.
 	The deployment descriptor must be named "META-INF/jboss-client.xml" in
 	the application client's jar file.  All the applicetion client deployment descriptors must indicate
 	the JBoss schema by using the Java EE namespace:
@@ -25,8 +25,8 @@
 	    <jboss-client xmlns="http://www.jboss.com/xml/ns/javaee"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://www.jboss.com/xml/ns/javaee
-                            http://www.jboss.org/j2ee/schema/jboss-client_5_1.xsd"
-             version="5.1">
+                            http://www.jboss.org/j2ee/schema/jboss-client_6_0.xsd"
+             version="6.0">
 	       ...
             </jboss-client>
 
@@ -34,19 +34,20 @@
 	the schema using the xsi:schemaLocation attribute for the
 	Java EE namespace with the following location:
 
-	http://www.jboss.org/j2ee/schema/jboss-client_5_1.xsd
+	http://www.jboss.org/j2ee/schema/jboss-client_6_0.xsd
 
 	]]>
       </xsd:documentation>
    </xsd:annotation>
 
-   <xsd:import namespace="http://java.sun.com/xml/ns/javaee" schemaLocation="http://java.sun.com/xml/ns/javaee/javaee_5.xsd"/>
-   <xsd:include schemaLocation="http://www.jboss.org/j2ee/schema/jboss-common_5_1.xsd"/>
+   <xsd:import namespace="http://java.sun.com/xml/ns/javaee" schemaLocation="http://java.sun.com/xml/ns/javaee/javaee_6.xsd"/>
+   <xsd:include schemaLocation="http://www.jboss.org/j2ee/schema/jboss-common_6_0.xsd"/>
 
    <xsd:element name="jboss-client" type="jboss:jboss-clientType"/>
 
    <xsd:complexType name="jboss-clientType">
       <xsd:sequence>
+         <xsd:element name="module-name" type="xsd:string" minOccurs="0"/>
          <xsd:group ref="jboss:descriptionGroup"/>
          <xsd:element name="callback-handler" type="xsd:string" minOccurs="0"/>
          <xsd:element name="metadata-complete" type="xsd:boolean" minOccurs="0"/>
