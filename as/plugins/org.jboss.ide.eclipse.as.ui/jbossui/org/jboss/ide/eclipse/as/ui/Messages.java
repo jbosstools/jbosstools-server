@@ -72,6 +72,8 @@ public class Messages extends NLS {
 	public static String rwf_homeDirBlank;
 	public static String rwf_NoVMSelected;
 	public static String rwf_jre6NotFound;
+	public static String rwf_requiresJDK;
+	public static String rwf_jdkWarning;
 	public static String rwf_noValidJRE;
 	public static String rwf_DefaultJREForExecEnv;
 	public static String rwf7_ConfigFileError;

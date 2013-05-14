@@ -70,6 +70,17 @@ public class JavaUtils {
 		}
 		return null;
 	}
+	
+	/**
+	 * This method performs a simple jdk check based on file structure ONLY
+	 * @return
+	 */
+	public static boolean isJDK(IVMInstall install) {
+		IPath locPath = new Path(install.getInstallLocation().getAbsolutePath());
+		if( locPath.append("bin").toFile().exists() && locPath.append("jre").append("bin").toFile().exists())
+			return true;
+		return false;
+	}
 
 	private static File getWindowsServerLibFolder(String version, IVMInstall install, boolean jdk) {
 		IPath locPath = new Path(install.getInstallLocation().getAbsolutePath());

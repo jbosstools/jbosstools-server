@@ -45,4 +45,8 @@ public class JBossEAP60ExtendedProperties extends JBossAS710ExtendedProperties {
 			return "-Xms1303m -Xmx1303m -XX:MaxPermSize=256m "; //$NON-NLS-1$
 		}
 	}
+	
+	public boolean requiresJDK() {
+		return true;
+	}
 }

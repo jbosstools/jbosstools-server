@@ -666,10 +666,10 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		File f = new File(folder);
 		configurations.getControl().setEnabled(f.exists() && f.isDirectory());
 
-		int sel = jreCombo.getSelectionIndex();
+		jreComboIndex = jreCombo.getSelectionIndex();
 		int offset = -1;
-		if( sel + offset >= 0 )
-			selectedVM = installedJREs.get(sel + offset);
+		if( jreComboIndex + offset >= 0 )
+			selectedVM = installedJREs.get(jreComboIndex + offset);
 		else // if sel < 0 or sel == 0 and offset == -1
 			selectedVM = null;
 		configDirTextVal = configDirText.getText();

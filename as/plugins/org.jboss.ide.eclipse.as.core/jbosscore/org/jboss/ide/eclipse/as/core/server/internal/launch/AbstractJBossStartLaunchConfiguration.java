@@ -26,20 +26,25 @@ import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMRunner;
 import org.eclipse.jdt.launching.VMRunnerConfiguration;
 import org.eclipse.jst.server.core.ServerProfilerDelegate;
+import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.IServerAlreadyStartedHandler;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
+import org.jboss.ide.eclipse.as.core.util.JavaUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
+import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 
 /**
  * @author Rob Stryker
@@ -61,12 +66,26 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 			return false;
 		}
 		
+		Trace.trace(Trace.STRING_FINEST, "Verifying server structure"); //$NON-NLS-1$
 		JBossExtendedProperties props = ExtendedServerPropertiesAdapterFactory.getJBossExtendedProperties(jbsBehavior.getServer());
 		IStatus status = props.verifyServerStructure();
 		if( !status.isOK() ) {
 			((DelegatingServerBehavior)jbsBehavior).setServerStopped();
 			throw new CoreException(status);
 		}
+		
+		Trace.trace(Trace.STRING_FINEST, "Verifying jdk is available if server requires jdk"); //$NON-NLS-1$
+		boolean requiresJDK = props.requiresJDK();
+		if( requiresJDK) {
+			IRuntime rt = jbsBehavior.getServer().getRuntime();
+			IJBossServerRuntime rt2 = RuntimeUtils.getJBossServerRuntime(rt);
+			IVMInstall vm = rt2.getVM();
+			if( !JavaUtils.isJDK(vm)) {
+				throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+						NLS.bind(Messages.launch_requiresJDK, jbsBehavior.getServer().getName())));
+			}
+		}
+
 		
 		Trace.trace(Trace.STRING_FINEST, "Checking if similar server is already up on the same ports."); //$NON-NLS-1$
 		IStatus startedStatus = isServerStarted(jbsBehavior);

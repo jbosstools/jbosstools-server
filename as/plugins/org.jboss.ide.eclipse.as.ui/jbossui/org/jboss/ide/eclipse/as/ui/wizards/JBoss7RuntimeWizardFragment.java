@@ -37,8 +37,10 @@ import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.TaskModel;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.JavaUtils;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
@@ -183,10 +185,10 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 
 	@Override
 	protected void updatePage() {
-		int sel = jreCombo.getSelectionIndex();
+		jreComboIndex = jreCombo.getSelectionIndex();
 		int offset = -1;
-		if( sel + offset >= 0 )
-			selectedVM = installedJREs.get(sel + offset);
+		if( jreComboIndex + offset >= 0 )
+			selectedVM = installedJREs.get(jreComboIndex + offset);
 		else // if sel < 0 or sel == 0 and offset == -1
 			selectedVM = null;
 		configDirTextVal = configDirText.getText();
@@ -205,6 +207,21 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 
 		if (name == null || name.equals("")) //$NON-NLS-1$
 			return Messages.rwf_nameTextBlank;
+		
+
+		if( getValidJREs().size() == 0 )
+			return NLS.bind(Messages.rwf_noValidJRE, getRuntime().getExecutionEnvironment().getId());
+		
+		JBossExtendedProperties props = (JBossExtendedProperties)getRuntime().getRuntime().getAdapter(JBossExtendedProperties.class);
+		if( props != null && props.requiresJDK() )  {
+			if( jreComboIndex != 0 && selectedVM != null) {
+				if( !JavaUtils.isJDK(selectedVM)) {
+					// The chosen vm has no jdk
+					return Messages.rwf_requiresJDK;
+				}
+			}
+		}
+		
 		
 		if( !homeDirectoryIsDirectory()) 
 			return Messages.rwf_homeIsNotDirectory;
@@ -232,6 +249,12 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	public String getWarningString() {
 		if (!systemJarExists())
 			return NLS.bind(Messages.rwf_homeMissingFiles2, getSystemJarPath());
+		JBossExtendedProperties props = (JBossExtendedProperties)getRuntime().getRuntime().getAdapter(JBossExtendedProperties.class);
+		if( props != null && props.requiresJDK() )  {
+			if( jreComboIndex == 0 || selectedVM == null) {
+				return Messages.rwf_jdkWarning;
+			}
+		}
 		// superclass handles the version warning
 		return super.getWarningString();
 	}

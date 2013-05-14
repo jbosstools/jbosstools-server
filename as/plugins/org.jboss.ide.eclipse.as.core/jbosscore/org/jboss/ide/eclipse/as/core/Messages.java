@@ -107,6 +107,7 @@ public class Messages extends NLS {
 	public static String JBossAS7ConfigurationFileDoesNotExist;
 	
 	public static String UpdateDeploymentScannerJobName;
+	public static String launch_requiresJDK;
 	
 	
 	/* From runtime detection */

@@ -154,4 +154,8 @@ public class JBossExtendedProperties extends ServerExtendedProperties {
 			return new JBossDefaultLaunchArguments(server);
 		return new JBossDefaultLaunchArguments(runtime);
 	}
+	
+	public boolean requiresJDK() {
+		return false;
+	}
 }
