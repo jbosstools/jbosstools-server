@@ -24,6 +24,10 @@ import org.eclipse.wst.common.componentcore.internal.flat.IFlattenParticipantPro
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 
+/**
+ * Prior consumers may now use the 
+ * @deprecated  This class was part of a workaround and was not intended to remain
+ */
 public class JBTHeirarchyParticipantProvider implements IFlattenParticipantProvider {
 	public static final String JBT_PROJ_IN_EAR_PARTICIPANT_ID = "jbtProjectInEarHeirarchyParticipant";
 	public static final String NESTED_UTILITIES_HEIRARCHY_PARTICIPANT_ID = "allowNestedUtilitiesHeirarchyParticipant";

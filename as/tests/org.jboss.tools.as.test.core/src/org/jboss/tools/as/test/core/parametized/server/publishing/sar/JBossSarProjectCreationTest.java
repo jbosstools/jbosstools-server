@@ -54,7 +54,6 @@ import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
-import org.jboss.ide.eclipse.as.wtp.core.util.CustomProjectInEarWorkaroundUtil;
 import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.internal.utils.ProjectRuntimeUtil;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
@@ -111,38 +110,6 @@ public class JBossSarProjectCreationTest extends TestCase {
 	}
 	
 	/*
-	 * This test is demonstrating the WRONG way to do things. 
-	 * This way will NOT be safe for all circumstances. 
-	 */
-	public void testSarInsideEarMemberResources()  {
-		createSarInEarAndVerify("sar1jear", "sar1j", "server3", new Path("lib").makeAbsolute());
-    	IProject earProj = ResourcesPlugin.getWorkspace().getRoot().getProject("sar1jear");
-    	IModule mod = ServerUtil.getModule(earProj);
-    	ModuleDelegate md = (ModuleDelegate)mod.loadAdapter(ModuleDelegate.class, null);
-    	try {
-    		// Current wtp behavior creates this resource
-    		IModuleResource sar = getResourceAtPath(md.members(), new Path("lib/sar1j.sar"));
-    		assertNotNull(sar);
-    		assertTrue(sar instanceof IModuleFile);
-	    	IModuleResource[] members = md.members();
-	    	
-	    	// Current behavior treats the sar resources as a very confused entity.
-	    	// It tries to treat it as an archive reference, but cannot convert it
-	    	// to a file or ifile. 
-	    	java.io.File f = (java.io.File)sar.getAdapter(java.io.File.class);
-	    	assertNull(f);
-	    	IFile ifile = (IFile)sar.getAdapter(IFile.class);
-	    	assertNull(ifile);
-	    	
-	    	// In this case, the child is not found
-    		IModule[] children = md.getChildModules();
-    		assertTrue(children.length == 0);
-    	} catch(CoreException ce) {
-    		fail("Unable to get members for ear module: " + ce.getMessage());
-    	}
-	}
-	
-	/*
 	 * This is the correct apis to use if you need a more correct model
 	 * than wtp can provide based on current api.
 	 */
@@ -153,7 +120,7 @@ public class JBossSarProjectCreationTest extends TestCase {
     	
     	// Do not simply get the module delegate;  Use our safe hack method
     	//ModuleDelegate md = (ModuleDelegate)mod.loadAdapter(ModuleDelegate.class, null);
-    	ModuleDelegate md = CustomProjectInEarWorkaroundUtil.getCustomProjectSafeModuleDelegate(mod);
+    	ModuleDelegate md = (ModuleDelegate)mod.loadAdapter(ModuleDelegate.class, new NullProgressMonitor());
     	try {
     		// On this safe impl, the resource should NOT be found
     		IModuleResource sar = getResourceAtPath(md.members(), new Path("lib/sar1k.sar"));
@@ -193,7 +160,7 @@ public class JBossSarProjectCreationTest extends TestCase {
     	} catch(CoreException ce) {
     		fail("Unable to create test class at path " + testClass.getFullPath().toOSString());
     	}
-    	
+    	JobUtils.waitForIdle(1500);
 		IModule earModule = ServerUtil.getModule(earProj);
 		IServer s = ServerCore.findServer("server2");
 		try {

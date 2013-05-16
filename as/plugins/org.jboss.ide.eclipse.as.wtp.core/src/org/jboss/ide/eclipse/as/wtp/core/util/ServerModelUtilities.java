@@ -15,14 +15,12 @@ import java.util.Arrays;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.jst.server.core.IEnterpriseApplication;
 import org.eclipse.jst.server.core.IJ2EEModule;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
-import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
 import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
 
 public class ServerModelUtilities {
@@ -78,7 +76,7 @@ public class ServerModelUtilities {
 	}
 	
 	public static IModule[] getChildModules(IModule module) {
-		return CustomProjectInEarWorkaroundUtil.getSafeChildrenModules(module);
+		return ((ModuleDelegate)module.loadAdapter(ModuleDelegate.class, new NullProgressMonitor())).getChildModules();
 	}
 	
 	

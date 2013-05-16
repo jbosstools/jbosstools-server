@@ -19,5 +19,12 @@
             weight="1">
       </flattenParticipantProvider>
    </extension>
+   <extension
+         point="org.eclipse.wst.common.modulecore.heirarchyFlattenParticipant">
+      <heirarchyParticipant
+            class="org.jboss.ide.eclipse.as.wtp.core.vcf.JBTHeirarchyParticipant">
+      </heirarchyParticipant>
+   </extension>
+   
    
 </plugin>

@@ -32,7 +32,6 @@ import org.eclipse.wst.server.core.util.ModuleFile;
 import org.eclipse.wst.server.core.util.ModuleFolder;
 import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
 import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
-import org.jboss.ide.eclipse.as.wtp.core.util.CustomProjectInEarWorkaroundUtil;
 
 public class ModuleResourceUtil {
 	public static int countChanges(IModuleResourceDelta[] deltas) {
@@ -53,7 +52,7 @@ public class ModuleResourceUtil {
 		if( index != 0 ) { 
 			IModule parent = tree[index-1];
 			IModule child = tree[index];
-			ModuleDelegate md = CustomProjectInEarWorkaroundUtil.getCustomProjectSafeModuleDelegate(parent);
+			ModuleDelegate md = (ModuleDelegate)parent.loadAdapter(ModuleDelegate.class, new NullProgressMonitor());
 			if( md instanceof IEnterpriseApplication)
 				uri = ((IEnterpriseApplication)md).getURI(child);
 			else if( md instanceof IJBTModule)
