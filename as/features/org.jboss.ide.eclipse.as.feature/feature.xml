@@ -78,6 +78,7 @@ Raleigh NC 27606 USA.
       <import feature="org.jboss.ide.eclipse.archives.feature"/>
       <import feature="org.jboss.tools.jmx.feature"/>
       <import feature="org.jboss.tools.runtime.core.feature"/>
+      <import feature="org.jboss.tools.stacks.core.feature"/>
    </requires>
 
    <plugin
