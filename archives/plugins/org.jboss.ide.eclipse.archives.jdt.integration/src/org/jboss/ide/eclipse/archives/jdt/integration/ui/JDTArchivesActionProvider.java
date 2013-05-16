@@ -13,6 +13,7 @@ package org.jboss.ide.eclipse.archives.jdt.integration.ui;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -67,6 +68,17 @@ public class JDTArchivesActionProvider extends CommonActionProvider {
 	}
 
 	public void fillContextMenu(IMenuManager manager) {
+		if( manager.find(ArchivesActionProvider.INITIAL_SEPARATOR_ID) == null){
+			Separator s = new Separator(ArchivesActionProvider.INITIAL_SEPARATOR_ID);
+			s.setVisible(false);
+			manager.add(s);
+		}
+		if( manager.find(ArchivesActionProvider.END_ADD_CHILD_SEPARATOR_ID) == null){
+			Separator s = new Separator(ArchivesActionProvider.END_ADD_CHILD_SEPARATOR_ID);
+			s.setVisible(false);
+			manager.add(s);
+		}
+
 		IArchiveNode node = getSelectedNode();
 		if( node instanceof INamedContainerArchiveNode )
 			manager.insertBefore(ArchivesActionProvider.END_ADD_CHILD_SEPARATOR_ID, newLibFilesetAction);
