@@ -15,7 +15,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
@@ -51,6 +53,30 @@ public class DirectoryScannerFactory {
 			String rawPath, IPath rootArchiveRelativePath,
 			String includes, String excludes, String projectName,
 			boolean inWorkspace, double version, boolean scan) {
+		return createDirectoryScanner(rawPath, rootArchiveRelativePath, includes, excludes, projectName, inWorkspace, version, scan, null);
+	}
+	
+	/**
+	 * Create a scanner and, optionally, scan it. The scan operation may throw a RuntimeException 
+	 * if a progress monitor is provided and it is canceled at any time. 
+	 * 
+	 * @param rawPath
+	 * @param rootArchiveRelativePath
+	 * @param includes
+	 * @param excludes
+	 * @param projectName
+	 * @param inWorkspace
+	 * @param version
+	 * @param scan
+	 * @param monitor
+	 * @return
+	 * @throws RuntimeException
+	 */
+	
+	public static DirectoryScannerExtension createDirectoryScanner (
+			String rawPath, IPath rootArchiveRelativePath,
+			String includes, String excludes, String projectName,
+			boolean inWorkspace, double version, boolean scan, IProgressMonitor monitor) throws RuntimeException {
 
 		ScannableFileSet fs = new ScannableFileSet();
 		fs.rawPath = rawPath;
@@ -62,7 +88,10 @@ public class DirectoryScannerFactory {
 		fs.version = version;
 		DirectoryScannerExtension scanner = new DirectoryScannerExtension(fs);
 		if (scan) {
-			scanner.scan();
+			if( monitor == null)
+				scanner.scan();
+			else
+				scanner.scan(monitor);
 		}
 		return scanner;
 	}
@@ -85,6 +114,8 @@ public class DirectoryScannerFactory {
 		 * @since 3.4
 		 */
 		protected HashMap<String, ArrayList<FileWrapper>> requiredFolders;
+		private IProgressMonitor monitor;
+		
 		public DirectoryScannerExtension(ScannableFileSet fs) {
 			this.fs = fs;
 			String includes = fs.includes == null ? "" : fs.includes; //$NON-NLS-1$
@@ -100,6 +131,11 @@ public class DirectoryScannerFactory {
 			setBasedir2(fs.rawPath);
 		}
 
+	    public void scan(IProgressMonitor monitor) throws IllegalStateException {
+	    	this.monitor = monitor;
+	    	super.scan();
+	    }
+		
 		public void setBasedir2(String path) {
 			String s = PathUtils.getAbsoluteLocation(path, fs.projectName, fs.inWorkspace, fs.version);
 			if( s == null )
@@ -119,6 +155,9 @@ public class DirectoryScannerFactory {
 
 	    /* Only used when workspace relative! */
 	    protected File[] list2(File file) {
+	    	if( monitor != null && monitor.isCanceled() )
+	    		throw new RuntimeException();
+	    	
 	    	if( fs.inWorkspace )
 	    		return list2workspace(file);
 	    	else
@@ -126,6 +165,9 @@ public class DirectoryScannerFactory {
 	    }
 
 	    protected File getChild(File file, String element) {
+	    	if( monitor != null && monitor.isCanceled() )
+	    		throw new RuntimeException();
+
 	    	if( !fs.inWorkspace)
 	    		return new FileWrapper(file, new Path(file.getAbsolutePath()), fs.rootArchiveRelativePath);
 	    	FileWrapper pWrapper = (FileWrapper)file;
@@ -135,6 +177,9 @@ public class DirectoryScannerFactory {
 	    }
 	    
 	    protected File[] list2workspace(File file) {
+	    	if( monitor != null && monitor.isCanceled() )
+	    		throw new RuntimeException();
+
 	    	IPath workspaceRelative = ((FileWrapper)file).getWrapperPath();
 	    	if( workspaceRelative == null )
 	    		return new File[0];
@@ -160,6 +205,9 @@ public class DirectoryScannerFactory {
 	    }
 
 	    protected File[] list2absolute(File file) {
+	    	if( monitor != null && monitor.isCanceled() )
+	    		throw new RuntimeException();
+
 	    	File[] children = file.listFiles();
 	    	if( children != null ) {
 		    	FileWrapper[] children2 = new FileWrapper[children.length];

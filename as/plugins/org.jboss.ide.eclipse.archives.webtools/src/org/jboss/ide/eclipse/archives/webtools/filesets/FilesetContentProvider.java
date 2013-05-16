@@ -24,6 +24,8 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.XPathTreeContentProvider.ServerWrapper;
 import org.jboss.tools.as.wst.server.ui.xpl.ServerToolTip;
 
@@ -159,6 +161,11 @@ public class FilesetContentProvider implements ITreeContentProvider {
 
 	public Object[] getChildren(Object parentElement) {
 		if (parentElement instanceof IServer) {
+			// check support
+			ServerExtendedProperties props = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties((IServer)parentElement);
+			if( props == null || !props.allowConvenienceEnhancements())
+				return new Object[]{};
+			
 			return new Object[] { new ServerWrapper((IServer) parentElement) };
 		}
 		if (parentElement instanceof ServerWrapper) {

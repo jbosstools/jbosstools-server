@@ -35,6 +35,13 @@ public class ServerExtendedProperties {
 		}
 	}
 
+	/*
+	 * Convenience enhancements include fileset and xpath support
+	 */
+	public boolean allowConvenienceEnhancements() {
+		return true;
+	}
+	
 	public String getNewFilesetDefaultRootFolder() {
 		return "${jboss_config_dir}"; //$NON-NLS-1$
 	}

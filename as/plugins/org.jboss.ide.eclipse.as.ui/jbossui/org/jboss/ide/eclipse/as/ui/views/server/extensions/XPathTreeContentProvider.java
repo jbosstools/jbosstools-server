@@ -30,6 +30,8 @@ import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
+import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.tools.as.wst.server.ui.xpl.ServerToolTip;
 
@@ -65,6 +67,11 @@ public class XPathTreeContentProvider implements ITreeContentProvider {
 		if (parentElement == null)
 			return new Object[] {};
 		if (parentElement instanceof IServer) {
+			ServerExtendedProperties props = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties((IServer)parentElement);
+			if( props == null || !props.allowConvenienceEnhancements())
+				return new Object[]{};
+
+			
 			return new Object[] { new ServerWrapper((IServer) parentElement) };
 		}
 

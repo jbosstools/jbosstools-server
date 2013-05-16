@@ -13,6 +13,7 @@ package org.jboss.ide.eclipse.archives.webtools.filesets;
 import java.io.File;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
@@ -182,11 +183,26 @@ public class Fileset implements Cloneable {
 	 * @return
 	 */
 	public static IPath[] findPaths(String dir, String includes, String excludes) {
+		return findPaths(dir, includes, excludes, null);
+	}
+	
+	/**
+	 * This method intentionally will not log any exceptions. It will only
+	 * return an empty array if the scanner is incapable of scanning
+	 * with the given parameters. 
+	 * 
+	 * @param dir
+	 * @param includes
+	 * @param excludes
+	 * @return
+	 */
+	public static IPath[] findPaths(String dir, String includes, String excludes, IProgressMonitor monitor) {
+
 		try {
 			if (dir != null && new File(dir).exists()) {
 				DirectoryScanner scanner = DirectoryScannerFactory
 						.createDirectoryScanner(dir, null, includes, excludes,
-								null, false, 1, true);
+								null, false, 1, true, monitor);
 				if (scanner != null) {
 					String[] files = scanner.getIncludedFiles();
 					IPath[] paths = new IPath[files.length];
@@ -197,6 +213,8 @@ public class Fileset implements Cloneable {
 				}
 			}
 		} catch (IllegalStateException ise) {
+			return new IPath[0];
+		} catch(RuntimeException re) {
 			return new IPath[0];
 		}
 		return new IPath[0];

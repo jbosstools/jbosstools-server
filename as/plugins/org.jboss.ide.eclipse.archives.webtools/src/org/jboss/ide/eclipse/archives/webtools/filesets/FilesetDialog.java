@@ -11,7 +11,11 @@
 package org.jboss.ide.eclipse.archives.webtools.filesets;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
@@ -27,6 +31,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -153,11 +158,17 @@ public class FilesetDialog extends TitleAreaDialog {
 		includes = includesText.getText();
 		excludes = excludesText.getText();
 		fileset.setName(name);
+		boolean requiresPreviewUpdate = false;
+		requiresPreviewUpdate |= (dir != null && !dir.equals(fileset.getRawFolder()));
+		requiresPreviewUpdate |= (includes != null && !includes.equals(fileset.getIncludesPattern()));
+		requiresPreviewUpdate |= (excludes != null && !excludes.equals(fileset.getExcludesPattern()));
+
 		fileset.setFolder(dir);
 		fileset.setIncludesPattern(includes);
 		fileset.setExcludesPattern(excludes);
 		validate();
-		updatePreview();
+		if( requiresPreviewUpdate)
+			updatePreview();
 	}
 	
 	protected void validate() {
@@ -231,9 +242,30 @@ public class FilesetDialog extends TitleAreaDialog {
 		if( preview != null ) { 
 			String resInc = fileset.getResolvedIncludesPattern();
 			String resExc = fileset.getResolvedExclude();
-			preview.setInput(findPaths(fileset.getFolder(), resInc, resExc));
+			launchPreviewJob(fileset.getFolder(), resInc, resExc);
 		}
 	}
+	
+	private Job loadPreviewJob;
+	private synchronized void launchPreviewJob(final String folder, final String inc, final String exc) {
+		if( loadPreviewJob != null )
+			loadPreviewJob.cancel();
+		loadPreviewJob = new Job("Previewing matched fileset path") { //$NON-NLS-1$
+			protected IStatus run(IProgressMonitor monitor) {
+				final IPath[] matched = findPaths(fileset.getFolder(), inc, exc, monitor);
+				Display.getDefault().asyncExec(new Runnable() { 
+					public void run() {
+						if( preview != null && !preview.isDisposed()) {
+							preview.setInput(matched);
+						}
+					}
+				});
+				return Status.OK_STATUS;
+			}
+		};
+		loadPreviewJob.schedule();
+	}
+	
 
 	public String getDir() {
 		return dir;
@@ -251,7 +283,7 @@ public class FilesetDialog extends TitleAreaDialog {
 		return fileset;
 	}
 	
-	private static IPath[] findPaths(String dir, String includes, String excludes) {
-		return Fileset.findPaths(dir, includes, excludes);
+	private static IPath[] findPaths(String dir, String includes, String excludes, IProgressMonitor monitor) {
+		return Fileset.findPaths(dir, includes, excludes, monitor);
 	}
 }
