@@ -102,10 +102,12 @@ public class FilesetInfoWizardPage extends WizardPage {
 		//mainComposite.layout();
 		Display.getDefault().asyncExec(new Runnable(){
 			public void run() {
-				fillDefaults();
-				addListeners();
-				changePreview();
-				includesText.setFocus();
+				if( !mainComposite.isDisposed()) {
+					fillDefaults();
+					addListeners();
+					changePreview();
+					includesText.setFocus();
+				}
 			}
 		});
 		setControl(mainComposite);
