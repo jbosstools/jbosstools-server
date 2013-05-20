@@ -158,7 +158,7 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 	
 	protected void projectLoad() {
 		IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-		String qualifier = JBossServerCorePlugin.getDefault().getDescriptor().getUniqueIdentifier();
+		String qualifier = JBossServerCorePlugin.PLUGIN_ID;
 		for( int i = 0; i < allProjects.length; i++) {
 			IScopeContext context = new ProjectScope(allProjects[i]);
 			IEclipsePreferences node = context.getNode(qualifier);
@@ -194,7 +194,7 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 			list += tmp.removeFirstSegments(1).makeRelative() + "\n"; //$NON-NLS-1$
 		}
 		
-		String qualifier = JBossServerCorePlugin.getDefault().getDescriptor().getUniqueIdentifier();
+		String qualifier = JBossServerCorePlugin.PLUGIN_ID;
 		if( project.exists() && project.isAccessible()) {
 			IScopeContext context = new ProjectScope(project);
 			IEclipsePreferences node = context.getNode(qualifier);
