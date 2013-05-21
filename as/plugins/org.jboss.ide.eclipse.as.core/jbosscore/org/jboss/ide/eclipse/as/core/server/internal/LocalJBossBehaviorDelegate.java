@@ -239,6 +239,8 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 				ExtensionManager.getDefault().getJMXRunner().endTransaction(getServer(), this);
 			}
 		}
+		// Fire a job to update module state properly
+		new UpdateModuleStateJob(getServer()).schedule(2000);
 	}
 	
 	protected boolean shouldSuspendScanner() {

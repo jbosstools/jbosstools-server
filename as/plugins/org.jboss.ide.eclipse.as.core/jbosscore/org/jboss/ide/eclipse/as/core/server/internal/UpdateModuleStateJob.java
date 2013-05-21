@@ -19,10 +19,20 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.Server;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 
 public class UpdateModuleStateJob extends Job {
 	private IServer server;
 	private IServerModuleStateVerifier verifier;
+	public UpdateModuleStateJob(IServer server) {
+		super("Update Module States"); //$NON-NLS-1$
+		this.server = server;
+		JBossExtendedProperties properties = (JBossExtendedProperties)server.loadAdapter(JBossExtendedProperties.class, null);
+		this.verifier = properties.getModuleStateVerifier();
+	}
+
+	
+	
 	public UpdateModuleStateJob(IServer server, IServerModuleStateVerifier verifier) {
 		super("Update Module States"); //$NON-NLS-1$
 		this.server = server;
@@ -31,6 +41,9 @@ public class UpdateModuleStateJob extends Job {
 
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
+		if( verifier == null )
+			return Status.CANCEL_STATUS;
+		
 		IModule[] modules = server.getModules();
 		monitor.beginTask("Verifying Module State", modules.length * 1000); //$NON-NLS-1$
 		for( int i = 0; i < modules.length; i++ ) {
