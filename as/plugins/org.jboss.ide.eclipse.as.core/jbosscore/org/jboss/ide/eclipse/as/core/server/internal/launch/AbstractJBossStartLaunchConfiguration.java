@@ -84,9 +84,12 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 			
 			if( !JavaUtils.isJDK(vm)) {
 				// JBIDE-14568 do not BLOCK launch, but log error
-				Trace.trace(Trace.STRING_FINEST, "The provided VM does not appear to be a JDK: " + vm.getInstallLocation().getAbsolutePath()); //$NON-NLS-1$
+				Trace.trace(Trace.STRING_FINEST, "The VM to launch server '" +  //$NON-NLS-1$
+						jbsBehavior.getServer().getName() + "' does not appear to be a JDK: " + vm.getInstallLocation().getAbsolutePath()); //$NON-NLS-1$
 				IStatus stat = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
-						NLS.bind(Messages.launch_requiresJDK, jbsBehavior.getServer().getName()));
+						NLS.bind(Messages.launch_requiresJDK, 
+								jbsBehavior.getServer().getName(),
+								vm.getInstallLocation().getAbsolutePath()));
 				ServerLogger.getDefault().log(jbsBehavior.getServer(), stat);
 			}
 		}
