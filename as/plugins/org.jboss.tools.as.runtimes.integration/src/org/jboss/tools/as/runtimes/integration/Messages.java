@@ -13,7 +13,7 @@ package org.jboss.tools.as.runtimes.integration;
 import org.eclipse.osgi.util.NLS;
 
 public class Messages {
-	private static final String RESOURCE_NAME = "org.jboss.tools.as.runtimes.download.messages"; //$NON-NLS-1$
+	private static final String RESOURCE_NAME = "org.jboss.tools.as.runtimes.integration.Messages"; //$NON-NLS-1$
 	public static String JBossRuntimeStartup_Cannot_create_new_JBoss_Server;
 	public static String JBossRuntimeStartup_Cannott_create_new_DTP_Connection_Profile;
 	public static String JBossRuntimeStartup_Cannott_create_new_HSQL_DB_Driver;
