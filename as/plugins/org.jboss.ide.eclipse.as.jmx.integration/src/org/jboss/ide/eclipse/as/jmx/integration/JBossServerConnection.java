@@ -222,11 +222,13 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 		}
 	}
 	
-	protected void launchConnectionJob(IServer server) {
+	protected void launchConnectionJob(final IServer server) {
 		new Job("Connecting to " + server.getName() + " via JMX") { //$NON-NLS-1$ //$NON-NLS-2$
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
-				connectToStartedServer();
+				if( server.getServerState() == IServer.STATE_STARTED)
+					// Since this job runs late, it's possible server already stopped by user
+					connectToStartedServer();
 				return Status.OK_STATUS;
 			} 
 		}.schedule(5000);
