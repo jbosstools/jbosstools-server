@@ -33,6 +33,7 @@ import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.Trace;
+import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.IServerAlreadyStartedHandler;
@@ -80,9 +81,16 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 			IRuntime rt = jbsBehavior.getServer().getRuntime();
 			IJBossServerRuntime rt2 = RuntimeUtils.getJBossServerRuntime(rt);
 			IVMInstall vm = rt2.getVM();
+			
 			if( !JavaUtils.isJDK(vm)) {
-				throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
-						NLS.bind(Messages.launch_requiresJDK, jbsBehavior.getServer().getName())));
+				// JBIDE-14568 do not BLOCK launch, but log error
+				Trace.trace(Trace.STRING_FINEST, "The VM to launch server '" +  //$NON-NLS-1$
+						jbsBehavior.getServer().getName() + "' does not appear to be a JDK: " + vm.getInstallLocation().getAbsolutePath()); //$NON-NLS-1$
+				IStatus stat = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+						NLS.bind(Messages.launch_requiresJDK, 
+								jbsBehavior.getServer().getName(),
+								vm.getInstallLocation().getAbsolutePath()));
+				ServerLogger.getDefault().log(jbsBehavior.getServer(), stat);
 			}
 		}
 
