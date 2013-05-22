@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -212,17 +213,6 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 		if( getValidJREs().size() == 0 )
 			return NLS.bind(Messages.rwf_noValidJRE, getRuntime().getExecutionEnvironment().getId());
 		
-		JBossExtendedProperties props = (JBossExtendedProperties)getRuntime().getRuntime().getAdapter(JBossExtendedProperties.class);
-		if( props != null && props.requiresJDK() )  {
-			if( jreComboIndex != 0 && selectedVM != null) {
-				if( !JavaUtils.isJDK(selectedVM)) {
-					// The chosen vm has no jdk
-					return Messages.rwf_requiresJDK;
-				}
-			}
-		}
-		
-		
 		if( !homeDirectoryIsDirectory()) 
 			return Messages.rwf_homeIsNotDirectory;
 		
@@ -249,12 +239,25 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	public String getWarningString() {
 		if (!systemJarExists())
 			return NLS.bind(Messages.rwf_homeMissingFiles2, getSystemJarPath());
+		
+		
 		JBossExtendedProperties props = (JBossExtendedProperties)getRuntime().getRuntime().getAdapter(JBossExtendedProperties.class);
 		if( props != null && props.requiresJDK() )  {
+			if( jreComboIndex != 0 && selectedVM != null) {
+				if( !JavaUtils.isJDK(selectedVM)) {
+					// The chosen vm has no jdk
+					return Messages.rwf_requiresJDK;
+				}
+			}
 			if( jreComboIndex == 0 || selectedVM == null) {
-				return Messages.rwf_jdkWarning;
+				// Resolve this 'default' value to an actual IVMInstall
+				IVMInstall ivm = getRuntime().getVM();
+				if( !JavaUtils.isJDK(ivm)) {
+					return Messages.rwf_jdkWarning;
+				}
 			}
 		}
+		
 		// superclass handles the version warning
 		return super.getWarningString();
 	}

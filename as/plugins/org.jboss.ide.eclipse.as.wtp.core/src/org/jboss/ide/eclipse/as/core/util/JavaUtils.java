@@ -77,8 +77,16 @@ public class JavaUtils {
 	 */
 	public static boolean isJDK(IVMInstall install) {
 		IPath locPath = new Path(install.getInstallLocation().getAbsolutePath());
+		// Find a javac at pre-determined locations
+		if( locPath.append("bin").append("javac").toFile().exists())
+			return true;
+		if( locPath.append("bin").append("javac.exe").toFile().exists())
+			return true;
+		
+		// Oracle-style folder structure
 		if( locPath.append("bin").toFile().exists() && locPath.append("jre").append("bin").toFile().exists())
 			return true;
+		
 		return false;
 	}
 
