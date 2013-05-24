@@ -47,6 +47,11 @@ public class JBoss70DefaultLaunchArguments extends JBossDefaultLaunchArguments {
 	protected String getResolverWarning() {
 		return "-Dorg.jboss.resolver.warning=true ";  //$NON-NLS-1$
 	}
+	
+	protected String getJavaFlags() {
+		return getJavaFlags(true);
+	}
+
 	protected String getJBossJavaFlags() {
 		IPath serverHome = getServerHome();
 
