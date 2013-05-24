@@ -104,8 +104,12 @@ public class JBossDefaultLaunchArguments implements IDefaultLaunchArguments, IJB
 	}
 	
 	protected String getJavaFlags() {
+		return getJavaFlags(isLinux());
+	}
+	
+	protected String getJavaFlags(boolean forceIP4) {
 		String ret = new String();
-		if( isLinux())
+		if( forceIP4 )
 			ret += SYSPROP + JAVA_PREFER_IP4_ARG + EQ + true + SPACE; 
 		ret += SYSPROP + SUN_CLIENT_GC_ARG + EQ + 3600000 + SPACE;
 		ret += SYSPROP + SUN_SERVER_GC_ARG + EQ + 3600000 + SPACE;
