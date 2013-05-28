@@ -13,10 +13,54 @@ package org.jboss.ide.eclipse.as.management.core;
 import org.eclipse.wst.server.core.IServer;
 
 public interface IAS7ManagementDetails {
+	
+	/**
+	 * A property key. The desired value should be an integer in string-form.
+	 */
+	public static final String PROPERTY_TIMEOUT = "PROPERTY_TIMEOUT";
+	
+	/**
+	 * Get the desired host for this connection
+	 * @return
+	 */
 	public String getHost();
+	
+	/**
+	 * Get the desired port for this connection
+	 * @return
+	 */
 	public int getManagementPort();	
+	
+	/**
+	 * Get the username to be used
+	 * @return
+	 */
 	public String getManagementUsername();
+	/**
+	 * Get the password to be used
+	 * @return
+	 */
 	public String getManagementPassword();	
+	
+	/**
+	 * Get a callback handler to provide further credentials if
+	 * the first ones fail.
+	 * 
+	 * @param prompts
+	 * @return
+	 * @throws UnsupportedOperationException
+	 */
 	public String[] handleCallbacks(String[] prompts) throws UnsupportedOperationException;	
+	
+	/**
+	 * Get the IServer for which thsi connection is being made
+	 * @return
+	 */
 	public IServer getServer();
+	
+	/**
+	 * Get a property value
+	 * @return
+	 */
+	public String getProperty(String key);
 }

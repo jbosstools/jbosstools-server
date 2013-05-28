@@ -12,6 +12,8 @@ package org.jboss.ide.eclipse.as.core.server.v7.management;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -26,8 +28,14 @@ import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 
 public class AS7ManagementDetails implements IServerProvider, IAS7ManagementDetails {
 	private IServer server;
+	private Map<String, String> properties;
+	
 	public AS7ManagementDetails(IServer server) {
+		this(server, new HashMap<String,String>());
+	}
+	public AS7ManagementDetails(IServer server, Map<String, String> props) {
 		this.server = server;
+		this.properties = props;
 	}
 	
 	public String getHost() {
@@ -75,5 +83,9 @@ public class AS7ManagementDetails implements IServerProvider, IAS7ManagementDeta
 	
 	public IServer getServer() {
 		return server;
+	}
+
+	public String getProperty(String key) {
+		return properties.get(key);
 	}
 }

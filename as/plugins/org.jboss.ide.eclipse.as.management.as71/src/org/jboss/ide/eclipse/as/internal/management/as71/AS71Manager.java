@@ -68,8 +68,11 @@ public class AS71Manager {
 	public AS71Manager(IAS7ManagementDetails details) throws JBoss7ManangerException {
 		try {
 			this.details = details;
-			this.client = ModelControllerClient.Factory.create(details.getHost(), details.getManagementPort(),
-					getCallbackHandler());
+			String timeout = details.getProperty(IAS7ManagementDetails.PROPERTY_TIMEOUT);
+			int timeout2 = timeout == null ? 5000 : Integer.parseInt(timeout);
+			this.client = ModelControllerClient.Factory.create(
+					details.getHost(), details.getManagementPort(),
+					getCallbackHandler(), null, timeout2);
 			this.manager = ServerDeploymentManager.Factory.create(client);
 		} catch(UnknownHostException uhe) {
 			throw new JBoss7ManangerException(uhe);
