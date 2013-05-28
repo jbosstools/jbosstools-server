@@ -15,7 +15,7 @@ import org.eclipse.wst.server.core.IServer;
 public interface IAS7ManagementDetails {
 	
 	/**
-	 * A property key. The desired value should be an integer in string-form.
+	 * A property key. The desired value should be an Integer object.
 	 */
 	public static final String PROPERTY_TIMEOUT = "PROPERTY_TIMEOUT";
 	
@@ -62,5 +62,5 @@ public interface IAS7ManagementDetails {
 	 * Get a property value
 	 * @return
 	 */
-	public String getProperty(String key);
+	public Object getProperty(String key);
 }

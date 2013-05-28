@@ -28,12 +28,12 @@ import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 
 public class AS7ManagementDetails implements IServerProvider, IAS7ManagementDetails {
 	private IServer server;
-	private Map<String, String> properties;
+	private Map<String, Object> properties;
 	
 	public AS7ManagementDetails(IServer server) {
-		this(server, new HashMap<String,String>());
+		this(server, new HashMap<String,Object>());
 	}
-	public AS7ManagementDetails(IServer server, Map<String, String> props) {
+	public AS7ManagementDetails(IServer server, Map<String, Object> props) {
 		this.server = server;
 		this.properties = props;
 	}
@@ -85,7 +85,7 @@ public class AS7ManagementDetails implements IServerProvider, IAS7ManagementDeta
 		return server;
 	}
 
-	public String getProperty(String key) {
+	public Object getProperty(String key) {
 		return properties.get(key);
 	}
 }

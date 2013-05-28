@@ -276,8 +276,8 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 	}
 	
 	private AS7ManagementDetails createSynchronousManagementDetails(IServer server, final boolean[] callbacksCalled) {
-		HashMap<String, String> props = new HashMap<String, String>();
-		props.put(IAS7ManagementDetails.PROPERTY_TIMEOUT, new Integer(800).toString());
+		HashMap<String, Object> props = new HashMap<String, Object>();
+		props.put(IAS7ManagementDetails.PROPERTY_TIMEOUT, new Integer(800));
 		return new AS7ManagementDetails(server, props) {
 			public String[] handleCallbacks(String[] prompts) throws UnsupportedOperationException {
 				// No need to do verification here... simply know that a server responded requesting callbacks

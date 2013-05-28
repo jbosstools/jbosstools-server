@@ -68,8 +68,8 @@ public class AS71Manager {
 	public AS71Manager(IAS7ManagementDetails details) throws JBoss7ManangerException {
 		try {
 			this.details = details;
-			String timeout = details.getProperty(IAS7ManagementDetails.PROPERTY_TIMEOUT);
-			int timeout2 = timeout == null ? 5000 : Integer.parseInt(timeout);
+			Object timeout = details.getProperty(IAS7ManagementDetails.PROPERTY_TIMEOUT);
+			int timeout2 = timeout == null || !(timeout instanceof Integer) ? 5000 : ((Integer)timeout).intValue();
 			this.client = ModelControllerClient.Factory.create(
 					details.getHost(), details.getManagementPort(),
 					getCallbackHandler(), null, timeout2);
