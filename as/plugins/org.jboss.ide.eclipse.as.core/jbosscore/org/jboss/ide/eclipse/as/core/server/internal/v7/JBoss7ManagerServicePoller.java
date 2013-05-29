@@ -40,6 +40,9 @@ import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
  */
 public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 	public static final String POLLER_ID = "org.jboss.ide.eclipse.as.core.server.JBoss7ManagerServicePoller"; //$NON-NLS-1$
+	private static final int SYNCHRONOUS_POLL_FAST_TIMEOUT = 800;
+	
+	
 	private IServer server;
 	private AS7ManagementDetails managementDetails;
 	private IServerStatePollerType type;
@@ -277,7 +280,7 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 	
 	private AS7ManagementDetails createSynchronousManagementDetails(IServer server, final boolean[] callbacksCalled) {
 		HashMap<String, Object> props = new HashMap<String, Object>();
-		props.put(IAS7ManagementDetails.PROPERTY_TIMEOUT, new Integer(800));
+		props.put(IAS7ManagementDetails.PROPERTY_TIMEOUT, new Integer(SYNCHRONOUS_POLL_FAST_TIMEOUT));
 		return new AS7ManagementDetails(server, props) {
 			public String[] handleCallbacks(String[] prompts) throws UnsupportedOperationException {
 				// No need to do verification here... simply know that a server responded requesting callbacks
@@ -285,6 +288,8 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 				synchronized(callbacksCalled) {
 					callbacksCalled[0] = true;
 				}
+				// Throwing this exception alerts our management that we will
+				// not be providing credentials and they should abort request, clean up
 				throw new UnsupportedOperationException();
 			}
 		};

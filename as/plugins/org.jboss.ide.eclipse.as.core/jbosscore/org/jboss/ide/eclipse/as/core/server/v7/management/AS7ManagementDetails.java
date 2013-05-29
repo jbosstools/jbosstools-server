@@ -31,7 +31,7 @@ public class AS7ManagementDetails implements IServerProvider, IAS7ManagementDeta
 	private Map<String, Object> properties;
 	
 	public AS7ManagementDetails(IServer server) {
-		this(server, new HashMap<String,Object>());
+		this(server, new HashMap<String,Object>(0));
 	}
 	public AS7ManagementDetails(IServer server, Map<String, Object> props) {
 		this.server = server;

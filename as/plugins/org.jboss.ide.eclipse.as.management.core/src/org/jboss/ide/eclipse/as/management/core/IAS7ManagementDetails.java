@@ -16,6 +16,7 @@ public interface IAS7ManagementDetails {
 	
 	/**
 	 * A property key. The desired value should be an Integer object.
+	 * The property should be in milliseconds. 
 	 */
 	public static final String PROPERTY_TIMEOUT = "PROPERTY_TIMEOUT";
 	
@@ -53,7 +54,7 @@ public interface IAS7ManagementDetails {
 	public String[] handleCallbacks(String[] prompts) throws UnsupportedOperationException;	
 	
 	/**
-	 * Get the IServer for which thsi connection is being made
+	 * Get the IServer for which this connection is being made
 	 * @return
 	 */
 	public IServer getServer();
