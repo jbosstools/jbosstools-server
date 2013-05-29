@@ -50,7 +50,9 @@ import org.jboss.ide.eclipse.as.core.util.ThreadUtils;
 
 /**
  * 
- * @author Rob Stryker
+ * A synchronized call for this class is essentially a synchronization on the IProcess 
+ * member variable. This is required because the debug listener, the poller, and a new start 
+ * launch configuration may all try to change these details at varying times. 
  *
  */
 public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate implements IProcessProvider {
@@ -160,41 +162,73 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 		ServerLogger.getDefault().log(getServer(), status);
 	}
 	
+	/*
+	 * Set the process to this new one. reset the debug listener, also. 
+	 */
 	public synchronized void setProcess(final IProcess newProcess) {
-		if (process != null) { 
-			return;
-		}
 		process = newProcess;
-		if (processListener != null)
+		if (processListener != null) {
 			DebugPlugin.getDefault().removeDebugEventListener(processListener);
+			processListener = null;
+		}
 		if (newProcess == null)
 			return;
 		
-		processListener = new IDebugEventSetListener() {
-			public void handleDebugEvents(DebugEvent[] events) {
-				if (events != null) {
-					int size = events.length;
-					for (int i = 0; i < size; i++) {
-						if (process != null && process.equals(events[i].getSource()) && events[i].getKind() == DebugEvent.TERMINATE) {
-							DebugPlugin.getDefault().removeDebugEventListener(this);
-							stopPolling();
-							forceStop();
-							addProcessTerminatedEvent();
-						}
-					}
-				}
-			}
-		};
+		processListener = new ProcessTerminatedDebugListener(process);
 		DebugPlugin.getDefault().addDebugEventListener(processListener);
 	}
 	
-	private boolean isProcessRunning() {
-		return process != null 
-				&& !process.isTerminated();
+	private synchronized void handleProcessTerminatedEvent(ProcessTerminatedDebugListener listener) {
+
+		// If there's a new process that's not equal to myProcess, 
+		// then the server is already starting again
+		if( listener.myProcess != null && !listener.myProcess.equals(getProcess())) 
+			return;
+		if( getServer().getServerState() != IServer.STATE_STOPPED) {
+			stopPolling();
+			addProcessTerminatedEvent();
+			getActualBehavior().setServerStopped();
+		}
+		DebugPlugin.getDefault().removeDebugEventListener(listener);		
+		processListener = null;
+		process = null;
+		nextStopRequiresForce = false;
 	}
 	
-	public void onServerStarting() {
+	/*
+	 * This debug listener will respond to debug events and, 
+	 * call handleProcessTerminatedEvent to handle the event in a safe manner.
+	 */
+	private class ProcessTerminatedDebugListener implements IDebugEventSetListener {
+		private IProcess myProcess;
+		public ProcessTerminatedDebugListener(IProcess process) {
+			myProcess = process;
+		}
+		
+		public void handleDebugEvents(DebugEvent[] events) {
+			if (events != null) {
+				int size = events.length;
+				for (int i = 0; i < size; i++) {
+					if (myProcess != null && myProcess.equals(events[i].getSource()) && events[i].getKind() == DebugEvent.TERMINATE) {
+						handleProcessTerminatedEvent(this);
+					}
+				}
+			}
+		}
+	}
+	
+	private boolean isProcessRunning() {
+		IProcess p = getProcess();
+		return p != null 
+				&& !p.isTerminated();
+	}
+	
+	/*
+	 * Must be synchronized because it makes changes to the process
+	 */
+	public synchronized void onServerStarting() {
 		nextStopRequiresForce = false;
+		setProcess(null);
 		pollServer(IServerStatePoller.SERVER_UP);
 	}
 	
@@ -202,6 +236,16 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 		pollServer(IServerStatePoller.SERVER_DOWN);
 	}
 	
+	/*
+	 * Must be synchronized because it makes changes to the process
+	 */
+	public synchronized void onServerStopped() {
+		setProcess(null);
+	}
+	
+	/*
+	 * Must be synchronized because it accesses the process
+	 */
 	public synchronized IProcess getProcess() {
 		return process;
 	}

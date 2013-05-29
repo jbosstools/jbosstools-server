@@ -44,6 +44,12 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
  */
 public class DeployableServerBehavior extends ServerBehaviourDelegate 
 	implements IDeployableServerBehaviour {
+	
+	/**
+	 * A lock introduced to protect changes to server state
+	 */
+	protected final Object serverStateLock = new Object();
+	
 
 	public DeployableServerBehavior() {
 	}
@@ -201,23 +207,31 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate
 	}
 	
 	public void setServerStarted() {
-		serverStateVal = IServer.STATE_STARTED;
-		setServerState(IServer.STATE_STARTED);
+		synchronized(serverStateLock) {
+			serverStateVal = IServer.STATE_STARTED;
+			setServerState(IServer.STATE_STARTED);
+		}
 	}
 	
 	public void setServerStarting() {
-		serverStateVal = IServer.STATE_STARTING;
-		setServerState(IServer.STATE_STARTING);
+		synchronized(serverStateLock) {
+			serverStateVal = IServer.STATE_STARTING;
+			setServerState(IServer.STATE_STARTING);
+		}
 	}
 	
 	public void setServerStopped() {
-		serverStateVal = IServer.STATE_STOPPED;
-		setServerState(IServer.STATE_STOPPED);
+		synchronized(serverStateLock) {
+			serverStateVal = IServer.STATE_STOPPED;
+			setServerState(IServer.STATE_STOPPED);
+		}
 	}
 	
 	public void setServerStopping() {
-		serverStateVal = IServer.STATE_STOPPING;
-		setServerState(IServer.STATE_STOPPING);
+		synchronized(serverStateLock) {
+			serverStateVal = IServer.STATE_STOPPING;
+			setServerState(IServer.STATE_STOPPING);
+		}
 	}
 	
 	protected void initialize(IProgressMonitor monitor) {
