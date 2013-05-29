@@ -88,24 +88,33 @@ public class DelegatingServerBehavior extends DeployableServerBehavior implement
 	
 	@Override
 	public void setServerStarting() {
-		super.setServerStarting();
-		getDelegate().onServerStarting();
+		synchronized(serverStateLock) {
+			super.setServerStarting();
+			getDelegate().onServerStarting();
+		}
 	}
 
 	@Override
 	public void setServerStarted() {
-		super.setServerStarted();
-		getDelegate().onServerStarted();
+		synchronized(serverStateLock) {
+			super.setServerStarted();
+			getDelegate().onServerStarted();
+		}
 	}
 
 	@Override
 	public void setServerStopping() {
-		super.setServerStopping();
-		getDelegate().onServerStopping();
+		synchronized(serverStateLock) {
+			super.setServerStopping();
+			getDelegate().onServerStopping();
+		}
 	}
 	
 	public void setServerStopped() {
-		super.setServerStopped();
+		synchronized(serverStateLock) {
+			super.setServerStopped();
+			getDelegate().onServerStopped();
+		}
 		IModule[] mods = getServer().getModules();
 		setModulesStopped(new IModule[]{}, mods);
 	}
