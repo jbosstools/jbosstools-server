@@ -60,6 +60,7 @@ import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
 public class AS71Manager {
 
 	public static final int MGMT_PORT = 9999;
+	public static final int DEFAULT_REQUEST_TIMEOUT = 5000;
 
 	private ModelControllerClient client;
 	private ServerDeploymentManager manager;
@@ -68,8 +69,12 @@ public class AS71Manager {
 	public AS71Manager(IAS7ManagementDetails details) throws JBoss7ManangerException {
 		try {
 			this.details = details;
-			this.client = ModelControllerClient.Factory.create(details.getHost(), details.getManagementPort(),
-					getCallbackHandler());
+			Object timeout = details.getProperty(IAS7ManagementDetails.PROPERTY_TIMEOUT);
+			int timeout2 = !(timeout instanceof Integer) ? DEFAULT_REQUEST_TIMEOUT : 
+							((Integer)timeout).intValue();
+			this.client = ModelControllerClient.Factory.create(
+					details.getHost(), details.getManagementPort(),
+					getCallbackHandler(), null, timeout2);
 			this.manager = ServerDeploymentManager.Factory.create(client);
 		} catch(UnknownHostException uhe) {
 			throw new JBoss7ManangerException(uhe);

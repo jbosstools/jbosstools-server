@@ -13,6 +13,7 @@ package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -27,6 +28,7 @@ import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePollerType;
 import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
+import org.jboss.ide.eclipse.as.management.core.IAS7ManagementDetails;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerConnectException;
@@ -38,6 +40,9 @@ import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
  */
 public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 	public static final String POLLER_ID = "org.jboss.ide.eclipse.as.core.server.JBoss7ManagerServicePoller"; //$NON-NLS-1$
+	private static final int SYNCHRONOUS_POLL_FAST_TIMEOUT = 800;
+	
+	
 	private IServer server;
 	private AS7ManagementDetails managementDetails;
 	private IServerStatePollerType type;
@@ -236,18 +241,22 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 
 	
 	/* Code related to synchronous state checking */
-	private boolean callbacksCalled = false;
 	public IStatus getCurrentStateSynchronous(final IServer server) {
+		final boolean[] callbacksCalled = new boolean[1];
+		callbacksCalled[0] = false;
+		
 		try {
 			Boolean result = JBoss7ManagerUtil.executeWithService(new JBoss7ManagerUtil.IServiceAware<Boolean>() {
 				@Override
 				public Boolean execute(IJBoss7ManagerService service) throws Exception {
 					try {
-						JBoss7ServerState state = service.getServerState(createSynchronousManagementDetails(server));
+						JBoss7ServerState state = service.getServerState(createSynchronousManagementDetails(server, callbacksCalled));
 						return state == JBoss7ServerState.RUNNING ? IServerStatePoller.SERVER_UP : IServerStatePoller.SERVER_DOWN;
 					} catch(Exception e) {
 						/* Should be JBoss7ManagerException, but cannot compile against since it is in jboss-as jars */
-						return callbacksCalled ? IServerStatePoller.SERVER_UP : IServerStatePoller.SERVER_DOWN;
+						synchronized(callbacksCalled) {
+							return callbacksCalled[0] ? IServerStatePoller.SERVER_UP : IServerStatePoller.SERVER_DOWN;
+						}
 					}
 				}
 			}, server);
@@ -269,12 +278,18 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 		}
 	}
 	
-	private AS7ManagementDetails createSynchronousManagementDetails(IServer server) {
-		return new AS7ManagementDetails(server) {
+	private AS7ManagementDetails createSynchronousManagementDetails(IServer server, final boolean[] callbacksCalled) {
+		HashMap<String, Object> props = new HashMap<String, Object>();
+		props.put(IAS7ManagementDetails.PROPERTY_TIMEOUT, new Integer(SYNCHRONOUS_POLL_FAST_TIMEOUT));
+		return new AS7ManagementDetails(server, props) {
 			public String[] handleCallbacks(String[] prompts) throws UnsupportedOperationException {
 				// No need to do verification here... simply know that a server responded requesting callbacks
 				// This means a server is up already
-				callbacksCalled = true;
+				synchronized(callbacksCalled) {
+					callbacksCalled[0] = true;
+				}
+				// Throwing this exception alerts our management that we will
+				// not be providing credentials and they should abort request, clean up
 				throw new UnsupportedOperationException();
 			}
 		};
