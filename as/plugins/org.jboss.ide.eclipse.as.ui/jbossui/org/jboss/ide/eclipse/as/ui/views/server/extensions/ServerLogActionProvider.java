@@ -74,6 +74,7 @@ public class ServerLogActionProvider extends CommonActionProvider {
 				if (part != null) {
 					ServerLogView view = (ServerLogView) part.getAdapter(ServerLogView.class);
 					if (view != null) {
+						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().activate(view);
 						view.setFocus();
 						view.setServer(server);
 					}
