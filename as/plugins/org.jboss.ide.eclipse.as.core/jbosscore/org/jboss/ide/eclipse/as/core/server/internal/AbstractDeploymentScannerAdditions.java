@@ -61,7 +61,7 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 	}
 	
 	public void removeAddedDeploymentScanners(IServer server) {
-		if( !acceptsSetting(server, IJBossToolingConstants.PROPERTY_REMOVE_DEPLOYMENT_SCANNERS, false)) {
+		if( acceptsSetting(server, IJBossToolingConstants.PROPERTY_REMOVE_DEPLOYMENT_SCANNERS, false)) {
 			String[] folders = getDeployLocationFolders(server);
 			ensureScannersRemoved(server, folders);
 		}
