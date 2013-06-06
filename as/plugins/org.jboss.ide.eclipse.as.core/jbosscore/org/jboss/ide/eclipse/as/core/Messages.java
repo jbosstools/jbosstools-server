@@ -17,6 +17,7 @@ public class Messages extends NLS {
 
 	/* Standard and re-usable */
 	public static String jboss;
+	public static String wildflyServerName;
 	public static String server;
 	public static String runtime;
 	public static String serverVersionName;

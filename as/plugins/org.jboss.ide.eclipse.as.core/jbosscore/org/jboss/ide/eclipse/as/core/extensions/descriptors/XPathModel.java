@@ -36,6 +36,8 @@ import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
+import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.IMemento;
@@ -85,11 +87,11 @@ public class XPathModel extends UnitedServerListener {
 	}
 	
 	private String getQueryBaseDir(IServer server) {
-		// JBoss 6 and below have a default basedir of the config location
-		// while as7 has a basedir of the empty string
-		if( ServerUtil.isJBoss7(server))
-			return ""; //$NON-NLS-1$
-		return "${jboss_config_dir}"; //$NON-NLS-1$
+		ServerExtendedProperties props = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
+		if( props != null ) {
+			return props.getNewXPathDefaultRootFolder();
+		}
+		return ""; //$NON-NLS-1$
 	}
 	
 	private IStatus handleAddJBossXPaths(IServer server2, String baseDir) {
@@ -271,6 +273,7 @@ public class XPathModel extends UnitedServerListener {
 		rtToPortsFile.put(IConstants.EAP_50, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_EAP_50));
 		rtToPortsFile.put(IConstants.EAP_60, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_71));
 		rtToPortsFile.put(IConstants.EAP_61, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_71));
+		rtToPortsFile.put(IConstants.WILDFLY_80, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_71));
 		// TODO NEW_SERVER_ADAPTER Add the new server ID to port mapping file above this line 
 	}
 	

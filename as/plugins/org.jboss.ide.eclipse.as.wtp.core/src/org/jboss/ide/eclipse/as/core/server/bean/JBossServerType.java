@@ -41,6 +41,7 @@ public class JBossServerType implements IJBossToolingConstants {
 	public static final JBossServerType UNKNOWN_AS72_PRODUCT = new ServerBeanTypeUnknownAS72Product();
 	public static final JBossServerType AS72 = new ServerBeanTypeAS72();
 	public static final JBossServerType EAP61 = new ServerBeanTypeEAP61();
+	public static final JBossServerType WILDFLY80 = new ServerBeanTypeWildfly80();
 	public static final JBossServerType JPP6 = new ServerBeanTypeJPP6();
 	public static final JBossServerType UNKNOWN_AS71_PRODUCT = new ServerBeanTypeUnknownAS71Product();
 	public static final JBossServerType SOAP = new ServerBeanTypeSOAP(); 

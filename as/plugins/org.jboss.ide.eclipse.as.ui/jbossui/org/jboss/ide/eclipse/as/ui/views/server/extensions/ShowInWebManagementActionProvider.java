@@ -13,7 +13,9 @@ package org.jboss.ide.eclipse.as.ui.views.server.extensions;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
@@ -32,8 +34,9 @@ public class ShowInWebManagementActionProvider extends AbstractOpenBrowserServer
 	}
 
 	protected boolean accepts(IServer server) {
-		return (ServerUtil.isJBoss7(server)
-				&& 	server.getServerState() == IServer.STATE_STARTED);
+		ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
+		boolean as7Style = sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS; 
+		return (as7Style && server.getServerState() == IServer.STATE_STARTED);
 	}
 	protected String getURL(IServer server) throws CoreException {
 		JBossServer jbossServer = ServerUtil.checkedGetServerAdapter(server, JBossServer.class);

@@ -33,6 +33,8 @@ import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
+import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.DeploymentMarkerUtils;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
@@ -227,15 +229,20 @@ public abstract class AbstractPublishingTest extends TestCase {
 	private String getRelativeTempOverrideFolder(){
 		return ServerCreationTestUtils.getRandomAbsoluteFolder().append("tmpOverride").toOSString();
 	}
+	private static boolean isJBoss7Style(IServer server) {
+		ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
+		boolean as7Style = sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS; 
+		return as7Style;
+	}
 
 	private String getCustomRelativeFolder(){
-		if( ServerUtil.isJBoss7(server)) {
+		if( isJBoss7Style(server)) {
 			return "myDeploy/final";
 		}
 		return "server/myDeploy/final";
 	}
 	private String getCustomRelativeTempFolder(){
-		if( ServerUtil.isJBoss7(server)) {
+		if( isJBoss7Style(server)) {
 			return "myDeploy/temp";
 		}
 		return "server/myDeploy/temp";

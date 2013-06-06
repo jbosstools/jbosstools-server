@@ -105,6 +105,8 @@ public class CustomRuntimeClasspathModel implements IJBossToolingConstants, IJBo
 		// This will change if jboss-as ever gets us an api
 		if(EAP_61.equals(type.getId()))
 			return getDefaultEAP61Entries();
+		if(WILDFLY_80.equals(type.getId()))
+			return getDefaultEAP61Entries();
 		
 		// NEW_SERVER_ADAPTER add logic for new adapter here
 		return new IDefaultPathProvider[]{};

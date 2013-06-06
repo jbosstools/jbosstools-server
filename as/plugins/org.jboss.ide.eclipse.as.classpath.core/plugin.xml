@@ -108,6 +108,12 @@
       <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.ProjectRuntimeClasspathProvider$Factory"/>
       <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
 	</adapter>
+		<adapter>
+      <runtime-component
+            id="org.jboss.ide.eclipse.as.runtime.wildfly.component" version="8.0"/>
+      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.ProjectRuntimeClasspathProvider$Factory"/>
+      <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
+	</adapter>
 	
      <adapter>
       <runtime-component

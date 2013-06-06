@@ -36,7 +36,9 @@ import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.IJBossBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 
 public class ServerUtil {
 	public static IPath getServerStateLocation(IServer server) {
@@ -103,17 +105,64 @@ public class ServerUtil {
 						|| type.getId().startsWith(IJBossToolingConstants.EAP_SERVER_PREFIX));
 	}
 	
+	
+	/**
+	 * This method should not be used because it is potentially misleading. 
+	 * 
+	 * This method *now* returns whether a server is in general jboss7 style server. 
+	 * However this is very vague. Small things change from release to release, and 
+	 * being of a general style does not mean all behavior is identical. 
+	 * 
+	 * Users should find some other way to determine the generic structure and 
+	 * behavior of a server. Many possibilities are in ServerExtendedProperties 
+	 * and all of their subclasses. 
+	 *  
+	 *  The currently implementation will now group wildfly in with the as7-style servers. 
+	 *  All clients should quickly move to find specific properties they need access too, 
+	 *  and should not use a method as vague as this. 
+	 * 
+	 * @deprecated
+
+	 * @param server
+	 * @return
+	 */
 	public static boolean isJBoss7(IServer server) {
-		return isJBoss7(server.getServerType());
+		return isJBoss7Style(server);
 	}
 	
+	/**
+	 * This method should not be used because it is potentially misleading. 
+	 * 
+	 * This method *now* returns whether a server is in general jboss7 style server. 
+	 * However this is very vague. Small things change from release to release, and 
+	 * being of a general style does not mean all behavior is identical. 
+	 * 
+	 * Users should find some other way to determine the generic structure and 
+	 * behavior of a server. Many possibilities are in ServerExtendedProperties 
+	 * and all of their subclasses. 
+	 *  
+	 *  The currently implementation will now group wildfly in with the as7-style servers. 
+	 *  All clients should quickly move to find specific properties they need access too, 
+	 *  and should not use a method as vague as this. 
+	 * 
+	 * @deprecated
+	 * @param type
+	 * @return
+	 */
 	public static boolean isJBoss7(IServerType type) {
 		if( type == null )
 			return false;
 		return type.getId().equals(IJBossToolingConstants.SERVER_AS_70)
 				 || type.getId().equals(IJBossToolingConstants.SERVER_AS_71)
 				 || type.getId().equals(IJBossToolingConstants.SERVER_EAP_60)
-				 || type.getId().equals(IJBossToolingConstants.SERVER_EAP_61);
+				 || type.getId().equals(IJBossToolingConstants.SERVER_EAP_61)
+				 || type.getId().equals(IJBossToolingConstants.SERVER_WILDFLY_80);
+	}
+	
+	private static boolean isJBoss7Style(IServer server) {
+		ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
+		boolean as7Style = sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS; 
+		return as7Style;
 	}
 	
 	public static void createStandardFolders(IServer server) {
@@ -125,9 +174,13 @@ public class ServerUtil {
 		d1.mkdirs();
 		d2.mkdirs();
 		
+		
+		ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
+		int fileStructure = sep.getFileStructure();
 		// create temp deploy folder
 		JBossServer ds = ( JBossServer)server.loadAdapter(JBossServer.class, null);
-		if( ds != null && !isJBoss7(server)) {
+		if( ds != null && fileStructure == ServerExtendedProperties.FILE_STRUCTURE_SERVER_CONFIG_DEPLOY) {
+			// Only add these folders for as < 7
 			if( !new File(ds.getDeployFolder()).equals(d1)) 
 				new File(ds.getDeployFolder()).mkdirs();
 			if( !new File(ds.getTempDeployFolder()).equals(d2))

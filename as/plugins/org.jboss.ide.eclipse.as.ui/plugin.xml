@@ -49,6 +49,14 @@
             class="org.jboss.ide.eclipse.as.ui.wizards.JBoss7ServerWizardFragment"
             id="org.jboss.ide.eclipse.as.ui.jboss7ServerWizardFragment"
             typeIds="%ServerTypesJBoss7"/>
+      <fragment
+            class="org.jboss.ide.eclipse.as.ui.wizards.Wildfly80RuntimeWizardFragment"
+            id="org.jboss.ide.eclipse.as.ui.Wildfly80RuntimeWizardFragment"
+            typeIds="%RuntimeTypesWildfly8"/>
+      <fragment
+            class="org.jboss.ide.eclipse.as.ui.wizards.JBoss7ServerWizardFragment"
+            id="org.jboss.ide.eclipse.as.ui.wildfly8ServerWizardFragment"
+            typeIds="%ServerTypesWildfly8"/>
       <!-- NEW_SERVER_ADAPTER  Add the wizard fragment (if applicable) for the new server adapter above this line -->
       <fragment
              class="org.jboss.ide.eclipse.as.ui.wizards.StrippedServerWizardFragment"
@@ -274,7 +282,7 @@
          point="org.jboss.ide.eclipse.as.ui.ServerEditorPortSection">
       <section
             class="org.jboss.ide.eclipse.as.ui.editor.PortSection$JBoss7PortOffsetEditorExtension"
-            serverIds="org.jboss.ide.eclipse.as.71,org.jboss.ide.eclipse.as.eap.60">
+            serverIds="org.jboss.ide.eclipse.as.71,org.jboss.ide.eclipse.as.eap.60,org.jboss.ide.eclipse.as.eap.61,org.jboss.ide.eclipse.as.wildfly.80">
       </section>
       <section
             class="org.jboss.ide.eclipse.as.ui.editor.PortSection$JNDIPortEditorExtension"
@@ -291,6 +299,10 @@
       <section
             class="org.jboss.ide.eclipse.as.ui.editor.PortSection$JBoss7ManagementPortEditorExtension"
             serverIds="%ServerTypesJBoss7">
+      </section>
+       <section
+            class="org.jboss.ide.eclipse.as.ui.editor.PortSection$JBoss7ManagementPortEditorExtension"
+            serverIds="%ServerTypesWildfly8">
       </section>
       
       <!-- NEW_SERVER_ADAPTER  Add the new port sections in the server editor above this line -->
@@ -556,6 +568,15 @@
                        property="org.eclipse.wst.server.ui.serverType"
                        value="org.jboss.ide.eclipse.as.eap.60">
                  </test>
+                 <test
+                       property="org.eclipse.wst.server.ui.serverType"
+                       value="org.jboss.ide.eclipse.as.eap.61">
+                 </test>
+                 <test
+                       property="org.eclipse.wst.server.ui.serverType"
+                       value="org.jboss.ide.eclipse.as.wildfly.80">
+                 </test>
+                 <!-- NEW_SERVER_ADAPTER -->
              </or>
           </and>
        </triggerPoints>
@@ -669,6 +690,13 @@
                class="org.jboss.ide.eclipse.as.ui.launch.JBoss7LaunchConfigurationTabGroup$JBoss7StandardTabProvider"
                serverTypes="%ServerTypesJBoss7">
          </launchTabProvider>
+         <launchTabProvider
+               class="org.jboss.ide.eclipse.as.ui.launch.JBoss7LaunchConfigurationTabGroup$JBoss7StandardTabProvider"
+               serverTypes="%ServerTypesWildfly8">
+         </launchTabProvider>
+         
+         <!-- NEW_SERVER_ADAPTER -->
+         
       </ui>
    </extension>
  

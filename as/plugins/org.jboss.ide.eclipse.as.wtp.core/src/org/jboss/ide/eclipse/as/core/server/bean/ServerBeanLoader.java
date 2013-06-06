@@ -24,6 +24,7 @@ public class ServerBeanLoader {
 	// NEW_SERVER_ADAPTER
 	public static JBossServerType[] typesInOrder = {
 		JBossServerType.AS, 
+		JBossServerType.WILDFLY80, 
 		JBossServerType.EAP61,
 		JBossServerType.UNKNOWN_AS72_PRODUCT,
 		JBossServerType.AS72, 

@@ -22,7 +22,7 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
+import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
@@ -33,7 +33,7 @@ public class RSEExploreBehavior implements IExploreBehavior {
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
 		String remote = RSEUtils.getDeployRootFolder(ds);
 		IPath remoteFolder = new Path(remote == null ? "/" : remote);
-		IJBossServerPublishMethodType type = DeploymentPreferenceLoader.getCurrentDeploymentMethodType(server);
+		IJBossServerPublishMethodType type = BehaviourModel.getPublishMethodType(server, null);
 		RSEPublishMethod method = (RSEPublishMethod)type.createPublishMethod();
 		method.setBehaviour(ServerConverter.getDeployableServerBehavior(server));
 		if( module != null ) {
