@@ -14,7 +14,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -31,9 +33,9 @@ public class ShowInJMXConsoleActionProvider extends AbstractOpenBrowserServerAct
 		if( server != null ) {
 			IJBossServer jbs = ServerConverter.getJBossServer(server);
 			if( jbs != null ) {
-				// TODO fix this so anything BELOW 7 works
-				// need new util methods
-				return ServerUtil.isJBossServerType(server.getServerType()) && !ServerUtil.isJBoss7(server);
+				ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
+				return ServerUtil.isJBossServerType(server.getServerType()) && 
+						sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_SERVER_CONFIG_DEPLOY;
 			}
 		}
 		return false;

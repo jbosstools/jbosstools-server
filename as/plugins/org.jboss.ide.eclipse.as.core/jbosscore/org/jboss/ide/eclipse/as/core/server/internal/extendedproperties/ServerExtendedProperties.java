@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 public class ServerExtendedProperties {
 	protected IServer server;
@@ -41,7 +42,9 @@ public class ServerExtendedProperties {
 	public boolean allowConvenienceEnhancements() {
 		return true;
 	}
-	
+	public String getNewXPathDefaultRootFolder() {
+		return "${jboss_config_dir}"; //$NON-NLS-1$
+	}
 	public String getNewFilesetDefaultRootFolder() {
 		return "${jboss_config_dir}"; //$NON-NLS-1$
 	}
@@ -91,4 +94,12 @@ public class ServerExtendedProperties {
 	public IServerModuleStateVerifier getModuleStateVerifier() {
 		return null;
 	}
+	
+	public static final int FILE_STRUCTURE_UNKNOWN = 0;
+	public static final int FILE_STRUCTURE_SERVER_CONFIG_DEPLOY = 1;
+	public static final int FILE_STRUCTURE_CONFIG_DEPLOYMENTS = 2;
+	public int getFileStructure() {
+		return FILE_STRUCTURE_UNKNOWN;
+	}
+	
 }

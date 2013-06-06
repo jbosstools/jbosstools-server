@@ -143,6 +143,8 @@ public class EJB3ClasspathContainer implements IClasspathContainer, IJBossServer
 		    	  ret = get70Jars(homePath);
 		      else if( id.equals(AS_71)) 
 		    	  ret = get70Jars(homePath);
+		      else if( id.equals(WILDFLY_80)) 
+		    	  ret = getEap61Jars(homePath);
 		      else if( id.equals(EAP_50)) 
 		    	  ret = get70Jars(homePath);
 		      else if( id.equals(EAP_60)) 

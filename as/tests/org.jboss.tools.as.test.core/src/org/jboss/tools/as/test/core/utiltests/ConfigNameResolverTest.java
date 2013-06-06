@@ -18,8 +18,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
-import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
 import org.jboss.tools.as.test.core.parametized.server.ServerParameterUtils;
 import org.junit.After;
@@ -58,7 +59,11 @@ public class ConfigNameResolverTest extends TestCase {
 	public void tearDown() throws Exception {
 		ServerCreationTestUtils.deleteAllServersAndRuntimes();
 	} 
-	
+	private static boolean isJBoss7Style(IServer server) {
+		ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
+		boolean as7Style = sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS; 
+		return as7Style;
+	}
 	@Test
 	public void testConfigNameResolver() {
 		String[] vars = ConfigNameResolver.ALL_VARIABLES;
@@ -69,11 +74,11 @@ public class ConfigNameResolverTest extends TestCase {
 			if( jbs == null ) {
 				assertEquals("", result);
 			} else  if( vars[i].equals(ConfigNameResolver.JBOSS_CONFIG))
-				testConfig(var, result, ServerUtil.isJBoss7(server));
+				testConfig(var, result, isJBoss7Style(server));
 			else if( vars[i].equals(ConfigNameResolver.JBOSS_CONFIG_DIR))
-				testConfigDir(var, result, ServerUtil.isJBoss7(server));
+				testConfigDir(var, result, isJBoss7Style(server));
 			else if( vars[i].equals(ConfigNameResolver.JBOSS_AS7_CONFIG_FILE)) 
-				testAS7ConfigFile(var, result, ServerUtil.isJBoss7(server));
+				testAS7ConfigFile(var, result, isJBoss7Style(server));
 			else
 				fail("Variable " + vars[i] + " not tested");
 		}

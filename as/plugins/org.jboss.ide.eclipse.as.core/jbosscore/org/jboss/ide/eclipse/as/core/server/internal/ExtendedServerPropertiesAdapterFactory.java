@@ -29,6 +29,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossEAP
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossEAP61ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.Wildfly80ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
 public class ExtendedServerPropertiesAdapterFactory implements IAdapterFactory, IJBossToolingConstants {
@@ -94,6 +95,9 @@ public class ExtendedServerPropertiesAdapterFactory implements IAdapterFactory, 
 				return new JBossEAP60ExtendedProperties(adaptable);
 			if( SERVER_EAP_61.equals(typeId) || EAP_61.equals(typeId))
 				return new JBossEAP61ExtendedProperties(adaptable);
+
+			if( SERVER_WILDFLY_80.equals(typeId) || WILDFLY_80.equals(typeId))
+				return new Wildfly80ExtendedProperties(adaptable);
 
 			// NEW_SERVER_ADAPTER
 			

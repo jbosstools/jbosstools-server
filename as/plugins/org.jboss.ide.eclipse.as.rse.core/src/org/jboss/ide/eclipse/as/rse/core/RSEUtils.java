@@ -25,11 +25,12 @@ import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
-import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 /* 
  * Some of this code will need to be abstracted out from JBossServer
@@ -101,8 +102,8 @@ public class RSEUtils {
 			// override this behavior
 			// Cannot move this code to JBossServer because this requires an
 			// RSE-specific key!! Damn!
-
-			if (ServerUtil.isJBoss7(server.getServerType())) {
+			ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
+			if (sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS) {
 				IPath p = new Path("standalone/deployments/");
 				return makeGlobal(server, p).toString();
 			} else {

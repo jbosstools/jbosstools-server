@@ -12,7 +12,6 @@ package org.jboss.ide.eclipse.as.rse.ui;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.rse.files.ui.dialogs.SystemRemoteFileDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -126,7 +125,7 @@ public class JBoss7RSEDeploymentPrefComposite extends
 	
 	protected void remoteHomeBrowseClicked() {
 		String home = rseServerHome.getText() == null ? "" : rseServerHome.getText();
-		String browseVal = RSEDeploymentPreferenceUI.browseClicked4(rseServerHome.getShell(), combo.getHost(), home);
+		String browseVal = RSEBrowseBehavior.browseClicked(rseServerHome.getShell(), combo.getHost(), home);
 		if (browseVal != null) {
 			rseServerHome.setText(browseVal);
 			serverHomeChanged();
@@ -137,7 +136,7 @@ public class JBoss7RSEDeploymentPrefComposite extends
 		IPath configFolder = home.append(IJBossRuntimeResourceConstants.AS7_STANDALONE)
 				.append(IJBossRuntimeResourceConstants.CONFIGURATION);
 		IPath configFile = configFolder.append(rseConfigFileText.getText());
-		String browseVal = RSEDeploymentPreferenceUI.browseClicked4(rseServerHome.getShell(), combo.getHost(), configFile.toString());
+		String browseVal = RSEBrowseBehavior.browseClicked(rseServerHome.getShell(), combo.getHost(), configFile.toString());
 		if (browseVal != null) {
 			rseConfigFileText.setText(new Path(browseVal).lastSegment());
 			configFileChanged();

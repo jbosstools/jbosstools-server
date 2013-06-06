@@ -66,6 +66,7 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
@@ -617,7 +618,8 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		
 		protected String getServerRadioNewDeployDir() {
 			String mode = getHelper().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
-			if( ServerUtil.isJBoss7(page.getServer().getServerType())) {
+			ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(page.getServer());
+			if (sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS) {
 				return new Path(IJBossRuntimeResourceConstants.AS7_STANDALONE)
 				.append(IJBossRuntimeResourceConstants.AS7_DEPLOYMENTS)
 				.makeRelative().toString();
@@ -633,7 +635,9 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		
 		protected String getServerRadioNewTempDeployDir() {
 			String mode = getHelper().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
-			if( ServerUtil.isJBoss7(page.getServer().getServerType())) {
+			ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(page.getServer());
+
+			if (sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS) {
 				return new Path(IJBossRuntimeResourceConstants.AS7_STANDALONE)
 				.append(IJBossRuntimeResourceConstants.FOLDER_TMP)
 				.makeRelative().toString();

@@ -57,6 +57,7 @@ public class ServerCreationTestUtils extends Assert {
 	private static final String twiddle_6_0_0 = "6.0.0" + twiddle_suffix;
 	private static final String as_server_7_0_jar = "7.0.0.mf.jboss-as-server.jar";
 	private static final String as_server_7_1_jar = "7.1.0.mf.jboss-as-server.jar";
+	private static final String wildfly_8_0_jar = "wf8.0.0.mf.jboss-as-server.jar";
 	private static final String twiddle_eap_4_3 = "eap4.3" + twiddle_suffix;
 	private static final String twiddle_eap_5_0 = "eap5.0" + twiddle_suffix;
 	private static final String twiddle_eap_5_1 = "eap5.1" + twiddle_suffix;
@@ -72,10 +73,11 @@ public class ServerCreationTestUtils extends Assert {
 		asSystemJar.put(IJBossToolingConstants.SERVER_AS_60, twiddle_6_0_0);
 		asSystemJar.put(IJBossToolingConstants.SERVER_AS_70, as_server_7_0_jar);
 		asSystemJar.put(IJBossToolingConstants.SERVER_AS_71, as_server_7_1_jar);
+		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_80, wildfly_8_0_jar);
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_43, twiddle_eap_4_3);
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_50, twiddle_eap_5_1);
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_60, eap_server_6_0_jar);
-
+		
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_AS_32, IJBossToolingConstants.AS_32);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_AS_40, IJBossToolingConstants.AS_40);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_AS_42, IJBossToolingConstants.AS_42);
@@ -83,7 +85,8 @@ public class ServerCreationTestUtils extends Assert {
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_AS_51, IJBossToolingConstants.AS_51);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_AS_60, IJBossToolingConstants.AS_60);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_AS_70, IJBossToolingConstants.AS_70);
-		//serverRuntimeMap.put(IJBossToolingConstants.SERVER_AS_71, IJBossToolingConstants.AS_71);
+		serverRuntimeMap.put(IJBossToolingConstants.SERVER_AS_71, IJBossToolingConstants.AS_71);
+		serverRuntimeMap.put(IJBossToolingConstants.SERVER_WILDFLY_80, IJBossToolingConstants.WILDFLY_80);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_43, IJBossToolingConstants.EAP_43);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_50, IJBossToolingConstants.EAP_50);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_60, IJBossToolingConstants.EAP_60);
@@ -120,6 +123,8 @@ public class ServerCreationTestUtils extends Assert {
 			serverDir = createEAP6StyleMockServerDirectory(name, serverType, asSystemJar.get(serverType));
 		} else if( IJBossToolingConstants.SERVER_EAP_61.equals(serverType)) {
 			serverDir = createAS72EAP61StyleMockServerDirectory(name, serverType, asSystemJar.get(serverType));
+		} else if( IJBossToolingConstants.SERVER_WILDFLY_80.equals(serverType)) {
+			serverDir = createWildfly80MockServerDirectory(name, serverType, asSystemJar.get(serverType));
 		}
 		return serverDir == null ? null : serverDir.toFile();
 	}
@@ -205,6 +210,32 @@ public class ServerCreationTestUtils extends Assert {
 		}
 		return loc;
 	}
+	
+	private static IPath createWildfly80MockServerDirectory(String name, String serverTypeId, String serverJar) {
+		IPath loc = mockedServers.append(name);
+		try {
+			loc.toFile().mkdirs();
+			IPath serverJarBelongs = loc.append("modules/system/layers/base/org/jboss/as/server/main");
+			serverJarBelongs.toFile().mkdirs();
+			File serverJarLoc = BundleUtils.getFileLocation("serverMock/" + serverJar);
+			FileUtil.fileSafeCopy(serverJarLoc, serverJarBelongs.append("anything.jar").toFile());
+			
+			IPath standalonexml = loc.append("standalone").append("configuration").append("standalone.xml");
+			standalonexml.toFile().getParentFile().mkdirs();
+			standalonexml.toFile().createNewFile();
+			
+			loc.append("jboss-modules.jar").toFile().createNewFile();
+			loc.append("bin").toFile().mkdirs();
+		} catch(CoreException ce) {
+			FileUtil.completeDelete(loc.toFile());
+			return null;
+		} catch(IOException ioe) {
+			FileUtil.completeDelete(loc.toFile());
+			return null;
+		}
+		return loc;
+	}
+	
 	
 	private static IPath createAS72EAP61StyleMockServerDirectory(String name, String serverTypeId, String serverJar) {
 		IPath loc = mockedServers.append(name);

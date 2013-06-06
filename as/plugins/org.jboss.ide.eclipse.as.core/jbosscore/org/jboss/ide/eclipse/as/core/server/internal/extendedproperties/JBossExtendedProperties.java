@@ -158,4 +158,9 @@ public class JBossExtendedProperties extends ServerExtendedProperties {
 	public boolean requiresJDK() {
 		return false;
 	}
+	
+	public int getFileStructure() {
+		return FILE_STRUCTURE_SERVER_CONFIG_DEPLOY;
+	}
+
 }

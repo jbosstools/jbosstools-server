@@ -28,6 +28,9 @@ public class JBossAS7ExtendedProperties extends JBossExtendedProperties {
 	public JBossAS7ExtendedProperties(IAdaptable obj) {
 		super(obj);
 	}
+	public String getNewXPathDefaultRootFolder() {
+		return ""; //$NON-NLS-1$
+	}
 
 	public String getNewFilesetDefaultRootFolder() {
 		return IJBossRuntimeResourceConstants.AS7_STANDALONE + "/" + IJBossRuntimeResourceConstants.CONFIGURATION; //$NON-NLS-1$
@@ -93,4 +96,9 @@ public class JBossAS7ExtendedProperties extends JBossExtendedProperties {
 	public String getJBossAdminScript() {
 		return IJBossRuntimeResourceConstants.AS_70_MANAGEMENT_SCRIPT;
 	}
+	
+	public int getFileStructure() {
+		return FILE_STRUCTURE_CONFIG_DEPLOYMENTS;
+	}
+
 }

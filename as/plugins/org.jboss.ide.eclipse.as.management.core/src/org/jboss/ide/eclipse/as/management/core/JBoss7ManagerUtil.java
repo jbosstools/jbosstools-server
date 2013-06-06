@@ -18,6 +18,7 @@ public class JBoss7ManagerUtil {
 
 	private static final String JBOSS7_RUNTIME = "org.jboss.ide.eclipse.as.runtime.70"; //$NON-NLS-1$
 	private static final String JBOSS71_RUNTIME = "org.jboss.ide.eclipse.as.runtime.71"; //$NON-NLS-1$
+	private static final String WILDFLY_80_RUNTIME = "org.jboss.ide.eclipse.as.runtime.wildfly.80"; //$NON-NLS-1$
 	private static final String EAP6_RUNTIME = "org.jboss.ide.eclipse.as.runtime.eap.60"; //$NON-NLS-1$
 	private static final String EAP61_RUNTIME = "org.jboss.ide.eclipse.as.runtime.eap.61"; //$NON-NLS-1$
 	
@@ -54,6 +55,8 @@ public class JBoss7ManagerUtil {
 		// This service fails for some tests, but it must be enabled here 
 		// for querying server state. TODO change this if new service bundle is required
 		if( EAP61_RUNTIME.equals(runtimeId)) 
+			return IJBoss7ManagerService.AS_VERSION_710_Beta;
+		if( WILDFLY_80_RUNTIME.equals(runtimeId)) 
 			return IJBoss7ManagerService.AS_VERSION_710_Beta;
 		return null;
 	}

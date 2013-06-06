@@ -54,10 +54,11 @@ import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManagerServicePoller;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
-import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
@@ -79,11 +80,12 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 		IJBossServer jbs = cServer.getOriginal() == null ? 
 				ServerConverter.getJBossServer(cServer) :
 					ServerConverter.getJBossServer(cServer.getOriginal());
-		if( jbs == null )
+		ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(cServer);
+		if( jbs == null || sep == null)
 			composite = new DeployOnlyRSEPrefComposite(parent, SWT.NONE, callback);
-		else if( !ServerUtil.isJBoss7(cServer.getServerType()))
+		else if( sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_SERVER_CONFIG_DEPLOY){
 			composite = new JBossRSEDeploymentPrefComposite(parent, SWT.NONE, callback);
-		else if( ServerUtil.isJBoss7(cServer.getServerType())){
+		} else if( sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS){
 			composite = new JBoss7RSEDeploymentPrefComposite(parent, SWT.NONE, callback);
 		}
 		// NEW_SERVER_ADAPTER potential location for new server details

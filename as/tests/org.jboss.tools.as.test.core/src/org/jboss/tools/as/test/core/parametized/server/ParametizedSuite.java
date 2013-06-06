@@ -24,10 +24,10 @@ import org.junit.runners.Suite.SuiteClasses;
 	CreateServerCheckDefaultsTest.class,
 	ProjectRuntimeClasspathTest.class,
 	CreateRuntimeTwiceTest.class,
-	PublishingSuite.class,
 	XPathModelTest.class,
 	MockArgsTests.class, 
-	DeploymentScannerAdditionsTest.class
+	DeploymentScannerAdditionsTest.class,
+//	PublishingSuite.class
 })
 public class ParametizedSuite {
 }
