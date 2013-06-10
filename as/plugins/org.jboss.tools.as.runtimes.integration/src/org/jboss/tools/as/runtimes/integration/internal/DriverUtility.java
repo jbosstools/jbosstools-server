@@ -178,9 +178,15 @@ public class DriverUtility implements IRuntimeIntegrationConstants {
 
 	private static String getDriverPath(String jbossASLocation, IServerType serverType)
 			throws IOException {
-		String driverPath;
-		if (isAS7StyleServer(serverType)) {
-			File file = new File(jbossASLocation + "/modules/com/h2database/h2/main").getCanonicalFile();//$NON-NLS-1$
+		String driverPath = null;
+		String driverDir = null;
+		if( isEAP61StyleServer(serverType)) {
+			driverDir = "/modules/system/layers/base/com/h2database/h2/main";
+		} else if(isAS7StyleServer(serverType)) {
+			driverDir = "/modules/com/h2database/h2/main";
+		}
+		if (driverDir!=null) {
+			File file = new File(jbossASLocation + driverDir).getCanonicalFile();//$NON-NLS-1$
 			File[] fileList = file.listFiles(new FilenameFilter() {
 				
 				@Override
@@ -192,12 +198,13 @@ public class DriverUtility implements IRuntimeIntegrationConstants {
 				}
 			});
 			if (fileList != null && fileList.length > 0) {
-				return fileList[0].getCanonicalPath();
+				driverPath = fileList[0].getCanonicalPath();
 			}
-			return null;
 		} else {
 			String loc = SERVER_DRIVER_LOCATION.get(serverType.getId());
-			driverPath = new File(jbossASLocation + loc).getCanonicalPath();
+			if(loc!=null) {
+				driverPath = new File(jbossASLocation + loc).getCanonicalPath();
+			}
 		}
 		return driverPath;
 	}
@@ -207,9 +214,14 @@ public class DriverUtility implements IRuntimeIntegrationConstants {
 			String id = type.getId();
 			return IJBossToolingConstants.SERVER_AS_70.equals(id) || 
 					IJBossToolingConstants.SERVER_AS_71.equals(id) ||
-					IJBossToolingConstants.SERVER_EAP_60.equals(id);
+					IJBossToolingConstants.SERVER_EAP_60.equals(id) ||
+					IJBossToolingConstants.SERVER_EAP_61.equals(id);
 		}
 		return false;
+	}
+
+	private static boolean isEAP61StyleServer(IServerType type) {
+		return type!=null && IJBossToolingConstants.SERVER_EAP_61.equals(type.getId());
 	}
 
 	public class DriverUtilityException extends Exception {
