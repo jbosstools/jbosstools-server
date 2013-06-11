@@ -17,7 +17,9 @@ import java.util.HashMap;
 import java.util.Properties;
 
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.datatools.connectivity.ConnectionProfileConstants;
 import org.eclipse.datatools.connectivity.ConnectionProfileException;
@@ -36,16 +38,34 @@ import org.jboss.tools.as.runtimes.integration.Messages;
 import org.jboss.tools.as.runtimes.integration.ServerRuntimesIntegrationActivator;
 
 public class DriverUtility implements IRuntimeIntegrationConstants {
-	public static final HashMap<String,String> SERVER_DRIVER_LOCATION = new HashMap<String, String>();
+	private static final int HSQL_TYPE = 1;
+	private static final int H2_TYPE = 2;
+	private static class Pair {
+		String loc;
+		int type;
+		public Pair(String loc, int type) {
+			this.loc = loc;
+			this.type = type;
+		}
+	}
+	
+	
+	public static final HashMap<String,Pair> SERVER_DRIVER_LOCATION = new HashMap<String, Pair>();
 	static {
-		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_AS_32, HSQLDB_DRIVER_3X_4X_LOCATION);
-		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_AS_40, HSQLDB_DRIVER_3X_4X_LOCATION);
-		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_AS_42, HSQLDB_DRIVER_3X_4X_LOCATION);
-		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_AS_50, HSQLDB_DRIVER_5X_LOCATION);
-		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_AS_51, HSQLDB_DRIVER_5X_LOCATION);
-		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_AS_60, HSQLDB_DRIVER_5X_LOCATION);
-		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_EAP_43, HSQLDB_DRIVER_3X_4X_LOCATION);
-		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_EAP_50, HSQLDB_DRIVER_5X_LOCATION);
+		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_AS_32, new Pair(HSQLDB_DRIVER_3X_4X_LOCATION, HSQL_TYPE));
+		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_AS_40, new Pair(HSQLDB_DRIVER_3X_4X_LOCATION, HSQL_TYPE));
+		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_AS_42, new Pair(HSQLDB_DRIVER_3X_4X_LOCATION, HSQL_TYPE));
+		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_AS_50, new Pair(HSQLDB_DRIVER_5X_LOCATION, HSQL_TYPE));
+		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_AS_51, new Pair(HSQLDB_DRIVER_5X_LOCATION, HSQL_TYPE));
+		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_AS_60, new Pair(HSQLDB_DRIVER_5X_LOCATION, HSQL_TYPE));
+		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_AS_70, new Pair(HSQLDB_DRIVER_7_LOCATION, H2_TYPE));
+		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_AS_71, new Pair(HSQLDB_DRIVER_7_LOCATION, H2_TYPE));
+		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_WILDFLY_80, new Pair(HSQLDB_DRIVER_72_EAP61_LOCATION, H2_TYPE));
+		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_EAP_43, new Pair(HSQLDB_DRIVER_3X_4X_LOCATION, HSQL_TYPE));
+		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_EAP_50, new Pair(HSQLDB_DRIVER_5X_LOCATION, HSQL_TYPE));
+		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_EAP_60, new Pair(HSQLDB_DRIVER_7_LOCATION, H2_TYPE));
+		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_EAP_61, new Pair(HSQLDB_DRIVER_72_EAP61_LOCATION, H2_TYPE));
+		// NEW_SERVER_ADAPTER 
 	}
 
 	/**
@@ -99,7 +119,7 @@ public class DriverUtility implements IRuntimeIntegrationConstants {
 			props.setProperty(DTP_DB_URL_PROPERTY_ID, getDriverUrl(serverType)); 
 			props.setProperty(IDriverMgmtConstants.PROP_DEFN_TYPE, descr.getId());
 			props.setProperty(IDriverMgmtConstants.PROP_DEFN_JARLIST, driverPath);
-			if( isAS7StyleServer(serverType)) {
+			if( usesH2(serverType)) {
 				props.setProperty(IDBDriverDefinitionConstants.DRIVER_CLASS_PROP_ID, "org.h2.Driver");//$NON-NLS-1$
 				props.setProperty(IDBDriverDefinitionConstants.DATABASE_VENDOR_PROP_ID, "H2 driver");//$NON-NLS-1$
 				props.setProperty(IDBDriverDefinitionConstants.URL_PROP_ID, "jdbc:h2:mem");//$NON-NLS-1$
@@ -128,7 +148,7 @@ public class DriverUtility implements IRuntimeIntegrationConstants {
 			props.setProperty(IDBDriverDefinitionConstants.USERNAME_PROP_ID, driver.getProperty(IDBDriverDefinitionConstants.USERNAME_PROP_ID));
 			props.setProperty(IDBDriverDefinitionConstants.URL_PROP_ID, driver.getProperty(IDBDriverDefinitionConstants.URL_PROP_ID));
 
-			if( isAS7StyleServer(serverType)) {
+			if( usesH2(serverType)) {
 				ProfileManager.getInstance().createProfile(DEFAULT_DS,	Messages.JBossRuntimeStartup_The_JBoss_AS_H2_embedded_database, H2_PROFILE_ID, props, "", false); //$NON-NLS-1$ 
 			} else {
 				ProfileManager.getInstance().createProfile(DEFAULT_DS,	Messages.JBossRuntimeStartup_The_JBoss_AS_Hypersonic_embedded_database, HSQL_PROFILE_ID, props, "", false); //$NON-NLS-1$
@@ -138,7 +158,7 @@ public class DriverUtility implements IRuntimeIntegrationConstants {
 	}
 
 	protected static String getDriverUrl(IServerType serverType) {
-		if( isAS7StyleServer(serverType)) {
+		if( usesH2(serverType)) {
 			return "jdbc:h2:mem";//$NON-NLS-1$
 		} else {
 			return "jdbc:hsqldb:.";//$NON-NLS-1$
@@ -146,7 +166,7 @@ public class DriverUtility implements IRuntimeIntegrationConstants {
 	}
 
 	private static String getDriverDefinitionId(IServerType serverType) {
-		if( isAS7StyleServer(serverType)) {
+		if( usesH2(serverType)) {
 			return H2_DRIVER_DEFINITION_ID;
 		} else {
 			return HSQL_DRIVER_DEFINITION_ID;
@@ -154,7 +174,7 @@ public class DriverUtility implements IRuntimeIntegrationConstants {
 	}
 
 	private static String getDriverName(IServerType serverType) {
-		if( isAS7StyleServer(serverType)) {
+		if( usesH2(serverType)) {
 			return H2_DRIVER_NAME;
 		} else {
 			return HSQL_DRIVER_NAME;
@@ -162,7 +182,7 @@ public class DriverUtility implements IRuntimeIntegrationConstants {
 	}
 
 	protected static TemplateDescriptor getDriverTemplateDescriptor(IServerType serverType) {
-		if( isAS7StyleServer(serverType)) {
+		if( usesH2(serverType)) {
 			return TemplateDescriptor.getDriverTemplateDescriptor(H2_DRIVER_TEMPLATE_ID);
 		} else {
 			return TemplateDescriptor.getDriverTemplateDescriptor(HSQL_DRIVER_TEMPLATE_ID);
@@ -170,7 +190,7 @@ public class DriverUtility implements IRuntimeIntegrationConstants {
 	}
 
 	protected static DriverInstance getDriver(IServerType serverType) {
-		if( isAS7StyleServer(serverType)) {
+		if( usesH2(serverType)) {
 			return DriverManager.getInstance().getDriverInstanceByName(H2_DRIVER_NAME);
 		}
 		return DriverManager.getInstance().getDriverInstanceByName(HSQL_DRIVER_NAME);
@@ -178,14 +198,15 @@ public class DriverUtility implements IRuntimeIntegrationConstants {
 
 	private static String getDriverPath(String jbossASLocation, IServerType serverType)
 			throws IOException {
-		String driverPath;
-		if (isAS7StyleServer(serverType)) {
-			File file = new File(jbossASLocation + "/modules/com/h2database/h2/main").getCanonicalFile();//$NON-NLS-1$
-			File[] fileList = file.listFiles(new FilenameFilter() {
-				
+		Pair pair = SERVER_DRIVER_LOCATION.get(serverType.getId());
+		String loc = pair.loc;
+		IPath p = new Path(jbossASLocation).append(loc);
+		File f = p.toFile().getCanonicalFile();
+		if( f.isDirectory()) {
+			File[] fileList = f.listFiles(new FilenameFilter() {
 				@Override
 				public boolean accept(File dir, String name) {
-					if (name.startsWith("h2") && name.endsWith(".jar")) {//$NON-NLS-1$ //$NON-NLS-2$
+					if (name.endsWith(".jar")) {//$NON-NLS-1$ //$NON-NLS-2$
 						return true;
 					}
 					return false;
@@ -194,24 +215,16 @@ public class DriverUtility implements IRuntimeIntegrationConstants {
 			if (fileList != null && fileList.length > 0) {
 				return fileList[0].getCanonicalPath();
 			}
-			return null;
-		} else {
-			String loc = SERVER_DRIVER_LOCATION.get(serverType.getId());
-			driverPath = new File(jbossASLocation + loc).getCanonicalPath();
 		}
-		return driverPath;
+		return f.getCanonicalPath();
 	}
 
-	private static boolean isAS7StyleServer(IServerType type) {
-		if( type != null ) {
-			String id = type.getId();
-			return IJBossToolingConstants.SERVER_AS_70.equals(id) || 
-					IJBossToolingConstants.SERVER_AS_71.equals(id) ||
-					IJBossToolingConstants.SERVER_EAP_60.equals(id);
-		}
-		return false;
+	private static boolean usesH2(IServerType serverType) {
+		return SERVER_DRIVER_LOCATION.get(serverType.getId()) != null 
+				&& SERVER_DRIVER_LOCATION.get(serverType.getId()).type == H2_TYPE;
 	}
-
+	
+	
 	public class DriverUtilityException extends Exception {
 		public DriverUtilityException(Exception e) {
 			super(e);
