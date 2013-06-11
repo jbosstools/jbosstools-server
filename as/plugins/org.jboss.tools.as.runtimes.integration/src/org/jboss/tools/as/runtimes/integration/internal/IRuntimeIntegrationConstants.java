@@ -33,7 +33,9 @@ public interface IRuntimeIntegrationConstants {
 	public static final String HSQLDB_DRIVER_3X_4X_LOCATION = "/server/default/lib/" + HSQLDB_DRIVER_JAR_NAME; //$NON-NLS-1$
 	
 	public static final String HSQLDB_DRIVER_5X_LOCATION = "/common/lib/" + HSQLDB_DRIVER_JAR_NAME; //$NON-NLS-1$
-		
+	public static final String HSQLDB_DRIVER_7_LOCATION = "/modules/com/h2database/h2/main";
+	public static final String HSQLDB_DRIVER_72_EAP61_LOCATION = "/modules/system/layers/base/com/h2database/h2/main";
+	
 	public static final String HSQL_DRIVER_DEFINITION_ID 
 												= "DriverDefn.Hypersonic DB"; //$NON-NLS-1$
 
