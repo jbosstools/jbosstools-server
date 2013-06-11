@@ -55,8 +55,9 @@ public class DownloadRuntimesProvider implements IDownloadRuntimesProvider {
 		ArrayList<DownloadRuntime> all = new ArrayList<DownloadRuntime>();
 		monitor.beginTask(Messages.CreateDownloadRuntimes, stacksArr.length * 100);		
 		for( int i = 0; i < stacksArr.length; i++ ) {
+			IProgressMonitor inner = new SubProgressMonitor(monitor, 100);
 			if( stacksArr[i] != null ) {
-				traverseStacks(stacksArr[i], all, new SubProgressMonitor(monitor, 100));
+				traverseStacks(stacksArr[i], all, inner);
 			}
 		}
 		monitor.done();
@@ -92,6 +93,7 @@ public class DownloadRuntimesProvider implements IDownloadRuntimesProvider {
 			}
 			monitor.worked(100);
 		}
+		monitor.done();
 	}
 	
 	
