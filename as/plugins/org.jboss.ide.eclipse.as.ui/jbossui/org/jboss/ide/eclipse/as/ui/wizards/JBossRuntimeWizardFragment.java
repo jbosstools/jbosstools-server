@@ -76,7 +76,6 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
-import org.jboss.ide.eclipse.as.core.runtime.DownloadRuntimeToWTPRuntime;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
@@ -90,6 +89,7 @@ import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
+import org.jboss.tools.as.runtimes.integration.util.DownloadRuntimeServerUtil;
 import org.jboss.tools.runtime.core.RuntimeCoreActivator;
 import org.jboss.tools.runtime.core.model.DownloadRuntime;
 import org.jboss.tools.runtime.core.model.IDownloadRuntimes;
@@ -158,7 +158,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	private void fireInitialWidgetUpdates() {
 		new Job("Update Download Runtimes Hyperlink") {
 			protected IStatus run(IProgressMonitor monitor) {
-				final DownloadRuntime[] downloads = DownloadRuntimeToWTPRuntime.getDownloadRuntimes(getRuntimeType());
+				final DownloadRuntime[] downloads = DownloadRuntimeServerUtil.getDownloadRuntimes(getRuntimeType());
 				Display.getDefault().asyncExec(new Runnable() { 
 					public void run() {
 						if( downloads != null && downloads.length > 0 ) {

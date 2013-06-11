@@ -24,7 +24,11 @@ import org.jboss.tools.runtime.core.model.DownloadRuntime;
  * Easily discover mappings for a download runtime to a wtp runtime
  */
 public class DownloadRuntimeServerUtil {
-	
+	/**
+	 * A public API property key which can be queried on a DownloadRuntime object
+	 */
+	public static final String PROP_WTP_RUNTIME = DownloadRuntimesProvider.PROP_WTP_RUNTIME;
+
 	public static IRuntimeType getWTPRuntime(DownloadRuntime rt) {
 		String rtType = (String)rt.getProperty(DownloadRuntimesProvider.PROP_WTP_RUNTIME);
 		if( rtType != null ) {
