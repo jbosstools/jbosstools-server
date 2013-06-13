@@ -2,6 +2,8 @@ package org.jboss.ide.eclipse.as.internal.management.as7.tests.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
 
 import junit.framework.Assert;
 
@@ -21,8 +23,8 @@ import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
 
 public class StartupUtility extends Assert {
 	private static final String JRE7_SYSPROP = "jbosstools.test.jre.7";
-	
-	
+
+
 	private static boolean isJava7() {
 		return (System.getProperty("java.version").startsWith("1.7."));
 	}
@@ -34,11 +36,11 @@ public class StartupUtility extends Assert {
 		IExecutionEnvironment env = ((JBossExtendedProperties)o).getDefaultExecutionEnvironment();
 		return env;
 	}
-	
+
 	private static boolean requiresJava7(String runtimeType) {
 		return "JavaSE-1.7".equals(getRequiredExecEnv(runtimeType).getId());
 	}
-	
+
 	public static Process runServer(String homeDir) {
 		String rtType = ParameterUtils.serverHomeToRuntimeType.get(homeDir);
 		System.out.println("Running server " + homeDir + " with rtType = " + rtType);
@@ -53,23 +55,25 @@ public class StartupUtility extends Assert {
 			scriptName = "standalone.sh";
 			IPath script = bin.append(scriptName);
 			script.toFile().setExecutable(true);
-			cmd = script.toFile().getAbsolutePath();			
+			cmd = script.toFile().getAbsolutePath();
 		}
 
+		List<String> envp = new ArrayList<String>();
 		try {
-		if( !isJava7() && requiresJava7(rtType)) {
-			String java = System.getProperty(JRE7_SYSPROP);
-			if( java == null || !new File(java).exists())
-				fail("Launching " + homeDir + " requires a java7 jdk, which has not been provided via the " + JRE7_SYSPROP + " system property, or does not exist");
-			cmd = "JAVA=" + java + " " + cmd;
-		}
+			if( !isJava7() && requiresJava7(rtType)) {
+				String java = System.getProperty(JRE7_SYSPROP);
+				if( java == null || !new File(java).exists()) {
+					fail("Launching " + homeDir + " requires a java7 jdk, which has not been provided via the " + JRE7_SYSPROP + " system property, or does not exist");
+				}
+				envp.add("JAVA=" + java);
+			}
 		} catch(Throwable t) {
 			t.printStackTrace();
 		}
 		System.out.println("Launching cmd " + cmd);
 		Process p = null;
 		try {
-			p = Runtime.getRuntime().exec(cmd);
+			p = Runtime.getRuntime().exec(cmd, envp.toArray(new String[0]));
 			return p;
 		} catch( IOException ioe) {
 			fail(homeDir + " server failed to start: " + ioe.getMessage());
@@ -77,7 +81,7 @@ public class StartupUtility extends Assert {
 		System.out.println("Somehow launch completed without returning a process");
 		return null;
 	}
-	
+
 	private String homeDir, runtimeType;
 	private Process process;
 	private boolean started = false;
@@ -106,7 +110,7 @@ public class StartupUtility extends Assert {
 			waitForStarted(process);
 		started = true;
 	}
-	
+
 	public void dispose() {
 		if( homeDir != null && process != null ) {
 			try {
@@ -121,7 +125,7 @@ public class StartupUtility extends Assert {
 		}
 		started = false;
 	}
-	
+
 	private void waitForStarted(Process p) {
 		System.out.println("Waiting for server to complete startup");
 		Exception ex = null;
@@ -129,7 +133,7 @@ public class StartupUtility extends Assert {
 		try {
 			Thread.sleep(3000);
 		} catch(InterruptedException ie){}
-		
+
 		try {
 			JBoss7ServerState state = null;
 			long startTime = System.currentTimeMillis();
@@ -139,7 +143,7 @@ public class StartupUtility extends Assert {
 					Thread.sleep(1000);
 				} catch(InterruptedException ie){}
 				try {
-					state = service.getServerState(AS7ManagerTestUtils.createStandardDetails()); 
+					state = service.getServerState(AS7ManagerTestUtils.createStandardDetails());
 					ex = null;
 				} catch(JBoss7ManangerException ioe) {
 					ex = ioe;
@@ -158,7 +162,7 @@ public class StartupUtility extends Assert {
 			}
 		}
 	}
-		
+
 	private void shutdownServer(Process p) {
 		IJBoss7ManagerService service = AS7ManagerTestUtils.findService(runtimeType);
 		Exception ex = null;
@@ -182,5 +186,5 @@ public class StartupUtility extends Assert {
 				fail("Could not stop server " + homeDir + ": " + ex.getMessage());
 		}
 	}
-	
+
 }
