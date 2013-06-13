@@ -1,5 +1,6 @@
 package org.jboss.ide.eclipse.as.internal.management.as7.tests.utils;
 
+import java.io.File;
 import java.io.IOException;
 
 import junit.framework.Assert;
@@ -7,14 +8,40 @@ import junit.framework.Assert;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
+import org.eclipse.wst.server.core.IRuntimeType;
+import org.eclipse.wst.server.core.ServerCore;
+import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.ThreadUtils;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
 
 public class StartupUtility extends Assert {
+	private static final String JRE7_SYSPROP = "jbosstools.test.jre.7";
+	
+	
+	private static boolean isJava7() {
+		return (System.getProperty("java.version").startsWith("1.7."));
+	}
+
+	private static IExecutionEnvironment getRequiredExecEnv(String runtimeType) {
+		IRuntimeType type = ServerCore.findRuntimeType(runtimeType);
+		System.out.println("getRequiredExecenv for " + type.getId());
+		ServerExtendedProperties o = new ExtendedServerPropertiesAdapterFactory().getExtendedProperties(type);
+		IExecutionEnvironment env = ((JBossExtendedProperties)o).getDefaultExecutionEnvironment();
+		return env;
+	}
+	
+	private static boolean requiresJava7(String runtimeType) {
+		return "JavaSE-1.7".equals(getRequiredExecEnv(runtimeType).getId());
+	}
+	
 	public static Process runServer(String homeDir) {
-		System.out.println("Running server " + homeDir);
+		String rtType = ParameterUtils.serverHomeToRuntimeType.get(homeDir);
+		System.out.println("Running server " + homeDir + " with rtType = " + rtType);
 		String scriptName = null;
 		String cmd = null;
 		IPath bin = new Path(homeDir).append("bin");
@@ -28,6 +55,18 @@ public class StartupUtility extends Assert {
 			script.toFile().setExecutable(true);
 			cmd = script.toFile().getAbsolutePath();			
 		}
+
+		try {
+		if( !isJava7() && requiresJava7(rtType)) {
+			String java = System.getProperty(JRE7_SYSPROP);
+			if( java == null || !new File(java).exists())
+				fail("Launching " + homeDir + " requires a java7 jdk, which has not been provided via the " + JRE7_SYSPROP + " system property, or does not exist");
+			cmd = "JAVA=" + java + " " + cmd;
+		}
+		} catch(Throwable t) {
+			t.printStackTrace();
+		}
+		System.out.println("Launching cmd " + cmd);
 		Process p = null;
 		try {
 			p = Runtime.getRuntime().exec(cmd);
@@ -35,6 +74,7 @@ public class StartupUtility extends Assert {
 		} catch( IOException ioe) {
 			fail(homeDir + " server failed to start: " + ioe.getMessage());
 		}
+		System.out.println("Somehow launch completed without returning a process");
 		return null;
 	}
 	

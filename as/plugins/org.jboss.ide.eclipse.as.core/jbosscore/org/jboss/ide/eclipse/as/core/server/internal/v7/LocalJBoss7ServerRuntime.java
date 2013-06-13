@@ -80,8 +80,4 @@ public class LocalJBoss7ServerRuntime extends LocalJBossServerRuntime implements
 	public String getJBossConfiguration() {
 		return ""; //$NON-NLS-1$
 	}
-	
-	public IExecutionEnvironment getDefaultExecutionEnvironment(IRuntimeType rtType) {
-		return EnvironmentsManager.getDefault().getEnvironment("JavaSE-1.6"); //$NON-NLS-1$
-	}
 }

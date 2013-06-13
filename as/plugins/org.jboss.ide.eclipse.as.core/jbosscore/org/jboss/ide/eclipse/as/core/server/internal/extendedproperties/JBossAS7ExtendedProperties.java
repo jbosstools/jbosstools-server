@@ -13,6 +13,8 @@ package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.jdt.internal.launching.environments.EnvironmentsManager;
+import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
 import org.jboss.ide.eclipse.as.core.Messages;
@@ -100,5 +102,7 @@ public class JBossAS7ExtendedProperties extends JBossExtendedProperties {
 	public int getFileStructure() {
 		return FILE_STRUCTURE_CONFIG_DEPLOYMENTS;
 	}
-
+	public IExecutionEnvironment getDefaultExecutionEnvironment() {
+		return EnvironmentsManager.getDefault().getEnvironment("JavaSE-1.6"); //$NON-NLS-1$
+	}
 }

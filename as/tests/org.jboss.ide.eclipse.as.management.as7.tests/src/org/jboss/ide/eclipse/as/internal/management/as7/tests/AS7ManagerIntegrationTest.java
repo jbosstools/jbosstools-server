@@ -101,10 +101,13 @@ public class AS7ManagerIntegrationTest extends AssertUtility {
 		Object o = ((ServiceTracker)service2).getService();
 		assertNotNull(o);
 
-		System.out.println("Beginning a new management test");
+		System.out.println("\n\nBeginning a new management test");
+		System.out.println("homedir = " + homeDir);
 		if( !homeDir.equals(util.getHomeDir())) {
+			System.out.println("disposing previous util");
 			util.dispose();
 			util.setHomeDir(homeDir);
+			System.out.println("launching server for homedir=" + homeDir);
 			util.start(true);
 		}
 		// Make sure a server is up

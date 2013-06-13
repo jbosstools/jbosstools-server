@@ -22,6 +22,8 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.model.RuntimeDelegate;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 
 public abstract class AbstractLocalJBossServerRuntime extends RuntimeDelegate implements IJBossServerRuntime {
@@ -141,11 +143,9 @@ public abstract class AbstractLocalJBossServerRuntime extends RuntimeDelegate im
 	}
 	
 	public IExecutionEnvironment getDefaultExecutionEnvironment(IRuntimeType rtType) {
-		// NEW_SERVER_ADAPTER  Subclasses override this
-		String typeId = rtType.getId();
-		if( typeId.equals(IConstants.EAP_50) 
-				|| typeId.equals(IConstants.AS_60)) {
-			return EnvironmentsManager.getDefault().getEnvironment("JavaSE-1.6"); //$NON-NLS-1$
+		ServerExtendedProperties sep = new ExtendedServerPropertiesAdapterFactory().getExtendedProperties(rtType);
+		if( sep instanceof JBossExtendedProperties) {
+			return ((JBossExtendedProperties)sep).getDefaultExecutionEnvironment();
 		}
 		return EnvironmentsManager.getDefault().getEnvironment("J2SE-1.4"); //$NON-NLS-1$
 	}

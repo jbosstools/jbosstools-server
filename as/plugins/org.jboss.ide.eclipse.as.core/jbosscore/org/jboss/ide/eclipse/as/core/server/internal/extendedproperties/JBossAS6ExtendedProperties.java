@@ -11,6 +11,9 @@
 package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.jdt.internal.launching.environments.EnvironmentsManager;
+import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
+import org.eclipse.wst.server.core.IRuntimeType;
 import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.internal.JBoss6ModuleStateVerifier;
@@ -33,5 +36,9 @@ public class JBossAS6ExtendedProperties extends JBossExtendedProperties {
 		if( server != null)
 			return new JBoss6xDefaultLaunchArguments(server);
 		return new JBoss6xDefaultLaunchArguments(runtime);
+	}
+	public IExecutionEnvironment getDefaultExecutionEnvironment() {
+		// NEW_SERVER_ADAPTER  Subclasses override this
+		return EnvironmentsManager.getDefault().getEnvironment("JavaSE-1.6"); //$NON-NLS-1$
 	}
 }
