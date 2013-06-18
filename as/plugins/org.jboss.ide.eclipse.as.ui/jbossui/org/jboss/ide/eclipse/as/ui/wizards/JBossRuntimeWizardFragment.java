@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jdt.internal.debug.ui.jres.JREsPreferencePage;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -69,6 +70,9 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.PreferencesUtil;
+import org.eclipse.ui.internal.dialogs.WorkbenchPreferenceDialog;
+import org.eclipse.ui.preferences.IWorkbenchPreferenceContainer;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
@@ -794,12 +798,14 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 						"org.eclipse.jdt.debug.ui.preferences.VMPreferencePage"); //$NON-NLS-1$
 		PreferenceManager manager2 = new PreferenceManager();
 		manager2.addToRoot(node);
-		final PreferenceDialog dialog = new PreferenceDialog(jreButton
-				.getShell(), manager2);
+		final PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(
+				jreButton.getShell(),
+				JREsPreferencePage.ID, 
+				new String[] {}, 
+				null);
 		final boolean[] result = new boolean[] { false };
 		BusyIndicator.showWhile(jreButton.getDisplay(), new Runnable() {
 			public void run() {
-				dialog.create();
 				if (dialog.open() == Window.OK)
 					result[0] = true;
 			}
