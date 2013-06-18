@@ -56,7 +56,6 @@ public class DeploymentScannerSection extends ServerEditorSection {
 		if( removeScannersOnShutdown != null ) {
 			boolean remove = server.getAttribute(IJBossToolingConstants.PROPERTY_REMOVE_DEPLOYMENT_SCANNERS, false);
 			removeScannersOnShutdown.setSelection(new Boolean(remove).booleanValue());
-			removeScannersOnShutdown.setEnabled(addScannersOnStartup.getSelection());
 			removeScannersOnShutdown.setText("Remove added deployment scanners before shutdown.");
 		}
 		addListeners();
@@ -120,11 +119,9 @@ public class DeploymentScannerSection extends ServerEditorSection {
 		}
 		public void execute() {
 			super.execute();
-			removeScannersOnShutdown.setEnabled(addScannersOnStartup.getSelection());
 		}
 		public void undo() {
 			super.undo();
-			removeScannersOnShutdown.setEnabled(addScannersOnStartup.getSelection());
 		}
 	}
 
