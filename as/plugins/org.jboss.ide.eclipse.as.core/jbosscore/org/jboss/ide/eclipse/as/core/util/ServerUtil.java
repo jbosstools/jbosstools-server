@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -98,11 +100,8 @@ public class ServerUtil {
 	public static boolean isJBossServerType(IServerType type) {
 		if( type == null )
 			return false;
-		
-		// If we start with AS or EAP serverIds and are NOT deploy-only server
-		return !type.getId().equals(IJBossToolingConstants.DEPLOY_ONLY_SERVER) &&
-				(type.getId().startsWith(IJBossToolingConstants.SERVER_AS_PREFIX) 
-						|| type.getId().startsWith(IJBossToolingConstants.EAP_SERVER_PREFIX));
+		List<String> asList = Arrays.asList(IJBossToolingConstants.ALL_JBOSS_SERVERS);
+		return asList.contains(type.getId());
 	}
 	
 	
@@ -161,6 +160,8 @@ public class ServerUtil {
 	
 	private static boolean isJBoss7Style(IServer server) {
 		ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
+		if( sep == null )
+			return false;
 		boolean as7Style = sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS; 
 		return as7Style;
 	}
@@ -175,25 +176,27 @@ public class ServerUtil {
 		d2.mkdirs();
 		
 		
-		ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
-		int fileStructure = sep.getFileStructure();
-		// create temp deploy folder
 		JBossServer ds = ( JBossServer)server.loadAdapter(JBossServer.class, null);
-		if( ds != null && fileStructure == ServerExtendedProperties.FILE_STRUCTURE_SERVER_CONFIG_DEPLOY) {
-			// Only add these folders for as < 7
-			if( !new File(ds.getDeployFolder()).equals(d1)) 
-				new File(ds.getDeployFolder()).mkdirs();
-			if( !new File(ds.getTempDeployFolder()).equals(d2))
-				new File(ds.getTempDeployFolder()).mkdirs();
-			IRuntime rt = server.getRuntime();
-			IJBossServerRuntime jbsrt = (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
-			if( jbsrt != null ) {
-				String config = jbsrt.getJBossConfiguration();
-				IPath newTemp = new Path(IJBossRuntimeResourceConstants.SERVER).append(config)
-					.append(IJBossToolingConstants.TMP)
-					.append(IJBossToolingConstants.JBOSSTOOLS_TMP).makeRelative();
-				IPath newTempAsGlobal = makeGlobal(jbsrt.getRuntime(), newTemp);
-				newTempAsGlobal.toFile().mkdirs();
+		ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
+		if( ds != null && sep != null ) {
+			int fileStructure = sep.getFileStructure();
+			// create temp deploy folder
+			if( fileStructure == ServerExtendedProperties.FILE_STRUCTURE_SERVER_CONFIG_DEPLOY) {
+				// Only add these folders for as < 7
+				if( !new File(ds.getDeployFolder()).equals(d1)) 
+					new File(ds.getDeployFolder()).mkdirs();
+				if( !new File(ds.getTempDeployFolder()).equals(d2))
+					new File(ds.getTempDeployFolder()).mkdirs();
+				IRuntime rt = server.getRuntime();
+				IJBossServerRuntime jbsrt = (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
+				if( jbsrt != null ) {
+					String config = jbsrt.getJBossConfiguration();
+					IPath newTemp = new Path(IJBossRuntimeResourceConstants.SERVER).append(config)
+						.append(IJBossToolingConstants.TMP)
+						.append(IJBossToolingConstants.JBOSSTOOLS_TMP).makeRelative();
+					IPath newTempAsGlobal = makeGlobal(jbsrt.getRuntime(), newTemp);
+					newTempAsGlobal.toFile().mkdirs();
+				}
 			}
 		}
 	}

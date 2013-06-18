@@ -35,6 +35,8 @@ public class ShowInWebManagementActionProvider extends AbstractOpenBrowserServer
 
 	protected boolean accepts(IServer server) {
 		ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
+		if( sep == null )
+			return false;
 		boolean as7Style = sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS; 
 		return (as7Style && server.getServerState() == IServer.STATE_STARTED);
 	}

@@ -34,7 +34,7 @@ public class ShowInJMXConsoleActionProvider extends AbstractOpenBrowserServerAct
 			IJBossServer jbs = ServerConverter.getJBossServer(server);
 			if( jbs != null ) {
 				ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
-				return ServerUtil.isJBossServerType(server.getServerType()) && 
+				return ServerUtil.isJBossServerType(server.getServerType()) && sep != null && 
 						sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_SERVER_CONFIG_DEPLOY;
 			}
 		}
