@@ -619,7 +619,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		protected String getServerRadioNewDeployDir() {
 			String mode = getHelper().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
 			ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(page.getServer());
-			if (sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS) {
+			if (sep != null && sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS) {
 				return new Path(IJBossRuntimeResourceConstants.AS7_STANDALONE)
 				.append(IJBossRuntimeResourceConstants.AS7_DEPLOYMENTS)
 				.makeRelative().toString();
@@ -637,7 +637,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 			String mode = getHelper().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
 			ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(page.getServer());
 
-			if (sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS) {
+			if (sep != null && sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS) {
 				return new Path(IJBossRuntimeResourceConstants.AS7_STANDALONE)
 				.append(IJBossRuntimeResourceConstants.FOLDER_TMP)
 				.makeRelative().toString();
