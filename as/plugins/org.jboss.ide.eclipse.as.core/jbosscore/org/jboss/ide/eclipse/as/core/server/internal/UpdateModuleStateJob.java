@@ -24,26 +24,76 @@ import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExt
 public class UpdateModuleStateJob extends Job {
 	private IServer server;
 	private IServerModuleStateVerifier verifier;
+	private boolean wait;
+	private int maxWait;
+	
 	public UpdateModuleStateJob(IServer server) {
-		super("Update Module States"); //$NON-NLS-1$
-		this.server = server;
-		JBossExtendedProperties properties = (JBossExtendedProperties)server.loadAdapter(JBossExtendedProperties.class, null);
-		this.verifier = properties.getModuleStateVerifier();
+		this(server, null, false, 0);
 	}
 
-	
-	
 	public UpdateModuleStateJob(IServer server, IServerModuleStateVerifier verifier) {
-		super("Update Module States"); //$NON-NLS-1$
-		this.server = server;
-		this.verifier = verifier;
+		this(server, verifier, false, 0);
 	}
+	
+	public UpdateModuleStateJob(IServer server, IServerModuleStateVerifier verifier, boolean wait, int maxWait) {
+		super("Update Module States"); //$NON-NLS-1$
+		this.wait = wait;
+		this.maxWait = maxWait;
+		this.server = server;
+		if( verifier == null ) {
+			JBossExtendedProperties properties = (JBossExtendedProperties)server.loadAdapter(JBossExtendedProperties.class, null);
+			this.verifier = properties.getModuleStateVerifier();
+		} else {
+			this.verifier = verifier;
+		}
+	}
+
 
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
 		if( verifier == null )
 			return Status.CANCEL_STATUS;
 		
+		
+		if( !wait ) {
+			// Handle the quick update scenario
+			return runQuick(monitor);
+		} else {
+			// Handle the scenario where we wait
+			return runWait(monitor);
+		}
+	}
+
+	private IStatus runWait(IProgressMonitor monitor) {
+		boolean allStarted = false;
+		long startTime = System.currentTimeMillis();
+		long endTime = startTime + maxWait;
+		IModule[] modules = server.getModules();
+		monitor.beginTask("Verifying Module State", maxWait * 1000); //$NON-NLS-1$
+		while( !allStarted && System.currentTimeMillis() < endTime) {
+			allStarted = true;
+			long thisLoopStart = System.currentTimeMillis();
+			for( int i = 0; i < modules.length; i++ ) {
+				IModule[] temp = new IModule[]{modules[i]};
+				boolean started = verifier.isModuleStarted(server, temp, new SubProgressMonitor(monitor, 100));
+				allStarted = allStarted && started;
+				int state = started ? IServer.STATE_STARTED : IServer.STATE_STOPPED;
+				((Server)server).setModuleState(temp, state);
+			}
+			
+			// Sleep just a bit
+			try {
+				Thread.sleep(500);
+			} catch(InterruptedException ie) {
+				// ignore
+			}
+			long timeDif = System.currentTimeMillis() - thisLoopStart;
+			monitor.worked((int)timeDif - (modules.length * 100));
+		}
+		return Status.OK_STATUS;
+	}
+	
+	private IStatus runQuick(IProgressMonitor monitor) {
 		IModule[] modules = server.getModules();
 		monitor.beginTask("Verifying Module State", modules.length * 1000); //$NON-NLS-1$
 		for( int i = 0; i < modules.length; i++ ) {
@@ -54,5 +104,5 @@ public class UpdateModuleStateJob extends Job {
 		}
 		return Status.OK_STATUS;
 	}
-
+	
 }

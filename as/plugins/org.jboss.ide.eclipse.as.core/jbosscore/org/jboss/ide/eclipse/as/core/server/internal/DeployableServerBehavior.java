@@ -126,8 +126,6 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate
 			int result = method.publishModule(this, kind, deltaKind, module, monitor);
 			if( result != -1 ) {
 				setModulePublishState(module, result);
-				boolean isStarted = getServer().getServerState() == IServer.STATE_STARTED;
-				setModuleState(module, isStarted ? IServer.STATE_STARTED : IServer.STATE_STOPPED);
 			}
 		} catch(CoreException ce) {
 			Trace.trace(Trace.STRING_FINER, "Error publishing module " + module[module.length-1].getName() + " in DeployableServerBehavior. " + ce.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
