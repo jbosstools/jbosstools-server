@@ -401,7 +401,7 @@ public class ArchivesActionProvider extends CommonActionProvider {
 
 	private void deleteSelectedNodes() {
 		IArchiveNode[] node = getSelectedNodes(site);
-		if (node != null && approveDeletion(node)) {
+		if (node != null && node.length > 0 && approveDeletion(node)) {
 			ArrayList<IPath> paths = new ArrayList<IPath>();
 			for( int i = 0; i < node.length; i++ ) {
 				final IArchiveNode parent = (IArchiveNode) node[i].getParent();
