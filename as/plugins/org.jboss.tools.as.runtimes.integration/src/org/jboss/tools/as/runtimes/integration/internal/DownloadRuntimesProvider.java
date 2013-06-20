@@ -28,8 +28,11 @@ import org.jboss.tools.stacks.core.model.StacksManager;
  */
 public class DownloadRuntimesProvider implements IDownloadRuntimesProvider {
 
-	private static final String LABEL_FILE_SIZE = "runtime-size";
-	private static final String LABEL_WTP_RUNTIME = "wtp-runtime-type";
+	/* The following constants are marked public but are in an internal package. */
+	public static final String LABEL_FILE_SIZE = "runtime-size";
+	public static final String LABEL_WTP_RUNTIME = "wtp-runtime-type";
+	public static final String LABEL_RUNTIME_CATEGORY = "runtime-category";
+	public static final String LABEL_RUNTIME_TYPE = "runtime-type";
 	public static final String PROP_WTP_RUNTIME = LABEL_WTP_RUNTIME;
 	
 	
@@ -87,6 +90,8 @@ public class DownloadRuntimesProvider implements IDownloadRuntimesProvider {
 				dr.setLicenseURL(license);
 				dr.setSize(fileSize);
 				dr.setProperty(PROP_WTP_RUNTIME, wtpRT);
+				dr.setProperty(LABEL_RUNTIME_CATEGORY, workingRT.getLabels().getProperty(LABEL_RUNTIME_CATEGORY));
+				dr.setProperty(LABEL_RUNTIME_TYPE, workingRT.getLabels().getProperty(LABEL_RUNTIME_TYPE));
 				if( legacyId != null )
 					dr.setProperty(DownloadRuntime.PROPERTY_ALTERNATE_ID, id);
 				list.add(dr);

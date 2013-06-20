@@ -62,7 +62,7 @@ public interface IJBossToolingConstants {
 	public static final String DEPLOY_ONLY_SERVER = "org.jboss.ide.eclipse.as.systemCopyServer"; //$NON-NLS-1$
 	
 	
-	/* Version Strings */
+	/* Version Strings.  These are sooo dumb and legacy. Ugh.  */
 	public static final String V3_0 = "3.0"; //$NON-NLS-1$
 	public static final String V3_2 = "3.2"; //$NON-NLS-1$
 	public static final String V3_3 = "3.3"; //$NON-NLS-1$

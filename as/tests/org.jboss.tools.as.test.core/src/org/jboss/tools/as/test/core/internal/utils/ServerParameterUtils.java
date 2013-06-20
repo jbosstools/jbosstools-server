@@ -48,7 +48,19 @@ public class ServerParameterUtils {
         return false;
 	}
 	
+	public static Object[] getJBossServerTypeParametersPlusAdditionalMocks() {
+		ArrayList<Object> l = new ArrayList<Object>(Arrays.asList(getJBossServerTypeParamterers()));
+		l.addAll(Arrays.asList(ServerCreationTestUtils.TEST_SERVER_TYPES_TO_MOCK));
+		return (String[]) l.toArray(new String[l.size()]);
+	}
+
+	
+	@Deprecated
 	public static Object[] getJBossServerTypeParamterers() {
+		return getJBossServerTypeParameters();
+	}
+
+	public static Object[] getJBossServerTypeParameters() {
 		boolean skipReqs = skipPrivateRequirements();
 		ArrayList<String> jbservers = new ArrayList<String>();
 		for( int i = 0; i < IJBossToolingConstants.ALL_JBOSS_SERVERS.length; i++ ) {
@@ -60,7 +72,12 @@ public class ServerParameterUtils {
 		return (String[]) jbservers.toArray(new String[jbservers.size()]);
 	}
 	
+	@Deprecated
 	public static Object[] getAllJBossServerTypeParamterers() {
+		return getAllJBossServerTypeParameters();
+	}
+	
+	public static Object[] getAllJBossServerTypeParameters() {
 		ArrayList<Object> list = new ArrayList<Object>();
 		list.add(IJBossToolingConstants.DEPLOY_ONLY_SERVER);
 		list.addAll(Arrays.asList(getJBossServerTypeParamterers()));

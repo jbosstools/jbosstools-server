@@ -62,8 +62,19 @@ public class ServerCreationTestUtils extends Assert {
 	private static final String twiddle_eap_5_0 = "eap5.0" + twiddle_suffix;
 	private static final String twiddle_eap_5_1 = "eap5.1" + twiddle_suffix;
 	private static final String eap_server_6_0_jar = "eap6.0.0.mf.jboss-as-server.jar";
+	private static final String eap_server_6_1_jar = "eap6.1.0.mf.jboss-as-server.jar";
+	private static final String gatein_3_4_0_jar = "gatein3.4.0.mf.jboss-as7-integration.jar";
 	private static final String run_jar = "run.jar";
 	private static final String service_xml = "service.xml";
+	
+	// ADDITIONAL NON_DEFAULT SERVER TYPES TO TEST
+	public static final String TEST_SERVER_TYPE_GATEIN_34 = "TEST_SERVER_TYPE_GATEIN_34";
+	public static final String TEST_SERVER_TYPE_GATEIN_35 = "TEST_SERVER_TYPE_GATEIN_35";
+	public static final String TEST_SERVER_TYPE_GATEIN_36 = "TEST_SERVER_TYPE_GATEIN_36";
+	public static final String[] TEST_SERVER_TYPES_TO_MOCK = new String[] { 
+		TEST_SERVER_TYPE_GATEIN_34, TEST_SERVER_TYPE_GATEIN_35,TEST_SERVER_TYPE_GATEIN_36
+	};
+	
 	static {
 		asSystemJar.put(IJBossToolingConstants.SERVER_AS_32, twiddle_3_2_8);
 		asSystemJar.put(IJBossToolingConstants.SERVER_AS_40, twiddle_4_0_5);
@@ -77,6 +88,9 @@ public class ServerCreationTestUtils extends Assert {
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_43, twiddle_eap_4_3);
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_50, twiddle_eap_5_1);
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_60, eap_server_6_0_jar);
+		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_61, eap_server_6_1_jar);
+		asSystemJar.put(TEST_SERVER_TYPE_GATEIN_34, gatein_3_4_0_jar);
+		// NEW_SERVER_ADAPTER Add the new runtime constant above this line
 		
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_AS_32, IJBossToolingConstants.AS_32);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_AS_40, IJBossToolingConstants.AS_40);
@@ -90,6 +104,10 @@ public class ServerCreationTestUtils extends Assert {
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_43, IJBossToolingConstants.EAP_43);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_50, IJBossToolingConstants.EAP_50);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_60, IJBossToolingConstants.EAP_60);
+		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_61, IJBossToolingConstants.EAP_61);
+		// NEW_SERVER_ADAPTER Add the new runtime constant above this line
+		
+		
 	}
 
 	private static IServer createDeployOnlyServer() throws CoreException {
@@ -125,6 +143,12 @@ public class ServerCreationTestUtils extends Assert {
 			serverDir = createAS72EAP61StyleMockServerDirectory(name, serverType, asSystemJar.get(serverType));
 		} else if( IJBossToolingConstants.SERVER_WILDFLY_80.equals(serverType)) {
 			serverDir = createWildfly80MockServerDirectory(name, serverType, asSystemJar.get(serverType));
+		} else if( TEST_SERVER_TYPE_GATEIN_34.equals(serverType)) {
+			serverDir = createGateIn34MockServerDirectory(name);
+		} else if( TEST_SERVER_TYPE_GATEIN_35.equals(serverType)) {
+			serverDir = createGateIn35MockServerDirectory(name);
+		} else if( TEST_SERVER_TYPE_GATEIN_36.equals(serverType)) {
+			serverDir = createGateIn36MockServerDirectory(name);
 		}
 		return serverDir == null ? null : serverDir.toFile();
 	}
@@ -153,7 +177,7 @@ public class ServerCreationTestUtils extends Assert {
 		return createServerWithRuntime(serverType, name, locFile);
 	}
 	
-	private static IServer createServerWithRuntime(String serverType, String name, File f) throws CoreException {
+	public static IServer createServerWithRuntime(String serverType, String name, File f) throws CoreException {
 		if( f != null ) {
 			IServerType type = ServerCore.findServerType(serverType);
 			if( ServerUtil.isJBoss7(type)) {
@@ -186,114 +210,134 @@ public class ServerCreationTestUtils extends Assert {
 		}
 	}
 
-	private static IPath createAS7StyleMockServerDirectory(String name, String serverTypeId, String serverJar) {
+	private static IPath createGateIn34MockServerDirectory(String name) {
 		IPath loc = mockedServers.append(name);
+		createAS7xProductStructure(loc, false, asSystemJar.get(IJBossToolingConstants.SERVER_AS_71), null, null);
+		IPath dest = loc.append("/gatein/modules/org/gatein/main/");
+		dest.toFile().mkdirs();
 		try {
-			loc.toFile().mkdirs();
-			IPath serverJarBelongs = loc.append("modules/org/jboss/as/server/main");
-			serverJarBelongs.toFile().mkdirs();
-			File serverJarLoc = BundleUtils.getFileLocation("serverMock/" + serverJar);
-			FileUtil.fileSafeCopy(serverJarLoc, serverJarBelongs.append("anything.jar").toFile());
-			
-			IPath standalonexml = loc.append("standalone").append("configuration").append("standalone.xml");
-			standalonexml.toFile().getParentFile().mkdirs();
-			standalonexml.toFile().createNewFile();
-			
-			loc.append("jboss-modules.jar").toFile().createNewFile();
-			loc.append("bin").toFile().mkdirs();
+			File serverJarLoc = BundleUtils.getFileLocation("serverMock/" + asSystemJar.get(TEST_SERVER_TYPE_GATEIN_34));
+			FileUtil.fileSafeCopy(serverJarLoc, dest.append("anything.jar").toFile());
 		} catch(CoreException ce) {
 			FileUtil.completeDelete(loc.toFile());
-			return null;
+		}
+
+		return loc;
+	}
+	
+	private static IPath createGateIn35MockServerDirectory(String name) {
+		IPath loc = mockedServers.append(name);
+		createAS7xProductStructure(loc, false, asSystemJar.get(IJBossToolingConstants.SERVER_AS_71), null, null);
+		String GATEIN_35_PROPERTY_FILE = "gatein/extensions/gatein-wsrp-integration.ear/extension-war.war/META-INF/maven/org.gatein.integration/extension-war/pom.properties";
+		IPath propFile = loc.append(GATEIN_35_PROPERTY_FILE);
+		propFile.toFile().getParentFile().mkdirs();
+		try {
+			IOUtil.setContents(propFile.toFile(), "version=3.5.0");
+		} catch( CoreException ce) {
+			FileUtil.completeDelete(loc.toFile());
 		} catch(IOException ioe) {
 			FileUtil.completeDelete(loc.toFile());
-			return null;
 		}
+		return loc;
+	}
+	private static IPath createGateIn36MockServerDirectory(String name) {
+		IPath loc = mockedServers.append(name);
+		createAS7xProductStructure(loc, false, asSystemJar.get(IJBossToolingConstants.SERVER_AS_71), null, null);
+		String GATEIN_35_PROPERTY_FILE = "gatein/extensions/gatein-wsrp-integration.ear/extension-war.war/META-INF/maven/org.gatein.integration/extension-war/pom.properties";
+		IPath propFile = loc.append(GATEIN_35_PROPERTY_FILE);
+		propFile.toFile().getParentFile().mkdirs();
+		try {
+			IOUtil.setContents(propFile.toFile(), "version=3.6.0");
+		} catch( CoreException ce) {
+			FileUtil.completeDelete(loc.toFile());
+		} catch(IOException ioe) {
+			FileUtil.completeDelete(loc.toFile());
+		}
+		return loc;
+	}
+
+	
+	private static IPath createAS7StyleMockServerDirectory(String name, String serverTypeId, String serverJar) {
+		IPath loc = mockedServers.append(name);
+		createAS7xProductStructure(loc, false, serverJar, null, null);
 		return loc;
 	}
 	
 	private static IPath createWildfly80MockServerDirectory(String name, String serverTypeId, String serverJar) {
 		IPath loc = mockedServers.append(name);
-		try {
-			loc.toFile().mkdirs();
-			IPath serverJarBelongs = loc.append("modules/system/layers/base/org/jboss/as/server/main");
-			serverJarBelongs.toFile().mkdirs();
-			File serverJarLoc = BundleUtils.getFileLocation("serverMock/" + serverJar);
-			FileUtil.fileSafeCopy(serverJarLoc, serverJarBelongs.append("anything.jar").toFile());
-			
-			IPath standalonexml = loc.append("standalone").append("configuration").append("standalone.xml");
-			standalonexml.toFile().getParentFile().mkdirs();
-			standalonexml.toFile().createNewFile();
-			
-			loc.append("jboss-modules.jar").toFile().createNewFile();
-			loc.append("bin").toFile().mkdirs();
-		} catch(CoreException ce) {
-			FileUtil.completeDelete(loc.toFile());
-			return null;
-		} catch(IOException ioe) {
-			FileUtil.completeDelete(loc.toFile());
-			return null;
-		}
+		createAS7xProductStructure(loc, true, serverJar, null, null);
 		return loc;
 	}
 	
 	
 	private static IPath createAS72EAP61StyleMockServerDirectory(String name, String serverTypeId, String serverJar) {
 		IPath loc = mockedServers.append(name);
-		try {
-			loc.toFile().mkdirs();
-			IPath productConf = loc.append("bin/product.conf");
-			loc.append("bin").toFile().mkdirs();
-			IOUtil.setContents(productConf.toFile(), "slot=eap");
-			IPath metainf = loc.append("modules/system/layers/base/org/jboss/as/product/eap/dir/META-INF");
-			metainf.toFile().mkdirs();
-			IPath manifest = metainf.append("MANIFEST.MF");
-			String manString = "JBoss-Product-Release-Name: EAP\nJBoss-Product-Release-Version: 6.1.0.Alpha\nJBoss-Product-Console-Slot: eap";
-			IOUtil.setContents(manifest.toFile(), manString);
-			IPath standalonexml = loc.append("standalone").append("configuration").append("standalone.xml");
-			standalonexml.toFile().getParentFile().mkdirs();
-			standalonexml.toFile().createNewFile();
-			
-			loc.append("jboss-modules.jar").toFile().createNewFile();
-			loc.append("bin").toFile().mkdirs();
-
-		} catch(CoreException ce) {
-			FileUtil.completeDelete(loc.toFile());
-			return null;
-		} catch(IOException ioe) {
-			FileUtil.completeDelete(loc.toFile());
-			return null;
-		}
+		String manString = "JBoss-Product-Release-Name: EAP\nJBoss-Product-Release-Version: 6.1.0.Alpha\nJBoss-Product-Console-Slot: eap";
+		createAS7xProductStructure(loc, true, serverJar, "eap", manString);
 		return loc;
 	}
 
 	private static IPath createEAP6StyleMockServerDirectory(String name, String serverTypeId, String serverJar) {
 		IPath loc = mockedServers.append(name);
-		try {
-			loc.toFile().mkdirs();
-			IPath productConf = loc.append("bin/product.conf");
-			loc.append("bin").toFile().mkdirs();
-			IOUtil.setContents(productConf.toFile(), "slot=eap");
-			IPath metainf = loc.append("modules/org/jboss/as/product/eap/dir/META-INF");
-			metainf.toFile().mkdirs();
-			IPath manifest = metainf.append("MANIFEST.MF");
-			String manString = "JBoss-Product-Release-Name: EAP\nJBoss-Product-Release-Version: 6.0.0.Alpha\nJBoss-Product-Console-Slot: eap";
-			IOUtil.setContents(manifest.toFile(), manString);
-			
-			IPath standalonexml = loc.append("standalone").append("configuration").append("standalone.xml");
-			standalonexml.toFile().getParentFile().mkdirs();
-			standalonexml.toFile().createNewFile();
-			
-			loc.append("jboss-modules.jar").toFile().createNewFile();
-			loc.append("bin").toFile().mkdirs();
-		} catch(CoreException ce) {
-			FileUtil.completeDelete(loc.toFile());
-			return null;
-		} catch(IOException ioe) {
-			FileUtil.completeDelete(loc.toFile());
-			return null;
-		}
+		String manString = "JBoss-Product-Release-Name: EAP\nJBoss-Product-Release-Version: 6.0.0.Alpha\nJBoss-Product-Console-Slot: eap";
+		createAS7xProductStructure(loc, false, serverJar, "eap", manString);
 		return loc;
 	}
+	
+	private static void createAS7xProductStructure(IPath loc,  boolean includeLayers, String serverJar, String slot,
+			String manifestContents ) {
+		try {
+			createStandaloneXML(loc);
+			copyASSystemJar(loc, serverJar, includeLayers);
+			loc.append("jboss-modules.jar").toFile().createNewFile();
+			loc.append("bin").toFile().mkdirs();
+			if( slot != null ) {
+				createProductConfASgt7(loc, slot);
+				createProductMetaInfFolder(loc, slot, includeLayers, manifestContents);
+			}
+		} catch(CoreException ce) {
+			FileUtil.completeDelete(loc.toFile());
+		} catch(IOException ioe) {
+			FileUtil.completeDelete(loc.toFile());
+		}
+	}
+	
+	private static void copyASSystemJar(IPath loc, String serverJar, boolean includeLayers) throws CoreException {
+		IPath serverJarBelongs = includeLayers ? 
+				loc.append("modules/system/layers/base/org/jboss/as/server/main") :
+					loc.append("modules/org/jboss/as/server/main");
+		serverJarBelongs.toFile().mkdirs();
+		File serverJarLoc = BundleUtils.getFileLocation("serverMock/" + serverJar);
+		FileUtil.fileSafeCopy(serverJarLoc, serverJarBelongs.append("anything.jar").toFile());
+	}
+	private static void createProductMetaInfFolder(IPath loc, String slot, boolean includeLayers, String manifestContents) throws IOException, CoreException {
+		IPath metainf = loc.append(getProductMetaInfFolderPath(slot, includeLayers));
+		metainf.toFile().mkdirs();
+		IPath manifest = metainf.append("MANIFEST.MF");
+		IOUtil.setContents(manifest.toFile(), manifestContents);		
+	}
+	
+	private static String getProductMetaInfFolderPath(String slot, boolean includeLayers) {
+		if( !includeLayers ) {
+			return "modules/org/jboss/as/product/" + slot + "/dir/META-INF";
+		}
+		return "modules/system/layers/base/org/jboss/as/product/" + slot + "/dir/META-INF";
+
+	}
+	
+	private static void createProductConfASgt7(IPath loc, String slot) throws CoreException, IOException  {
+		loc.toFile().mkdirs();
+		IPath productConf = loc.append("bin/product.conf");
+		loc.append("bin").toFile().mkdirs();
+		IOUtil.setContents(productConf.toFile(), "slot=" + slot);
+	}
+	
+	private static void createStandaloneXML(IPath loc) throws IOException {
+		IPath standalonexml = loc.append("standalone").append("configuration").append("standalone.xml");
+		standalonexml.toFile().getParentFile().mkdirs();
+		standalonexml.toFile().createNewFile();
+	}
+	
 	
 	private static IServer createServer(String serverType,
 			String location, String configuration, String name) throws CoreException {
