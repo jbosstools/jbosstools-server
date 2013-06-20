@@ -58,5 +58,22 @@
 	<feature url="features/org.jboss.tools.jmx.test.feature.source_0.0.0.jar" id="org.jboss.tools.jmx.test.feature.source" version="0.0.0">
 		<category name="AllSources"/>
 	</feature>
+
+<!-- wtp -->
+
+	<feature url="features/org.jboss.tools.tomcat.runtimes.integration.feature_0.0.0.jar" id="org.jboss.tools.tomcat.runtimes.integration.feature" version="0.0.0">
+		<category name="AllFeatures" />
+	</feature>
+	<feature url="features/org.jboss.tools.tomcat.runtimes.integration.tests.feature_0.0.0.jar" id="org.jboss.tools.tomcat.runtimes.integration.tests.feature" version="0.0.0">
+		<category name="AllFeatures" />
+	</feature>
+	<!-- sources -->
+	<feature url="features/org.jboss.tools.tomcat.runtimes.integration.feature.source_0.0.0.jar" id="org.jboss.tools.tomcat.runtimes.integration.feature.source" version="0.0.0">
+		<category name="AllSources" />
+	</feature>
+	<feature url="features/org.jboss.tools.tomcat.runtimes.integration.tests.feature.source_0.0.0.jar" id="org.jboss.tools.tomcat.runtimes.integration.tests.feature.source" version="0.0.0">
+		<category name="AllSources" />
+	</feature>
+
 </site>
 

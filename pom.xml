@@ -14,6 +14,7 @@
 	<modules>
 		<module>archives</module>
 		<module>as</module>
+		<module>wtp</module>
 		<module>jmx</module>
 		<module>site</module>
 	</modules>
