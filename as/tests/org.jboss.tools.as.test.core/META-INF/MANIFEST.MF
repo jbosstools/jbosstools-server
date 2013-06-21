@@ -1,6 +1,7 @@
 hManifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: %BundleName.0
+Bundle-Name: %BundleName
+Bundle-Vendor: %BundleVendor
 Bundle-SymbolicName: org.jboss.tools.as.test.core;singleton:=true
 Bundle-Version: 2.4.100.qualifier
 Bundle-Localization: plugin
