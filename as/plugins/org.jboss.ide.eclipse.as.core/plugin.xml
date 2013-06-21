@@ -151,7 +151,7 @@
       <serverType
             id="org.jboss.ide.eclipse.as.wildfly.80"
             behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.v7.DelegatingJBoss7ServerBehavior"
-            class="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server"
+            class="org.jboss.ide.eclipse.as.core.server.internal.v7.Wildfly8Server"
             description="%jboss.version.wildfly8.description"
             hasConfiguration="false"
             initialState="stopped"
@@ -668,9 +668,14 @@
             supportsShutdown="true"
             supportsStartup="true">
        </serverPoller>
+       <!-- 
+       		We need to use a different id here for this poller. Under the current impl, 
+       		these are stored in a map with the id as key, and the entries cannot be 
+       		merged into a single model. Therefore we need to give it a different id. 
+       -->
       <serverPoller
             class="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManagerServicePoller"
-            id="org.jboss.ide.eclipse.as.core.server.JBoss7ManagerServicePoller"
+            id="org.jboss.ide.eclipse.as.core.server.Wildfly8ManagerServicePoller"
             name="Wildfly Manager Service"
             serverTypes="%ServerTypesWildfly8"
             supportsShutdown="true"

@@ -40,6 +40,8 @@ import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
  */
 public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 	public static final String POLLER_ID = "org.jboss.ide.eclipse.as.core.server.JBoss7ManagerServicePoller"; //$NON-NLS-1$
+	public static final String WILDFLY_POLLER_ID = "org.jboss.ide.eclipse.as.core.server.Wildfly8ManagerServicePoller"; //$NON-NLS-1$
+	
 	private static final int SYNCHRONOUS_POLL_FAST_TIMEOUT = 800;
 	
 	

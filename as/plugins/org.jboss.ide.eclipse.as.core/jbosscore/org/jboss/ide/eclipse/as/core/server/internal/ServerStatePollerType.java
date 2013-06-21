@@ -59,4 +59,22 @@ public class ServerStatePollerType implements IServerStatePollerType {
 		}
 		return null;
 	}
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[ServerStatePollerType] "); //$NON-NLS-1$
+		sb.append("id=");//$NON-NLS-1$
+		sb.append(getId());
+		sb.append(", name=");//$NON-NLS-1$
+		sb.append(getName());
+		sb.append(", supportsStartup=");//$NON-NLS-1$
+		sb.append(supportsStartup());
+		sb.append(", supportsShutdown=");//$NON-NLS-1$
+		sb.append(supportsShutdown());
+		sb.append(", serverTypes=");//$NON-NLS-1$
+		sb.append(getServerTypes());
+		sb.append(", behaviorModes=");//$NON-NLS-1$
+		sb.append(getServerModes());
+		return sb.toString();
+	}
 }

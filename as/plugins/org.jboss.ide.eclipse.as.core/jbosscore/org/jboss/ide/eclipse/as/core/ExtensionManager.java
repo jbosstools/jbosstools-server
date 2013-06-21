@@ -65,7 +65,17 @@ public class ExtensionManager {
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
 		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerCorePlugin.PLUGIN_ID, "pollers"); //$NON-NLS-1$
 		for( int i = 0; i < cf.length; i++ ) {
-			pollers.put(cf[i].getAttribute("id"), new ServerStatePollerType(cf[i])); //$NON-NLS-1$
+			String id = cf[i].getAttribute("id"); //$NON-NLS-1$
+			ServerStatePollerType sspt = new ServerStatePollerType(cf[i]);
+			if( pollers.get(id) != null) {
+				// This is an actual error, not just an annoyance
+				IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+						"Two pollers with conflicting id's have been declared and will clobber each other. The existing poller will be kept.\n " //$NON-NLS-1$
+						+ pollers.get(id).toString() + "\n" + sspt.toString()); //$NON-NLS-1$
+				JBossServerCorePlugin.getDefault().getLog().log(s);
+			} else {
+				pollers.put(id, sspt); 
+			}
 		}
 	}
 	
