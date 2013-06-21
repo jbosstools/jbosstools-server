@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Test Plug-in
+Bundle-Name: %BundleName.0
 Bundle-SymbolicName: org.jboss.ide.eclipse.as.ui.test;singleton:=true
 Bundle-Version: 2.4.100.qualifier
 Require-Bundle: org.junit;bundle-version="4.5",
@@ -17,3 +17,5 @@ Require-Bundle: org.junit;bundle-version="4.5",
 Export-Package: org.jboss.ide.eclipse.as.ui.test,
  org.jboss.ide.eclipse.as.ui.wizards.test
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-Vendor: %Bundle-Vendor.0
+Bundle-Localization: plugin
