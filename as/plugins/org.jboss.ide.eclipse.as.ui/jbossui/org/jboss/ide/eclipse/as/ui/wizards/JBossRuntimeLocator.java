@@ -27,6 +27,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
+import org.eclipse.wst.server.core.IServerType;
+import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
@@ -46,7 +48,6 @@ import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 public class JBossRuntimeLocator extends RuntimeLocatorDelegate {
 
 	public JBossRuntimeLocator() {
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -94,96 +95,16 @@ public class JBossRuntimeLocator extends RuntimeLocatorDelegate {
 	}
 
 	public static IRuntimeWorkingCopy createRuntime(IPath path, ServerBeanLoader loader) {
-		JBossServerType type = loader.getServerType();
-		if( type == JBossServerType.AS)
-			return createASRuntime(path, loader);
-		if( type == JBossServerType.AS7)
-			return createAS7Runtime(path, loader);
-		if( type == JBossServerType.EAP)
-			return createEAPRuntime(path, loader);
-		if( type == JBossServerType.EAP6)
-			return createEAP6Runtime(path, loader);
-		if( type == JBossServerType.SOAP)
-			return createSOAPRuntime(path, loader);
-		if( type == JBossServerType.EAP61)
-			return createEAP61Runtime(path, loader);
-		return null;
-	}
-	
-	private static IRuntimeWorkingCopy createAS7Runtime(IPath path, ServerBeanLoader loader) {
-		String version = loader.getFullServerVersion();
-		String runtimeTypeId;
-		if( version.startsWith(IJBossToolingConstants.V7_0))
-			runtimeTypeId = IJBossToolingConstants.AS_70;
-		else 
-			runtimeTypeId = IJBossToolingConstants.AS_71;
+		String serverId = loader.getServerAdapterId();
+		IServerType st = serverId == null ? null : ServerCore.findServerType(serverId);
+		IRuntimeType rt = st == null ? null : st.getRuntimeType();
+		String rtId = rt == null ? null : rt.getId();
+		String append = getServerHomePathAppend(rtId);
 		
-		try {
-			IRuntimeWorkingCopy wc = createRuntimeWorkingCopy(runtimeTypeId, path.toOSString(), IJBossRuntimeResourceConstants.DEFAULT_CONFIGURATION);
-			return launchRuntimeWizard(wc);
-		} catch( CoreException ce) {
-		}
-		return null;
-	}
-	
-	private static IRuntimeWorkingCopy createEAP6Runtime(IPath path, ServerBeanLoader loader) {
-		String runtimeTypeId = IJBossToolingConstants.EAP_60;
-		try {
-			IRuntimeWorkingCopy wc = createRuntimeWorkingCopy(runtimeTypeId, path.toOSString(), IJBossRuntimeResourceConstants.DEFAULT_CONFIGURATION);
-			return launchRuntimeWizard(wc);
-		} catch( CoreException ce) {
-		}
-		return null;
-	}
-	
-	private static IRuntimeWorkingCopy createEAP61Runtime(IPath path, ServerBeanLoader loader) {
-		String runtimeTypeId = IJBossToolingConstants.EAP_61;
-		try {
-			IRuntimeWorkingCopy wc = createRuntimeWorkingCopy(runtimeTypeId, path.toOSString(), IJBossRuntimeResourceConstants.DEFAULT_CONFIGURATION);
-			return launchRuntimeWizard(wc);
-		} catch( CoreException ce) {
-		}
-		return null;
-	}
-
-	private static IRuntimeWorkingCopy createASRuntime(IPath path, ServerBeanLoader loader) {
-		String version = loader.getFullServerVersion();
-		String runtimeTypeId = null;
-		if( version.compareTo("4.0") < 0 ) //$NON-NLS-1$
-			runtimeTypeId=IJBossToolingConstants.AS_32;
-		else if( version.compareTo("4.2") < 0 ) //$NON-NLS-1$
-			runtimeTypeId=IJBossToolingConstants.AS_40;
-		else if( version.compareTo("5.0") < 0 ) //$NON-NLS-1$
-			runtimeTypeId=IJBossToolingConstants.AS_42;
-		else if( version.compareTo("5.1") < 0 ) //$NON-NLS-1$
-			runtimeTypeId=IJBossToolingConstants.AS_50;
-		else if( version.compareTo("6.0") < 0 ) //$NON-NLS-1$
-			runtimeTypeId=IJBossToolingConstants.AS_51;
-		else
-			runtimeTypeId=IJBossToolingConstants.AS_60;
-		if( runtimeTypeId != null ) {
+		if( rtId != null ) {
+			IPath path2 = append == null ? path : path.append(append); 
 			try {
-				IRuntimeWorkingCopy wc = createRuntimeWorkingCopy(runtimeTypeId, path.toOSString(), IJBossRuntimeResourceConstants.DEFAULT_CONFIGURATION);
-				return launchRuntimeWizard(wc);
-			} catch( CoreException ce) {
-			}
-		}
-		return null;
-	}
-	private static IRuntimeWorkingCopy createEAPRuntime(IPath path, ServerBeanLoader loader) {
-		String version = loader.getFullServerVersion();
-		String runtimeTypeId = null;
-		if( version.compareTo("5.0") < 0 ) //$NON-NLS-1$
-			runtimeTypeId=IJBossToolingConstants.EAP_43;
-		else if( version.compareTo("6.0") < 0 ) //$NON-NLS-1$
-			runtimeTypeId=IJBossToolingConstants.EAP_50;
-		else
-			runtimeTypeId=IJBossToolingConstants.EAP_60
-			;
-		IPath path2 = path.append(IJBossRuntimeResourceConstants.JBOSS_AS_EAP_DIRECTORY);
-		if( runtimeTypeId != null ) {
-			try {
-				IRuntimeWorkingCopy wc = createRuntimeWorkingCopy(runtimeTypeId, path2.toOSString(), IJBossRuntimeResourceConstants.DEFAULT_CONFIGURATION);
+				IRuntimeWorkingCopy wc = createRuntimeWorkingCopy(rtId, path2.toOSString());
 				return launchRuntimeWizard(wc);
 			} catch( CoreException ce) {
 			}
@@ -191,8 +112,10 @@ public class JBossRuntimeLocator extends RuntimeLocatorDelegate {
 		return null;
 	}
 	
-	private static IRuntimeWorkingCopy createSOAPRuntime(IPath path, ServerBeanLoader loader) {
-		return createEAPRuntime(path, loader);
+	private static String getServerHomePathAppend(String runtimeType) {
+		boolean b = IJBossToolingConstants.EAP_43.equals(runtimeType) ||
+				IJBossToolingConstants.EAP_50.equals(runtimeType);
+		return b ? IJBossRuntimeResourceConstants.JBOSS_AS_EAP_DIRECTORY : null;
 	}
 	
 	private static IRuntimeWorkingCopy launchRuntimeWizard(final IRuntimeWorkingCopy wc) {
@@ -206,7 +129,7 @@ public class JBossRuntimeLocator extends RuntimeLocatorDelegate {
 		return wcRet[0];
 	}
 	
-	// Copied from RuntimePreferencePage
+	// Copied from RuntimePreferencePage,opens a new runtime wizard
 	protected static IRuntimeWorkingCopy showWizard(final IRuntimeWorkingCopy runtimeWorkingCopy) {
 		String title = null;
 		WizardFragment fragment = null;
@@ -246,7 +169,15 @@ public class JBossRuntimeLocator extends RuntimeLocatorDelegate {
 		}
 		return null;
 	}
-
+	
+	private static IRuntimeWorkingCopy createRuntimeWorkingCopy(String runtimeId, String homeDir) throws CoreException {
+		return createRuntimeWorkingCopy(runtimeId, homeDir, null);
+	}
+	
+	/*
+	 * This should not have been public. There is no replacement. Make your own working copy!
+	 */
+	@Deprecated
 	public static IRuntimeWorkingCopy createRuntimeWorkingCopy(String runtimeId, String homeDir,
 			String config) throws CoreException {
 		IRuntimeType[] runtimeTypes = ServerUtil.getRuntimeTypes(null, null,
@@ -260,6 +191,8 @@ public class JBossRuntimeLocator extends RuntimeLocatorDelegate {
 		((RuntimeWorkingCopy) runtimeWC).setAttribute(
 				IJBossServerRuntime.PROPERTY_VM_TYPE_ID, JavaRuntime.getDefaultVMInstall()
 						.getVMInstallType().getId());
+		
+		// THIS should NOT be needed. Defaults should be set properly. But since this is an api method now, it remains.
 		((RuntimeWorkingCopy) runtimeWC).setAttribute(
 				IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, config);
 		return runtimeWC;
