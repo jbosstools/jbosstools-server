@@ -70,3 +70,4 @@ Export-Package: org.jboss.tools.as.test.core,
  org.jboss.tools.as.test.core.internal,
  org.jboss.tools.as.test.core.internal.utils,
  org.jboss.tools.as.test.core.internal.utils.wtp
+Bundle-Vendor: %Bundle-Vendor.0
