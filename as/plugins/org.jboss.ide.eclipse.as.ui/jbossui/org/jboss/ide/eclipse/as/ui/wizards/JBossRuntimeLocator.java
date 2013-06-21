@@ -105,6 +105,8 @@ public class JBossRuntimeLocator extends RuntimeLocatorDelegate {
 			return createEAP6Runtime(path, loader);
 		if( type == JBossServerType.SOAP)
 			return createSOAPRuntime(path, loader);
+		if( type == JBossServerType.EAP61)
+			return createEAP61Runtime(path, loader);
 		return null;
 	}
 	
@@ -126,6 +128,16 @@ public class JBossRuntimeLocator extends RuntimeLocatorDelegate {
 	
 	private static IRuntimeWorkingCopy createEAP6Runtime(IPath path, ServerBeanLoader loader) {
 		String runtimeTypeId = IJBossToolingConstants.EAP_60;
+		try {
+			IRuntimeWorkingCopy wc = createRuntimeWorkingCopy(runtimeTypeId, path.toOSString(), IJBossRuntimeResourceConstants.DEFAULT_CONFIGURATION);
+			return launchRuntimeWizard(wc);
+		} catch( CoreException ce) {
+		}
+		return null;
+	}
+	
+	private static IRuntimeWorkingCopy createEAP61Runtime(IPath path, ServerBeanLoader loader) {
+		String runtimeTypeId = IJBossToolingConstants.EAP_61;
 		try {
 			IRuntimeWorkingCopy wc = createRuntimeWorkingCopy(runtimeTypeId, path.toOSString(), IJBossRuntimeResourceConstants.DEFAULT_CONFIGURATION);
 			return launchRuntimeWizard(wc);
