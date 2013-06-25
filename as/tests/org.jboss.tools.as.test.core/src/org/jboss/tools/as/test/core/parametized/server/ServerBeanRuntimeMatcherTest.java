@@ -11,37 +11,34 @@
 package org.jboss.tools.as.test.core.parametized.server;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 
 import junit.framework.TestCase;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-import org.jboss.tools.as.test.core.TestConstants;
+import org.jboss.tools.as.runtimes.integration.util.RuntimeMatcher;
+import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.osgi.framework.Version;
 /**
- * This test will create run the server bean loader on all runtimes that are marked as jboss runtimes, 
- * which are all astools runtime types currently. If a type is found which does not have a cmd line arg, 
- * that test will fail.  It will verify that the proper type and version for serverbean is found
- * for the given server home. 
- * 
- *  It will also make MOCK structures for all server types, including 'subtypes' like 
- *  jpp, gatein, etc. This will help verify the mocks are created with the minimal requirements
- *  that the server bean loader looks for. 
- * 
+ * This test class will verify that RuntimeMatcher utility will properly return all 
+ * wst.server runtime objects that match the patterns provided. It will also verify 
+ * subtypes such as gatein are also properly identified and returned via this util class. 
  */
 @RunWith(value = Parameterized.class)
-public class ServerBeanLoader3Test extends TestCase {
+public class ServerBeanRuntimeMatcherTest extends TestCase {
 	@Parameters
 	 public static Collection<Object[]> data() {
 		 return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerTypeParametersPlusAdditionalMocks());
@@ -59,8 +56,13 @@ public class ServerBeanLoader3Test extends TestCase {
 	
 	
 	private String serverType;
-	public ServerBeanLoader3Test(String serverType) {
+	public ServerBeanRuntimeMatcherTest(String serverType) {
 		this.serverType = serverType;
+	}
+	
+	@After
+	public void tearDown() throws Exception {
+		ASMatrixTests.cleanup();
 	}
 	
 	@Before
@@ -83,36 +85,25 @@ public class ServerBeanLoader3Test extends TestCase {
 		expected.put(ServerCreationTestUtils.TEST_SERVER_TYPE_GATEIN_36, new Pair(JBossServerType.AS7GateIn, "3.6"));
 		// NEW_SERVER_ADAPTER
 	}
-	
-	/*
-	 * Test the server bean loader using runtime home flags passed in to the build
-	 */
-	@Test
-	public void testServerBeanLoaderFromRuntimes() {
-		String fLoc = TestConstants.getServerHome(serverType);
-		if( fLoc == null && Arrays.asList(IJBossToolingConstants.ALL_JBOSS_SERVERS).contains(serverType))
-			// IF we're not one of the standard types, we're a test type, and this isn't a fail
-			fail("Test Suite has no server home for server type " + serverType);
-		Pair p = expected.get(serverType);
-		inner_testServerBeanLoaderForFolder(new File(fLoc), p.type, p.version);
-		if( p.type.equals(JBossServerType.EAP_STD)) {
-			inner_testServerBeanLoaderForFolder(new File(fLoc).getParentFile(), JBossServerType.EAP, p.version);
-		}
-	}
 
 	/*
 	 * Create a mock folder and verify the mock folder matches also
 	 */
 	@Test
-	public void testServerBeanLoaderForMocks() {
+	public void testServerBeanRuntimeMatcherForMocks() {
 		File serverDir = (ServerCreationTestUtils.createMockServerLayout(serverType));
 		if( serverDir == null || !serverDir.exists())
 			fail("Creation of mock server type " + serverType + " has failed.");
 		Pair p = expected.get(serverType);
-		inner_testServerBeanLoaderForFolder(serverDir, p.type, p.version);
+		try {
+			ServerCreationTestUtils.createServerWithRuntime(p.type.getServerAdapterTypeId(p.version), serverType, serverDir);
+		} catch(CoreException ce) {
+			// Ignore, let test fail
+		}
+		inner_testServerBeanRuntimeMatcherForMocks(serverDir, p.type, p.version);
 	}
 	
-	private void inner_testServerBeanLoaderForFolder(File serverDir, JBossServerType expectedType, String expectedVersion) {
+	private void inner_testServerBeanRuntimeMatcherForMocks(File serverDir, JBossServerType expectedType, String expectedVersion) {
 		assertNotNull(serverType);
 		IServerType itype = ServerCore.findServerType(expectedType.getServerAdapterTypeId(expectedVersion));
 		if( itype == null )
@@ -127,5 +118,52 @@ public class ServerBeanLoader3Test extends TestCase {
 		assertTrue(fullVersion + " does not begin with " + expectedVersion + " for server type " + serverType, 
 				fullVersion.startsWith(expectedVersion));
 		assertEquals(loader.getServerAdapterId(), itype.getId());
+		
+		RuntimeMatcher matcher = new RuntimeMatcher();
+		String serverTypeId = loader.getServerAdapterId();
+		IServerType stype = ServerCore.findServerType(serverTypeId);
+		String rtTypeId = stype.getRuntimeType().getId();
+		assertEquals(1, matcher.findExistingRuntimes(rtTypeId).length);
+		assertEquals(0, matcher.findExistingRuntimes(rtTypeId + "0").length);
+		assertEquals(1, matcher.findExistingRuntimes(matcher.createPattern(rtTypeId, expectedType.getId())).length);
+		assertEquals(0, matcher.findExistingRuntimes(matcher.createPattern(rtTypeId, expectedType.getId() + "0")).length);
+		
+		assertEquals(1, matcher.findExistingRuntimes(matcher.createPattern(rtTypeId, expectedType.getId(), expectedVersion, true, incrementMinor(expectedVersion), false)).length);
+		assertEquals(0, matcher.findExistingRuntimes(matcher.createPattern(rtTypeId, expectedType.getId(), 
+				incrementMajor(expectedVersion), true, incrementMajor(expectedVersion,2), false)).length);
 	}
+	
+	
+	private String incrementMajor(String v) {
+		return incrementMajor(v,1);
+	}
+	
+	private String incrementMinor(String v) {
+		return incrementMinor(v,1);
+	}
+
+	private String incrementMicro(String v) {
+		return incrementMicro(v,1);
+	}
+
+	private String incrementMajor(String v, int c) {
+		Version vers = new Version(v);
+		Version vers2 = new Version(vers.getMajor()+c, 0, 0, "Final");
+		return vers2.toString();
+	}
+	
+	private String incrementMinor(String v, int c) {
+		Version vers = new Version(v);
+		Version vers2 = new Version(vers.getMajor(), vers.getMinor()+c, 0, "Final");
+		return vers2.toString();
+	}
+
+	private String incrementMicro(String v, int c) {
+		Version vers = new Version(v);
+		Version vers2 = new Version(vers.getMajor(), vers.getMinor(), vers.getMicro() + c, "Final");
+		return vers2.toString();
+	}
+
+
+	
 }

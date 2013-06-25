@@ -11,12 +11,18 @@
 package org.jboss.ide.eclipse.as.core.server.bean;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
 
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
 
 public class ServerBeanTypeAS7GateIn extends JBossServerType {
 	private static final String AS7_GATE_IN_SYSTEM_JAR_FOLDER = "/gatein/modules/org/gatein/main/";
+	private static final String GATEIN_35_PROPERTY_FILE = "gatein/extensions/gatein-wsrp-integration.ear/extension-war.war/META-INF/maven/org.gatein.integration/extension-war/pom.properties";
+	private static final String VERSION_PROP = "version";
+	
 	private static final String JBAS7_RELEASE_VERSION = "JBossAS-Release-Version"; //$NON-NLS-1$
 
 	protected ServerBeanTypeAS7GateIn() {
@@ -24,7 +30,7 @@ public class ServerBeanTypeAS7GateIn extends JBossServerType {
 			"GateIn", //$NON-NLS-1$
 			"GateIn Application Server", //$NON-NLS-1$
 			asPath( "modules","org","jboss","as","server","main"),
-			new String[]{V3_3,V3_4 /*, 3_5 is indistinguishable from as7.1 */}, new AS7GateInServerTypeCondition());
+			new String[]{V3_3,V3_4, V3_5, "3.6"}, new AS7GateInServerTypeCondition());
 	}
 
 	public static class AS7GateInServerTypeCondition extends AbstractCondition {
@@ -46,6 +52,17 @@ public class ServerBeanTypeAS7GateIn extends JBossServerType {
 						String value = getJarProperty(children[i], "Specification-Version");
 						return value;
 					}
+				}
+			}
+			
+			File f2 = new File(location, GATEIN_35_PROPERTY_FILE);
+			if( f2.exists()) {
+				try {
+					Properties p = new Properties();
+					p.load(new FileInputStream(f2));
+					return p.getProperty(VERSION_PROP);
+				} catch(IOException ioe) {
+					// ignore
 				}
 			}
 			return null;

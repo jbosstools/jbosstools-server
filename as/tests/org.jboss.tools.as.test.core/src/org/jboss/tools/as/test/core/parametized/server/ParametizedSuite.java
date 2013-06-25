@@ -27,7 +27,9 @@ import org.junit.runners.Suite.SuiteClasses;
 	XPathModelTest.class,
 	MockArgsTests.class, 
 	DeploymentScannerAdditionsTest.class,
-//	PublishingSuite.class
+	PublishingSuite.class,
+	ServerBeanRuntimeMatcherTest.class,
+	DownloadRuntimeMatcherTest.class
 })
 public class ParametizedSuite {
 }
