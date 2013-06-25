@@ -106,7 +106,9 @@ public class ArchivesActionProvider extends CommonActionProvider {
 		createActions();
 		newPackageManager = new MenuManager(ArchivesUIMessages.ProjectPackagesView_newPackageMenu_label, NEW_PACKAGE_MENU_ID);
 		Control viewerControl = aSite.getStructuredViewer().getControl();
-		viewerControl.addKeyListener(deleteKeyListener);
+		String siteId = aSite.getViewSite().getId();
+		if( ProjectArchivesCommonView.ID.equals(siteId))
+			viewerControl.addKeyListener(deleteKeyListener);
 	}
 
 	public void fillContextMenu(IMenuManager manager) {
