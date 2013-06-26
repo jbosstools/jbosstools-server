@@ -59,17 +59,14 @@ public class StartupUtility extends Assert {
 		}
 
 		List<String> envp = new ArrayList<String>();
-		try {
-			if( !isJava7() && requiresJava7(rtType)) {
-				String java = System.getProperty(JRE7_SYSPROP);
-				if( java == null || !new File(java).exists()) {
-					fail("Launching " + homeDir + " requires a java7 jdk, which has not been provided via the " + JRE7_SYSPROP + " system property, or does not exist");
-				}
-				envp.add("JAVA=" + java);
+		if( !isJava7() && requiresJava7(rtType)) {
+			String java = System.getProperty(JRE7_SYSPROP);
+			if( java == null || !new File(java).exists()) {
+				fail("Launching " + homeDir + " requires a java7 jdk, which has not been provided via the " + JRE7_SYSPROP + " system property, or does not exist");
 			}
-		} catch(Throwable t) {
-			t.printStackTrace();
+			envp.add("JAVA=" + java);
 		}
+		
 		System.out.println("Launching cmd " + cmd);
 		Process p = null;
 		try {
