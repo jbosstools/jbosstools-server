@@ -60,11 +60,17 @@ public class LocalJBoss7DeploymentScannerAdditions extends AbstractDeploymentSca
 		String v = null;
 		while(lastStartup.hasNext()) {
 			k = (String)lastStartup.next();
-			v = (String)props.get(k);
-			if( !asList.contains(v)) 
+			v = (String)props.get(k); 
+			
+			// Sometimes the returned value from app server may have quotes
+			String withoutQuotes = v.trim();
+			withoutQuotes = withoutQuotes.startsWith("\"") ? withoutQuotes.substring(1) : withoutQuotes;  //$NON-NLS-1$
+			withoutQuotes = withoutQuotes.endsWith("\"") ? withoutQuotes.substring(0, withoutQuotes.length()-1) : withoutQuotes;  //$NON-NLS-1$
+			
+			if( !asList.contains(v) && !asList.contains(withoutQuotes))
 				removed.add(k);
 			else {
-				added.remove(v);
+				added.remove(withoutQuotes);
 				Trace.trace(Trace.STRING_FINEST, "Unchanged Deployment Scanner " + k + ":" + v); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}

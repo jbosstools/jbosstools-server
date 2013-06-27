@@ -61,14 +61,14 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 	}
 	
 	public void removeAddedDeploymentScanners(IServer server) {
-		if( acceptsSetting(server, IJBossToolingConstants.PROPERTY_REMOVE_DEPLOYMENT_SCANNERS, false)) {
+		if( acceptsSetting(server, IJBossToolingConstants.PROPERTY_REMOVE_DEPLOYMENT_SCANNERS, true)) {
 			String[] folders = getDeployLocationFolders(server);
 			ensureScannersRemoved(server, folders);
 		}
 	}
 	
 	public Job getRemoveDeploymentScannerJob(final IServer server) {
-		if( !acceptsSetting(server, IJBossToolingConstants.PROPERTY_REMOVE_DEPLOYMENT_SCANNERS, false))
+		if( !acceptsSetting(server, IJBossToolingConstants.PROPERTY_REMOVE_DEPLOYMENT_SCANNERS, true))
 			return null;
 		
 		return new Job(getJobName(server)) {
