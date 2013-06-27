@@ -24,9 +24,13 @@ public class ServerBeanTypeUnknownAS71Product extends JBossServerType {
 	}
 	
 	public ServerBeanTypeUnknownAS71Product(String path, Condition condition) {
-		super( "AS-Product", "Application Server",
-				path, new String[]{}, condition);
+		this("AS-Product", "Application Server",path, condition);
 	}
+	
+	protected ServerBeanTypeUnknownAS71Product(String id, String desc, String path, Condition condition) {
+		super( id, desc, path, new String[]{}, condition);
+	}
+	
 	
 	public static class UnknownAS71ProductServerTypeCondition extends org.jboss.ide.eclipse.as.core.server.bean.ServerBeanTypeEAP6.EAP6ServerTypeCondition {
 		public String getServerTypeId(String version) {
@@ -38,15 +42,33 @@ public class ServerBeanTypeUnknownAS71Product extends JBossServerType {
 		public String getFullVersion(File location, File systemJarFile) {
 			IPath rootPath = new Path(location.getAbsolutePath());
 			IPath productConf = rootPath.append("bin/product.conf"); //$NON-NLS-1$
+			IPath layersConf = rootPath.append("modules/layers.conf");
+			String productSlot = null;
+			String[] layers = null;
 			if( productConf.toFile().exists()) {
 				Properties p = JBossServerType.loadProperties(productConf.toFile());
-				String product = (String) p.get("slot"); //$NON-NLS-1$
-				return getEAP6xVersionNoSlotCheck(location, 
-						getMetaInfFolderForSlot(product),
-						null, null);
+				productSlot = (String) p.get("slot"); //$NON-NLS-1$
+			}
+			if( layersConf.toFile().exists()) {
+				Properties p = JBossServerType.loadProperties(layersConf.toFile());
+				String layers2 = (String) p.get("layers"); //$NON-NLS-1$
+				layers = layers2 == null ? new String[0] : layers2.trim().split(",");
+			}
+			String[] manifestFolders = getManifestFoldersToFindVersion(productSlot, layers == null ? new String[0] : layers);
+			for( int i = 0; i < manifestFolders.length; i++ ) {
+				String versionInManifest = getEAP6xVersionNoSlotCheck(location, 
+						manifestFolders[i], null, null);
+				if( versionInManifest != null )
+					return versionInManifest;
 			}
 			return null;
 		}
+		
+		// Provided mostly for subclass to override
+		protected String[] getManifestFoldersToFindVersion(String productSlot, String[] layers) {
+			return new String[]{ getMetaInfFolderForSlot(productSlot)};
+		}
+		
 		protected String getMetaInfFolderForSlot(String slot) {
 			return "modules/org/jboss/as/product/" + slot + "/dir/META-INF"; //$NON-NLS-1$
 		}
