@@ -123,7 +123,11 @@ public class DelegatingServerBehavior extends DeployableServerBehavior implement
 		for( int i = 0; i < children.length; i++ ) {
 			IModule[] combined = PublishUtil.combine(parent, children[i]);
 			setModuleState(combined, IServer.STATE_UNKNOWN);
-			setModulesStopped(combined, getServer().getChildModules(combined, new NullProgressMonitor()));
+			
+			// Javadoc says this should not be null, but Server.java clearly returns null in some cases
+			// https://bugs.eclipse.org/bugs/show_bug.cgi?id=411812
+			IModule[] children2 =  getServer().getChildModules(combined, new NullProgressMonitor());
+			setModulesStopped(combined, children2);
 		}
 	}
 

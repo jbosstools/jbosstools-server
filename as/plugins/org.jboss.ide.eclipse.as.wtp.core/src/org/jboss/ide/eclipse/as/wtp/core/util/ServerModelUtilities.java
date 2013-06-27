@@ -76,7 +76,8 @@ public class ServerModelUtilities {
 	}
 	
 	public static IModule[] getChildModules(IModule module) {
-		return ((ModuleDelegate)module.loadAdapter(ModuleDelegate.class, new NullProgressMonitor())).getChildModules();
+		IModule[] children = ((ModuleDelegate)module.loadAdapter(ModuleDelegate.class, new NullProgressMonitor())).getChildModules();
+		return children == null ? new IModule[0] : children;
 	}
 	
 	
