@@ -52,7 +52,7 @@ public class ServerBeanTypeUnknownAS71Product extends JBossServerType {
 			if( layersConf.toFile().exists()) {
 				Properties p = JBossServerType.loadProperties(layersConf.toFile());
 				String layers2 = (String) p.get("layers"); //$NON-NLS-1$
-				layers = layers2.trim().split(",");
+				layers = layers2 == null ? new String[0] : layers2.trim().split(",");
 			}
 			String[] manifestFolders = getManifestFoldersToFindVersion(productSlot, layers == null ? new String[0] : layers);
 			for( int i = 0; i < manifestFolders.length; i++ ) {
