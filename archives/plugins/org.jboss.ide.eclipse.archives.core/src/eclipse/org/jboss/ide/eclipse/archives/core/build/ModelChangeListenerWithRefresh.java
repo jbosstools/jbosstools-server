@@ -17,6 +17,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -30,6 +31,7 @@ import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModel;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeDelta;
+import org.jboss.ide.eclipse.archives.core.util.internal.ModelTruezipBridge.FullBuildRequiredException;
 
 /**
  * This class responds to model change events.
@@ -49,7 +51,13 @@ public class ModelChangeListenerWithRefresh extends ModelChangeListener {
 		
 		Job j = new WorkspaceJob(ArchivesCoreMessages.UpdatingModelJob) {
 			public IStatus runInWorkspace(IProgressMonitor monitor) {
-				ModelChangeListenerWithRefresh.super.executeAndLog(delta2);
+				try {
+					ModelChangeListenerWithRefresh.super.executeAndLog(delta2);
+				} catch(FullBuildRequiredException fbre) {
+					IArchiveNode o = delta2.getPostNode(); 
+					IPath p = o == null ? null : o.getProjectPath();
+					return new ArchiveBuildDelegate().fullProjectBuild(delta2.getPostNode().getProjectPath(), monitor);
+				}
 				return Status.OK_STATUS;
 			}
 		};

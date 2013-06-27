@@ -36,6 +36,7 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeDelta;
 import org.jboss.ide.eclipse.archives.core.util.ModelUtil;
 import org.jboss.ide.eclipse.archives.core.util.internal.ModelTruezipBridge;
 import org.jboss.ide.eclipse.archives.core.util.internal.ModelTruezipBridge.FileWrapperStatusPair;
+import org.jboss.ide.eclipse.archives.core.util.internal.ModelTruezipBridge.FullBuildRequiredException;
 
 /**
  * This class responds to model change events.
@@ -81,9 +82,12 @@ public class ModelChangeListener implements IArchiveModelListener {
 	}
 	
 	protected void executeAndLog(IArchiveNodeDelta delta) {
-		IStatus[] errors;
+		IStatus[] errors = null;
 		try {
 			errors = handle(delta);
+		} catch( FullBuildRequiredException fbre) {
+			// kick off a full build
+			throw fbre;
 		} catch( Exception e ) {
 			IStatus er = new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID, ArchivesCoreMessages.ErrorUpdatingModel, e);
 			errors = new IStatus[] { er };

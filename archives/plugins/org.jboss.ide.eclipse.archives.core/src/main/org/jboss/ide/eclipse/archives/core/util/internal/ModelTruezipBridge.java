@@ -66,6 +66,12 @@ public class ModelTruezipBridge {
 		return new FileWrapperStatusPair( files, s );
 	}
 
+	public static class FullBuildRequiredException extends RuntimeException {
+		public FullBuildRequiredException(String s, Exception cause) {
+			super(s,cause);
+		}
+	}
+	
 	/*
 	 * 	Returns an Object array as follows:
 	 *  Object[] {
@@ -79,7 +85,7 @@ public class ModelTruezipBridge {
 		try {
 			files = fileset.findMatchingPaths();
 		} catch(RuntimeException re) {
-			throw new RuntimeException("Unable to incrementally remove fileset. A full build may be required.", re); //$NON-NLS-1$
+			throw new FullBuildRequiredException("Unable to incrementally remove fileset. A full build may be required.", re); //$NON-NLS-1$
 		}
 		final ArrayList<IStatus> errors = new ArrayList<IStatus>();
 		final ArrayList<FileWrapper> list = new ArrayList<FileWrapper>();
