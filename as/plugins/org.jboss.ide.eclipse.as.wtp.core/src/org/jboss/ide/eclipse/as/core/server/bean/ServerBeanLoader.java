@@ -26,6 +26,7 @@ public class ServerBeanLoader {
 		JBossServerType.AS, 
 		JBossServerType.WILDFLY80, 
 		JBossServerType.EAP61,
+		JBossServerType.SOA6,
 		JBossServerType.UNKNOWN_AS72_PRODUCT,
 		JBossServerType.AS72, 
 		JBossServerType.JPP6, 
