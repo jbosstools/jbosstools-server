@@ -75,11 +75,11 @@ public class DownloadRuntimesProvider implements IDownloadRuntimesProvider {
 		while(i.hasNext()) {
 			workingRT = i.next();
 			String wtpRT = workingRT.getLabels().getProperty(LABEL_WTP_RUNTIME);
-			String dlUrl = workingRT.getDownloadUrl();
 			if( wtpRT != null ) {
 				// We can make a DL out of this
 				String fileSize = workingRT.getLabels().getProperty(LABEL_FILE_SIZE);
 				String license = workingRT.getLicense();
+				String dlUrl = workingRT.getDownloadUrl();
 				String id = workingRT.getId();
 				String legacyId = getLegacyId(id);
 				String effectiveId = legacyId == null ? id : legacyId;
