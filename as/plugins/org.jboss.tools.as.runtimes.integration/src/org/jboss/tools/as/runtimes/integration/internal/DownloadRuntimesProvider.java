@@ -75,8 +75,8 @@ public class DownloadRuntimesProvider implements IDownloadRuntimesProvider {
 		while(i.hasNext()) {
 			workingRT = i.next();
 			String wtpRT = workingRT.getLabels().getProperty(LABEL_WTP_RUNTIME);
-			String url = workingRT.getDownloadUrl();
-			if( wtpRT != null && url != null && !"".equals(url)) {
+			String dlUrl = workingRT.getDownloadUrl();
+			if( wtpRT != null ) {
 				// We can make a DL out of this
 				String fileSize = workingRT.getLabels().getProperty(LABEL_FILE_SIZE);
 				String license = workingRT.getLicense();
@@ -86,7 +86,8 @@ public class DownloadRuntimesProvider implements IDownloadRuntimesProvider {
 				
 				String name = workingRT.getName();
 				String version = workingRT.getVersion();
-				DownloadRuntime dr = new DownloadRuntime(effectiveId, name, version, url);
+				DownloadRuntime dr = new DownloadRuntime(effectiveId, name, version, dlUrl);
+				dr.setHumanUrl(workingRT.getUrl());
 				dr.setLicenseURL(license);
 				dr.setSize(fileSize);
 				dr.setProperty(PROP_WTP_RUNTIME, wtpRT);
