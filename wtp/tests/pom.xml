@@ -12,7 +12,7 @@
 	<name>wtp.tests</name>
 	<packaging>pom</packaging>
 	<modules>
-		<module>org.jboss.tools.tomcat.runtimes.integration.tests</module>
+		<module>org.jboss.tools.wtp.runtimes.tomcat.tests</module>
 	</modules>
   <build>
 
