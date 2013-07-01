@@ -12,8 +12,8 @@
 	<name>wtp.features</name>
 	<packaging>pom</packaging>
 	<modules>
-		 <module>org.jboss.tools.tomcat.runtimes.integration.feature</module>
-		 <module>org.jboss.tools.tomcat.runtimes.integration.tests.feature</module>
+		 <module>org.jboss.tools.wtp.runtimes.tomcat.feature</module>
+		 <module>org.jboss.tools.wtp.runtimes.tomcat.tests.feature</module>
 	</modules>
 	<build>
 		<plugins>
