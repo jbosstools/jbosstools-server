@@ -46,6 +46,7 @@ public class UpdateModuleStateJob extends Job {
 		} else {
 			this.verifier = verifier;
 		}
+		setSystem(true);
 	}
 
 
@@ -53,7 +54,8 @@ public class UpdateModuleStateJob extends Job {
 	protected IStatus run(IProgressMonitor monitor) {
 		if( verifier == null )
 			return Status.CANCEL_STATUS;
-		
+		if( server.getServerState() != IServer.STATE_STARTED)
+			return Status.OK_STATUS;
 		
 		if( !wait ) {
 			// Handle the quick update scenario
