@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.jdf.stacks.model.Stacks;
 import org.jboss.tools.as.runtimes.integration.Messages;
 import org.jboss.tools.runtime.core.model.DownloadRuntime;
@@ -87,6 +88,7 @@ public class DownloadRuntimesProvider implements IDownloadRuntimesProvider {
 				String name = workingRT.getName();
 				String version = workingRT.getVersion();
 				DownloadRuntime dr = new DownloadRuntime(effectiveId, name, version, dlUrl);
+				dr.setDisclaimer(!wtpRT.startsWith(IJBossToolingConstants.EAP_RUNTIME_PREFIX));
 				dr.setHumanUrl(workingRT.getUrl());
 				dr.setLicenseURL(license);
 				dr.setSize(fileSize);
