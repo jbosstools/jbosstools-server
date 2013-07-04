@@ -236,7 +236,8 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate
 		serverStateVal =  getServer().getServerState();
 		getServer().addServerListener(new IServerListener() {
 			public void serverChanged(ServerEvent event) {
-				if( event.getState() != serverStateVal ) {
+				boolean isServerChangeEvent = ((event.getKind() & ServerEvent.SERVER_CHANGE) != 0);
+				if( isServerChangeEvent && event.getState() != serverStateVal ) {
 					Trace.trace(Trace.STRING_FINER, "Framework has changed server state from starting to stopped. Ensuring server has stopped."); //$NON-NLS-1$
 					// something's been changed by the framework and NOT by us. 
 					if( serverStateVal == IServer.STATE_STARTING && event.getState() == IServer.STATE_STOPPED) {
