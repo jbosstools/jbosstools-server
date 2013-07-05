@@ -127,19 +127,23 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 	}
 	
 	@Override
-	protected synchronized void forceStop() {
-		// just terminate the process.
-		if( isProcessRunning()) {
-			try {
-				process.terminate();
-				addForceStopEvent();
-			} catch( DebugException e ) {
-				addForceStopFailedEvent(e);
+	protected void forceStop() {
+		// Only synchronize on this for fast methods blocking on the process
+		// Calls to parent should not be synchronized for fear of deadlock
+		synchronized(this) {
+			// just terminate the process.
+			if( isProcessRunning()) {
+				try {
+					process.terminate();
+					addForceStopEvent();
+				} catch( DebugException e ) {
+					addForceStopFailedEvent(e);
+				}
 			}
+			process = null;
+			nextStopRequiresForce = false;
 		}
-		process = null;
 		getActualBehavior().setServerStopped();
-		nextStopRequiresForce = false;
 	}
 	
 	protected void addForceStopFailedEvent(DebugException e) {
@@ -178,21 +182,26 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 		DebugPlugin.getDefault().addDebugEventListener(processListener);
 	}
 	
-	private synchronized void handleProcessTerminatedEvent(ProcessTerminatedDebugListener listener) {
-
-		// If there's a new process that's not equal to myProcess, 
-		// then the server is already starting again
-		if( listener.myProcess != null && !listener.myProcess.equals(getProcess())) 
-			return;
+	private void handleProcessTerminatedEvent(ProcessTerminatedDebugListener listener) {
+		synchronized(this) {
+			
+			// If there's a new process that's not equal to myProcess, 
+			// then the server is already starting again
+			if( listener.myProcess != null && !listener.myProcess.equals(getProcess())) 
+				return;
+			if( getServer().getServerState() != IServer.STATE_STOPPED) {
+				stopPolling();
+				addProcessTerminatedEvent();
+			}
+			DebugPlugin.getDefault().removeDebugEventListener(listener);		
+			processListener = null;
+			process = null;
+			nextStopRequiresForce = false;
+		}
+		
 		if( getServer().getServerState() != IServer.STATE_STOPPED) {
-			stopPolling();
-			addProcessTerminatedEvent();
 			getActualBehavior().setServerStopped();
 		}
-		DebugPlugin.getDefault().removeDebugEventListener(listener);		
-		processListener = null;
-		process = null;
-		nextStopRequiresForce = false;
 	}
 	
 	/*
