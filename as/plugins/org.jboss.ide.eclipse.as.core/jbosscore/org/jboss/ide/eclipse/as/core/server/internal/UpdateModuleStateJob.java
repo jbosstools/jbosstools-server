@@ -36,7 +36,7 @@ public class UpdateModuleStateJob extends Job {
 	}
 	
 	public UpdateModuleStateJob(IServer server, IServerModuleStateVerifier verifier, boolean wait, int maxWait) {
-		super("Update Module States"); //$NON-NLS-1$
+		super("Check module status for server " + server.getName()); //$NON-NLS-1$
 		this.wait = wait;
 		this.maxWait = maxWait;
 		this.server = server;
@@ -46,7 +46,6 @@ public class UpdateModuleStateJob extends Job {
 		} else {
 			this.verifier = verifier;
 		}
-		setSystem(true);
 	}
 
 
@@ -71,15 +70,16 @@ public class UpdateModuleStateJob extends Job {
 		long startTime = System.currentTimeMillis();
 		long endTime = startTime + maxWait;
 		IModule[] modules = server.getModules();
-		monitor.beginTask("Verifying Module State", maxWait * 1000); //$NON-NLS-1$
+		monitor.beginTask("Checking module states for " + server.getName(), maxWait * 1000); //$NON-NLS-1$
 		while( !allStarted && System.currentTimeMillis() < endTime) {
 			allStarted = true;
 			long thisLoopStart = System.currentTimeMillis();
 			for( int i = 0; i < modules.length; i++ ) {
 				IModule[] temp = new IModule[]{modules[i]};
-				boolean started = verifier.isModuleStarted(server, temp, new SubProgressMonitor(monitor, 100));
+				int state = verifier.getModuleState(server, temp, new SubProgressMonitor(monitor, 1000));
+				((Server)server).setModuleState(temp, state);
+				boolean started = state == IServer.STATE_STARTED;
 				allStarted = allStarted && started;
-				int state = started ? IServer.STATE_STARTED : IServer.STATE_STOPPED;
 				((Server)server).setModuleState(temp, state);
 			}
 			
@@ -100,8 +100,10 @@ public class UpdateModuleStateJob extends Job {
 		monitor.beginTask("Verifying Module State", modules.length * 1000); //$NON-NLS-1$
 		for( int i = 0; i < modules.length; i++ ) {
 			IModule[] temp = new IModule[]{modules[i]};
-			boolean started = verifier.isModuleStarted(server, temp, new SubProgressMonitor(monitor, 1000));
-			int state = started ? IServer.STATE_STARTED : IServer.STATE_STOPPED;
+			
+			//boolean started = verifier.isModuleStarted(server, temp, new SubProgressMonitor(monitor, 1000));
+			//int state = started ? IServer.STATE_STARTED : IServer.STATE_STOPPED;
+			int state = verifier.getModuleState(server, temp, new SubProgressMonitor(monitor, 1000));
 			((Server)server).setModuleState(temp, state);
 		}
 		return Status.OK_STATUS;

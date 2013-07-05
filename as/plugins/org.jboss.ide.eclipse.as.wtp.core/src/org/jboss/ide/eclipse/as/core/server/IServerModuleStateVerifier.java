@@ -21,6 +21,15 @@ import org.eclipse.wst.server.core.IServer;
  */
 public interface IServerModuleStateVerifier {
 	/**
+	 * Get the running state of the given module
+	 * @param server
+	 * @param module
+	 * @param monitor
+	 * @return IServer.STATE_XXX flag
+	 */
+	public int getModuleState(IServer server, IModule module[], IProgressMonitor monitor);
+	
+	/**
 	 * Check to see if the module is started on the server
 	 */
 	public boolean isModuleStarted(IServer server, IModule module[], IProgressMonitor monitor);
