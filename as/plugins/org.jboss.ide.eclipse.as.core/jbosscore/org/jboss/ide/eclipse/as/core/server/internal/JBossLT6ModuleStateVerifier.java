@@ -33,7 +33,13 @@ public class JBossLT6ModuleStateVerifier implements IServerModuleStateVerifier {
 	public JBossLT6ModuleStateVerifier() {
 		// Nothing
 	}
+	
 	public boolean isModuleStarted(final IServer server, final IModule[] module,
+			final IProgressMonitor monitor) {
+		return getModuleState(server, module, monitor) == IServer.STATE_STARTED;
+	}
+	
+	public int getModuleState(final IServer server, final IModule[] module,
 			final IProgressMonitor monitor) {
 		final boolean[] result = new boolean[1];
 		result[0] = false;
@@ -50,7 +56,10 @@ public class JBossLT6ModuleStateVerifier implements IServerModuleStateVerifier {
 		} finally {
 			ExtensionManager.getDefault().getJMXRunner().endTransaction(server, this);
 		}
-		return result[0];
+		// Leaving the jboss < 6 impl old and basic because I don't 
+		// have the time to really dig into what else the jboss app server
+		// can reply for deployment state at this time. 
+		return result[0] ? IServer.STATE_STARTED : IServer.STATE_STOPPED;
 	}
 
 	public void waitModuleStarted(IServer server, IModule[] module, int maxDelay) {
