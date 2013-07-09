@@ -8,22 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.internal.management.as71;
-
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.ADDRESS;
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.CHILD_TYPE;
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.DEPLOYMENT;
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.ENABLED;
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.FAILURE_DESCRIPTION;
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.NAME;
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.OP;
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.OP_ADDR;
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.READ_ATTRIBUTE_OPERATION;
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.READ_CHILDREN_NAMES_OPERATION;
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.READ_RESOURCE_OPERATION;
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.RESULT;
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.SERVER_STATE;
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.SHUTDOWN;
+package org.jboss.ide.eclipse.as.internal.management.wildfly8;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,19 +39,31 @@ import org.jboss.ide.eclipse.as.management.core.JBoss7DeploymentState;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
 
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.OP;
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.DEPLOYMENT;
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.READ_RESOURCE_OPERATION;
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.ADDRESS;
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.ENABLED;
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.SHUTDOWN;
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.FAILURE_DESCRIPTION;
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.NAME;
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.SERVER_STATE;
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.READ_ATTRIBUTE_OPERATION;
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.RESULT;
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.READ_CHILDREN_NAMES_OPERATION;
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.CHILD_TYPE;
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.OP_ADDR;
+
 /**
  * @author André Dietisheim
  */
-public class AS71Manager {
-
-	public static final int MGMT_PORT = 9999;
+public class Wildfly8Manager {
 	public static final int DEFAULT_REQUEST_TIMEOUT = 5000;
-
 	private ModelControllerClient client;
 	private ServerDeploymentManager manager;
 	private IAS7ManagementDetails details;
 
-	public AS71Manager(IAS7ManagementDetails details) throws JBoss7ManangerException {
+	public Wildfly8Manager(IAS7ManagementDetails details) throws JBoss7ManangerException {
 		try {
 			this.details = details;
 			Object timeout = details.getProperty(IAS7ManagementDetails.PROPERTY_TIMEOUT);
@@ -231,22 +228,16 @@ public class AS71Manager {
 			return JBoss7DeploymentState.NOT_FOUND;
 		}
 
-		Boolean enabled = AS7ManagerUtil.getBooleanProperty(ENABLED, result);
+		Boolean enabled = Wildfly8ManagerUtil.getBooleanProperty(ENABLED, result);
 		if (enabled == null) {
 			throw new JBoss7ManangerException(
-					NLS.bind(AS7Messages.ModuleStateEvaluationFailed, name));
+					NLS.bind(Messages.ModuleStateEvaluationFailed, name));
 		} else if (enabled) {
 			return JBoss7DeploymentState.STARTED;
 		} else {
 			return JBoss7DeploymentState.STOPPED;
 		}
 	}
-
-	@Deprecated
-	public void addDeploymentDirectory(String path) {
-		
-	}
-
 	
 	/**
 	 * Shuts the server down.
@@ -323,9 +314,9 @@ public class AS71Manager {
 	/*package*/ ModelNode execute(ModelNode node) throws JBoss7ManangerException {
 		try {
 			ModelNode response = client.execute(node);
-			if (!AS7ManagerUtil.isSuccess(response)) {
+			if (!Wildfly8ManagerUtil.isSuccess(response)) {
 				throw new JBoss7ManangerException(
-						NLS.bind(AS7Messages.OperationOnAddressFailed,
+						NLS.bind(Messages.OperationOnAddressFailed,
 								new Object[] { node.get(OP),
 										node.get(ADDRESS),
 										response.get(FAILURE_DESCRIPTION) }
@@ -342,7 +333,8 @@ public class AS71Manager {
 		try {
 			client.execute(node);
 		} catch (Exception e) {
-			// AS 7.0 servers fails in finishing the client calls thus we will see IOException when calling shutdown that we should ignore.
+			// During shutdown, some connections may be closed prematurely
+			// It is acceptable to ignore these errors. 
 			if (!isConnectionCloseException(e)) {
 				throw new JBoss7ManangerException(e);
 			}
