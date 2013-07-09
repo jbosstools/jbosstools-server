@@ -26,7 +26,7 @@
             typeId="rse">
       </behaviour>
       <behaviour
-            behaviourDelegate="org.jboss.ide.eclipse.as.rse.core.RSEJBoss7BehaviourDelegate"
+            behaviourDelegate="org.jboss.ide.eclipse.as.rse.core.RSEWildfly8BehaviourDelegate"
             launchDelegate="org.jboss.ide.eclipse.as.rse.core.RSEJBoss7StartLaunchDelegate"
             name="%RSEMethodName"
             publishMethod="org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod"

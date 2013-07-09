@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.internal.management.as71;
+package org.jboss.ide.eclipse.as.internal.management.wildfly8;
 
 import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.CHILD_TYPE;
 import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.DEPLOYMENT;
@@ -39,7 +39,7 @@ import org.jboss.ide.eclipse.as.management.core.OperationFormatException;
  * @author Alexey Loubyansky
  * @author André Dietisheim
  */
-public class AS7ManagerUtil {
+public class Wildfly8ManagerUtil {
 
 	public static boolean isSuccess(ModelNode operationResult) {
 		if (operationResult != null) {
@@ -113,7 +113,7 @@ public class AS7ManagerUtil {
 			builder.addProperty(CHILD_TYPE, DEPLOYMENT);
 			request = builder.buildRequest();
 		} catch (OperationFormatException e) {
-			throw new IllegalStateException(AS7Messages.FailedToBuildOperation, e);
+			throw new IllegalStateException(Messages.FailedToBuildOperation, e);
 		}
 
 		ModelNode outcome = client.execute(request);
@@ -152,7 +152,7 @@ public class AS7ManagerUtil {
 			}
 			else {
 				throw new JBoss7ManangerException(NLS.bind(
-						AS7Messages.OperationOutcomeToString, result.get(OUTCOME).asString()));
+						Messages.OperationOutcomeToString, result.get(OUTCOME).asString()));
 			}
 		} catch (IOException e) {
 			throw new JBoss7ManangerException(e);

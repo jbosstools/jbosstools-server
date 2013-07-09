@@ -61,7 +61,6 @@ public class JBoss71ServerConnection extends JBossServerConnection {
 		else {
 			port = ((IManagementPortProvider)sd).getManagementPort();
 		}
-		
 		String url = "service:jmx:remoting-jmx://" + s.getHost() + ":" + port; 
 		Map<String, String[]> environment = new HashMap<String, String[]>();
         environment.put(JMXConnector.CREDENTIALS, new String[]{user,pass});
