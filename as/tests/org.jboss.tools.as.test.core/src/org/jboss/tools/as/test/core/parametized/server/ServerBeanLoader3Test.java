@@ -90,9 +90,14 @@ public class ServerBeanLoader3Test extends TestCase {
 	@Test
 	public void testServerBeanLoaderFromRuntimes() {
 		String fLoc = TestConstants.getServerHome(serverType);
-		if( fLoc == null && Arrays.asList(IJBossToolingConstants.ALL_JBOSS_SERVERS).contains(serverType))
-			// IF we're not one of the standard types, we're a test type, and this isn't a fail
-			fail("Test Suite has no server home for server type " + serverType);
+		if( fLoc == null ) {
+			if( Arrays.asList(IJBossToolingConstants.ALL_JBOSS_SERVERS).contains(serverType)) {
+				// This type should be tested but has no server-home, so fail
+				fail("Test Suite has no server home for server type " + serverType);
+			}
+			// IF we're not one of the standard types, we're a test type (jpp, gate-in, etc), and this isn't a fail
+			return;
+		}
 		Pair p = expected.get(serverType);
 		inner_testServerBeanLoaderForFolder(new File(fLoc), p.type, p.version);
 		if( p.type.equals(JBossServerType.EAP_STD)) {
