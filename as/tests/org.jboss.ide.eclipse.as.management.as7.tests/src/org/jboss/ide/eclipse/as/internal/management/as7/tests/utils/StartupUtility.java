@@ -64,7 +64,7 @@ public class StartupUtility extends Assert {
 			if( java == null || !new File(java).exists()) {
 				fail("Launching " + homeDir + " requires a java7 jdk, which has not been provided via the " + JRE7_SYSPROP + " system property, or does not exist");
 			}
-			envp.add("JAVA=" + java);
+			envp.add("JAVA_HOME=" + java);
 		}
 		
 		System.out.println("Launching cmd " + cmd);

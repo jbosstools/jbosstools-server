@@ -14,6 +14,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -53,13 +55,25 @@ public class TomcatDetectionTest extends AbstractTomcatDetectionTest {
 		RuntimeInitializerUtil.initializeRuntimesFromFolder(new File(REQUIREMENTS_DIR), new NullProgressMonitor());
 		
 		IRuntime[] runtimes = ServerCore.getRuntimes();
-		assertEquals(2, runtimes.length);
-		assertEquals(TOMCAT_6 +" Runtime", runtimes[0].getName());
-		assertEquals(TOMCAT_7 +" Runtime", runtimes[1].getName());
+		Map<String, IRuntime> runtimeMap = new HashMap<String, IRuntime>(); 
+
+		for (IRuntime iRuntime : runtimes) {
+			runtimeMap.put(iRuntime.getName(),iRuntime);
+		}
 		
+		assertEquals(2, runtimes.length);
+		assertNotNull(runtimeMap.get(TOMCAT_6 +" Runtime"));
+		assertNotNull(runtimeMap.get(TOMCAT_7 +" Runtime"));
+
 		IServer[] servers = ServerCore.getServers();
+		Map<String, IServer> serverMap = new HashMap<String, IServer>();
+		
+		for (IServer iServer : servers) {
+			serverMap.put(iServer.getName(), iServer);
+		}
+		
 		assertEquals(2, servers.length);
-		assertEquals(TOMCAT_6, servers[0].getName());
-		assertEquals(TOMCAT_7, servers[1].getName());
+		assertNotNull(serverMap.get(TOMCAT_6));
+		assertNotNull(serverMap.get(TOMCAT_7));
 	}
 }
