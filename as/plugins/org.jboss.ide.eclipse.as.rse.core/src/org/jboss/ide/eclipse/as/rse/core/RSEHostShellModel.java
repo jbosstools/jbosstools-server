@@ -203,7 +203,7 @@ public class RSEHostShellModel {
 			};
 			singleUseShell.getStandardOutputReader().addOutputListener(statusListener);
 			
-			singleUseShell.writeToShell("echo $? && echo " + serverId);
+			singleUseShell.writeToShell("echo $? && echo \"" + serverId + "\"");
 			ThreadUtils.sleepFor(delay);
 			if( exit && singleUseShell != null && singleUseShell.isActive() ) {
 				singleUseShell.exit();
