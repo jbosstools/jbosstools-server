@@ -392,8 +392,10 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			wc.setAttribute(IJBossToolingConstants.SHUTDOWN_POLLER_KEY, WebPortPoller.WEB_POLLER_ID);
 		} else {
 			// as7 && exposed
-			wc.setAttribute(IJBossToolingConstants.STARTUP_POLLER_KEY, JBoss7ManagerServicePoller.POLLER_ID);
-			wc.setAttribute(IJBossToolingConstants.SHUTDOWN_POLLER_KEY, JBoss7ManagerServicePoller.POLLER_ID);
+			// TODO THIS NEEDS TO LIVE ELSEWHERE
+			String pollId = wc.getServerType().getId().equals(IJBossToolingConstants.SERVER_WILDFLY_80) ? JBoss7ManagerServicePoller.WILDFLY_POLLER_ID : JBoss7ManagerServicePoller.POLLER_ID;
+			wc.setAttribute(IJBossToolingConstants.STARTUP_POLLER_KEY, pollId);
+			wc.setAttribute(IJBossToolingConstants.SHUTDOWN_POLLER_KEY, pollId);
 		}
 	}
 	

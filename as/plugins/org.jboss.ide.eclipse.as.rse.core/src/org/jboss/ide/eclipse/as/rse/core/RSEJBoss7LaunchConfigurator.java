@@ -16,12 +16,13 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.ILaunchConfigConfigurator;
+import org.jboss.ide.eclipse.as.core.server.IManagementPortProvider;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossAS7ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
@@ -77,9 +78,10 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 		boolean exposeManagement = LaunchCommandPreferences.exposesManagement(server);
 		if( exposeManagement ) {
 			String host = server.getHost();
+			ServerDelegate sd = (ServerDelegate) server.loadAdapter(ServerDelegate.class, new NullProgressMonitor());
 			int defPort = IJBossToolingConstants.AS7_MANAGEMENT_PORT_DEFAULT_PORT;
-			int port = (server instanceof JBoss7Server) ? 
-					((JBoss7Server)server).getManagementPort() : defPort;
+			int port = (sd instanceof IManagementPortProvider) ? 
+					((IManagementPortProvider)sd).getManagementPort() : defPort;
 			ret += " --controller=" + host + ":" + port;
 		}
 		ret += " --connect command=:shutdown";

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry exported="true" kind="lib" path="lib/jboss-dmr-1.2.0.Beta2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jboss-logging-3.1.3.GA.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jboss-marshalling-1.3.16.GA.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jboss-marshalling-river-1.3.16.GA.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jboss-remoting-4.0.0.Beta1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jboss-sasl-1.0.3.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jboss-threads-2.1.0.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/wildfly-controller-client-8.0.0.Alpha2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/wildfly-protocol-8.0.0.Alpha2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xnio-api-3.1.0.CR3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xnio-nio-3.1.0.CR3.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

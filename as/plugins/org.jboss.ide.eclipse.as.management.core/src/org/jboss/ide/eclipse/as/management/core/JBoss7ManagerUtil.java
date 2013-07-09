@@ -57,7 +57,7 @@ public class JBoss7ManagerUtil {
 		if( EAP61_RUNTIME.equals(runtimeId)) 
 			return IJBoss7ManagerService.AS_VERSION_710_Beta;
 		if( WILDFLY_80_RUNTIME.equals(runtimeId)) 
-			return IJBoss7ManagerService.AS_VERSION_710_Beta;
+			return IJBoss7ManagerService.WILDFLY_VERSION_800;
 		return null;
 	}
 
