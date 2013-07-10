@@ -25,12 +25,22 @@ Raleigh NC 27606 USA.
    </license>
 
    <requires>
-      <import feature="org.jboss.tools.runtime.core.feature"/>
+      <import feature="org.jboss.tools.runtime.core.feature" version="2.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.jboss.tools.runtime.core"/>
+      <import plugin="org.eclipse.wst.server.core"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.jst.server.tomcat.core" version="1.1.400" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jdt.launching"/>
+      <import plugin="org.eclipse.jst.server.core" version="1.2.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jst.server.tomcat.ui" version="1.1.300" match="greaterOrEqual"/>
    </requires>
+
    <plugin
          id="org.jboss.tools.wtp.runtimes.tomcat"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+
 </feature>
