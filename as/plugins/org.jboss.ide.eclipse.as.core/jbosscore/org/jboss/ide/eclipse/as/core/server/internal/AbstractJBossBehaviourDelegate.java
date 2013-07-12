@@ -44,7 +44,7 @@ public abstract class AbstractJBossBehaviourDelegate extends AbstractBehaviourDe
 			actualBehavior.setServerStopped();
 			return;
 		}
-		boolean removeScanners = getServer().getAttribute(IJBossToolingConstants.PROPERTY_REMOVE_DEPLOYMENT_SCANNERS, false);
+		boolean removeScanners = getServer().getAttribute(IJBossToolingConstants.PROPERTY_REMOVE_DEPLOYMENT_SCANNERS, true);
 		if( removeScanners ) {
 			JBossExtendedProperties properties = (JBossExtendedProperties)getServer().loadAdapter(JBossExtendedProperties.class, null);
 			if( properties != null ) {
