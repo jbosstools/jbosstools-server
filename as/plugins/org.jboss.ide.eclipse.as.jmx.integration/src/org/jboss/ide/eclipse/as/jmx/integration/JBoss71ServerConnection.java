@@ -25,10 +25,10 @@ import javax.security.sasl.SaslException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.server.IManagementPortProvider;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.server.IJMXURLProvider;
+import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.jmx.integration.JMXUtil.CredentialException;
 import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.IConnectionProvider;
@@ -53,15 +53,22 @@ public class JBoss71ServerConnection extends JBossServerConnection {
 			this.connectionToConnector = new HashMap<MBeanServerConnection, JMXConnector>();
 	}
 	
-	protected MBeanServerConnection createConnection(IServer s) throws Exception  {
-		ServerDelegate sd = (ServerDelegate)s.loadAdapter(ServerDelegate.class, null);
-		int port = -1;
-		if( !(sd instanceof IManagementPortProvider))
-			port = IJBossToolingConstants.AS7_MANAGEMENT_PORT_DEFAULT_PORT;
-		else {
-			port = ((IManagementPortProvider)sd).getManagementPort();
+	protected String getUrl(IServer s) {
+		JBossExtendedProperties props = ExtendedServerPropertiesAdapterFactory.getJBossExtendedProperties(s);
+		if( props != null && props instanceof IJMXURLProvider ) {
+			IJMXURLProvider p = (IJMXURLProvider)props;
+			String url = p.getJMXUrl();
+			return url;
 		}
-		String url = "service:jmx:remoting-jmx://" + s.getHost() + ":" + port; 
+		return null;
+	}
+	
+	protected MBeanServerConnection createConnection(IServer s) throws Exception  {
+		String url = getUrl(s);
+		if( url == null ) {
+			throw new JMXException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Unable to discover a jmx url for server " + s.getName()));
+		}
+		
 		Map<String, String[]> environment = new HashMap<String, String[]>();
         environment.put(JMXConnector.CREDENTIALS, new String[]{user,pass});
         
