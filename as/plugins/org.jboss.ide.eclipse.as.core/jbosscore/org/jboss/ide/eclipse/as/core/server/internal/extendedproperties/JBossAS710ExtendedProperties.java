@@ -11,12 +11,16 @@
 package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
+import org.jboss.ide.eclipse.as.core.server.IJMXURLProvider;
+import org.jboss.ide.eclipse.as.core.server.IManagementPortProvider;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
-public class JBossAS710ExtendedProperties extends JBossAS7ExtendedProperties {
+public class JBossAS710ExtendedProperties extends JBossAS7ExtendedProperties implements IJMXURLProvider {
 
 	public JBossAS710ExtendedProperties(IAdaptable obj) {
 		super(obj);
@@ -52,4 +56,15 @@ public class JBossAS710ExtendedProperties extends JBossAS7ExtendedProperties {
 		return IJBossRuntimeResourceConstants.AS_71_MANAGEMENT_SCRIPT;
 	}
 
+	public String getJMXUrl() {
+		ServerDelegate sd = (ServerDelegate)server.loadAdapter(ServerDelegate.class, null);
+		int port = -1;
+		if( !(sd instanceof IManagementPortProvider))
+			port = IJBossToolingConstants.AS7_MANAGEMENT_PORT_DEFAULT_PORT;
+		else {
+			port = ((IManagementPortProvider)sd).getManagementPort();
+		}
+		String url = "service:jmx:remoting-jmx://" + server.getHost() + ":" + port;  //$NON-NLS-1$ //$NON-NLS-2$
+		return url;
+	}
 }
