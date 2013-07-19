@@ -112,18 +112,29 @@ public interface IJBossToolingConstants {
 
 	
 	// Inside the plugin (not metadata)
+	/* The following are all deprecated and were never meant for external consumption */
+	@Deprecated
 	public static final String PROPERTIES = "properties"; //$NON-NLS-1$
+	@Deprecated
 	public static final String DEFAULT_PROPS_32 = "jboss.32.default.ports.properties"; //$NON-NLS-1$
+	@Deprecated
 	public static final String DEFAULT_PROPS_40 = "jboss.40.default.ports.properties"; //$NON-NLS-1$
+	@Deprecated
 	public static final String DEFAULT_PROPS_42 = "jboss.42.default.ports.properties"; //$NON-NLS-1$
+	@Deprecated
 	public static final String DEFAULT_PROPS_50 = "jboss.50.default.ports.properties"; //$NON-NLS-1$
+	@Deprecated
 	public static final String DEFAULT_PROPS_51 = "jboss.51.default.ports.properties"; //$NON-NLS-1$
+	@Deprecated
 	public static final String DEFAULT_PROPS_60 = "jboss.60.default.ports.properties"; //$NON-NLS-1$
+	@Deprecated
 	public static final String DEFAULT_PROPS_70 = "jboss.70.default.ports.properties"; //$NON-NLS-1$
+	@Deprecated
 	public static final String DEFAULT_PROPS_71 = "jboss.71.default.ports.properties"; //$NON-NLS-1$
+	@Deprecated
 	public static final String DEFAULT_PROPS_EAP_43 = "jboss.eap.43.default.ports.properties"; //$NON-NLS-1$
+	@Deprecated
 	public static final String DEFAULT_PROPS_EAP_50 = "jboss.eap.50.default.ports.properties"; //$NON-NLS-1$
-	// NEW_SERVER_ADAPTER Add the new properties file for this server adapter above this line
 	
 	// Poller constants
 	public static final String DEFAULT_STARTUP_POLLER = "org.jboss.ide.eclipse.as.core.runtime.server.WebPoller"; //$NON-NLS-1$
@@ -153,6 +164,7 @@ public interface IJBossToolingConstants {
 	public static final String AS7_MANAGEMENT_PORT_DETECT_XPATH = "org.jboss.ide.eclipse.as.core.server.as7.managementPortAutoDetect.XPath"; //$NON-NLS-1$
 	public static final String AS7_MANAGEMENT_PORT_DEFAULT_XPATH = Messages.Ports + IPath.SEPARATOR + "JBoss Management"; //$NON-NLS-1$
 	public static final int    AS7_MANAGEMENT_PORT_DEFAULT_PORT = 9999;
+	public static final int    WILDFLY8_MANAGEMENT_PORT_DEFAULT_PORT = 9990;
 	
 	public static final String PORT_OFFSET = "org.jboss.ide.eclipse.as.core.server.portOffset"; //$NON-NLS-1$
 	public static final String PORT_OFFSET_DETECT= "org.jboss.ide.eclipse.as.core.server.portOffsetAutoDetect"; //$NON-NLS-1$

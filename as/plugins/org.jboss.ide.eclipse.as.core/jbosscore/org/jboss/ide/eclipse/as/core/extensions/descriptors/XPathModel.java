@@ -42,7 +42,6 @@ import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.IMemento;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
-import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.core.util.XMLMemento;
 
 /**
@@ -52,6 +51,23 @@ import org.jboss.ide.eclipse.as.core.util.XMLMemento;
  *
  */
 public class XPathModel extends UnitedServerListener {
+	// Inside the plugin (not metadata)
+	public static final String PROPERTIES = "properties"; //$NON-NLS-1$
+	public static final String DEFAULT_PROPS_32 = "jboss.32.default.ports.properties"; //$NON-NLS-1$
+	public static final String DEFAULT_PROPS_40 = "jboss.40.default.ports.properties"; //$NON-NLS-1$
+	public static final String DEFAULT_PROPS_42 = "jboss.42.default.ports.properties"; //$NON-NLS-1$
+	public static final String DEFAULT_PROPS_50 = "jboss.50.default.ports.properties"; //$NON-NLS-1$
+	public static final String DEFAULT_PROPS_51 = "jboss.51.default.ports.properties"; //$NON-NLS-1$
+	public static final String DEFAULT_PROPS_60 = "jboss.60.default.ports.properties"; //$NON-NLS-1$
+	public static final String DEFAULT_PROPS_70 = "jboss.70.default.ports.properties"; //$NON-NLS-1$
+	public static final String DEFAULT_PROPS_71 = "jboss.71.default.ports.properties"; //$NON-NLS-1$
+	public static final String DEFAULT_PROPS_80 = "wildfly.80.default.ports.properties"; //$NON-NLS-1$
+	
+	public static final String DEFAULT_PROPS_EAP_43 = "jboss.eap.43.default.ports.properties"; //$NON-NLS-1$
+	public static final String DEFAULT_PROPS_EAP_50 = "jboss.eap.50.default.ports.properties"; //$NON-NLS-1$
+	// NEW_SERVER_ADAPTER Add the new properties file for this server adapter above this line
+
+	
 	
 	public static final String EMPTY_STRING = "org.jboss.ide.eclipse.as.core.model.descriptor.EmptyString"; //$NON-NLS-1$
 	public static final String PORTS_CATEGORY_NAME = Messages.Ports;
@@ -261,19 +277,19 @@ public class XPathModel extends UnitedServerListener {
 	private static final String FILE_SUFFIX = "_FILE";//$NON-NLS-1$
 	static {
 		rtToPortsFile = new HashMap<String, URL>();
-		rtToPortsFile.put(IConstants.AS_32, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_32));
-		rtToPortsFile.put(IConstants.AS_40, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_40));
-		rtToPortsFile.put(IConstants.AS_42, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_42));
-		rtToPortsFile.put(IConstants.AS_50, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_50));
-		rtToPortsFile.put(IConstants.AS_51, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_51));
-		rtToPortsFile.put(IConstants.AS_60, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_60));
-		rtToPortsFile.put(IConstants.AS_70, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_70));
-		rtToPortsFile.put(IConstants.AS_71, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_71));
-		rtToPortsFile.put(IConstants.EAP_43, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_EAP_43));
-		rtToPortsFile.put(IConstants.EAP_50, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_EAP_50));
-		rtToPortsFile.put(IConstants.EAP_60, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_71));
-		rtToPortsFile.put(IConstants.EAP_61, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_71));
-		rtToPortsFile.put(IConstants.WILDFLY_80, getURLFor(IJBossToolingConstants.DEFAULT_PROPS_71));
+		rtToPortsFile.put(IConstants.AS_32, getURLFor(DEFAULT_PROPS_32));
+		rtToPortsFile.put(IConstants.AS_40, getURLFor(DEFAULT_PROPS_40));
+		rtToPortsFile.put(IConstants.AS_42, getURLFor(DEFAULT_PROPS_42));
+		rtToPortsFile.put(IConstants.AS_50, getURLFor(DEFAULT_PROPS_50));
+		rtToPortsFile.put(IConstants.AS_51, getURLFor(DEFAULT_PROPS_51));
+		rtToPortsFile.put(IConstants.AS_60, getURLFor(DEFAULT_PROPS_60));
+		rtToPortsFile.put(IConstants.AS_70, getURLFor(DEFAULT_PROPS_70));
+		rtToPortsFile.put(IConstants.AS_71, getURLFor(DEFAULT_PROPS_71));
+		rtToPortsFile.put(IConstants.EAP_43, getURLFor(DEFAULT_PROPS_EAP_43));
+		rtToPortsFile.put(IConstants.EAP_50, getURLFor(DEFAULT_PROPS_EAP_50));
+		rtToPortsFile.put(IConstants.EAP_60, getURLFor(DEFAULT_PROPS_71));
+		rtToPortsFile.put(IConstants.EAP_61, getURLFor(DEFAULT_PROPS_71));
+		rtToPortsFile.put(IConstants.WILDFLY_80, getURLFor(DEFAULT_PROPS_80));
 		// TODO NEW_SERVER_ADAPTER Add the new server ID to port mapping file above this line 
 	}
 	
@@ -295,7 +311,7 @@ public class XPathModel extends UnitedServerListener {
 	}
 	
 	private static URL getURLFor(String props) {
-		IPath properties = new Path(IJBossToolingConstants.PROPERTIES).append(props);
+		IPath properties = new Path(PROPERTIES).append(props);
 		URL url = FileLocator.find(JBossServerCorePlugin.getDefault().getBundle(), properties, null);
 		return url;
 	}
@@ -327,7 +343,7 @@ public class XPathModel extends UnitedServerListener {
 			String baseDir, URL url) throws IOException {
 		Properties pr = new Properties();
 		pr.load(url.openStream());
-		Iterator i = pr.keySet().iterator();
+		Iterator<Object> i = pr.keySet().iterator();
 		String name, xpath, attributeName, file;
 		XPathQuery query;
 		while(i.hasNext()) {
