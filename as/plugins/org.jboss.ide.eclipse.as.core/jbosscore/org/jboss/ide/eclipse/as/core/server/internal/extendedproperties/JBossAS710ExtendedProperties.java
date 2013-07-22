@@ -55,16 +55,18 @@ public class JBossAS710ExtendedProperties extends JBossAS7ExtendedProperties imp
 	public String getJBossAdminScript() {
 		return IJBossRuntimeResourceConstants.AS_71_MANAGEMENT_SCRIPT;
 	}
-
+	
 	public String getJMXUrl() {
+		return getJMXUrl(IJBossToolingConstants.AS7_MANAGEMENT_PORT_DEFAULT_PORT, "service:jmx:remoting-jmx"); //$NON-NLS-1$
+	}
+	
+	protected String getJMXUrl(int defaultPort, String jmxScheme) {
 		ServerDelegate sd = (ServerDelegate)server.loadAdapter(ServerDelegate.class, null);
-		int port = -1;
-		if( !(sd instanceof IManagementPortProvider))
-			port = IJBossToolingConstants.AS7_MANAGEMENT_PORT_DEFAULT_PORT;
-		else {
-			port = ((IManagementPortProvider)sd).getManagementPort();
-		}
-		String url = "service:jmx:remoting-jmx://" + server.getHost() + ":" + port;  //$NON-NLS-1$ //$NON-NLS-2$
+		int port = (sd instanceof IManagementPortProvider) ? 
+					((IManagementPortProvider)sd).getManagementPort() : defaultPort;
+		String url = jmxScheme + "://" + server.getHost() + ":" + port;  //$NON-NLS-1$ //$NON-NLS-2$
 		return url;
 	}
+
+
 }
