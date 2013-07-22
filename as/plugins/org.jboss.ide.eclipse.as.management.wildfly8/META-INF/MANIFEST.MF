@@ -23,3 +23,4 @@ Bundle-ClassPath: .,
 Service-Component: META-INF/jboss-management-service.xml
 Export-Package: org.jboss.ide.eclipse.as.internal.management.wildfly8;x-friends:="org.jboss.ide.eclipse.as.management.as7.tests"
 Bundle-Vendor: JBoss by Red Hat
+Bundle-Localization: plugin 
