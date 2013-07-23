@@ -27,13 +27,16 @@ import java.net.UnknownHostException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.wst.server.core.IRuntimeType;
+import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
 import org.jboss.ide.eclipse.as.management.core.IAS7ManagementDetails;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
-import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
+import org.jboss.ide.eclipse.as.management.core.IJBossManagerServiceProvider;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleException;
 
 /**
  * @author André Dietisheim
@@ -189,10 +192,29 @@ public class AS7ManagerTestUtils {
 	}
 
 	public static IJBoss7ManagerService findService(String runtimeType) {
-		try {
-			return JBoss7ManagerUtil.getService(runtimeType);
-		} catch(JBoss7ManangerException ise) {
-			return null;
+		return findService(ServerCore.findRuntimeType(runtimeType));
+	}
+	
+	public static IJBoss7ManagerService findService(IRuntimeType runtimeType) {
+		forceStart("org.jboss.ide.eclipse.as.core");
+		forceStart("org.jboss.ide.eclipse.as.management.as71");
+		forceStart("org.jboss.ide.eclipse.as.management.wildfly8");
+		IJBossManagerServiceProvider serviceProvider = (IJBossManagerServiceProvider)Platform.getAdapterManager().getAdapter(runtimeType, IJBossManagerServiceProvider.class);
+		if( serviceProvider != null ) {
+			return serviceProvider.getManagerService();
 		}
+		return null;
+	}
+	
+	private static boolean forceStart(String bundleId) {
+		Bundle bundle = Platform.getBundle(bundleId); //$NON-NLS-1$
+		if (bundle != null && bundle.getState() != Bundle.ACTIVE) {
+			try {
+				bundle.start();
+			} catch (BundleException e) {
+				// ignore
+			}
+		}
+		return bundle.getState() == Bundle.ACTIVE;
 	}
 }

@@ -22,11 +22,11 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	ParametizedSuite.class,
-	UtilsSuite.class,
-	PollThreadTest.class,
-	LaunchProjectOnJPP6Test.class,
-	ClasspathSuite.class,
+//	ParametizedSuite.class,
+//	UtilsSuite.class,
+//	PollThreadTest.class,
+//	LaunchProjectOnJPP6Test.class,
+//	ClasspathSuite.class,
 	RuntimeDetectionTest.class
 })
 public class ASToolsTestSuite {

@@ -10,27 +10,36 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.management.core;
 
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.ServerCore;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 
 public class JBoss7ManagerUtil {
 
+	@Deprecated
 	private static final String JBOSS7_RUNTIME = "org.jboss.ide.eclipse.as.runtime.70"; //$NON-NLS-1$
+	@Deprecated
 	private static final String JBOSS71_RUNTIME = "org.jboss.ide.eclipse.as.runtime.71"; //$NON-NLS-1$
+	@Deprecated
 	private static final String WILDFLY_80_RUNTIME = "org.jboss.ide.eclipse.as.runtime.wildfly.80"; //$NON-NLS-1$
+	@Deprecated
 	private static final String EAP6_RUNTIME = "org.jboss.ide.eclipse.as.runtime.eap.60"; //$NON-NLS-1$
+	@Deprecated
 	private static final String EAP61_RUNTIME = "org.jboss.ide.eclipse.as.runtime.eap.61"; //$NON-NLS-1$
 	
 	
 	public static IJBoss7ManagerService getService(IServer server) throws JBoss7ManangerException  {
 		return getService(server.getRuntime().getRuntimeType().getId());
 	}
-
-	public static IJBoss7ManagerService getService(String runtimeType) throws JBoss7ManangerException  {
+	
+	public static IJBoss7ManagerService getManagerService(String serviceId) throws JBoss7ManangerException {
 		try {
 			BundleContext context = AS7ManagementActivator.getContext();
-			JBoss7ManagerServiceProxy proxy = new JBoss7ManagerServiceProxy(context, getRequiredServiceVersion(runtimeType));
+			JBoss7ManagerServiceProxy proxy = new JBoss7ManagerServiceProxy(context, 
+					serviceId);
 			proxy.open();
 			return proxy;
 		} catch(InvalidSyntaxException ise) {
@@ -38,13 +47,26 @@ public class JBoss7ManagerUtil {
 		}
 	}
 
+	public static IJBoss7ManagerService getService(String runtimeType) throws JBoss7ManangerException  {
+		IRuntimeType rtType = ServerCore.findRuntimeType(runtimeType);
+		IJBossManagerServiceProvider serviceProvider = (IJBossManagerServiceProvider)Platform.getAdapterManager()
+					.getAdapter(rtType, IJBossManagerServiceProvider.class);
+		if( serviceProvider != null ) {
+			return serviceProvider.getManagerService();
+		}
+		return null;
+	}
+
+	@Deprecated
 	public static String getRequiredVersion(IServer server) {
 		String id = server.getRuntime().getRuntimeType().getId();
 		return getRequiredServiceVersion(id);
 	}
 	
 	// This may need to be updated for as7-style servers NEW_SERVER_ADAPTER
-	// TODO  move this to extended properties
+	// Cannot use factory directly. Must use adapters somehow to avoid circular deps
+	// THis has been moved to extended properties
+	@Deprecated
 	public static String getRequiredServiceVersion(String runtimeId) {
 		if (JBOSS7_RUNTIME.equals(runtimeId)
 				|| EAP6_RUNTIME.equals(runtimeId)) {
