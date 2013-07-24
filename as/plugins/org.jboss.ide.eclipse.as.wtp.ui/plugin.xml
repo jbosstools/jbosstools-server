@@ -21,10 +21,22 @@
     <extension
           point="org.eclipse.ui.commands">
        <command
+             categoryId="rg.jboss.ide.eclipse.as.wtp.ui.commands.modules"
              defaultHandler="org.jboss.ide.eclipse.as.wtp.ui.commands.FullPublishCommandHandler"
              id="org.jboss.ide.eclipse.as.wtp.ui.fullPublishCommand"
-             name="Full Publish">
+             name="Full Publish Module">
        </command>
+       <command
+             categoryId="rg.jboss.ide.eclipse.as.wtp.ui.commands.modules"
+             defaultHandler="org.jboss.ide.eclipse.as.wtp.ui.commands.RestartModuleCommandHandler"
+             id="org.jboss.ide.eclipse.as.wtp.ui.restartModuleCommand"
+             name="Restart Module">
+       </command>
+      <category
+            description="Commands related to modules"
+            id="rg.jboss.ide.eclipse.as.wtp.ui.commands.modules"
+            name="Modules">
+      </category>
     </extension>
     <extension
           point="org.eclipse.ui.bindings">
@@ -33,6 +45,12 @@
              contextId="org.eclipse.ui.contexts.window"
              schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
              sequence="M3+M2+Y F">
+       </key>
+       <key
+             commandId="org.jboss.ide.eclipse.as.wtp.ui.restartModuleCommand"
+             contextId="org.eclipse.ui.contexts.window"
+             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+             sequence="M3+M2+Y G">
        </key>
     </extension>
 </plugin>
