@@ -232,9 +232,9 @@
             name="Build Project Archives">
       </command>
       <category
-            description="Commands related to projects"
+            description="Commands related to project archives"
             id="org.jboss.ide.eclipse.archives.ui.commands.projects"
-            name="Projects">
+            name="Project Archives">
       </category>
    </extension>
    <extension
