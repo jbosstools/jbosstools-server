@@ -1,5 +1,5 @@
 /*************************************************************************************
- * Copyright (c) 2008-2013 Red Hat, Inc. and others.
+ * Copyright (c) 2013 Red Hat, Inc. and others.
  * All rights reserved. This program and the accompanying materials 
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,22 +10,22 @@
  ************************************************************************************/
 package org.jboss.ide.eclipse.as.wtp.ui.commands;
 
-import java.util.ArrayList;
-
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.internal.ui.stringsubstitution.SelectedResourceManager;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.internal.PublishServerJob;
-import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.util.NullModuleArtifact;
-import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
+import org.eclipse.wst.server.ui.internal.view.servers.RestartModuleAction;
 
-public class FullPublishCommandHandler extends AbstractModuleCommandHandler {
+public class RestartModuleCommandHandler extends AbstractModuleCommandHandler
+		implements IHandler {
+
+	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		try {
 			// go around in a circle to avoid plugin dependence on debug.ui
@@ -34,12 +34,7 @@ public class FullPublishCommandHandler extends AbstractModuleCommandHandler {
 			IServer server = getServer(module, new NullModuleArtifact(module), new NullProgressMonitor());
 			if( module != null && server != null ) {
 				IModule[] module2 = new IModule[]{module};
-				((Server)server).setModulePublishState(module2, IServer.PUBLISH_STATE_FULL);
-				ArrayList<IModule[]> allChildren = ServerModelUtilities.getDeepChildren(server, module2);
-				for( int j = 0; j < allChildren.size(); j++ ) {
-					((Server)server).setModulePublishState((IModule[])allChildren.get(j), IServer.PUBLISH_STATE_FULL);
-				}
-				new PublishServerJob(server, IServer.PUBLISH_INCREMENTAL, true).schedule();
+				new RestartModuleAction(server, module2).run();
 			}
 			return null;
 		} catch( CoreException ce) {
