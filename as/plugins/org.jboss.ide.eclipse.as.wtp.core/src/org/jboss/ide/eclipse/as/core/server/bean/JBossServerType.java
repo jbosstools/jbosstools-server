@@ -105,6 +105,17 @@ public class JBossServerType implements IJBossToolingConstants {
 		return this.condition.getFullVersion(root, new File(root, getSystemJarPath()));
 	}
 	
+	public String getUnderlyingTypeId(File root) {
+		if( this.condition == null )
+			return null;
+		String ret = null;
+		if( this.condition instanceof AbstractCondition ) {
+			ret = ((AbstractCondition)condition).getUnderlyingTypeId(root, new File(root, getSystemJarPath()));
+		}
+		return ret == null ? id : ret;
+	}
+
+	
 	/**
 	 * This method is for conditions where the underlying server may be 
 	 * of a different id than the JBossServerType. For example, any 

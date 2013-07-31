@@ -88,7 +88,6 @@ public class ServerBeanLoader {
 		return bean.getType().getFullVersion(rootLocation);
 	}
 	
-	
 	/**
 	 * Get a string representation of this bean's 
 	 * server type. This will usually be equivalent to 
