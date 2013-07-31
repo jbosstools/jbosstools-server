@@ -88,6 +88,13 @@ public class ServerBeanLoader {
 		return bean.getType().getFullVersion(rootLocation);
 	}
 	
+	public String getUnderlyingTypeId() {
+		if( bean == null )
+			loadBeanInternal();
+		return bean.getType().getUnderlyingTypeId(rootLocation);
+	}
+	
+	
 	public String getServerAdapterId() {
 		if( bean == null )
 			loadBeanInternal();

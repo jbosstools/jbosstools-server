@@ -161,7 +161,7 @@ public class RuntimeMatcher {
 					list.add(all[i]);
 				else {
 					ServerBeanLoader loader = new ServerBeanLoader(all[i].getLocation().toFile());
-					if( matchesServerBeanType(rep.stacksRuntimeType, loader.getServerBean())) {
+					if( matchesServerBeanType(rep.stacksRuntimeType, loader)) {
 						if( rep.beginVersion == null ) {
 							list.add(all[i]);
 						} else {
@@ -177,8 +177,8 @@ public class RuntimeMatcher {
 	};
 	
 	/* This can be replaced with some mapping if there's an disconnect between ServerBean and the stacks.yaml file */
-	private boolean matchesServerBeanType(String stacksRuntimeType, ServerBean serverBean) {
-		return stacksRuntimeType.equals(serverBean.getType().getId());
+	private boolean matchesServerBeanType(String stacksRuntimeType, ServerBeanLoader loader) {
+		return stacksRuntimeType.equals(loader.getUnderlyingTypeId());
 	}
 	
 	/**
