@@ -81,7 +81,9 @@ public class SimpleAntTest extends TestCase implements IProcessListener {
 			File[] children = outputFolder.toFile().listFiles();
 			if( children.length > 0 ) {
 				for( int i = 0; i < children.length; i++ ) 
-					children[i].delete();
+					// 'blank' file kept here to keep output folder in git
+					if( !children[i].getName().equals("blank"))
+						children[i].delete();
 			}
 		} catch( CoreException ce ) {
 		}
