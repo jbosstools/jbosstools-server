@@ -63,6 +63,8 @@ public class ServerCreationTestUtils extends Assert {
 	private static final String twiddle_eap_5_1 = "eap5.1" + twiddle_suffix;
 	private static final String eap_server_6_0_jar = "eap6.0.0.mf.jboss-as-server.jar";
 	private static final String eap_server_6_1_jar = "eap6.1.0.mf.jboss-as-server.jar";
+	private static final String jpp_server_6_0_jar = "jpp6.0.0.mf.jboss-as-server.jar";
+	private static final String jpp_server_6_1_jar = "jpp6.1.0.mf.jboss-as-server.jar";
 	private static final String gatein_3_4_0_jar = "gatein3.4.0.mf.jboss-as7-integration.jar";
 	private static final String run_jar = "run.jar";
 	private static final String service_xml = "service.xml";
@@ -71,8 +73,11 @@ public class ServerCreationTestUtils extends Assert {
 	public static final String TEST_SERVER_TYPE_GATEIN_34 = "TEST_SERVER_TYPE_GATEIN_34";
 	public static final String TEST_SERVER_TYPE_GATEIN_35 = "TEST_SERVER_TYPE_GATEIN_35";
 	public static final String TEST_SERVER_TYPE_GATEIN_36 = "TEST_SERVER_TYPE_GATEIN_36";
+	public static final String TEST_SERVER_TYPE_JPP_60 = "TEST_SERVER_TYPE_JPP_60";
+	public static final String TEST_SERVER_TYPE_JPP_61 = "TEST_SERVER_TYPE_JPP_61";
 	public static final String[] TEST_SERVER_TYPES_TO_MOCK = new String[] { 
-		TEST_SERVER_TYPE_GATEIN_34, TEST_SERVER_TYPE_GATEIN_35,TEST_SERVER_TYPE_GATEIN_36
+		TEST_SERVER_TYPE_GATEIN_34, TEST_SERVER_TYPE_GATEIN_35,TEST_SERVER_TYPE_GATEIN_36,
+		TEST_SERVER_TYPE_JPP_60, TEST_SERVER_TYPE_JPP_61
 	};
 	
 	static {
@@ -89,6 +94,8 @@ public class ServerCreationTestUtils extends Assert {
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_50, twiddle_eap_5_1);
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_60, eap_server_6_0_jar);
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_61, eap_server_6_1_jar);
+		asSystemJar.put(TEST_SERVER_TYPE_JPP_60, jpp_server_6_0_jar);
+		asSystemJar.put(TEST_SERVER_TYPE_JPP_61, jpp_server_6_1_jar);
 		asSystemJar.put(TEST_SERVER_TYPE_GATEIN_34, gatein_3_4_0_jar);
 		// NEW_SERVER_ADAPTER Add the new runtime constant above this line
 		
@@ -149,6 +156,10 @@ public class ServerCreationTestUtils extends Assert {
 			serverDir = createGateIn35MockServerDirectory(name);
 		} else if( TEST_SERVER_TYPE_GATEIN_36.equals(serverType)) {
 			serverDir = createGateIn36MockServerDirectory(name);
+		}else if( TEST_SERVER_TYPE_JPP_60.equals(serverType)) {
+			serverDir = createJPP60MockServerDirectory(name,serverType, asSystemJar.get(serverType));
+		}else if( TEST_SERVER_TYPE_JPP_61.equals(serverType)) {
+			serverDir = createJPP61MockServerDirectory(name,serverType, asSystemJar.get(serverType));
 		}
 		return serverDir == null ? null : serverDir.toFile();
 	}
@@ -283,6 +294,22 @@ public class ServerCreationTestUtils extends Assert {
 		createAS7xProductStructure(loc, false, serverJar, "eap", manString);
 		return loc;
 	}
+	
+	private static IPath createJPP60MockServerDirectory(String name, String serverTypeId, String serverJar) {
+		IPath loc = mockedServers.append(name);
+		String manString = "JBoss-Product-Release-Name: Portal Platform\nJBoss-Product-Release-Version: 6.0.0.CR01\nJBoss-Product-Console-Slot: jpp";
+		createAS7xProductStructure(loc, false, serverJar, "jpp", manString);
+		return loc;
+	}
+
+	private static IPath createJPP61MockServerDirectory(String name, String serverTypeId, String serverJar) {
+		IPath loc = mockedServers.append(name);
+		String manString = "JBoss-Product-Release-Name: Portal Platform\nJBoss-Product-Release-Version: 6.1.0.ER03\nJBoss-Product-Console-Slot: jpp";
+		createAS7xProductStructure(loc, true, serverJar, "jpp", manString);
+		return loc;
+	}
+
+
 	
 	private static void createAS7xProductStructure(IPath loc,  boolean includeLayers, String serverJar, String slot,
 			String manifestContents ) {
