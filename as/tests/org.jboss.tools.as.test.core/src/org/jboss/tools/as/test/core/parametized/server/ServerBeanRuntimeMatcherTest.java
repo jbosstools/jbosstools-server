@@ -44,13 +44,18 @@ public class ServerBeanRuntimeMatcherTest extends TestCase {
 		 return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerTypeParametersPlusAdditionalMocks());
 	 }
 
-	private HashMap<String, Pair> expected = new HashMap<String, Pair>();
-	private class Pair {
+	private HashMap<String, Data> expected = new HashMap<String, Data>();
+	private class Data {
 		private JBossServerType type;
-		private String version;
-		public Pair(JBossServerType type, String version) {
+		private String version, overrideId;
+		public Data(JBossServerType type, String version) {
 			this.type = type;
 			this.version = version;
+			this.overrideId = null;
+		}
+		public Data(JBossServerType type, String version, String oid) {
+			this(type, version);
+			this.overrideId = oid;
 		}
 	}
 	
@@ -67,22 +72,24 @@ public class ServerBeanRuntimeMatcherTest extends TestCase {
 	
 	@Before
 	public void setUp() {
-		expected.put(IJBossToolingConstants.SERVER_AS_32, new Pair(JBossServerType.AS, IJBossToolingConstants.V3_2));
-		expected.put(IJBossToolingConstants.SERVER_AS_40, new Pair(JBossServerType.AS, IJBossToolingConstants.V4_0));
-		expected.put(IJBossToolingConstants.SERVER_AS_42, new Pair(JBossServerType.AS, IJBossToolingConstants.V4_2));
-		expected.put(IJBossToolingConstants.SERVER_AS_50, new Pair(JBossServerType.AS, IJBossToolingConstants.V5_0));
-		expected.put(IJBossToolingConstants.SERVER_AS_51, new Pair(JBossServerType.AS, IJBossToolingConstants.V5_1));
-		expected.put(IJBossToolingConstants.SERVER_AS_60, new Pair(JBossServerType.AS, IJBossToolingConstants.V6_0));
-		expected.put(IJBossToolingConstants.SERVER_AS_70, new Pair(JBossServerType.AS7, IJBossToolingConstants.V7_0));
-		expected.put(IJBossToolingConstants.SERVER_AS_71, new Pair(JBossServerType.AS7, IJBossToolingConstants.V7_1));
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_80, new Pair(JBossServerType.WILDFLY80, IJBossToolingConstants.V8_0));
-		expected.put(IJBossToolingConstants.SERVER_EAP_43, new Pair(JBossServerType.EAP_STD, IJBossToolingConstants.V4_3));
-		expected.put(IJBossToolingConstants.SERVER_EAP_50, new Pair(JBossServerType.EAP_STD, IJBossToolingConstants.V5_1));
-		expected.put(IJBossToolingConstants.SERVER_EAP_60, new Pair(JBossServerType.EAP6, IJBossToolingConstants.V6_0));
-		expected.put(IJBossToolingConstants.SERVER_EAP_61, new Pair(JBossServerType.EAP61, IJBossToolingConstants.V6_1));
-		expected.put(ServerCreationTestUtils.TEST_SERVER_TYPE_GATEIN_34, new Pair(JBossServerType.AS7GateIn, IJBossToolingConstants.V3_4));
-		expected.put(ServerCreationTestUtils.TEST_SERVER_TYPE_GATEIN_35, new Pair(JBossServerType.AS7GateIn, IJBossToolingConstants.V3_5));
-		expected.put(ServerCreationTestUtils.TEST_SERVER_TYPE_GATEIN_36, new Pair(JBossServerType.AS7GateIn, "3.6"));
+		expected.put(IJBossToolingConstants.SERVER_AS_32, new Data(JBossServerType.AS, IJBossToolingConstants.V3_2));
+		expected.put(IJBossToolingConstants.SERVER_AS_40, new Data(JBossServerType.AS, IJBossToolingConstants.V4_0));
+		expected.put(IJBossToolingConstants.SERVER_AS_42, new Data(JBossServerType.AS, IJBossToolingConstants.V4_2));
+		expected.put(IJBossToolingConstants.SERVER_AS_50, new Data(JBossServerType.AS, IJBossToolingConstants.V5_0));
+		expected.put(IJBossToolingConstants.SERVER_AS_51, new Data(JBossServerType.AS, IJBossToolingConstants.V5_1));
+		expected.put(IJBossToolingConstants.SERVER_AS_60, new Data(JBossServerType.AS, IJBossToolingConstants.V6_0));
+		expected.put(IJBossToolingConstants.SERVER_AS_70, new Data(JBossServerType.AS7, IJBossToolingConstants.V7_0));
+		expected.put(IJBossToolingConstants.SERVER_AS_71, new Data(JBossServerType.AS7, IJBossToolingConstants.V7_1));
+		expected.put(IJBossToolingConstants.SERVER_WILDFLY_80, new Data(JBossServerType.WILDFLY80, IJBossToolingConstants.V8_0));
+		expected.put(IJBossToolingConstants.SERVER_EAP_43, new Data(JBossServerType.EAP_STD, IJBossToolingConstants.V4_3));
+		expected.put(IJBossToolingConstants.SERVER_EAP_50, new Data(JBossServerType.EAP_STD, IJBossToolingConstants.V5_1));
+		expected.put(IJBossToolingConstants.SERVER_EAP_60, new Data(JBossServerType.EAP6, IJBossToolingConstants.V6_0));
+		expected.put(IJBossToolingConstants.SERVER_EAP_61, new Data(JBossServerType.EAP61, IJBossToolingConstants.V6_1));
+		expected.put(ServerCreationTestUtils.TEST_SERVER_TYPE_GATEIN_34, new Data(JBossServerType.AS7GateIn, IJBossToolingConstants.V3_4));
+		expected.put(ServerCreationTestUtils.TEST_SERVER_TYPE_GATEIN_35, new Data(JBossServerType.AS7GateIn, IJBossToolingConstants.V3_5));
+		expected.put(ServerCreationTestUtils.TEST_SERVER_TYPE_GATEIN_36, new Data(JBossServerType.AS7GateIn, "3.6"));
+		expected.put(ServerCreationTestUtils.TEST_SERVER_TYPE_JPP_60, new Data(JBossServerType.JPP6, "6.0"));
+		expected.put(ServerCreationTestUtils.TEST_SERVER_TYPE_JPP_61, new Data(JBossServerType.UNKNOWN_AS72_PRODUCT, "6.1", "JPP"));
 		// NEW_SERVER_ADAPTER
 	}
 
@@ -94,16 +101,16 @@ public class ServerBeanRuntimeMatcherTest extends TestCase {
 		File serverDir = (ServerCreationTestUtils.createMockServerLayout(serverType));
 		if( serverDir == null || !serverDir.exists())
 			fail("Creation of mock server type " + serverType + " has failed.");
-		Pair p = expected.get(serverType);
+		Data p = expected.get(serverType);
 		try {
 			ServerCreationTestUtils.createServerWithRuntime(p.type.getServerAdapterTypeId(p.version), serverType, serverDir);
 		} catch(CoreException ce) {
 			// Ignore, let test fail
 		}
-		inner_testServerBeanRuntimeMatcherForMocks(serverDir, p.type, p.version);
+		inner_testServerBeanRuntimeMatcherForMocks(serverDir, p.type, p.version, p.overrideId);
 	}
 	
-	private void inner_testServerBeanRuntimeMatcherForMocks(File serverDir, JBossServerType expectedType, String expectedVersion) {
+	private void inner_testServerBeanRuntimeMatcherForMocks(File serverDir, JBossServerType expectedType, String expectedVersion,  String underlyingId) {
 		assertNotNull(serverType);
 		IServerType itype = ServerCore.findServerType(expectedType.getServerAdapterTypeId(expectedVersion));
 		if( itype == null )
@@ -125,11 +132,14 @@ public class ServerBeanRuntimeMatcherTest extends TestCase {
 		String rtTypeId = stype.getRuntimeType().getId();
 		assertEquals(1, matcher.findExistingRuntimes(rtTypeId).length);
 		assertEquals(0, matcher.findExistingRuntimes(rtTypeId + "0").length);
-		assertEquals(1, matcher.findExistingRuntimes(matcher.createPattern(rtTypeId, expectedType.getId())).length);
-		assertEquals(0, matcher.findExistingRuntimes(matcher.createPattern(rtTypeId, expectedType.getId() + "0")).length);
 		
-		assertEquals(1, matcher.findExistingRuntimes(matcher.createPattern(rtTypeId, expectedType.getId(), expectedVersion, true, incrementMinor(expectedVersion), false)).length);
-		assertEquals(0, matcher.findExistingRuntimes(matcher.createPattern(rtTypeId, expectedType.getId(), 
+		String expectedTypeOverride = underlyingId == null ? expectedType.getId() : underlyingId;
+		
+		assertEquals(1, matcher.findExistingRuntimes(matcher.createPattern(rtTypeId, expectedTypeOverride)).length);
+		assertEquals(0, matcher.findExistingRuntimes(matcher.createPattern(rtTypeId, expectedTypeOverride + "0")).length);
+		
+		assertEquals(1, matcher.findExistingRuntimes(matcher.createPattern(rtTypeId, expectedTypeOverride, expectedVersion, true, incrementMinor(expectedVersion), false)).length);
+		assertEquals(0, matcher.findExistingRuntimes(matcher.createPattern(rtTypeId, expectedTypeOverride, 
 				incrementMajor(expectedVersion), true, incrementMajor(expectedVersion,2), false)).length);
 	}
 	

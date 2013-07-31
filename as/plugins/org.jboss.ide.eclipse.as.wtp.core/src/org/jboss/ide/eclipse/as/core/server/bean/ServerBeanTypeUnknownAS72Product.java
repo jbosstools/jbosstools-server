@@ -21,6 +21,7 @@ public class ServerBeanTypeUnknownAS72Product extends ServerBeanTypeUnknownAS71P
 				new UnknownAS72ProductServerTypeCondition());
 	}
 	public static class UnknownAS72ProductServerTypeCondition extends UnknownAS71ProductServerTypeCondition {
+		@Override
 		public String getServerTypeId(String version) {
 			return IJBossToolingConstants.SERVER_EAP_61;
 		}
@@ -40,6 +41,6 @@ public class ServerBeanTypeUnknownAS72Product extends ServerBeanTypeUnknownAS71P
 		protected String getMetaInfFolderForLayer(String layer) {
 			return "modules/system/layers/" + layer + "/org/jboss/as/product/" + layer + "/dir/META-INF"; //$NON-NLS-1$
 		}
-
+		
 	}
 }

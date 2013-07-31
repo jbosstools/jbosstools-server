@@ -106,6 +106,35 @@ public class JBossServerType implements IJBossToolingConstants {
 	}
 	
 	/**
+	 * This method is for conditions where the underlying server may be 
+	 * of a different id than the JBossServerType. For example, any 
+	 * JBossServerType which represents an entire class of similar but
+	 * not identical servers, the server type may have an id such as 
+	 * AS-Product, and this method may return something like "JPP"
+	 * 
+	 * Note that differs from the method of the same name in 
+	 * the AbstractCondition, which will return null if there is no 
+	 * underlying type. This method will default to returning the
+	 * value of 'id' in the case where there is no different underlying type.  
+	 * 
+	 * @param location
+	 * @param systemFile
+	 * @return an underlying type id, or the id of this JBossServerType
+	 * 		   if the condition does not provide an underlying type. 
+	 */
+
+	public String getUnderlyingTypeId(File root) {
+		if( this.condition == null )
+			return null;
+		String ret = null;
+		if( this.condition instanceof AbstractCondition ) {
+			ret = ((AbstractCondition)condition).getUnderlyingTypeId(root, new File(root, getSystemJarPath()));
+		}
+		return ret == null ? id : ret;
+	}
+
+	
+	/**
 	 * This will return a version, if it can be discovered.
 	 * If this is an UNKNOWN server bean, the return 
 	 * value will be null
@@ -150,7 +179,7 @@ public class JBossServerType implements IJBossToolingConstants {
 		public String getFullVersion(File serverRoot, File systemFile);
 		
 		/**
-		 * Get the ServerType id associated with this installation
+		 * Get the wtp server type which matches this ServerType with this installation
 		 * 
 		 * @param serverRoot
 		 * @param systemFile
@@ -161,6 +190,22 @@ public class JBossServerType implements IJBossToolingConstants {
 	}
 	
 	public static abstract class AbstractCondition implements Condition {
+		
+		/**
+		 * This method is for conditions where the underlying server may be 
+		 * of a different id than the JBossServerType. For example, any 
+		 * JBossServerType which represents an entire class of similar but
+		 * not identical servers, the server type may have an id such as 
+		 * AS-Product, and this method may return something like "JPP"
+		 * 
+		 * @param location
+		 * @param systemFile
+		 * @return an ID, or null if the JBossServerType does not represent a class of different types.
+		 */
+		public String getUnderlyingTypeId(File location, File systemFile) {
+			return null;
+		}
+		
 		public String getFullVersion(File location, File systemFile) {
 			return ServerBeanLoader.getFullServerVersionFromZip(systemFile);
 		}

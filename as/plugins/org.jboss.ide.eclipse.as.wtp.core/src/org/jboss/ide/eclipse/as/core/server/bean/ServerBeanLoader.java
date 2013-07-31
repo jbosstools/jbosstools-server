@@ -88,6 +88,28 @@ public class ServerBeanLoader {
 		return bean.getType().getFullVersion(rootLocation);
 	}
 	
+	
+	/**
+	 * Get a string representation of this bean's 
+	 * server type. This will usually be equivalent to 
+	 * getServerType().getId(),  but may be overridden 
+	 * in some cases that require additional differentiation. 
+	 * 
+	 * @return an org.eclipse.wst.server.core.IServerType's type id
+	 */
+	public String getUnderlyingTypeId() {
+		if( bean == null )
+			loadBeanInternal();
+		return bean.getType().getUnderlyingTypeId(rootLocation);
+	}
+	
+	
+	/**
+	 * Get a server type id corresponding to an org.eclipse.wst.server.core.IServerType
+	 * that matches with this server bean's root location. 
+	 * 
+	 * @return an org.eclipse.wst.server.core.IServerType's type id
+	 */
 	public String getServerAdapterId() {
 		if( bean == null )
 			loadBeanInternal();
