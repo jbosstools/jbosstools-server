@@ -90,6 +90,9 @@ public class Messages extends NLS {
 	public static String Loading;
 	public static String ErrorLoading;
 	public static String UpdatingSelectionJob;
+	
+	public static String StateConnected;
+	public static String StateDisconnected;
 
 	public static String JMXUIImageDescriptorNotFound;
 	
