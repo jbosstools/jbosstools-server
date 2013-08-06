@@ -8,46 +8,33 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.ui.editor;
+package org.jboss.ide.eclipse.as.ui.editor.internal;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Iterator;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.ICellModifier;
-import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.ILabelProviderListener;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.TreeColumn;
-import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.forms.IFormColors;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -56,7 +43,6 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.eclipse.wst.server.ui.ServerUICore;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
@@ -66,66 +52,50 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
+import org.jboss.ide.eclipse.as.core.server.IServerModeDetails;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.ide.eclipse.as.ui.UIUtil;
+import org.jboss.ide.eclipse.as.ui.editor.DeploymentPage;
+import org.jboss.ide.eclipse.as.ui.editor.EditorExtensionManager;
+import org.jboss.ide.eclipse.as.ui.editor.ModuleDeploymentPage;
 
 /**
- * 
- * This class was never intended to be public API. 
- * This class suffers from large structural errors. 
- * It functions as a composite but is not a composite. 
- * It requires other classes that are not suitable for public API. 
- * 
- * A new workflow would make use of org.jboss.ide.eclipse.as.ui.editor.internal.JBossDeploymentOptionsComposite
- * for similar functionality, however that class is internal. 
- * @deprecated  To be removed in 2.7
+ * This class is an internal class for displaying
+ * deployment options for a JBoss server. 
  * 
  */
-public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeListener {
-	public static interface IDeploymentPageCallback {
-		public void propertyChange(PropertyChangeEvent evt, DeploymentModuleOptionCompositeAssistant composite);
-		public String getServerLocation(IServerWorkingCopy wc);
-		public String getServerConfigName(IServerWorkingCopy wc);
-	}
+public class JBossDeploymentOptionsComposite extends Composite implements PropertyChangeListener {
 	
-	private static HashMap<String, IDeploymentPageCallback> callbackMappings;
-	static {
-		callbackMappings = new HashMap<String, IDeploymentPageCallback>();
-		callbackMappings.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new LocalDeploymentPageCallback());
-	}
+	protected static final String MAIN = LocalPublishMethod.LOCAL_PUBLISH_METHOD;
+	private DeploymentPage page;
+	private Text deployText, tempDeployText;
+	private Button metadataRadio, serverRadio, customRadio, currentRadioSelection;
+	private Button deployButton, tempDeployButton;
+	private ModifyListener deployListener, tempDeployListener;
+	private SelectionListener radioListener, zipListener;
+	private Button zipDeployWTPProjects;
+	private String lastCustomDeploy, lastCustomTemp;
 	
-	public static void addMapping(String mode, IDeploymentPageCallback callback) {
-		callbackMappings.put(mode, callback);
-	}
+	
+	// Poorly named, but, after certain events, any widget in this list
+	// may have its 'enabled' status tweaked based on shouldEnableControl
+	private ArrayList<Control> enableDisableWidgets = new ArrayList<Control>();
 
 	
-	public static class LocalDeploymentPageCallback implements IDeploymentPageCallback {
-		public String getServerLocation(IServerWorkingCopy wc) {
-			IJBossServerRuntime jbsrt = (IJBossServerRuntime)wc.getRuntime().loadAdapter(IJBossServerRuntime.class, null);
-			return jbsrt.getConfigLocation();
-		}
-
-		public String getServerConfigName(IServerWorkingCopy wc) {
-			IJBossServerRuntime jbsrt = (IJBossServerRuntime)wc.getRuntime().loadAdapter(IJBossServerRuntime.class, null);
-			return jbsrt.getJBossConfiguration();
-		}
-
-		public void propertyChange(PropertyChangeEvent evt,
-				DeploymentModuleOptionCompositeAssistant composite) {
-			// TODO Auto-generated method stub
-			
-		}
-	}
+	private IServerWorkingCopy lastWC;
 	
+	public JBossDeploymentOptionsComposite(Composite parent, DeploymentPage page) {
+		super(parent, SWT.NONE);
+		this.page = page;
+		setLayout(new FillLayout());
+		createDefaultComposite(this);
+	}
+
 	protected String openBrowseDialog(String original) {
 		String mode = getServer().getAttributeHelper().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
 		org.jboss.ide.eclipse.as.ui.IBrowseBehavior beh = EditorExtensionManager.getDefault().getBrowseBehavior(mode);
@@ -134,50 +104,9 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		return beh.openBrowseDialog(page.getServer(), original);
 	}
 
-	// Combo strings - TODO extract to messages
-	private static final String ALL = "All";
-	private static final String DEPLOYABLE = "Deployable";
-	private static final String DEPLOYED = "Deployed";
-	private static final String BY_MODNAME = "By Module Name";
-	private static final String BY_MODTYPE = "By Module Type";
 	
-	
-	protected static final String COLUMN_NAME = IJBossToolingConstants.LOCAL_DEPLOYMENT_NAME;
-	protected static final String COLUMN_LOC = IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC;
-	protected static final String COLUMN_TEMP_LOC = IJBossToolingConstants.LOCAL_DEPLOYMENT_TEMP_LOC;
-	protected static final String OUTPUT_NAME = IJBossToolingConstants.LOCAL_DEPLOYMENT_OUTPUT_NAME;
-	protected static final String MAIN = LocalPublishMethod.LOCAL_PUBLISH_METHOD;
-	private ModuleDeploymentPage page;
-	private DeploymentPreferences preferences;
-	private TreeViewer viewer;
-	private Text deployText, tempDeployText;
-	private Button metadataRadio, serverRadio, customRadio, currentSelection;
-	private Button deployButton, tempDeployButton;
-	private ModifyListener deployListener, tempDeployListener;
-	private SelectionListener radioListener, zipListener;
-	private Button zipDeployWTPProjects;
-	private String lastCustomDeploy, lastCustomTemp;
-	
-	private Combo filterCombo; 
-	private Text filterText;
-	
-
-	
-	private IServerWorkingCopy lastWC;
-	
-	public DeploymentModuleOptionCompositeAssistant() {
-	}
-
-	public ModuleDeploymentPage getPage() {
+	public DeploymentPage getPage() {
 		return page;
-	}
-	
-	public void setDeploymentPage(ModuleDeploymentPage page) {
-		this.page = page;
-	}
-
-	public void setDeploymentPrefs(DeploymentPreferences prefs) {
-		this.preferences = prefs;
 	}
 
 	protected ServerAttributeHelper getHelper() {
@@ -197,7 +126,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 	}
 
 	public Button getSelectedRadio() {
-		return currentSelection;
+		return currentRadioSelection;
 	}
 	
 	protected boolean shouldCreateMetadataRadio() {
@@ -213,6 +142,9 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 	}
 
 	protected boolean shouldEnableMetadataRadio() {
+		if( !shouldCreateMetadataRadio())
+			return false;
+		
 		String mode = getHelper().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
 		if(!LocalPublishMethod.LOCAL_PUBLISH_METHOD.equals(mode))
 			return false;
@@ -227,10 +159,10 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		return true;
 	}
 
-	protected Composite createDefaultComposite(Composite parent) {
-
-		FormToolkit toolkit = new FormToolkit(parent.getDisplay());
-
+	/*
+	 * Subclasses may override to change text strings
+	 */
+	protected Section createSection(FormToolkit toolkit, Composite parent) {
 		Section section = toolkit.createSection(parent,
 				ExpandableComposite.TWISTIE | ExpandableComposite.EXPANDED
 						| ExpandableComposite.TITLE_BAR);
@@ -238,35 +170,77 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		section.setToolTipText(Messages.swf_DeploymentDescription);
 		section.setLayoutData(new GridData(GridData.FILL_HORIZONTAL
 				| GridData.VERTICAL_ALIGN_FILL));
-
-		Composite composite = toolkit.createComposite(section);
-
-		composite.setLayout(new FormLayout());
-
+		return section;
+	}
+	
+	/*
+	 * Subclasses may override to change text labels
+	 */
+	protected Control createDescriptionLabel(FormToolkit toolkit, Composite composite) {
 		Label descriptionLabel = toolkit.createLabel(composite,
 				Messages.swf_DeploymentDescriptionLabel);
 		descriptionLabel.setToolTipText(Messages.swf_DeploymentDescription);
-		Control top = descriptionLabel;
-		FormData descriptionLabelData = new FormData();
-		descriptionLabelData.left = new FormAttachment(0, 5);
-		descriptionLabelData.top = new FormAttachment(0, 5);
-		descriptionLabel.setLayoutData(descriptionLabelData);
+		return descriptionLabel;
+	}
+	
+	/*
+	 * This creates the top half of the page. Specifically, 
+	 * the deploy and tmp deploy fields, the radios (metadata, server, custom), 
+	 * the 'should zip' checkbox, etc. 
+	 */
+	
+	protected Composite createDefaultComposite(Composite parent) {
+
+		lastWC = page.getServer();
+		lastWC.addPropertyChangeListener(this);
+
+		FormToolkit toolkit = new FormToolkit(parent.getDisplay());
+		Section section = createSection(toolkit, parent);
+		Composite composite = toolkit.createComposite(section);
+		composite.setLayout(new FormLayout());
+
+		createDefaultCompositeContents(toolkit, composite);
+
+		toolkit.paintBordersFor(composite);
+		section.setClient(composite);
+		page.getSaveStatus();
+		updateWidgets();
+		return section;
+	}
+	
+	protected void createDefaultCompositeContents(FormToolkit toolkit, Composite composite) {
+		Control top = createDescriptionLabel(toolkit, composite);
+		if( top != null ) {
+			FormData fd1 = new FormData();
+			fd1.left = new FormAttachment(0, 5);
+			fd1.top = new FormAttachment(0, 5);
+			top.setLayoutData(fd1);
+		}
+		
 		if( getShowRadios() ) {
 			Composite inner = addRadios(toolkit, composite);
 			FormData radios = new FormData();
-			radios.top = new FormAttachment(descriptionLabel, 5);
+			radios.top = new FormAttachment(top, 5);
 			radios.left = new FormAttachment(0, 5);
 			radios.right = new FormAttachment(100, -5);
 			inner.setLayoutData(radios);
 			top = inner;
 		}
-		lastWC = page.getServer();
-		lastWC.addPropertyChangeListener(this);
 		
 		if( showTempAndDeployTexts() ) {
 			top = addTempAndDeployTexts(toolkit, composite, top);
 		}
 		
+		if( showZipWidgets()) {
+			addZipWidgets(toolkit, composite, top);
+		}
+	}
+	
+	protected boolean showZipWidgets() {
+		return true;
+	}
+	
+	protected Control addZipWidgets(FormToolkit toolkit, Composite composite, Control top) {
 		zipDeployWTPProjects = toolkit.createButton(composite,
 				Messages.EditorZipDeployments, SWT.CHECK);
 		boolean zippedPublisherAvailable = isZippedPublisherAvailable(); 
@@ -290,28 +264,10 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 			}
 		};
 		zipDeployWTPProjects.addSelectionListener(zipListener);
-
-		toolkit.paintBordersFor(composite);
-		section.setClient(composite);
-		page.getSaveStatus();
-		updateWidgets();
-		return section;
+		return zipDeployWTPProjects;
 	}
 	
 	protected Composite addRadios(FormToolkit toolkit, Composite parent) {
-		Composite inner = toolkit.createComposite(parent);
-		inner.setLayout(new GridLayout(1, false));
-
-		if( shouldCreateMetadataRadio() )
-			metadataRadio = toolkit.createButton(inner,
-					Messages.EditorUseWorkspaceMetadata, SWT.RADIO);
-		if( shouldCreateServerRadio())
-			serverRadio = toolkit.createButton(inner,
-					Messages.EditorUseServersDeployFolder, SWT.RADIO);
-		if( shouldCreateCustomRadio())
-			customRadio = toolkit.createButton(inner,
-					Messages.EditorUseCustomDeployFolder, SWT.RADIO);
-
 		radioListener = new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				widgetSelected(e);
@@ -321,14 +277,29 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 				radioSelected(e.getSource());
 			}
 		};
-		if( shouldCreateMetadataRadio())
+
+		Composite inner = toolkit.createComposite(parent);
+		inner.setLayout(new GridLayout(1, false));
+
+		if( shouldCreateMetadataRadio() ) {
+			metadataRadio = toolkit.createButton(inner,
+					Messages.EditorUseWorkspaceMetadata, SWT.RADIO);
 			metadataRadio.addSelectionListener(radioListener);
-		if( shouldCreateServerRadio())
+			metadataRadio.setEnabled(shouldEnableMetadataRadio());
+			enableDisableWidgets.add(metadataRadio);
+		}
+		if( shouldCreateServerRadio()) {
+			serverRadio = toolkit.createButton(inner,
+					Messages.EditorUseServersDeployFolder, SWT.RADIO);
 			serverRadio.addSelectionListener(radioListener);
-		if( shouldCreateCustomRadio()) 
+			enableDisableWidgets.add(serverRadio);
+		}
+		if( shouldCreateCustomRadio()) {
+			customRadio = toolkit.createButton(inner,
+					Messages.EditorUseCustomDeployFolder, SWT.RADIO);
 			customRadio.addSelectionListener(radioListener);
-		
-		metadataRadio.setEnabled(shouldEnableMetadataRadio());
+			enableDisableWidgets.add(customRadio);
+		}
 		return inner;
 	}
 	
@@ -338,6 +309,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		label.setForeground(toolkit.getColors().getColor(IFormColors.TITLE));
 		
 		deployText = toolkit.createText(parent, getDeployDir(), SWT.BORDER);
+		enableDisableWidgets.add(deployText);
 		deployListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				page.execute(new SetDeployDirCommand());
@@ -345,8 +317,9 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		};
 		deployText.addModifyListener(deployListener);
 
-		deployButton = toolkit.createButton(parent, Messages.browse,
-				SWT.PUSH);
+		deployButton = toolkit.createButton(parent, Messages.browse, SWT.PUSH);
+		enableDisableWidgets.add(deployButton);
+
 		deployButton.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
@@ -364,8 +337,9 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		tempDeployLabel.setForeground(toolkit.getColors().getColor(
 				IFormColors.TITLE));
 
-		tempDeployText = toolkit.createText(parent, getTempDeployDir(),
-				SWT.BORDER);
+		tempDeployText = toolkit.createText(parent, getTempDeployDir(), SWT.BORDER);
+		enableDisableWidgets.add(tempDeployText);
+
 		tempDeployListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				page.execute(new SetTempDeployDirCommand());
@@ -373,8 +347,9 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		};
 		tempDeployText.addModifyListener(tempDeployListener);
 
-		tempDeployButton = toolkit.createButton(parent, Messages.browse,
-				SWT.PUSH);
+		tempDeployButton = toolkit.createButton(parent, Messages.browse,SWT.PUSH);
+		enableDisableWidgets.add(tempDeployButton);
+
 		tempDeployButton.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
@@ -446,7 +421,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 				customRadio.setSelection(getDeployType().equals(
 						IDeployableServer.DEPLOY_CUSTOM));
 			
-			currentSelection = metadataRadio != null && metadataRadio.getSelection() ? metadataRadio
+			currentRadioSelection = metadataRadio != null && metadataRadio.getSelection() ? metadataRadio
 					: serverRadio != null && serverRadio.getSelection() ? serverRadio : customRadio;
 		}
 		
@@ -475,22 +450,11 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		}
 	}
 	
-	protected boolean shouldEnableControl(Control c) {
-		if( c == null || c.isDisposed())
-			return false;
-		
-		if( c == deployText || c == tempDeployText || c == deployButton || c == tempDeployButton)
-			return getDeployType().equals(IDeployableServer.DEPLOY_CUSTOM);
-		if( c == metadataRadio)
-			return shouldEnableMetadataRadio();
-		return true;
-	}
-	
 	public void radioSelected(Object c) {
-		if (c == currentSelection)
+		if (c == currentRadioSelection)
 			return; // do nothing
-		page.execute(new RadioClickedCommand((Button)c, currentSelection));
-		currentSelection = (Button)c;
+		page.execute(new RadioClickedCommand((Button)c, currentRadioSelection));
+		currentRadioSelection = (Button)c;
 	}
 	
 	protected boolean isZippedPublisherAvailable() {
@@ -629,38 +593,19 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		}
 		
 		protected String getServerRadioNewDeployDir() {
-			String mode = getHelper().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
-			ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(page.getServer());
-			if (sep != null && sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS) {
-				return new Path(IJBossRuntimeResourceConstants.AS7_STANDALONE)
-				.append(IJBossRuntimeResourceConstants.AS7_DEPLOYMENTS)
-				.makeRelative().toString();
-			} else {
-				IDeploymentPageCallback cb = callbackMappings.get(mode);
-				String loc = cb.getServerLocation(page.getServer());
-				String config = cb.getServerConfigName(page.getServer());
-				return new Path(loc)
-					.append(config)
-					.append(IJBossRuntimeResourceConstants.DEPLOY).toString();
-			}
+			IServerModeDetails det = (IServerModeDetails)Platform.getAdapterManager().getAdapter(server, IServerModeDetails.class); 
+			if( det == null )
+				return "";
+			String s = det.getProperty(det.PROP_SERVER_DEPLOYMENTS_FOLDER_REL);
+			return s;
 		}
 		
 		protected String getServerRadioNewTempDeployDir() {
-			String mode = getHelper().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
-			ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(page.getServer());
-
-			if (sep != null && sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS) {
-				return new Path(IJBossRuntimeResourceConstants.AS7_STANDALONE)
-				.append(IJBossRuntimeResourceConstants.FOLDER_TMP)
-				.makeRelative().toString();
-			} else {
-				IDeploymentPageCallback cb = callbackMappings.get(mode);
-				String loc = cb.getServerLocation(page.getServer());
-				String config = cb.getServerConfigName(page.getServer());
-				return new Path(loc).append(config)
-				.append(IJBossToolingConstants.TMP)
-				.append(IJBossToolingConstants.JBOSSTOOLS_TMP).toString();
-			}
+			IServerModeDetails det = (IServerModeDetails)Platform.getAdapterManager().getAdapter(server, IServerModeDetails.class); 
+			if( det == null )
+				return "";
+			String s = det.getProperty(det.PROP_SERVER_TMP_DEPLOYMENTS_FOLDER_REL);
+			return s;
 		}
 		
 		protected void discoverNewFolders() {
@@ -712,260 +657,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		return (IDeployableServer) page.getServer().loadAdapter(
 				IDeployableServer.class, new NullProgressMonitor());
 	}
-/*
- * 
- * 
- * 
- * This is where the second half goes
- * 
- * 
- * 
- */
-	protected Composite createViewerPortion(Composite random) {
-		Composite root = new Composite(random, SWT.NONE);
-		root.setLayout(new FormLayout());
-
-		page.getFormToolkit(random).adapt(root);
-
-		viewer = new TreeViewer(root, SWT.BORDER);
-		viewer.getTree().setHeaderVisible(true);
-		viewer.getTree().setLinesVisible(true);
-		TreeColumn moduleColumn = new TreeColumn(viewer.getTree(), SWT.NONE);
-		TreeColumn publishLocColumn = new TreeColumn(viewer.getTree(), SWT.NONE);
-		TreeColumn publishTempLocColumn = new TreeColumn(viewer.getTree(),
-				SWT.NONE);
-		moduleColumn.setText(Messages.EditorModule);
-		publishLocColumn.setText(Messages.EditorSetDeployLabel);
-		publishTempLocColumn.setText(Messages.EditorSetTempDeployLabel);
-
-		moduleColumn.setWidth(200);
-		publishLocColumn.setWidth(200);
-		publishTempLocColumn.setWidth(200);
-
-		viewer.setContentProvider(new ModulePageContentProvider());
-
-		viewer.setLabelProvider(new ModulePageLabelProvider());
-		viewer.setColumnProperties(new String[] { COLUMN_NAME,
-				COLUMN_LOC, COLUMN_TEMP_LOC });
-		viewer.setInput("");  //$NON-NLS-1$
-		CellEditor[] editors = new CellEditor[] {
-				new TextCellEditor(viewer.getTree()),
-				new TextCellEditor(viewer.getTree()),
-				new TextCellEditor(viewer.getTree()) };
-		viewer.setCellModifier(new LocalDeploymentCellModifier());
-		viewer.setCellEditors(editors);
-		
-		Link link = new Link(root, SWT.DEFAULT);
-		link.setText("<a>" + Messages.EditorRefreshViewer + "</a>"); //$NON-NLS-1$ //$NON-NLS-2$
-		link.addSelectionListener(new SelectionListener() {
-			public void widgetSelected(SelectionEvent e) {
-				refreshViewer();
-			}
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
-		
-		FormData linkData = UIUtil.createFormData2(null, 0, 100,-10, 0,5,null,0);
-		link.setLayoutData(linkData);
-		
-		FormData treeData = UIUtil.createFormData2(0, 5, link,-5, 0,5,100,-5);
-		viewer.getTree().setLayoutData(treeData);
-
-		// Newer stuff
-		Label comboLabel = new Label(root, SWT.NULL);
-		comboLabel.setText("Filter by:");
-		filterCombo = new Combo(root, SWT.READ_ONLY);
-		filterCombo.setItems(new String[]{ALL, DEPLOYABLE, DEPLOYED, BY_MODNAME});
-		filterCombo.select(0);
-		
-		filterText = new Text(root, SWT.SINGLE |SWT.BORDER);
-		
-		comboLabel.setLayoutData(UIUtil.createFormData2(null,0,100,-8,link,5,null,0));
-		filterCombo.setLayoutData(UIUtil.createFormData2(null,0,100,-3,comboLabel,5,null,0));
-		filterText.setLayoutData(UIUtil.createFormData2(null,0,100,-3,filterCombo,5,100,-5));
-		
-		ModifyListener ml =new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				resetFilterTextState();
-				viewer.setInput(""); //$NON-NLS-1$
-			}
-		};
-		filterCombo.addModifyListener(ml);
-		filterText.addModifyListener(ml);
-		filterCombo.select(1); // select DEPLOYABLE
-		return root;
-	}
 	
-	public void resetFilterTextState() {
-		int ind = filterCombo.getSelectionIndex();
-		boolean enabled = ind != -1 && 
-				filterCombo.getItem(ind).equals(BY_MODNAME);
-		filterText.setEnabled(enabled);
-	}
-	
-	private void refreshViewer() {
-		page.refreshPossibleModules();
-		viewer.setInput("");  //$NON-NLS-1$
-	}
-	
-	private class LocalDeploymentCellModifier implements ICellModifier {
-		public boolean canModify(Object element, String property) {
-			if( property == COLUMN_NAME)
-				return false;
-			return true;
-		}
-
-		public Object getValue(Object element, String property) {
-			DeploymentModulePrefs p = preferences.getOrCreatePreferences(MAIN)
-					.getOrCreateModulePrefs((IModule) element);
-			if (property == COLUMN_LOC) {
-				return getOutputFolderAndName(p, (IModule)element);
-			}
-			if (property == COLUMN_TEMP_LOC) {
-				String ret = p.getProperty(COLUMN_TEMP_LOC);
-				return ret == null ? "" : ret; //$NON-NLS-1$
-			}
-
-			return ""; //$NON-NLS-1$
-		}
-
-		public void modify(Object element, String property, Object value) {
-
-			IModule module = (IModule) ((TreeItem) element).getData();
-			DeploymentModulePrefs p = preferences.getOrCreatePreferences(MAIN)
-					.getOrCreateModulePrefs(module);
-			if (property == COLUMN_LOC) {
-				String outputName, outPath;
-				if( value == null || ((String)value).equals("")) { //$NON-NLS-1$
-					outputName = ""; //$NON-NLS-1$
-					outPath = ""; //$NON-NLS-1$
-				} else {
-					outputName = new Path(((String)value)).lastSegment();
-					outPath = ((String)value).substring(0, ((String)value).length()-outputName.length());
-				}
-				page.firePropertyChangeCommand(p, 
-						new String[]{COLUMN_LOC, OUTPUT_NAME},
-						new String[]{outPath,outputName},
-						Messages.EditorEditDeployLocCommand);
-				viewer.refresh();
-			} else if (property == COLUMN_TEMP_LOC) {
-				page.firePropertyChangeCommand(p, COLUMN_TEMP_LOC,
-						(String) value, Messages.EditorEditDeployLocCommand);
-				viewer.refresh();
-			}
-		}
-	}
-
-	private class ModulePageContentProvider implements ITreeContentProvider {
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		}
-
-		public void dispose() {
-		}
-
-		public Object[] getElements(Object inputElement) {
-			return getFilteredModules();
-		}
-
-		public boolean hasChildren(Object element) {
-			return false;
-		}
-
-		public Object getParent(Object element) {
-			return null;
-		}
-
-		public Object[] getChildren(Object parentElement) {
-			return null;
-		}
-	}
-
-	private Object[] getFilteredModules(){
-		if( filterCombo == null )
-			return page.getPossibleModules();
-		if( filterCombo.getItem(filterCombo.getSelectionIndex()).equals(ALL))
-			return page.getPossibleModules();
-		if( filterCombo.getItem(filterCombo.getSelectionIndex()).equals(DEPLOYED))
-			return page.getServer().getModules();
-		else {
-			IModule[] mods = page.getPossibleModules();
-			ArrayList<IModule> result = new ArrayList<IModule>();
-			if( filterCombo.getItem(filterCombo.getSelectionIndex()).equals(DEPLOYABLE)) {
-				for( int i = 0; i < mods.length; i++) {
-					try {
-						IModule[] parent = page.getServer().getRootModules(mods[i], new NullProgressMonitor());
-						if( parent.length == 1 && parent[0] == mods[i]) {
-							result.add(mods[i]);
-						}
-					} catch(CoreException ce) {
-						// getRootModules only throws CE if modules cannot be modified.
-						// If they cannot be modified, they will not get added to result list.
-						// No logging is needed
-					}
-				}
-			}
-			if( filterCombo.getItem(filterCombo.getSelectionIndex()).equals(BY_MODNAME)) {
-				String txt = filterText.getText();
-				for( int i = 0; i < mods.length; i++) {
-					if( mods[i].getName().contains(txt)) {
-						result.add(mods[i]);
-					}
-				}
-			}
-			return result.toArray(new IModule[result.size()]);
-		}
-	}
-	
-	private class ModulePageLabelProvider implements ITableLabelProvider {
-		public Image getColumnImage(Object element, int columnIndex) {
-			if (element instanceof IModule && columnIndex == 0) {
-				ILabelProvider labelProvider = ServerUICore.getLabelProvider();
-				Image image = labelProvider.getImage((IModule) element);
-				labelProvider.dispose();
-				return image;
-			}
-			return null;
-		}
-
-		public String getColumnText(Object element, int columnIndex) {
-			if (element instanceof IModule) {
-				IModule m = (IModule) element;
-				if (columnIndex == 0)
-					return m.getName();
-				if (columnIndex == 1) {
-					DeploymentModulePrefs modPref = preferences
-							.getOrCreatePreferences(MAIN)
-							.getOrCreateModulePrefs(m);
-					return getOutputFolderAndName(modPref, m);
-				}
-				if (columnIndex == 2) {
-					DeploymentModulePrefs modPref = preferences
-							.getOrCreatePreferences(MAIN)
-							.getOrCreateModulePrefs(m);
-					String result = modPref.getProperty(COLUMN_TEMP_LOC);
-					if (result != null)
-						return result;
-					modPref.setProperty(COLUMN_TEMP_LOC, ""); //$NON-NLS-1$
-					return ""; //$NON-NLS-1$
-				}
-			}
-			return element.toString();
-		}
-
-		public void addListener(ILabelProviderListener listener) {
-		}
-
-		public void dispose() {
-		}
-
-		public boolean isLabelProperty(Object element, String property) {
-			return false;
-		}
-
-		public void removeListener(ILabelProviderListener listener) {
-		}
-	}
-
 	public void updateListeners() {
 		// server has been saved. Remove property change listener from last wc and add to newest
 		if( lastWC != null )
@@ -980,7 +672,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 			if( shouldCreateMetadataRadio() ) {
 				metadataRadio.setEnabled(shouldEnableMetadataRadio());
 				if(!metadataRadio.isEnabled() && metadataRadio.getSelection()) {
-					page.execute(new RadioClickedCommand(serverRadio, currentSelection));
+					page.execute(new RadioClickedCommand(serverRadio, currentRadioSelection));
 				}
 			}
 		} 
@@ -996,27 +688,28 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		return  ret;
 	}
 	
-	protected static String getOutputFolderAndName(DeploymentModulePrefs modPref, IModule m) {
-		String folder = modPref.getProperty(COLUMN_LOC);
-		String outputName = modPref.getProperty(OUTPUT_NAME);
-		outputName = outputName == null || outputName.length() == 0
-			? getDefaultOutputName(m) : outputName;
-			
-		if (folder != null)
-			return new Path(folder).append(outputName).toPortableString();
-		return outputName;
-	}
-
 	public void setEnabled(boolean enabled) {
-		Control[] c = new Control[] { 
-				viewer.getTree(), deployText, tempDeployText, 
-				metadataRadio, serverRadio, customRadio, currentSelection, 
-				deployButton, tempDeployButton
-		};
-		for( int i = 0; i < c.length; i++ ) {
-			if( shouldEnableControl(c[i])) {
-				c[i].setEnabled(enabled);
+		Iterator<Control> i = enableDisableWidgets.iterator();
+		while(i.hasNext()) {
+			Control c = i.next();
+			if( shouldEnableControl(c)) {
+				c.setEnabled(enabled);
 			}
 		}
 	}
+	
+	/*
+	 * This method may be overridden with specific logic for your list of radios
+	 */
+	protected boolean shouldEnableControl(Control c) {
+		if( c == null || c.isDisposed())
+			return false;
+		
+		if( c == deployText || c == tempDeployText || c == deployButton || c == tempDeployButton)
+			return getDeployType().equals(IDeployableServer.DEPLOY_CUSTOM);
+		if( c == metadataRadio)
+			return shouldEnableMetadataRadio();
+		return true;
+	}
+
 }
