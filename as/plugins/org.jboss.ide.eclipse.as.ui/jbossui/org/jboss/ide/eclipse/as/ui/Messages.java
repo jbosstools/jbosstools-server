@@ -240,7 +240,12 @@ public class Messages extends NLS {
 	public static String EditorLocalDeployment;
 	public static String EditorRefreshViewer;
 	public static String EditorDeploymentPageWarning;
-	
+	public static String EditorDeploymentPageFilterBy;
+	public static String EditorDeploymentPageFilterAll;
+	public static String EditorDeploymentPageFilterDeployable;
+	public static String EditorDeploymentPageFilterDeployed;
+	public static String EditorDeploymentPageFilterModuleName;
+
 	
 	public static String ExploreUtils_Action_Text;
 	public static String ExploreUtils_Description;

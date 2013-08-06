@@ -10,10 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.ui.editor;
 
-import java.util.ArrayList;
-
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.jobs.Job;
@@ -46,19 +43,30 @@ import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExt
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
+import org.jboss.ide.eclipse.as.ui.editor.ModuleDeploymentOptionsComposite.IModuleDeploymentOptionsPartner;
 
-public class ModuleDeploymentPage extends ServerEditorPart {
+/**
+ * This class is a module deployment page for server editors. It allows customizations 
+ * of default deployment folders and per-module customization in names and locations
+ * 
+ * It is not officially public API despite being in a public package. 
+ * Clients may extend this on a *provisional* basis. Further changes may come. 
+ *
+ */
+public class ModuleDeploymentPage extends ServerEditorPart implements IModuleDeploymentOptionsPartner {
 	protected ServerResourceCommandManager commandManager;
-	protected ArrayList<IModule> possibleModules;
 	protected DeploymentPreferences preferences;
 	protected ServerAttributeHelper helper; 
-	protected DeploymentModuleOptionCompositeAssistant tab;
+	protected DeploymentModuleOptionCompositeAssistant standardOptions;
+	protected ModuleDeploymentOptionsComposite perModuleOptions;
 	private IServerListener listener;
+	
+	
+	/* Cache a helper in charge of letting us set values on the most recent server working copy. */
 	public ServerAttributeHelper getHelper() {
 		if( helper == null ) {
 			helper = new ServerAttributeHelper(getServer().getOriginal(), getServer());
@@ -72,10 +80,6 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 		return helper;
 	}
 
-	public IModule[] getPossibleModules() {
-		return (IModule[]) possibleModules.toArray(new IModule[possibleModules.size()]);
-	}
-	
 	public FormToolkit getFormToolkit(Composite parent) {
 		return getFormToolkit(parent.getDisplay());
 	}
@@ -86,8 +90,7 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 	
 	public void init(IEditorSite site, IEditorInput input) {
 		super.init(site, input);
-		refreshPossibleModules();
-		if (input instanceof IServerEditorPartInput) {
+		if (input instanceof IServerEditorPartInput) { // always true (?)
 			IServerEditorPartInput sepi = (IServerEditorPartInput) input;
 			server = sepi.getServer();
 			commandManager = ((ServerEditorPartInput) sepi).getServerCommandManager();
@@ -120,7 +123,10 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 						|| server.getOriginal().getServerPublishState() == IServer.PUBLISH_STATE_UNKNOWN);
 				Display.getDefault().asyncExec(new Runnable() { 
 					public void run() {
-						tab.setEnabled(enabled);
+						if( standardOptions != null )
+							standardOptions.setEnabled(enabled);
+						if( perModuleOptions != null )
+							perModuleOptions.setEnabled(enabled);
 					}
 				});
 			}
@@ -130,20 +136,6 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 	public void dispose() {
 		super.dispose();
 		server.getOriginal().removeServerListener(listener);
-	}
-	public void refreshPossibleModules() {
-		ArrayList<IModule> possibleChildren = new ArrayList<IModule>();
-		IModule[] modules2 = org.eclipse.wst.server.core.ServerUtil.getModules(server.getServerType().getRuntimeType().getModuleTypes());
-		if (modules2 != null) {
-			int size = modules2.length;
-			for (int i = 0; i < size; i++) {
-				IModule module = modules2[i];
-				IStatus status = server.canModifyModules(new IModule[] { module }, null, null);
-				if (status != null && status.getSeverity() != IStatus.ERROR)
-					possibleChildren.add(module);
-			}
-		}
-		this.possibleModules = possibleChildren;
 	}
 
 	public void createPartControl(Composite parent) {
@@ -163,7 +155,7 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 		return allContent;
 	}
 	
-	private void addDeploymentLocationControls(Composite parent, Control top) {
+	protected void addDeploymentLocationControls(Composite parent, Control top) {
 		FormToolkit toolkit = new FormToolkit(parent.getDisplay());
 		Label l1 = toolkit.createLabel(parent, Messages.EditorDeploymentPageWarning); 
 		FormData fd = new FormData();
@@ -172,21 +164,21 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 		fd.right = new FormAttachment(100, -5);
 		l1.setLayoutData(fd);
 		
-		tab = new DeploymentModuleOptionCompositeAssistant();
-		tab.setDeploymentPage(this);
-		tab.setDeploymentPrefs(preferences);
-		Composite defaultComposite = tab.createDefaultComposite(parent);
-		defaultComposite.setLayoutData(UIUtil.createFormData2(l1, 5, null,0,0,5,100,-5));
 		
-		Composite viewComposite = tab.createViewerPortion(parent);
+		// First section is deployment mode (server / custom / metadata) etc. 
+		standardOptions = new DeploymentModuleOptionCompositeAssistant(parent, this);
+		standardOptions.setLayoutData(UIUtil.createFormData2(l1, 5, null,0,0,5,100,-5));
+		
+		// Simply create a composite to show the per-module customizations
+		perModuleOptions = new ModuleDeploymentOptionsComposite(parent, this, getFormToolkit(parent), preferences);
 		fd = new FormData();
 		fd.left = new FormAttachment(0, 5);
-		fd.top = new FormAttachment(defaultComposite, 5);
+		fd.top = new FormAttachment(standardOptions, 5);
 		fd.right = new FormAttachment(100, -5);
 		fd.bottom = new FormAttachment(100, -5);
-		viewComposite.setLayoutData(fd);
+		perModuleOptions.setLayoutData(fd);
 	}
-
+	
 	public void execute(ServerCommand command) {
 		commandManager.execute(command);
 	}
@@ -269,7 +261,11 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 	}
 
 	public void doSave(IProgressMonitor monitor) {
-		tab.updateListeners();
+		if( standardOptions != null ) 
+			standardOptions.updateListeners();
+		if( perModuleOptions != null )
+			perModuleOptions.updateListeners();
+		
 		IServer s = getServer().getOriginal();
 		if( s.getServerState() == IServer.STATE_STARTED ) {
 			JBossExtendedProperties properties = (JBossExtendedProperties)s.loadAdapter(JBossExtendedProperties.class, null);
