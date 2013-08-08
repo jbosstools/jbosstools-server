@@ -22,6 +22,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	ServerHomeTest.class,
 	ServerBeanLoader3Test.class,
 	CreateServerCheckDefaultsTest.class,
+	ServerModeRuntimeDetailsTest.class,
 	ProjectRuntimeClasspathTest.class,
 	CreateRuntimeTwiceTest.class,
 	XPathModelTest.class,

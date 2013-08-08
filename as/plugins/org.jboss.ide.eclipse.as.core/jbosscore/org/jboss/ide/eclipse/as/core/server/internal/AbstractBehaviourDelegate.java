@@ -19,6 +19,7 @@ import org.jboss.ide.eclipse.as.core.modules.ResourceModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.IJBossBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
+import org.jboss.ide.eclipse.as.core.server.IServerModeDetails;
 
 /**
  * A complete stub implementation of the interface
@@ -104,4 +105,13 @@ public abstract class AbstractBehaviourDelegate implements IJBossBehaviourDelega
 		// TODO Auto-generated method stub
 
 	}
+	
+	/* 
+	 * Not added to the interface, but is added to the abstract class. 
+	 * Subclasses may override to return the proper information. 
+	 */
+	public IServerModeDetails getServerModeDetails() {
+		return null;
+	}
+
 }

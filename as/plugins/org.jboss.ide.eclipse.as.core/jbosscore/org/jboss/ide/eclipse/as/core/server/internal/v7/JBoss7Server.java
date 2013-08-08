@@ -10,7 +10,6 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
-import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.AS7_DEPLOYMENTS;
 import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.AS7_STANDALONE;
 import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.FOLDER_TMP;
 import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.AS7_MANAGEMENT_PORT;
@@ -76,14 +75,7 @@ public class JBoss7Server extends JBossServer implements IJBoss7Deployment, IMan
 	}
 
 	public String getDeployFolder(String type) {
-		if( type.equals(DEPLOY_SERVER) ) {
-			IRuntime rt = getServer().getRuntime();
-			if( rt == null )
-				return null;
-			IPath p = rt.getLocation().append(AS7_STANDALONE).append(AS7_DEPLOYMENTS);
-			return ServerUtil.makeGlobal(rt, p).toString();
-		}
-		return getDeployFolder(this, type);
+		return super.getDeployFolder(type);
 	}
 	
 	public String getTempDeployFolder() {

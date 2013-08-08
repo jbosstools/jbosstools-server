@@ -1523,4 +1523,14 @@
          <adapter type="org.jboss.ide.eclipse.as.management.core.IJBossManagerServiceProvider"/>
       </factory>
    </extension>
+
+   <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="org.eclipse.wst.server.core.IServer"
+            class="org.jboss.ide.eclipse.as.core.server.internal.ServerModeDetailsAdapterFactory">
+         <adapter type="org.jboss.ide.eclipse.as.core.server.IServerModeDetails"/>
+      </factory>
+   </extension>
+
 </plugin>

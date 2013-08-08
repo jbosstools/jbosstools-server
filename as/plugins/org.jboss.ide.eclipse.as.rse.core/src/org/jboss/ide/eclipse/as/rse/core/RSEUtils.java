@@ -28,6 +28,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
@@ -37,10 +38,30 @@ import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
  * and turned into a proper API, but in as simple a way as possible
  */
 public class RSEUtils {
+	
+	/**
+	 * A key which represents either the configuration name of as < 7 server (default or all), 
+	 * or, in as >= 7, represents the configuration FILE name (standalone.xml, etc)
+	 */
 	public static final String RSE_SERVER_CONFIG = "org.jboss.ide.eclipse.as.rse.core.RSEServerConfig"; //$NON-NLS-1$
+	
+	/**
+	 * The home directory of the remote server
+	 */
 	public static final String RSE_SERVER_HOME_DIR = "org.jboss.ide.eclipse.as.rse.core.RSEServerHomeDir"; //$NON-NLS-1$
+	
+	/**
+	 * A key to store which RSE host this server is attached to
+	 */
 	public static final String RSE_SERVER_HOST = "org.jboss.ide.eclipse.as.rse.core.ServerHost"; //$NON-NLS-1$
+	/**
+	 * The default host if one is not set
+	 */
 	public static final String RSE_SERVER_DEFAULT_HOST = "Local"; //$NON-NLS-1$
+	
+	/**
+	 * The name of this mode, which is just 'rse' 
+	 */
 	public static final String RSE_MODE = "rse";
 
 	public static String getRSEConnectionName(IServer server) {
@@ -71,10 +92,20 @@ public class RSEUtils {
 		return serverHome;
 	}
 
+	
+	public static String getRSEConfigFile(IServerAttributes server) {
+		// At this time, both config name (as<7) and config file (as7) use the same key. 
+		// this must remain this way or we will break users.  
+		return getRSEConfigName(server);
+	}
+	
 	public static String getRSEConfigName(IServerAttributes server) {
 		IJBossServerRuntime runtime = RuntimeUtils.getJBossServerRuntime(server);
-		return server.getAttribute(RSEUtils.RSE_SERVER_CONFIG, 
-				runtime == null ? null : runtime.getJBossConfiguration());
+		ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
+		boolean isAS7Style =(sep != null && sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS);
+		boolean useAS7 = isAS7Style && runtime instanceof LocalJBoss7ServerRuntime;
+		String defVal = useAS7 ? ((LocalJBoss7ServerRuntime)runtime).getConfigurationFile() : runtime.getJBossConfiguration(); 
+		return server.getAttribute(RSEUtils.RSE_SERVER_CONFIG,  runtime == null ? null : defVal);
 	}
 
 	public static String getDeployRootFolder(IDeployableServer server) {
