@@ -165,4 +165,22 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 	public boolean persistsScannerChanges() {
 		return false;
 	}
+
+
+	/*
+	 * An internal method which lets us know whether this app server version
+	 * can customize the scanner's interval 
+	 */
+	public boolean canCustomizeInterval() {
+		return false;
+	}
+
+	/*
+	 * An internal method which lets us know whether this app server version
+	 * can customize the scanner's timeout 
+	 */
+	public boolean canCustomizeTimeout() {
+		return false;
+	}
+
 }

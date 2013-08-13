@@ -20,6 +20,8 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractDeploymentScannerAdditions;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.AS7DeploymentScannerUtility.Scanner;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
 public class LocalJBoss7DeploymentScannerAdditions extends AbstractDeploymentScannerAdditions {
 	public LocalJBoss7DeploymentScannerAdditions() {
@@ -49,6 +51,9 @@ public class LocalJBoss7DeploymentScannerAdditions extends AbstractDeploymentSca
 		ArrayList<String> removed = new ArrayList<String>(); // list of the scanner names
 		
 		Map<String, String> props = loadScannersFromServer(server);
+		Scanner defaultScanner = loadDefaultScannerFromServer(server);
+		int existingScannerTimeout = (defaultScanner == null ? 5000 : defaultScanner.getTimeout());
+		int existingScannerInterval = (defaultScanner == null ? AS7DeploymentScannerUtility.IGNORE : defaultScanner.getInterval());
 		
 		// Properties file of format like:  JBossToolsScanner4=/some/folder
 		Iterator<String> lastStartup = props.keySet().iterator();
@@ -85,6 +90,10 @@ public class LocalJBoss7DeploymentScannerAdditions extends AbstractDeploymentSca
 			Trace.trace(Trace.STRING_FINER, "Removed Deployment Scanner: success="+s.isOK() + ", " + scannerName + ":" + props.get(scannerName)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		 
+		
+		int defaultInterval = server.getAttribute(IJBossToolingConstants.PROPERTY_SCANNER_INTERVAL, existingScannerInterval);
+		int defaultTimeout = server.getAttribute(IJBossToolingConstants.PROPERTY_SCANNER_TIMEOUT, existingScannerTimeout);
+		
 		// Do the adds
 		i = added.iterator();
 		String path;
@@ -92,10 +101,10 @@ public class LocalJBoss7DeploymentScannerAdditions extends AbstractDeploymentSca
 		while(i.hasNext()) {
 			path = i.next();
 			newScannerName = findNextScannerName(props);
-			IStatus s = util.addDeploymentScanner(server, newScannerName, path);
+			IStatus s = util.addDeploymentScanner(server, newScannerName, path, 
+					defaultInterval, defaultTimeout);
 			if( s.isOK()){
 				props.put(newScannerName, path);
-				util.updateDeploymentScannerInterval(server, newScannerName, 5000);
 			}
 			Trace.trace(Trace.STRING_FINER, "Added Deployment Scanner: success="+s.isOK() + ", " + scannerName + ":" + props.get(newScannerName)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
@@ -119,6 +128,11 @@ public class LocalJBoss7DeploymentScannerAdditions extends AbstractDeploymentSca
 		return new AS7DeploymentScannerUtility().getDeploymentScannersFromServer(server, false);
 	}
 	
+	protected Scanner loadDefaultScannerFromServer(IServer server) {
+		return new AS7DeploymentScannerUtility().getDefaultDeploymentScanner(server);
+	}
+
+	
 	protected String findNextScannerName(Map<String,String> props) {
 		int i = 1;
 		while( props.get(AS7DeploymentScannerUtility.SCANNER_PREFIX + i) != null ) {
@@ -133,6 +147,24 @@ public class LocalJBoss7DeploymentScannerAdditions extends AbstractDeploymentSca
 	 */
 	@Override
 	public boolean persistsScannerChanges() {
+		return true;
+	}
+
+	/*
+	 * An internal method which lets us know whether this app server version
+	 * can customize the scanner's interval 
+	 */
+	@Override
+	public boolean canCustomizeInterval() {
+		return true;
+	}
+
+	/*
+	 * An internal method which lets us know whether this app server version
+	 * can customize the scanner's timeout 
+	 */
+	@Override
+	public boolean canCustomizeTimeout() {
 		return true;
 	}
 
