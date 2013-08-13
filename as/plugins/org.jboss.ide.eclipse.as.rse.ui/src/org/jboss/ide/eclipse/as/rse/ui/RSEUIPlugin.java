@@ -16,11 +16,7 @@ import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel;
-import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
 import org.jboss.ide.eclipse.as.ui.console.JBASConsoleWriter;
-import org.jboss.ide.eclipse.as.ui.editor.DeploymentModuleOptionCompositeAssistant;
-import org.jboss.ide.eclipse.as.ui.launch.JBoss7LaunchConfigurationTabGroup;
-import org.jboss.ide.eclipse.as.ui.launch.JBossLaunchConfigurationTabGroup;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -40,10 +36,8 @@ public class RSEUIPlugin implements BundleActivator {
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
-		
 		context = bundleContext;
 		plugin = this;
-		DeploymentModuleOptionCompositeAssistant.addMapping(RSEPublishMethod.RSE_ID, new RSEDeploymentPageCallback());
 		consoleWriter = new JBASConsoleWriter();
 		RSEHostShellModel.getInstance().addHostShellListener(consoleWriter);
 	}

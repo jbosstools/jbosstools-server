@@ -18,6 +18,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAda
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
 public class RSEServerModeDetails implements IServerModeDetails {
 	private IServer server;
@@ -41,21 +42,43 @@ public class RSEServerModeDetails implements IServerModeDetails {
 			} else {
 				// Remote servers at this time do not allow arbitrary configuration locations. 
 				// This would require UI changes and API additions. 
-				return getServerLT6RelativeConfigPath(IConstants.SERVER, null);
+				IPath p = getServerLT6RelativeConfigPath(IConstants.SERVER, null);
+				return p == null ? null : p.toString();
 			}
 		}
-		if( PROP_SERVER_DEPLOYMENTS_FOLDER.equals(prop)) {
+		if( PROP_SERVER_DEPLOYMENTS_FOLDER_REL.equals(prop) || PROP_SERVER_DEPLOYMENTS_FOLDER_ABS.equals(prop)) {
+			boolean relative = PROP_SERVER_DEPLOYMENTS_FOLDER_REL.equals(prop);
+			IPath relPath = null;
 			// Currently AS7 does not support custom configurations
 			if (isAS7Structure()) {
-				IPath p = new Path(IJBossRuntimeResourceConstants.AS7_STANDALONE).append(IJBossRuntimeResourceConstants.AS7_DEPLOYMENTS);
-				return RSEUtils.makeGlobal(server, p).toString();
+				relPath = new Path(IJBossRuntimeResourceConstants.AS7_STANDALONE).append(IJBossRuntimeResourceConstants.AS7_DEPLOYMENTS);
 			} else {
 				// Remote servers at this time do not allow arbitrary configuration locations. 
 				// This would require UI changes and API additions. 
-				return getServerLT6RelativeConfigPath(IConstants.SERVER, IJBossRuntimeResourceConstants.DEPLOY);
+				relPath = getServerLT6RelativeConfigPath(IConstants.SERVER, IJBossRuntimeResourceConstants.DEPLOY);
 			}
+			if( relPath == null ) 
+				return null;
+			if( !relative) 
+				return RSEUtils.makeGlobal(server, relPath).toString();
+			return RSEUtils.makeRelative(server, relPath).toString();
 		}
-		
+		if( PROP_SERVER_TMP_DEPLOYMENTS_FOLDER_REL.equals(prop) || PROP_SERVER_TMP_DEPLOYMENTS_FOLDER_ABS.equals(prop)) {
+			boolean relative = PROP_SERVER_TMP_DEPLOYMENTS_FOLDER_REL.equals(prop);
+			IPath relPath = null;
+			if( isAS7Structure()) {
+				relPath = new Path(IJBossRuntimeResourceConstants.AS7_STANDALONE)
+					.append(IJBossRuntimeResourceConstants.FOLDER_TMP).makeRelative();
+			} else {
+				relPath = getServerLT6RelativeConfigPath(IConstants.SERVER, IJBossToolingConstants.TMP + "/" + IJBossToolingConstants.JBOSSTOOLS_TMP);
+			}
+			if( relPath == null ) 
+				return null;
+			if( !relative) 
+				return RSEUtils.makeGlobal(server, relPath).toString();
+			return RSEUtils.makeRelative(server, relPath).toString();
+		}
+
 		
 		if( PROP_AS7_CONFIG_FILE.equals(prop)) {
 			return RSEUtils.getRSEConfigFile(server);
@@ -64,14 +87,14 @@ public class RSEServerModeDetails implements IServerModeDetails {
 	}
 	
 	/* Get a global path which includes the config name */
-	private String getServerLT6RelativeConfigPath(String prefix, String suffix) {
+	private IPath getServerLT6RelativeConfigPath(String prefix, String suffix) {
 		String config = RSEUtils.getRSEConfigName(server);
 		if( config == null )
 			return null;
 		IPath p = new Path(prefix).append(config);
 		if( suffix != null )
 			p = p.append(suffix);
-		return RSEUtils.makeGlobal(server, p).toString();
+		return RSEUtils.makeGlobal(server, p);
 	}
 	
 	private boolean isAS7Structure() {

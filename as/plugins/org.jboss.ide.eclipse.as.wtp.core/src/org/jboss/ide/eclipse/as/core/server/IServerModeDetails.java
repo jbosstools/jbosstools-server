@@ -65,10 +65,29 @@ public interface IServerModeDetails {
 
 	/**
 	 * Get the default folder the server provides as a deployment folder given the
-	 * current server version and mode information
+	 * current server version and mode information in a relative fashion
 	 */
-	public static final String PROP_SERVER_DEPLOYMENTS_FOLDER = "PROP_SERVER_DEPLOYMENTS_FOLDER";
+	public static final String PROP_SERVER_DEPLOYMENTS_FOLDER_REL = "PROP_SERVER_DEPLOYMENTS_FOLDER_RELATIVE";
 
+	/**
+	 * Get the default folder the server provides as a deployment folder given the
+	 * current server version and mode information as an absolute path
+	 */
+	public static final String PROP_SERVER_DEPLOYMENTS_FOLDER_ABS = "PROP_SERVER_DEPLOYMENTS_FOLDER_ABSOLUTE";
+
+	/**
+	 * Get the default temporary folder the server provides as a deployment folder given the
+	 * current server version and mode information as an absolute path
+	 */
+	public static final String PROP_SERVER_TMP_DEPLOYMENTS_FOLDER_REL = "PROP_SERVER_TMP_DEPLOYMENTS_FOLDER_RELATIVE";
+
+	/**
+	 * Get the default temporary folder the server provides as a deployment folder given the
+	 * current server version and mode information in a relative fashion
+	 */
+	public static final String PROP_SERVER_TMP_DEPLOYMENTS_FOLDER_ABS = "PROP_SERVER_TMP_DEPLOYMENTS_FOLDER_ABSOLUTE";
+
+	
 	
 	/**
 	 * Retrieve the server-mode-relative value for the given property
