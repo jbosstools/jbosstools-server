@@ -4,7 +4,7 @@
    <extension-point id="ServiceXMLQuickFixProvider" name="org.jboss.ide.eclipse.as.ui.mbeans.serviceXMLQuickFixProvider" schema="schema/ServiceXMLQuickFixProvider.exsd"/>
    <extension-point id="ServiceXMLOutlineMenuProvider" name="org.jboss.ide.eclipse.as.ui.mbeans.serviceXMLOutlineMenuProvider" schema="schema/ServiceXMLOutlineMenuProvider.exsd"/>
    <extension
-         point="org.eclipse.core.runtime.contentTypes">
+         point="org.eclipse.core.contenttype.contentTypes">
       <content-type
             base-type="org.eclipse.core.runtime.xml"
             file-extensions="xml"

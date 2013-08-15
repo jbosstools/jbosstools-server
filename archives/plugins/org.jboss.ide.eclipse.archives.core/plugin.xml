@@ -32,7 +32,7 @@
 
 	<!-- LEGACY - JBIDE-1041 -->
    <extension
-         point="org.eclipse.core.runtime.contentTypes">
+         point="org.eclipse.core.contenttype.contentTypes">
       <file-association
             file-names="packaging-build.xml"
             content-type="org.eclipse.ant.core.antBuildFile">
