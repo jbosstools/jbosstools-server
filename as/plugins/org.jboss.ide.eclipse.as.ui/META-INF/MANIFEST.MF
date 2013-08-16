@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name.0
 Bundle-SymbolicName: org.jboss.ide.eclipse.as.ui;singleton:=true
-Bundle-Version: 2.4.101.qualifier
+Bundle-Version: 2.5.0.qualifier
 Bundle-Localization: plugin
 Require-Bundle: com.ibm.icu;bundle-version="4.2.1",
  org.apache.ant;bundle-version="1.7.1",
@@ -55,9 +55,9 @@ Require-Bundle: com.ibm.icu;bundle-version="4.2.1",
  org.eclipse.wst.common.project.facet.ui;bundle-version="1.4.200",
  org.eclipse.wst.common.emfworkbench.integration;bundle-version="1.2.100",
  org.eclipse.wst.web.ui;bundle-version="1.1.400",
- org.jboss.ide.eclipse.as.core;bundle-version="[2.4.0,3.0.0)",
- org.jboss.ide.eclipse.as.wtp.core;bundle-version="[2.4.0,3.0.0)",
- org.jboss.ide.eclipse.as.management.core;bundle-version="[2.4.0,3.0.0)",
+ org.jboss.ide.eclipse.as.core;bundle-version="[2.5.0,3.0.0)",
+ org.jboss.ide.eclipse.as.wtp.core;bundle-version="[2.5.0,3.0.0)",
+ org.jboss.ide.eclipse.as.management.core;bundle-version="[2.5.0,3.0.0)",
  org.jboss.ide.eclipse.as.dmr;bundle-version="[2.4.0,3.0.0)",
  org.jboss.tools.as.runtimes.integration;bundle-version="[2.4.0,3.0.0)",
  org.jboss.tools.runtime.core;bundle-version="2.0.0",
