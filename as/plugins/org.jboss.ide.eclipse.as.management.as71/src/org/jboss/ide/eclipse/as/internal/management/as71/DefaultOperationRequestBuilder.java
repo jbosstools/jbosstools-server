@@ -28,6 +28,7 @@ import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
 import org.jboss.dmr.ModelNode;
+import org.jboss.ide.eclipse.as.management.core.DefaultOperationRequestAddress;
 import org.jboss.ide.eclipse.as.management.core.OperationFormatException;
 import org.jboss.ide.eclipse.as.management.core.OperationRequestAddress;
 import org.jboss.ide.eclipse.as.management.core.ValidatingOperationCallbackHandler;
