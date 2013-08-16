@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jboss.tools.archives</groupId>
 		<artifactId>plugins</artifactId>
-		<version>3.4.100-SNAPSHOT</version>
+		<version>3.4.101</version>
 	</parent>
 	<groupId>org.jboss.tools.archives.plugins</groupId>
 	<artifactId>org.jboss.ide.eclipse.archives.jdt.integration</artifactId> 

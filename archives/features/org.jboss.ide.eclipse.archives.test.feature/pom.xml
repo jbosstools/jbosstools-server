@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jboss.tools.archives</groupId>
 		<artifactId>features</artifactId>
-		<version>3.4.100-SNAPSHOT</version>
+		<version>3.4.101</version>
 	</parent>
 	<groupId>org.jboss.tools.archives.features</groupId>
 	<artifactId>org.jboss.ide.eclipse.archives.test.feature</artifactId> 
