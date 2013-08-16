@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name.0
 Bundle-Vendor: %Bundle-Vendor.0
 Bundle-SymbolicName: org.jboss.ide.eclipse.as.rse.core;singleton:=true
-Bundle-Version: 2.4.101.qualifier
+Bundle-Version: 2.5.0.qualifier
 Bundle-Activator: org.jboss.ide.eclipse.as.rse.core.RSECorePlugin
 Require-Bundle: org.eclipse.core.runtime;bundle-version="3.7.0",
  org.eclipse.core.resources;bundle-version="3.7.100",
@@ -21,10 +21,10 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="3.7.0",
  org.eclipse.wst.common.modulecore;bundle-version="1.2.100",
  org.eclipse.wst.common.emfworkbench.integration;bundle-version="1.2.100",
  org.eclipse.jem.util;bundle-version="2.1.2",
- org.jboss.ide.eclipse.as.core;bundle-version="[2.4.0,3.0.0)",
- org.jboss.ide.eclipse.as.wtp.core;bundle-version="[2.4.0,3.0.0)",
- org.jboss.ide.eclipse.archives.webtools;bundle-version="[2.4.0,3.0.0)",
- org.jboss.ide.eclipse.as.management.core;bundle-version="[2.4.0,3.0.0)"
+ org.jboss.ide.eclipse.as.core;bundle-version="[2.5.0,3.0.0)",
+ org.jboss.ide.eclipse.as.wtp.core;bundle-version="[2.5.0,3.0.0)",
+ org.jboss.ide.eclipse.archives.webtools;bundle-version="[2.5.0,3.0.0)",
+ org.jboss.ide.eclipse.as.management.core;bundle-version="[2.5.0,3.0.0)"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.jboss.ide.eclipse.as.rse.core;x-friends:="org.jboss.ide.eclipse.as.rse.ui,org.jboss.tools.as.test.core",
