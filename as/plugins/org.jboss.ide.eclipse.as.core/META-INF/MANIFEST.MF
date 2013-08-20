@@ -30,7 +30,8 @@ Require-Bundle: org.apache.ant;bundle-version="1.7.1",
  org.jboss.ide.eclipse.as.management.core;bundle-version="[2.5.0,3.0.0)",
  org.jboss.ide.eclipse.as.dmr;bundle-version="[2.4.0,3.0.0)",
  org.jboss.tools.runtime.core;bundle-version="2.0.0",
- org.jboss.tools.as.runtimes.integration;bundle-version="[2.4.0,3.0.0)"
+ org.jboss.tools.as.runtimes.integration;bundle-version="[2.4.0,3.0.0)",
+ org.jboss.ide.eclipse.archives.core;bundle-version="3.5.0"
 Bundle-ActivationPolicy: lazy
 Export-Package: org.jboss.ide.eclipse.as.core,
  org.jboss.ide.eclipse.as.core.extensions.descriptors,
@@ -39,6 +40,7 @@ Export-Package: org.jboss.ide.eclipse.as.core,
  org.jboss.ide.eclipse.as.core.modules,
  org.jboss.ide.eclipse.as.core.publishers,
  org.jboss.ide.eclipse.as.core.publishers.patterns,
+ org.jboss.ide.eclipse.as.core.publishers.patterns.internal;x-friends:="org.jboss.ide.eclipse.as.archives.integration.test,org.jboss.tools.as.test.core,org.jboss.ide.eclipse.as.test",
  org.jboss.ide.eclipse.as.core.resolvers,
  org.jboss.ide.eclipse.as.core.server.internal,
  org.jboss.ide.eclipse.as.core.server.internal.extendedproperties,

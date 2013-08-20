@@ -6,6 +6,7 @@ Bundle-Version: 3.5.0.qualifier
 Bundle-Activator: org.jboss.ide.eclipse.archives.test.ArchivesTest
 Require-Bundle: org.eclipse.core.runtime,
  org.junit,
+ org.jboss.tools.archives.scanner,
  org.eclipse.core.resources,
  org.jboss.tools.tests,
  org.eclipse.core.variables;bundle-version="3.2.100",

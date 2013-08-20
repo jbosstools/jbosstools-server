@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.archives.ui.wizards.pages;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -312,11 +311,11 @@ public class FilesetInfoWizardPage extends WizardPage {
 				ds = DirectoryScannerFactory.createDirectoryScanner( 
 						replaceVariables(), parentRelativeToRoot, includes, effectiveExcludes, parentNode.getProjectName(),
 						srcDestComposite.isWorkspaceRelative(), parentNode.getModelRootNode().getDescriptorVersion(), false);
-				Iterator<File> it = null;
+				Iterator<FileWrapper> it = null;
 				try {
 					it = ds.iterator();
 				} catch(IllegalStateException ise) {
-					it = new ArrayList<File>().iterator();
+					it = new ArrayList<FileWrapper>().iterator();
 				}
 				ArrayList<String> paths2 = new ArrayList<String>();
 				while(it.hasNext() && paths2.size() < 30) {

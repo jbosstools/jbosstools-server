@@ -29,6 +29,8 @@
 		<import plugin="org.eclipse.ui.navigator" version="3.3.100" match="greaterOrEqual" />
 	</requires>
 
+
+	<includes id="org.jboss.tools.archives.scanner.feature" version="0.0.0"/>
 	<plugin id="org.jboss.ide.eclipse.archives.core" download-size="0" install-size="0" version="0.0.0" />
 	<plugin id="org.jboss.ide.eclipse.archives.ui" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 	<plugin id="org.jboss.ide.eclipse.archives.jdt.integration" download-size="0" install-size="0" version="0.0.0" unpack="false" />

@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.as.core.publishers.patterns;
 
 import org.eclipse.wst.server.core.model.IModuleResource;
+import org.jboss.ide.eclipse.as.core.publishers.patterns.internal.PublishFilterDirectoryScanner;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 
 /**
@@ -23,8 +24,8 @@ public class ModuleDirectoryScannerPathFilter implements IModulePathFilter {
 	public ModuleDirectoryScannerPathFilter(IModuleResource[] members, 
 			String includes, String excludes) {
 		scanner = new PublishFilterDirectoryScanner(members);
-		scanner.setIncludes(includes);
-		scanner.setExcludes(excludes);
+		scanner.setIncludes(includes == null ? null : new String[]{includes});
+		scanner.setExcludes(excludes == null ? null : new String[]{excludes});
 	}
 	
 	private void ensureScanned() {

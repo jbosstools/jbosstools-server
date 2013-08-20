@@ -2,10 +2,12 @@
 	<property name="eclipse.home" location="${UNIT_TEST_ECLIPSE_LOC}" />
 	<property name="archives.home" location="${UNIT_TEST_ARCHIVES_HOME}"/>
 	<property name="equinox.jar" location="${EQUINOX_JAR}"/>	
+	<property name="scanner.jar" location="${SCANNER_JAR}"/>	
 	<property name="example_variable" value="test" />
 	
 	<path id="generate-archives-classpath">
 		<pathelement location="${equinox.jar}"/>
+		<pathelement location="${scanner.jar}"/>
 		<fileset dir="${archives.home}">
 			<include
 				name="plugins/org.jboss.ide.eclipse.archives.core**/archivescore.jar" />

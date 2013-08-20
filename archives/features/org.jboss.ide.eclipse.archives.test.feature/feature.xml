@@ -19,6 +19,7 @@ source code, or contact Red Hat Legal Affairs, 1801 Varsity Drive,
 Raleigh NC 27606 USA.
    </license>
 
- <plugin id="org.jboss.ide.eclipse.archives.test" download-size="0" install-size="0" version="0.0.0" />
+        <includes id="org.jboss.tools.archives.scanner.feature" version="0.0.0"/>
+	<plugin id="org.jboss.ide.eclipse.archives.test" download-size="0" install-size="0" version="0.0.0" />
 	<plugin id="org.jboss.ide.eclipse.archives.ui.test" download-size="0" install-size="0" version="0.0.0" />
 </feature>

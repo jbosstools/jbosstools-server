@@ -20,7 +20,7 @@ import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.util.ModuleFile;
 import org.eclipse.wst.server.core.util.ModuleFolder;
-import org.jboss.ide.eclipse.as.core.publishers.patterns.PublishFilterDirectoryScanner;
+import org.jboss.ide.eclipse.as.core.publishers.patterns.internal.PublishFilterDirectoryScanner;
 import org.jboss.ide.eclipse.as.test.publishing.AbstractDeploymentTest;
 
 public class PublishFilterDirectoryScannerTest extends TestCase {

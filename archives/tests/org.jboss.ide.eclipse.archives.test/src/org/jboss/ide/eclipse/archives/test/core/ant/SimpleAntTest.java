@@ -32,6 +32,7 @@ public class SimpleAntTest extends TestCase implements IProcessListener {
 	protected static final String ARCHIVES_HOME = "${UNIT_TEST_ARCHIVES_HOME}";
 	protected static final String PROJECT_NAME = "${UNIT_TEST_PROJECT_NAME}";
 	protected static final String PROJECT_DIR = "${UNIT_TEST_PROJECT_DIR}";
+	protected static final String SCANNER_JAR = "${SCANNER_JAR}";
 	protected static final String EQUINOX_JAR = "${EQUINOX_JAR}";
 	
 	// if running from runtime workbench, set this to true. otherwise its running in a full build
@@ -57,13 +58,21 @@ public class SimpleAntTest extends TestCase implements IProcessListener {
 			IPath bundlePath = new Path(bundleURL.getFile());
 			IPath projectLoc = bundlePath.append(new Path("inputs").append("projects").append("SimpleAntTest"));
 			outputFolder = projectLoc.append("output");
-			
+			outputFolder.toFile().mkdirs();
 			String eclipseHome = new File(new URL(System.getProperty("eclipse.home.location")).toURI()).getAbsolutePath();
 			String equinoxJar = FileLocator.getBundleFile(Platform.getBundle("org.eclipse.equinox.common")).getAbsolutePath();
+			String scannerJar = FileLocator.getBundleFile(Platform.getBundle("org.jboss.tools.archives.scanner")).getAbsolutePath();
 			map.put(ECLIPSE_LOC, eclipseHome);
 			map.put(EQUINOX_JAR, equinoxJar);
+			map.put(SCANNER_JAR, scannerJar);
 			map.put(PROJECT_NAME, "SimpleAntTest");
 			map.put(ARCHIVES_HOME, RUNTIME_WORKBENCH ? PLUGIN_LOCATION : eclipseHome);
+			System.out.println();
+			System.out.println();
+			System.out.println(scannerJar);
+			System.out.println(RUNTIME_WORKBENCH ? PLUGIN_LOCATION : eclipseHome);
+			System.out.println();
+			System.out.println();
 			map.put(PROJECT_DIR, projectLoc.toOSString());
 			launcher.createProjectData(templatePath, map);
 		} catch( CoreException ce) {

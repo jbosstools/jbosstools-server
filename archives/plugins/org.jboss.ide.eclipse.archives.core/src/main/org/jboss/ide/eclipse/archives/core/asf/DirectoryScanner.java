@@ -129,6 +129,7 @@ import org.apache.tools.ant.util.FileUtils;
  * This will scan a directory called test for .class files, but excludes all
  * files in all proper subdirectories of a directory called "modules"
  *
+ * @deprecated This class is deprecated
  */
 
 /*
@@ -137,7 +138,13 @@ import org.apache.tools.ant.util.FileUtils;
  * version as possible.
  * 
  * Started to diverge quite a bit in preparation for 
+ * 
+ * This class is now deprecated. It was never intended to be a public class. 
+ * The suggested way to make use of directory scanners in project archives
+ * is solely through the DirectoryScannerFactory class. 
+ * 
  */
+@Deprecated
 public class DirectoryScanner {
 
     /** Is OpenVMS the operating system we're running on? */

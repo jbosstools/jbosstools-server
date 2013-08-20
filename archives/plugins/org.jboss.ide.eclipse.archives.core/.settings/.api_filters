@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.jboss.ide.eclipse.archives.core" version="2">
+    <resource path="src/main/org/jboss/ide/eclipse/archives/core/model/DirectoryScannerFactory.java" type="org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory$DirectoryScannerExtension">
+        <filter comment="Usage scan reveals no clients outside of jbosstools-server repo" id="338849923">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>
