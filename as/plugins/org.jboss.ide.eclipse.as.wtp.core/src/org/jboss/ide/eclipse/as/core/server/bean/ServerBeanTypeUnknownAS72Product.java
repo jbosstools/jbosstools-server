@@ -10,7 +10,6 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.bean;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -42,5 +41,6 @@ public class ServerBeanTypeUnknownAS72Product extends ServerBeanTypeUnknownAS71P
 		protected String getMetaInfFolderForLayer(String layer) {
 			return "modules/system/layers/" + layer + "/org/jboss/as/product/" + layer + "/dir/META-INF"; //$NON-NLS-1$
 		}
+		
 	}
 }
