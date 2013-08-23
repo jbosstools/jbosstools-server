@@ -33,12 +33,15 @@ public class ServerBeanTypeUnknownAS71Product extends JBossServerType {
 	
 	
 	public static class UnknownAS71ProductServerTypeCondition extends org.jboss.ide.eclipse.as.core.server.bean.ServerBeanTypeEAP6.EAP6ServerTypeCondition {
+		@Override
 		public String getServerTypeId(String version) {
 			return IJBossToolingConstants.SERVER_EAP_60;
 		}
+		@Override
 		public boolean isServerRoot(File location) {
 			return getFullVersion(location, null) != null;
 		}
+		@Override
 		public String getFullVersion(File location, File systemJarFile) {
 			String productSlot = getSlot(location);
 			String[] layers = getLayers(location);
@@ -83,6 +86,7 @@ public class ServerBeanTypeUnknownAS71Product extends JBossServerType {
 			return "modules/org/jboss/as/product/" + slot + "/dir/META-INF"; //$NON-NLS-1$
 		}
 		
+		@Override
 		public String getUnderlyingTypeId(File location, File systemFile) {
 			String s = getSlot(location);
 			return s == null ? null : s.toUpperCase();
