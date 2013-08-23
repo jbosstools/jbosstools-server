@@ -42,7 +42,7 @@ public class AS7ManagementServicePreReqTest extends Assert {
 		assertNotNull("Management Service for runtime type " + rtType + " not found.", service);
 		
 		IJBoss7ManagerService service2 = JBoss7ManagerUtil.getService(rtType);
-		assertNotNull("Management Service for runtime type " + rtType + " not found.", service);
+		assertNotNull("Management Service for runtime type " + rtType + " not found.", service2);
 		
 		assertTrue(service instanceof JBoss7ManagerServiceProxy);
 		assertTrue(service instanceof ServiceTracker);
