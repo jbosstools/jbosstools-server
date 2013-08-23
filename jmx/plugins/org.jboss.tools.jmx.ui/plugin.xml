@@ -262,4 +262,24 @@
          </wizardPage>
       </providerUI>
    </extension>
+   
+   
+   	<!-- Decorator for connected / disconnected -->
+	<extension point="org.eclipse.ui.decorators">
+      <decorator
+            class="org.jboss.tools.jmx.ui.internal.views.navigator.JMXConnectionDecorator"
+            id="org.jboss.tools.jmx.ui.internal.views.navigator.JMXConnectionDecorator"
+            label="JMX Connection Decorator"
+            lightweight="true"
+            location="BOTTOM_RIGHT"
+            state="true">
+         <enablement>
+            <or>
+               <objectClass name="org.jboss.tools.jmx.core.IConnectionWrapper"/>
+            </or>
+         </enablement>
+      </decorator>
+   </extension>
+   
+   
 </plugin>
