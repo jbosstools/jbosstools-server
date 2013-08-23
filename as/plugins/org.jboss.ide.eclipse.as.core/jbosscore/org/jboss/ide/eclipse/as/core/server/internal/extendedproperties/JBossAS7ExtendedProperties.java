@@ -17,19 +17,19 @@ import org.eclipse.jdt.internal.launching.environments.EnvironmentsManager;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
 import org.jboss.ide.eclipse.as.core.server.IDeploymentScannerModifier;
-import org.jboss.ide.eclipse.as.core.server.IManagementPortProvider;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7DeploymentScannerAdditions;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
+import org.jboss.ide.eclipse.as.management.core.IJBossManagerServiceProvider;
+import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
 
-public class JBossAS7ExtendedProperties extends JBossExtendedProperties {
+public class JBossAS7ExtendedProperties extends JBossExtendedProperties implements IJBossManagerServiceProvider {
 	public JBossAS7ExtendedProperties(IAdaptable obj) {
 		super(obj);
 	}
@@ -107,5 +107,13 @@ public class JBossAS7ExtendedProperties extends JBossExtendedProperties {
 	}
 	public IExecutionEnvironment getDefaultExecutionEnvironment() {
 		return EnvironmentsManager.getDefault().getEnvironment("JavaSE-1.6"); //$NON-NLS-1$
+	}
+	
+	public IJBoss7ManagerService getManagerService() {
+		return JBoss7ManagerUtil.getManagerService(getManagerServiceId());
+	}
+	
+	public String getManagerServiceId() {
+		return IJBoss7ManagerService.AS_VERSION_710_Beta;
 	}
 }

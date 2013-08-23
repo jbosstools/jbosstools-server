@@ -10,6 +10,7 @@ import org.jboss.ide.eclipse.as.internal.management.as7.tests.utils.AS7ManagerTe
 import org.jboss.ide.eclipse.as.internal.management.as7.tests.utils.ParameterUtils;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerServiceProxy;
+import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
 import org.jboss.tools.as.test.core.internal.utils.MatrixUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,8 +37,13 @@ public class AS7ManagementServicePreReqTest extends Assert {
 		assertTrue(new Path(homeDir).toFile().exists());
 		String rtType = ParameterUtils.serverHomeToRuntimeType.get(homeDir);
 		assertNotNull(rtType);
+		
 		IJBoss7ManagerService service = AS7ManagerTestUtils.findService(rtType);
 		assertNotNull("Management Service for runtime type " + rtType + " not found.", service);
+		
+		IJBoss7ManagerService service2 = JBoss7ManagerUtil.getService(rtType);
+		assertNotNull("Management Service for runtime type " + rtType + " not found.", service2);
+		
 		assertTrue(service instanceof JBoss7ManagerServiceProxy);
 		assertTrue(service instanceof ServiceTracker);
 		Object o = ((ServiceTracker)service).getService();
