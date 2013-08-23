@@ -21,20 +21,20 @@
     <extension
           point="org.eclipse.ui.commands">
        <command
-             categoryId="rg.jboss.ide.eclipse.as.wtp.ui.commands.modules"
+             categoryId="org.jboss.ide.eclipse.as.wtp.ui.commands.modules"
              defaultHandler="org.jboss.ide.eclipse.as.wtp.ui.commands.FullPublishCommandHandler"
              id="org.jboss.ide.eclipse.as.wtp.ui.fullPublishCommand"
              name="Full Publish Module">
        </command>
        <command
-             categoryId="rg.jboss.ide.eclipse.as.wtp.ui.commands.modules"
+             categoryId="org.jboss.ide.eclipse.as.wtp.ui.commands.modules"
              defaultHandler="org.jboss.ide.eclipse.as.wtp.ui.commands.RestartModuleCommandHandler"
              id="org.jboss.ide.eclipse.as.wtp.ui.restartModuleCommand"
              name="Restart Module">
        </command>
       <category
             description="Commands related to modules"
-            id="rg.jboss.ide.eclipse.as.wtp.ui.commands.modules"
+            id="org.jboss.ide.eclipse.as.wtp.ui.commands.modules"
             name="Modules">
       </category>
     </extension>
