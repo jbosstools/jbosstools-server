@@ -2,11 +2,10 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name.0
 Bundle-SymbolicName: org.jboss.ide.eclipse.archives.test
-Bundle-Version: 3.4.100.qualifier
+Bundle-Version: 3.5.0.qualifier
 Bundle-Activator: org.jboss.ide.eclipse.archives.test.ArchivesTest
 Require-Bundle: org.eclipse.core.runtime,
  org.junit,
- org.jboss.ide.eclipse.archives.core,
  org.eclipse.core.resources,
  org.jboss.tools.tests,
  org.eclipse.core.variables;bundle-version="3.2.100",
@@ -14,10 +13,11 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.ant;bundle-version="1.7.0",
  org.eclipse.ant.ui;bundle-version="3.3.0",
  org.eclipse.jdt.launching;bundle-version="3.4.0",
- org.jboss.ide.eclipse.archives.ui;bundle-version="1.0.0",
  org.eclipse.jface;bundle-version="3.4.0",
  org.eclipse.jdt.core;bundle-version="3.4.4",
- org.jboss.ide.eclipse.archives.jdt.integration;bundle-version="1.0.0"
+ org.jboss.ide.eclipse.archives.core;bundle-version="3.4.1",
+ org.jboss.ide.eclipse.archives.jdt.integration;bundle-version="3.4.1",
+ org.jboss.ide.eclipse.archives.ui;bundle-version="3.4.1"
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
 Export-Package: org.jboss.ide.eclipse.archives.test,
