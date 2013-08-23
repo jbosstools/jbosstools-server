@@ -28,9 +28,13 @@ public class ServerBeanTypeUnknownAS71Product extends JBossServerType {
 	}
 	
 	protected ServerBeanTypeUnknownAS71Product(String id, String desc, String path, Condition condition) {
-		super( id, desc, path, new String[]{}, condition);
+		this( id, desc, path, new String[]{}, condition);
 	}
 	
+	protected ServerBeanTypeUnknownAS71Product(String id, String desc, String path, 
+			String[] version, Condition condition) {
+		super( id, desc, path, version, condition);
+	}
 	
 	public static class UnknownAS71ProductServerTypeCondition extends org.jboss.ide.eclipse.as.core.server.bean.ServerBeanTypeEAP6.EAP6ServerTypeCondition {
 		@Override

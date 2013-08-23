@@ -43,6 +43,7 @@ public class JBossServerType implements IJBossToolingConstants {
 	public static final JBossServerType EAP61 = new ServerBeanTypeEAP61();
 	public static final JBossServerType WILDFLY80 = new ServerBeanTypeWildfly80();
 	public static final JBossServerType JPP6 = new ServerBeanTypeJPP6();
+	public static final JBossServerType JPP61 = new ServerBeanTypeJPP61();
 	public static final JBossServerType UNKNOWN_AS71_PRODUCT = new ServerBeanTypeUnknownAS71Product();	
 	public static final JBossServerType SOA6 = new ServerBeanTypeSOA6();; 
 	public static final JBossServerType SOAP = new ServerBeanTypeSOAP(); 
@@ -104,6 +105,35 @@ public class JBossServerType implements IJBossToolingConstants {
 			return null;
 		return this.condition.getFullVersion(root, new File(root, getSystemJarPath()));
 	}
+	
+	/**
+	 * This method is for conditions where the underlying server may be 
+	 * of a different id than the JBossServerType. For example, any 
+	 * JBossServerType which represents an entire class of similar but
+	 * not identical servers, the server type may have an id such as 
+	 * AS-Product, and this method may return something like "JPP"
+	 * 
+	 * Note that differs from the method of the same name in 
+	 * the AbstractCondition, which will return null if there is no 
+	 * underlying type. This method will default to returning the
+	 * value of 'id' in the case where there is no different underlying type.  
+	 * 
+	 * @param location
+	 * @param systemFile
+	 * @return an underlying type id, or the id of this JBossServerType
+	 * 		   if the condition does not provide an underlying type. 
+	 */
+
+	public String getUnderlyingTypeId(File root) {
+		if( this.condition == null )
+			return null;
+		String ret = null;
+		if( this.condition instanceof AbstractCondition ) {
+			ret = ((AbstractCondition)condition).getUnderlyingTypeId(root, new File(root, getSystemJarPath()));
+		}
+		return ret == null ? id : ret;
+	}
+
 	
 	/**
 	 * This method is for conditions where the underlying server may be 
