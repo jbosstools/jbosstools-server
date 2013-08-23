@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.wtp.ui.commands;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
@@ -36,65 +37,54 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
+import org.jboss.ide.eclipse.as.wtp.ui.WTPOveridePlugin;
 import org.jboss.ide.eclipse.as.wtp.ui.wizards.xpl.export.FullPublishToServerWizard;
 
-public abstract class AbstractModuleCommandHandler implements IHandler {
+public abstract class AbstractModuleCommandHandler extends AbstractHandler implements IHandler {
+	private static final String FAMILY = "org.eclipse.wst.server.ui.family";
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.eclipse.core.commands.IHandler#execute(org.eclipse.core.commands.ExecutionEvent)
+	 */
 	public abstract Object execute(ExecutionEvent event) throws ExecutionException;
 	
-	public IServer getServer(IModule module) {
-		IServer toRepublish = null;
-		if( module != null ) {
-			IServer[] servers = ServerCore.getServers();
-			ArrayList<IServer> matched = new ArrayList<IServer>();
-			for( int i = 0; i < servers.length; i++ ) {
-				boolean found = false;
-				IModule[] deployed = servers[i].getModules();
-				for( int j = 0; j < deployed.length && !found; j++ ) 
-					if( deployed[j].getId().equals(module.getId()))
-						found = true;
-				if( found )
-					matched.add(servers[i]);
-			}
-			
-			if( matched.size() == 0 || matched.size() > 1 ) {
-				// TODO show a dialog to choose the server
-				toRepublish = matched.get(0);
-			} else 
-				toRepublish = matched.get(0);
-		}
-		return toRepublish;
-	}
 	
 	protected IModule getModule(IResource resource) {
-		IModule module = null;
-		ArrayList<IModule> possibleModules = new ArrayList<IModule>();
 		if (resource != null) {
+			ArrayList<IModule> possibleModules = new ArrayList<IModule>();
 			IModuleArtifact[] moduleArtifacts = ServerPlugin.getModuleArtifacts(resource);
-			if (moduleArtifacts != null && moduleArtifacts.length > 0)
-				for( int i = 0; i < moduleArtifacts.length; i++ ) 
+			if (moduleArtifacts != null && moduleArtifacts.length > 0) {
+				for( int i = 0; i < moduleArtifacts.length; i++ ) {
 					if( moduleArtifacts[i].getModule() != null && 
-							!possibleModules.contains(moduleArtifacts[i].getModule()))
+							!possibleModules.contains(moduleArtifacts[i].getModule())) {
 						possibleModules.add(moduleArtifacts[i].getModule());
-			if( possibleModules.size() > 0 ) {
-				module = promptForModule(possibleModules);
+					}
+				}
 			}
+			return promptForModule(possibleModules);
 		}
-		return module;
+		return null;
 	}
 
 	protected IModule promptForModule(ArrayList<IModule> modules) {
-		if(modules.size() == 1 )
+		if( modules.size() > 0 ) {
+			if(modules.size() == 1 )
+				return modules.get(0);
+			// TODO prompt. Unfortunately there's no easy way to do this in UI
+			// Since there's no prompt-for-module dialogs in wtp, 
+			// and it is unclear what type of ui should be designed 
 			return modules.get(0);
-		// TODO prompt
-		return modules.get(0);
+		}
+		return null;
 	}
 	
 	public IServer[] getCompatibleServers(IModule module) {
-		ArrayList<IServer> ret = new ArrayList<IServer>();
 		IServer[] servers = ServerCore.getServers();
 		IModuleType mt = module.getModuleType();
-		if (servers != null) {
-			int size = servers.length;
+		int size = servers.length;
+		if (servers != null && size > 0) {
+			ArrayList<IServer> ret = new ArrayList<IServer>();
 			for (int i = 0; i < size; i++) {
 				IRuntimeType rtt = servers[i].getServerType().getRuntimeType();
 				IModuleType[] stmt = rtt == null ? new IModuleType[0] : rtt.getModuleTypes();
@@ -102,8 +92,9 @@ public abstract class AbstractModuleCommandHandler implements IHandler {
 					ret.add(servers[i]);
 				}
 			}
+			return (IServer[]) ret.toArray(new IServer[ret.size()]);
 		}
-		return (IServer[]) ret.toArray(new IServer[ret.size()]);
+		return new IServer[0];
 	}
 	
 	public IServer getServer(IModule module, IModuleArtifact moduleArtifact, IProgressMonitor monitor) throws CoreException {
@@ -114,6 +105,7 @@ public abstract class AbstractModuleCommandHandler implements IHandler {
 				ServerUtil.modifyModules(wc, new IModule[] { module }, new IModule[0], monitor);
 				wc.save(false, monitor);
 			} catch (CoreException ce) {
+				WTPOveridePlugin.logError(ce);
 				server = null;
 			}
 		}
@@ -134,10 +126,8 @@ public abstract class AbstractModuleCommandHandler implements IHandler {
 				return null;
 			}
 			
-			try {
-				Job.getJobManager().join("org.eclipse.wst.server.ui.family", null);
-			} catch (Exception e) {
-			}
+			joinJobFamily();
+			
 			server = wizard.getServer();
 			boolean preferred = wizard.isPreferredServer();
 //			tasksAndClientShown = true;
@@ -155,14 +145,16 @@ public abstract class AbstractModuleCommandHandler implements IHandler {
 			}
 		}
 		
-		try {
-			Job.getJobManager().join("org.eclipse.wst.server.ui.family", new NullProgressMonitor());
-		} catch (Exception e) {
-		}
-		
+		joinJobFamily();
 		return server;
 	}
 
+	private void joinJobFamily() {
+		try {
+			Job.getJobManager().join(FAMILY, new NullProgressMonitor());
+		} catch (Exception e) {
+		}
+	}
 	
 	public boolean isEnabled() {
 		IResource resource = SelectedResourceManager.getDefault().getSelectedResource();
@@ -172,14 +164,5 @@ public abstract class AbstractModuleCommandHandler implements IHandler {
 
 	public boolean isHandled() {
 		return true;
-	}
-
-	public void removeHandlerListener(IHandlerListener handlerListener) {
-	}
-
-	public void addHandlerListener(IHandlerListener handlerListener) {
-	}
-
-	public void dispose() {
 	}
 }
