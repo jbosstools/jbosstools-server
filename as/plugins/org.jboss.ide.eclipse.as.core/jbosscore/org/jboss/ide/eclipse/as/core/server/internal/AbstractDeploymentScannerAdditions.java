@@ -14,6 +14,8 @@ import java.util.ArrayList;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.server.core.IModule;
@@ -22,6 +24,7 @@ import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IDeploymentScannerModifier;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
+import org.jboss.ide.eclipse.as.core.server.IServerModeDetails;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
@@ -115,13 +118,16 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 		
 		// custom
 		if( type.equals(JBossServer.DEPLOY_CUSTOM)) {
-			String serverHome = null;
-			if (server != null && server.getRuntime()!= null && server.getRuntime().getLocation() != null) {
-				serverHome = server.getRuntime().getLocation().toString();
+			IServerModeDetails det = (IServerModeDetails)Platform.getAdapterManager().getAdapter(server, IServerModeDetails.class);
+			String serverHome = det.getProperty(IServerModeDetails.PROP_SERVER_HOME);
+			
+			String custom1 = server.getAttribute(IDeployableServer.DEPLOY_DIRECTORY, (String)null);
+			if( !new Path(custom1).isAbsolute()) {
+				custom1 = new Path(serverHome).append(custom1).toString();
 			}
-			String custom = JBossServer.getDeployFolder(ds, JBossServer.DEPLOY_CUSTOM);
-			if( !folders.contains(custom) && !custom.equals(serverHome))
-				folders.add(custom);
+			
+			if( custom1 != null && !folders.contains(custom1) && !serverHome.equals(custom1))
+				folders.add(custom1);
 		}
 
 		IModule[] modules2 = org.eclipse.wst.server.core.ServerUtil.getModules(server.getServerType().getRuntimeType().getModuleTypes());
@@ -148,8 +154,8 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 	 *    standalone/deployments
 	 */
 	protected String getInsideServerDeployFolder(IServer server) {
-		JBossServer ds = (JBossServer)ServerConverter.getJBossServer(server);
-		return 	ds.getDeployFolder(IDeployableServer.DEPLOY_SERVER);
+		IServerModeDetails det = (IServerModeDetails)Platform.getAdapterManager().getAdapter(server, IServerModeDetails.class);
+		return det.getProperty(IServerModeDetails.PROP_SERVER_DEPLOYMENTS_FOLDER);
 	}
 
 	/*

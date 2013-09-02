@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.server.IServerModeDetails;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractJBossBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
@@ -90,5 +91,9 @@ public abstract class AbstractRSEBehaviourDelegate extends AbstractJBossBehaviou
 		getActualBehavior().setServerStopped();
 		pid = null;
 	}
-	
+
+	@Override
+	public IServerModeDetails getServerModeDetails() {
+		return new RSEServerModeDetails(getServer());
+	}
 }

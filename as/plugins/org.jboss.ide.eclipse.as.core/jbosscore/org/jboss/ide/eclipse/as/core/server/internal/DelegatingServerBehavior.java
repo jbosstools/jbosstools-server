@@ -35,7 +35,6 @@ import org.jboss.ide.eclipse.as.core.server.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel.Behaviour;
 import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel.BehaviourImpl;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
@@ -54,10 +53,13 @@ public class DelegatingServerBehavior extends DeployableServerBehavior implement
 	}
 
 	public synchronized IJBossBehaviourDelegate getDelegate() {
-		IJBossServerPublishMethodType type = DeploymentPreferenceLoader.getCurrentDeploymentMethodType(getServer());
-		String id = type == null ? LocalPublishMethod.LOCAL_PUBLISH_METHOD : type.getId();
+		IJBossServerPublishMethodType type = BehaviourModel.getPublishMethodType(getServer(), LocalPublishMethod.LOCAL_PUBLISH_METHOD);
+		String id = type == null ? null : type.getId();
 		IJBossBehaviourDelegate ret = null;
-		if( id.equals(lastModeId) && delegate != null && delegate.getBehaviourTypeId().equals(id))
+		if( id == null ) {
+			lastModeId = null;
+			ret = null;
+		} else if( id.equals(lastModeId) && delegate != null && delegate.getBehaviourTypeId().equals(id))
 			ret = delegate;
 		else {
 			Behaviour b = BehaviourModel.getModel().getBehaviour(getServer().getServerType().getId());
@@ -83,14 +85,16 @@ public class DelegatingServerBehavior extends DeployableServerBehavior implement
 	
 	public void stop(boolean force) {
 		Trace.trace(Trace.STRING_FINER, "DelegatingServerBehavior initiating stop for server " + getServer().getName()); //$NON-NLS-1$
-		getDelegate().stop(force);
+		if( getDelegate() != null )
+			getDelegate().stop(force);
 	}
 	
 	@Override
 	public void setServerStarting() {
 		synchronized(serverStateLock) {
 			super.setServerStarting();
-			getDelegate().onServerStarting();
+			if( getDelegate() != null )
+				getDelegate().onServerStarting();
 		}
 	}
 
@@ -98,7 +102,8 @@ public class DelegatingServerBehavior extends DeployableServerBehavior implement
 	public void setServerStarted() {
 		synchronized(serverStateLock) {
 			super.setServerStarted();
-			getDelegate().onServerStarted();
+			if( getDelegate() != null )
+				getDelegate().onServerStarted();
 		}
 	}
 
@@ -106,14 +111,16 @@ public class DelegatingServerBehavior extends DeployableServerBehavior implement
 	public void setServerStopping() {
 		synchronized(serverStateLock) {
 			super.setServerStopping();
-			getDelegate().onServerStopping();
+			if( getDelegate() != null )
+				getDelegate().onServerStopping();
 		}
 	}
 	
 	public void setServerStopped() {
 		synchronized(serverStateLock) {
 			super.setServerStopped();
-			getDelegate().onServerStopped();
+			if( getDelegate() != null )
+				getDelegate().onServerStopped();
 		}
 		IModule[] mods = getServer().getModules();
 		setModulesStopped(new IModule[]{}, mods);
@@ -148,15 +155,18 @@ public class DelegatingServerBehavior extends DeployableServerBehavior implement
 	
 	protected void publishStart(final IProgressMonitor monitor) throws CoreException {
 		super.publishStart(monitor);
-		getDelegate().publishStart(monitor);
+		if( getDelegate() != null ) 
+			getDelegate().publishStart(monitor);
 	}
 	
 	protected void publishFinish(final IProgressMonitor monitor) throws CoreException {
 		Trace.trace(Trace.STRING_FINER, "PublishFinish in DelegatingServerBehavior"); //$NON-NLS-1$
-		try {
-			getDelegate().publishFinish(monitor);
-		} finally {
-			super.publishFinish(monitor);
+		if( getDelegate() != null ) {
+			try {
+				getDelegate().publishFinish(monitor);
+			} finally {
+				super.publishFinish(monitor);
+			}
 		}
 	}
 

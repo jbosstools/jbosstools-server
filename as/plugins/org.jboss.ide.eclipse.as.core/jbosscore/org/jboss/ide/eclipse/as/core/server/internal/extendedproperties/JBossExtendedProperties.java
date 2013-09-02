@@ -20,7 +20,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.internal.launching.environments.EnvironmentsManager;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.wst.server.core.IRuntimeType;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver;
@@ -31,7 +30,6 @@ import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossLT6ModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JMXServerDeploymentScannerAdditions;
-import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
@@ -69,6 +67,7 @@ public class JBossExtendedProperties extends ServerExtendedProperties {
 	
 	/**
 	 * Returns the full path of a local server's server/{config}/deploy folder
+	 * or standalone/deployments folder depending on configuration location
 	 */
 	public String getServerDeployLocation() {
 		String original = ConfigNameResolver.getVariablePattern(ConfigNameResolver.JBOSS_CONFIG_DIR) +

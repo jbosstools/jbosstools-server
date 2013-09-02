@@ -10,6 +10,9 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.AS7_DEPLOYMENTS;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.AS7_STANDALONE;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
@@ -18,6 +21,7 @@ import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
 import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver;
 import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
 import org.jboss.ide.eclipse.as.core.server.IDeploymentScannerModifier;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
@@ -25,6 +29,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ModuleStateVerifie
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7DeploymentScannerAdditions;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.IJBossManagerServiceProvider;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
@@ -115,5 +120,16 @@ public class JBossAS7ExtendedProperties extends JBossExtendedProperties implemen
 	
 	public String getManagerServiceId() {
 		return IJBoss7ManagerService.AS_VERSION_710_Beta;
+	}
+	
+	/**
+	 * Returns the full path of a local server's server/{config}/deploy folder
+	 */
+	@Override
+	public String getServerDeployLocation() {
+		if( runtime == null )
+			return null;
+		IPath p = runtime.getLocation().append(AS7_STANDALONE).append(AS7_DEPLOYMENTS);
+		return ServerUtil.makeGlobal(runtime, p).toString();
 	}
 }

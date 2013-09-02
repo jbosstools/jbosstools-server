@@ -39,6 +39,7 @@ import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.IProcessProvider;
+import org.jboss.ide.eclipse.as.core.server.IServerModeDetails;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.LocalStopLaunchConfigurator;
 import org.jboss.ide.eclipse.as.core.util.IEventCodes;
@@ -55,7 +56,8 @@ import org.jboss.ide.eclipse.as.core.util.ThreadUtils;
  * launch configuration may all try to change these details at varying times. 
  *
  */
-public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate implements IProcessProvider {
+public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate 
+	implements IProcessProvider {
 	
 	private static final String STOP_LAUNCH_TYPE = "org.jboss.ide.eclipse.as.core.server.stopLaunchConfiguration"; //$NON-NLS-1$
 
@@ -409,5 +411,10 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 			IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, getServer());
 			pollServer(expectedState, poller);
 		}
+	}
+
+	@Override
+	public IServerModeDetails getServerModeDetails() {
+		return new LocalServerModeDetails(getServer());
 	}
 }
