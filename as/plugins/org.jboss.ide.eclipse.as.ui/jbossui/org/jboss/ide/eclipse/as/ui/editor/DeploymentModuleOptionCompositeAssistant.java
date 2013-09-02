@@ -14,11 +14,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -66,7 +66,7 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
+import org.jboss.ide.eclipse.as.core.server.IServerModeDetails;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
@@ -79,41 +79,6 @@ import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 
 public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeListener {
-	public static interface IDeploymentPageCallback {
-		public void propertyChange(PropertyChangeEvent evt, DeploymentModuleOptionCompositeAssistant composite);
-		public String getServerLocation(IServerWorkingCopy wc);
-		public String getServerConfigName(IServerWorkingCopy wc);
-	}
-	
-	private static HashMap<String, IDeploymentPageCallback> callbackMappings;
-	static {
-		callbackMappings = new HashMap<String, IDeploymentPageCallback>();
-		callbackMappings.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new LocalDeploymentPageCallback());
-	}
-	
-	public static void addMapping(String mode, IDeploymentPageCallback callback) {
-		callbackMappings.put(mode, callback);
-	}
-
-	
-	public static class LocalDeploymentPageCallback implements IDeploymentPageCallback {
-		public String getServerLocation(IServerWorkingCopy wc) {
-			IJBossServerRuntime jbsrt = (IJBossServerRuntime)wc.getRuntime().loadAdapter(IJBossServerRuntime.class, null);
-			return jbsrt.getConfigLocation();
-		}
-
-		public String getServerConfigName(IServerWorkingCopy wc) {
-			IJBossServerRuntime jbsrt = (IJBossServerRuntime)wc.getRuntime().loadAdapter(IJBossServerRuntime.class, null);
-			return jbsrt.getJBossConfiguration();
-		}
-
-		public void propertyChange(PropertyChangeEvent evt,
-				DeploymentModuleOptionCompositeAssistant composite) {
-			// TODO Auto-generated method stub
-			
-		}
-	}
-	
 	protected String openBrowseDialog(String original) {
 		String mode = getServer().getAttributeHelper().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
 		org.jboss.ide.eclipse.as.ui.IBrowseBehavior beh = EditorExtensionManager.getDefault().getBrowseBehavior(mode);
@@ -617,38 +582,19 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		}
 		
 		protected String getServerRadioNewDeployDir() {
-			String mode = getHelper().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
-			ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(page.getServer());
-			if (sep != null && sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS) {
-				return new Path(IJBossRuntimeResourceConstants.AS7_STANDALONE)
-				.append(IJBossRuntimeResourceConstants.AS7_DEPLOYMENTS)
-				.makeRelative().toString();
-			} else {
-				IDeploymentPageCallback cb = callbackMappings.get(mode);
-				String loc = cb.getServerLocation(page.getServer());
-				String config = cb.getServerConfigName(page.getServer());
-				return new Path(loc)
-					.append(config)
-					.append(IJBossRuntimeResourceConstants.DEPLOY).toString();
-			}
+			IServerModeDetails det = (IServerModeDetails)Platform.getAdapterManager().getAdapter(server, IServerModeDetails.class); 
+			if( det == null )
+				return "";
+			String s = det.getProperty(det.PROP_SERVER_DEPLOYMENTS_FOLDER_REL);
+			return s;
 		}
 		
 		protected String getServerRadioNewTempDeployDir() {
-			String mode = getHelper().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
-			ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(page.getServer());
-
-			if (sep != null && sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS) {
-				return new Path(IJBossRuntimeResourceConstants.AS7_STANDALONE)
-				.append(IJBossRuntimeResourceConstants.FOLDER_TMP)
-				.makeRelative().toString();
-			} else {
-				IDeploymentPageCallback cb = callbackMappings.get(mode);
-				String loc = cb.getServerLocation(page.getServer());
-				String config = cb.getServerConfigName(page.getServer());
-				return new Path(loc).append(config)
-				.append(IJBossToolingConstants.TMP)
-				.append(IJBossToolingConstants.JBOSSTOOLS_TMP).toString();
-			}
+			IServerModeDetails det = (IServerModeDetails)Platform.getAdapterManager().getAdapter(server, IServerModeDetails.class); 
+			if( det == null )
+				return "";
+			String s = det.getProperty(det.PROP_SERVER_TMP_DEPLOYMENTS_FOLDER_REL);
+			return s;
 		}
 		
 		protected void discoverNewFolders() {

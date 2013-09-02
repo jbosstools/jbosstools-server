@@ -155,7 +155,7 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 	 */
 	protected String getInsideServerDeployFolder(IServer server) {
 		IServerModeDetails det = (IServerModeDetails)Platform.getAdapterManager().getAdapter(server, IServerModeDetails.class);
-		return det.getProperty(IServerModeDetails.PROP_SERVER_DEPLOYMENTS_FOLDER);
+		return det.getProperty(IServerModeDetails.PROP_SERVER_DEPLOYMENTS_FOLDER_ABS);
 	}
 
 	/*

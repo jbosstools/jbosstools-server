@@ -10,6 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
@@ -19,7 +20,9 @@ import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExt
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 /**
  * Local servers pull most of their critical configuration locations from the runtime.
@@ -54,9 +57,30 @@ public class LocalServerModeDetails implements IServerModeDetails {
 				return ((LocalJBoss7ServerRuntime)jbrt).getConfigurationFile();
 			}
 		}
-		if( PROP_SERVER_DEPLOYMENTS_FOLDER.equals(prop)) {
+		if( PROP_SERVER_DEPLOYMENTS_FOLDER_REL.equals(prop)) {
 			ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
-			return ((JBossExtendedProperties)sep).getServerDeployLocation();
+			String s = ((JBossExtendedProperties)sep).getServerDeployLocation();
+			return ServerUtil.makeRelative(server.getRuntime(), new Path(s)).toString();
+		}
+		if( PROP_SERVER_DEPLOYMENTS_FOLDER_ABS.equals(prop)) {
+			ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
+			String s = ((JBossExtendedProperties)sep).getServerDeployLocation();
+			return ServerUtil.makeGlobal(server.getRuntime(), new Path(s)).toString();
+		}
+		if( PROP_SERVER_TMP_DEPLOYMENTS_FOLDER_REL.equals(prop) || PROP_SERVER_TMP_DEPLOYMENTS_FOLDER_ABS.equals(prop)) {
+			boolean relative = PROP_SERVER_TMP_DEPLOYMENTS_FOLDER_REL.equals(prop);
+			IPath p = null;
+			if( isAS7Structure()) {
+				p = new Path(IJBossRuntimeResourceConstants.AS7_STANDALONE)
+					.append(IJBossRuntimeResourceConstants.FOLDER_TMP);
+			} else {
+				p = new Path(jbrt.getConfigLocation()).append(jbrt.getJBossConfiguration())
+				.append(IJBossToolingConstants.TMP)
+				.append(IJBossToolingConstants.JBOSSTOOLS_TMP);
+			}
+			if( relative )
+				return ServerUtil.makeRelative(server.getRuntime(), p).toString();
+			return ServerUtil.makeGlobal(server.getRuntime(), p).toString();
 		}
 		return null;
 	}

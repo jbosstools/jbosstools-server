@@ -26,7 +26,7 @@ import org.jboss.ide.eclipse.as.ui.IBrowseBehavior;
 public class RSEBrowseBehavior implements IBrowseBehavior {
 	public String openBrowseDialog(IServerAttributes server, String original) {
 		String current = server.getAttribute(RSEUtils.RSE_SERVER_HOST, (String)null);
-		IHost h = RSEUtils.findHost(current, null);
+		IHost h = RSEUtils.findHost(current);
 		return browseClicked(new Shell(), h);
 	}
 	
