@@ -11,12 +11,17 @@
 package org.jboss.ide.eclipse.as.ui.editor;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
@@ -26,18 +31,22 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.ui.editor.ServerEditorSection;
 import org.jboss.ide.eclipse.as.core.server.IDeploymentScannerModifier;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractDeploymentScannerAdditions;
-import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 
 public class DeploymentScannerSection extends ServerEditorSection {
 
+	private static final int DEFAULT_TIMEOUT = 60;
+	private static final int DEFAULT_INTERVAL = 5000;
+	
+	
 	public DeploymentScannerSection() {
 	}
 	private Button addScannersOnStartup, removeScannersOnShutdown;
+	private Text intervalText, timeoutText;
+	private ModifyListener intervalListener, timeoutListener;
 	private SelectionListener startupListener, shutdownListener;
 	protected ServerAttributeHelper helper; 
 	
@@ -49,16 +58,32 @@ public class DeploymentScannerSection extends ServerEditorSection {
 	public void createSection(Composite parent) {
 		super.createSection(parent);
 		createUI(parent);
-		DeployableServer ds = (DeployableServer)ServerConverter.getDeployableServer(server.getOriginal());
+		setDefaultValues();
+		addListeners();
+	}
+	
+	protected void setDefaultValues() {
+		// set initial values
 		boolean add = server.getAttribute(IJBossToolingConstants.PROPERTY_ADD_DEPLOYMENT_SCANNERS, true);
 		addScannersOnStartup.setSelection(new Boolean(add).booleanValue());
-		addScannersOnStartup.setText("Add missing deployment scanners after server startup.");
 		if( removeScannersOnShutdown != null ) {
 			boolean remove = server.getAttribute(IJBossToolingConstants.PROPERTY_REMOVE_DEPLOYMENT_SCANNERS, true);
 			removeScannersOnShutdown.setSelection(new Boolean(remove).booleanValue());
-			removeScannersOnShutdown.setText("Remove added deployment scanners before shutdown.");
 		}
-		addListeners();
+		
+		if( timeoutText != null ) {
+			// using an unlikely value as default in case property isn't set. User is unlikely to have used -20 as timeout
+			int s = server.getAttribute(IJBossToolingConstants.PROPERTY_SCANNER_TIMEOUT, -20);
+			//int s2 = s == -20 ? DEFAULT_TIMEOUT : s; // default value of 60 seconds for timeout
+			timeoutText.setText(s == -20 ? "(default)" : new Integer(s).toString());
+		}
+		
+		if( intervalText != null ) {
+			// using an unlikely value as default in case property isn't set. User is unlikely to have used -20 as interval
+			int s = server.getAttribute(IJBossToolingConstants.PROPERTY_SCANNER_INTERVAL, -20);
+			//int s2 = s == -20 ? DEFAULT_INTERVAL : s;  // default of 5000 ms for interval
+			intervalText.setText(s == -20 ? "(default)" : new Integer(s).toString());
+		}
 	}
 	
 	protected void createUI(Composite parent) {
@@ -73,10 +98,27 @@ public class DeploymentScannerSection extends ServerEditorSection {
 		
 		addScannersOnStartup = toolkit.createButton(composite, "Add missing deployment scanners after server startup.", SWT.CHECK);
 		addScannersOnStartup.setLayoutData(UIUtil.createFormData2(0, 5, null, 0, 0, 5, null, 0));
+		Control top = addScannersOnStartup;
 		if( showRemoveScannerButton() ) {
 			removeScannersOnShutdown = toolkit.createButton(composite, "Remove added deployment scanners before shutdown.", SWT.CHECK);
 			removeScannersOnShutdown.setLayoutData(UIUtil.createFormData2(addScannersOnStartup, 5, null, 0, 0, 5, null, 0));
+			top = removeScannersOnShutdown;
 		}
+		if( showIntervalText()) {
+			Label intLabel = toolkit.createLabel(composite, "Override Scanner Interval (ms)");
+			intLabel.setLayoutData(UIUtil.createFormData2(top, 5, null, 0, 0, 5, null, 0));
+			intervalText = toolkit.createText(composite, "", SWT.CHECK);
+			intervalText.setLayoutData(UIUtil.createFormData2(top, 5, null, 0, 50, 5, 80, 0));
+			top = intervalText;
+		}
+		if( showTimeoutText()) {
+			Label timeLabel = toolkit.createLabel(composite, "Override Scanner Timeout (sec)");
+			timeLabel.setLayoutData(UIUtil.createFormData2(top, 5, null, 0, 0, 5, null, 0));
+			timeoutText = toolkit.createText(composite, "", SWT.CHECK);
+			timeoutText.setLayoutData(UIUtil.createFormData2(top, 5, null, 0, 50, 5, 80, 0));
+			top = timeoutText;
+		}
+		
 		toolkit.paintBordersFor(composite);
 		section.setClient(composite);
 	}
@@ -90,6 +132,28 @@ public class DeploymentScannerSection extends ServerEditorSection {
 		}
 		return false;
 	}
+	
+	private boolean showTimeoutText() {
+		JBossExtendedProperties props = (JBossExtendedProperties)server.loadAdapter(JBossExtendedProperties.class, null);
+		if( props != null ) {
+			IDeploymentScannerModifier scanner = props.getDeploymentScannerModifier();
+			if( scanner instanceof AbstractDeploymentScannerAdditions && 
+					((AbstractDeploymentScannerAdditions)scanner).canCustomizeTimeout())
+				return true;
+		}
+		return false;
+	}
+
+	private boolean showIntervalText() {
+		JBossExtendedProperties props = (JBossExtendedProperties)server.loadAdapter(JBossExtendedProperties.class, null);
+		if( props != null ) {
+			IDeploymentScannerModifier scanner = props.getDeploymentScannerModifier();
+			if( scanner instanceof AbstractDeploymentScannerAdditions && ((AbstractDeploymentScannerAdditions)scanner).canCustomizeInterval())
+				return true;
+		}
+		return false;
+	}
+
 	
 	protected void addListeners() {
 		startupListener = new SelectionListener() {
@@ -106,9 +170,26 @@ public class DeploymentScannerSection extends ServerEditorSection {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		};
+		
+		intervalListener = new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				execute(new SetIntervalPropertyCommand(server));
+			}
+		};
+		timeoutListener = new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				execute(new SetTimeoutPropertyCommand(server));
+			}
+		};
 
 		this.addScannersOnStartup.addSelectionListener(startupListener);
-		this.removeScannersOnShutdown.addSelectionListener(shutdownListener);
+		if( showRemoveScannerButton())
+			this.removeScannersOnShutdown.addSelectionListener(shutdownListener);
+		
+		if( showIntervalText())
+			this.intervalText.addModifyListener(intervalListener);
+		if( showTimeoutText())
+			this.timeoutText.addModifyListener(timeoutListener);
 	}
 
 	public class SetStartupPropertyCommand extends ServerWorkingCopyPropertyButtonCommand {
@@ -116,12 +197,6 @@ public class DeploymentScannerSection extends ServerEditorSection {
 			super(server, "Modify deployment scanner startup preference",  
 					addScannersOnStartup, addScannersOnStartup.getSelection(), 
 					IJBossToolingConstants.PROPERTY_ADD_DEPLOYMENT_SCANNERS, startupListener);
-		}
-		public void execute() {
-			super.execute();
-		}
-		public void undo() {
-			super.undo();
 		}
 	}
 
@@ -132,4 +207,22 @@ public class DeploymentScannerSection extends ServerEditorSection {
 					IJBossToolingConstants.PROPERTY_REMOVE_DEPLOYMENT_SCANNERS, shutdownListener);
 		}
 	}
+
+
+	public class SetIntervalPropertyCommand extends ServerWorkingCopyPropertyTextCommand {
+		public SetIntervalPropertyCommand(IServerWorkingCopy server) {
+			super(server, "Modify deployment scanner interval preference",  
+					intervalText, intervalText.getText(), 
+					IJBossToolingConstants.PROPERTY_SCANNER_INTERVAL, "(default)", intervalListener);
+		}
+	}
+
+	public class SetTimeoutPropertyCommand extends ServerWorkingCopyPropertyTextCommand {
+		public SetTimeoutPropertyCommand(IServerWorkingCopy server) {
+			super(server, "Modify deployment scanner timeout preference",  
+					timeoutText, timeoutText.getText(), 
+					IJBossToolingConstants.PROPERTY_SCANNER_TIMEOUT, "(default)", timeoutListener);
+		}
+	}
+
 }

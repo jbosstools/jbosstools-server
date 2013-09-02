@@ -24,15 +24,27 @@ import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
 
 public class AS7DeploymentScannerUtility {
+	public static final int DEFAULT_INTERVAL = 5000;
+	public static final int IGNORE = -20;
+	
 	public static final String SCANNER_PREFIX = "jbosstoolsscanner"; //$NON-NLS-1$
 
 	public IStatus addDeploymentScanner(final IServer server, String scannerName, final String folder) {
+		return addDeploymentScanner(server, scannerName, folder, DEFAULT_INTERVAL, IGNORE);
+	}
+	public IStatus addDeploymentScanner(final IServer server, String scannerName, final String folder, 
+			int interval, int timeout) {
+
 		ModelNode op = new ModelNode();
 		op.get("operation").set("add"); //$NON-NLS-1$ //$NON-NLS-2$
 		ModelNode addr = op.get("address"); //$NON-NLS-1$
 		addr.add("subsystem", "deployment-scanner");  //$NON-NLS-1$//$NON-NLS-2$
 		addr.add("scanner", scannerName); //$NON-NLS-1$
 		op.get("path").set(folder); //$NON-NLS-1$
+		if( interval != IGNORE) 
+			op.get("scan-interval").set(interval); //$NON-NLS-1$
+		if( timeout != IGNORE)
+			op.get("deployment-timeout").set(timeout); //$NON-NLS-1$
 		final String request = op.toJSONString(true);
 		return execute(server, request);
 	}
@@ -74,81 +86,12 @@ public class AS7DeploymentScannerUtility {
 	}
 
 	public Scanner[] getDeploymentScanners(final IServer server) {
-		
-		ModelNode op2 = new ModelNode();
-		op2.get("operation").set("read-attribute"); //$NON-NLS-1$ //$NON-NLS-2$
-		op2.get("name").set("path"); //$NON-NLS-1$ //$NON-NLS-2$
-		ModelNode addr2 = op2.get("address"); //$NON-NLS-1$
-		addr2.add("subsystem", "deployment-scanner");  //$NON-NLS-1$//$NON-NLS-2$
-		addr2.add("scanner", "*"); //$NON-NLS-1$ //$NON-NLS-2$
-		final String request2 = op2.toJSONString(true);
-		ModelNode response2 = null;
-		try {
-			response2 = executeWithResult(server, request2);
-		} catch(Exception e) {
-			return new Scanner[]{};
-		}
-		// Map name to path
-		List<ModelNode> list2 = response2.asList();
-		HashMap<String, String> nameToPath = new HashMap<String, String>();
-		for( int i = 0; i <list2.size(); i++ ) {
-			ModelNode address = list2.get(i).get("address"); //$NON-NLS-1$
-			String scannerName = address.asList().get(1).get("scanner").asString(); //$NON-NLS-1$
-			ModelNode path = list2.get(i).get("result"); //$NON-NLS-1$
-			String path2 = path.asString();
-			nameToPath.put(scannerName, path2);
-		}
-		
-		//Load intervals
-		ArrayList<Scanner> scanners = new ArrayList<Scanner>();
-		ModelNode op = new ModelNode();
-		op.get("operation").set("read-attribute"); //$NON-NLS-1$ //$NON-NLS-2$
-		op.get("name").set("scan-interval"); //$NON-NLS-1$ //$NON-NLS-2$
-		ModelNode addr = op.get("address"); //$NON-NLS-1$
-		addr.add("subsystem", "deployment-scanner");  //$NON-NLS-1$//$NON-NLS-2$
-		addr.add("scanner", "*"); //$NON-NLS-1$ //$NON-NLS-2$
-		final String request = op.toJSONString(true);
-		ModelNode response = null;
-		try {
-			response = executeWithResult(server, request);
-		} catch(Exception e) {
-			return new Scanner[]{};
-		}
-		
-		List<ModelNode> list = response.asList();
-		for( int i = 0; i <list.size(); i++ ) {
-			ModelNode address = list.get(i).get("address"); //$NON-NLS-1$
-			String scannerName = address.asList().get(1).get("scanner").asString(); //$NON-NLS-1$
-			ModelNode intVal = list.get(i).get("result"); //$NON-NLS-1$
-			int intVal2 = intVal.asBigInteger().intValue();
-			Scanner s = new Scanner();
-			s.name = scannerName;
-			s.interval = intVal2;
-			s.address = nameToPath.get(scannerName);
-			scanners.add(s);
-		}
-		return (Scanner[]) scanners.toArray(new Scanner[scanners.size()]);
+		return getDeploymentScanners(server, true);
 	}
 	
-	public static final class Scanner {
-		private String name;
-		private int interval;
-		private String address;
-		public String getName() {
-			return name;
-		}
-		public int getInterval() {
-			return interval;
-		}
-		public void setInterval(int interval) {
-			this.interval = interval;
-		}
-		public String getAddress() {
-			return address;
-		}
-	}
-	
-	public HashMap<String, String> getDeploymentScannersFromServer(final IServer server, boolean all) {
+	public Scanner[] getDeploymentScanners(final IServer server, boolean allScanners) {
+		ArrayList<Scanner> list = new ArrayList<Scanner>();
+		
 		ModelNode op = new ModelNode();
 		op.get("operation").set("read-resource"); //$NON-NLS-1$ //$NON-NLS-2$
 		ModelNode addr = op.get("address"); //$NON-NLS-1$
@@ -159,23 +102,98 @@ public class AS7DeploymentScannerUtility {
 		try {
 			response = executeWithResult(server, request);
 		} catch(Exception e) {
-			return new HashMap<String, String>();
+			return new Scanner[0];
 		}
 		
-		HashMap<String, String> retval=new HashMap<String, String>();
-		List<ModelNode> list = response.asList();
-		for( int i = 0; i <list.size(); i++ ) {
-			ModelNode address = list.get(i).get("address"); //$NON-NLS-1$
+		List<ModelNode> mnList = response.asList();
+		for( int i = 0; i < mnList.size(); i++ ) {
+			ModelNode listElement = mnList.get(i);
+			ModelNode address = listElement.get("address"); //$NON-NLS-1$
+			ModelNode result = listElement.get("result"); //$NON-NLS-1$
+
 			String scannerName = address.asList().get(1).get("scanner").asString(); //$NON-NLS-1$
-			if( all || scannerName.startsWith(SCANNER_PREFIX)) {
-				ModelNode arr = list.get(i).get("result"); //$NON-NLS-1$
-				String loc = arr.get("path").toString(); //$NON-NLS-1$
-				retval.put(scannerName, loc);
+			if( allScanners || scannerName.startsWith(SCANNER_PREFIX)) {
+				int interval = result.get("scan-interval").asBigInteger().intValue();//$NON-NLS-1$
+				int timeout = result.get("deployment-timeout").asBigInteger().intValue(); //$NON-NLS-1$
+				String path5 = result.get("path").toString();//$NON-NLS-1$
+				Scanner s = new Scanner();
+				s.name = scannerName;
+				s.address = path5;
+				s.interval = interval;
+				s.timeout = timeout;
+				list.add(s);
 			}
+		}
+		
+		return (Scanner[]) list.toArray(new Scanner[list.size()]);
+	}
+
+	
+	public static final class Scanner {
+		private String name;
+		private int interval;
+		private int timeout;
+		private String address;
+		private String relativeTo;
+
+		public String getName() {
+			return name;
+		}
+		public int getInterval() {
+			return interval;
+		}
+		public String getRelativeTo() {
+			return relativeTo;
+		}
+		public int getTimeout() {
+			return timeout;
+		}
+		public void setTimeout(int timeout) {
+			this.timeout = timeout;
+		}
+		public void setInterval(int interval) {
+			this.interval = interval;
+		}
+		public String getAddress() {
+			return address;
+		}
+	}
+	
+	/**
+	 * Returns a hashmap of scanner names to their path. 
+	 * 
+	 * @param server
+	 * @param all
+	 * @return
+	 */
+	public HashMap<String, String> getDeploymentScannersFromServer(final IServer server, boolean all) {
+		HashMap<String, String> retval=new HashMap<String, String>();
+		Scanner[] scanners = getDeploymentScanners(server, all);
+		for( int i = 0; i < scanners.length; i++ ) {
+			retval.put(scanners[i].getName(), scanners[i].getAddress());
 		}
 		return retval;
 	}
 
+	
+	/**
+	 * Get the deployment scanner with path=deployments and relative-to=jboss.server.base.dir
+	 * @param server
+	 * @return
+	 */
+	public Scanner getDefaultDeploymentScanner(final IServer server) {
+		Scanner[] scanners = getDeploymentScanners(server, true);
+		for( int i = 0; i < scanners.length; i++ ) {
+//			if( "deployments".equals(scanners[i].address) && //$NON-NLS-1$
+//			"jboss.server.base.dir".equals(scanners[i].relativeTo)) {  //$NON-NLS-1$ 
+			if( "default".equals(scanners[i].name)) { //$NON-NLS-1$
+				return scanners[i];
+			}
+		}
+		return null;
+	}
+
+	
 	protected IStatus execute(final IServer server, final String request) {
 		try {
 			ModelNode node = executeWithResult(server, request);

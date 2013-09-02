@@ -181,6 +181,8 @@ public interface IJBossToolingConstants {
 	 * Should we remove deployment scanners on shutdown?
 	 */
 	public static final String PROPERTY_REMOVE_DEPLOYMENT_SCANNERS = "org.jboss.ide.eclipse.as.core.server.removeDeploymentScanner";
+	public static final String PROPERTY_SCANNER_TIMEOUT = "org.jboss.ide.eclipse.as.core.server.deploymentscanner.timeout";
+	public static final String PROPERTY_SCANNER_INTERVAL= "org.jboss.ide.eclipse.as.core.server.deploymentscanner.interval";
 	
 	
 	
