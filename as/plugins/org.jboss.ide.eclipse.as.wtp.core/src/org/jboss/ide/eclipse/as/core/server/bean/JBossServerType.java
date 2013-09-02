@@ -136,35 +136,6 @@ public class JBossServerType implements IJBossToolingConstants {
 
 	
 	/**
-	 * This method is for conditions where the underlying server may be 
-	 * of a different id than the JBossServerType. For example, any 
-	 * JBossServerType which represents an entire class of similar but
-	 * not identical servers, the server type may have an id such as 
-	 * AS-Product, and this method may return something like "JPP"
-	 * 
-	 * Note that differs from the method of the same name in 
-	 * the AbstractCondition, which will return null if there is no 
-	 * underlying type. This method will default to returning the
-	 * value of 'id' in the case where there is no different underlying type.  
-	 * 
-	 * @param location
-	 * @param systemFile
-	 * @return an underlying type id, or the id of this JBossServerType
-	 * 		   if the condition does not provide an underlying type. 
-	 */
-
-	public String getUnderlyingTypeId(File root) {
-		if( this.condition == null )
-			return null;
-		String ret = null;
-		if( this.condition instanceof AbstractCondition ) {
-			ret = ((AbstractCondition)condition).getUnderlyingTypeId(root, new File(root, getSystemJarPath()));
-		}
-		return ret == null ? id : ret;
-	}
-
-	
-	/**
 	 * This will return a version, if it can be discovered.
 	 * If this is an UNKNOWN server bean, the return 
 	 * value will be null
