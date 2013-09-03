@@ -14,6 +14,10 @@ import org.jboss.ide.eclipse.as.core.util.ExpressionResolverUtil;
 
 import junit.framework.TestCase;
 
+/**
+ * @deprecated This test has been superceded by the tests in foundation. 
+ * 
+ */
 public class ExpressionResolverUtilTest extends TestCase {
 	public void testExpressionResolver() {
 		assertEquals("aaa", ExpressionResolverUtil.safeReplaceProperties("aaa"));

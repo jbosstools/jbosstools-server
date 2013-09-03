@@ -25,7 +25,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jdt.core.IClasspathAttribute;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
-import org.jboss.ide.eclipse.as.classpath.core.Messages;
+import org.jboss.ide.eclipse.as.classpath.core.internal.Messages;
 import org.osgi.service.prefs.BackingStoreException;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

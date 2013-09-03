@@ -28,7 +28,7 @@ import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
-import org.jboss.ide.eclipse.as.classpath.core.Messages;
+import org.jboss.ide.eclipse.as.classpath.core.internal.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;

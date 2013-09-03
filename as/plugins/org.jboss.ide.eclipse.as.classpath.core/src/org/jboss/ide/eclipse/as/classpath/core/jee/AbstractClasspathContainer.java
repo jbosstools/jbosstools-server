@@ -30,7 +30,7 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
-import org.jboss.ide.eclipse.as.classpath.core.Messages;
+import org.jboss.ide.eclipse.as.classpath.core.internal.Messages;
 import org.jboss.ide.eclipse.as.classpath.core.xpl.ClasspathDecorations;
 import org.jboss.ide.eclipse.as.classpath.core.xpl.ClasspathDecorationsManager;
 

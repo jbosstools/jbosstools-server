@@ -12,21 +12,30 @@ package org.jboss.ide.eclipse.as.core.util;
 
 import java.io.File;
 
+import org.jboss.tools.foundation.core.expressions.ExpressionResolver;
+
 /**
- * This class coppied from JBoss's DMR project, ExpressionValue.java
- *
+ * This class copied from JBoss's DMR project, ExpressionValue.java
+ * 
+ * This class will be removed in ASTools 3.0.0
+ * 
+ * @deprecated Please use {@link ExpressionResolver}
  */
 public class ExpressionResolverUtil {
 
-	/*
+	/**
 	 * An interface is added to allow the actual resolving of the variables
 	 * to be customized
+	 * @Deprecated
 	 */
 	public interface IExpressionResolver {
 		public String getSystemProperty(String variable);
 		public String getEnvironmentProperty(String variable);
 	}
 	
+	/**
+	 * @Deprecated
+	 */
 	public static class NullExpressionResolver implements IExpressionResolver {
 		public String getSystemProperty(String variable) {
 			return null;
@@ -41,10 +50,16 @@ public class ExpressionResolverUtil {
     private static final int GOT_OPEN_BRACE = 2;
     private static final int RESOLVED = 3;
     private static final int DEFAULT = 4;
-
+    
+	/**
+	 * @Deprecated
+	 */
     public static String safeReplaceProperties(final String value) {
     	return safeReplaceProperties(value, null);
     }
+	/**
+	 * @Deprecated
+	 */
     public static String safeReplaceProperties(final String value, IExpressionResolver resolver) {
     	try {
     		return replaceProperties(value, resolver);
@@ -61,6 +76,7 @@ public class ExpressionResolverUtil {
      * @param resolver - to resolve the variables
      * @return the value of the system property or environment variable referenced if
      *  it exists
+	 * @Deprecated
      */
     public static String replaceProperties(final String value, IExpressionResolver resolver) {
     	if( resolver == null )

@@ -62,13 +62,6 @@ public class JBoss7Server extends JBossServer implements IJBoss7Deployment, IMan
 				PORT_OFFSET_DEFAULT_XPATH, PORT_OFFSET_DEFAULT_PORT);
 	}
 
-	
-	@Override
-	protected String resolveXPathResult(String result) {
-		return ExpressionResolverUtil.safeReplaceProperties(result);
-	}
-
-	
 	@Override
 	public String getDeployLocationType() {
 		return getAttribute(DEPLOY_DIRECTORY_TYPE, DEPLOY_SERVER);

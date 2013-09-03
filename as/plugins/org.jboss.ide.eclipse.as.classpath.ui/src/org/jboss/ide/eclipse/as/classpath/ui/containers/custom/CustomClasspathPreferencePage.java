@@ -53,11 +53,9 @@ import org.jboss.ide.eclipse.archives.webtools.filesets.FilesetDialog;
 import org.jboss.ide.eclipse.archives.webtools.filesets.FilesetLabelProvider;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel;
-import org.jboss.ide.eclipse.as.classpath.core.runtime.RuntimeKey;
-import org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel.IDefaultPathProvider;
-import org.jboss.ide.eclipse.as.classpath.ui.ClasspathUIPlugin;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.IRuntimePathProvider;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.RuntimePathProviderFileset;
 import org.jboss.ide.eclipse.as.classpath.ui.Messages;
-import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.preferences.ServerTypePreferencePage;
@@ -79,13 +77,13 @@ public class CustomClasspathPreferencePage extends ServerTypePreferencePage {
 	public boolean performOk() {
 		String[] changed2 = rootComp.getChanged();
 		ArrayList<Object> list;
-		IDefaultPathProvider[] arr;
+		IRuntimePathProvider[] arr;
 		final ArrayList<IProject> projectsNeedRefresh = new ArrayList<IProject>();
 		for( int i = 0; i < changed2.length; i++ ) {
 			String runtimeId = changed2[i];
 			IRuntimeType rt = ServerCore.findRuntimeType(runtimeId);
 			list = rootComp.getDataForComboSelection(changed2[i]);
-			arr = (IDefaultPathProvider[]) list.toArray(new IDefaultPathProvider[list.size()]);
+			arr = (IRuntimePathProvider[]) list.toArray(new IRuntimePathProvider[list.size()]);
 			CustomRuntimeClasspathModel.saveFilesets(rt, arr);
 			clearRuntimeTypeCachedClasspathEntries(rt);
 			IProject[] projectsTargeting = findProjectsTargeting(rt);
@@ -138,13 +136,7 @@ public class CustomClasspathPreferencePage extends ServerTypePreferencePage {
 	
 	/* Clear the cached entries for this runtime */
 	private void clearRuntimeTypeCachedClasspathEntries(IRuntimeType rt) {
-		IRuntime[] allRuntimes = ServerCore.getRuntimes();
-		for( int i = 0; i < allRuntimes.length; i++ ) {
-			if( allRuntimes[i].getRuntimeType().getId().equals(rt.getId())) {
-				RuntimeKey key = ClasspathCorePlugin.getRuntimeKey(allRuntimes[i]);
-				ClasspathCorePlugin.getRuntimeClasspaths().put(key, null);
-			}
-		}
+		ClasspathCorePlugin.clearCachedClasspathEntries(rt);
 	}
 	
 	private IProject[] findProjectsTargeting(IRuntimeType rt) {
@@ -211,11 +203,11 @@ public class CustomClasspathPreferencePage extends ServerTypePreferencePage {
 		protected Object[] getCurrentComboSelectionDefaultDataModel() {
 			String id = getCurrentId();
 			IRuntimeType rtType = ServerCore.findRuntimeType(id);
-			CustomRuntimeClasspathModel.IDefaultPathProvider[] sets = CustomRuntimeClasspathModel.getInstance().getDefaultEntries(rtType);
+			IRuntimePathProvider[] sets = CustomRuntimeClasspathModel.getInstance().getDefaultEntries(rtType);
 			return sets;
 		}
 
-		protected IDefaultPathProvider[] getCurrentSelectionDataModel() {
+		protected IRuntimePathProvider[] getCurrentSelectionDataModel() {
 			String id = getCurrentId();
 			ArrayList<Object> list = new ArrayList<Object>();
 			if( id != null ) {
@@ -223,14 +215,14 @@ public class CustomClasspathPreferencePage extends ServerTypePreferencePage {
 				if( list == null ) {
 					IRuntimeType rtType = ServerCore.findRuntimeType(id);
 					if( rtType != null ) {
-						CustomRuntimeClasspathModel.IDefaultPathProvider[] sets = CustomRuntimeClasspathModel.getInstance().getEntries(rtType);
+						IRuntimePathProvider[] sets = CustomRuntimeClasspathModel.getInstance().getEntries(rtType);
 						list = new ArrayList<Object>();
 						list.addAll(Arrays.asList(sets));
 						cacheMap.put(id, list);
 					}
 				}
 			}
-			return (IDefaultPathProvider[]) list.toArray(new IDefaultPathProvider[list.size()]);
+			return (IRuntimePathProvider[]) list.toArray(new IRuntimePathProvider[list.size()]);
 		}
 
 		protected String getAllOptionString() {
@@ -278,7 +270,7 @@ public class CustomClasspathPreferencePage extends ServerTypePreferencePage {
 				setRequiresName(false);
 			}
 			public Fileset getFileset() {
-				return new CustomRuntimeClasspathModel.PathProviderFileset(fileset);
+				return new RuntimePathProviderFileset(fileset);
 			}
 			protected void configureShell(Shell shell) {
 				super.configureShell(shell);

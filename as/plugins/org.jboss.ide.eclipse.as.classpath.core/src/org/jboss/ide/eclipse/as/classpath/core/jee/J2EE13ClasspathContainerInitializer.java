@@ -13,7 +13,7 @@ package org.jboss.ide.eclipse.as.classpath.core.jee;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IJavaProject;
-import org.jboss.ide.eclipse.as.classpath.core.Messages;
+import org.jboss.ide.eclipse.as.classpath.core.internal.Messages;
 
 /**
  * 

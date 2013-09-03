@@ -19,7 +19,7 @@ import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel;
-import org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel.IDefaultPathProvider;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.IRuntimePathProvider;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,7 +47,7 @@ public class ServerTypeDefaultClasspathEntriesTest extends Assert {
 		if( type.getRuntimeType() == null ) 
 			fail("Server type " + serverType + " does not have an associated runtime");
 		IRuntimeType rtType = type.getRuntimeType();
-		IDefaultPathProvider[] providers = CustomRuntimeClasspathModel.getInstance().getDefaultEntries(rtType);
+		IRuntimePathProvider[] providers = CustomRuntimeClasspathModel.getInstance().getDefaultEntries(rtType);
 		assertNotNull("Null returned for default classpath entries", providers);
 		assertFalse("0 classpath entr yproviders returned", providers.length == 0);
 		ArrayList<IPath> paths = new ArrayList<IPath>();

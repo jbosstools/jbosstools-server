@@ -61,6 +61,8 @@ import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.dialogs.ChangePortDialog;
 import org.jboss.ide.eclipse.as.ui.dialogs.ChangePortDialog.ChangePortDialogInfo;
+import org.jboss.tools.foundation.core.expressions.ExpressionResolutionException;
+import org.jboss.tools.foundation.core.expressions.ExpressionResolver;
 
 /**
  *
@@ -529,7 +531,7 @@ public class PortSection extends ServerEditorSection {
 				query.refresh();
 				result = query.getFirstResult();
 				result = result == null ? "" : result; //$NON-NLS-1$
-				result = ExpressionResolverUtil.safeReplaceProperties(result);
+	    		result = new ExpressionResolver().resolveIgnoreErrors(result);
 				return new Integer(Integer.parseInt(result)+offset).toString();
 			} catch(NumberFormatException nfe) {
 				/* Intentionally fall through, return non-replaced string */

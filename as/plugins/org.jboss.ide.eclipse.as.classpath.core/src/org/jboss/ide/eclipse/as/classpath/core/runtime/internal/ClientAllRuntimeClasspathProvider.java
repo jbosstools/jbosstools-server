@@ -9,17 +9,14 @@
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
 
-package org.jboss.ide.eclipse.as.classpath.core.runtime;
+package org.jboss.ide.eclipse.as.classpath.core.runtime.internal;
 
-import java.io.File;
-import java.io.FileFilter;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
@@ -30,9 +27,9 @@ import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jst.server.core.RuntimeClasspathProviderDelegate;
 import org.eclipse.wst.server.core.IRuntime;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
-import org.jboss.ide.eclipse.as.classpath.core.Messages;
-import org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel.IDefaultPathProvider;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
+import org.jboss.ide.eclipse.as.classpath.core.internal.Messages;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.IRuntimePathProvider;
 
 /**
  * This class uses the "throw everything you can find" strategy
@@ -43,11 +40,10 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
  *
  */
 public class ClientAllRuntimeClasspathProvider 
-		extends RuntimeClasspathProviderDelegate
-		implements IJBossServerConstants {
+		extends RuntimeClasspathProviderDelegate {
 
 	public ClientAllRuntimeClasspathProvider() {
-		// TODO Auto-generated constructor stub
+		// Do Nothing
 	}
 
 	public static class Entry {
@@ -99,7 +95,7 @@ public class ClientAllRuntimeClasspathProvider
 		if( runtime == null ) 
 			return new IClasspathEntry[0];
 
-		RuntimeKey key = ClasspathCorePlugin.getRuntimeKey(runtime);
+		RuntimeKey key = RuntimeClasspathCache.getRuntimeKey(runtime);
 		if( key == null ) {
 			// log error
 			IStatus status = new Status(IStatus.WARNING, ClasspathCorePlugin.PLUGIN_ID, MessageFormat.format(Messages.ClientAllRuntimeClasspathProvider_wrong_runtime_type,
@@ -107,12 +103,14 @@ public class ClientAllRuntimeClasspathProvider
 			ClasspathCorePlugin.getDefault().getLog().log(status);
 			return new IClasspathEntry[0];
 		}
-		IClasspathEntry[] runtimeClasspath = ClasspathCorePlugin.getRuntimeClasspaths().get(key);
+		
+		Map<RuntimeKey, IClasspathEntry[]> map = RuntimeClasspathCache.getInstance().getRuntimeClasspaths();
+		IClasspathEntry[] runtimeClasspath = map.get(key);
 		if (runtimeClasspath != null) {
 			return runtimeClasspath;
 		}
 		runtimeClasspath = getClasspathEntriesForRuntime(runtime);
-		ClasspathCorePlugin.getRuntimeClasspaths().put(key, runtimeClasspath);
+		map.put(key, runtimeClasspath);
 		return runtimeClasspath;
 	}
 
@@ -126,8 +124,8 @@ public class ClientAllRuntimeClasspathProvider
 	}
 	
 	protected IClasspathEntry[] getClasspathEntriesForRuntime(IRuntime rt) {
-		IDefaultPathProvider[] sets = CustomRuntimeClasspathModel.getInstance().getEntries(rt.getRuntimeType());
-		IPath[] allPaths = CustomRuntimeClasspathModel.getInstance().getAllEntries(rt, sets);
+		IRuntimePathProvider[] sets = CustomRuntimeClasspathModel.getInstance().getEntries(rt.getRuntimeType());
+		IPath[] allPaths = DefaultClasspathJarLocator.getAllEntries(rt, sets);
 		ArrayList<Entry> entries = new ArrayList<Entry>();
 		for( int i = 0; i < allPaths.length; i++ ) {
 			addSinglePath(allPaths[i], entries);

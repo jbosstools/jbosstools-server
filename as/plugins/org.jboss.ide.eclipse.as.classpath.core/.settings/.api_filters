@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.jboss.ide.eclipse.as.classpath.core" version="2">
+    <resource path="src/org/jboss/ide/eclipse/as/classpath/core/ClasspathCorePlugin.java" type="org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin">
+        <filter comment="Another method exposing internal classes via API (API Leak)" id="338792546">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin"/>
+                <message_argument value="getRuntimeClasspaths()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Removal of very bad method exposing what should be internal result type" id="338792546">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin"/>
+                <message_argument value="getRuntimeKey(IRuntime)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/jboss/ide/eclipse/as/classpath/core/runtime/CustomRuntimeClasspathModel.java" type="org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel">
+        <filter comment="Heavily refactored class, most methods should have been internal" id="337682486">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Heavily refactored class, most methods should have been internal" id="338792546">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel"/>
+                <message_argument value="get42()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Heavily refactored class, most methods should have been internal" id="338792546">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel"/>
+                <message_argument value="getAllEntries(IRuntime, CustomRuntimeClasspathModel.IDefaultPathProvider[])"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Heavily refactored class, most methods should have been internal" id="338792546">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel"/>
+                <message_argument value="getDefaultAS3Entries()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Heavily refactored class, most methods should have been internal" id="338792546">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel"/>
+                <message_argument value="getDefaultAS40Entries()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Heavily refactored class, most methods should have been internal" id="338792546">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel"/>
+                <message_argument value="getDefaultAS50Entries()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Heavily refactored class, most methods should have been internal" id="338792546">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel"/>
+                <message_argument value="getDefaultAS60Entries()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Heavily refactored class, most methods should have been internal" id="338792546">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel"/>
+                <message_argument value="getDefaultAS70Entries()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Heavily refactored class, most methods should have been internal" id="338792546">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel"/>
+                <message_argument value="getDefaultAS71Entries()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Heavily refactored class, most methods should have been internal" id="338792546">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel"/>
+                <message_argument value="getDefaultEAP43Entries()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Heavily refactored class, most methods should have been internal" id="338792546">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel"/>
+                <message_argument value="getDefaultEAP61Entries()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Heavily refactored class, most methods should have been internal" id="338792546">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel"/>
+                <message_argument value="getDefaultEntries(IRuntimeType)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Heavily refactored class, most methods should have been internal" id="338792546">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel"/>
+                <message_argument value="getEntries(IRuntimeType)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Heavily refactored class, most methods should have been internal" id="338792546">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel"/>
+                <message_argument value="loadFilesets(IRuntimeType)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Heavily refactored class, most methods should have been internal" id="338792546">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel"/>
+                <message_argument value="saveFilesets(IRuntimeType, CustomRuntimeClasspathModel.IDefaultPathProvider[])"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Heavily refactored class, most methods should have been internal" id="338886760">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel.IDefaultPathProvider"/>
+                <message_argument value="org.jboss.ide.eclipse.as.classpath.core_2.5.0"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Heavily refactored class, most methods should have been internal" id="338886760">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel.PathProviderFileset"/>
+                <message_argument value="org.jboss.ide.eclipse.as.classpath.core_2.5.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>

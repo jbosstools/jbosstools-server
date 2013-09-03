@@ -9,7 +9,7 @@
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
 
-package org.jboss.ide.eclipse.as.classpath.core.runtime;
+package org.jboss.ide.eclipse.as.classpath.core.runtime.internal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +37,7 @@ import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
-import org.jboss.ide.eclipse.as.classpath.core.Messages;
+import org.jboss.ide.eclipse.as.classpath.core.internal.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
 

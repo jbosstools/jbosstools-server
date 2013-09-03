@@ -8,12 +8,12 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.classpath.core;
+package org.jboss.ide.eclipse.as.classpath.core.internal;
 
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
-	private static final String BUNDLE_NAME = "org.jboss.ide.eclipse.as.classpath.core.messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "org.jboss.ide.eclipse.as.classpath.core.internal.messages"; //$NON-NLS-1$
 	public static String AbstractClasspathContainer_error_loading_container;
 	public static String ClasspathDecorationsManager_unexpected_exception;
 	public static String ClientAllRuntimeClasspathProvider_wrong_runtime_type;
@@ -29,6 +29,8 @@ public class Messages extends NLS {
 	public static String ProjectRuntimeClasspathProvider_runtime_does_not_exist;
 	public static String WebtoolsProjectJBossClasspathContainerInitializer_jboss_runtimes;
 	public static String WebtoolsProjectJBossClasspathContainerInitializer_jboss_runtimes_path;
+	public static String CouldNotSaveDefaultClasspathEntries;
+	
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

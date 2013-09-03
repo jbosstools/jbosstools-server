@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007 Red Hat, Inc.
+ * Copyright (c) 2007-2013 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -20,10 +20,14 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
 import org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver;
+import org.jboss.ide.eclipse.as.core.resolvers.RuntimeVariableResolver;
+import org.jboss.ide.eclipse.as.core.server.IRuntimeProvider;
 import org.jboss.tools.archives.scanner.IterableDirectoryScanner;
+import org.jboss.tools.foundation.core.expressions.ExpressionResolver;
+import org.jboss.tools.foundation.core.expressions.IVariableResolver;
 
 
-public class Fileset implements Cloneable {
+public class Fileset implements Cloneable, IRuntimeProvider {
 	private static final String HASH_SEPARATOR = "::_::"; //$NON-NLS-1$
 	private static final String SEP = "\n"; //$NON-NLS-1$
 	private String name, folder, includesPattern, excludesPattern;
@@ -39,6 +43,7 @@ public class Fileset implements Cloneable {
 		folder = parts.length <= 1 ? null : parts[1];
 		includesPattern = parts.length <= 2 ? null : parts[2];
 		excludesPattern = parts.length <= 3 ? null : parts[3];
+		setVariableResolver(new RuntimeVariableResolver(this));
 	}
 
 	public Fileset(String name, String folder, String inc, String exc) {
@@ -46,7 +51,9 @@ public class Fileset implements Cloneable {
 		this.folder = folder;
 		includesPattern = inc;
 		excludesPattern = exc;
+		setVariableResolver(new RuntimeVariableResolver(this));
 	}
+	
 	public String toString() {
 		return name + SEP + folder + SEP + includesPattern + SEP + excludesPattern;
 	}
@@ -55,12 +62,36 @@ public class Fileset implements Cloneable {
 	 * @return the folder
 	 */
 	public String getFolder() {
-		return getFolder(folder, runtime);
+		String result = new ExpressionResolver(resolver).resolve(folder);
+		// This resolved variable still might be relative, so we must 
+		// resolve it further if possible, by prepending the server home
+		IPath p = new Path(result);
+		if( !p.isAbsolute() ) {
+			String s2 = ConfigNameResolver.getVariablePattern(ConfigNameResolver.JBOSS_SERVER_HOME) + IPath.SEPARATOR + result;
+			result = new ExpressionResolver(resolver).resolve(s2);
+		}
+		return result;
+		
 	}
 	
+	/**
+	 * @deprecated
+	 * @param folder
+	 * @param runtime
+	 * @return
+	 */
 	public static String getFolder(String folder, IRuntime runtime) {
 		return getFolder(folder, runtime, true);
 	}
+	
+	/**
+	 * 
+	 * @deprecated
+	 * @param folder
+	 * @param runtime
+	 * @param ignoreError
+	 * @return
+	 */
 	public static String getFolder(String folder, IRuntime runtime, boolean ignoreError) {
 		String tmp = new ConfigNameResolver().performSubstitutions(folder, runtime == null ? null : runtime.getName(), ignoreError);
 		IPath p = new Path(tmp);
@@ -89,7 +120,7 @@ public class Fileset implements Cloneable {
 	
 	public String getResolvedExclude() {
 		String pattern = excludesPattern == null ? "" : excludesPattern; //$NON-NLS-1$
-		String resolved = new ConfigNameResolver().performSubstitutions(pattern, runtime == null ? null : runtime.getName(), true);
+		String resolved = new ExpressionResolver(resolver).resolveIgnoreErrors(pattern); 
 		return resolved;
 	}
 	/**
@@ -100,7 +131,7 @@ public class Fileset implements Cloneable {
 	}
 	public String getResolvedIncludesPattern() {
 		String pattern = includesPattern == null ? "" : includesPattern; //$NON-NLS-1$
-		String resolved = new ConfigNameResolver().performSubstitutions(pattern, runtime == null ? null : runtime.getName(), true);
+		String resolved = new ExpressionResolver(resolver).resolveIgnoreErrors(pattern); 
 		return resolved;
 	}
 
@@ -222,4 +253,11 @@ public class Fileset implements Cloneable {
 	}
 
 	
+	private IVariableResolver resolver;
+	/**
+	 * @since 2.5
+	 */
+	protected void setVariableResolver(IVariableResolver resolver) {
+		this.resolver = resolver;
+	}
 }

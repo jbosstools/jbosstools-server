@@ -49,9 +49,10 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
-import org.jboss.ide.eclipse.as.core.util.ExpressionResolverUtil;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
+import org.jboss.tools.foundation.core.expressions.ExpressionResolutionException;
+import org.jboss.tools.foundation.core.expressions.ExpressionResolver;
 
 /**
  * 
@@ -231,7 +232,7 @@ public class JBossServer extends DeployableServer
 	}
 	
 	protected String resolveXPathResult(String result) {
-		return ExpressionResolverUtil.safeReplaceProperties(result);
+		return new ExpressionResolver().resolveIgnoreErrors(result);
 	}
 	
 	// first class parameters

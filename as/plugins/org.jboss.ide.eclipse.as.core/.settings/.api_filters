@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.jboss.ide.eclipse.as.core" version="2">
+    <resource path="jbosscore/org/jboss/ide/eclipse/as/core/resolvers/ConfigNameResolver.java" type="org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver">
+        <filter comment="Methods should have been internal" id="338792546">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver"/>
+                <message_argument value="handleAS7ConfigFile(IDynamicVariable, String)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Methods should have been internal" id="338792546">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver"/>
+                <message_argument value="handleConfig(IDynamicVariable, String)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Methods should have been internal" id="338792546">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver"/>
+                <message_argument value="handleConfigDir(IDynamicVariable, String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="jbosscore/org/jboss/ide/eclipse/as/core/server/internal/v7/AS7DeploymentScannerUtility.java" type="org.jboss.ide.eclipse.as.core.server.internal.v7.AS7DeploymentScannerUtility">
         <filter comment="Internal Package" id="1143996420">
             <message_arguments>

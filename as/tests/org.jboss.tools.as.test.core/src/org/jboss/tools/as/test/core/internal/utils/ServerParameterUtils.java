@@ -49,7 +49,7 @@ public class ServerParameterUtils {
 	}
 	
 	public static Object[] getJBossServerTypeParametersPlusAdditionalMocks() {
-		ArrayList<Object> l = new ArrayList<Object>(Arrays.asList(getJBossServerTypeParamterers()));
+		ArrayList<Object> l = new ArrayList<Object>(Arrays.asList(getJBossServerTypeParameters()));
 		l.addAll(Arrays.asList(ServerCreationTestUtils.TEST_SERVER_TYPES_TO_MOCK));
 		return (String[]) l.toArray(new String[l.size()]);
 	}

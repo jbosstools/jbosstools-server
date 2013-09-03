@@ -1406,6 +1406,12 @@
    <extension
          point="org.eclipse.core.variables.dynamicVariables">
       <variable
+            name="jboss_server_home"
+            description="Returns the server home for the server who&apos;s name matches the variable, or, if none, the runtime who&apos;s name matches the variable"
+            resolver="org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver"
+            supportsArgument="true">
+      </variable>
+      <variable
             name="jboss_config"
             description="Returns the configuration name for the server who&apos;s name matches the variable, or, if none, the runtime who&apos;s name matches the variable"
             resolver="org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver"

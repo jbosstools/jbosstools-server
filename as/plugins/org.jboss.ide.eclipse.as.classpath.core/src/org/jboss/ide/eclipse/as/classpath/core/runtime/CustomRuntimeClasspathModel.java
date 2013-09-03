@@ -15,25 +15,23 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.internal.XMLMemento;
 import org.jboss.ide.eclipse.archives.webtools.filesets.Fileset;
 import org.jboss.ide.eclipse.archives.webtools.filesets.FilesetUtil;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
+import org.jboss.ide.eclipse.as.classpath.core.internal.Messages;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.internal.DefaultClasspathJarLocator;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.XMLMemento;
 
-public class CustomRuntimeClasspathModel implements IJBossToolingConstants, IJBossRuntimeResourceConstants {
+public class CustomRuntimeClasspathModel {
 	protected static final IPath DEFAULT_CLASSPATH_FS_ROOT = JBossServerCorePlugin.getGlobalSettingsLocation().append("filesets").append("runtimeClasspaths"); //$NON-NLS-1$ //$NON-NLS-2$
 
 	private static CustomRuntimeClasspathModel instance;
@@ -42,200 +40,47 @@ public class CustomRuntimeClasspathModel implements IJBossToolingConstants, IJBo
 			instance = new CustomRuntimeClasspathModel();
 		return instance;
 	}
-	
-	public static interface IDefaultPathProvider {
-		public IPath[] getAbsolutePaths();
-		public void setRuntime(IRuntime rt);
-	}
-	
-	public static class PathProviderFileset extends Fileset implements IDefaultPathProvider {
-		public PathProviderFileset(Fileset set) {
-			super(set.getName(), set.getRawFolder(), set.getIncludesPattern(), set.getExcludesPattern());
-		}
-		public PathProviderFileset(String baseFolder) {
-			this("", baseFolder, "**/*.jar", "");
-		}
-		public PathProviderFileset(String name, String folder, String inc, String exc) {
-			super(name, folder, inc, exc);
-		}
-		public IPath[] getAbsolutePaths() {
-			IPath[] setPaths = findPaths();
-			IPath[] absolute = new IPath[setPaths.length];
-			for( int j = 0; j < setPaths.length; j++ ) {
-				absolute[j] = new Path(getFolder()).append(setPaths[j]);
-			}
-			return absolute;
-		}
-	}
-
-	public IDefaultPathProvider[] getEntries(IRuntimeType type) {
-		IDefaultPathProvider[] sets = loadFilesets(type);
+	 
+	/**
+	 * @since 2.5
+	 */
+	public IRuntimePathProvider[] getEntries(IRuntimeType type) {
+		IRuntimePathProvider[] sets = loadFilesets(type);
 		if( sets == null ) {
 			return getDefaultEntries(type);
 		}
 		return sets;
 	}
 	
-	public IDefaultPathProvider[] getDefaultEntries(IRuntimeType type) {
-		String rtID = type.getId();
-		if(AS_32.equals(rtID)) 
-			return getDefaultAS3Entries();
-		if(AS_40.equals(rtID)) 
-			return getDefaultAS40Entries();
-		if(AS_42.equals(rtID)) 
-			return getDefaultAS40Entries();
-		if(AS_50.equals(rtID)) 
-			return getDefaultAS50Entries();
-		if(EAP_43.equals(rtID))
-			return getDefaultEAP43Entries();
-		if(AS_51.equals(rtID)) 
-			return getDefaultAS50Entries();
-		if(AS_60.equals(rtID)) 
-			return getDefaultAS60Entries();
-		if(EAP_50.equals(rtID))
-			return getDefaultAS50Entries();
-
-		if(AS_70.equals(type.getId()))
-			return getDefaultAS70Entries();
-		if(AS_71.equals(type.getId()))
-			return getDefaultAS71Entries();
-		if(EAP_60.equals(type.getId()))
-			return getDefaultAS71Entries();
-		
-		// This will change if jboss-as ever gets us an api
-		if(EAP_61.equals(type.getId()))
-			return getDefaultEAP61Entries();
-		if(WILDFLY_80.equals(type.getId()))
-			return getDefaultEAP61Entries();
-		
-		// NEW_SERVER_ADAPTER add logic for new adapter here
-		return new IDefaultPathProvider[]{};
+	/**
+	 * @since 2.5
+	 */
+	public IRuntimePathProvider[] getDefaultEntries(IRuntimeType type) {
+		return new DefaultClasspathJarLocator().getDefaultPathProviders(type);
 	}
 	
 	public IPath[] getDefaultPaths(IRuntime rt) {
 		return getAllEntries(rt, getDefaultEntries(rt.getRuntimeType()));
 	}
 
-	
-	protected IDefaultPathProvider[] getDefaultAS3Entries() {
-		ArrayList<PathProviderFileset> sets = new ArrayList<PathProviderFileset>();
-		String configPath = "${jboss_config_dir}";
-		String deployerPath = configPath + "/" + DEPLOYERS;
-		String deployPath = configPath + "/" + DEPLOY;
-		sets.add(new PathProviderFileset(LIB));
-		sets.add(new PathProviderFileset(configPath + "/" + LIB));
-		sets.add(new PathProviderFileset(CLIENT));
-		return sets.toArray(new PathProviderFileset[sets.size()]);
-	}
-	
-	protected IDefaultPathProvider[] getDefaultAS40Entries() {
-		ArrayList<PathProviderFileset> sets = new ArrayList<PathProviderFileset>();
-		String configPath = "${jboss_config_dir}";
-		String deployerPath = configPath + "/" + DEPLOYERS;
-		String deployPath = configPath + "/" + DEPLOY;
-		sets.add(new PathProviderFileset(LIB));
-		sets.add(new PathProviderFileset(configPath + "/" + LIB));
-		sets.add(new PathProviderFileset(deployPath + "/" + JBOSS_WEB_DEPLOYER + "/" + JSF_LIB));
-		sets.add(new PathProviderFileset(deployPath + "/" + AOP_JDK5_DEPLOYER));
-		sets.add(new PathProviderFileset(deployPath + "/" + EJB3_DEPLOYER));
-		sets.add(new PathProviderFileset(CLIENT));
-		return sets.toArray(new PathProviderFileset[sets.size()]);
-	}
-
-	protected IDefaultPathProvider[] get42() {
-		return getDefaultAS40Entries();
-	}
-
-	protected IDefaultPathProvider[] getDefaultEAP43Entries() {
-		return getDefaultAS40Entries();
-	}
-	
-	protected IDefaultPathProvider[] getDefaultAS50Entries() {
-		ArrayList<PathProviderFileset> sets = new ArrayList<PathProviderFileset>();
-		String configPath = "${jboss_config_dir}";
-		String deployerPath = configPath + "/" + DEPLOYERS;
-		String deployPath = configPath + "/" + DEPLOY;
-		sets.add(new PathProviderFileset(COMMON + "/" + LIB));
-		sets.add(new PathProviderFileset(LIB));
-		sets.add(new PathProviderFileset(configPath + "/" + LIB));
-		
-		sets.add(new PathProviderFileset(deployPath + "/" + JBOSSWEB_SAR + "/" + JSF_LIB));
-		sets.add(new PathProviderFileset("", deployPath + "/" + JBOSSWEB_SAR, JBOSS_WEB_SERVICE_JAR, ""));
-		sets.add(new PathProviderFileset("", deployPath + "/" + JBOSSWEB_SAR, JSTL_JAR, ""));
-		sets.add(new PathProviderFileset(deployerPath + "/" + AS5_AOP_DEPLOYER));
-		sets.add(new PathProviderFileset(deployerPath + "/" + EJB3_DEPLOYER));
-		sets.add(new PathProviderFileset("", deployerPath + "/" + WEBBEANS_DEPLOYER,JSR299_API_JAR, ""));
-		sets.add(new PathProviderFileset(CLIENT));
-		return sets.toArray(new PathProviderFileset[sets.size()]);
-	}
-	
-	public IDefaultPathProvider[] getDefaultAS60Entries() {
-		ArrayList<IDefaultPathProvider> sets = new ArrayList<IDefaultPathProvider>();
-		String configPath = "${jboss_config_dir}";
-		sets.addAll(Arrays.asList(getDefaultAS50Entries()));
-		sets.add(new PathProviderFileset(configPath + "/" + DEPLOYERS + "/" + REST_EASY_DEPLOYER));
-		sets.add(new PathProviderFileset(configPath + "/" + DEPLOYERS + "/" + JSF_DEPLOYER + "/" + MOJARRA_20 + "/" + JSF_LIB));
-		return sets.toArray(new PathProviderFileset[sets.size()]);
-	}
-	public IDefaultPathProvider[] getDefaultAS70Entries() {
-		return getDefaultAS7xEntries("modules");
-	}
-	
-	/*
-	 * Temporary method where we pass in which folder as a prefix. 
-	 * This does not support layering and will need to change once
-	 * a proper api is provided.
+	/**
+	 * @since 2.5
 	 */
-	private IDefaultPathProvider[] getDefaultAS7xEntries(String modulesPrefix) {
-		
-		ArrayList<IDefaultPathProvider> sets = new ArrayList<IDefaultPathProvider>();
-		sets.add(new PathProviderFileset("", modulesPrefix + "/javax", "**/*.jar", "**/jsf-api-1.2*.jar"));
-		sets.add(new PathProviderFileset(modulesPrefix + "/org/hibernate/validator"));
-		sets.add(new PathProviderFileset(modulesPrefix + "/org/resteasy"));
-		sets.add(new PathProviderFileset(modulesPrefix + "/org/picketbox"));
-		sets.add(new PathProviderFileset(modulesPrefix + "/org/jboss/as/controller-client/main/"));
-		sets.add(new PathProviderFileset(modulesPrefix + "/org/jboss/dmr/main/"));
-		sets.add(new PathProviderFileset(modulesPrefix + "/org/jboss/logging/main"));
-		sets.add(new PathProviderFileset(modulesPrefix + "/org/jboss/resteasy/resteasy-jaxb-provider/main"));
-		sets.add(new PathProviderFileset(modulesPrefix + "/org/jboss/resteasy/resteasy-jaxrs/main"));
-		sets.add(new PathProviderFileset(modulesPrefix + "/org/jboss/resteasy/resteasy-multipart-provider/main"));
-		sets.add(new PathProviderFileset(modulesPrefix + "/org/jboss/ejb3/main"));
-		return (IDefaultPathProvider[]) sets.toArray(new IDefaultPathProvider[sets.size()]);
+	public IPath[] getAllEntries(IRuntime runtime, IRuntimePathProvider[] sets) {
+		return DefaultClasspathJarLocator.getAllEntries(runtime, sets);
 	}
-	
-	public IDefaultPathProvider[] getDefaultAS71Entries() {
-		return getDefaultAS70Entries();
-	}
-
-	public IDefaultPathProvider[] getDefaultEAP61Entries() {
-		return getDefaultAS7xEntries("modules/system/layers/base");
-	}
-
-	public IPath[] getAllEntries(IRuntime runtime, IDefaultPathProvider[] sets) {
-		ArrayList<IPath> retval = new ArrayList<IPath>();
-		for( int i = 0; i < sets.length; i++ ) {
-			sets[i].setRuntime(runtime);
-			IPath[] absolute = sets[i].getAbsolutePaths();
-			for( int j = 0; j < absolute.length; j++ ) {
-				if( !retval.contains(absolute[j]))
-					retval.add(absolute[j]);
-			}
-		}
-		return (IPath[]) retval.toArray(new IPath[retval.size()]);
-	}
-	
 	
 	/*
 	 * Persistance of the model
 	 */
 	
-	public static IDefaultPathProvider[] loadFilesets(IRuntimeType rt) {
+	private static IRuntimePathProvider[] loadFilesets(IRuntimeType rt) {
 		IPath fileToRead = DEFAULT_CLASSPATH_FS_ROOT.append(rt.getId());
 		Fileset[] sets = loadFilesets(fileToRead.toFile(), null);
 		if( sets != null ) {
-			PathProviderFileset[] newSets = new PathProviderFileset[sets.length];
+			RuntimePathProviderFileset[] newSets = new RuntimePathProviderFileset[sets.length];
 			for( int i = 0; i < sets.length; i++ ) {
-				newSets[i] = new PathProviderFileset(sets[i]);
+				newSets[i] = new RuntimePathProviderFileset(sets[i]);
 			}
 			return newSets;
 		}
@@ -246,6 +91,7 @@ public class CustomRuntimeClasspathModel implements IJBossToolingConstants, IJBo
 	 * Return a list of filesets, or null if none are found
 	 * @param file
 	 * @param server
+	 * @deprecated This method should be private. 
 	 * @return
 	 */
 	public static Fileset[] loadFilesets(File file, IServer server) {
@@ -258,7 +104,10 @@ public class CustomRuntimeClasspathModel implements IJBossToolingConstants, IJBo
 		return null;
 	}
 
-	public static void saveFilesets(IRuntimeType runtime, IDefaultPathProvider[] sets) {
+	/**
+	 * @since 2.5
+	 */
+	public static void saveFilesets(IRuntimeType runtime, IRuntimePathProvider[] sets) {
 		if( !DEFAULT_CLASSPATH_FS_ROOT.toFile().exists()) {
 			DEFAULT_CLASSPATH_FS_ROOT.toFile().mkdirs();
 		}
@@ -279,7 +128,8 @@ public class CustomRuntimeClasspathModel implements IJBossToolingConstants, IJBo
 		try {
 			memento.save(new FileOutputStream(fileToWrite.toFile()));
 		} catch( IOException ioe) {
-			IStatus status = new Status(IStatus.ERROR, ClasspathCorePlugin.PLUGIN_ID, "Could not save default classpath entries", ioe);
+			IStatus status = new Status(IStatus.ERROR, ClasspathCorePlugin.PLUGIN_ID, 
+					NLS.bind(Messages.CouldNotSaveDefaultClasspathEntries, runtime.getId()), ioe);
 			ClasspathCorePlugin.getDefault().getLog().log(status);
 		}
 	}

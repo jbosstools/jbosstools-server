@@ -10,17 +10,15 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.classpath.core;
 
-import java.util.Map;
-
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.ServerCore;
-import org.jboss.ide.eclipse.as.classpath.core.runtime.RuntimeClasspathCache;
-import org.jboss.ide.eclipse.as.classpath.core.runtime.RuntimeKey;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.internal.RuntimeClasspathCache;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.internal.RuntimeKey;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -75,12 +73,19 @@ public class ClasspathCorePlugin extends Plugin {
         log.log(status);
 	}
 
-	public static Map<RuntimeKey, IClasspathEntry[]> getRuntimeClasspaths() {
-		return RuntimeClasspathCache.getInstance().getRuntimeClasspaths();
+	/**
+	 * Clear the cached entries for this runtime type
+	 * @since 2.5
+	 */
+	public static void clearCachedClasspathEntries(IRuntimeType rt) {
+		IRuntime[] allRuntimes = ServerCore.getRuntimes();
+		for( int i = 0; i < allRuntimes.length; i++ ) {
+			if( allRuntimes[i].getRuntimeType().getId().equals(rt.getId())) {
+				RuntimeKey key = RuntimeClasspathCache.getRuntimeKey(allRuntimes[i]);
+				RuntimeClasspathCache.getInstance().getRuntimeClasspaths().put(key, null);
+			}
+		}
 	}
-	
-	public static RuntimeKey getRuntimeKey(IRuntime runtime) {
-		return RuntimeClasspathCache.getRuntimeKey(runtime);
-	}
+
 	
 }

@@ -35,8 +35,12 @@ public class ConfigNameResolver implements IDynamicVariableResolver {
 	public static final String JBOSS_CONFIG = "jboss_config"; //$NON-NLS-1$
 	public static final String JBOSS_CONFIG_DIR = "jboss_config_dir"; //$NON-NLS-1$
 	public static final String JBOSS_AS7_CONFIG_FILE = "jboss_config_file"; //$NON-NLS-1$
+	/**
+	 * @since 2.5
+	 */
+	public static final String JBOSS_SERVER_HOME  = "jboss_server_home"; //$NON-NLS-1$
 	public static final String[] ALL_VARIABLES = new String[] {
-		JBOSS_CONFIG, JBOSS_CONFIG_DIR, JBOSS_AS7_CONFIG_FILE
+		JBOSS_CONFIG, JBOSS_CONFIG_DIR, JBOSS_AS7_CONFIG_FILE, JBOSS_SERVER_HOME
 	};
 	
 	
@@ -51,11 +55,21 @@ public class ConfigNameResolver implements IDynamicVariableResolver {
 	 * 
 	 * @param dir1
 	 * @param serverOrRuntimeName
+	 * @deprecated Please use {@link RuntimeVariableResolver}
 	 * @return
 	 */
 	public String performSubstitutions(String dir1, String serverOrRuntimeName) {
 		return performSubstitutions(dir1, serverOrRuntimeName, false);
 	}
+	
+	/**
+	 * 
+	 * @param dir1
+	 * @param serverOrRuntimeName
+	 * @param ignoreError
+	 * @deprecated Please use {@link RuntimeVariableResolver}
+	 * @return
+	 */
 	public String performSubstitutions(String dir1, String serverOrRuntimeName, boolean ignoreError) {
 
 		String dir2 = null;
@@ -63,6 +77,7 @@ public class ConfigNameResolver implements IDynamicVariableResolver {
 			dir2 = replace(dir1, ConfigNameResolver.JBOSS_CONFIG, serverOrRuntimeName);
 			dir2 = replace(dir2, ConfigNameResolver.JBOSS_CONFIG_DIR, serverOrRuntimeName);
 			dir2 = replace(dir2, ConfigNameResolver.JBOSS_AS7_CONFIG_FILE, serverOrRuntimeName);
+			dir2 = replace(dir2, ConfigNameResolver.JBOSS_SERVER_HOME, serverOrRuntimeName);
 			
 			try {
 				StringSubstitutionEngine engine = new StringSubstitutionEngine();
@@ -96,18 +111,32 @@ public class ConfigNameResolver implements IDynamicVariableResolver {
 	 * Actual resolution of these dynamic variables are performed below
 	 */
 	
-	public String resolveValue(IDynamicVariable variable, String argument)
+	public String resolveValue(IDynamicVariable variable, String argument) throws CoreException {
+		return resolveValue(variable.getName(), argument);
+	}
+	
+	/**
+	 * @since 2.5
+	 */
+	public String resolveValue(String variable, String argument)
 			throws CoreException {
-		if( variable.getName().equals(JBOSS_CONFIG))
+		if( variable.equals(JBOSS_CONFIG))
 			return handleConfig(variable, argument);
-		if( variable.getName().equals(JBOSS_CONFIG_DIR)) 
+		if( variable.equals(JBOSS_CONFIG_DIR)) 
 			return handleConfigDir(variable, argument);
-		if( variable.getName().equals(JBOSS_AS7_CONFIG_FILE)) 
+		if( variable.equals(JBOSS_AS7_CONFIG_FILE)) 
 			return handleAS7ConfigFile(variable, argument);
+		if( variable.equals(JBOSS_SERVER_HOME)) 
+			return handleServerHome(variable, argument);
 		return null;
 	}
 
-	protected String handleConfig(IDynamicVariable variable, String argument) {
+	private String handleServerHome(String variable, String argument) {
+		IJBossServerRuntime ajbsrt = findJBossServerRuntime(argument);
+		return ajbsrt.getRuntime().getLocation().toOSString();
+	}
+	
+	private String handleConfig(String variable, String argument) {
 		IJBossServerRuntime ajbsrt = findJBossServerRuntime(argument);
 		if( ajbsrt != null ) {
 			String config = null;
@@ -118,7 +147,7 @@ public class ConfigNameResolver implements IDynamicVariableResolver {
 		}
 		return null;
 	}
-	protected String handleConfigDir(IDynamicVariable variable, String argument) {
+	private String handleConfigDir(String variable, String argument) {
 		IJBossServerRuntime ajbsrt = findJBossServerRuntime(argument);
 		if( ajbsrt != null ) {
 			String config = null;
@@ -130,7 +159,7 @@ public class ConfigNameResolver implements IDynamicVariableResolver {
 		return null;
 	}
 	
-	protected String handleAS7ConfigFile(IDynamicVariable variable, String argument) {
+	private String handleAS7ConfigFile(String variable, String argument) {
 		IJBossServerRuntime ajbsrt = findJBossServerRuntime(argument);
 		if( ajbsrt != null && ajbsrt instanceof LocalJBoss7ServerRuntime) {
 			return ((LocalJBoss7ServerRuntime)ajbsrt).getConfigurationFile();
