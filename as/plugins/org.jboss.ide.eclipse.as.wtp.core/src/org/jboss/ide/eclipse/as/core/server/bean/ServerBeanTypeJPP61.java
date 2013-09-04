@@ -14,6 +14,9 @@ import java.io.File;
 
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanTypeUnknownAS72Product.UnknownAS72ProductServerTypeCondition;
 
+/**
+ * @since 2.4  Actually 2.4.101
+ */
 public class ServerBeanTypeJPP61 extends ServerBeanTypeUnknownAS71Product {
 	public ServerBeanTypeJPP61() {
 		super("JPP", "JBoss Portal Platform", 

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.jboss.tools.jmx.ui" version="2">
+    <resource path="META-INF/MANIFEST.MF">
+        <filter comment="Will not increment minor version for changes to messages and new internal class" id="924844039">
+            <message_arguments>
+                <message_argument value="1.4.1"/>
+                <message_argument value="1.4.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/jboss/tools/jmx/ui/Messages.java" type="org.jboss.tools.jmx.ui.Messages">
+        <filter comment="exempt message strings" id="1143996420">
+            <message_arguments>
+                <message_argument value="StateConnected"/>
+            </message_arguments>
+        </filter>
+        <filter comment="exempt message strings" id="1143996420">
+            <message_arguments>
+                <message_argument value="StateDisconnected"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/org/jboss/tools/jmx/ui/internal/views/navigator/JMXConnectionDecorator.java" type="org.jboss.tools.jmx.ui.internal.views.navigator.JMXConnectionDecorator">
+        <filter comment="internal package" id="1110441988">
+            <message_arguments>
+                <message_argument value="org.jboss.tools.jmx.ui.internal.views.navigator.JMXConnectionDecorator"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>
