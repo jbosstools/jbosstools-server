@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2011 Red Hat, Inc. 
+ * Copyright (c) 2013 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -10,11 +10,12 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server;
 
-import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
 
 /**
- * A simple interface for an object which can provide a relevant IServer
+ * A simple interface for an object which can provide a relevant IServerWorkingCopy
+ * @since 2.5
  */
-public interface IServerProvider {
-	public IServer getServer();
+public interface IServerWorkingCopyProvider {
+	public IServerWorkingCopy getServer();
 }
