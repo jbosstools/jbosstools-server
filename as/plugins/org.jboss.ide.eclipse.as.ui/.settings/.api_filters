@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.jboss.ide.eclipse.as.ui" version="2">
+    <resource path="jbossui/org/jboss/ide/eclipse/as/ui/editor/DeploymentModuleOptionCompositeAssistant.java" type="org.jboss.ide.eclipse.as.ui.editor.DeploymentModuleOptionCompositeAssistant">
+        <filter comment="Cleanup of very specific UI which should not have been API and has 0 external clients" id="338792546">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.ui.editor.DeploymentModuleOptionCompositeAssistant"/>
+                <message_argument value="addMapping(String, DeploymentModuleOptionCompositeAssistant.IDeploymentPageCallback)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Cleanup of very specific UI which should not have been API and has 0 external clients" id="338886760">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.ui.editor.DeploymentModuleOptionCompositeAssistant.IDeploymentPageCallback"/>
+                <message_argument value="org.jboss.ide.eclipse.as.ui_2.5.0"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Cleanup of very specific UI which should not have been API and has 0 external clients" id="338886760">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.ui.editor.DeploymentModuleOptionCompositeAssistant.LocalDeploymentPageCallback"/>
+                <message_argument value="org.jboss.ide.eclipse.as.ui_2.5.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="jbossui/org/jboss/ide/eclipse/as/ui/editor/ServerPasswordSection.java" type="org.jboss.ide.eclipse.as.ui.editor.ServerPasswordSection">
         <filter id="338886760">
             <message_arguments>

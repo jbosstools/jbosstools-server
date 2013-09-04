@@ -56,10 +56,16 @@ public class JBossAS710ExtendedProperties extends JBossAS7ExtendedProperties imp
 		return IJBossRuntimeResourceConstants.AS_71_MANAGEMENT_SCRIPT;
 	}
 	
+	/**
+	 * @since 2.5
+	 */
 	public String getJMXUrl() {
 		return getJMXUrl(IJBossToolingConstants.AS7_MANAGEMENT_PORT_DEFAULT_PORT, "service:jmx:remoting-jmx"); //$NON-NLS-1$
 	}
 	
+	/**
+	 * @since 2.5
+	 */
 	protected String getJMXUrl(int defaultPort, String jmxScheme) {
 		ServerDelegate sd = (ServerDelegate)server.loadAdapter(ServerDelegate.class, null);
 		int port = (sd instanceof IManagementPortProvider) ? 

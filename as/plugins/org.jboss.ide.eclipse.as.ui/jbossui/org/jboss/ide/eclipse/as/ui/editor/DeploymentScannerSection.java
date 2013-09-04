@@ -37,11 +37,6 @@ import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 
 public class DeploymentScannerSection extends ServerEditorSection {
-
-	private static final int DEFAULT_TIMEOUT = 60;
-	private static final int DEFAULT_INTERVAL = 5000;
-	
-	
 	public DeploymentScannerSection() {
 	}
 	private Button addScannersOnStartup, removeScannersOnShutdown;
@@ -62,6 +57,9 @@ public class DeploymentScannerSection extends ServerEditorSection {
 		addListeners();
 	}
 	
+	/**
+	 * @since 2.5
+	 */
 	protected void setDefaultValues() {
 		// set initial values
 		boolean add = server.getAttribute(IJBossToolingConstants.PROPERTY_ADD_DEPLOYMENT_SCANNERS, true);
@@ -209,7 +207,7 @@ public class DeploymentScannerSection extends ServerEditorSection {
 	}
 
 
-	public class SetIntervalPropertyCommand extends ServerWorkingCopyPropertyTextCommand {
+	private class SetIntervalPropertyCommand extends ServerWorkingCopyPropertyTextCommand {
 		public SetIntervalPropertyCommand(IServerWorkingCopy server) {
 			super(server, "Modify deployment scanner interval preference",  
 					intervalText, intervalText.getText(), 
@@ -217,7 +215,7 @@ public class DeploymentScannerSection extends ServerEditorSection {
 		}
 	}
 
-	public class SetTimeoutPropertyCommand extends ServerWorkingCopyPropertyTextCommand {
+	private class SetTimeoutPropertyCommand extends ServerWorkingCopyPropertyTextCommand {
 		public SetTimeoutPropertyCommand(IServerWorkingCopy server) {
 			super(server, "Modify deployment scanner timeout preference",  
 					timeoutText, timeoutText.getText(), 

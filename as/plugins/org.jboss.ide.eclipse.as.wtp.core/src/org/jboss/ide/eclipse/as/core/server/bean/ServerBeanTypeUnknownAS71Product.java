@@ -31,6 +31,9 @@ public class ServerBeanTypeUnknownAS71Product extends JBossServerType {
 		this( id, desc, path, new String[]{}, condition);
 	}
 	
+	/**
+	 * @since 2.4 (actually 2.4.101)
+	 */
 	protected ServerBeanTypeUnknownAS71Product(String id, String desc, String path, 
 			String[] version, Condition condition) {
 		super( id, desc, path, version, condition);
@@ -59,6 +62,9 @@ public class ServerBeanTypeUnknownAS71Product extends JBossServerType {
 			return null;
 		}
 		
+		/**
+		 * @since 2.4 (actually 2.4.101)
+		 */
 		protected String getSlot(File location) {
 			IPath rootPath = new Path(location.getAbsolutePath());
 			IPath productConf = rootPath.append("bin/product.conf"); //$NON-NLS-1$
@@ -69,6 +75,9 @@ public class ServerBeanTypeUnknownAS71Product extends JBossServerType {
 			return null;
 		}
 		
+		/**
+		 * @since 2.4 (actually 2.4.101)
+		 */
 		protected String[] getLayers(File location) {
 			IPath rootPath = new Path(location.getAbsolutePath());
 			IPath layersConf = rootPath.append("modules/layers.conf");

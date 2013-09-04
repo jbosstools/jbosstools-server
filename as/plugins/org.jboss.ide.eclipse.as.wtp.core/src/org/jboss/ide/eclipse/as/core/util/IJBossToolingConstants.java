@@ -13,6 +13,9 @@ package org.jboss.ide.eclipse.as.core.util;
 import org.eclipse.core.runtime.IPath;
 import org.jboss.ide.eclipse.as.wtp.core.Messages;
 
+/**
+ * @noimplement This interface is not intended to be implemented by clients.
+ */
 public interface IJBossToolingConstants {
 	/* Server runtime types */
 	public static final String AS_32 = "org.jboss.ide.eclipse.as.runtime.32"; //$NON-NLS-1$
@@ -181,7 +184,13 @@ public interface IJBossToolingConstants {
 	 * Should we remove deployment scanners on shutdown?
 	 */
 	public static final String PROPERTY_REMOVE_DEPLOYMENT_SCANNERS = "org.jboss.ide.eclipse.as.core.server.removeDeploymentScanner";
+	/**
+	 * @since 2.5
+	 */
 	public static final String PROPERTY_SCANNER_TIMEOUT = "org.jboss.ide.eclipse.as.core.server.deploymentscanner.timeout";
+	/**
+	 * @since 2.5
+	 */
 	public static final String PROPERTY_SCANNER_INTERVAL= "org.jboss.ide.eclipse.as.core.server.deploymentscanner.interval";
 	
 	

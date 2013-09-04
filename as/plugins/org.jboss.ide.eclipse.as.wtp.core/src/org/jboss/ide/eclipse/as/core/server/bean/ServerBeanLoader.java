@@ -96,6 +96,7 @@ public class ServerBeanLoader {
 	 * in some cases that require additional differentiation. 
 	 * 
 	 * @return an org.eclipse.wst.server.core.IServerType's type id
+	 * @since 2.4 (actually 2.4.101)
 	 */
 	public String getUnderlyingTypeId() {
 		if( bean == null )

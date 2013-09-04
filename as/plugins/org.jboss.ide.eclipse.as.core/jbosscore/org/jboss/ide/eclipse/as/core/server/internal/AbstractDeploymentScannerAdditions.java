@@ -29,6 +29,9 @@ import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
+/**
+ * @since 2.5
+ */
 public abstract class AbstractDeploymentScannerAdditions implements IDeploymentScannerModifier {
 	// Can this listener handle this server?
 	public abstract boolean accepts(IServer server);
@@ -171,6 +174,9 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 	 * An internal method which lets us know whether this app server version
 	 * can customize the scanner's interval 
 	 */
+	/**
+	 * @since 2.5
+	 */
 	public boolean canCustomizeInterval() {
 		return false;
 	}
@@ -178,6 +184,9 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 	/*
 	 * An internal method which lets us know whether this app server version
 	 * can customize the scanner's timeout 
+	 */
+	/**
+	 * @since 2.5
 	 */
 	public boolean canCustomizeTimeout() {
 		return false;

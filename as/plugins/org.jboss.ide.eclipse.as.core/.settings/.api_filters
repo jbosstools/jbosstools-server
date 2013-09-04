@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.jboss.ide.eclipse.as.core" version="2">
+    <resource path="jbosscore/org/jboss/ide/eclipse/as/core/server/internal/v7/AS7DeploymentScannerUtility.java" type="org.jboss.ide.eclipse.as.core.server.internal.v7.AS7DeploymentScannerUtility">
+        <filter comment="Internal Package" id="1143996420">
+            <message_arguments>
+                <message_argument value="DEFAULT_INTERVAL"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Internal Package" id="1143996420">
+            <message_arguments>
+                <message_argument value="IGNORE"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Internal Package" id="1143996420">
+            <message_arguments>
+                <message_argument value="addDeploymentScanner(IServer, String, String, int, int)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Internal Package" id="1143996420">
+            <message_arguments>
+                <message_argument value="getDefaultDeploymentScanner(IServer)"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Internal Package" id="1143996420">
+            <message_arguments>
+                <message_argument value="getDeploymentScanners(IServer, boolean)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="jbosscore/org/jboss/ide/eclipse/as/core/server/internal/v7/AS7DeploymentScannerUtility.java" type="org.jboss.ide.eclipse.as.core.server.internal.v7.AS7DeploymentScannerUtility$Scanner">
+        <filter comment="Internal Package" id="1143996420">
+            <message_arguments>
+                <message_argument value="getRelativeTo()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Internal Package" id="1143996420">
+            <message_arguments>
+                <message_argument value="getTimeout()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Internal Package" id="1143996420">
+            <message_arguments>
+                <message_argument value="setTimeout(int)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="jbosscore/org/jboss/ide/eclipse/as/core/server/internal/v7/LocalJBoss7DeploymentScannerAdditions.java" type="org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7DeploymentScannerAdditions">
+        <filter comment="Internal Package" id="1143996420">
+            <message_arguments>
+                <message_argument value="loadDefaultScannerFromServer(IServer)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>

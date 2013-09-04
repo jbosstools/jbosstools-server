@@ -114,10 +114,16 @@ public class JBossAS7ExtendedProperties extends JBossExtendedProperties implemen
 		return EnvironmentsManager.getDefault().getEnvironment("JavaSE-1.6"); //$NON-NLS-1$
 	}
 	
+	/**
+	 * @since 2.5
+	 */
 	public IJBoss7ManagerService getManagerService() {
 		return JBoss7ManagerUtil.getManagerService(getManagerServiceId());
 	}
 	
+	/**
+	 * @since 2.5
+	 */
 	public String getManagerServiceId() {
 		return IJBoss7ManagerService.AS_VERSION_710_Beta;
 	}

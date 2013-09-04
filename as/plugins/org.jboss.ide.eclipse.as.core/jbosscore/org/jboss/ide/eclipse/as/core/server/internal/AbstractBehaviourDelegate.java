@@ -110,6 +110,9 @@ public abstract class AbstractBehaviourDelegate implements IJBossBehaviourDelega
 	 * Not added to the interface, but is added to the abstract class. 
 	 * Subclasses may override to return the proper information. 
 	 */
+	/**
+	 * @since 2.5
+	 */
 	public IServerModeDetails getServerModeDetails() {
 		return null;
 	}
