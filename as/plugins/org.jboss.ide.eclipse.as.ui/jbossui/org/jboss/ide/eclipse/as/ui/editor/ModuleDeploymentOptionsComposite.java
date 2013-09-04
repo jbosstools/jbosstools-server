@@ -55,6 +55,10 @@ import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 
 /**
+ * 
+ * This class represents primarily a tree viewer with columns capable of 
+ * customizing deployment locations on a per-module basis for a given server. 
+ * 
  * @since 2.5
  */
 public class ModuleDeploymentOptionsComposite extends Composite implements PropertyChangeListener {
@@ -95,10 +99,6 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 		lastWC.removePropertyChangeListener(this);
 	}
 	
-	/* Subclasses should override */
-	private void updateWidgets() {
-	}
-	
 	/*
 	 * This part adds the viewer for customizing on a per-module basis 
 	 */
@@ -106,36 +106,26 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 		setLayout(new FormLayout());
 
 		tk.adapt(root);
-
-		viewer = new TreeViewer(root, SWT.BORDER);
-		viewer.getTree().setHeaderVisible(true);
-		viewer.getTree().setLinesVisible(true);
-		TreeColumn moduleColumn = new TreeColumn(viewer.getTree(), SWT.NONE);
-		TreeColumn publishLocColumn = new TreeColumn(viewer.getTree(), SWT.NONE);
-		TreeColumn publishTempLocColumn = new TreeColumn(viewer.getTree(),
-				SWT.NONE);
-		moduleColumn.setText(Messages.EditorModule);
-		publishLocColumn.setText(Messages.EditorSetDeployLabel);
-		publishTempLocColumn.setText(Messages.EditorSetTempDeployLabel);
-
-		moduleColumn.setWidth(200);
-		publishLocColumn.setWidth(200);
-		publishTempLocColumn.setWidth(200);
-
-		viewer.setContentProvider(new ModulePageContentProvider());
-
-		viewer.setLabelProvider(new ModulePageLabelProvider());
-		viewer.setColumnProperties(new String[] { COLUMN_NAME,
-				COLUMN_LOC, COLUMN_TEMP_LOC });
-		viewer.setInput("");  //$NON-NLS-1$
-		CellEditor[] editors = new CellEditor[] {
-				new TextCellEditor(viewer.getTree()),
-				new TextCellEditor(viewer.getTree()),
-				new TextCellEditor(viewer.getTree()) };
-		viewer.setCellModifier(new ModuleDeploymentCellModifier());
-		viewer.setCellEditors(editors);
+		viewer = createTreeViewer(root);
+		Composite filterComposite = createFilterComposite(root);
 		
-		Link link = new Link(root, SWT.DEFAULT);
+		FormData treeData = UIUtil.createFormData2(0, 5, filterComposite,-5, 0,5,100,-5);
+		viewer.getTree().setLayoutData(treeData);
+
+		if( filterComposite != null ) {
+			FormData filterData = UIUtil.createFormData2(null, 0, 100,-5, 0,5,100,-5);
+			filterComposite.setLayoutData(filterData);
+		}
+		
+		return root;
+	}
+	
+	protected Composite createFilterComposite(Composite root) {
+		
+		Composite wrapper = new Composite(root, SWT.NONE);
+		wrapper.setLayout(new FormLayout());
+		
+		Link link = new Link(wrapper, SWT.DEFAULT);
 		link.setText("<a>" + Messages.EditorRefreshViewer + "</a>"); //$NON-NLS-1$ //$NON-NLS-2$
 		link.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
@@ -147,18 +137,15 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 		
 		FormData linkData = UIUtil.createFormData2(null, 0, 100,-10, 0,5,null,0);
 		link.setLayoutData(linkData);
-		
-		FormData treeData = UIUtil.createFormData2(0, 5, link,-5, 0,5,100,-5);
-		viewer.getTree().setLayoutData(treeData);
 
 		// Newer stuff
-		Label comboLabel = new Label(root, SWT.NULL);
+		Label comboLabel = new Label(wrapper, SWT.NULL);
 		comboLabel.setText(Messages.EditorDeploymentPageFilterBy);
-		filterCombo = new Combo(root, SWT.READ_ONLY);
+		filterCombo = new Combo(wrapper, SWT.READ_ONLY);
 		filterCombo.setItems(getViewerFilterTypes());
 		filterCombo.select(0);
 		
-		filterText = new Text(root, SWT.SINGLE |SWT.BORDER);
+		filterText = new Text(wrapper, SWT.SINGLE |SWT.BORDER);
 		
 		comboLabel.setLayoutData(UIUtil.createFormData2(null,0,100,-8,link,5,null,0));
 		filterCombo.setLayoutData(UIUtil.createFormData2(null,0,100,-3,comboLabel,5,null,0));
@@ -173,7 +160,50 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 		filterCombo.addModifyListener(ml);
 		filterText.addModifyListener(ml);
 		filterCombo.select(1); // select DEPLOYABLE
-		return root;
+		
+		return wrapper;
+	}
+	
+	protected TreeViewer createTreeViewer(Composite root) {
+		TreeViewer viewer = new TreeViewer(root, SWT.BORDER);
+		viewer.getTree().setHeaderVisible(true);
+		viewer.getTree().setLinesVisible(true);
+		viewer.setContentProvider(createViewerContentProvider());
+		viewer.setLabelProvider(createViewerLabelProvider());
+		
+		TreeColumn moduleColumn = new TreeColumn(viewer.getTree(), SWT.NONE);
+		TreeColumn publishLocColumn = new TreeColumn(viewer.getTree(), SWT.NONE);
+		TreeColumn publishTempLocColumn = new TreeColumn(viewer.getTree(),
+				SWT.NONE);
+		moduleColumn.setText(Messages.EditorModule);
+		publishLocColumn.setText(Messages.EditorSetDeployLabel);
+		publishTempLocColumn.setText(Messages.EditorSetTempDeployLabel);
+
+		moduleColumn.setWidth(200);
+		publishLocColumn.setWidth(200);
+		publishTempLocColumn.setWidth(200);
+
+		viewer.setColumnProperties(new String[] { 
+				COLUMN_NAME, COLUMN_LOC, COLUMN_TEMP_LOC });
+		viewer.setInput("");  //$NON-NLS-1$
+		CellEditor[] editors = new CellEditor[] {
+				new TextCellEditor(viewer.getTree()),
+				new TextCellEditor(viewer.getTree()),
+				new TextCellEditor(viewer.getTree()) };
+		viewer.setCellEditors(editors);
+		viewer.setCellModifier(createViewerCellModifier());
+		return viewer;
+	}
+	
+	protected ITableLabelProvider createViewerLabelProvider() {
+		return new ModulePageLabelProvider();
+	}
+	
+	protected ITreeContentProvider createViewerContentProvider() {
+		return new ModulePageContentProvider();
+	}
+	protected ICellModifier createViewerCellModifier() {
+		return new ModuleDeploymentCellModifier();
 	}
 	
 	/*
@@ -402,7 +432,7 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 
 	/* Subclasses can override */
 	public void propertyChange(PropertyChangeEvent evt) {
-		updateWidgets();
+		// Update widgets for the property change. Subclasses may override
 	}
 	
 	

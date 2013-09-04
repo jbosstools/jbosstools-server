@@ -10,9 +10,11 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.ui.editor;
 
+import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -32,11 +34,11 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerEvent;
 import org.eclipse.wst.server.ui.editor.IServerEditorPartInput;
 import org.eclipse.wst.server.ui.editor.ServerEditorPart;
-import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.eclipse.wst.server.ui.internal.editor.ServerEditorPartInput;
 import org.eclipse.wst.server.ui.internal.editor.ServerResourceCommandManager;
 import org.jboss.ide.eclipse.as.core.server.IDeploymentScannerModifier;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.IServerWorkingCopyProvider;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
@@ -58,7 +60,8 @@ import org.jboss.ide.eclipse.as.ui.editor.internal.JBossDeploymentOptionsComposi
  * @since 2.5
  *
  */
-public class DeploymentPage extends ServerEditorPart implements IModuleDeploymentOptionsPersister {
+public class DeploymentPage extends ServerEditorPart implements 
+	IModuleDeploymentOptionsPersister, IServerWorkingCopyProvider {
 	protected ServerResourceCommandManager commandManager;
 	protected DeploymentPreferences preferences;
 	protected ServerAttributeHelper helper; 
@@ -160,7 +163,6 @@ public class DeploymentPage extends ServerEditorPart implements IModuleDeploymen
 		preferences = DeploymentPreferenceLoader.loadPreferencesFromServer(server.getOriginal());
 		ScrolledForm innerContent = createPageStructure(parent);
 		addDeploymentLocationControls(innerContent.getBody(), null);
-		
 		innerContent.reflow(true);
 	}
 	
@@ -173,6 +175,12 @@ public class DeploymentPage extends ServerEditorPart implements IModuleDeploymen
 		return allContent;
 	}
 	
+	/**
+	 * Clients are expected to override this method if they 
+	 * require a custom layout with various composites
+	 * @param parent
+	 * @param top
+	 */
 	protected void addDeploymentLocationControls(Composite parent, Control top) {
 		FormToolkit toolkit = new FormToolkit(parent.getDisplay());
 		Label l1 = toolkit.createLabel(parent, Messages.EditorDeploymentPageWarning); 
@@ -197,7 +205,7 @@ public class DeploymentPage extends ServerEditorPart implements IModuleDeploymen
 		perModuleOptions.setLayoutData(fd);
 	}
 	
-	public void execute(ServerCommand command) {
+	public void execute(IUndoableOperation command) {
 		commandManager.execute(command);
 	}
 	
@@ -206,12 +214,7 @@ public class DeploymentPage extends ServerEditorPart implements IModuleDeploymen
 	}
 	
 	public void firePropertyChangeCommand(DeploymentModulePrefs p, String[] keys, String[] vals, String cmdName) {
-		commandManager.execute(new ChangeModuleDeploymentPropertyCommand(getServer(), preferences, p, keys,vals,cmdName));
-	}
-
-	
-	public void savePreferencesToWorkingCopy() {
-		DeploymentPreferenceLoader.savePreferencesToServerWorkingCopy(helper, preferences);
+		execute(new ChangeModuleDeploymentPropertyCommand(this, preferences, p, keys,vals,cmdName));
 	}
 
 	public String makeGlobal(String path) {
@@ -237,6 +240,10 @@ public class DeploymentPage extends ServerEditorPart implements IModuleDeploymen
 	public void setFocus() {
 	}
 
+	/**
+	 * Clients are expected to override this method
+	 * if they have specialized tasks to perform on a save event
+	 */
 	public void doSave(IProgressMonitor monitor) {
 		if( standardOptions != null ) 
 			standardOptions.updateListeners();

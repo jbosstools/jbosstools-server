@@ -92,7 +92,7 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 	public JBossDeploymentOptionsComposite(Composite parent, DeploymentPage page) {
 		super(parent, SWT.NONE);
 		this.page = page;
-		setLayout(new FillLayout());
+		setLayout(new GridLayout(1,true));
 		createDefaultComposite(this);
 	}
 

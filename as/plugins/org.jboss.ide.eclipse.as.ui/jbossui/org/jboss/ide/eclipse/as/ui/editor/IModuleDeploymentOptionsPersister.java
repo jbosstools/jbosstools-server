@@ -11,12 +11,13 @@
 package org.jboss.ide.eclipse.as.ui.editor;
 
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.jboss.ide.eclipse.as.core.server.IServerWorkingCopyProvider;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
 
 /**
  * @since 2.5
  */
-public interface IModuleDeploymentOptionsPersister {
+public interface IModuleDeploymentOptionsPersister extends IServerWorkingCopyProvider {
 	/**
 	 * Get the current working copy of a server
 	 * @return

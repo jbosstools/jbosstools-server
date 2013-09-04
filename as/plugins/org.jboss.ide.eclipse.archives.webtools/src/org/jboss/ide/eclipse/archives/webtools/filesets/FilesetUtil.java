@@ -23,8 +23,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.archives.webtools.IntegrationPlugin;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.tools.jmx.core.IMemento;
-import org.jboss.tools.jmx.core.util.XMLMemento;
+import org.jboss.ide.eclipse.as.core.util.IMemento;
+import org.jboss.ide.eclipse.as.core.util.XMLMemento;
 
 public class FilesetUtil {
 	protected static final String FILESET_FILE_NAME = "filesets.xml"; //$NON-NLS-1$
