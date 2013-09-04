@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<component id="org.jboss.ide.eclipse.as.core" version="2">
+    <resource path="META-INF/MANIFEST.MF">
+        <filter comment="No breaking changes" id="927989779">
+            <message_arguments>
+                <message_argument value="2.4.101"/>
+                <message_argument value="org.jboss.ide.eclipse.as.wtp.core"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="jbosscore/org/jboss/ide/eclipse/as/core/server/internal/extendedproperties/JBossAS710ExtendedProperties.java" type="org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossAS710ExtendedProperties">
+        <filter comment="Internal Package" id="1143996420">
+            <message_arguments>
+                <message_argument value="getJMXUrl()"/>
+            </message_arguments>
+        </filter>
+        <filter comment="Internal Package" id="1143996420">
+            <message_arguments>
+                <message_argument value="getJMXUrl(int, String)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+</component>

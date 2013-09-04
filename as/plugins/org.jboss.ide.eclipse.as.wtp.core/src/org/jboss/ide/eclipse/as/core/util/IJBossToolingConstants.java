@@ -13,6 +13,9 @@ package org.jboss.ide.eclipse.as.core.util;
 import org.eclipse.core.runtime.IPath;
 import org.jboss.ide.eclipse.as.wtp.core.Messages;
 
+/**
+ * @noimplement This interface is not intended to be implemented by clients.
+ */
 public interface IJBossToolingConstants {
 	/* Server runtime types */
 	public static final String AS_32 = "org.jboss.ide.eclipse.as.runtime.32"; //$NON-NLS-1$
