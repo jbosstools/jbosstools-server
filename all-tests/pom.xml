@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.jboss.tools</groupId>
 		<artifactId>server.all</artifactId>
-		<version>4.0.0-SNAPSHOT</version>
+		<version>4.1.1-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jboss.tools</groupId>
 	<artifactId>server.all.tests</artifactId>
@@ -15,5 +15,6 @@
 		<module>../archives/tests</module>
 		<module>../as/tests</module>
 		<module>../jmx/tests</module>
+		<module>../wtp/tests</module>
 	</modules>
 </project>
