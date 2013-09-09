@@ -15,6 +15,8 @@ import junit.framework.TestSuite;
 
 import org.jboss.ide.eclipse.archives.test.core.ArchivesCoreTest;
 import org.jboss.ide.eclipse.archives.test.core.ant.SimpleAntTest;
+import org.jboss.ide.eclipse.archives.test.model.DirectoryScannerModelTest;
+import org.jboss.ide.eclipse.archives.test.model.DirectoryScannerRegexTest;
 import org.jboss.ide.eclipse.archives.test.model.DirectoryScannerTest;
 import org.jboss.ide.eclipse.archives.test.model.FilesetMatchesPathTest;
 import org.jboss.ide.eclipse.archives.test.model.ModelCreationTest;
@@ -42,6 +44,8 @@ public class ArchivesTestSuite extends TestSuite {
         suite.addTestSuite(ReadWriteTest.class);
         suite.addTestSuite(TruezipUtilTest.class);
         suite.addTestSuite(ModelUtilTest.class);
+        suite.addTestSuite(DirectoryScannerRegexTest.class);
+        suite.addTestSuite(DirectoryScannerModelTest.class);
         suite.addTestSuite(DirectoryScannerTest.class);
         suite.addTestSuite(ModelCreationTest.class);
         suite.addTestSuite(ModelTruezipBridgeTest.class);

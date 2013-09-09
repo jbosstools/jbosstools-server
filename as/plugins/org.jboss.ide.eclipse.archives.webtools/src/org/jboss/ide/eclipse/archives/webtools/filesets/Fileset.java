@@ -17,9 +17,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.archives.core.asf.DirectoryScanner;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
+import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
 import org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver;
+import org.jboss.tools.archives.scanner.IterableDirectoryScanner;
 
 
 public class Fileset implements Cloneable {
@@ -200,7 +201,7 @@ public class Fileset implements Cloneable {
 
 		try {
 			if (dir != null && new File(dir).exists()) {
-				DirectoryScanner scanner = DirectoryScannerFactory
+				IterableDirectoryScanner<FileWrapper> scanner = (IterableDirectoryScanner<FileWrapper>)DirectoryScannerFactory
 						.createDirectoryScanner(dir, null, includes, excludes,
 								null, false, 1, true, monitor);
 				if (scanner != null) {

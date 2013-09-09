@@ -20,7 +20,6 @@ import java.util.zip.ZipFile;
 import junit.framework.AssertionFailedError;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -124,7 +123,7 @@ public class ModelTruezipBridgeTest extends ModelTest {
 		try {
 			assertEquals(1, countEntries(zipF));
 		} catch( AssertionFailedError re ) {
-			System.out.println("gah");
+			re.printStackTrace();
 		}
 
 		// zip inside zip

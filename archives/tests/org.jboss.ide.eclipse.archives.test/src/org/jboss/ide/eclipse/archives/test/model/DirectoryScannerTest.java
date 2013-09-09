@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.archives.test.model;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -74,7 +73,7 @@ public class DirectoryScannerTest extends TestCase {
 		
 		
 		ArrayList<FileWrapper> iterated = new ArrayList<FileWrapper>();
-		Iterator<File> i = scanner2.iterator();
+		Iterator<FileWrapper> i = scanner2.iterator();
 		Object next;
 		while( i.hasNext()) {
 			next = i.next();

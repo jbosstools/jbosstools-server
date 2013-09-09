@@ -10,7 +10,31 @@
 	<artifactId>org.jboss.ide.eclipse.archives.test</artifactId> 
 	<packaging>eclipse-test-plugin</packaging>
 	<properties>
-		<coverage.filter>org.jboss.ide.eclipse.archives.core*</coverage.filter>
-		<emma.instrument.bundles>org.jboss.ide.eclipse.archives.core</emma.instrument.bundles>
+		<coverage.filter>org.jboss.ide.eclipse.archives.core*,org.jboss.tools.archives.scanner</coverage.filter>
+		<emma.instrument.bundles>org.jboss.ide.eclipse.archives.core,org.jboss.tools.archives.scanner</emma.instrument.bundles>
 	</properties>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.6.1.201212231917</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>org.jboss.ide.eclipse.archives.core*</include>
+								<include>org.jboss.tools.archives.scanner*</include>
+							</includes>
+							<!-- Merge reports from all executions -->
+							<append>true</append>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
