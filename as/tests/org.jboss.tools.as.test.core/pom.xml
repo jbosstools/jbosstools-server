@@ -189,13 +189,13 @@
 						</configuration>
 					</execution>
 					<execution>
-						<id>install-wildfly-8.0.0.Alpha1</id>
+						<id>install-wildfly-8.0.0.Alpha4</id>
 						<phase>pre-integration-test</phase>
 						<goals>
 							<goal>wget</goal>
 						</goals>
 						<configuration>
-							<url>http://download.jboss.org/wildfly/8.0.0.Alpha1/wildfly-8.0.0.Alpha1.zip</url>
+							<url>http://download.jboss.org/wildfly/8.0.0.Alpha4/wildfly-8.0.0.Alpha4.zip</url>
 							<md5>220b246c08a66192b9466f9ac93f1693</md5>
 							<unpack>true</unpack>
 						</configuration>
