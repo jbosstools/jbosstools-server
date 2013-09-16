@@ -141,12 +141,12 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 			super.setServerStopped();
 			return;
 		}
-		getDelegate().stop(force);
+		super.stop(force);
 	}
 
 	@Override
 	public void dispose() {
-		getDelegate().dispose();
+		super.dispose();
 	}
 
 	@Override
