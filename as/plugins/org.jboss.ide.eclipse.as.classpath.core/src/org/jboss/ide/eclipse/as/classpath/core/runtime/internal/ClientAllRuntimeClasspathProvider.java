@@ -28,8 +28,7 @@ import org.eclipse.jst.server.core.RuntimeClasspathProviderDelegate;
 import org.eclipse.wst.server.core.IRuntime;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.classpath.core.internal.Messages;
-import org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel;
-import org.jboss.ide.eclipse.as.classpath.core.runtime.IRuntimePathProvider;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.RuntimeJarUtility;
 
 /**
  * This class uses the "throw everything you can find" strategy
@@ -124,8 +123,7 @@ public class ClientAllRuntimeClasspathProvider
 	}
 	
 	protected IClasspathEntry[] getClasspathEntriesForRuntime(IRuntime rt) {
-		IRuntimePathProvider[] sets = CustomRuntimeClasspathModel.getInstance().getEntries(rt.getRuntimeType());
-		IPath[] allPaths = DefaultClasspathJarLocator.getAllEntries(rt, sets);
+		IPath[] allPaths = new RuntimeJarUtility().getJarsForRuntime(rt, RuntimeJarUtility.CLASSPATH_JARS);
 		ArrayList<Entry> entries = new ArrayList<Entry>();
 		for( int i = 0; i < allPaths.length; i++ ) {
 			addSinglePath(allPaths[i], entries);

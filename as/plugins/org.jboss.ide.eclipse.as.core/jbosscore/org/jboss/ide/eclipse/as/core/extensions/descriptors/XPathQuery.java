@@ -17,9 +17,6 @@ import java.util.Map;
 
 import org.dom4j.Document;
 import org.dom4j.Node;
-import org.eclipse.core.internal.variables.StringSubstitutionEngine;
-import org.eclipse.core.internal.variables.StringVariableManager;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IServer;
@@ -27,10 +24,10 @@ import org.jaxen.JaxenException;
 import org.jaxen.SimpleNamespaceContext;
 import org.jaxen.XPath;
 import org.jaxen.dom4j.Dom4jXPath;
-import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
-import org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver;
+import org.jboss.ide.eclipse.as.core.resolvers.RuntimeVariableResolver;
 import org.jboss.ide.eclipse.as.core.util.IMemento;
+import org.jboss.tools.foundation.core.expressions.ExpressionResolver;
 
 /**
  * A simple value object to hold the XPath query data
@@ -101,10 +98,15 @@ public class XPathQuery implements Serializable {
 		setEffectiveFilePattern();
 	}
 	
+	private String getReplacedString(String original) {
+		 RuntimeVariableResolver resolver = new RuntimeVariableResolver(server.getRuntime());
+		 ExpressionResolver process = new ExpressionResolver(resolver);
+		 return process.resolve(original);
+	}
+	
 	private void setEffectiveBaseDir() {
-		String serverName = server == null ? "" : server.getName(); //$NON-NLS-1$
 		String dir1 = baseDir == null ? null : baseDir;
-		String dir2 = new ConfigNameResolver().performSubstitutions(dir1, serverName);
+		String dir2 = getReplacedString(dir1);
 		IPath dir = dir2 == null ? null : new Path(dir2);
 		if( dir == null && category != null) {
 			dir = getCategory().getServer().getRuntime().getLocation();
@@ -115,9 +117,8 @@ public class XPathQuery implements Serializable {
 	}
 	
 	private void setEffectiveFilePattern() {
-		String serverName = server == null ? "" : server.getName(); //$NON-NLS-1$
 		String pattern = filePattern == null ? null : filePattern;
-		String pattern2 = new ConfigNameResolver().performSubstitutions(pattern, serverName);
+		String pattern2 = getReplacedString(pattern);
 		effectiveFilePattern = pattern2;
 	}
 	

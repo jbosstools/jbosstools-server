@@ -24,6 +24,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	CreateServerCheckDefaultsTest.class,
 	ServerModeRuntimeDetailsTest.class,
 	ProjectRuntimeClasspathTest.class,
+	RuntimeJarUtilityTest.class, 
 	CreateRuntimeTwiceTest.class,
 	XPathModelTest.class,
 	MockArgsTests.class, 
