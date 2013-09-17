@@ -13,65 +13,71 @@
 
 <!-- archives -->
 
-	<feature url="features/org.jboss.ide.eclipse.archives.feature_0.0.0.jar" id="org.jboss.ide.eclipse.archives.feature" version="0.0.0">
+	<feature id="org.jboss.ide.eclipse.archives.feature">
 		<category name="AllFeatures"/>
 	</feature>
-	<feature url="features/org.jboss.ide.eclipse.archives.test.feature_0.0.0.jar" id="org.jboss.ide.eclipse.archives.test.feature" version="0.0.0">
+	<feature id="org.jboss.tools.archives.scanner.feature">
+		<category name="AllFeatures"/>
+	</feature>
+	<feature id="org.jboss.ide.eclipse.archives.test.feature">
 		<category name="AllFeatures"/>
 	</feature>
 	<!-- sources -->
-	<feature url="features/org.jboss.ide.eclipse.archives.feature.source_0.0.0.jar" id="org.jboss.ide.eclipse.archives.feature.source" version="0.0.0">
+	<feature id="org.jboss.ide.eclipse.archives.feature.source">
 		<category name="AllSources"/>
 	</feature>
-	<feature url="features/org.jboss.ide.eclipse.archives.test.feature.source_0.0.0.jar" id="org.jboss.ide.eclipse.archives.test.feature.source" version="0.0.0">
+	<feature id="org.jboss.ide.eclipse.archives.test.feature.source">
+		<category name="AllSources"/>
+	</feature>
+	<feature id="org.jboss.tools.archives.scanner.feature.source">
 		<category name="AllSources"/>
 	</feature>
 
 <!-- as -->
 
-	<feature url="features/org.jboss.ide.eclipse.as.feature_0.0.0.jar" id="org.jboss.ide.eclipse.as.feature" version="0.0.0">
+	<feature id="org.jboss.ide.eclipse.as.feature">
 		<category name="AllFeatures" />
 	</feature>
-	<feature url="features/org.jboss.ide.eclipse.as.test.feature_0.0.0.jar" id="org.jboss.ide.eclipse.as.test.feature" version="0.0.0">
+	<feature id="org.jboss.ide.eclipse.as.test.feature">
 		<category name="AllFeatures" />
 	</feature>
 	<!-- sources -->
-	<feature url="features/org.jboss.ide.eclipse.as.feature.source_0.0.0.jar" id="org.jboss.ide.eclipse.as.feature.source" version="0.0.0">
+	<feature id="org.jboss.ide.eclipse.as.feature.source">
 		<category name="AllSources" />
 	</feature>
-	<feature url="features/org.jboss.ide.eclipse.as.test.feature.source_0.0.0.jar" id="org.jboss.ide.eclipse.as.test.feature.source" version="0.0.0">
+	<feature id="org.jboss.ide.eclipse.as.test.feature.source">
 		<category name="AllSources" />
 	</feature>
 
 <!-- jmx -->
 
-	<feature url="features/org.jboss.tools.jmx.feature_0.0.0.jar" id="org.jboss.tools.jmx.feature" version="0.0.0">
+	<feature id="org.jboss.tools.jmx.feature">
 		<category name="AllFeatures"/>
 	</feature>
-	<feature url="features/org.jboss.tools.jmx.test.feature_0.0.0.jar" id="org.jboss.tools.jmx.test.feature" version="0.0.0">
+	<feature id="org.jboss.tools.jmx.test.feature">
         	<category name="AllFeatures"/>
         </feature>
 	<!-- sources -->
-	<feature url="features/org.jboss.tools.jmx.feature.source_0.0.0.jar" id="org.jboss.tools.jmx.feature.source" version="0.0.0">
+	<feature id="org.jboss.tools.jmx.feature.source">
 		<category name="AllSources"/>
 	</feature>
-	<feature url="features/org.jboss.tools.jmx.test.feature.source_0.0.0.jar" id="org.jboss.tools.jmx.test.feature.source" version="0.0.0">
+	<feature id="org.jboss.tools.jmx.test.feature.source">
 		<category name="AllSources"/>
 	</feature>
 
 <!-- wtp -->
 
-	<feature url="features/org.jboss.tools.wtp.runtimes.tomcat.feature_0.0.0.jar" id="org.jboss.tools.wtp.runtimes.tomcat.feature" version="0.0.0">
+	<feature id="org.jboss.tools.wtp.runtimes.tomcat.feature">
 		<category name="AllFeatures" />
 	</feature>
-	<feature url="features/org.jboss.tools.wtp.runtimes.tomcat.tests.feature_0.0.0.jar" id="org.jboss.tools.wtp.runtimes.tomcat.tests.feature" version="0.0.0">
+	<feature id="org.jboss.tools.wtp.runtimes.tomcat.tests.feature">
 		<category name="AllFeatures" />
 	</feature>
 	<!-- sources -->
-	<feature url="features/org.jboss.tools.wtp.runtimes.tomcat.feature.source_0.0.0.jar" id="org.jboss.tools.wtp.runtimes.tomcat.feature.source" version="0.0.0">
+	<feature id="org.jboss.tools.wtp.runtimes.tomcat.feature.source">
 		<category name="AllSources" />
 	</feature>
-	<feature url="features/org.jboss.tools.wtp.runtimes.tomcat.tests.feature.source_0.0.0.jar" id="org.jboss.tools.wtp.runtimes.tomcat.tests.feature.source" version="0.0.0">
+	<feature id="org.jboss.tools.wtp.runtimes.tomcat.tests.feature.source">
 		<category name="AllSources" />
 	</feature>
 
