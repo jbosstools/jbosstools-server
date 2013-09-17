@@ -15,6 +15,7 @@ import java.util.Collection;
 import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
@@ -43,7 +44,7 @@ public class ConfigNameResolverTest extends TestCase {
 	private IServer server;
 	@Parameters
 	public static Collection<Object[]> data() {
-		 return ServerParameterUtils.asCollection(ServerParameterUtils.getAllJBossServerTypeParamterers());
+		 return ServerParameterUtils.asCollection(ServerParameterUtils.getAllJBossServerTypeParameters());
 	}
 	
 	public ConfigNameResolverTest(String serverType) {
@@ -79,6 +80,8 @@ public class ConfigNameResolverTest extends TestCase {
 				testConfigDir(var, result, isJBoss7Style(server));
 			else if( vars[i].equals(ConfigNameResolver.JBOSS_AS7_CONFIG_FILE)) 
 				testAS7ConfigFile(var, result, isJBoss7Style(server));
+			else if( vars[i].equals(ConfigNameResolver.JBOSS_SERVER_HOME)) 
+				testServerHome(var, result, jbs.getServer().getRuntime());
 			else
 				fail("Variable " + vars[i] + " not tested");
 		}
@@ -98,6 +101,10 @@ public class ConfigNameResolverTest extends TestCase {
 			// This is more documenting current behaviour than what it *should* be. 
 			// Oh well :( 
 			assertEquals(result, server.getRuntime().getLocation().append("standalone").append("configuration").toString());
+	}
+	private void testServerHome(String var, String result, IRuntime rt) {
+		assertNotNull(rt);
+		assertEquals(result, rt.getLocation().toOSString());
 	}
 	private void testAS7ConfigFile(String var, String result, boolean isAS7 ) {
 		if( isAS7 ) 

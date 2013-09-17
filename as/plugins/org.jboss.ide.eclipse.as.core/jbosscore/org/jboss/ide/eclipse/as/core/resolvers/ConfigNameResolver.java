@@ -14,6 +14,7 @@ package org.jboss.ide.eclipse.as.core.resolvers;
 import org.eclipse.core.internal.variables.StringSubstitutionEngine;
 import org.eclipse.core.internal.variables.StringVariableManager;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.variables.IDynamicVariable;
 import org.eclipse.core.variables.IDynamicVariableResolver;
@@ -133,7 +134,8 @@ public class ConfigNameResolver implements IDynamicVariableResolver {
 
 	private String handleServerHome(String variable, String argument) {
 		IRuntime rt = findServerRuntime(argument);
-		return rt.getLocation().toOSString();
+		IPath loc = rt.getLocation();
+		return loc == null ? null : loc.toOSString();
 	}
 	
 	private String handleConfig(String variable, String argument) {
