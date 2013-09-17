@@ -65,10 +65,12 @@ import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPat
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver;
+import org.jboss.ide.eclipse.as.core.resolvers.RuntimeVariableResolver;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.Messages;
+import org.jboss.tools.foundation.core.expressions.ExpressionResolver;
 
 
 /**
@@ -369,6 +371,13 @@ public class XPathDialogs {
 				baseDirText.setText(rootDir);
 			}
 		}
+		
+		private String getReplacedString(String original) {
+			 RuntimeVariableResolver resolver = new RuntimeVariableResolver(server.getRuntime());
+			 ExpressionResolver process = new ExpressionResolver(resolver);
+			 return process.resolve(original);
+		}
+		
 		protected void previewPressed() {
 			if( server == null ) {
 				checkErrors();
@@ -381,14 +390,14 @@ public class XPathDialogs {
 			String directory = baseDirText.getText();
 			
 			// substitute in basedir
-			directory = new ConfigNameResolver().performSubstitutions(directory, server.getName());
+			directory = getReplacedString(directory);
 			if( !new Path(directory).isAbsolute()) {
 				directory = server.getRuntime().getLocation().append(directory).toString();
 			}
 			final String directory2 = directory;
 			
 			// substitute in filePattern
-			filePattern = new ConfigNameResolver().performSubstitutions(filePattern, server.getName());
+			filePattern = getReplacedString(filePattern);
 			final String filePattern2 = filePattern;
 			
 			IRunnableWithProgress op = new IRunnableWithProgress() {

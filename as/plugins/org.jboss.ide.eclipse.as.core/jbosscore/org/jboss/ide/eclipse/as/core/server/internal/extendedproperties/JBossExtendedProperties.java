@@ -23,6 +23,7 @@ import org.eclipse.osgi.util.NLS;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver;
+import org.jboss.ide.eclipse.as.core.resolvers.RuntimeVariableResolver;
 import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
 import org.jboss.ide.eclipse.as.core.server.IDeploymentScannerModifier;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
@@ -33,6 +34,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.JMXServerDeploymentScannerA
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
+import org.jboss.tools.foundation.core.expressions.ExpressionResolver;
 
 /**
  * The superclass containing most functionality, to be overridden as necessary.
@@ -72,8 +74,9 @@ public class JBossExtendedProperties extends ServerExtendedProperties {
 	public String getServerDeployLocation() {
 		String original = ConfigNameResolver.getVariablePattern(ConfigNameResolver.JBOSS_CONFIG_DIR) +
 				"/" + IJBossRuntimeResourceConstants.DEPLOY;  //$NON-NLS-1$
-		return new ConfigNameResolver().performSubstitutions(
-				original, server.getName());
+		 RuntimeVariableResolver resolver = new RuntimeVariableResolver(runtime);
+		 ExpressionResolver process = new ExpressionResolver(resolver);
+		 return process.resolve(original);
 	}
 
 	public int getJMXProviderType() {

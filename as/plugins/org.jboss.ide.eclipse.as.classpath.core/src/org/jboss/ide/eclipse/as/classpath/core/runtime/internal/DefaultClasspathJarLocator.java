@@ -18,8 +18,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.IRuntimePathProvider;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.RuntimeJarUtility;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.RuntimePathProviderFileset;
-import org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver;
 import org.jboss.ide.eclipse.as.core.resolvers.RuntimeVariableResolver;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -33,7 +33,7 @@ import org.jboss.tools.foundation.core.expressions.IVariableResolver;
 public class DefaultClasspathJarLocator implements IJBossToolingConstants, IJBossRuntimeResourceConstants {
 	private static final String SEP = "/"; //$NON-NLS-1$
 	private static final String EMPTY = ""; //$NON-NLS-1$
-	private static final String CONFIG_DIR = ConfigNameResolver.getVariablePattern(ConfigNameResolver.JBOSS_CONFIG_DIR);
+	private static final String CONFIG_DIR = RuntimeJarUtility.CONFIG_DIR_VAR_PATTERN;
 	
 	public IRuntimePathProvider[] getDefaultPathProviders(IRuntimeType type) {
 		String rtID = type.getId();

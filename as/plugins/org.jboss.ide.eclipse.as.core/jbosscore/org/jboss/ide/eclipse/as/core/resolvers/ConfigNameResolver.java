@@ -132,8 +132,8 @@ public class ConfigNameResolver implements IDynamicVariableResolver {
 	}
 
 	private String handleServerHome(String variable, String argument) {
-		IJBossServerRuntime ajbsrt = findJBossServerRuntime(argument);
-		return ajbsrt.getRuntime().getLocation().toOSString();
+		IRuntime rt = findServerRuntime(argument);
+		return rt.getLocation().toOSString();
 	}
 	
 	private String handleConfig(String variable, String argument) {
@@ -173,19 +173,33 @@ public class ConfigNameResolver implements IDynamicVariableResolver {
 	 * @return
 	 */
 	private IJBossServerRuntime findJBossServerRuntime(String serverOrRuntimeName) {
+		return (IJBossServerRuntime)findServerRuntime(serverOrRuntimeName, true);
+	}
+	
+	private IRuntime findServerRuntime(String serverOrRuntimeName) {
+		return (IRuntime)findServerRuntime(serverOrRuntimeName, false);
+	}
+	
+	
+	private Object findServerRuntime(String serverOrRuntimeName, boolean adapt) {
 		IServer[] servers = ServerCore.getServers();
 		for( int i = 0; i < servers.length; i++ ) {
 			if( servers[i].getName().equals(serverOrRuntimeName)) {
-				if( servers[i].getRuntime() != null )
-					return  (IJBossServerRuntime) servers[i].getRuntime()
-							.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
+				if( servers[i].getRuntime() != null ) {
+					if( adapt )
+						return  (IJBossServerRuntime) servers[i].getRuntime()
+								.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
+					return servers[i].getRuntime();
+				}
 			}
 		}
 		IRuntime[] runtimes = ServerCore.getRuntimes();
 		for( int i = 0; i < runtimes.length; i++ ) {
 			if( runtimes[i].getName().equals(serverOrRuntimeName)) {
-				return (IJBossServerRuntime) runtimes[i]
-						.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
+				if( adapt )
+					return (IJBossServerRuntime) runtimes[i]
+							.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
+				return runtimes[i];
 			}
 		}
 		return null;
