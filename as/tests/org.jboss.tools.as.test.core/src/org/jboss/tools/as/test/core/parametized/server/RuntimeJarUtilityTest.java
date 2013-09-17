@@ -78,13 +78,13 @@ public class RuntimeJarUtilityTest extends TestCase {
 		assertTrue(result1.length > 0);
 		checkAllValid(result1);
 		
-		IPath[] result2 = util.getJarsForRuntimeHome(rt.getLocation().toString(), util.CLASSPATH_JARS, replacements);
+		IPath[] result2 = util.getJarsForRuntimeHome(rt.getLocation().toString(), util.CLASSPATH_JARS, replacements, false);
 		assertNotNull(result2);
 		assertTrue(result2.length > 0);
 		checkAllValid(result2);
 		
 		replacements.put(ConfigNameResolver.JBOSS_CONFIG_DIR, "/home/garbage/does/not/exist");
-		IPath[] result3 = util.getJarsForRuntimeHome("/home/garbage/does/not/exist", util.CLASSPATH_JARS, replacements);
+		IPath[] result3 = util.getJarsForRuntimeHome("/home/garbage/does/not/exist", util.CLASSPATH_JARS, replacements, false);
 		assertNull(result3);
 		
 	}
