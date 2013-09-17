@@ -19,7 +19,7 @@
 		<jbosstools.test.jboss.home.6.0>${requirementsDirectory}/jboss-6.0.0.Final</jbosstools.test.jboss.home.6.0>
 		<jbosstools.test.jboss.home.7.0>${requirementsDirectory}/jboss-as-7.0.0.Final</jbosstools.test.jboss.home.7.0>
 		<jbosstools.test.jboss.home.7.1>${requirementsDirectory}/jboss-as-7.1.0.Final</jbosstools.test.jboss.home.7.1>
-		<jbosstools.test.jboss.home.8.0>${requirementsDirectory}/wildfly-8.0.0.Alpha1</jbosstools.test.jboss.home.8.0>
+		<jbosstools.test.jboss.home.8.0>${requirementsDirectory}/wildfly-8.0.0.Alpha4</jbosstools.test.jboss.home.8.0>
 		<jbosstools.test.jboss.home.eap.4.3>${requirementsDirectory}/jboss-eap-4.3/jboss-as</jbosstools.test.jboss.home.eap.4.3>
 		<jbosstools.test.jboss.home.eap.5.0>${requirementsDirectory}/jboss-eap-5.1/jboss-as</jbosstools.test.jboss.home.eap.5.0>
 		<jbosstools.test.jboss.home.eap.6.0>${requirementsDirectory}/jboss-eap-6.0</jbosstools.test.jboss.home.eap.6.0>
@@ -196,7 +196,7 @@
 						</goals>
 						<configuration>
 							<url>http://download.jboss.org/wildfly/8.0.0.Alpha4/wildfly-8.0.0.Alpha4.zip</url>
-							<md5>220b246c08a66192b9466f9ac93f1693</md5>
+							<md5>4049b94e02c4a232ceb935fbbc4a68f0</md5>
 							<unpack>true</unpack>
 						</configuration>
 					</execution>

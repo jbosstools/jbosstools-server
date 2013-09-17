@@ -13,7 +13,7 @@
 		<!-- jbosstools.test.jre.7 defined in ../pom.xml so it's available to all tests -->
 		<jbosstools.test.jboss.home.7.0>${requirementsDirectory}/jboss-as-7.0.0.Final</jbosstools.test.jboss.home.7.0>
 		<jbosstools.test.jboss.home.7.1>${requirementsDirectory}/jboss-as-7.1.0.Final</jbosstools.test.jboss.home.7.1>
-		<jbosstools.test.jboss.home.8.0>${requirementsDirectory}/wildfly-8.0.0.Alpha1</jbosstools.test.jboss.home.8.0>
+		<jbosstools.test.jboss.home.8.0>${requirementsDirectory}/wildfly-8.0.0.Alpha4</jbosstools.test.jboss.home.8.0>
 		<jbosstools.test.jboss.home.eap.6.0>${requirementsDirectory}/jboss-eap-6.0</jbosstools.test.jboss.home.eap.6.0>
 		<jbosstools.test.jboss.home.eap.6.1>${requirementsDirectory}/jboss-eap-6.1</jbosstools.test.jboss.home.eap.6.1>
 		<!-- skipPrivateRequirements is inherited from parent pom -->
@@ -97,14 +97,14 @@
 						</configuration>
 					</execution>
 					<execution>
-						<id>install-wildfly-8.0.0.Alpha1</id>
+						<id>install-wildfly-8.0.0.Alpha4</id>
 						<phase>pre-integration-test</phase>
 						<goals>
 							<goal>wget</goal>
 						</goals>
 						<configuration>
-							<url>http://download.jboss.org/wildfly/8.0.0.Alpha1/wildfly-8.0.0.Alpha1.zip</url>
-							<md5>220b246c08a66192b9466f9ac93f1693</md5>
+							<url>http://download.jboss.org/wildfly/8.0.0.Alpha4/wildfly-8.0.0.Alpha4.zip</url>
+							<md5>4049b94e02c4a232ceb935fbbc4a68f0</md5>
 							<unpack>true</unpack>
 						</configuration>
 					</execution>
