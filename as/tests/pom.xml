@@ -13,6 +13,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 	<properties>
 		<!-- set a different path with -Djbosstools.test.jre.7= -->
 		<jbosstools.test.jre.7>/qa/tools/opt/jdk1.7.0_last</jbosstools.test.jre.7>
+		<!-- these are used by o.j.t.as.test.core and o.j.i.e.as.managent.as7.tests -->
+    <eapURL>http://download.devel.redhat.com/released/JBEAP-6/6.1.1/jboss-eap-6.1.1.zip</eapURL>
+    <eapMD5>d7abd98375b6ff9fb16581d688465207</eapMD5>
 	</properties>
 	<modules>
 		<module>org.jboss.ide.eclipse.as.archives.integration.test</module>		
