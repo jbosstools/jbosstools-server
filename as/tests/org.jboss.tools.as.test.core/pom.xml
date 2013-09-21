@@ -23,8 +23,8 @@
 		<jbosstools.test.jboss.home.eap.4.3>${requirementsDirectory}/jboss-eap-4.3/jboss-as</jbosstools.test.jboss.home.eap.4.3>
 		<jbosstools.test.jboss.home.eap.5.0>${requirementsDirectory}/jboss-eap-5.1/jboss-as</jbosstools.test.jboss.home.eap.5.0>
 		<jbosstools.test.jboss.home.eap.6.0>${requirementsDirectory}/jboss-eap-6.0</jbosstools.test.jboss.home.eap.6.0>
-                <jbosstools.test.jboss.home.eap.6.1>${requirementsDirectory}/jboss-eap-6.1</jbosstools.test.jboss.home.eap.6.1>
-
+		<jbosstools.test.jboss.home.eap.6.1>${requirementsDirectory}/jboss-eap-6.1</jbosstools.test.jboss.home.eap.6.1>
+		<!-- skipPrivateRequirements, eapURL and eapMD5 are inherited from parent pom or ../pom.xml -->
 
 		<systemProperties>-Djbosstools.test.jboss.home.3.2=${jbosstools.test.jboss.home.3.2} -Djbosstools.test.jboss.home.4.0=${jbosstools.test.jboss.home.4.0} -Djbosstools.test.jboss.home.4.2=${jbosstools.test.jboss.home.4.2} -Djbosstools.test.jboss.home.5.0=${jbosstools.test.jboss.home.5.0} -Djbosstools.test.jboss.home.5.1=${jbosstools.test.jboss.home.5.1} -Djbosstools.test.jboss.home.6.0=${jbosstools.test.jboss.home.6.0} -Djbosstools.test.jboss.home.7.0=${jbosstools.test.jboss.home.7.0} -Djbosstools.test.jboss.home.7.1=${jbosstools.test.jboss.home.7.1} -Djbosstools.test.jboss.home.eap.4.3=${jbosstools.test.jboss.home.eap.4.3} -Djbosstools.test.jboss.home.eap.5.0=${jbosstools.test.jboss.home.eap.5.0} -Djbosstools.test.jboss.home.eap.6.0=${jbosstools.test.jboss.home.eap.6.0}  -Djbosstools.test.jboss.home.eap.6.1=${jbosstools.test.jboss.home.eap.6.1} -Djbosstools.test.jboss.home.8.0=${jbosstools.test.jboss.home.8.0} -Dorg.jboss.tools.tests.skipPrivateRequirements=${skipPrivateRequirements}  </systemProperties>
 		<coverage.filter>org.jboss.ide.eclipse.as.core*</coverage.filter>
@@ -182,8 +182,8 @@
 							<goal>wget</goal>
 						</goals>
 						<configuration>
-							<url>http://download.lab.bos.redhat.com/devel/candidates/JBEAP/JBEAP-6.1.0-ER4/jboss-eap-6.1.0.ER4.zip</url>
-							<md5>b396c0b5234264f09ed2db5eef4ad48c</md5>
+              <url>${eapURL}</url>
+              <md5>${eapMD5}</md5>
 							<unpack>true</unpack>
 							<skip>${skipPrivateRequirements}</skip>
 						</configuration>
