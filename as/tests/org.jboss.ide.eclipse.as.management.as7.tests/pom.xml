@@ -82,8 +82,8 @@
 							<goal>wget</goal>
 						</goals>
 						<configuration>
-							<url>http://download.lab.bos.redhat.com/devel/candidates/JBEAP/JBEAP-6.1.0-ER4/jboss-eap-6.1.0.ER4.zip</url>
-							<md5>b396c0b5234264f09ed2db5eef4ad48c</md5>
+							<url>http://download.devel.redhat.com/released/JBEAP-6/6.1.1/jboss-eap-6.1.1.zip</url>
+							<md5>d7abd98375b6ff9fb16581d688465207</md5>
 							<unpack>true</unpack>
 							<skip>${skipPrivateRequirements}</skip>
 						</configuration>
