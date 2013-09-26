@@ -149,7 +149,7 @@ public class DeploymentScannerAdditionsTest extends TestCase  {
 		IServer s = ServerCreationTestUtils.createMockServerWithRuntime(serverType, serverType);
 		try {
 			IServerWorkingCopy wc = s.createWorkingCopy();
-			wc.setAttribute(IDeployableServer.SERVER_MODE, "mock4");
+			wc.setAttribute(IDeployableServer.SERVER_MODE, "mock5unknown");
 			s = wc.save(true, null);
 		} catch(CoreException ce) {
 			fail("Could not set server mode to non-local");
