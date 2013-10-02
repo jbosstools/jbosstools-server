@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.IVMInstall;
@@ -65,6 +66,7 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 		getProperties().setServerId(getServerId(jbossServer), launchConfig);
 		getProperties().setModulesFolder(getModulesFolder(jbossServer, jbossRuntime), launchConfig);
 		getProperties().setConfigurationFile(getServerConfigFile(jbossServer, jbossRuntime), launchConfig);
+		getProperties().setBaseDirectory(getBaseDir(jbossRuntime), launchConfig);
 		getProperties().setBootLogFile(getBootLogPath(jbossRuntime), launchConfig);
 		getProperties().setLoggingConfigFile(getLoggingConfigPath(jbossRuntime), launchConfig);
 	}
@@ -90,6 +92,14 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 		return rt.getConfigurationFile();
 	}
 
+	/**
+	 * @since 2.5
+	 */
+	protected String getBaseDir(IJBossServerRuntime runtime)  throws CoreException {
+		LocalJBoss7ServerRuntime rt = (LocalJBoss7ServerRuntime)runtime.getRuntime().loadAdapter(LocalJBoss7ServerRuntime.class, null);
+		return rt.getBaseDirectory();
+	}
+	
 
 	@Override
 	protected List<String> getClasspath(JBossServer server, IJBossServerRuntime runtime, List<String> currentClasspath) throws CoreException {
@@ -144,16 +154,16 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 	}
 	
 	protected String getBootLogPath(IJBossServerRuntime runtime) {
-		IPath serverHome = runtime.getRuntime().getLocation();
 		IJBossRuntimeResourceConstants c = new IJBossRuntimeResourceConstants() {};
-		IPath bootLog = serverHome.append(c.AS7_STANDALONE).append(c.FOLDER_LOG).append(c.AS7_BOOT_LOG);
+		IPath basedir = new Path(((LocalJBoss7ServerRuntime)runtime).getBaseDirectory());
+		IPath bootLog = basedir.append(c.FOLDER_LOG).append(c.AS7_BOOT_LOG);
 		return bootLog.toString();
 	}
 	
 	protected String getLoggingConfigPath(IJBossServerRuntime runtime) {
 		IJBossRuntimeResourceConstants c = new IJBossRuntimeResourceConstants() {};
-		IPath serverHome = runtime.getRuntime().getLocation();
-		IPath logConfigPath = serverHome.append(c.AS7_STANDALONE).append(c.CONFIGURATION).append(c.LOGGING_PROPERTIES);
+		IPath basedir = new Path(((LocalJBoss7ServerRuntime)runtime).getBaseDirectory());
+		IPath logConfigPath = basedir.append(c.CONFIGURATION).append(c.LOGGING_PROPERTIES);
 		try {
 			return logConfigPath.toFile().toURI().toURL().toString();
 		} catch (MalformedURLException murle) {

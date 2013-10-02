@@ -11,8 +11,10 @@
 package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 
 public class GateIn33AS71DefaultLaunchArguments extends JBoss71DefaultLaunchArguments {
 	public GateIn33AS71DefaultLaunchArguments(IServer s) {
@@ -41,9 +43,10 @@ public class GateIn33AS71DefaultLaunchArguments extends JBoss71DefaultLaunchArgu
 	}
 	
 	protected String getJBossJavaFlags() {
+		LocalJBoss7ServerRuntime jb7rt = (LocalJBoss7ServerRuntime)runtime.getAdapter(LocalJBoss7ServerRuntime.class);
+		IPath basedir = new Path(jb7rt.getBaseDirectory());
 		IPath gateInConfig = 
-				getServerHome().append("standalone")//$NON-NLS-1$
-				.append("configuration").append("gatein"); //$NON-NLS-1$ //$NON-NLS-2$
+				basedir.append("configuration").append("gatein"); //$NON-NLS-1$ //$NON-NLS-2$
 		String s1 = "-Dexo.conf.dir=" + QUOTE //$NON-NLS-1$
 				+ gateInConfig.toString()
 				+ QUOTE + SPACE

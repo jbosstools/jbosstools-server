@@ -52,6 +52,10 @@ import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 
+/**
+ * This class was replaced by {@link DeploymentPage}
+ */
+@Deprecated
 public class ModuleDeploymentPage extends ServerEditorPart {
 	protected ServerResourceCommandManager commandManager;
 	protected ArrayList<IModule> possibleModules;
