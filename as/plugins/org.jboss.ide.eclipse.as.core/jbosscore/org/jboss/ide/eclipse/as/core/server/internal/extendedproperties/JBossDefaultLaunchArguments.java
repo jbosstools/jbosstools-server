@@ -38,8 +38,8 @@ public class JBossDefaultLaunchArguments implements IDefaultLaunchArguments, IJB
 	// If created with a server, we can try to get values from 
 	// whatever 'mode' it is in (local vs rse). 
 	public JBossDefaultLaunchArguments(IServer s) {
+		this(s.getRuntime());
 		this.server = s;
-		serverHome = getLocalRuntimeHomeDirectory();
 	}
 
 	/*

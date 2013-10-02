@@ -72,7 +72,9 @@ public class LocalServerModeDetails implements IServerModeDetails {
 			boolean relative = PROP_SERVER_TMP_DEPLOYMENTS_FOLDER_REL.equals(prop);
 			IPath p = null;
 			if( isAS7Structure()) {
-				p = new Path(IJBossRuntimeResourceConstants.AS7_STANDALONE)
+				LocalJBoss7ServerRuntime jb7rt = (LocalJBoss7ServerRuntime)server.getRuntime().loadAdapter(LocalJBoss7ServerRuntime.class, null);
+				String basedir = jb7rt.getBaseDirectory();
+				p = new Path(basedir)
 					.append(IJBossRuntimeResourceConstants.FOLDER_TMP);
 			} else {
 				p = new Path(jbrt.getConfigLocation()).append(jbrt.getJBossConfiguration())

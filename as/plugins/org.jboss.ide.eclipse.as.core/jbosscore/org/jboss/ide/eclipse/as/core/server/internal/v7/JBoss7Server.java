@@ -10,7 +10,6 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
-import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.AS7_STANDALONE;
 import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.FOLDER_TMP;
 import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.AS7_MANAGEMENT_PORT;
 import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.AS7_MANAGEMENT_PORT_DEFAULT_PORT;
@@ -25,11 +24,11 @@ import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.PORT_OFF
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IRuntime;
 import org.jboss.ide.eclipse.as.core.server.IManagementPortProvider;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
-import org.jboss.ide.eclipse.as.core.util.ExpressionResolverUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
@@ -75,7 +74,8 @@ public class JBoss7Server extends JBossServer implements IJBoss7Deployment, IMan
 		String type = getDeployLocationType();
 		if( DEPLOY_SERVER.equals(type)) {
 			IRuntime rt = getServer().getRuntime();
-			IPath p = rt.getLocation().append(AS7_STANDALONE).append(FOLDER_TMP);
+			LocalJBoss7ServerRuntime jb7rt = (LocalJBoss7ServerRuntime)rt.loadAdapter(LocalJBoss7ServerRuntime.class, null);
+			IPath p = new Path(jb7rt.getBaseDirectory()).append(FOLDER_TMP);
 			return ServerUtil.makeGlobal(rt, p).toString();
 		}
 		return getTempDeployFolder(this, type);

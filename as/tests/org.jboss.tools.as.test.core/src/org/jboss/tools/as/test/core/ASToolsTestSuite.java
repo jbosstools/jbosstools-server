@@ -14,6 +14,7 @@ import org.jboss.tools.as.test.core.classpath.ClasspathSuite;
 import org.jboss.tools.as.test.core.parametized.server.ParametizedSuite;
 import org.jboss.tools.as.test.core.polling.PollThreadTest;
 import org.jboss.tools.as.test.core.portal.LaunchProjectOnJPP6Test;
+import org.jboss.tools.as.test.core.runtime.RuntimeSuite;
 import org.jboss.tools.as.test.core.runtimedetect.RuntimeDetectionTest;
 import org.jboss.tools.as.test.core.utiltests.UtilsSuite;
 import org.junit.runner.RunWith;
@@ -22,6 +23,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
+	RuntimeSuite.class,
 	ParametizedSuite.class,
 	UtilsSuite.class,
 	PollThreadTest.class,

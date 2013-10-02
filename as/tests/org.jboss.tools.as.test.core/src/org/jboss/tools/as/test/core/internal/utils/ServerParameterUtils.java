@@ -80,7 +80,7 @@ public class ServerParameterUtils {
 	public static Object[] getAllJBossServerTypeParameters() {
 		ArrayList<Object> list = new ArrayList<Object>();
 		list.add(IJBossToolingConstants.DEPLOY_ONLY_SERVER);
-		list.addAll(Arrays.asList(getJBossServerTypeParamterers()));
+		list.addAll(Arrays.asList(getJBossServerTypeParameters()));
 		return (Object[]) list.toArray(new Object[list.size()]);
 	}
 	

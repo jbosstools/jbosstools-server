@@ -275,6 +275,8 @@ public class XPathModel extends UnitedServerListener {
 	private static HashMap<String, URL> rtToPortsFile;
 	private static final String ATTRIBUTE_SUFFIX = "_ATTRIBUTE";//$NON-NLS-1$
 	private static final String FILE_SUFFIX = "_FILE";//$NON-NLS-1$
+	private static final String BASEDIR_SUFFIX = "_BASEDIR";//$NON-NLS-1$
+
 	static {
 		rtToPortsFile = new HashMap<String, URL>();
 		rtToPortsFile.put(IConstants.AS_32, getURLFor(DEFAULT_PROPS_32));
@@ -344,15 +346,18 @@ public class XPathModel extends UnitedServerListener {
 		Properties pr = new Properties();
 		pr.load(url.openStream());
 		Iterator<Object> i = pr.keySet().iterator();
-		String name, xpath, attributeName, file;
+		String name, xpath, attributeName, file, tmpBasedir;
 		XPathQuery query;
 		while(i.hasNext()) {
 			name = (String)i.next();
-			if( !name.endsWith(ATTRIBUTE_SUFFIX) && !name.endsWith(FILE_SUFFIX)) {
+			if( !name.endsWith(ATTRIBUTE_SUFFIX) && !name.endsWith(FILE_SUFFIX) && !name.endsWith(BASEDIR_SUFFIX)) {
 				xpath = pr.getProperty(name);
 				attributeName = pr.getProperty(name+ATTRIBUTE_SUFFIX);
 				file = pr.getProperty(name + FILE_SUFFIX);
-				query = new XPathQuery(server, name.replace('_', ' '), baseDir, file, xpath, attributeName);
+				tmpBasedir = pr.getProperty(name + BASEDIR_SUFFIX);
+				query = new XPathQuery(server, name.replace('_', ' '), 
+						tmpBasedir == null ? baseDir : tmpBasedir, 
+						file, xpath, attributeName);
 				category.addQuery(query);
 			}
 		}

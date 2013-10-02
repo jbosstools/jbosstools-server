@@ -47,7 +47,11 @@ import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 
 public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
-
+	private Label baseDirLabel;
+	private Text baseDirText;
+	private Button baseDirBrowse;
+	private String baseDirTextVal;
+	
 	@Override
 	public boolean hasComposite() {
 		return true;
@@ -75,14 +79,31 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 		
 		configBrowse = new Button(configComposite, SWT.NONE);
 		configBrowse.setText(Messages.browse);
+
+		
+		baseDirLabel = new Label(configComposite, SWT.NONE);
+		baseDirLabel.setText("Configuration base directory: ");
+		baseDirText = new Text(configComposite, SWT.BORDER);
+		
+		baseDirBrowse = new Button(configComposite, SWT.NONE);
+		baseDirBrowse.setText(Messages.browse);
+
 		
 		// Organize them
-		configDirLabel.setLayoutData(u.createFormData(
+		baseDirLabel.setLayoutData(u.createFormData(
 				0, 7, null, 0, 0, 5, null, 0));
-		configDirText.setLayoutData(u.createFormData(
-				0, 5, null, 0, configDirLabel, 5, configBrowse, -5));
-		configBrowse.setLayoutData(u.createFormData(
+		baseDirText.setLayoutData(u.createFormData(
+				0, 5, null, 0, baseDirLabel, 5, baseDirBrowse, -5));
+		baseDirBrowse.setLayoutData(u.createFormData(
 				0, 5, null, 0, null, 0, 100, -5));
+		
+		configDirLabel.setLayoutData(u.createFormData(
+				baseDirLabel, 10, null, 0, 0, 5, null, 0));
+		configDirText.setLayoutData(u.createFormData(
+				baseDirText, 5, null, 0, configDirLabel, 5, configBrowse, -5));
+		configBrowse.setLayoutData(u.createFormData(
+				baseDirBrowse, 5, null, 0, null, 0, 100, -5));
+		
 		
 		configDirText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
@@ -90,6 +111,15 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 				updatePage();
 			} 
 		});
+
+		
+		baseDirText.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				baseDirTextVal = baseDirText.getText();
+				updatePage();
+			} 
+		});
+
 		
 		configBrowse.addSelectionListener(new SelectionListener(){
 			public void widgetSelected(SelectionEvent e) {
@@ -99,53 +129,110 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 			}
 		});
 
+		baseDirBrowse.addSelectionListener(new SelectionListener(){
+			public void widgetSelected(SelectionEvent e) {
+				baseDirBrowsePressed();
+				updatePage();
+			}
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+
+		
 	}
 	
-	protected void configBrowsePressed() {
+	
+	private File getConfigBrowseInitialFolder() {
 		IPath f1 = null;
-		if(new Path(configDirText.getText()).isAbsolute()) {
-			f1 = new Path(configDirText.getText());
+		if(new Path(configDirTextVal).isAbsolute()) {
+			// If the configuration file (not dir, despite superclass var name) 
+			// is absolute, then just use that
+			f1 = new Path(configDirTextVal);
 		} else {
-			f1 = new Path(homeDir).append(IJBossRuntimeResourceConstants.AS7_STANDALONE)
+			// Else, 
+			f1 = new Path(getAbsoluteBaseDir(baseDirTextVal, homeDir))
 					.append(IJBossRuntimeResourceConstants.CONFIGURATION)
-					.append(configDirText.getText());
+					.append(configDirTextVal);
 		}
 		String folder = f1.removeLastSegments(1).toString();
 		File file = new File(folder);
 		if (!file.exists()) {
 			file = null;
 		}
-
+		
+		return file;
+	}
+	
+	protected void configBrowsePressed() {
+		File file = getConfigBrowseInitialFolder();
 		File ffile = getFile(file, homeDirComposite.getShell());
 		if (ffile != null) {
-			IPath standaloneFolder = new Path(homeDir).append(IJBossRuntimeResourceConstants.AS7_STANDALONE)
+			// Chosen basedir's config folder
+			IPath chosenConfigFolder = new Path(getAbsoluteBaseDir(baseDirTextVal, homeDir))
 					.append(IJBossRuntimeResourceConstants.CONFIGURATION);
-			if(ffile.getAbsolutePath().startsWith(standaloneFolder.toFile().getAbsolutePath())) {
-				String result = ffile.getAbsolutePath().substring(standaloneFolder.toString().length());
-				configDirText.setText(new Path(result).makeRelative().toString());
+			
+			if(ffile.getAbsolutePath().startsWith(chosenConfigFolder.toFile().getAbsolutePath())) {
+				String result = ffile.getAbsolutePath().substring(chosenConfigFolder.toString().length());
+				configDirTextVal = (new Path(result).makeRelative().toString());
 			} else {
 				IPath ffilePath = new Path(ffile.getAbsolutePath());
-				String relativeToStandalone = makeRelativeToStandaloneConfig(standaloneFolder, ffilePath);
-				configDirText.setText(relativeToStandalone);
+				String relativeToConfig = makeRelativeToConfigFolder(chosenConfigFolder, ffilePath);
+				configDirTextVal = (relativeToConfig);
 			}
+			configDirText.setText(configDirTextVal);
 		}
-		configDirTextVal = configDirText.getText();
 	}
-	private String makeRelativeToStandaloneConfig(IPath standaloneFolder, IPath ffilePath) {
+	
+	/**
+	 * @since 2.5
+	 */
+	protected void baseDirBrowsePressed() {
+		File file = null;
+		if( new Path(baseDirTextVal).isAbsolute()) {
+			file = new Path(baseDirTextVal).toFile();
+		} else {
+			file = new Path(homeDir).append(baseDirTextVal).toFile();
+		}
+		File ffile = getDirectory(file, homeDirComposite.getShell());
+		if (ffile != null) {
+			IPath ffilePath = new Path(ffile.getAbsolutePath());
+			if( new Path(homeDir).isPrefixOf(ffilePath)) {
+				String relative = ffile.getAbsolutePath().substring(homeDir.toString().length());
+				baseDirTextVal = new Path(relative).makeRelative().toString();
+			} else {
+				baseDirTextVal = ffile.getAbsolutePath();
+			}
+			baseDirText.setText(baseDirTextVal);
+		}
+	}
+	
+	
+	
+	/**
+	 * Given a baseFolder folder of /home/user/jboss7/standalone2
+	 * and a config-file of /home/user/jboss7/standalone4/mystandalone.xml, 
+	 * this should return ../standalone4/mystandalone.xml
+	 * 
+	 * @param baseFolder  the base folder for your configuration
+	 * @param ffilePath   the absolute file-system location of the chosen config xml
+	 * @return  a relative path between the two
+	 */
+	private String makeRelativeToConfigFolder(IPath baseFolder, IPath ffilePath) {
 		StringBuffer sb = new StringBuffer();
 		boolean done = false;
 		while( !done ) {
-			if( !standaloneFolder.isPrefixOf(ffilePath)) {
+			if( !baseFolder.isPrefixOf(ffilePath)) {
 				sb.append("../");
-				standaloneFolder = standaloneFolder.removeLastSegments(1);
+				baseFolder = baseFolder.removeLastSegments(1);
 			} else {
 				done = true;
 			}
 		}
-		sb.append(ffilePath.removeFirstSegments(standaloneFolder.segmentCount()).toString());
+		sb.append(ffilePath.removeFirstSegments(baseFolder.segmentCount()).toString());
 		return sb.toString();
 	}
 
+	// Open a file-chooser dialog
 	protected static File getFile(File startingDirectory, Shell shell) {
 		FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
 		if (startingDirectory != null) {
@@ -162,10 +249,9 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 		return null;
 	}
 	
-	
+	@Override
 	protected void fillWidgets() {
 		IRuntime rt = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
-		
 		if (rt != null) {
 			try {
 				fillNameWidgets(rt);
@@ -179,11 +265,46 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 		}
 	}
 
+	@Override
 	protected void fillConfigWidgets(IRuntime rt) {
 		LocalJBoss7ServerRuntime rt2 = (LocalJBoss7ServerRuntime)rt.loadAdapter(LocalJBoss7ServerRuntime.class, null);
-		configDirText.setText(rt2.getConfigurationFile());
+		baseDirTextVal = getPresentableBaseDir(rt);
+		baseDirText.setText(baseDirTextVal);
+		configDirTextVal = rt2.getConfigurationFile();
+		configDirText.setText(configDirTextVal);
 	}
 
+	/**
+	 * Returns a presentable string representing the basedir. 
+	 * For basedir that is relative to server home, such as 'standalone', 
+	 * only 'standalone' will be returned, whereas for base directories 
+	 * outside of the tree, a file-system full path should be returned
+	 * 
+	 * @param rt
+	 * @return
+	 */
+	private String getPresentableBaseDir(IRuntime rt) {
+		LocalJBoss7ServerRuntime rt2 = (LocalJBoss7ServerRuntime)rt.loadAdapter(LocalJBoss7ServerRuntime.class, null);
+		String baseDir = rt2.getBaseDirectory();
+		if( rt.getLocation().isPrefixOf(new Path(baseDir))) {
+			return new Path(baseDir).removeFirstSegments(rt.getLocation().segmentCount()).toString();
+		}
+		return baseDir;
+	}
+	
+	/**
+	 * Get the base directory as an absolute file-system path
+	 * @param path
+	 * @param rt
+	 * @return
+	 */
+	private String getAbsoluteBaseDir(String path, String homeDir) {
+		if( new Path(path).isAbsolute())
+			return path;
+		return new Path(homeDir).append(path).toString();
+	}
+	
+	
 	@Override
 	protected void updatePage() {
 		jreComboIndex = jreCombo.getSelectionIndex();
@@ -224,8 +345,8 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 			if( p.isAbsolute() ) {
 				return Messages.bind(Messages.rwf7_ConfigFileAbsoluteError, p.toString());
 			}
-			IPath actualPath = new Path(homeDir)
-					.append(IJBossRuntimeResourceConstants.AS7_STANDALONE)
+			IPath actualPath = 
+					new Path(getAbsoluteBaseDir(baseDirTextVal, homeDir))
 					.append(IJBossRuntimeResourceConstants.CONFIGURATION).append(p);
 			if( !actualPath.toFile().exists()) {
 				return Messages.bind(Messages.rwf7_ConfigFileError, actualPath.toString());
@@ -308,6 +429,8 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 				LocalJBoss7ServerRuntime.class, new NullProgressMonitor());
 		if( configDirTextVal != null && !"".equals(configDirTextVal))
 			srt.setConfigurationFile(configDirTextVal);
+		if( baseDirTextVal != null && !"".equals(baseDirTextVal))
+			srt.setBaseDirectory(baseDirTextVal);
 	}
 
 }

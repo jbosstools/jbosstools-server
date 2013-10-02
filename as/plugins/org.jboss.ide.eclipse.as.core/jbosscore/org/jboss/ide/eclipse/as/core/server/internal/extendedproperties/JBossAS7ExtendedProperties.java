@@ -11,17 +11,18 @@
 package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
 import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.AS7_DEPLOYMENTS;
-import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.AS7_STANDALONE;
+
+import java.io.File;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.internal.launching.environments.EnvironmentsManager;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
 import org.jboss.ide.eclipse.as.core.Messages;
-import org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver;
 import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
 import org.jboss.ide.eclipse.as.core.server.IDeploymentScannerModifier;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
@@ -43,7 +44,10 @@ public class JBossAS7ExtendedProperties extends JBossExtendedProperties implemen
 	}
 
 	public String getNewFilesetDefaultRootFolder() {
-		return IJBossRuntimeResourceConstants.AS7_STANDALONE + "/" + IJBossRuntimeResourceConstants.CONFIGURATION; //$NON-NLS-1$
+		if( runtime == null )
+			return IJBossRuntimeResourceConstants.AS7_STANDALONE + "/" + IJBossRuntimeResourceConstants.CONFIGURATION; //$NON-NLS-1$
+		LocalJBoss7ServerRuntime jb7rt = (LocalJBoss7ServerRuntime)runtime.loadAdapter(LocalJBoss7ServerRuntime.class, null);
+		return jb7rt.getConfigLocation();
 	}
 	
 	public String getNewClasspathFilesetDefaultRootFolder() {
@@ -77,11 +81,9 @@ public class JBossAS7ExtendedProperties extends JBossExtendedProperties implemen
 			return NLS.bind(Messages.RuntimeFolderDoesNotExist, server.getRuntime().getLocation().toOSString());
 		IRuntime rt = server.getRuntime();
 		LocalJBoss7ServerRuntime rt2 = (LocalJBoss7ServerRuntime)rt.loadAdapter(LocalJBoss7ServerRuntime.class, null);
-		String cfile = rt2.getConfigurationFile();
-		IPath cFilePath = rt.getLocation().append(IJBossRuntimeResourceConstants.AS7_STANDALONE)
-				.append(IJBossRuntimeResourceConstants.CONFIGURATION).append(cfile);
-		if( !cFilePath.toFile().exists())
-			return NLS.bind(Messages.JBossAS7ConfigurationFileDoesNotExist, cFilePath.toOSString());
+		String cFile = rt2.getConfigurationFileFullPath();
+		if( !(new File(cFile)).exists())
+			return NLS.bind(Messages.JBossAS7ConfigurationFileDoesNotExist, cFile);
 		return null;
 	}
 
@@ -135,7 +137,8 @@ public class JBossAS7ExtendedProperties extends JBossExtendedProperties implemen
 	public String getServerDeployLocation() {
 		if( runtime == null )
 			return null;
-		IPath p = runtime.getLocation().append(AS7_STANDALONE).append(AS7_DEPLOYMENTS);
+		LocalJBoss7ServerRuntime jb7rt = (LocalJBoss7ServerRuntime)runtime.loadAdapter(LocalJBoss7ServerRuntime.class, null);
+		IPath p = new Path(jb7rt.getBaseDirectory()).append(AS7_DEPLOYMENTS);
 		return ServerUtil.makeGlobal(runtime, p).toString();
 	}
 }

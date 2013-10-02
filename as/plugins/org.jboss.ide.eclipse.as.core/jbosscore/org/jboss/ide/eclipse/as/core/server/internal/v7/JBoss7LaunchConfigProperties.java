@@ -43,6 +43,21 @@ public class JBoss7LaunchConfigProperties extends JBossLaunchConfigProperties {
 		}
 	}
 
+	/**
+	 * @since 2.5
+	 */
+	public void setBaseDirectory(String file, ILaunchConfigurationWorkingCopy launchConfig)
+			throws CoreException {
+		if (isSet(file)) {
+			String progArgs = getProgramArguments(launchConfig);
+			progArgs = ArgsUtil.setArg(progArgs,
+					null, IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JBOSS_SERVER_BASE_DIR, file);
+			setProgramArguments(progArgs, launchConfig);
+		}
+	}
+
+	
+	
 	public void setBootLogFile(String blf, ILaunchConfigurationWorkingCopy launchConfig)
 			throws CoreException {
 		if (isSet(blf)) {
