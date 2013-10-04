@@ -64,7 +64,7 @@ public class ServerBeanLoader {
 		String version = null;
 		if (!JBossServerType.UNKNOWN.equals(type)) {
 			String fullVersion = type.getFullVersion(rootLocation);
-			version = getServerVersion(fullVersion);
+			version = getMajorMinorVersion(fullVersion);
 		} 
 		ServerBean server = new ServerBean(rootLocation.getPath(),getName(rootLocation),type,version);
 		this.bean = server;
