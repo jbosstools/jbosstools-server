@@ -16,6 +16,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.server.core.IModule;
 
+/**
+ * This class represents jbt-specific delegates to the 
+ * ServerBehaviorDelegate, so that how our servers behave can be
+ * changed based on what 'mode' the server is currently in. 
+ *   ex:  local, rse, management, etc... 
+ */
 public interface IJBossBehaviourDelegate {
 
 	public String getBehaviourTypeId();
@@ -36,16 +42,17 @@ public interface IJBossBehaviourDelegate {
 
 	public void onServerStopped();
 
-	public IStatus canChangeState(String launchMode);
-
-	/* Use the JBossExtendedProperties.getDefaultLaunchArguments().getDefaultStopArgs()  instead*/
-	@Deprecated 
-	public String getDefaultStopArguments() throws CoreException;
 	
 	/**
-	 * @since 2.4
+	 * It is possible this method is not sufficient.
+	 * Some server modes may be able to stop a server, or restart a server, 
+	 * but not start a server. 
+	 * 
+	 *  We may need an additional interface to expand this without breaking API
+	 * @param launchMode
+	 * @return
 	 */
-	public IModulePathFilter getPathFilter(IModule[] moduleTree);
-	
+	public IStatus canChangeState(String launchMode);
+		
 	public void dispose();
 }

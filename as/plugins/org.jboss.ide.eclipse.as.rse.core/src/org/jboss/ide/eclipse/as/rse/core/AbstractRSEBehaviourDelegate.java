@@ -86,12 +86,6 @@ public abstract class AbstractRSEBehaviourDelegate extends AbstractJBossBehaviou
 		pollServer(IServerStatePoller.SERVER_DOWN);
 	}
 	
-	@Override @Deprecated
-	protected void setServerStopped() {
-		getActualBehavior().setServerStopped();
-		pid = null;
-	}
-
 	@Override
 	public IServerModeDetails getServerModeDetails() {
 		return new RSEServerModeDetails(getServer());

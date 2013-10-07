@@ -58,7 +58,7 @@ public class DeploymentScannerSection extends ServerEditorSection {
 	}
 	
 	/**
-	 * @since 2.5
+	 * @since 3.0
 	 */
 	protected void setDefaultValues() {
 		// set initial values

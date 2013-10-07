@@ -22,7 +22,9 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
 
@@ -39,6 +41,11 @@ public class RSEJBoss7BehaviourDelegate extends RSEBehaviourDelegate {
 		String defaultCommand = getDefaultStopArguments();
 		ILaunchConfiguration config = getServer().getLaunchConfiguration(false, new NullProgressMonitor());
 		return RSELaunchConfigProperties.getShutdownCommand(config, defaultCommand);
+	}
+	
+	public String getDefaultStopArguments() throws CoreException {
+		JBossServer jbs = (JBossServer)ServerConverter.getJBossServer(getServer());
+		return jbs.getExtendedProperties().getDefaultLaunchArguments().getDefaultStopArgs();
 	}
 
 	@Override

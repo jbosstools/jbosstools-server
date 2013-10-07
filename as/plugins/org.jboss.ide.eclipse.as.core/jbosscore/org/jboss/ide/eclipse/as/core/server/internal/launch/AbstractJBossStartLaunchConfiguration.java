@@ -24,6 +24,7 @@ import org.eclipse.jdt.launching.AbstractJavaLaunchConfigurationDelegate;
 import org.eclipse.jdt.launching.ExecutionArguments;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMRunner;
+import org.eclipse.jdt.launching.JavaLaunchDelegate;
 import org.eclipse.jdt.launching.VMRunnerConfiguration;
 import org.eclipse.jst.server.core.ServerProfilerDelegate;
 import org.eclipse.osgi.util.NLS;
@@ -48,6 +49,14 @@ import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 
 /**
+ * This class may look like a lot of copy-pasted code that should be handled in the superclass,
+ * but it cannot be. The superclass's methods have an implicit assumption of an IProject 
+ * being involved in the launch. Without the IProject, the super-class's implementation will
+ * fail in many ways. 
+ * 
+ * So much of the code needed to be copied here. 
+ * 
+ * 
  * @author Rob Stryker
  */
 public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJavaLaunchConfigurationDelegate {
@@ -157,6 +166,16 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 
 	protected void actualLaunch(ILaunchConfiguration configuration,
 			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
+		// It looks like the code commented will work cleaner, EXCEPT that near the bottom of the method
+		// there's integration with server profiling.  Not sure how to extract the two.
+		// The profiling stuff must be done before runner, so using JavaLaunchDelegate
+		// may not be acceptable
+		
+//		boolean t = true;
+//		if( t ) {
+//			new JavaLaunchDelegate().launch(configuration, mode, launch, monitor);
+//			return;
+//		}
 		// And off we go!
 		IVMInstall vm = verifyVMInstall(configuration);
 		IVMRunner runner = vm.getVMRunner(mode);
@@ -210,8 +229,7 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 			} catch (CoreException ce) {
 				IServer server = org.eclipse.wst.server.core.ServerUtil.getServer(configuration);
 				DelegatingServerBehavior jbsb = (DelegatingServerBehavior) server.getAdapter(DelegatingServerBehavior.class);
-				jbsb.stop(true);
-				// genericServer.stopImpl();
+				jbsb.setServerStopped();
 				throw ce;
 			}
 		}

@@ -33,6 +33,7 @@ import org.eclipse.wst.server.core.internal.ServerPreferences;
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
+import org.jboss.ide.eclipse.as.core.modules.ResourceModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.publishers.patterns.internal.PublishFilterDirectoryScanner;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossBehaviourDelegate;
@@ -104,7 +105,7 @@ public class ZippedFilterTest extends TestCase {
 		DelegatingServerBehavior beh = (DelegatingServerBehavior)server.loadAdapter(DelegatingServerBehavior.class, null);
 		IJBossBehaviourDelegate del = (IJBossBehaviourDelegate)beh.getDelegate();
 //		del.setUseSuperclassBehaviour(true);
-		IModulePathFilter filter = del.getPathFilter(new IModule[]{mod});
+		IModulePathFilter filter = ResourceModuleResourceUtil.findDefaultModuleFilter(mod);
 		IModuleResource[] originalMembers = md.members();
 		IModuleResource[] filteredMembers = filter == null ? originalMembers : filter.getFilteredMembers();
 		int oCount = IOUtil.countAllResources(originalMembers);
@@ -116,7 +117,7 @@ public class ZippedFilterTest extends TestCase {
 		vc.setMetaProperty("component.inclusion.patterns", "**/*");
 		vc.setMetaProperty("component.exclusion.patterns", "**/*.txt");
 		
-		filter = del.getPathFilter(new IModule[]{mod});
+		filter = ResourceModuleResourceUtil.findDefaultModuleFilter(mod);
 		originalMembers = md.members();
 		filteredMembers = filter.getFilteredMembers();
 		oCount = IOUtil.countAllResources(originalMembers);
@@ -126,7 +127,7 @@ public class ZippedFilterTest extends TestCase {
 		vc.setMetaProperty("component.inclusion.patterns", "**/*");
 		vc.setMetaProperty("component.exclusion.patterns", "**/DON*");
 		
-		filter = del.getPathFilter(new IModule[]{mod});
+		filter = ResourceModuleResourceUtil.findDefaultModuleFilter(mod);
 		originalMembers = md.members();
 		filteredMembers = filter.getFilteredMembers();
 		oCount = IOUtil.countAllResources(originalMembers);

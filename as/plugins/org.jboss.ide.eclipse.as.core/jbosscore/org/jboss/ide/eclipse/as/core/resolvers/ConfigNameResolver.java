@@ -37,7 +37,7 @@ public class ConfigNameResolver implements IDynamicVariableResolver {
 	public static final String JBOSS_CONFIG_DIR = "jboss_config_dir"; //$NON-NLS-1$
 	public static final String JBOSS_AS7_CONFIG_FILE = "jboss_config_file"; //$NON-NLS-1$
 	/**
-	 * @since 2.5
+	 * @since 3.0
 	 */
 	public static final String JBOSS_SERVER_HOME  = "jboss_server_home"; //$NON-NLS-1$
 	public static final String[] ALL_VARIABLES = new String[] {
@@ -117,7 +117,7 @@ public class ConfigNameResolver implements IDynamicVariableResolver {
 	}
 	
 	/**
-	 * @since 2.5
+	 * @since 3.0
 	 */
 	public String resolveValue(String variable, String argument)
 			throws CoreException {

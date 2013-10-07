@@ -237,12 +237,6 @@ public class PublishUtil extends ModuleResourceUtil {
 		}
 		return new IStatus[]{};
 	}
-
-	
-	/* Add one file or folder to a jar */
-	public static void doPackModule(IModuleResource resource, ModulePackager packager) throws CoreException, IOException{
-		doPackModule(resource, packager, null);
-	}
 	
 	/**
 	 * @since 2.4

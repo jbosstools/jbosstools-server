@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 /**
- * @since 2.5
+ * @since 3.0
  */
 public class ServerWorkingCopyPropertyTextCommand extends ServerCommand {
 	public static int POST_EXECUTE = 1;

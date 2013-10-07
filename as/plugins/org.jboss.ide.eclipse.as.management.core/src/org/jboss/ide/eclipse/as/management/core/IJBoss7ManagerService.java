@@ -31,15 +31,14 @@ public interface IJBoss7ManagerService {
 	
 	/**
 	 * Asynchronously deploy a file to a server
-	 * @param host     The host
-	 * @param port     The port
-	 * @param name     The deployment's name
+	 * @param details     The IAs7ManagementDetails including things like credentialing, host, port
+	 * @param deploymentName     The deployment's name
 	 * @param file     The file to be deployed
 	 * @param add      Add the deployment? True if the deployment is not 
 	 * 				   already added, false if you just want to start the existing deployment
 	 * @param monitor  The progress monitor
 	 * 
-	 * @return Not sure what to return yet
+	 * @return result An IJBoss7DeploymentResult
 	 * @throws JBoss7ManangerException
 	 */
 	public IJBoss7DeploymentResult deployAsync(IAS7ManagementDetails details,
@@ -48,15 +47,14 @@ public interface IJBoss7ManagerService {
 	/**
 	 * Synchronously deploy a file to a server
 	 * 
-	 * @param host    The host
-	 * @param port    The port
-	 * @param name    The deployment's name
+	 * @param details     The IAs7ManagementDetails including things like credentialing, host, port
+	 * @param deploymentName     The deployment's name
 	 * @param file    The file to be deployed
 	 * @param add     Add the deployment? True if the deployment is not 
 	 * 				  already added, false if you just want to start the existing deployment
 	 * @param monitor The progress monitor
 	 * 
-	 * @return Not sure what to return yet
+	 * @return result An IJBoss7DeploymentResult
 	 * @throws JBoss7ManangerException
 	 */
 	public IJBoss7DeploymentResult deploySync(IAS7ManagementDetails details,
@@ -65,13 +63,12 @@ public interface IJBoss7ManagerService {
 	/**
 	 * Asynchronously undeploy a file to a server
 	 * 
-	 * @param host    The host
-	 * @param port    The port
-	 * @param name    The deployment's name
+	 * @param details     The IAs7ManagementDetails including things like credentialing, host, port
+	 * @param deploymentName     The deployment's name
 	 * @param file    The file to be deployed
 	 * @param monitor The progress monitor
 	 * 
-	 * @return Not sure what to return yet
+	 * @return result An IJBoss7DeploymentResult
 	 * @throws JBoss7ManangerException
 	 */
 	public IJBoss7DeploymentResult undeployAsync(IAS7ManagementDetails details,
@@ -80,13 +77,12 @@ public interface IJBoss7ManagerService {
 	/**
 	 * Synchronously undeploy a file to a server
 	 * 
-	 * @param host    The host
-	 * @param port    The port
-	 * @param name    The deployment's name
-	 * @param file    The file to be deployed
+	 * @param details     The IAs7ManagementDetails including things like credentialing, host, port
+	 * @param deploymentName     The deployment's name
+	 * @param remove    Whether to remove the file or simply undeploy it
 	 * @param monitor The progress monitor
 	 * 
-	 * @return Not sure what to return yet
+	 * @return result An IJBoss7DeploymentResult
 	 * @throws JBoss7ManangerException
 	 */
 	public IJBoss7DeploymentResult undeploySync(IAS7ManagementDetails details,
@@ -95,8 +91,7 @@ public interface IJBoss7ManagerService {
 	/**
 	 * Returns the state for a given deployment name on a given host and port.
 	 * 
-	 * @param host    the host to query
-	 * @param port    the port to contact it on
+	 * @param details     The IAs7ManagementDetails including things like credentials, host, port
 	 * @param deploymentName  the name of the deployment that shall be queried
 	 * 
 	 * @return the state of the deployment
@@ -107,8 +102,7 @@ public interface IJBoss7ManagerService {
 	/**
 	 * Returns the state of the server 
 	 * 
-	 * @param host the server to query
-	 * @param port the port to communicate on
+	 * @param details     The IAs7ManagementDetails including things like credentials, host, port
 	 * @return the state of the server
 	 * 
 	 * @throws JBoss7ManangerException
@@ -119,8 +113,7 @@ public interface IJBoss7ManagerService {
 	 * Returns <code>true</code> if the server is running, <code>false</code>
 	 * otherwise.
 	 * 
-	 * @param host the server to to query
-	 * @param port the port to communicate on
+	 * @param details     The IAs7ManagementDetails including things like credentialing, host, port
 	 * @return true if it's running, false otherwise
 	 * @throws JBoss7ManangerException
 	 */

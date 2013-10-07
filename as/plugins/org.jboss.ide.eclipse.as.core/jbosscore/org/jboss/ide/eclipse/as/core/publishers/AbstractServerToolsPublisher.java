@@ -272,7 +272,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 			temp = File.createTempFile(module.getName() + "000", ".tmp", tempDeployFolder); //$NON-NLS-1$ //$NON-NLS-2$
 			IPath tempFile = new Path(temp.getAbsolutePath());
 			IStatus[] e2 = PublishUtil.packModuleIntoJar(moduleTree[moduleTree.length-1].getName(), 
-					resources, tempFile, getPathFilter(moduleTree));;
+					resources, tempFile, getPathFilter(moduleTree));
 			errors.addAll(Arrays.asList(e2));
 			return temp;
 		} catch( IOException ioe) {

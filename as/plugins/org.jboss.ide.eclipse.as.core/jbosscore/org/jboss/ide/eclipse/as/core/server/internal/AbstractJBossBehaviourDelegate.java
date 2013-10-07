@@ -10,7 +10,6 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
@@ -25,7 +24,6 @@ import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExt
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public abstract class AbstractJBossBehaviourDelegate extends AbstractBehaviourDelegate {
 
@@ -63,12 +61,6 @@ public abstract class AbstractJBossBehaviourDelegate extends AbstractBehaviourDe
 	@Override
 	public IStatus canChangeState(String launchMode) {
 		return Status.OK_STATUS;
-	}
-
-	@Override
-	public String getDefaultStopArguments() throws CoreException {
-		JBossServer jbs = (JBossServer)ServerConverter.getJBossServer(getServer());
-		return jbs.getExtendedProperties().getDefaultLaunchArguments().getDefaultStopArgs();
 	}
 
 	protected void pollServer(final boolean expectedState) {

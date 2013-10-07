@@ -38,7 +38,7 @@ import org.jboss.tools.foundation.core.expressions.IVariableResolver;
  *    ExpressionResolver process = new ExpressionResolver(resolver);
  *    String result = process.resolve("${jboss_config_dir}/deploy/someDeployedFolder");
  * 
- * @since 2.5
+ * @since 3.0
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class RuntimeVariableResolver implements IVariableResolver {

@@ -86,19 +86,6 @@ public abstract class AbstractBehaviourDelegate implements IJBossBehaviourDelega
 		// TODO Auto-generated method stub
 		return Status.CANCEL_STATUS;
 	}
-
-	@Override
-	public String getDefaultStopArguments() throws CoreException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/**
-	 * @since 2.4
-	 */
-	public IModulePathFilter getPathFilter(IModule[] moduleTree) {
-		return ResourceModuleResourceUtil.findDefaultModuleFilter(moduleTree[moduleTree.length-1]);
-	}
 	
 	@Override
 	public void dispose() {
@@ -111,7 +98,7 @@ public abstract class AbstractBehaviourDelegate implements IJBossBehaviourDelega
 	 * Subclasses may override to return the proper information. 
 	 */
 	/**
-	 * @since 2.5
+	 * @since 3.0
 	 */
 	public IServerModeDetails getServerModeDetails() {
 		return null;

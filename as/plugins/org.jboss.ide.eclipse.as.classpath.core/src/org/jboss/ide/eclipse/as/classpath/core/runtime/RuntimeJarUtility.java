@@ -33,7 +33,7 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
  * This class assists in fetching a set of jars based on a given
  * criteria for a relevant runtime
  * 
- * @since 2.5
+ * @since 3.0
  */
 public class RuntimeJarUtility {
 	/**

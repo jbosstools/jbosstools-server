@@ -16,7 +16,7 @@ import org.jboss.ide.eclipse.archives.webtools.filesets.Fileset;
 import org.jboss.tools.foundation.core.expressions.IVariableResolver;
 
 /**
- * @since 2.5
+ * @since 3.0
  */
 public class RuntimePathProviderFileset extends Fileset implements IRuntimePathProvider {
 	
