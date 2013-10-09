@@ -2,8 +2,8 @@ package org.jboss.ide.eclipse.as.internal.management.as7.tests.utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import junit.framework.Assert;
 
@@ -67,10 +67,10 @@ public class StartupUtility extends Assert {
 			envp.add("JAVA_HOME=" + java);
 		}
 		
-		System.out.println("Launching cmd " + cmd);
+		String[] envList = (String[]) envp.toArray(new String[envp.size()]);
 		Process p = null;
 		try {
-			p = Runtime.getRuntime().exec(cmd, envp.toArray(new String[0]));
+			p = Runtime.getRuntime().exec(cmd, envList);
 			return p;
 		} catch( IOException ioe) {
 			fail(homeDir + " server failed to start: " + ioe.getMessage());
