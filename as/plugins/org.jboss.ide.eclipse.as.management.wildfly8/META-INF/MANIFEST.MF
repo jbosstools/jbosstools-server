@@ -11,15 +11,15 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: .,
  lib/jboss-dmr-1.2.0.Beta2.jar,
  lib/jboss-logging-3.1.3.GA.jar,
+ lib/jboss-marshalling-1.4.1.Final.jar,
+ lib/jboss-marshalling-river-1.4.1.Final.jar,
  lib/jboss-remoting-4.0.0.Beta1.jar,
  lib/jboss-sasl-1.0.3.Final.jar,
- lib/jboss-threads-2.1.0.Final.jar,
- lib/xnio-api-3.1.0.CR3.jar,
- lib/xnio-nio-3.1.0.CR3.jar,
- lib/jboss-marshalling-1.3.18.GA.jar,
- lib/jboss-marshalling-river-1.3.18.GA.jar,
- lib/wildfly-controller-client-8.0.0.Alpha4.jar,
- lib/wildfly-protocol-8.0.0.Alpha4.jar
+ lib/jboss-threads-2.1.1.Final.jar,
+ lib/wildfly-controller-client-8.0.0.Beta1.jar,
+ lib/wildfly-protocol-8.0.0.Beta1.jar,
+ lib/xnio-api-3.1.0.CR7.jar,
+ lib/xnio-nio-3.1.0.CR7.jar
 Service-Component: META-INF/jboss-management-service.xml
 Export-Package: org.jboss.ide.eclipse.as.internal.management.wildfly8;x-friends:="org.jboss.ide.eclipse.as.management.as7.tests"
 Bundle-Vendor: JBoss by Red Hat

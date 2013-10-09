@@ -32,9 +32,9 @@ public class RuntimeDetectionTest extends TestCase {
 		while(legacyIdIterator.hasNext()) {
 			String stacksId = legacyIdIterator.next();
 			String legacyId = legacy.get(stacksId);
-			assertNotNull(RuntimeCoreActivator.getDefault().findDownloadRuntime(stacksId));
-			assertNotNull(RuntimeCoreActivator.getDefault().findDownloadRuntime(legacyId));
-			assertNotNull(RuntimeCoreActivator.getDefault().getDownloadRuntimes().get(legacyId));
+			assertNotNull(stacksId + " not found.", RuntimeCoreActivator.getDefault().findDownloadRuntime(stacksId));
+			assertNotNull(legacyId + " not found.", RuntimeCoreActivator.getDefault().findDownloadRuntime(legacyId));
+			assertNotNull(legacyId + " not found.", RuntimeCoreActivator.getDefault().getDownloadRuntimes().get(legacyId));
 		}
 	}
 	
