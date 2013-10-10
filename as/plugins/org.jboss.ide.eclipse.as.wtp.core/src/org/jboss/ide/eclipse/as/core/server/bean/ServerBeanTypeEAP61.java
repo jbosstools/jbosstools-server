@@ -12,6 +12,8 @@ package org.jboss.ide.eclipse.as.core.server.bean;
 
 import java.io.File;
 
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+
 public class ServerBeanTypeEAP61 extends JBossServerType {
 	private static final String EAP61_DIR_META_INF = "modules/system/layers/base/org/jboss/as/product/eap/dir/META-INF"; //$NON-NLS-1$
 	public ServerBeanTypeEAP61() {
@@ -23,6 +25,10 @@ public class ServerBeanTypeEAP61 extends JBossServerType {
 				new String[]{V6_1, V6_2}, new EAP61ServerTypeCondition());
 	}
 	public static class EAP61ServerTypeCondition extends org.jboss.ide.eclipse.as.core.server.bean.ServerBeanTypeEAP6.EAP6ServerTypeCondition {
+		@Override
+		public String getServerTypeId(String version) {
+			return IJBossToolingConstants.SERVER_EAP_61;
+		}
 		public boolean isServerRoot(File location) {
 			return getEAP6xVersion(location, EAP61_DIR_META_INF, "6.", "eap", "EAP") != null; //$NON-NLS-1$
 		}
