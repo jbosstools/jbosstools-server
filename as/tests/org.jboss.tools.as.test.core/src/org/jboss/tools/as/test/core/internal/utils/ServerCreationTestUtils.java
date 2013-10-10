@@ -75,9 +75,12 @@ public class ServerCreationTestUtils extends Assert {
 	public static final String TEST_SERVER_TYPE_GATEIN_36 = "TEST_SERVER_TYPE_GATEIN_36";
 	public static final String TEST_SERVER_TYPE_JPP_60 = "TEST_SERVER_TYPE_JPP_60";
 	public static final String TEST_SERVER_TYPE_JPP_61 = "TEST_SERVER_TYPE_JPP_61";
+	public static final String TEST_SERVER_TYPE_EAP_65 = "TEST_SERVER_TYPE_EAP_65";
+	
+	
 	public static final String[] TEST_SERVER_TYPES_TO_MOCK = new String[] { 
 		TEST_SERVER_TYPE_GATEIN_34, TEST_SERVER_TYPE_GATEIN_35,TEST_SERVER_TYPE_GATEIN_36,
-		TEST_SERVER_TYPE_JPP_60, TEST_SERVER_TYPE_JPP_61
+		TEST_SERVER_TYPE_JPP_60, TEST_SERVER_TYPE_JPP_61, TEST_SERVER_TYPE_EAP_65
 	};
 	
 	static {
@@ -94,6 +97,7 @@ public class ServerCreationTestUtils extends Assert {
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_50, twiddle_eap_5_1);
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_60, eap_server_6_0_jar);
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_61, eap_server_6_1_jar);
+		asSystemJar.put(TEST_SERVER_TYPE_EAP_65, eap_server_6_1_jar);
 		asSystemJar.put(TEST_SERVER_TYPE_JPP_60, jpp_server_6_0_jar);
 		asSystemJar.put(TEST_SERVER_TYPE_JPP_61, jpp_server_6_1_jar);
 		asSystemJar.put(TEST_SERVER_TYPE_GATEIN_34, gatein_3_4_0_jar);
@@ -160,6 +164,8 @@ public class ServerCreationTestUtils extends Assert {
 			serverDir = createJPP60MockServerDirectory(name,serverType, asSystemJar.get(serverType));
 		}else if( TEST_SERVER_TYPE_JPP_61.equals(serverType)) {
 			serverDir = createJPP61MockServerDirectory(name,serverType, asSystemJar.get(serverType));
+		} else if( TEST_SERVER_TYPE_EAP_65.equals(serverType)) {
+			serverDir = createAS72EAP65StyleMockServerDirectory(name, serverType, asSystemJar.get(serverType));
 		}
 		return serverDir == null ? null : serverDir.toFile();
 	}
@@ -284,6 +290,13 @@ public class ServerCreationTestUtils extends Assert {
 	private static IPath createAS72EAP61StyleMockServerDirectory(String name, String serverTypeId, String serverJar) {
 		IPath loc = mockedServers.append(name);
 		String manString = "JBoss-Product-Release-Name: EAP\nJBoss-Product-Release-Version: 6.1.0.Alpha\nJBoss-Product-Console-Slot: eap";
+		createAS7xProductStructure(loc, true, serverJar, "eap", manString);
+		return loc;
+	}
+
+	private static IPath createAS72EAP65StyleMockServerDirectory(String name, String serverTypeId, String serverJar) {
+		IPath loc = mockedServers.append(name);
+		String manString = "JBoss-Product-Release-Name: EAP\nJBoss-Product-Release-Version: 6.5.0.Alpha\nJBoss-Product-Console-Slot: eap";
 		createAS7xProductStructure(loc, true, serverJar, "eap", manString);
 		return loc;
 	}
