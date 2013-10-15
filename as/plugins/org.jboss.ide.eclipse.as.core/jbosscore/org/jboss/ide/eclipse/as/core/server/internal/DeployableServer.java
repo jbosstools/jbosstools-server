@@ -67,6 +67,13 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	public void configurationChanged() {
 	}
 	
+
+	@Override
+	public boolean isUseProjectSpecificSchedulingRuleOnPublish() {
+		return true;
+	}
+
+	
 	/*
 	 * Abstracts to implement
 	 */
