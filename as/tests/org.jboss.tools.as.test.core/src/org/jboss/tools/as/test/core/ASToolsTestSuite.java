@@ -23,8 +23,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	RuntimeSuite.class,
 	ParametizedSuite.class,
+	RuntimeSuite.class,
 	UtilsSuite.class,
 	PollThreadTest.class,
 	LaunchProjectOnJPP6Test.class,

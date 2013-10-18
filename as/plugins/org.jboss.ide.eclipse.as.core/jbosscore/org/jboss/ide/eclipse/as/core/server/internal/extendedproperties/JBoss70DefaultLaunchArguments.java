@@ -12,8 +12,10 @@ package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.server.IServerModeDetails;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 
@@ -38,11 +40,13 @@ public class JBoss70DefaultLaunchArguments extends JBossDefaultLaunchArguments {
 		return SPACE + DASH + JB7_LOGMODULE_ARG + SPACE + JB7_LOGMODULE_DEFAULT;
 	}
 	
+	@Override
 	public String getStartDefaultVMArgs() {
 		return getProgramNameArgs() + getServerFlagArgs() +
 				getMemoryArgs() + getResolverWarning() +
 				getJavaFlags() + getJBossJavaFlags();
 	}
+	@Override
 	protected String getMemoryArgs() {
 		return "-Xms64m -Xmx512m -XX:MaxPermSize=256m "; //$NON-NLS-1$
 	}
@@ -50,17 +54,23 @@ public class JBoss70DefaultLaunchArguments extends JBossDefaultLaunchArguments {
 		return "-Dorg.jboss.resolver.warning=true ";  //$NON-NLS-1$
 	}
 	
+	@Override
 	protected String getJavaFlags() {
 		return getJavaFlags(true);
 	}
 
+	@Override
 	protected String getJBossJavaFlags() {
 		IPath serverHome = getServerHome();
 
 		// don't like typing that big constants interface over and over; its ugly
 		IJBossRuntimeResourceConstants c = new IJBossRuntimeResourceConstants() {};
 		LocalJBoss7ServerRuntime jb7rt = (LocalJBoss7ServerRuntime)runtime.loadAdapter(LocalJBoss7ServerRuntime.class, null);
-		IPath base = new Path(jb7rt.getBaseDirectory());
+		
+		IServerModeDetails det = (IServerModeDetails)Platform.getAdapterManager().getAdapter(server, IServerModeDetails.class);
+		String basedir = det.getProperty(IServerModeDetails.PROP_SERVER_BASE_DIR_ABS);
+		
+		IPath base = new Path(basedir);
 		// TODO this can be changed to the config folder, if such a feature is added
 		IPath bootLog = base.append(c.FOLDER_LOG).append(c.AS7_BOOT_LOG);
 		IPath logConfig = base.append(c.CONFIGURATION).append(c.LOGGING_PROPERTIES);

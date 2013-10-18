@@ -47,7 +47,7 @@ import org.osgi.framework.BundleException;
  *
  */
 @RunWith(value = Parameterized.class)
-public class ServerModeRuntimeDetailsTest extends TestCase {
+public class ServerDefaultLaunchArgsTest extends TestCase {
 	private String serverType;
 	private IServer server;
 	@Parameters
@@ -55,7 +55,7 @@ public class ServerModeRuntimeDetailsTest extends TestCase {
 		 return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerTypeParameters());
 	}
 	 
-	public ServerModeRuntimeDetailsTest(String serverType) {
+	public ServerDefaultLaunchArgsTest(String serverType) {
 		this.serverType = serverType;
 	}
 	
@@ -69,6 +69,9 @@ public class ServerModeRuntimeDetailsTest extends TestCase {
 		ServerCreationTestUtils.deleteAllServersAndRuntimes();
 	}
 	
+
+	
+	
 	@Test
 	public void testServerDefaults() {
 		forceStart(RSECorePlugin.PLUGIN_ID);
@@ -77,10 +80,33 @@ public class ServerModeRuntimeDetailsTest extends TestCase {
 				Platform.getAdapterManager().getAdapter(server, IServerModeDetails.class);
 		assertNotNull(ret);
 		assertTrue(ret instanceof LocalServerModeDetails);
+		JBossExtendedProperties props1 = (JBossExtendedProperties)
+				Platform.getAdapterManager().getAdapter(server, JBossExtendedProperties.class);
+		boolean as7Style = props1.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS;
+		JBossDefaultLaunchArguments localArgs = (JBossDefaultLaunchArguments)props1.getDefaultLaunchArguments();
+		
+		String progArgs = localArgs.getStartDefaultProgramArgs();
+		String vmArgs = localArgs.getStartDefaultVMArgs();
+		if( as7Style ) {
+			// verify for as7-style servers
+			assertTrue(vmArgs.contains("mockedServers/" + serverType + "/standalone/configuration/logging.properties"));
+		} else {
+			// verify for as<7 serversnt
+			boolean matches1a = vmArgs.matches(".*-Djava.endorsed.dirs=.*metadata/.plugins/org.jboss.tools.as.test.core/mockedServers/.*/lib/endorsed.*");
+			assertTrue(matches1a);
+		}
+		
+		
 		
 		// Next try with rse mode
 		IServerWorkingCopy wc = server.createWorkingCopy();
 		wc.setAttribute(IDeployableServer.SERVER_MODE, "rse");
+		wc.setAttribute(RSEUtils.RSE_BASE_DIR, "standNOTalone");
+		wc.setAttribute(RSEUtils.RSE_SERVER_HOME_DIR, "/home/otherUser/jboss");
+		ServerExtendedProperties props2 = (ServerExtendedProperties)
+				Platform.getAdapterManager().getAdapter(server, ServerExtendedProperties.class);
+		String configVal = as7Style ? "standNOTalone.xml" : "myDefConfig";
+		wc.setAttribute(RSEUtils.RSE_SERVER_CONFIG, configVal);
 		try {
 			server = wc.save(true,  new NullProgressMonitor());
 		} catch(CoreException ce) {
@@ -90,17 +116,22 @@ public class ServerModeRuntimeDetailsTest extends TestCase {
 		assertNotNull(ret);
 		assertTrue(ret instanceof RSEServerModeDetails);
 		
+		JBossExtendedProperties props2a = (JBossExtendedProperties)
+				Platform.getAdapterManager().getAdapter(server, JBossExtendedProperties.class);
+		JBossDefaultLaunchArguments rseArgs = (JBossDefaultLaunchArguments) props2a.getDefaultLaunchArguments();
 		
-		// Now try with a garbage mode
-		wc = server.createWorkingCopy();
-		wc.setAttribute(IDeployableServer.SERVER_MODE, "garbage222");
-		try {
-			server = wc.save(true,  new NullProgressMonitor());
-		} catch(CoreException ce) {
-			fail(ce.getMessage());
+		
+		progArgs = rseArgs.getStartDefaultProgramArgs();
+		vmArgs = rseArgs.getStartDefaultVMArgs();
+		if( as7Style ) {
+			// verify for as7-style servers
+			assertTrue(vmArgs.contains("/home/otherUser/jboss/standNOTalone/configuration/logging.properties"));
+			assertTrue(vmArgs.contains("-Djboss.home.dir=/home/otherUser/jboss"));
+		} else {
+			// verify for as<7 servers
+			assertTrue(vmArgs.matches(".*-Djava.endorsed.dirs=/home/otherUser/jboss/lib/endorsed.*"));
 		}
-		ret = (IServerModeDetails) Platform.getAdapterManager().getAdapter(server, IServerModeDetails.class);
-		assertNull(ret);
+		
 	}
 	
 	

@@ -32,6 +32,13 @@ package org.jboss.ide.eclipse.as.core.server;
  * @since 2.5
  */
 public interface IServerModeDetails {
+	
+	/**
+	 * Get the basedirectory for the server 
+	 */
+	public static final String PROP_SERVER_BASE_DIR_ABS = "PROP_SERVER_BASE_DIR_ABS";
+	
+	
 	/**
 	 * Get the server home 
 	 */

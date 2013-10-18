@@ -37,11 +37,14 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.TaskModel;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.JavaUtils;
+import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
@@ -137,8 +140,17 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
-
-		
+	}
+	
+	public void updateModels() {
+		super.updateModels();
+		IJBossServerRuntime rt = getRuntime();
+		if( rt.getRuntime().getLocation() != null ) {
+			LocalJBoss7ServerRuntime jb7rt = (LocalJBoss7ServerRuntime)rt;
+			String bd = jb7rt.getBaseDirectory();
+			IPath relative = ServerUtil.makeRelative(rt.getRuntime(), new Path(bd));
+			baseDirTextVal = relative.toString();
+		}
 	}
 	
 	

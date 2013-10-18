@@ -42,11 +42,14 @@ public class JBoss6xDefaultLaunchArguments extends JBoss5xDefaultLaunchArguments
 		// It's possible the remote server is of a different version, but we 
 		// EXPECT the local dev copy is the same distribution. 
 		IPath home = getServerHome();
-		String version = new ServerBeanLoader(home.toFile()).getFullServerVersion();
-		if( version.startsWith(IJBossToolingConstants.V6_1)) {
-			// Only relevent for as6.1
-			ret += SYSPROP + LOGGING_CONFIG_PROP + EQ + QUOTE + FILE_COLON + 
-					home.append(BIN).append(LOGGING_PROPERTIES) + QUOTE + SPACE;
+		if( runtime != null ) {
+			/// use the local version to know what version, since we can't actually look at the remote
+			String version = new ServerBeanLoader(runtime.getLocation().toFile()).getFullServerVersion();
+			if( version.startsWith(IJBossToolingConstants.V6_1)) {
+				// Only relevent for as6.1
+				ret += SYSPROP + LOGGING_CONFIG_PROP + EQ + QUOTE + FILE_COLON + 
+						home.append(BIN).append(LOGGING_PROPERTIES) + QUOTE + SPACE;
+			}
 		}
 		return ret;
 	}

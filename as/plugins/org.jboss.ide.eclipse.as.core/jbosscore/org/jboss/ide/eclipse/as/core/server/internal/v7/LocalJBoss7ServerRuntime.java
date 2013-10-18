@@ -84,6 +84,7 @@ public class LocalJBoss7ServerRuntime extends LocalJBossServerRuntime implements
 	
 	/**
 	 * This method is technically internal and is not part of any interface
+	 * Gets an absolute path for the server's base directory
 	 * 
 	 * @since 2.5
 	 */

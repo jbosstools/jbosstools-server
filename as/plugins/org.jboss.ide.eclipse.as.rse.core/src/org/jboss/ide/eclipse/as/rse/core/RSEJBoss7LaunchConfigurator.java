@@ -141,7 +141,6 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 		return preArgs;
 	}
 	
-	
 	protected String getLaunchCommand(JBossServer jbossServer) throws CoreException {
 		String programArguments = getDefaultProgramArguments(jbossServer.getServer());
 		programArguments = getArgsOverrideHost(jbossServer.getServer(), programArguments);
@@ -162,15 +161,11 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 	}
 	
 	protected String getDefaultVMArguments(IServer server) {
-		String rseHomeDir = RSEUtils.getRSEHomeDir(server);
-		IPath rseHome = new Path(rseHomeDir);
-		return getExtendedProperties().getDefaultLaunchArguments().getStartDefaultVMArgs(rseHome);
+		return getExtendedProperties().getDefaultLaunchArguments().getStartDefaultVMArgs();
 	}
 
 	protected String getDefaultProgramArguments(IServer server) {
-		String rseHomeDir = RSEUtils.getRSEHomeDir(server);
-		IPath rseHome = new Path(rseHomeDir);
-		return getExtendedProperties().getDefaultLaunchArguments().getStartDefaultProgramArgs(rseHome);
+		return getExtendedProperties().getDefaultLaunchArguments().getStartDefaultProgramArgs();
 	}
 	
 	protected String getJar(IServer server) {

@@ -47,6 +47,10 @@ public class LocalServerModeDetails implements IServerModeDetails {
 			return rt == null ? null : rt.getLocation().toOSString();
 		}
 		IJBossServerRuntime jbrt = RuntimeUtils.getJBossServerRuntime(rt);
+		if( PROP_SERVER_BASE_DIR_ABS.equals(prop)) {
+			if( jbrt instanceof LocalJBoss7ServerRuntime)
+				return ((LocalJBoss7ServerRuntime)jbrt).getBaseDirectory();
+		}
 		if( PROP_CONFIG_NAME.equals(prop)) {
 			return jbrt == null ? null : jbrt.getJBossConfiguration();
 		}

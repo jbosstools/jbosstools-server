@@ -31,7 +31,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	DeploymentScannerAdditionsTest.class,
 	PublishingSuite.class,
 	ServerBeanRuntimeMatcherTest.class,
-	DownloadRuntimeMatcherTest.class
+	DownloadRuntimeMatcherTest.class,
+	ServerDefaultLaunchArgsTest.class,
 })
 public class ParametizedSuite {
 }

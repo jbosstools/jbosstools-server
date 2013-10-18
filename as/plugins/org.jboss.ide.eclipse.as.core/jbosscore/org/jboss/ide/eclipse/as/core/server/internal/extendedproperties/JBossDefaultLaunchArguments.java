@@ -18,12 +18,14 @@ import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.IServerModeDetails;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.JavaUtils;
 import org.jboss.ide.eclipse.as.core.util.PortalUtil;
@@ -58,7 +60,9 @@ public class JBossDefaultLaunchArguments implements IDefaultLaunchArguments, IJB
 	}
 	
 	protected IPath getServerHome() {
-		return serverHome;
+		IServerModeDetails det = (IServerModeDetails)Platform.getAdapterManager().getAdapter(server, IServerModeDetails.class);
+		String homeDir = det.getProperty(IServerModeDetails.PROP_SERVER_HOME);
+		return new Path(homeDir);
 	}
 		
 	protected IRuntime getRuntime() {
