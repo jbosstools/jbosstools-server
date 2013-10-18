@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
@@ -36,6 +37,9 @@ public class JBoss7RSEDeploymentPrefComposite extends
 	private Text rseServerHome;
 	private Button rseBrowse;
 	
+	private Text rseBaseDirText;
+	private Button rseBaseDirBrowse;
+
 	private Text rseConfigFileText;
 	private Button rseConfigFileBrowse;
 
@@ -72,13 +76,43 @@ public class JBoss7RSEDeploymentPrefComposite extends
 				serverHomeChanged();
 			}
 		});
+		
+		
+		Label baseDirLabel = new Label(this, SWT.NONE);
+		baseDirLabel.setText(RSEUIMessages.REMOTE_BASE_DIR_LABEL);
+		rseBaseDirBrowse = new Button(this, SWT.NONE);
+		rseBaseDirBrowse.setText(RSEUIMessages.BROWSE);
+		rseBaseDirBrowse.setLayoutData(UIUtil.createFormData2(rseServerHome, 5, null,
+				0, null, 0, 100, -5));
+		rseBaseDirBrowse.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				remoteBaseDirBrowseClicked();
+			}
+		});
+		rseBaseDirText = new Text(this, SWT.SINGLE | SWT.BORDER);
+		baseDirLabel.setLayoutData(UIUtil.createFormData2(rseServerHome, 7,
+				null, 0, 0, 10, null, 0));
+		rseBaseDirText.setLayoutData(UIUtil.createFormData2(rseServerHome, 5,
+				null, 0, baseDirLabel, 5, rseBaseDirBrowse, -5));
+		rseBaseDirText.setText(callback.getServer().getAttribute(
+				RSEUtils.RSE_BASE_DIR, IJBossRuntimeResourceConstants.AS7_STANDALONE));
+		rseBaseDirText.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				serverBaseDirChanged();
+			}
+		});
+
+		
+		
+		
+		
 
 	
 		Label serverConfigLabel = new Label(this, SWT.NONE);
 		serverConfigLabel.setText(RSEUIMessages.REMOTE_CONFIG_FILE_LABEL);
 		rseConfigFileBrowse = new Button(this, SWT.NONE);
 		rseConfigFileBrowse.setText(RSEUIMessages.BROWSE);
-		rseConfigFileBrowse.setLayoutData(UIUtil.createFormData2(rseServerHome, 5, null,
+		rseConfigFileBrowse.setLayoutData(UIUtil.createFormData2(rseBaseDirText, 5, null,
 				0, null, 0, 100, -5));
 		rseConfigFileBrowse.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
@@ -90,9 +124,9 @@ public class JBoss7RSEDeploymentPrefComposite extends
 			}
 		});
 		rseConfigFileText = new Text(this, SWT.SINGLE | SWT.BORDER);
-		serverConfigLabel.setLayoutData(UIUtil.createFormData2(rseServerHome, 7,
+		serverConfigLabel.setLayoutData(UIUtil.createFormData2(rseBaseDirText, 7,
 				null, 0, 0, 10, null, 0));
-		rseConfigFileText.setLayoutData(UIUtil.createFormData2(rseServerHome, 5,
+		rseConfigFileText.setLayoutData(UIUtil.createFormData2(rseBaseDirText, 5,
 				null, 0, serverConfigLabel, 5, rseConfigFileBrowse, -5));
 		rseConfigFileText.setText(callback.getServer().getAttribute(
 				RSEUtils.RSE_SERVER_CONFIG, LocalJBoss7ServerRuntime.CONFIG_FILE_DEFAULT));
@@ -101,7 +135,7 @@ public class JBoss7RSEDeploymentPrefComposite extends
 				configFileChanged();
 			}
 		});
-}
+	}
 	protected void serverHomeChanged() {
 		if( !isUpdatingFromModelChange()) {
 			String safeString = callback.getRuntime() != null ? callback.getRuntime().getLocation() != null ? 
@@ -111,7 +145,17 @@ public class JBoss7RSEDeploymentPrefComposite extends
 					safeString, RSEUIMessages.CHANGE_REMOTE_SERVER_HOME));
 		}
 	}
+
 	
+	protected void serverBaseDirChanged() {
+		if( !isUpdatingFromModelChange()) {
+			callback.execute(new ChangeServerPropertyCommand(
+					callback.getServer(), RSEUtils.RSE_BASE_DIR, rseBaseDirText.getText(), 
+					IJBossRuntimeResourceConstants.AS7_STANDALONE, 
+					RSEUIMessages.CHANGE_REMOTE_BASE_DIR));
+		}
+	}
+
 	protected void configFileChanged() {
 		if( !isUpdatingFromModelChange()) {
 			IRuntime rt = callback.getRuntime();
@@ -131,10 +175,30 @@ public class JBoss7RSEDeploymentPrefComposite extends
 			serverHomeChanged();
 		}
 	}
+	
+	
+	protected void remoteBaseDirBrowseClicked() {
+		String basedir = rseBaseDirText.getText() == null ? "" : rseBaseDirText.getText();
+		String toOpen = null;
+		if( new Path(basedir).isAbsolute()) {
+			toOpen = basedir;
+		} else {
+			toOpen = new Path(rseServerHome.getText()).append(basedir).toString();
+		}
+		String browseVal = RSEBrowseBehavior.browseClicked(rseServerHome.getShell(), combo.getHost(), toOpen);
+		if (browseVal != null) {
+			rseBaseDirText.setText(browseVal);
+			serverBaseDirChanged();
+		}
+	}
+	
+	
 	protected void remoteConfigBrowseClicked() {
 		IPath home = new Path(rseServerHome.getText());
-		IPath configFolder = home.append(IJBossRuntimeResourceConstants.AS7_STANDALONE)
-				.append(IJBossRuntimeResourceConstants.CONFIGURATION);
+		IPath basedir = new Path(rseBaseDirText.getText());
+		IPath basedir2 = basedir.isAbsolute() ? basedir : home.append(basedir);
+		
+		IPath configFolder = basedir2.append(IJBossRuntimeResourceConstants.CONFIGURATION);
 		IPath configFile = configFolder.append(rseConfigFileText.getText());
 		String browseVal = RSEBrowseBehavior.browseClicked(rseServerHome.getShell(), combo.getHost(), configFile.toString());
 		if (browseVal != null) {
