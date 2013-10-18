@@ -46,11 +46,6 @@ public class RSEUtils {
 	public static final String RSE_SERVER_CONFIG = "org.jboss.ide.eclipse.as.rse.core.RSEServerConfig"; //$NON-NLS-1$
 	
 	/**
-	 * The base directory as stored in rse-dependent constant
-	 */
-	public static final String RSE_BASE_DIR = "org.jboss.ide.eclipse.as.rse.core.RSEServerBaseDir"; //$NON-NLS-1$
-
-	/**
 	 * The home directory of the remote server
 	 */
 	public static final String RSE_SERVER_HOME_DIR = "org.jboss.ide.eclipse.as.rse.core.RSEServerHomeDir"; //$NON-NLS-1$
@@ -63,8 +58,6 @@ public class RSEUtils {
 	 * The default host if one is not set
 	 */
 	public static final String RSE_SERVER_DEFAULT_HOST = "Local"; //$NON-NLS-1$
-	
-	
 	
 	/**
 	 * The name of this mode, which is just 'rse' 
@@ -142,7 +135,8 @@ public class RSEUtils {
 			// RSE-specific key!! Damn!
 			ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
 			if (sep != null && sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS) {
-				return getBaseDirectoryPath(server).append(IJBossRuntimeResourceConstants.AS7_DEPLOYMENTS).toString();
+				IPath p = new Path("standalone/deployments/");
+				return makeGlobal(server, p).toString();
 			} else {
 				String loc = IConstants.SERVER;
 				String config = getRSEConfigName(server);
@@ -155,19 +149,6 @@ public class RSEUtils {
 		}
 		return null;
 	}
-	
-	protected static IPath getBaseDirectoryPath(IServer server) {
-		String val = server.getAttribute(RSE_BASE_DIR, IJBossRuntimeResourceConstants.AS7_STANDALONE);
-		IPath valPath = new Path(val);
-		if( valPath.isAbsolute())
-			return valPath;
-		return makeGlobal(server, valPath);		
-	}
-	
-	public static String getBaseDirectory(IServer server) {
-		return getBaseDirectoryPath(server).toString();
-	}
-	
 
 	public static IPath makeRelative(IServer server, IPath p) {
 		if (p.isAbsolute()) {

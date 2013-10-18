@@ -29,8 +29,6 @@ public class RSEUIMessages {
 	public static String REMOTE_CONFIG_NOT_FOUND;
 	public static String ERROR_CHECKING_REMOTE_SYSTEM;
 	public static String BROWSE_REMOTE_SYSTEM;
-	
-	public static String CHANGE_REMOTE_BASE_DIR;
 	public static String CHANGE_RSE_HOST;
 	public static String CHANGE_HOSTNAME;
 	public static String CHANGE_REMOTE_SERVER_HOME;
@@ -43,7 +41,7 @@ public class RSEUIMessages {
 
 	public static String REMOTE_CONFIG_FILE_LABEL; 
 	public static String REMOTE_SERVER_HOME_LABEL; 
-	public static String REMOTE_BASE_DIR_LABEL;
+
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, RSEUIMessages.class);
