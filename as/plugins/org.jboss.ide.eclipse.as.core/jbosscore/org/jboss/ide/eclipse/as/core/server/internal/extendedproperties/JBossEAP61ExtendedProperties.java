@@ -19,7 +19,7 @@ public class JBossEAP61ExtendedProperties extends JBossEAP60ExtendedProperties {
 	}
 	
 	public String getRuntimeTypeVersionString() {
-		return "6.1"; //$NON-NLS-1$
+		return "6.1+"; //$NON-NLS-1$
 	}
 	
 	public IDefaultLaunchArguments getDefaultLaunchArguments() {
