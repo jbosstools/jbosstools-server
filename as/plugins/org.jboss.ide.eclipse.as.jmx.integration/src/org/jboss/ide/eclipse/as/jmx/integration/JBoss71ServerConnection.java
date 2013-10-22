@@ -52,6 +52,12 @@ public class JBoss71ServerConnection extends JBossServerConnection {
 		if( this.connectionToConnector == null )
 			this.connectionToConnector = new HashMap<MBeanServerConnection, JMXConnector>();
 	}
+
+	@Override
+	protected boolean shouldUseDefaultCredentials() {
+		return false;
+	}
+
 	
 	protected String getUrl(IServer s) {
 		JBossExtendedProperties props = ExtendedServerPropertiesAdapterFactory.getJBossExtendedProperties(s);
@@ -70,7 +76,8 @@ public class JBoss71ServerConnection extends JBossServerConnection {
 		}
 		
 		Map<String, String[]> environment = new HashMap<String, String[]>();
-        environment.put(JMXConnector.CREDENTIALS, new String[]{user,pass});
+		if( user != null && pass != null ) 
+			environment.put(JMXConnector.CREDENTIALS, new String[]{user,pass});
         
 		JMXConnector connector = null;
 		try {

@@ -122,10 +122,18 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 		if( force || server.getServerState() == IServer.STATE_STARTED) {
 			String defaultUser = ServerConverter.getJBossServer(server).getUsername();
 			String defaultPass = ServerConverter.getJBossServer(server).getPassword();
-			String user = prefs.get("user") == null ? defaultUser : prefs.get("user");
-			String pass = prefs.get("pass") == null ? defaultPass : prefs.get("pass");
+			String user = prefs.get("user");
+			String pass = prefs.get("pass");
+			if( shouldUseDefaultCredentials()) {
+				user = (user == null ? defaultUser : user);
+				pass = (pass == null ? defaultPass : pass);
+			}
 			run(server, runnable, user, pass);
 		}
+	}
+	
+	protected boolean shouldUseDefaultCredentials() {
+		return true;
 	}
 	
 	public void run(IServer s, IJMXRunnable r, String user, String pass) throws JMXException {
