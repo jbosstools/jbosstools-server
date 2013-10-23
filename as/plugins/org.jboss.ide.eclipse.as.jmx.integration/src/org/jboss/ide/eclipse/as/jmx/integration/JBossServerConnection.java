@@ -122,10 +122,29 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 		if( force || server.getServerState() == IServer.STATE_STARTED) {
 			String defaultUser = ServerConverter.getJBossServer(server).getUsername();
 			String defaultPass = ServerConverter.getJBossServer(server).getPassword();
-			String user = prefs.get("user") == null ? defaultUser : prefs.get("user");
-			String pass = prefs.get("pass") == null ? defaultPass : prefs.get("pass");
+			String user = prefs.get("user");
+			String pass = prefs.get("pass");
+			if( shouldUseDefaultCredentials()) {
+				user = (user == null ? defaultUser : user);
+				pass = (pass == null ? defaultPass : pass);
+			}
 			run(server, runnable, user, pass);
 		}
+	}
+	
+	
+	/**
+	 * Some workspaces some previous versions may include server adapters with
+	 * null values for username and password. In some of these situations, providing 
+	 * default credentials will allow authorization to jmx operations. 
+	 * 
+	 * Subclasses for server versions that should not use default credentials in the event 
+	 * of no credentials being passed in should override this method and return false. 
+	 * 
+	 * @return boolean whether to use default credentials as provided by the server implementation
+	 */
+	protected boolean shouldUseDefaultCredentials() {
+		return true;
 	}
 	
 	public void run(IServer s, IJMXRunnable r, String user, String pass) throws JMXException {
