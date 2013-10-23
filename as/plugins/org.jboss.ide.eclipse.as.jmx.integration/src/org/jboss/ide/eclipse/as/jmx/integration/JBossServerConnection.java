@@ -132,6 +132,17 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 		}
 	}
 	
+	
+	/**
+	 * Some workspaces some previous versions may include server adapters with
+	 * null values for username and password. In some of these situations, providing 
+	 * default credentials will allow authorization to jmx operations. 
+	 * 
+	 * Subclasses for server versions that should not use default credentials in the event 
+	 * of no credentials being passed in should override this method and return false. 
+	 * 
+	 * @return boolean whether to use default credentials as provided by the server implementation
+	 */
 	protected boolean shouldUseDefaultCredentials() {
 		return true;
 	}
