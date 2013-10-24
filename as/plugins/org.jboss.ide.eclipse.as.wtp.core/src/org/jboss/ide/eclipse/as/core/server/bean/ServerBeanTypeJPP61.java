@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.as.core.server.bean;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanTypeUnknownAS72Product.UnknownAS72ProductServerTypeCondition;
 
@@ -32,6 +33,18 @@ public class ServerBeanTypeJPP61 extends ServerBeanTypeUnknownAS71Product {
 				return v != null && v.startsWith(V6_1);
 			}
 			return false;
+		}
+
+		@Override
+		protected String[] getManifestFoldersToFindVersion(String productSlot,
+				String[] layers) {
+			String[] folders = super.getManifestFoldersToFindVersion(productSlot, layers);
+			String[] newFolders = new String[folders.length + 1];
+			// https://issues.jboss.org/browse/JBIDE-15765
+			String add = getMetaInfFolderForSlot("eap");
+			System.arraycopy(folders, 0, newFolders, 0, folders.length);
+			newFolders[folders.length] = add;
+			return newFolders;
 		}
 	}
 }
