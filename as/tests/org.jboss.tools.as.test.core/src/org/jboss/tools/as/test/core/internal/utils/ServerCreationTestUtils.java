@@ -74,10 +74,16 @@ public class ServerCreationTestUtils extends Assert {
 	public static final String TEST_SERVER_TYPE_GATEIN_35 = "TEST_SERVER_TYPE_GATEIN_35";
 	public static final String TEST_SERVER_TYPE_GATEIN_36 = "TEST_SERVER_TYPE_GATEIN_36";
 	public static final String TEST_SERVER_TYPE_JPP_60 = "TEST_SERVER_TYPE_JPP_60";
+	
+	/* Represents a mock structure for jpp 6.1 ER3,  NOT final!  */
 	public static final String TEST_SERVER_TYPE_JPP_61 = "TEST_SERVER_TYPE_JPP_61";
+	public static final String TEST_SERVER_TYPE_WONKA_1 = "TEST_SERVER_TYPE_WONKA_1_MISMATCH";
+	
+	
 	public static final String[] TEST_SERVER_TYPES_TO_MOCK = new String[] { 
 		TEST_SERVER_TYPE_GATEIN_34, TEST_SERVER_TYPE_GATEIN_35,TEST_SERVER_TYPE_GATEIN_36,
-		TEST_SERVER_TYPE_JPP_60, TEST_SERVER_TYPE_JPP_61
+		TEST_SERVER_TYPE_JPP_60, TEST_SERVER_TYPE_JPP_61, 
+		TEST_SERVER_TYPE_WONKA_1
 	};
 	
 	static {
@@ -96,6 +102,7 @@ public class ServerCreationTestUtils extends Assert {
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_61, eap_server_6_1_jar);
 		asSystemJar.put(TEST_SERVER_TYPE_JPP_60, jpp_server_6_0_jar);
 		asSystemJar.put(TEST_SERVER_TYPE_JPP_61, jpp_server_6_1_jar);
+		asSystemJar.put(TEST_SERVER_TYPE_WONKA_1, eap_server_6_1_jar);
 		asSystemJar.put(TEST_SERVER_TYPE_GATEIN_34, gatein_3_4_0_jar);
 		// NEW_SERVER_ADAPTER Add the new runtime constant above this line
 		
@@ -160,6 +167,8 @@ public class ServerCreationTestUtils extends Assert {
 			serverDir = createJPP60MockServerDirectory(name,serverType, asSystemJar.get(serverType));
 		}else if( TEST_SERVER_TYPE_JPP_61.equals(serverType)) {
 			serverDir = createJPP61MockServerDirectory(name,serverType, asSystemJar.get(serverType));
+		}else if( TEST_SERVER_TYPE_WONKA_1.equals(serverType)) {
+			serverDir = createAS72Wonka1MockServerDirectory(name, serverType, asSystemJar.get(serverType));
 		}
 		return serverDir == null ? null : serverDir.toFile();
 	}
@@ -288,6 +297,36 @@ public class ServerCreationTestUtils extends Assert {
 		return loc;
 	}
 
+	private static IPath createAS72EAP65StyleMockServerDirectory(String name, String serverTypeId, String serverJar) {
+		IPath loc = mockedServers.append(name);
+		String manString = "JBoss-Product-Release-Name: EAP\nJBoss-Product-Release-Version: 6.5.0.Alpha\nJBoss-Product-Console-Slot: eap";
+		createAS7xProductStructure(loc, true, serverJar, "eap", manString);
+		return loc;
+	}
+	private static IPath createAS72Wonka1MockServerDirectory(String name, String serverTypeId, String serverJar) {
+		IPath loc = mockedServers.append(name);
+		String wonkaManString = "JBoss-Product-Release-Name: WONKA\nJBoss-Product-Release-Version: 1.0.0.Alpha\nJBoss-Product-Console-Slot: wonka";
+		String eapManContents = "JBoss-Product-Release-Name: EAP\nJBoss-Product-Release-Version: 6.1.1.GA\nJBoss-Product-Console-Slot: eap";
+
+		createAS7xProductStructure(loc, true, serverJar, null, null);
+		try {
+			createProductConfASgt7(loc, "wonka", new String[]{"notwonka"});
+			
+			IPath metainf = loc.append(getProductMetaInfFolderPath("eap", true));
+			createProductMetaInfFolder(metainf, eapManContents);
+
+			IPath metainf2 = loc.append(getProductMetaInfFolderPath("wonka", true, "notwonka"));
+			createProductMetaInfFolder(metainf2, wonkaManString);
+		} catch(CoreException ce) {
+			FileUtil.completeDelete(loc.toFile());
+		} catch(IOException ioe) {
+			FileUtil.completeDelete(loc.toFile());
+		}
+
+		return loc;
+	}
+	
+
 	private static IPath createEAP6StyleMockServerDirectory(String name, String serverTypeId, String serverJar) {
 		IPath loc = mockedServers.append(name);
 		String manString = "JBoss-Product-Release-Name: EAP\nJBoss-Product-Release-Version: 6.0.0.Alpha\nJBoss-Product-Console-Slot: eap";
@@ -319,7 +358,7 @@ public class ServerCreationTestUtils extends Assert {
 			loc.append("jboss-modules.jar").toFile().createNewFile();
 			loc.append("bin").toFile().mkdirs();
 			if( slot != null ) {
-				createProductConfASgt7(loc, slot);
+				createProductConfASgt7(loc, slot, null);
 				createProductMetaInfFolder(loc, slot, includeLayers, manifestContents);
 			}
 		} catch(CoreException ce) {
@@ -339,24 +378,47 @@ public class ServerCreationTestUtils extends Assert {
 	}
 	private static void createProductMetaInfFolder(IPath loc, String slot, boolean includeLayers, String manifestContents) throws IOException, CoreException {
 		IPath metainf = loc.append(getProductMetaInfFolderPath(slot, includeLayers));
+		createProductMetaInfFolder(metainf, manifestContents);
+	}
+	private static void createProductMetaInfFolder(IPath metainf, String manifestContents) throws IOException, CoreException {
 		metainf.toFile().mkdirs();
 		IPath manifest = metainf.append("MANIFEST.MF");
 		IOUtil.setContents(manifest.toFile(), manifestContents);		
 	}
 	
 	private static String getProductMetaInfFolderPath(String slot, boolean includeLayers) {
-		if( !includeLayers ) {
-			return "modules/org/jboss/as/product/" + slot + "/dir/META-INF";
-		}
-		return "modules/system/layers/base/org/jboss/as/product/" + slot + "/dir/META-INF";
-
+		return getProductMetaInfFolderPath(slot, includeLayers, null);
 	}
 	
-	private static void createProductConfASgt7(IPath loc, String slot) throws CoreException, IOException  {
+	private static String getProductMetaInfFolderPath(String slot, boolean includeLayers, String insideLayer) {
+		if( insideLayer == null ) {
+			if( !includeLayers ) {
+				return "modules/org/jboss/as/product/" + slot + "/dir/META-INF";
+			}
+			return "modules/system/layers/base/org/jboss/as/product/" + slot + "/dir/META-INF";
+		}
+		// Now we know it lives inside a layer
+		return "modules/system/layers/" + insideLayer + "/org/jboss/as/product/" + slot + "/dir/META-INF";
+	}
+	
+	private static void createProductConfASgt7(IPath loc, String slot, String[] layers) throws CoreException, IOException  {
 		loc.toFile().mkdirs();
 		IPath productConf = loc.append("bin/product.conf");
 		loc.append("bin").toFile().mkdirs();
 		IOUtil.setContents(productConf.toFile(), "slot=" + slot);
+		if( layers != null && layers.length > 0 ) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("layers=");
+			for( int i = 0; i < layers.length; i++ ) {
+				sb.append(layers[i]);
+				if( i < layers.length-1) {
+					sb.append(",");
+				}
+			}
+			IPath layersConf = loc.append("modules/layers.conf");
+			loc.append("modules").toFile().mkdirs();
+			IOUtil.setContents(layersConf.toFile(), sb.toString());
+		}
 	}
 	
 	private static void createStandaloneXML(IPath loc) throws IOException {
