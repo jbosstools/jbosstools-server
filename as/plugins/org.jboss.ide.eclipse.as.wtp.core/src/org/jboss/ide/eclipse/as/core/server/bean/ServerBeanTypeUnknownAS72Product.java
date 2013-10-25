@@ -29,7 +29,7 @@ public class ServerBeanTypeUnknownAS72Product extends ServerBeanTypeUnknownAS71P
 		protected String[] getManifestFoldersToFindVersion(String productSlot, String[] layers) {
 			ArrayList<String> l = new ArrayList<String>(layers.length);
 			for( int i = 0; i < layers.length; i++ ) {
-				l.add(getMetaInfFolderForLayer(layers[i]));
+				l.add(getMetaInfFolderForLayer(layers[i], productSlot));
 			}
 			l.add(getMetaInfFolderForSlot(productSlot));
 			return (String[]) l.toArray(new String[l.size()]);
@@ -38,8 +38,17 @@ public class ServerBeanTypeUnknownAS72Product extends ServerBeanTypeUnknownAS71P
 		protected String getMetaInfFolderForSlot(String slot) {
 			return "modules/system/layers/base/org/jboss/as/product/" + slot + "/dir/META-INF"; //$NON-NLS-1$
 		}
+		
+		/* Incorrect implementation, but cannot remove it because it's officially api */
+		@Deprecated
 		protected String getMetaInfFolderForLayer(String layer) {
-			return "modules/system/layers/" + layer + "/org/jboss/as/product/" + layer + "/dir/META-INF"; //$NON-NLS-1$
+			return getMetaInfFolderForLayer(layer, layer);
+		}
+		/**
+		 * @since 2.5
+		 */
+		protected String getMetaInfFolderForLayer(String layer, String slot) {
+			return "modules/system/layers/" + layer + "/org/jboss/as/product/" + slot + "/dir/META-INF"; //$NON-NLS-1$
 		}
 		
 	}
