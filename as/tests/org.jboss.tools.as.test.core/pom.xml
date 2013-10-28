@@ -19,7 +19,7 @@
 		<jbosstools.test.jboss.home.6.0>${requirementsDirectory}/jboss-6.0.0.Final</jbosstools.test.jboss.home.6.0>
 		<jbosstools.test.jboss.home.7.0>${requirementsDirectory}/jboss-as-7.0.0.Final</jbosstools.test.jboss.home.7.0>
 		<jbosstools.test.jboss.home.7.1>${requirementsDirectory}/jboss-as-7.1.0.Final</jbosstools.test.jboss.home.7.1>
-		<jbosstools.test.jboss.home.8.0>${requirementsDirectory}/wildfly-8.0.0.Alpha1</jbosstools.test.jboss.home.8.0>
+		<jbosstools.test.jboss.home.8.0>${requirementsDirectory}/wildfly-8.0.0.Beta1</jbosstools.test.jboss.home.8.0>
 		<jbosstools.test.jboss.home.eap.4.3>${requirementsDirectory}/jboss-eap-4.3/jboss-as</jbosstools.test.jboss.home.eap.4.3>
 		<jbosstools.test.jboss.home.eap.5.0>${requirementsDirectory}/jboss-eap-5.1/jboss-as</jbosstools.test.jboss.home.eap.5.0>
 		<jbosstools.test.jboss.home.eap.6.0>${requirementsDirectory}/jboss-eap-6.0</jbosstools.test.jboss.home.eap.6.0>
@@ -189,14 +189,14 @@
 						</configuration>
 					</execution>
 					<execution>
-						<id>install-wildfly-8.0.0.Alpha1</id>
+						<id>install-wildfly-8.0.0.Beta1</id>
 						<phase>pre-integration-test</phase>
 						<goals>
 							<goal>wget</goal>
 						</goals>
 						<configuration>
-							<url>http://download.jboss.org/wildfly/8.0.0.Alpha1/wildfly-8.0.0.Alpha1.zip</url>
-							<md5>220b246c08a66192b9466f9ac93f1693</md5>
+							<url>http://download.jboss.org/wildfly/8.0.0.Beta1/wildfly-8.0.0.Beta1.zip</url>
+							<md5>1485c119c1740eaf3ce3e1d5c7b66098</md5>
 							<unpack>true</unpack>
 						</configuration>
 					</execution>

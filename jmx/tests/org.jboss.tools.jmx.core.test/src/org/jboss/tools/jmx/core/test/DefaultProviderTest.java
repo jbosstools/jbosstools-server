@@ -112,7 +112,10 @@ public class DefaultProviderTest extends TestCase {
 		});
 		
 		 /* */
-		Thread.sleep(10000);
+		try {
+			Thread.sleep(10000);
+		} catch(InterruptedException ie) {}
+		
 		
 		try {
 			IConnectionProvider defProvider =
