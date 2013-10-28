@@ -20,8 +20,8 @@
 	  <jboss.threads.version>2.1.1.Final</jboss.threads.version>
 	  <wildfly.controller.version>8.0.0.Beta1</wildfly.controller.version>
 	  <wildfly.protocol.version>8.0.0.Beta1</wildfly.protocol.version>
-	  <xnio.api.version>3.1.0.CR7</xnio.api.version>
-	  <xnio.nio.version>3.1.0.CR7</xnio.nio.version>
+	  <xnio.api.version>3.1.0.Final</xnio.api.version>
+	  <xnio.nio.version>3.1.0.Final</xnio.nio.version>
 	</properties>
 	
 	<build>
