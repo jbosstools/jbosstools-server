@@ -15,8 +15,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.security.AccessController;
 import java.util.Calendar;
 import java.util.Date;
-import org.eclipse.core.runtime.internal.adaptor.EclipseEnvironmentInfo;
-import org.eclipse.osgi.framework.internal.core.FrameworkProperties;
 import org.eclipse.osgi.framework.log.FrameworkLog;
 import org.eclipse.osgi.framework.log.FrameworkLogEntry;
 import org.eclipse.osgi.framework.util.SecureAction;
@@ -151,68 +149,13 @@ public class DeprecatedEclipseLog implements FrameworkLog {
 	}
 
 	/**
-	 * Returns the session timestamp.  This is the time the platform was started
-	 * @return the session timestamp
-	 */
-	protected String getSessionTimestamp() {
-		// Main should have set the session start-up timestamp so return that. 
-		// Return the "now" time if not available.
-		String ts = FrameworkProperties.getProperty("eclipse.startTime"); //$NON-NLS-1$
-		if (ts != null) {
-			try {
-				return getDate(new Date(Long.parseLong(ts)));
-			} catch (NumberFormatException e) {
-				// fall through and use the timestamp from right now
-			}
-		}
-		return getDate(new Date());
-	}
-
-	/**
 	 * Writes the session
 	 * @throws IOException if an error occurs writing to the log
 	 */
 	protected void writeSession() throws IOException {
 		write(SESSION);
 		writeSpace();
-		String date = getSessionTimestamp();
-		write(date);
-		writeSpace();
-		for (int i = SESSION.length() + date.length(); i < 78; i++) {
-			write("-"); //$NON-NLS-1$
-		}
 		writeln();
-		// Write out certain values found in System.getProperties()
-		try {
-			String key = "eclipse.buildId"; //$NON-NLS-1$
-			String value = FrameworkProperties.getProperty(key, "unknown"); //$NON-NLS-1$
-			writeln(key + "=" + value); //$NON-NLS-1$
-
-			key = "java.fullversion"; //$NON-NLS-1$
-			value = System.getProperty(key);
-			if (value == null) {
-				key = "java.version"; //$NON-NLS-1$
-				value = System.getProperty(key);
-				writeln(key + "=" + value); //$NON-NLS-1$
-				key = "java.vendor"; //$NON-NLS-1$
-				value = System.getProperty(key);
-				writeln(key + "=" + value); //$NON-NLS-1$
-			} else {
-				writeln(key + "=" + value); //$NON-NLS-1$
-			}
-		} catch (Exception e) {
-			// If we're not allowed to get the values of these properties
-			// then just skip over them.
-		}
-		// The Bootloader has some information that we might be interested in.
-		write("BootLoader constants: OS=" + EclipseEnvironmentInfo.getDefault().getOS()); //$NON-NLS-1$
-		write(", ARCH=" + EclipseEnvironmentInfo.getDefault().getOSArch()); //$NON-NLS-1$
-		write(", WS=" + EclipseEnvironmentInfo.getDefault().getWS()); //$NON-NLS-1$
-		writeln(", NL=" + EclipseEnvironmentInfo.getDefault().getNL()); //$NON-NLS-1$
-		// Add the command-line arguments used to invoke the platform 
-		// XXX: this includes runtime-private arguments - should we do that?
-		writeArgs("Framework arguments: ", EclipseEnvironmentInfo.getDefault().getNonFrameworkArgs()); //$NON-NLS-1$
-		writeArgs("Command-line arguments: ", EclipseEnvironmentInfo.getDefault().getCommandLineArgs()); //$NON-NLS-1$
 	}
 
 	public void close() {
@@ -332,7 +275,6 @@ public class DeprecatedEclipseLog implements FrameworkLog {
 			backupIdx = 0;
 		}
 		setOutput(newFile, null, append);
-		FrameworkProperties.setProperty(PROP_LOGFILE, newFile == null ? "" : newFile.getAbsolutePath()); //$NON-NLS-1$
 	}
 
 	public synchronized File getFile() {

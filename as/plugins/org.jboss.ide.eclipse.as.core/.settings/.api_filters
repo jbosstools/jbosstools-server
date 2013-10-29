@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.jboss.ide.eclipse.as.core" version="2">
+    <resource path="jbosscore/org/jboss/ide/eclipse/as/core/extensions/events/DeprecatedEclipseLog.java" type="org.jboss.ide.eclipse.as.core.extensions.events.DeprecatedEclipseLog">
+        <filter id="338792546">
+            <message_arguments>
+                <message_argument value="org.jboss.ide.eclipse.as.core.extensions.events.DeprecatedEclipseLog"/>
+                <message_argument value="getSessionTimestamp()"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="jbosscore/org/jboss/ide/eclipse/as/core/resolvers/ConfigNameResolver.java" type="org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver">
         <filter comment="Methods should have been internal" id="338792546">
             <message_arguments>
