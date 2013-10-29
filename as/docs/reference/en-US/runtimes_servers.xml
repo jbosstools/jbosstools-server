@@ -72,7 +72,7 @@
 				<title>Note:</title>
 				
 				<para>
-					Now there is a separation between .org servers (the <guilabel>JBoss Community</guilabel> category) and product server that comes with JBoss EAP in JBDS ( the <guilabel>JBoss Enterprise Middleware</guilabel> category).
+					Now there is a separation between .org servers (the <guilabel>JBoss Community</guilabel> category) and product server that comes with JBoss EAP in JBDS ( the <guilabel>Red Hat JBoss Middleware</guilabel> category).
 				</para>
 			</note>
 			<!--
