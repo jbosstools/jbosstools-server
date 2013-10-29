@@ -269,4 +269,10 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate
 		return null;
 	}
 
+	@Override
+	protected boolean shouldIgnorePublishRequest(IModule m) {
+		return (m.getProject() != null && m.getProject().exists() && !m.getProject().isAccessible());
+	}
+
+	
 }
