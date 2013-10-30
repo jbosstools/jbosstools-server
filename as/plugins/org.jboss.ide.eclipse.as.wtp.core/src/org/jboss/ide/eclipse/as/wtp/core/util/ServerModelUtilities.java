@@ -98,7 +98,7 @@ public class ServerModelUtilities {
 	public static boolean isAnyDeleted(IModule[] module) {
 		boolean deleted = false;
 		for( int i = 0; i < module.length; i++ ) {
-			if( module[i].isExternal() ) {
+			if( !module[i].exists()) {
 				deleted = true;
 				break;
 			}
