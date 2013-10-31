@@ -12,6 +12,8 @@ package org.jboss.ide.eclipse.as.ui.views.server.extensions;
 
 import java.net.URL;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -32,10 +34,14 @@ import org.eclipse.ui.navigator.ICommonActionExtensionSite;
 import org.eclipse.ui.navigator.ICommonViewerSite;
 import org.eclipse.ui.navigator.ICommonViewerWorkbenchSite;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IModuleArtifact;
 import org.eclipse.wst.server.core.IModuleType;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.internal.ILaunchableAdapter;
+import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.IURLProvider;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossLaunchAdapter.JBTCustomHttpLaunchable;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.actions.ServerActionMessages;
@@ -71,7 +77,13 @@ public class ShowInWelcomePageActionProvider extends CommonActionProvider {
 				new Job("Fetching Welcome Page URL") {
 					public IStatus run(IProgressMonitor monitor) {
 						// Get the url in a background thread to not freeze the UI
-						final String url = getUrl();
+						String url2 = null;
+						try {
+							url2 = getUrl();
+						} catch(CoreException ce) {
+							return ce.getStatus();
+						}
+						final String url = url2;
 						if(url!=null) {
 							Display.getDefault().asyncExec(new Runnable() {
 								public void run() {
@@ -97,12 +109,67 @@ public class ShowInWelcomePageActionProvider extends CommonActionProvider {
 		return false;
 	}
 	
-	private String getUrl() {
+	private static JBTCustomHttpLaunchable getCustomLaunchable(IServer server, final IModule[] module) throws CoreException {
+		IModule mod = module == null || module.length == 0 ? null : module[module.length-1];
+		IModuleArtifact artifact = null;
+		if( mod != null ) {
+			IProject p = mod.getProject();
+			if( p != null ) {
+				final IModuleArtifact[] moduleArtifacts = ServerPlugin.getModuleArtifacts(p);
+				if( moduleArtifacts != null && moduleArtifacts.length > 0 ) {
+					artifact = moduleArtifacts[0];
+				}
+			}
+		}
+		
+		if( artifact == null ) {
+			// create a stub
+			artifact = new IModuleArtifact() {
+				public IModule getModule() {
+					return module == null || module.length == 0 ? null : module[module.length-1];
+				}
+			};
+		}
+		return getLaunchable(server, artifact);
+	}
+	
+	private static JBTCustomHttpLaunchable getLaunchable(IServer server, IModuleArtifact moduleArtifact) throws CoreException {
+		ILaunchableAdapter[] adapters = ServerPlugin.getLaunchableAdapters();
+		IStatus lastStatus = null;
+		if (adapters != null) {
+			int size2 = adapters.length;
+			for (int j = 0; j < size2; j++) {
+				try {
+					Object launchable2 = adapters[j].getLaunchable(server, moduleArtifact);
+					if (launchable2 != null && launchable2 instanceof JBTCustomHttpLaunchable)
+						return (JBTCustomHttpLaunchable)launchable2;
+				} catch (CoreException ce) {
+					lastStatus = ce.getStatus();
+				} catch (Exception e) {
+				}
+			}
+			if (lastStatus != null)
+				throw new CoreException(lastStatus);
+		}
+		return null;
+	}
+
+	
+	private String getUrl() throws CoreException {
 		String urlString = null;
 		IServer server = getServer();
 		if(server!=null && server.getServerState() == IServer.STATE_STARTED) {
+			// When a module is selected, behave as you would during run-on-server for project-level selection
 			ModuleServer ms = getModuleServer();
 			if(ms!=null) {
+				// Go through the wtp framework to find the proper launchable adapter for the project
+				JBTCustomHttpLaunchable launchable = getCustomLaunchable(server, ms.getModule());
+				// IF its one we provide, return its url directly
+				if( launchable != null ){
+					return (launchable).getURL().toString();
+				} 
+					
+				//Otherwise, do the magic we did in the past to try our best to come up with a url
 				IModule[] mss = ms.getModule();
 				IModule m = getWebModule(mss);
 				if(m!=null) {
@@ -116,6 +183,7 @@ public class ShowInWelcomePageActionProvider extends CommonActionProvider {
 					}
 				}
 			} else {
+				// When no module is selected,use welcome page url
 				ServerExtendedProperties props = (ServerExtendedProperties)server.loadAdapter(ServerExtendedProperties.class, new NullProgressMonitor());
 				if( props != null )
 					urlString = props.getWelcomePageUrl();
