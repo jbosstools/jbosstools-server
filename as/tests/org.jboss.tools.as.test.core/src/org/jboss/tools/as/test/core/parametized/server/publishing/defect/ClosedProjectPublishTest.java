@@ -81,6 +81,7 @@ public class ClosedProjectPublishTest extends TestCase {
 		assertTrue(p.append("WEB-INF").append("web.xml").toFile().exists());
 		
 		module.getProject().close(new NullProgressMonitor() );
+		JobUtils.waitForIdle();
 		
 		// publish, verify the contents are still there
 		server.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
