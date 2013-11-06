@@ -13,16 +13,13 @@ package org.jboss.ide.eclipse.as.wtp.core.server.behavior;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.debug.core.ILaunch;
-import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.debug.core.model.LaunchConfigurationDelegate;
-import org.jboss.ide.eclipse.as.core.server.IJBossLaunchDelegate;
+import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 
 /**
  * @since 3.0
  */
-public interface ILaunchServerController extends IJBossLaunchDelegate, ISubsystemController {
+public interface ILaunchServerController extends ISubsystemController, ILaunchConfigurationDelegate {
 	/**
 	 * Is the server in a position that it can be started?
 	 * @param launchMode
@@ -38,18 +35,5 @@ public interface ILaunchServerController extends IJBossLaunchDelegate, ISubsyste
 	 */
 	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IProgressMonitor monitor) throws CoreException;
 
-
-	public void actualLaunch(LaunchConfigurationDelegate launchConfig, ILaunchConfiguration configuration, 
-			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException;
-	
-	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor) 
-			throws CoreException;
-
-	public void preLaunch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor) 
-			throws CoreException;
-
-	public void postLaunch(ILaunchConfiguration configuration, String mode,
-			ILaunch launch, IProgressMonitor monitor) throws CoreException;
-	
 
 }

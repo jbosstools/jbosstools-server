@@ -59,7 +59,6 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate
 	}
 	
 	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IProgressMonitor monitor) throws CoreException {
-		workingCopy.setAttribute(DeployableLaunchConfiguration.ACTION_KEY, DeployableLaunchConfiguration.START);
 	}
 	
 	
@@ -101,6 +100,8 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate
 		try {
 			int result = method.publishFinish(this, monitor);
 			setServerPublishState(result);
+		} catch(Exception ce) { 
+			ce.printStackTrace();
 		} finally {
 			publishTaskModel = null;
 			method = null;

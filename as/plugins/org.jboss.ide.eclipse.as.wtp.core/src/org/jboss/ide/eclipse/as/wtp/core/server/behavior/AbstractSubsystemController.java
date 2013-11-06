@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.SubsystemModel.SubsystemType;
 
 /**
@@ -30,9 +31,25 @@ public abstract class AbstractSubsystemController implements ISubsystemControlle
 	private IServer server;
 	private Map<String, Object> environment = null;
 	
-	
+	/**
+	 * Get the server this controller was instantiated with
+	 * @return
+	 */
 	protected IServer getServer() {
 		return server;
+	}
+	
+	/**
+	 * Convert the given server into a {@link ControllableServerBehavior} if possible
+	 * @return
+	 */
+	protected IControllableServerBehavior getControllableBehavior() {
+		if( server != null ) {
+			ServerBehaviourDelegate del = (ServerBehaviourDelegate)server.loadAdapter(ServerBehaviourDelegate.class, null);
+			if( del instanceof ControllableServerBehavior)
+				return (IControllableServerBehavior)del;
+		}
+		return null;
 	}
 	
 	protected Map<String, Object> getEnvironment() {

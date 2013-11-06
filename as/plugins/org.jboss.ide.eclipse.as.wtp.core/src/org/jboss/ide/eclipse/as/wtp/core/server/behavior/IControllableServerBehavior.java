@@ -35,4 +35,32 @@ public interface IControllableServerBehavior {
 	 * @throws CoreException
 	 */
 	public ISubsystemController getController(String system) throws CoreException;
+	
+	/**
+	 * Set the server to stopping. 
+	 * The server may respond to this by launching pollers 
+	 * or other services that occur during shutdown 
+	 */
+	public void setServerStopping();
+	
+	/**
+	 * Ser the server to stopped. 
+	 */
+	public void setServerStopped();
+	
+	/**
+	 * Set the server to starting
+	 * This alerts the server that it may begin any number of tasks that should
+	 * run concurrently during server startup
+	 */
+	public void setServerStarting();
+	
+	/**
+	 * Set the server to started
+	 * This alerts the server that it may run any number of tasks
+	 * that should be run AFTER the server is started
+	 */
+	public void setServerStarted();
+
+	
 }
