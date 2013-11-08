@@ -93,7 +93,7 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 	}
 
 	/**
-	 * @since 2.5
+	 * @since 3.0
 	 */
 	protected String getBaseDir(IJBossServerRuntime runtime)  throws CoreException {
 		LocalJBoss7ServerRuntime rt = (LocalJBoss7ServerRuntime)runtime.getRuntime().loadAdapter(LocalJBoss7ServerRuntime.class, null);

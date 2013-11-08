@@ -42,7 +42,7 @@ public class CustomRuntimeClasspathModel {
 	}
 	 
 	/**
-	 * @since 2.5
+	 * @since 3.0
 	 */
 	public IRuntimePathProvider[] getEntries(IRuntimeType type) {
 		IRuntimePathProvider[] sets = loadFilesets(type);
@@ -53,7 +53,7 @@ public class CustomRuntimeClasspathModel {
 	}
 	
 	/**
-	 * @since 2.5
+	 * @since 3.0
 	 */
 	public IRuntimePathProvider[] getDefaultEntries(IRuntimeType type) {
 		return new DefaultClasspathJarLocator().getDefaultPathProviders(type);
@@ -64,7 +64,7 @@ public class CustomRuntimeClasspathModel {
 	}
 
 	/**
-	 * @since 2.5
+	 * @since 3.0
 	 */
 	public IPath[] getAllEntries(IRuntime runtime, IRuntimePathProvider[] sets) {
 		return DefaultClasspathJarLocator.getAllEntries(runtime, sets);
@@ -105,7 +105,7 @@ public class CustomRuntimeClasspathModel {
 	}
 
 	/**
-	 * @since 2.5
+	 * @since 3.0
 	 */
 	public static void saveFilesets(IRuntimeType runtime, IRuntimePathProvider[] sets) {
 		if( !DEFAULT_CLASSPATH_FS_ROOT.toFile().exists()) {

@@ -75,7 +75,7 @@ public class ClasspathCorePlugin extends Plugin {
 
 	/**
 	 * Clear the cached entries for this runtime type
-	 * @since 2.5
+	 * @since 3.0
 	 */
 	public static void clearCachedClasspathEntries(IRuntimeType rt) {
 		IRuntime[] allRuntimes = ServerCore.getRuntimes();

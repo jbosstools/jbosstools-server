@@ -31,7 +31,7 @@ import org.jboss.ide.eclipse.as.core.util.ServerUtil;
  * 
  * Eventually even this class will be broken up on a per-version basis, 
  * but at this point it is not necessary. 
- * @since 2.5
+ * @since 3.0
  */
 public class LocalServerModeDetails implements IServerModeDetails {
 

@@ -15,7 +15,7 @@ package org.jboss.ide.eclipse.as.core.server;
  * An interface representing any class that can provide a JMX url
  * through which it can be accessed.  
  * 
- * @since 2.5 (actually 2.4.101)
+ * @since 3.0 (actually 2.4.101)
  */
 public interface IJMXURLProvider {
 	

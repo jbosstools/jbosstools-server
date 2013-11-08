@@ -67,4 +67,161 @@
             readOnly="true">
       </classpathVariableInitializer>
    </extension>
+   
+   
+   
+   
+   <!-- NEW server behavior implementation using subsystems   -->
+   <extension
+         point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
+      <subsystem
+            class="org.jboss.tools.as.test.core.parametized.server.behavior.controllable.impl.System1aSubsystem"
+            id="system1.implA"
+            name="implA"
+            serverTypes="customServer1"
+            system="system1">
+      </subsystem>
+   </extension>
+
+
+	<!-- Test 2,  two for the same system, one has default-->
+   <extension
+         point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
+      <subsystem
+            class="org.jboss.tools.as.test.core.parametized.server.behavior.controllable.impl.System1aSubsystem"
+            id="system2.implA"
+            name="implA"
+            serverTypes="customServer1"
+            system="system2">
+         <properties>
+            <property key="someKey" value="someVal"/>
+         </properties>
+      </subsystem>
+      <subsystem
+            class="org.jboss.tools.as.test.core.parametized.server.behavior.controllable.impl.System1aSubsystem"
+            id="system2.implB"
+            name="implB"
+            serverTypes="customServer1"
+            system="system2">
+         <properties>
+            <property key="default" value="true"/>
+            <property key="otherKey" value="otherVal"/>
+         </properties>
+      </subsystem>
+   </extension>
+
+
+
+	<!-- Test 3,  Dependency test-->
+   <extension
+         point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
+      <subsystem
+            class="org.jboss.tools.as.test.core.parametized.server.behavior.controllable.impl.System1aSubsystem"
+            id="system3.implA"
+            name="implA"
+            serverTypes="customServer1"
+            system="system3">
+      </subsystem>
+      <subsystem
+            class="org.jboss.tools.as.test.core.parametized.server.behavior.controllable.impl.System1aSubsystem"
+            id="system3.implB"
+            name="implB"
+            serverTypes="customServer1"
+            system="system3">
+         <properties>
+            <property key="default" value="true"/>
+         </properties>
+         <dependencies>
+            <requires
+                  system="missingSystem">
+            </requires>
+         </dependencies>
+      </subsystem>
+   </extension>
+
+
+
+
+	<!-- 
+		Test 4,  Dependency with required attribute test
+	    This test will query for a system4 implementation,
+	    and verify that it resolves a dependent subsystem
+	    based on the required properties.
+	-->
+   <extension
+         point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
+      <subsystem
+            class="org.jboss.tools.as.test.core.parametized.server.behavior.controllable.impl.System1aSubsystem"
+            id="system4.implSingleton"
+            name="implSingleton"
+            serverTypes="customServer1"
+            system="system4">
+         <dependencies>
+            <requires system="system4a"/>
+         </dependencies>
+      </subsystem>
+      
+      
+      <subsystem
+            class="org.jboss.tools.as.test.core.parametized.server.behavior.controllable.impl.System1aSubsystem"
+            id="system4a.tiger"
+            name="tiger"
+            serverTypes="customServer1"
+            system="system4a">
+            <properties>
+               <property key="animal" value="tiger"/>
+            </properties>
+      </subsystem>
+      <subsystem
+            class="org.jboss.tools.as.test.core.parametized.server.behavior.controllable.impl.System1aSubsystem"
+            id="system4a.mantis"
+            name="mantis"
+            serverTypes="customServer1"
+            system="system4a">
+            <properties>
+               <property key="animal" value="mantis"/>
+            </properties>
+      </subsystem>
+   </extension>
+
+	<!-- 
+		Test 5,  Dependency with required attribute test, second level
+		A test5 system impl will depend on the singleton impl from test4. 
+		This will test that the environment properly passes down requirements
+		more than 1 layer. 
+	-->
+   <extension
+         point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
+      <subsystem
+            class="org.jboss.tools.as.test.core.parametized.server.behavior.controllable.impl.System1aSubsystem"
+            id="system5.implSingleton5"
+            name="implSingleton5"
+            serverTypes="customServer1"
+            system="system5">
+         <dependencies>
+            <requires system="system4"/>
+         </dependencies>
+      </subsystem>
+	</extension>
+
+	<!-- 
+		Test 6,  Dependency resolution customized by subclass 
+		based on values in the given environment
+	-->
+   <extension
+         point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
+      <subsystem
+            class="org.jboss.tools.as.test.core.parametized.server.behavior.controllable.impl.System6Subsystem"
+            id="system6.implSingleton6"
+            name="implSingleton6"
+            serverTypes="customServer1"
+            system="system6">
+         <dependencies>
+            <requires system="system4a"/>
+         </dependencies>
+      </subsystem>
+	</extension>
+
+
+   
 </plugin>

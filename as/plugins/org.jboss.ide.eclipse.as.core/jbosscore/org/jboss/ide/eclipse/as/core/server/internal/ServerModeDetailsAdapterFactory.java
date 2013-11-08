@@ -21,7 +21,7 @@ import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
 /**
- * @since 2.5
+ * @since 3.0
  */
 public class ServerModeDetailsAdapterFactory implements IAdapterFactory, IJBossToolingConstants {
 	

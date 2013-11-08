@@ -21,6 +21,7 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.Trace;
+import org.jboss.ide.eclipse.as.core.modules.ResourceModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.JSTPublisherXMLToucher;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
@@ -59,9 +60,9 @@ public class DelegatingServerBehavior extends DeployableServerBehavior implement
 		if( id == null ) {
 			lastModeId = null;
 			ret = null;
-		} else if( id.equals(lastModeId) && delegate != null && delegate.getBehaviourTypeId().equals(id))
+		} else if( id.equals(lastModeId) && delegate != null && delegate.getBehaviourTypeId().equals(id)) {
 			ret = delegate;
-		else {
+		} else {
 			Behaviour b = BehaviourModel.getModel().getBehaviour(getServer().getServerType().getId());
 			BehaviourImpl impl = b.getImpl(id);
 			if( impl != null ) {
@@ -77,10 +78,7 @@ public class DelegatingServerBehavior extends DeployableServerBehavior implement
 	}
 	
 	public IModulePathFilter getPathFilter(IModule[] moduleTree) {
-		if( getDelegate() != null ) {
-			return getDelegate().getPathFilter(moduleTree);
-		}
-		return null;
+		return ResourceModuleResourceUtil.findDefaultModuleFilter(moduleTree[moduleTree.length-1]);
 	}
 	
 	public void stop(boolean force) {

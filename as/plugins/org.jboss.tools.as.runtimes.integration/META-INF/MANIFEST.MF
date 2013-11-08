@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %BundleName
 Bundle-Vendor: %BundleVendor
 Bundle-SymbolicName: org.jboss.tools.as.runtimes.integration;singleton:=true
-Bundle-Version: 2.5.0.qualifier
+Bundle-Version: 3.0.0.qualifier
 Bundle-Activator: org.jboss.tools.as.runtimes.integration.ServerRuntimesIntegrationActivator
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources;bundle-version="3.8.100",
@@ -13,7 +13,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.jboss.tools.common.core;bundle-version="3.5.0",
  org.jboss.tools.runtime.core;bundle-version="2.1.0",
  org.jboss.tools.stacks.core;bundle-version="1.0.0",
- org.jboss.ide.eclipse.as.wtp.core;bundle-version="[2.4.101,3.0.0)"
+ org.jboss.ide.eclipse.as.wtp.core;bundle-version="[3.0.0,4.0.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .

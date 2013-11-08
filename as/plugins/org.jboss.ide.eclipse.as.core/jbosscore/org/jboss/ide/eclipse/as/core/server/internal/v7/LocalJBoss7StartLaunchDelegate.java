@@ -34,11 +34,6 @@ public class LocalJBoss7StartLaunchDelegate extends LocalJBossStartLaunchDelegat
 		return new String[] {};
 	}
 
-	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor)
-			throws CoreException {
-		return super.preLaunchCheck(configuration, mode, monitor);
-	}
-
 	public void preLaunch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
 			throws CoreException {
 		IServer server = ServerUtil.getServer(configuration);
@@ -60,7 +55,6 @@ public class LocalJBoss7StartLaunchDelegate extends LocalJBossStartLaunchDelegat
 		if( behavior != null ) {
 			IProcess[] processes = launch.getProcesses();
 			if (processes != null && processes.length >= 1) {
-				behavior.setProcess(processes[0]);
 				((LocalJBossBehaviorDelegate) (behavior.getDelegate())).setProcess(processes[0]);
 			}
 			behavior.setRunMode(mode);

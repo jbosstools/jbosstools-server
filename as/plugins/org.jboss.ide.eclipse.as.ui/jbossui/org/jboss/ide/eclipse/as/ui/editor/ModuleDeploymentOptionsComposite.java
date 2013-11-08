@@ -59,7 +59,7 @@ import org.jboss.ide.eclipse.as.ui.UIUtil;
  * This class represents primarily a tree viewer with columns capable of 
  * customizing deployment locations on a per-module basis for a given server. 
  * 
- * @since 2.5
+ * @since 3.0
  */
 public class ModuleDeploymentOptionsComposite extends Composite implements PropertyChangeListener {
 	protected static final String ALL = Messages.EditorDeploymentPageFilterAll;
@@ -153,6 +153,7 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 		
 		ModifyListener ml =new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
+				refreshPossibleModules();
 				resetFilterTextState();
 				viewer.setInput(""); //$NON-NLS-1$
 			}

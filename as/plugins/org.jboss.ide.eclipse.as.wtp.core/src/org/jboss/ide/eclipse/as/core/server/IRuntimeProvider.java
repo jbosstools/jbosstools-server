@@ -14,7 +14,7 @@ import org.eclipse.wst.server.core.IRuntime;
 
 /**
  * A simple interface for an object which can provide a relevant IRuntime
- * @since 2.5
+ * @since 3.0
  */
 public interface IRuntimeProvider {
 	public IRuntime getRuntime();

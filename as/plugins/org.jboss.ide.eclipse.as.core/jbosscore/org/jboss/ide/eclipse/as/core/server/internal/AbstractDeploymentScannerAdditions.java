@@ -175,7 +175,7 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 	 * can customize the scanner's interval 
 	 */
 	/**
-	 * @since 2.5
+	 * @since 3.0
 	 */
 	public boolean canCustomizeInterval() {
 		return false;
@@ -186,7 +186,7 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 	 * can customize the scanner's timeout 
 	 */
 	/**
-	 * @since 2.5
+	 * @since 3.0
 	 */
 	public boolean canCustomizeTimeout() {
 		return false;

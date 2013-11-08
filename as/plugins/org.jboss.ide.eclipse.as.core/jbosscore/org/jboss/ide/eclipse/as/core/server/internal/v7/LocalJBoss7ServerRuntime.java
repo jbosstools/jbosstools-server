@@ -24,7 +24,7 @@ public class LocalJBoss7ServerRuntime extends LocalJBossServerRuntime implements
 	public static final String CONFIG_FILE = "org.jboss.ide.eclipse.as.core.server.internal.v7.CONFIG_FILE"; //$NON-NLS-1$
 	public static final String CONFIG_FILE_DEFAULT = "standalone.xml"; //$NON-NLS-1$
 	/**
-	 * @since 2.5
+	 * @since 3.0
 	 */
 	public static final String BASE_DIRECTORY = "org.jboss.ide.eclipse.as.core.server.internal.v7.BASE_DIRECTORY"; //$NON-NLS-1$
 	
@@ -69,7 +69,7 @@ public class LocalJBoss7ServerRuntime extends LocalJBossServerRuntime implements
 	}
 	
 	/**
-	 * @since 2.5
+	 * @since 3.0
 	 */
 	public String getConfigurationFileFullPath() {
 		String configFile = getConfigurationFile();
@@ -86,7 +86,7 @@ public class LocalJBoss7ServerRuntime extends LocalJBossServerRuntime implements
 	 * This method is technically internal and is not part of any interface
 	 * Gets an absolute path for the server's base directory
 	 * 
-	 * @since 2.5
+	 * @since 3.0
 	 */
 	public String getBaseDirectory() {
 		String bd = getAttribute(BASE_DIRECTORY, IJBossRuntimeResourceConstants.AS7_STANDALONE);
@@ -101,7 +101,7 @@ public class LocalJBoss7ServerRuntime extends LocalJBossServerRuntime implements
 	 * or, a file-system absolute path. Setting the value of 'null' will
 	 * restore it to the default of 'standalone'
 	 * 
-	 * @since 2.5
+	 * @since 3.0
 	 */
 	public void setBaseDirectory(String s) {
 		setAttribute(BASE_DIRECTORY, s);

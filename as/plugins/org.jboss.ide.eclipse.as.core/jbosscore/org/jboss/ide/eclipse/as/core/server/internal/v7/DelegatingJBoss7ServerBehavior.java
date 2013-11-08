@@ -20,10 +20,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.debug.core.DebugEvent;
-import org.eclipse.debug.core.DebugPlugin;
-import org.eclipse.debug.core.IDebugEventSetListener;
-import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
@@ -38,7 +34,6 @@ import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
 import org.jboss.ide.eclipse.as.core.util.IEventCodes;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
-import org.jboss.ide.eclipse.as.management.core.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
@@ -47,27 +42,7 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 
 	public static final String MARK_DO_DEPLOY = "org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher.markUndeploy"; //$NON-NLS-1$
 
-	private IProcess serverProcess;
-	private IDebugEventSetListener serverProcessListener;
 	private PollThread pollThread;
-
-	public void setProcess(IProcess process) {
-		this.serverProcess = process;
-		initDebugListener(process);
-	}
-
-	private void initDebugListener(IProcess process) {
-		DebugPlugin.getDefault().addDebugEventListener(serverProcessListener = new JBossServerLifecycleListener());
-	}
-
-	private void disposeServerProcessListener() {
-		if( serverProcessListener != null ) {
-			DebugPlugin.getDefault().removeDebugEventListener(serverProcessListener);
-			serverProcess = null;
-			if( pollThread != null )
-				pollThread.cancel();
-		}
-	}
 
 	@Override
 	protected void publishModule(int kind, int deltaKind, IModule[] module, IProgressMonitor monitor)
@@ -151,7 +126,6 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 
 	@Override
 	public void setServerStopped() {
-		disposeServerProcessListener();
 		logServerStopped();
 		super.setServerStopped();
 	}
@@ -163,19 +137,6 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 		ServerLogger.getDefault().log(getServer(), status);
 	}
 
-	private class JBossServerLifecycleListener implements IDebugEventSetListener {
-
-		public void handleDebugEvents(DebugEvent[] events) {
-			for (DebugEvent event : events) {
-				if (serverProcess != null && serverProcess.equals(event.getSource())
-						&& event.getKind() == DebugEvent.TERMINATE) {
-					setServerStopped();
-					break;
-				}
-			}
-		}
-	}
-	
 	public void markDoDeploy(IPath path) {
 		Object o = getPublishData(MARK_DO_DEPLOY);
 		if(!(o instanceof List<?>)) {
