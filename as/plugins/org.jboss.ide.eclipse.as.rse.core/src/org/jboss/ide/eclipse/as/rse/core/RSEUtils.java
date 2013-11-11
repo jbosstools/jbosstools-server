@@ -14,7 +14,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.rse.core.RSECorePlugin;
 import org.eclipse.rse.core.model.IHost;
@@ -26,12 +25,12 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
-import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.RemotePath;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
+import org.jboss.ide.eclipse.as.rse.core.subsystems.RSEDeploymentOptionsController;
 
 /* 
  * Some of this code will need to be abstracted out from JBossServer
@@ -71,7 +70,7 @@ public class RSEUtils {
 	 */
 	public static final String RSE_MODE = "rse";
 
-	public static String getRSEConnectionName(IServer server) {
+	public static String getRSEConnectionName(IServerAttributes server) {
 		return server.getAttribute(RSEUtils.RSE_SERVER_HOST, RSE_SERVER_DEFAULT_HOST);
 	}
 
@@ -116,71 +115,61 @@ public class RSEUtils {
 	}
 
 	public static String getDeployRootFolder(IDeployableServer server) {
-		return getDeployRootFolder(server.getServer(), server.getDeployLocationType());
+		RSEDeploymentOptionsController controller = new RSEDeploymentOptionsController();
+		controller.initialize(server.getServer(), null, null);
+		return controller.getDeploymentsRootFolder(true);
 	}
 
-	/* Copied from JBossServer.getDeployFolder(etc) */
-	public static String getDeployRootFolder(IServer server, String type) {
-		if (JBossServer.DEPLOY_CUSTOM.equals(type)) {
-			String val = server.getAttribute(JBossServer.DEPLOY_DIRECTORY, (String) null);
-			if (val != null) {
-				IPath val2 = new Path(val);
-				return makeGlobal(server, val2).toString();
-			}
-			// if no value is set, default to metadata
-			type = JBossServer.DEPLOY_SERVER;
-		}
-		// This should *NOT* happen, so if it does, we will default to server
-		// location
-		else if (JBossServer.DEPLOY_METADATA.equals(type)) {
-			type = JBossServer.DEPLOY_SERVER;
-		}
-		if (JBossServer.DEPLOY_SERVER.equals(type)) {
-			// TODO !!!! Need API (nmaybe in JBossServer?) so servers can
-			// override this behavior
-			// Cannot move this code to JBossServer because this requires an
-			// RSE-specific key!! Damn!
-			ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
-			if (sep != null && sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS) {
-				return getBaseDirectoryPath(server).append(IJBossRuntimeResourceConstants.AS7_DEPLOYMENTS).toString();
-			} else {
-				String loc = IConstants.SERVER;
-				String config = getRSEConfigName(server);
-				if( loc == null || config == null )
-					return null;
-				IPath p = new Path(loc).append(config)
-						.append(IJBossRuntimeResourceConstants.DEPLOY);
-				return makeGlobal(server, p).toString();
-			}
-		}
-		return null;
+
+	// This method is unsafe when accessing a remote windows machine from non-windows
+	@Deprecated
+	protected static IPath getBaseDirectoryPath(IServerAttributes server) {
+		return getBaseDirectoryPath(server, java.io.File.pathSeparatorChar);
 	}
 	
-	protected static IPath getBaseDirectoryPath(IServer server) {
+	protected static IPath getBaseDirectoryPath(IServerAttributes server, char sep) {
 		String val = server.getAttribute(RSE_BASE_DIR, IJBossRuntimeResourceConstants.AS7_STANDALONE);
-		IPath valPath = new Path(val);
+		IPath valPath = new RemotePath(val, sep);
 		if( valPath.isAbsolute())
 			return valPath;
-		return makeGlobal(server, valPath);	
+		IPath ret = makeGlobal(server, valPath, sep);
+		return ret;
 	}
-	
-	public static String getBaseDirectory(IServer server) {
-		return getBaseDirectoryPath(server).toString();
-	}
-	
 
-	public static IPath makeRelative(IServer server, IPath p) {
-		if (p.isAbsolute()) {
-			if (new Path(getRSEHomeDir(server)).isPrefixOf(p)) { 
-				return p.makeRelativeTo(new Path(getRSEHomeDir(server)));
+	public static String getBaseDirectory(IServerAttributes server, char separator) {
+		return getBaseDirectoryPath(server, separator).toOSString();
+	}
+	
+	// This signature may not work very well when on linux connected to remote windows
+	public static IPath makeRelative(IServerAttributes server, IPath p) {
+		return makeRelative(server, p, java.io.File.pathSeparatorChar);
+	}
+	
+	public static IPath makeRelative(IServerAttributes server, IPath p, char sep) {
+		RemotePath p1 = new RemotePath(p.toString(), sep);
+		if (p1.isAbsolute()) {
+			RemotePath rseHome = new RemotePath(getRSEHomeDir(server), sep);
+			if (rseHome.isPrefixOf(p1)) { 
+				return p1.makeRelativeTo(rseHome);
 			}
 		}
 		return p;
 	}
 
-	public static IPath makeGlobal(IServer server, IPath p) {
+	// This method may be error prone if running on linux against a remote windows
+	public static IPath makeGlobal(IServerAttributes server, IPath p) {
+		return makeGlobal(server, p, getRemoteSystemSeparatorCharacter(server));
+	}
+	
+	public static IPath makeGlobal(IServerAttributes server, IPath p, char sep) {
+
+		if( server.getRuntime() == null || server.getRuntime().getLocation() == null) {
+			// Has nothing to be relative to, so just make the current path absolute
+			return p.makeAbsolute();
+		}
+
 		if (!p.isAbsolute()) {
-			return new Path(getRSEHomeDir(server)).append(p).makeAbsolute();
+			return new RemotePath(getRSEHomeDir(server), sep).makeAbsolute().append(p);
 		}
 		return p;
 	}
@@ -253,7 +242,32 @@ public class RSEUtils {
 		String path3 = hostIsWindows ? separatorsToWindows(path2) : separatorsToUnix(path2);
 		return path3;
 	}
-	private static boolean isHostWindows(IHost host) {
+	
+	/**
+	 * Is this server's stored host property an rse host that has windows subsystems
+	 * @param server
+	 * @return
+	 */
+	public static boolean connectedToWindowsHost(IServerAttributes server) {
+		IHost host = findHost(RSEUtils.getRSEConnectionName(server));
+		return host == null ? false : isHostWindows(host);
+	}
+	
+	/**
+	 * Get the separator character for the remote system
+	 * @param server
+	 * @return
+	 */
+	public static char getRemoteSystemSeparatorCharacter(IServerAttributes server) {
+		return connectedToWindowsHost(server) ? '\\' : '/';
+	}
+	
+	/**
+	 * Is the given host a windows host, using windows subsystems
+	 * @param host
+	 * @return
+	 */
+	public static boolean isHostWindows(IHost host) {
 		String sysType = host.getSystemType().getId();
 		if( sysType.equals("org.eclipse.rse.systemtype.windows"))
 			return true;

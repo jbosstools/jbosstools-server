@@ -29,6 +29,7 @@ public class RSEServerModeDetails implements IServerModeDetails {
 
 	@Override
 	public String getProperty(String prop) {
+		char sep = RSEUtils.getRemoteSystemSeparatorCharacter(server);
 		if( PROP_SERVER_HOME.equals(prop)) {
 			return RSEUtils.getRSEHomeDir(server);
 		}
@@ -37,14 +38,14 @@ public class RSEServerModeDetails implements IServerModeDetails {
 		}
 		if( PROP_SERVER_BASE_DIR_ABS.equals(prop)) {
 			if (isAS7Structure()) {
-				return RSEUtils.getBaseDirectoryPath(server).toString();
+				return RSEUtils.getBaseDirectoryPath(server, sep).toString();
 			}
 		}
 		
 		if( PROP_CONFIG_LOCATION.equals(prop)) {
 			// Currently AS7 does not support custom configurations
 			if (isAS7Structure()) {
-				IPath p = RSEUtils.getBaseDirectoryPath(server).append(IJBossRuntimeResourceConstants.CONFIGURATION);
+				IPath p = RSEUtils.getBaseDirectoryPath(server, sep).append(IJBossRuntimeResourceConstants.CONFIGURATION);
 				return p.toString();
 			} else {
 				// Remote servers at this time do not allow arbitrary configuration locations. 
@@ -56,7 +57,7 @@ public class RSEServerModeDetails implements IServerModeDetails {
 		if( PROP_SERVER_DEPLOYMENTS_FOLDER_REL.equals(prop) || PROP_SERVER_DEPLOYMENTS_FOLDER_ABS.equals(prop)) {
 			boolean relative = PROP_SERVER_DEPLOYMENTS_FOLDER_REL.equals(prop);
 			IPath relPath = null;
-			// Currently AS7 does not support custom configurations
+			// AS7's basedir may change, so pull from there
 			if (isAS7Structure()) {
 				String raw = server.getAttribute(RSEUtils.RSE_BASE_DIR, IJBossRuntimeResourceConstants.AS7_STANDALONE);
 				relPath = new Path(raw).append(IJBossRuntimeResourceConstants.AS7_DEPLOYMENTS);

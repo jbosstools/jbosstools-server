@@ -35,4 +35,25 @@
       </behaviour>
    </extension>
    <!-- NEW_SERVER_ADAPTER  Add the new RSE behaviour delegate if needed for the new server above this line -->
+   
+   
+   
+   <extension
+         point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
+      <subsystem
+            system="deploy.settings.rootpath"
+            id="deploy.settings.rootpath.remote"
+            name="Server Deployment Settings"
+            serverTypes="%AllJBTServerTypes"
+            class="org.jboss.ide.eclipse.as.rse.core.subsystems.RSEDeploymentOptionsController">
+         <properties>
+            <property
+                  key="target"
+                  value="rse">
+            </property>
+         </properties>
+      </subsystem>
+	</extension>
+   
+   
 </plugin>

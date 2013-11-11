@@ -30,9 +30,15 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel;
 
+/**
+ * A stripped down version of this class has been copied and made internal in the 
+ * org.jboss.tools.as.core.internal.modules package. 
+ * 
+ * This class will be removed once all servers and sections of code 
+ * no longer make use of it. 
+ */
 public class DeploymentPreferenceLoader {
 	public static final String DEPLOYMENT_PREFERENCES_KEY = "org.jboss.ide.eclipse.as.core.util.deploymentPreferenceKey"; //$NON-NLS-1$
-	public static final String CURRENT_METHOD_PROPERTY = "publishMethod"; //$NON-NLS-1$	
 	
 	/**
 	 * This method can return null and is only meant to show what deployment method

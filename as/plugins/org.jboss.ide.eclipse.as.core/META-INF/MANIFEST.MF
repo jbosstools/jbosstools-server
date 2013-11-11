@@ -50,7 +50,8 @@ Export-Package: org.jboss.ide.eclipse.as.core,
  org.jboss.ide.eclipse.as.core.server.internal.v7,
  org.jboss.ide.eclipse.as.core.server.v7.management,
  org.jboss.ide.eclipse.as.core.server.xpl,
- org.jboss.ide.eclipse.as.core.util
+ org.jboss.ide.eclipse.as.core.util,
+ org.jboss.tools.as.core.server.controllable.systems
 Bundle-ClassPath: dom4j-1.6.1.jar,
  jaxen-1.1-beta-6.jar,
  getopt.jar,

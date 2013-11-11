@@ -21,8 +21,12 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
+import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
 import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
 
+/**
+ * This class should be combined with {@link ModuleResourceUtil}
+ */
 public class ServerModelUtilities {
 	
 	public static IModule[] getParentModules(IServer server, IModule module) {

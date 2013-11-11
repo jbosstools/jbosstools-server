@@ -60,7 +60,7 @@ public class ServerParameterUtils {
 		return getJBossServerTypeParameters();
 	}
 
-	public static Object[] getJBossServerTypeParameters() {
+	public static String[] getJBossServerTypeParameters() {
 		boolean skipReqs = skipPrivateRequirements();
 		ArrayList<String> jbservers = new ArrayList<String>();
 		for( int i = 0; i < IJBossToolingConstants.ALL_JBOSS_SERVERS.length; i++ ) {
@@ -73,41 +73,41 @@ public class ServerParameterUtils {
 	}
 	
 	@Deprecated
-	public static Object[] getAllJBossServerTypeParamterers() {
+	public static String[] getAllJBossServerTypeParamterers() {
 		return getAllJBossServerTypeParameters();
 	}
 	
-	public static Object[] getAllJBossServerTypeParameters() {
-		ArrayList<Object> list = new ArrayList<Object>();
+	public static String[] getAllJBossServerTypeParameters() {
+		ArrayList<String> list = new ArrayList<String>();
 		list.add(IJBossToolingConstants.DEPLOY_ONLY_SERVER);
 		list.addAll(Arrays.asList(getJBossServerTypeParameters()));
-		return (Object[]) list.toArray(new Object[list.size()]);
+		return (String[]) list.toArray(new String[list.size()]);
 	}
 	
 	/*
 	 * Return the most common DIFFERENT server types where impl may matter
 	 */
-	public static Object[] getPublishServerTypes() {
-		return new Object[] { 
+	public static String[] getPublishServerTypes() {
+		return new String[] { 
 				IJBossToolingConstants.DEPLOY_ONLY_SERVER,
 				IJBossToolingConstants.SERVER_AS_60, IJBossToolingConstants.SERVER_AS_71
 		};
 	}
 	
-	public static Object[] getServerZipOptions() {
+	public static String[] getServerZipOptions() {
 		return new String[] { 
 				ZIPPED, UNZIPPED
 		};
 	}
 	
-	public static Object[] getDefaultDeployOptions() {
+	public static String[] getDefaultDeployOptions() {
 		return new String[] { 
 				DEPLOY_META, DEPLOY_SERVER, DEPLOY_CUSTOM_NULL,  DEPLOY_CUSTOM_ABS, DEPLOY_CUSTOM_REL
 		};
 	}
 
 	/* TODO add changing the deploy name (ex: from project.ear to project1.jar */
-	public static Object[] getPerModuleOverrideOptions() {
+	public static String[] getPerModuleOverrideOptions() {
 		return new String[] { 
 				DEPLOY_PERMOD_DEFAULT, DEPLOY_PERMOD_ABS, DEPLOY_PERMOD_REL
 		};
