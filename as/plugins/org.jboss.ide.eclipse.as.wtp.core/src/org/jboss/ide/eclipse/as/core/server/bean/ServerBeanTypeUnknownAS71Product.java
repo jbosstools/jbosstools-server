@@ -32,7 +32,7 @@ public class ServerBeanTypeUnknownAS71Product extends JBossServerType {
 	}
 	
 	/**
-	 * @since 2.4 (actually 2.4.101)
+	 * @since 3.0 (actually 2.4.101)
 	 */
 	protected ServerBeanTypeUnknownAS71Product(String id, String desc, String path, 
 			String[] version, Condition condition) {
@@ -63,7 +63,7 @@ public class ServerBeanTypeUnknownAS71Product extends JBossServerType {
 		}
 		
 		/**
-		 * @since 2.4 (actually 2.4.101)
+		 * @since 3.0 (actually 2.4.101)
 		 */
 		protected String getSlot(File location) {
 			IPath rootPath = new Path(location.getAbsolutePath());
@@ -76,7 +76,7 @@ public class ServerBeanTypeUnknownAS71Product extends JBossServerType {
 		}
 		
 		/**
-		 * @since 2.4 (actually 2.4.101)
+		 * @since 3.0 (actually 2.4.101)
 		 */
 		protected String[] getLayers(File location) {
 			IPath rootPath = new Path(location.getAbsolutePath());

@@ -15,7 +15,7 @@ import org.jboss.ide.eclipse.as.core.server.IServerWorkingCopyProvider;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
 
 /**
- * @since 2.5
+ * @since 3.0
  */
 public interface IModuleDeploymentOptionsPersister extends IServerWorkingCopyProvider {
 	/**

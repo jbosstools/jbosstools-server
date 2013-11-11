@@ -44,7 +44,7 @@ public class JBoss7LaunchConfigProperties extends JBossLaunchConfigProperties {
 	}
 
 	/**
-	 * @since 2.5
+	 * @since 3.0
 	 */
 	public void setBaseDirectory(String file, ILaunchConfigurationWorkingCopy launchConfig)
 			throws CoreException {

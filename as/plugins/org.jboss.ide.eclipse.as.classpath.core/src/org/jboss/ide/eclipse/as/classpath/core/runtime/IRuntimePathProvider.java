@@ -15,7 +15,7 @@ import org.jboss.tools.foundation.core.expressions.IVariableResolver;
 
 /**
  * An object capable of returning paths
- * @since 2.5
+ * @since 3.0
  */
 public interface IRuntimePathProvider {
 	

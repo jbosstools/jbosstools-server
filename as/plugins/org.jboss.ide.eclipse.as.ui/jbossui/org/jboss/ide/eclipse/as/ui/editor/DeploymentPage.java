@@ -57,7 +57,7 @@ import org.jboss.ide.eclipse.as.ui.editor.internal.JBossDeploymentOptionsComposi
  * of default deployment folders and per-module customization in names and locations
  * 
  * Clients may extend this on a *provisional* basis. Further changes may come. 
- * @since 2.5
+ * @since 3.0
  *
  */
 public class DeploymentPage extends ServerEditorPart implements 

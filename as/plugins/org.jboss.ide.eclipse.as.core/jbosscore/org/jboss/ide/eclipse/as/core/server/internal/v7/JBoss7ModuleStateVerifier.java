@@ -29,12 +29,12 @@ import org.jboss.ide.eclipse.as.management.core.JBoss7DeploymentState;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
 
 public class JBoss7ModuleStateVerifier implements IServerModuleStateVerifier {
-	public void waitModuleStarted(IServer server, IModule[] module, int maxDelay) {
+	public void waitModuleStarted(IServer server, IModule[] module, final int maxDelay) {
 		final NullProgressMonitor monitor = new NullProgressMonitor();
 		Thread t = new Thread(){
 			public void run() {
 				try {
-					Thread.sleep(20000);
+					Thread.sleep(maxDelay);
 				} catch(InterruptedException ie) {
 					return;
 				}

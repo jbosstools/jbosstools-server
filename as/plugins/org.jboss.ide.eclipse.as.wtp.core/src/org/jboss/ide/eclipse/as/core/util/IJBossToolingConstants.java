@@ -80,6 +80,9 @@ public interface IJBossToolingConstants {
 	public static final String V5_3 = "5.3"; //$NON-NLS-1$
 	public static final String V6_0 = "6.0"; //$NON-NLS-1$
 	public static final String V6_1 = "6.1"; //$NON-NLS-1$
+	/**
+	 * @since 3.0
+	 */
 	public static final String V6_2 = "6.2"; //$NON-NLS-1$
 	public static final String V7_0 = "7.0"; //$NON-NLS-1$
 	public static final String V7_1 = "7.1"; //$NON-NLS-1$
@@ -186,11 +189,11 @@ public interface IJBossToolingConstants {
 	 */
 	public static final String PROPERTY_REMOVE_DEPLOYMENT_SCANNERS = "org.jboss.ide.eclipse.as.core.server.removeDeploymentScanner";
 	/**
-	 * @since 2.5
+	 * @since 3.0
 	 */
 	public static final String PROPERTY_SCANNER_TIMEOUT = "org.jboss.ide.eclipse.as.core.server.deploymentscanner.timeout";
 	/**
-	 * @since 2.5
+	 * @since 3.0
 	 */
 	public static final String PROPERTY_SCANNER_INTERVAL= "org.jboss.ide.eclipse.as.core.server.deploymentscanner.interval";
 	
