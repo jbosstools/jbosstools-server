@@ -17,6 +17,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerAttributes;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.SubsystemModel.SubsystemType;
 
@@ -28,7 +30,7 @@ public abstract class AbstractSubsystemController implements ISubsystemControlle
 	
 	
 	private SubsystemType subsystemType = null;
-	private IServer server;
+	private IServerAttributes server;
 	private Map<String, Object> environment = null;
 	
 	/**
@@ -36,7 +38,11 @@ public abstract class AbstractSubsystemController implements ISubsystemControlle
 	 * @return
 	 */
 	protected IServer getServer() {
-		return server;
+		if( server instanceof IServerWorkingCopy)
+			return ((IServerWorkingCopy)server).getOriginal();
+		if( server instanceof IServer)
+			return ((IServer)server);
+		return null;
 	}
 	
 	/**
@@ -61,39 +67,77 @@ public abstract class AbstractSubsystemController implements ISubsystemControlle
 	}
 	
 	/**
-	 * This method should not be used and is only exposed for testing purposes
+	 * This method should not be used and is only exposed for testing purposes.
+	 * This method is guaranteed to throw a CoreException if a dependency cannot be found. 
+	 * This method will locate a dependency for your server type and the given system. 
 	 * 
 	 * @param system
 	 * @param serverType
 	 * @return
-	 * @throws CoreException
+	 * @throws CoreException 
 	 */
 	protected ISubsystemController findDependency(String system, String serverType) throws CoreException {
+		return findDependency(system, serverType, environment);
+	}
+	
+	/**
+	 * This method should not be used and is only exposed for testing purposes.
+	 * This method is guaranteed to throw a CoreException if a dependency cannot be found. 
+	 * This method will locate a dependency for your server type and the given system. 
+	 * 
+	 * @param system
+	 * @param serverType
+	 * @param environment
+	 * @return
+	 * @throws CoreException 
+	 */
+	protected ISubsystemController findDependency(String system, String serverType, Map<String, Object> environment) throws CoreException {
+
 		// If we're declared to require a specific subsystem, pull that one first and ignore the environment
 		Map<String, String> reqs = subsystemType.getRequiredSubsystems();
 		String defaultSubsystem = reqs.get(system);
 		return SubsystemModel.getInstance().createSubsystemController(server, serverType, system, (Map<String,String>)null, defaultSubsystem, environment);
 	}
 	
-	public void initialize(IServer server, SubsystemType type, Map<String, Object> environment) {
+	public void initialize(IServerAttributes server, SubsystemType type, Map<String, Object> environment) {
 		this.server = server;
 		this.subsystemType = type;
-		this.environment = environment;
+		this.environment = (environment == null ? new HashMap<String, Object>() : environment);
 	}
 	
 	public String getSubsystemId() {
-		return subsystemType.getId();
+		if( subsystemType != null )
+			return subsystemType.getId();
+		return null;
 	}
 
 	public String getSystemId() {
-		return subsystemType.getSystem();
+		if( subsystemType != null )
+			return subsystemType.getSystem();
+		return null;
 	}
 
 	public IStatus validate() {
-		if( subsystemType.isValid()) {
-			return Status.OK_STATUS;
+		if( subsystemType != null ) {
+			if( subsystemType.isValid()) {
+				return Status.OK_STATUS;
+			}
+			return subsystemType.getValidationError();
 		}
-		return subsystemType.getValidationError();
+		// This should never occur unless the framework did not instantiate the object
+		return Status.OK_STATUS;
 	}
 
+	
+	protected IServerAttributes getServerOrWC() {
+		return server;
+	}
+	
+	protected IServerWorkingCopy getWorkingCopy() {
+		if( server instanceof IServerWorkingCopy)
+			return (IServerWorkingCopy)server;
+		
+		return null;
+	}
+	
 }

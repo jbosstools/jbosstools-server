@@ -26,6 +26,7 @@ import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 
 /**
  * @author Rob Stryker
+ * @deprecated
  */
 public class LocalJBoss7StartLaunchDelegate extends LocalJBossStartLaunchDelegate 
 	implements IJBossLaunchDelegate {

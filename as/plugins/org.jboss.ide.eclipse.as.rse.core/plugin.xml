@@ -41,9 +41,9 @@
    <extension
          point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
       <subsystem
-            system="deploy.settings.rootpath"
-            id="deploy.settings.rootpath.remote"
-            name="Server Deployment Settings"
+            system="deploymentOptions"
+            id="deploymentOptions.rse"
+            name="Server Deployment Settings (RSE)"
             serverTypes="%AllJBTServerTypes"
             class="org.jboss.ide.eclipse.as.rse.core.subsystems.RSEDeploymentOptionsController">
          <properties>
@@ -53,7 +53,45 @@
             </property>
          </properties>
       </subsystem>
+      <subsystem
+            system="filesystem"
+            id="filesystem.rse"
+            name="Filesystem (RSE)"
+            serverTypes="%AllJBTServerTypes"
+            class="org.jboss.ide.eclipse.as.rse.core.subsystems.RSEFilesystemController">
+         <properties>
+            <property key="target" value="rse"></property>
+         </properties>
+      </subsystem>
+      <subsystem
+            system="serverDetails"
+            id="serverDetails.rse"
+            name="Server Details (RSE)"
+            serverTypes="%AllJBTServerTypes"
+            class="org.jboss.ide.eclipse.as.rse.core.RSEServerModeDetails">
+         <properties>
+            <property key="target" value="rse"></property>
+         </properties>
+      </subsystem>
+      <subsystem
+            system="launch"
+            id="launch.standard.rse"
+            name="Launch JBoss Server (RSE)"
+            serverTypes="%AllJBossServerTypes"
+            class="org.jboss.ide.eclipse.as.rse.core.subsystems.RSEJBossLaunchController">
+         <properties>
+            <property key="target" value="rse"></property>
+         </properties>
+      </subsystem>
+      <subsystem
+            system="shutdown"
+            id="shutdown.rse.commandline"
+            name="Shutdown Server (Remote Command Line)"
+            serverTypes="%ServerTypesJBoss6OrLower"
+            class="org.jboss.ide.eclipse.as.rse.core.subsystems.RSECommandLineShutdownController">
+         <properties>
+            <property key="target" value="rse"></property>
+         </properties>
+      </subsystem>
 	</extension>
-   
-   
 </plugin>

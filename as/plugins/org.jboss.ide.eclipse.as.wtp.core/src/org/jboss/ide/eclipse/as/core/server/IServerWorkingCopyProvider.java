@@ -17,5 +17,10 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
  * @since 3.0
  */
 public interface IServerWorkingCopyProvider {
+	
+	/**
+	 * Retrieve the server working copy
+	 * @return
+	 */
 	public IServerWorkingCopy getServer();
 }

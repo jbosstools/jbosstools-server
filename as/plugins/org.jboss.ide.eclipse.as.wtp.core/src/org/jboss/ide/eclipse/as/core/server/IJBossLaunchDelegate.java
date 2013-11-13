@@ -18,6 +18,10 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.LaunchConfigurationDelegate;
 import org.eclipse.wst.server.core.IServer;
 
+/**
+ * This is an interface for a customized launch configuration or delegate which can perform 
+ * pre-launch and post-launch actions related to servers. 
+ */
 public interface IJBossLaunchDelegate {
 	public void actualLaunch(LaunchConfigurationDelegate launchConfig, ILaunchConfiguration configuration, 
 			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException;

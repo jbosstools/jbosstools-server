@@ -23,6 +23,8 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IServerDetailsController;
 
 /**
  * Local servers pull most of their critical configuration locations from the runtime.
@@ -33,16 +35,19 @@ import org.jboss.ide.eclipse.as.core.util.ServerUtil;
  * but at this point it is not necessary. 
  * @since 3.0
  */
-public class LocalServerModeDetails implements IServerModeDetails {
+public class LocalServerModeDetails extends AbstractSubsystemController implements IServerModeDetails, IServerDetailsController {
 
-	private IServer server;
+	public LocalServerModeDetails() {
+		super();
+	}
+	
+	@Deprecated
 	public LocalServerModeDetails(IServer server) {
-		this.server = server;
 	}
 	
 	@Override
 	public String getProperty(String prop) {
-		IRuntime rt = server.getRuntime();
+		IRuntime rt = getServerOrWC().getRuntime();
 		if( PROP_SERVER_HOME.equals(prop)) {
 			return rt == null ? null : rt.getLocation().toOSString();
 		}
@@ -63,20 +68,20 @@ public class LocalServerModeDetails implements IServerModeDetails {
 			}
 		}
 		if( PROP_SERVER_DEPLOYMENTS_FOLDER_REL.equals(prop)) {
-			ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
+			ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(getServerOrWC());
 			String s = ((JBossExtendedProperties)sep).getServerDeployLocation();
-			return ServerUtil.makeRelative(server.getRuntime(), new Path(s)).toString();
+			return ServerUtil.makeRelative(getServerOrWC().getRuntime(), new Path(s)).toString();
 		}
 		if( PROP_SERVER_DEPLOYMENTS_FOLDER_ABS.equals(prop)) {
-			ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
+			ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(getServerOrWC());
 			String s = ((JBossExtendedProperties)sep).getServerDeployLocation();
-			return ServerUtil.makeGlobal(server.getRuntime(), new Path(s)).toString();
+			return ServerUtil.makeGlobal(getServerOrWC().getRuntime(), new Path(s)).toString();
 		}
 		if( PROP_SERVER_TMP_DEPLOYMENTS_FOLDER_REL.equals(prop) || PROP_SERVER_TMP_DEPLOYMENTS_FOLDER_ABS.equals(prop)) {
 			boolean relative = PROP_SERVER_TMP_DEPLOYMENTS_FOLDER_REL.equals(prop);
 			IPath p = null;
 			if( isAS7Structure()) {
-				LocalJBoss7ServerRuntime jb7rt = (LocalJBoss7ServerRuntime)server.getRuntime().loadAdapter(LocalJBoss7ServerRuntime.class, null);
+				LocalJBoss7ServerRuntime jb7rt = (LocalJBoss7ServerRuntime)getServerOrWC().getRuntime().loadAdapter(LocalJBoss7ServerRuntime.class, null);
 				String basedir = jb7rt.getBaseDirectory();
 				p = new Path(basedir)
 					.append(IJBossRuntimeResourceConstants.FOLDER_TMP);
@@ -86,13 +91,13 @@ public class LocalServerModeDetails implements IServerModeDetails {
 				.append(IJBossToolingConstants.JBOSSTOOLS_TMP);
 			}
 			if( relative )
-				return ServerUtil.makeRelative(server.getRuntime(), p).toString();
-			return ServerUtil.makeGlobal(server.getRuntime(), p).toString();
+				return ServerUtil.makeRelative(getServerOrWC().getRuntime(), p).toString();
+			return ServerUtil.makeGlobal(getServerOrWC().getRuntime(), p).toString();
 		}
 		return null;
 	}
 	private boolean isAS7Structure() {
-		ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
+		ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(getServerOrWC());
 		if (sep != null && sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS) {
 			return true;
 		}

@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
@@ -29,18 +30,6 @@ import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
  */
 public class ControllableServerBehavior extends ServerBehaviourDelegate implements IControllableServerBehavior {
 	public static final String PROPERTY_PREFIX = "SUBSYSTEM_OVERRIDE_";
-	
-	
-	// A list of pre-defined subsystem categories
-	public static final String SUBSYSTEM_PUBLISH = "publish";
-	public static final String SUBSYSTEM_MODULES = "modules";
-	public static final String SUBSYSTEM_LAUNCH = "launch";
-	public static final String SUBSYSTEM_SHUTDOWN = "shutdown";
-	
-	// The below are not required for all server types
-//	public static final String SUBSYSTEM_SERVERSTATE = "serverState";
-//	public static final String SUBSYSTEM_FILESYSTEM = "fs";
-//	public static final String SUBSYSTEM_MANAGEMENT = "mgmt";
 	
 	
 	/**
@@ -64,13 +53,13 @@ public class ControllableServerBehavior extends ServerBehaviourDelegate implemen
 	 * @throws CoreException
 	 */
 	public ISubsystemController getController(String system) throws CoreException {
-		if( SUBSYSTEM_PUBLISH.equals(system) )
+		if( SYSTEM_PUBLISH.equals(system) )
 			return getPublishController();
-		if( SUBSYSTEM_MODULES.equals(system) )
+		if( SYSTEM_MODULES.equals(system) )
 			return getModuleStateController();
-		if( SUBSYSTEM_SHUTDOWN.equals(system) )
+		if( SYSTEM_SHUTDOWN.equals(system) )
 			return getShutdownController();
-		if( SUBSYSTEM_LAUNCH.equals(system) )
+		if( SYSTEM_LAUNCH.equals(system) )
 			return getLaunchController();
 		return getController(system, null);
 	}
@@ -85,6 +74,8 @@ public class ControllableServerBehavior extends ServerBehaviourDelegate implemen
 	 * @throws CoreException
 	 */
 	protected ISubsystemController getController(String system, ControllerEnvironment env) throws CoreException {
+		
+		// FIrst check if the server has a hard-coded subsystem to choose for this system
 		String propOverride = PROPERTY_PREFIX + system;
 		String val = getServer().getAttribute(propOverride, (String)null);
 		ISubsystemController ret = null;
@@ -93,6 +84,7 @@ public class ControllableServerBehavior extends ServerBehaviourDelegate implemen
 			ret = SubsystemModel.getInstance().createControllerForSubsystem(
 					getServer(), getServer().getServerType().getId(), system, val, envMap);
 		} else {
+			// Otherwise, just get one from the model
 			ret = SubsystemModel.getInstance().createSubsystemController(getServer(), system, envMap);
 		}
 		if( ret == null ) {
@@ -104,59 +96,50 @@ public class ControllableServerBehavior extends ServerBehaviourDelegate implemen
 	
 	
 	protected IPublishController getPublishController() throws CoreException {
-		return (IPublishController)getController(SUBSYSTEM_PUBLISH, null);
+		return (IPublishController)getController(SYSTEM_PUBLISH, null);
 	}
 	
 	protected IModuleStateController getModuleStateController() throws CoreException {
-		return (IModuleStateController)getController(SUBSYSTEM_MODULES, null);
+		return (IModuleStateController)getController(SYSTEM_MODULES, null);
 	}
 
 	protected IServerShutdownController getShutdownController() throws CoreException {
-		return (IServerShutdownController)getController(SUBSYSTEM_SHUTDOWN, null);
+		return (IServerShutdownController)getController(SYSTEM_SHUTDOWN, null);
 	}
 	
 	protected ILaunchServerController getLaunchController() throws CoreException {
-		return (ILaunchServerController)getController(SUBSYSTEM_LAUNCH, null);
+		return (ILaunchServerController)getController(SYSTEM_LAUNCH, null);
 	}
 	
+	
+	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IProgressMonitor monitor) throws CoreException {
+		ILaunchServerController controller = getLaunchController();
+		controller.setupLaunchConfiguration(workingCopy, monitor);
+	}
+
 	
 	@Override
 	protected void publishFinish(IProgressMonitor monitor) throws CoreException {
 		IPublishController controller = getPublishController();
-		if( controller != null ) {
-			controller.publishFinish(this, monitor);
-		} else {
-			// TODO Log Error
-		}
+		controller.publishFinish(monitor);
 	}
 	@Override
 	protected void publishModule(int kind, int deltaKind, IModule[] module, IProgressMonitor monitor) throws CoreException {
 		IPublishController controller = getPublishController();
-		if( controller != null ) {
-			controller.publishModule(this, kind, deltaKind, module, monitor);
-		} else {
-			// TODO Log Error
-		}
+		int result = controller.publishModule( kind, deltaKind, module, monitor);
+		setModulePublishState(module, result);
 	}
 
 	@Override
 	protected void publishServer(int kind, IProgressMonitor monitor) throws CoreException {
 		IPublishController controller = getPublishController();
-		if( controller != null ) {
-			controller.publishServer(kind, monitor);
-		} else {
-			// TODO Log Error
-		}
+		controller.publishServer(kind, monitor);
 	}
 	
 	@Override
 	protected void publishStart(IProgressMonitor monitor) throws CoreException {
 		IPublishController controller = getPublishController();
-		if( controller != null ) {
-			controller.publishStart(this, monitor);
-		} else {
-			// TODO Log Error
-		}
+		controller.publishStart(monitor);
 	}
 
 	
@@ -165,13 +148,9 @@ public class ControllableServerBehavior extends ServerBehaviourDelegate implemen
 	public boolean canRestartModule(IModule[] module) {
 		try {
 			IModuleStateController controller = getModuleStateController();
-			if( controller != null ) {
-				return controller.canRestartModule(module);
-			} else {
-				// TODO log missing controller
-			}
+			return controller.canRestartModule(module);
 		} catch(CoreException ce) {
-			// TODO log
+			ASWTPToolsPlugin.log(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, "Unable to locate a module state controller for the given server"));
 		}
 		return false;
 	}
@@ -179,32 +158,21 @@ public class ControllableServerBehavior extends ServerBehaviourDelegate implemen
 	@Override
 	public void startModule(IModule[] module, IProgressMonitor monitor) throws CoreException {
 		IModuleStateController controller = getModuleStateController();
-		if( controller != null ) {
-			controller.startModule(module, monitor);
-		} else {
-			// TODO log
-		}
+		controller.startModule(module, monitor);
 	}
 
 	@Override
 	public void stopModule(IModule[] module, IProgressMonitor monitor) throws CoreException {
 		IModuleStateController controller = getModuleStateController();
-		if( controller != null ) {
-			controller.stopModule(module, monitor);
-		} else {
-			// TODO Log Error
-		}
+		controller.stopModule(module, monitor);
 	}
 	
 	@Override
 	public void restartModule(IModule[] module, IProgressMonitor monitor) throws CoreException {
 		IModuleStateController controller = getModuleStateController();
-		if( controller != null ) {
-			controller.restartModule(module, monitor);
-		} else{
-			// TODO log error
-		}
+		controller.restartModule(module, monitor);
 	}
+
 
 	
 	// TODO launch polling
@@ -293,6 +261,11 @@ public class ControllableServerBehavior extends ServerBehaviourDelegate implemen
 		}
 	}
 	
+	
+
+	public void setRunMode(String mode) {
+		setMode(mode);
+	}
 	
 	// TODO search via subsystems
 	protected void pollServer(final boolean expectedState) {

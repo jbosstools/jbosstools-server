@@ -170,5 +170,17 @@ public class LocalJBoss7DeploymentScannerAdditions extends AbstractDeploymentSca
 	public boolean canCustomizeTimeout() {
 		return true;
 	}
+	@Override
+	public void suspendScanners(IServer server)
+			throws UnsupportedOperationException {
+		// Cannot implement easily without modifying a standalone.xml
+		throw new UnsupportedOperationException();
+	}
+	@Override
+	public void resumeScanners(IServer server)
+			throws UnsupportedOperationException {
+		// Cannot implement easily without modifying a standalone.xml
+		throw new UnsupportedOperationException();
+	}
 
 }

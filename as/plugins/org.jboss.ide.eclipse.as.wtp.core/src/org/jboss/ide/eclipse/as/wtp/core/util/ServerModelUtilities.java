@@ -14,20 +14,47 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jst.server.core.IJ2EEModule;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
+import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
 import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
+import org.jboss.ide.eclipse.as.core.util.RemotePath;
 import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
 
 /**
  * This class should be combined with {@link ModuleResourceUtil}
  */
 public class ServerModelUtilities {
+	
+
+	/**
+	 * Get the path relative to the root module here.
+	 * 
+	 * For example, if the provided IModule is {WrapEar,TigerWar,ClawUtil},
+	 * the returned value should be "TigerWar.war/WEB-INF/lib/ClawUtil.jar" 
+	 * @param module
+	 * @return
+	 */
+	public static IPath getRootModuleRelativePath(IServerAttributes server, IModule[] moduleTree) {
+		String modName, name, uri, suffixedName;
+		IPath working = null;
+		for( int i = 1; i < moduleTree.length; i++ ) {
+			modName = moduleTree[i].getName();
+			name = new RemotePath(modName).lastSegment();
+			suffixedName = name + getDefaultSuffixForModule(moduleTree[i]);
+			uri = ModuleResourceUtil.getParentRelativeURI(moduleTree, i, suffixedName);
+			working = (working == null ? new Path(uri) : working.append(uri));
+		}
+		return working;
+	}
 	
 	public static IModule[] getParentModules(IServer server, IModule module) {
 		// get all supported modules
@@ -137,5 +164,51 @@ public class ServerModelUtilities {
 		}
 		return false;
 	}
+	
+	
+	/**
+	 * Get the default suffix for this module
+	 * @param module
+	 */
+	public static String getDefaultSuffixForModule(IModule module) {
+		String type = null;
+		if( module != null ) 
+			type = module.getModuleType().getId();
+		return getDefaultSuffixForModuleType(type);
+	}
+	
+	/**
+	 * Get the suffix from this module type
+	 * @param type a module type id
+	 * @return
+	 */
+	public static String getDefaultSuffixForModuleType(String type) {
+		// TODO
+		// VirtualReferenceUtilities.INSTANCE. has utility methods to help!!
+		String suffix = null;
+		if( IWTPConstants.FACET_EAR.equals(type)) 
+			suffix = IWTPConstants.EXT_EAR;
+		else if( IWTPConstants.FACET_WEB.equals(type) || IWTPConstants.FACET_STATIC_WEB.equals(type)) 
+			suffix = IWTPConstants.EXT_WAR;
+		else if( IWTPConstants.FACET_WEB_FRAGMENT.equals(type))
+			suffix = IWTPConstants.EXT_JAR;
+		else if( IWTPConstants.FACET_UTILITY.equals(type)) 
+			suffix = IWTPConstants.EXT_JAR;
+		else if( IWTPConstants.FACET_CONNECTOR.equals(type)) 
+			suffix = IWTPConstants.EXT_RAR;
+		else if( IWTPConstants.FACET_ESB.equals(type))
+			suffix = IWTPConstants.EXT_ESB;
+		else if( "jboss.package".equals(type)) //$NON-NLS-1$ 
+			// no suffix required, name already has it
+			suffix = ""; //$NON-NLS-1$
+		else if( "jboss.singlefile".equals(type)) //$NON-NLS-1$
+			suffix = ""; //$NON-NLS-1$
+		else if( "jst.jboss.sar".equals(type)) //$NON-NLS-1$
+			suffix = IWTPConstants.EXT_SAR;
+		if( suffix == null )
+			suffix = IWTPConstants.EXT_JAR;
+		return suffix;
+	}
+
 	
 }

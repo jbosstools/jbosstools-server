@@ -19,10 +19,12 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
+import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 import org.jboss.tools.as.core.internal.modules.DeploymentModulePrefs;
 import org.jboss.tools.as.core.internal.modules.DeploymentPreferences;
 import org.jboss.tools.as.core.internal.modules.DeploymentPreferencesLoader;
 import org.jboss.tools.as.core.internal.modules.ModuleDeploymentPrefsUtil;
+import org.jboss.tools.as.core.server.controllable.systems.IDeploymentOptionsController;
 import org.jboss.tools.as.core.server.controllable.systems.IModuleDeployPathController;
 
 /**
@@ -31,27 +33,27 @@ import org.jboss.tools.as.core.server.controllable.systems.IModuleDeployPathCont
  */
 public class ModuleDeployPathController extends AbstractSubsystemController
 		implements IModuleDeployPathController {
-	
-	protected IServerAttributes getServerOrWC() {
-		Object o = getEnvironment().get(ENV_WORKING_COPY);
-		if( o instanceof IServerWorkingCopy )
-			return (IServerWorkingCopy)o;
-		return getServer();
+	public ModuleDeployPathController() {
+		super();
 	}
-	
-	protected IServerWorkingCopy getWorkingCopy() {
-		Object o = getEnvironment().get(ENV_WORKING_COPY);
-		if( o instanceof IServerWorkingCopy )
-			return (IServerWorkingCopy)o;
-		return null;
-	}
-	
 	protected String getDefaultDeployFolder() {
-		return (String)getEnvironment().get(ENV_DEFAULT_DEPLOY_FOLDER);
+		String ret = (String)getEnvironment().get(ENV_DEFAULT_DEPLOY_FOLDER);
+		if( ret == null ) {
+			IDeploymentOptionsController c = (IDeploymentOptionsController)getEnvironment().get(ENV_DEPLOYMENT_OPTIONS_CONTROLLER);
+			if( c != null )
+				return c.getDeploymentsRootFolder(true);
+		}
+		return ret;
 	}
 
 	protected String getDefaultTmpDeployFolder() {
-		return (String)getEnvironment().get(ENV_DEFAULT_TMP_DEPLOY_FOLDER);
+		String ret = (String)getEnvironment().get(ENV_DEFAULT_TMP_DEPLOY_FOLDER);
+		if( ret == null ) {
+			IDeploymentOptionsController c = (IDeploymentOptionsController)getEnvironment().get(ENV_DEPLOYMENT_OPTIONS_CONTROLLER);
+			if( c != null )
+				return c.getDeploymentsTemporaryFolder(true);
+		}
+		return ret;
 	}
 
 	protected char getTargetSystemSeparator() {
@@ -74,7 +76,10 @@ public class ModuleDeployPathController extends AbstractSubsystemController
 	@Override
 	public String getDeployDirectory(IModule[] module) {
 		IServerAttributes server = getServerOrWC();
+		boolean isBinaryObject = ServerModelUtilities.isBinaryModule(module);
 		IPath fullPath = new ModuleDeploymentPrefsUtil().getModuleTreeDestinationFullPath(module, server, getDefaultDeployFolder(), getTargetSystemSeparator());
+		if( isBinaryObject )
+			fullPath = fullPath == null ? null : fullPath.removeLastSegments(1);
 		String ret = fullPath == null ? null : fullPath.toOSString();
 		return ret;
 	}
@@ -122,7 +127,7 @@ public class ModuleDeployPathController extends AbstractSubsystemController
 
 	@Override
 	public String getDefaultSuffix(IModule module) {
-		return new ModuleDeploymentPrefsUtil().getDefaultSuffix(module);
+		return ServerModelUtilities.getDefaultSuffixForModule(module);
 		
 	}
 	

@@ -402,7 +402,7 @@ public class XPathDialogs {
 			
 			IRunnableWithProgress op = new IRunnableWithProgress() {
 				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-					XPathQuery tmp = new XPathQuery(null, "", directory2, filePattern2, xpText, attText); //$NON-NLS-1$
+					XPathQuery tmp = new XPathQuery(server, "", directory2, filePattern2, xpText, attText); //$NON-NLS-1$
 					tmp.setRepository(repository);
 					final ArrayList<XPathFileResult> list = new ArrayList<XPathFileResult>();
 					list.addAll(Arrays.asList(tmp.getResults()));

@@ -1,35 +1,38 @@
-package org.jboss.tools.as.test.core.parametized.server.behavior.controllable;
+/******************************************************************************* 
+ * Copyright (c) 2013 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
+package org.jboss.tools.as.test.core.subsystems;
 
 import java.util.HashMap;
-import java.util.Set;
 
 import junit.framework.TestCase;
 
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.jst.server.core.IEnterpriseApplication;
 import org.eclipse.wst.server.core.IModule;
-import org.eclipse.wst.server.core.IModuleType;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.eclipse.wst.server.core.model.IModuleResource;
-import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.RemotePath;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ISubsystemController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.SubsystemModel.SubsystemType;
 import org.jboss.tools.as.core.server.controllable.systems.IModuleDeployPathController;
 import org.jboss.tools.as.test.core.ASMatrixTests;
+import org.jboss.tools.as.test.core.internal.utils.MockModule;
+import org.jboss.tools.as.test.core.internal.utils.MockModuleUtil;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
 import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
-import org.jboss.tools.as.test.core.parametized.server.behavior.controllable.ServerSubsystemTest1.ModelSubclass;
+import org.jboss.tools.as.test.core.subsystems.ServerSubsystemTest1.ModelSubclass;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -90,14 +93,14 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		
 		IModuleDeployPathController contr = buildEnv(initialDeployDir, initialTmpDeployDir, null);
 		assertTrue(contr.validate().isOK());
-		assertEquals(".war", contr.getDefaultSuffix(createMockWebModule()));
-		assertEquals(".jar", contr.getDefaultSuffix(createMockUtilModule()));
-		assertEquals(".ear", contr.getDefaultSuffix(createMockEarModule()));
+		assertEquals(".war", contr.getDefaultSuffix(MockModuleUtil.createMockWebModule()));
+		assertEquals(".jar", contr.getDefaultSuffix(MockModuleUtil.createMockUtilModule()));
+		assertEquals(".ear", contr.getDefaultSuffix(MockModuleUtil.createMockEarModule()));
 		
-		String tmpDir = contr.getTemporaryDeployDirectory(asArray(createMockWebModule()));
+		String tmpDir = contr.getTemporaryDeployDirectory(asArray(MockModuleUtil.createMockWebModule()));
 		assertEquals(tmpDir, initialTmpDeployDir);
-		String depDir = contr.getDeployDirectory(asArray(createMockWebModule()));
-		String expected = initialDeployDir + "/" + createMockWebModule().getName() + ".war";
+		String depDir = contr.getDeployDirectory(asArray(MockModuleUtil.createMockWebModule()));
+		String expected = initialDeployDir + "/" + MockModuleUtil.createMockWebModule().getName() + ".war";
 		assertEquals(expected, depDir);
 	}
 
@@ -107,8 +110,8 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		
 		IModuleDeployPathController contr = buildEnv(initialDeployDir, initialTmpDeployDir, null);
 		assertTrue(contr.validate().isOK());
-		IModule web = createMockWebModule();
-		IModule ear = createMockEarModule();
+		IModule web = MockModuleUtil.createMockWebModule();
+		IModule ear = MockModuleUtil.createMockEarModule();
 		
 		String earWithSuffix = ear.getName() + ".ear";
 		String warWithSuffix = web.getName() + ".war";
@@ -132,8 +135,8 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		
 		IModuleDeployPathController contr = buildEnv(initialDeployDir, initialTmpDeployDir, null);
 		assertTrue(contr.validate().isOK());
-		IModule web = createMockWebModule();
-		IModule util = createMockUtilModule();
+		IModule web = MockModuleUtil.createMockWebModule();
+		IModule util = MockModuleUtil.createMockUtilModule();
 		
 		String utilWithSuffix = util.getName() + ".jar";
 		String warWithSuffix = web.getName() + ".war";
@@ -157,9 +160,9 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		
 		IModuleDeployPathController contr = buildEnv(initialDeployDir, initialTmpDeployDir, null);
 		assertTrue(contr.validate().isOK());
-		IModule ear = createMockEarModule();
-		IModule web = createMockWebModule();
-		IModule util = createMockUtilModule();
+		IModule ear = MockModuleUtil.createMockEarModule();
+		IModule web = MockModuleUtil.createMockWebModule();
+		IModule util = MockModuleUtil.createMockUtilModule();
 		
 		String earWithSuffix = ear.getName() + ".ear";
 		String utilWithSuffix = util.getName() + ".jar";
@@ -186,7 +189,7 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		
 		IModuleDeployPathController contr = buildEnv(initialDeployDir, initialTmpDeployDir, null);
 		assertTrue(contr.validate().isOK());
-		IModule web = createMockWebModule();
+		IModule web = MockModuleUtil.createMockWebModule();
 
 		try {
 			contr.setDeployDirectory(web, "arbitraryPath");
@@ -240,7 +243,7 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		IServerWorkingCopy wc = server.createWorkingCopy();
 		IModuleDeployPathController contr = buildEnv(initial, initialTmp, wc, separator);
 		assertTrue(contr.validate().isOK());
-		IModule web = createMockWebModule();
+		IModule web = MockModuleUtil.createMockWebModule();
 		contr.setDeployDirectory(web, propVal);
 		try {
 			wc.save(true, new NullProgressMonitor());
@@ -290,7 +293,7 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		IServerWorkingCopy wc = server.createWorkingCopy();
 		IModuleDeployPathController contr = buildEnv(initial, initialTmp, wc, separator);
 		assertTrue(contr.validate().isOK());
-		IModule web = createMockWebModule();
+		IModule web = MockModuleUtil.createMockWebModule();
 		contr.setTemporaryDeployDirectory(web, propVal);
 		try {
 			wc.save(true, new NullProgressMonitor());
@@ -341,9 +344,9 @@ public class ModuleDeployPathControllerTest extends TestCase {
 			
 		IModuleDeployPathController contr = buildEnv(initialDeployDir, initialTmpDeployDir, null, sep);
 		assertTrue(contr.validate().isOK());
-		IModule ear = createMockEarModule();
-		IModule web = createMockWebModule();
-		IModule util = createMockUtilModule();
+		IModule ear = MockModuleUtil.createMockEarModule();
+		IModule web = MockModuleUtil.createMockWebModule();
+		IModule util = MockModuleUtil.createMockUtilModule();
 		
 		String earWithSuffix = ear.getName() + ".ear";
 		String utilWithSuffix = util.getName() + ".jar";
@@ -393,12 +396,12 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		HashMap<String, Object> env = new HashMap<String, Object>();
 		env.put(IModuleDeployPathController.ENV_DEFAULT_DEPLOY_FOLDER, dep);
 		env.put(IModuleDeployPathController.ENV_DEFAULT_TMP_DEPLOY_FOLDER, tmpDep);
-		env.put(IModuleDeployPathController.ENV_WORKING_COPY, wc);
 		if( targetSystemSeparator != null )
 			env.put(IModuleDeployPathController.ENV_TARGET_OS_SEPARATOR, targetSystemSeparator);
 		
 		try {
-			ISubsystemController controller = c.createSubsystemController(server,system, null, null, env);
+			IServerAttributes serverToUse = (wc == null ? server : wc);
+			ISubsystemController controller = c.createSubsystemController(serverToUse,system, null, null, env);
 			assertNotNull(controller);
 			assertTrue(controller.getSubsystemId().equals(subsystem));
 			assertTrue(controller instanceof IModuleDeployPathController);
@@ -472,118 +475,5 @@ public class ModuleDeployPathControllerTest extends TestCase {
 	private IModule[] asArray(IModule m) {
 		return new IModule[]{m};
 	}
-
-	private static class MockModuleType implements IModuleType {
-		private String id, name, version;
-		public MockModuleType(String id, String name, String version) {
-			this.id = id; this.name = name; this.version = version;
-		}
-		public String getId() {
-			return id;
-		}
-		public String getName() {
-			return name;
-		}
-		public String getVersion() {
-			return version;
-		}
-	}
-	
-	private class MockModule extends ModuleDelegate implements IModule, IEnterpriseApplication {
-		private String id, name;
-		private MockModuleType type;
-		private HashMap<IModule, String> children;
-		public MockModule(final String id, final String name, 
-				final String typeId, final String typeName, final String typeVersion) {
-			this.id = id;
-			this.name = name;
-			this.type = new MockModuleType(typeId, typeName, typeVersion);
-			children = new HashMap<IModule, String>();
-		}
-		public String getId() {
-			return id;
-		}
-		public String getName() {
-			return name;
-		}
-		public IModuleType getModuleType() {
-			return type;
-		}
-		public IProject getProject() {
-			return null;
-		}
-		public boolean isExternal() {
-			return false;
-		}
-		public boolean exists() {
-			return false;
-		}
-		public Object getAdapter(Class adapter) {
-			if( adapter.equals(IEnterpriseApplication.class))
-				return this;
-			if( adapter.equals(ModuleDelegate.class))
-				return this;
-			return null;
-		}
-		public Object loadAdapter(Class adapter, IProgressMonitor monitor) {
-			return getAdapter(adapter);
-		}
-		public void addChildModule(IModule child, String relativeURI) {
-			children.put(child, relativeURI);
-		}
-		public IModule[] getModules() {
-			Set<IModule> s = children.keySet();
-			return (IModule[]) s.toArray(new IModule[s.size()]);
-		}
-		public String getURI(IModule module) {
-			return children.get(module);
-		}
-		public IContainer[] getResourceFolders() {
-			return null;
-		}
-		@Override
-		public IStatus validate() {
-			return Status.OK_STATUS;
-		}
-		@Override
-		public IModule[] getChildModules() {
-			return getModules();
-		}
-		@Override
-		public IModuleResource[] members() throws CoreException {
-			return null;
-		}
-	}
-	
-	private IModuleType createMockModuleType(final String id, final String name, final String version) {
-		return new MockModuleType(id, name, version);
-	}
-	
-	private IModule createMockWebModule() {
-		return createMockWebModule("jst.web", "WebProj");
-	}
-	private IModule createMockWebModule(final String id, final String name ) {
-		return createMockModule(id, name, "jst.web", "jst.web", "2.5");
-	}
-	private IModule createMockUtilModule() {
-		return createMockUtilModule("jst.utility", "UtilProj");
-	}
-	private IModule createMockUtilModule(final String id, final String name ) {
-		return createMockModule(id, name, "jst.utility", "jst.utility", "1.0");
-	}
-	private IModule createMockEarModule() {
-		return createMockEarModule("jst.ear", "EarProj");
-	}
-	private IModule createMockEarModule(final String id, final String name ) {
-		return createMockModule(id, name, "jst.ear", "jst.ear", "1.0");
-	}
-	
-	private IModule createMockModule(final String id, final String name, 
-			final String typeId, final String typeName, final String typeVersion) {
-		return new MockModule(id, name, typeId, typeName, typeVersion);
-	}
-	
-	
-	
 
 }

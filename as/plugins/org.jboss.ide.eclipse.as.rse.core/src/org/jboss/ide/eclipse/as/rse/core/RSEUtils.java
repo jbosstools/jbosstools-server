@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.rse.core.RSECorePlugin;
 import org.eclipse.rse.core.model.IHost;
-import org.eclipse.rse.core.subsystems.ISubSystem;
 import org.eclipse.rse.services.shells.IHostShell;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
@@ -32,12 +31,25 @@ import org.jboss.ide.eclipse.as.core.util.RemotePath;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.rse.core.subsystems.RSEDeploymentOptionsController;
 
-/* 
- * Some of this code will need to be abstracted out from JBossServer
- * and turned into a proper API, but in as simple a way as possible
+/**
+ * This class should be more accurately labeled working with properties 
+ * on an IServer object that relate to rse usage. It accomplishes things
+ * like checking server mode, remote server home, deployment folder, 
+ * etc. 
  */
 public class RSEUtils {
 	
+   /**
+     * The Unix separator character.
+     */
+    private static final char UNIX_SEPARATOR = '/';
+
+    /**
+     * The Windows separator character.
+     */
+    private static final char WINDOWS_SEPARATOR = '\\';
+    
+    
 	/**
 	 * A key which represents either the configuration name of as < 7 server (default or all), 
 	 * or, in as >= 7, represents the configuration FILE name (standalone.xml, etc)
@@ -115,8 +127,18 @@ public class RSEUtils {
 	}
 
 	public static String getDeployRootFolder(IDeployableServer server) {
+		return getDeployRootFolder(server.getServer());
+	}
+	
+	/**
+	 * Get the deploy root for a given server 
+	 * @param server
+	 * @return
+	 * @since 3.0
+	 */
+	public static String getDeployRootFolder(IServer server) {
 		RSEDeploymentOptionsController controller = new RSEDeploymentOptionsController();
-		controller.initialize(server.getServer(), null, null);
+		controller.initialize(server, null, null);
 		return controller.getDeploymentsRootFolder(true);
 	}
 
@@ -174,28 +196,6 @@ public class RSEUtils {
 		return p;
 	}
 
-	public static IHost findHost(String connectionName) {
-		IHost[] allHosts = RSECorePlugin.getTheSystemRegistry().getHosts();
-		return findHost(connectionName, allHosts);
-	}
-	
-	public static IHost findHost(String connectionName, IHost[] hosts) {
-		for (int i = 0; i < hosts.length; i++) {
-			if (hosts[i].getAliasName().equals(connectionName))
-				return hosts[i];
-		}
-		return null;
-	}
-
-	public static void waitForFullInit() throws CoreException {
-		try {
-			RSECorePlugin.waitForInitCompletion();
-		} catch (InterruptedException e) {
-			throw new CoreException(new Status(IStatus.ERROR,
-					org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID,
-					"The RSE model initialization has been interrupted."));
-		}
-	}
 
 	public static IServer setServerToRSEMode(IServer server, IHost newHost) throws CoreException {
 		IServerWorkingCopy wc = server.createWorkingCopy();
@@ -223,24 +223,18 @@ public class RSEUtils {
 				&& shell.isActive();
 	}
 	
-	   /**
-     * The Unix separator character.
-     */
-    private static final char UNIX_SEPARATOR = '/';
-
     /**
-     * The Windows separator character.
+     * Returns an OS-compliant path for a remote system with the given base
+     * and a tail to append on it.
+     * 
+     * @param host
+     * @param path
+     * @param append
+     * @return
      */
-    private static final char WINDOWS_SEPARATOR = '\\';
-	public static String pathToRemoteSystem(IHost host, String path, String append) {
-		boolean hostIsWindows = isHostWindows(host);
-		char sep = hostIsWindows ? WINDOWS_SEPARATOR : UNIX_SEPARATOR;
-		boolean endsWithSep = path.endsWith(Character.toString(WINDOWS_SEPARATOR)) || path.endsWith(Character.toString(UNIX_SEPARATOR));
-		String path2 = append == null ? path :
-			// ensure we have a trailing separator before appending the 'append'
-			(endsWithSep ? path : path + sep) + append;
-		String path3 = hostIsWindows ? separatorsToWindows(path2) : separatorsToUnix(path2);
-		return path3;
+	public static String pathToRemoteSystem(IHost host, String path, String tail) {
+		char sep = getRemoteSystemSeparatorCharacter(host);
+		return new RemotePath(path, sep).append(tail).toOSString();
 	}
 	
 	/**
@@ -249,8 +243,8 @@ public class RSEUtils {
 	 * @return
 	 */
 	public static boolean connectedToWindowsHost(IServerAttributes server) {
-		IHost host = findHost(RSEUtils.getRSEConnectionName(server));
-		return host == null ? false : isHostWindows(host);
+		IHost host = RSEFrameworkUtils.findHost(RSEUtils.getRSEConnectionName(server));
+		return host == null ? false : RSEFrameworkUtils.isHostWindows(host);
 	}
 	
 	/**
@@ -259,42 +253,17 @@ public class RSEUtils {
 	 * @return
 	 */
 	public static char getRemoteSystemSeparatorCharacter(IServerAttributes server) {
-		return connectedToWindowsHost(server) ? '\\' : '/';
+		return connectedToWindowsHost(server) ? WINDOWS_SEPARATOR :  UNIX_SEPARATOR;
 	}
 	
 	/**
-	 * Is the given host a windows host, using windows subsystems
+	 * 
 	 * @param host
 	 * @return
+	 * @since 3.0
 	 */
-	public static boolean isHostWindows(IHost host) {
-		String sysType = host.getSystemType().getId();
-		if( sysType.equals("org.eclipse.rse.systemtype.windows"))
-			return true;
-		ISubSystem[] systems = RSECorePlugin.getTheSystemRegistry().getSubSystems(host);
-		for( int i = 0; i < systems.length; i++ ) {
-			if( systems[i].getConfigurationId().equals("dstore.windows.files"))
-				return true;
-		}
-		return false;
+	public static char getRemoteSystemSeparatorCharacter(IHost host) {
+		boolean win = (host == null ? false : RSEFrameworkUtils.isHostWindows(host));
+		return win ? WINDOWS_SEPARATOR :  UNIX_SEPARATOR;
 	}
-    public static String separatorsToUnix(String path) {
-        if (path == null || path.indexOf(WINDOWS_SEPARATOR) == -1) {
-            return path;
-        }
-        return path.replace(WINDOWS_SEPARATOR, UNIX_SEPARATOR);
-    }
-
-    /**
-     * Converts all separators to the Windows separator of backslash.
-     * 
-     * @param path  the path to be changed, null ignored
-     * @return the updated path
-     */
-    public static String separatorsToWindows(String path) {
-        if (path == null || path.indexOf(UNIX_SEPARATOR) == -1) {
-            return path;
-        }
-        return path.replace(UNIX_SEPARATOR, WINDOWS_SEPARATOR);
-    }
 }

@@ -21,11 +21,13 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.LaunchConfigurationDelegate;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 
 public class RSEJBossStartLaunchDelegate extends AbstractRSELaunchDelegate {
 
@@ -38,15 +40,16 @@ public class RSEJBossStartLaunchDelegate extends AbstractRSELaunchDelegate {
 	@Override
 	public boolean preLaunchCheck(ILaunchConfiguration configuration,
 			String mode, IProgressMonitor monitor) throws CoreException {
-		final IDelegatingServerBehavior beh = JBossServerBehaviorUtils.getServerBehavior(configuration);
-		boolean dontLaunch = LaunchCommandPreferences.isIgnoreLaunchCommand(beh.getServer());
-		if (dontLaunch || isStarted(beh)) {
-			((DelegatingServerBehavior)beh).setServerStarted();
+		IServer server = ServerUtil.getServer(configuration);
+		final IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(configuration);
+		boolean dontLaunch = LaunchCommandPreferences.isIgnoreLaunchCommand(server);
+		if (dontLaunch || isStarted(server)) {
+			((ControllableServerBehavior)beh).setServerStarted();
 			return false;
 		}
 		IDelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
 		String currentHost = jbsBehavior.getServer().getAttribute(RSEUtils.RSE_SERVER_HOST, (String)null);
-		if( currentHost == null || RSEUtils.findHost(currentHost) == null ) {
+		if( currentHost == null || RSEFrameworkUtils.findHost(currentHost) == null ) {
 			throw new CoreException(new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, 
 					"Host \"" + currentHost + "\" not found. Host may have been deleted or RSE model may not be completely loaded"));
 		}
@@ -54,15 +57,15 @@ public class RSEJBossStartLaunchDelegate extends AbstractRSELaunchDelegate {
 		return true;
 	}
 
-	protected boolean isStarted(IDelegatingServerBehavior beh) {
-		return PollThreadUtils.isServerStarted(beh).isOK();
+	protected boolean isStarted(IServer server) {
+		return PollThreadUtils.isServerStarted(server).isOK();
 	}
 	
 	@Override
 	public void preLaunch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		IDelegatingServerBehavior beh = JBossServerBehaviorUtils.getServerBehavior(configuration);
-		((DelegatingServerBehavior)beh).setServerStarting();
+		final IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(configuration);
+		((ControllableServerBehavior)beh).setServerStarting();
 	}
 
 	@Override

@@ -209,6 +209,16 @@ public class DeploymentScannerAdditionsTest extends TestCase  {
 			public boolean accepts(IServer server) {
 				return true;
 			}
+			@Override
+			public void suspendScanners(IServer server) {
+				// TODO Auto-generated method stub
+				
+			}
+			@Override
+			public void resumeScanners(IServer server) {
+				// TODO Auto-generated method stub
+				
+			}
 		};
 	}
 }

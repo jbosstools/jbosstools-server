@@ -14,12 +14,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -31,8 +30,6 @@ import org.eclipse.wst.server.core.internal.ServerPreferences;
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.jboss.ide.eclipse.archives.core.util.internal.TrueZipUtil;
-import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
-import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
@@ -43,7 +40,6 @@ import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentM
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
-import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.internal.MockPublishMethod4;
 import org.jboss.tools.as.test.core.internal.utils.IOUtil;
@@ -96,13 +92,19 @@ public abstract class AbstractPublishingTest extends TestCase {
 
 	@Before
 	public void setUp() throws Exception {
+		setUp(true);
+	}
+	
+	protected void setUp(boolean setMock4) throws Exception {
 		printConstructor();
 		ServerPreferences.getInstance().setAutoPublishing(false);
 		ValidationFramework.getDefault().suspendAllValidation(true);
 		JobUtils.waitForIdle();
 		server = ServerCreationTestUtils.createMockServerWithRuntime(param_serverType, getClass().getName() + param_serverType);
 		wc = server.createWorkingCopy();
-		setMockPublishMethod4(wc);
+		if( setMock4) {
+			setMockPublishMethod4(wc);
+		}
 		setupZipParam(wc);
 		setupDeployTypeParam(wc);
 		createProjects();
@@ -353,7 +355,11 @@ public abstract class AbstractPublishingTest extends TestCase {
 		return path;
 	}
 	
-	protected void verifyList(IPath root, ArrayList<IPath> list, boolean exists) {
+	/*
+	 * Given an IPath representing a root folder, verify 
+	 * all relative paths in list exist or do not exist (as per the exists flag)
+	 */
+	protected void verifyList(IPath root, List<IPath> list, boolean exists) {
 		Iterator<IPath> iterator = list.iterator();
 		ArchiveDetector detector = isZipped() ? new TrueZipUtil.JarArchiveDetector() : ArchiveDetector.DEFAULT;
 		while(iterator.hasNext()) {

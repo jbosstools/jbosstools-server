@@ -13,7 +13,7 @@
    <extension
          point="org.eclipse.wst.server.core.serverTypes">
       <serverType
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior"
+            behaviourClass="org.jboss.tools.as.core.server.controllable.internal.DeployableServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.DeployableServer"
             description="%deploy.server.description"
             hasConfiguration="false"
@@ -51,24 +51,7 @@
           <moduleType types="jbt.egit" versions="1.0"/>
           <moduleType types="jboss.osgi" versions="1.0"/>
       </runtimeType>
-	</extension>
-   <extension
-         point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
-      <subsystem
-            id="launch.noOp"
-            name="No-Op Launch"
-            system="launch"
-            serverTypes="org.jboss.ide.eclipse.as.systemCopyServer"
-            class="org.jboss.tools.as.core.server.controllable.subsystems.internal.NoOpLaunchController">
-      </subsystem>
-      <subsystem
-            id="shutdown.noOp"
-            name="No-Op Shutdown"
-            system="shutdown"
-            serverTypes="org.jboss.ide.eclipse.as.systemCopyServer"
-            class="org.jboss.tools.as.core.server.controllable.subsystems.internal.NoOpShutdownController">
-      </subsystem>
-   </extension>
+	</extension> 
 
 
 
@@ -78,7 +61,7 @@
    <extension
          point="org.eclipse.wst.server.core.serverTypes">
       <serverType
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior"
+            behaviourClass="org.jboss.tools.as.core.server.controllable.internal.DeployableServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
             description="%jboss.version.32.description"
             hasConfiguration="false"
@@ -95,7 +78,7 @@
             supportsRemoteHosts="true"/>
 
       <serverType
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior"
+            behaviourClass="org.jboss.tools.as.core.server.controllable.internal.DeployableServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
             description="%jboss.version.40.description"
             hasConfiguration="false"
@@ -112,7 +95,7 @@
             supportsRemoteHosts="true"/>
 
       <serverType
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior"
+            behaviourClass="org.jboss.tools.as.core.server.controllable.internal.DeployableServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
             description="%jboss.version.42.description"
             hasConfiguration="false"
@@ -129,7 +112,7 @@
             supportsRemoteHosts="true"/>
 
       <serverType
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior"
+            behaviourClass="org.jboss.tools.as.core.server.controllable.internal.DeployableServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
             description="%jboss.version.50.description"
             hasConfiguration="false"
@@ -146,7 +129,7 @@
             supportsRemoteHosts="true"/>
 
       <serverType
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior"
+            behaviourClass="org.jboss.tools.as.core.server.controllable.internal.DeployableServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
             description="%jboss.version.51.description"
             hasConfiguration="false"
@@ -163,7 +146,7 @@
             supportsRemoteHosts="true"/>
             
       <serverType
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior"
+            behaviourClass="org.jboss.tools.as.core.server.controllable.internal.DeployableServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.JBoss6Server"
             description="%jboss.version.60.description"
             hasConfiguration="false"
@@ -180,13 +163,13 @@
             supportsRemoteHosts="true"/>
 
       <serverType
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.v7.DelegatingJBoss7ServerBehavior"
+            behaviourClass="org.jboss.tools.as.core.server.controllable.internal.DeployableServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server"
             description="%jboss.version.70.description"
             hasConfiguration="false"
             id="org.jboss.ide.eclipse.as.70"
             initialState="stopped"
-            launchConfigId="org.jboss.ide.eclipse.as.core.server.JBoss7StartupConfiguration"
+            launchConfigId="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
             launchModes="run,debug,profile"
             name="%jboss.version.70.name"
             runtime="true"
@@ -197,13 +180,13 @@
             supportsRemoteHosts="true"/>
 
       <serverType
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.v7.DelegatingJBoss7ServerBehavior"
+            behaviourClass="org.jboss.tools.as.core.server.controllable.internal.DeployableServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server"
             description="%jboss.version.71.description"
             hasConfiguration="false"
             id="org.jboss.ide.eclipse.as.71"
             initialState="stopped"
-            launchConfigId="org.jboss.ide.eclipse.as.core.server.JBoss7StartupConfiguration"
+            launchConfigId="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
             launchModes="run,debug,profile"
             name="%jboss.version.71.name"
             runtime="true"
@@ -216,12 +199,12 @@
 
       <serverType
             id="org.jboss.ide.eclipse.as.wildfly.80"
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.v7.DelegatingJBoss7ServerBehavior"
+            behaviourClass="org.jboss.tools.as.core.server.controllable.internal.DeployableServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.v7.Wildfly8Server"
             description="%jboss.version.wildfly8.description"
             hasConfiguration="false"
             initialState="stopped"
-            launchConfigId="org.jboss.ide.eclipse.as.core.server.JBoss7StartupConfiguration"
+            launchConfigId="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
             launchModes="run,debug,profile"
             name="%jboss.version.wildfly8.name"
             runtime="true"
@@ -232,7 +215,7 @@
             supportsRemoteHosts="true"/>
 
       <serverType
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior"
+            behaviourClass="org.jboss.tools.as.core.server.controllable.internal.DeployableServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
             description="%jboss.eap.version.43.description"
             hasConfiguration="false"
@@ -249,7 +232,7 @@
             supportsRemoteHosts="true"/>
 
       <serverType
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior"
+            behaviourClass="org.jboss.tools.as.core.server.controllable.internal.DeployableServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
             description="%jboss.eap.version.50.description"
             hasConfiguration="false"
@@ -266,13 +249,13 @@
             supportsRemoteHosts="true"/>
 
       <serverType
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.v7.DelegatingJBoss7ServerBehavior"
+            behaviourClass="org.jboss.tools.as.core.server.controllable.internal.DeployableServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server"
             description="%jboss.eap.version.60.description"
             hasConfiguration="false"
             id="org.jboss.ide.eclipse.as.eap.60"
             initialState="stopped"
-            launchConfigId="org.jboss.ide.eclipse.as.core.server.JBoss7StartupConfiguration"
+            launchConfigId="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
             launchModes="run,debug,profile"
             name="%jboss.eap.version.60.name"
             runtime="true"
@@ -283,13 +266,13 @@
             supportsRemoteHosts="true"/>
 
       <serverType
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.v7.DelegatingJBoss7ServerBehavior"
+            behaviourClass="org.jboss.tools.as.core.server.controllable.internal.DeployableServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server"
             description="%jboss.eap.version.61.description"
             hasConfiguration="false"
             id="org.jboss.ide.eclipse.as.eap.61"
             initialState="stopped"
-            launchConfigId="org.jboss.ide.eclipse.as.core.server.JBoss7StartupConfiguration"
+            launchConfigId="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
             launchModes="run,debug,profile"
             name="%jboss.eap.version.61.name"
             runtime="true"
@@ -578,17 +561,8 @@
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
             category="JBoss"
-            delegate="org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration"
+            delegate="org.jboss.ide.eclipse.as.core.server.internal.launch.ControllableServerLaunchConfiguration"
             id="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
-            modes="run,debug,profile"
-            name="JBoss Application Server Startup Configuration"
-            public="true"
-            sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"
-            sourcePathComputerId="org.eclipse.jst.server.generic.core.sourcePathComputer"/>
-      <launchConfigurationType
-            category="JBoss"
-            delegate="org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration"
-            id="org.jboss.ide.eclipse.as.core.server.JBoss7StartupConfiguration"
             modes="run,debug,profile"
             name="JBoss Application Server Startup Configuration"
             public="true"
@@ -1427,7 +1401,7 @@
    <extension
          point="org.eclipse.jdt.launching.classpathProviders">
       <classpathProvider
-            class="org.jboss.ide.eclipse.as.core.server.internal.launch.LocalJBossStartLaunchDelegate$JBossServerDefaultClasspathProvider"
+            class="org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerDefaultClasspathProvider"
             id="org.jboss.ide.eclipse.as.core.server.internal.launch.serverClasspathProvider">
       </classpathProvider>
    </extension>
@@ -1575,25 +1549,135 @@
     <extension
          point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
       <subsystem
-            system="module.deploy.path"
-            id="module.deploy.path.xmlprefs"
+            system="moduleDeployPath"
+            id="moduleDeployPath.xmlprefs"
             name="Customize Module Deployment Paths"
             serverTypes="%AllJBTServerTypes"
             class="org.jboss.tools.as.core.server.controllable.subsystems.internal.ModuleDeployPathController">
       </subsystem>
       <subsystem
-            system="deploy.settings.rootpath"
-            id="deploy.settings.rootpath.local"
-            name="Server Deployment Settings"
+            system="deploymentOptions"
+            id="deploymentOptions.local"
+            name="Server Deployment Settings (Local)"
             serverTypes="%AllJBTServerTypes"
             class="org.jboss.tools.as.core.server.controllable.subsystems.internal.LocalDeploymentOptionsController">
          <properties>
-            <property
-                  key="target"
-                  value="local">
-            </property>
+            <property key="target" value="local"></property>
          </properties>
       </subsystem>
+      <subsystem
+            system="launch"
+            id="launch.standard.local"
+            name="Launch JBoss Server (Local)"
+            serverTypes="%AllJBossServerTypes"
+            class="org.jboss.tools.as.core.server.controllable.subsystems.internal.LocalJBossLaunchController">
+         <properties>
+            <property key="target" value="local"></property>
+         </properties>
+      </subsystem>
+      <subsystem
+            system="serverDetails"
+            id="serverDetails.local"
+            name="Server Details (Local)"
+            serverTypes="%AllJBTServerTypes"
+            class="org.jboss.ide.eclipse.as.core.server.internal.LocalServerModeDetails">
+         <properties>
+            <property key="target" value="local"></property>
+         </properties>
+      </subsystem>
+      
+      <subsystem
+            system="shutdown"
+            id="shutdown.legacy"
+            name="Shutdown Server"
+            serverTypes="%ServerTypesJBoss6OrLower"
+            class="org.jboss.tools.as.core.server.controllable.subsystems.internal.LocalLegacyShutdownController">
+         <properties>
+            <property key="target" value="local"></property>
+         </properties>
+      </subsystem>
+      <subsystem
+            system="shutdown"
+            id="shutdown.management"
+            name="Shutdown Server via Management"
+            serverTypes="org.jboss.ide.eclipse.as.70,org.jboss.ide.eclipse.as.71,org.jboss.ide.eclipse.as.eap.60,org.jboss.ide.eclipse.as.eap.61,org.jboss.ide.eclipse.as.wildfly.80"
+            class="org.jboss.tools.as.core.server.controllable.subsystems.internal.ManagementShutdownController">
+      </subsystem>
+      
+      
+      
+      <subsystem
+            system="filesystem"
+            id="filesystem.local"
+            name="Filesystem Support (Local)"
+            serverTypes="%AllJBTServerTypes"
+            class="org.jboss.ide.eclipse.as.wtp.core.server.behavior.LocalFilesystemController">
+         <properties>
+            <property key="target" value="local"></property>
+         </properties>
+      </subsystem>
+      <subsystem
+            system="module.restart.behavior"
+            id="module.restart.behavior.regex"
+            name="Module Restart Pattern Matcher"
+            serverTypes="%AllJBTServerTypes"
+            class="org.jboss.tools.as.core.server.controllable.subsystems.internal.StandardModuleRestartBehaviorController">
+      </subsystem>
+      
+      <subsystem
+            system="publish"
+            id="publish.filesystem"
+            name="Filesystem Publish Controller"
+            serverTypes="%AllJBTServerTypes"
+            class="org.jboss.tools.as.core.server.controllable.subsystems.internal.StandardFileSystemPublishController">
+         <dependencies>
+            <requires system="filesystem"></requires>
+            <requires system="moduleDeployPath"></requires>
+            <requires system="deploymentOptions"></requires>
+            <requires system="module.restart.behavior"></requires>
+         </dependencies>
+      </subsystem>
+      
+      <!-- A filesystem publish controller that suspends and resumes deployment scanners, for use in as lessthan 7 -->
+      <subsystem
+            system="publish"
+            id="publish.filesystem.suspendScanners"
+            name="Suspended Deployment Scanner Filesystem Publish Controller"
+            serverTypes="%AllJBossServerTypes"
+            class="org.jboss.tools.as.core.server.controllable.subsystems.internal.SuspendedScannersFileSystemPublishController">
+         <dependencies>
+            <requires system="filesystem"></requires>
+            <requires system="moduleDeployPath"></requires>
+            <requires system="deploymentOptions"></requires>
+            <requires system="module.restart.behavior"></requires>
+            <!-- optional dependency on <requires system="moduleState"></requires> -->
+         </dependencies>
+      </subsystem>
+      
+      
+      <!-- Some no-op stub implementations -->
+      <subsystem
+            system="modules"
+            id="modules.noop"
+            name="Module Controller - Stub Implementation"
+            serverTypes="%AllJBTServerTypes"
+            class="org.jboss.tools.as.core.server.controllable.subsystems.internal.NoOpModuleController">
+      </subsystem>
+      <subsystem
+            system="launch"
+            id="launch.noop"
+            name="Launch Controller - Stub Implementation"
+            serverTypes="org.jboss.ide.eclipse.as.systemCopyServer"
+            class="org.jboss.tools.as.core.server.controllable.subsystems.internal.NoOpLaunchController">
+      </subsystem>
+      <subsystem
+            system="shutdown"
+            id="shutdown.noop"
+            name="Shutdown Controller - Stub Implementation"
+            serverTypes="org.jboss.ide.eclipse.as.systemCopyServer"
+            class="org.jboss.tools.as.core.server.controllable.subsystems.internal.NoOpShutdownController">
+      </subsystem>
+      
 	</extension>
 
 

@@ -20,13 +20,14 @@ import org.eclipse.rse.subsystems.files.core.subsystems.IRemoteFile;
 import org.eclipse.rse.subsystems.files.core.subsystems.IRemoteFileSubSystem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.server.core.IServerAttributes;
+import org.jboss.ide.eclipse.as.rse.core.RSEFrameworkUtils;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
 import org.jboss.ide.eclipse.as.ui.IBrowseBehavior;
 
 public class RSEBrowseBehavior implements IBrowseBehavior {
 	public String openBrowseDialog(IServerAttributes server, String original) {
 		String current = server.getAttribute(RSEUtils.RSE_SERVER_HOST, (String)null);
-		IHost h = RSEUtils.findHost(current);
+		IHost h = RSEFrameworkUtils.findHost(current);
 		return browseClicked(new Shell(), h);
 	}
 	

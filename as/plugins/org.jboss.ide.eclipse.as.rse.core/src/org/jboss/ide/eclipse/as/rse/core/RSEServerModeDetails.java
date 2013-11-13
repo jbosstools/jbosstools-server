@@ -16,36 +16,41 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IServerModeDetails;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IServerDetailsController;
 
-public class RSEServerModeDetails implements IServerModeDetails {
-	private IServer server;
+public class RSEServerModeDetails extends AbstractSubsystemController implements IServerModeDetails, IServerDetailsController {
+	
+	public RSEServerModeDetails() {
+		super();
+	}
+	
+	@Deprecated
 	public RSEServerModeDetails(IServer server) {
-		this.server = server;
 	}
 
 	@Override
 	public String getProperty(String prop) {
-		char sep = RSEUtils.getRemoteSystemSeparatorCharacter(server);
+		char sep = RSEUtils.getRemoteSystemSeparatorCharacter(getServerOrWC());
 		if( PROP_SERVER_HOME.equals(prop)) {
-			return RSEUtils.getRSEHomeDir(server);
+			return RSEUtils.getRSEHomeDir(getServerOrWC());
 		}
 		if( PROP_CONFIG_NAME.equals(prop)) {
-			return RSEUtils.getRSEConfigName(server);
+			return RSEUtils.getRSEConfigName(getServerOrWC());
 		}
 		if( PROP_SERVER_BASE_DIR_ABS.equals(prop)) {
 			if (isAS7Structure()) {
-				return RSEUtils.getBaseDirectoryPath(server, sep).toString();
+				return RSEUtils.getBaseDirectoryPath(getServerOrWC(), sep).toString();
 			}
 		}
 		
 		if( PROP_CONFIG_LOCATION.equals(prop)) {
 			// Currently AS7 does not support custom configurations
 			if (isAS7Structure()) {
-				IPath p = RSEUtils.getBaseDirectoryPath(server, sep).append(IJBossRuntimeResourceConstants.CONFIGURATION);
+				IPath p = RSEUtils.getBaseDirectoryPath(getServerOrWC(), sep).append(IJBossRuntimeResourceConstants.CONFIGURATION);
 				return p.toString();
 			} else {
 				// Remote servers at this time do not allow arbitrary configuration locations. 
@@ -59,7 +64,7 @@ public class RSEServerModeDetails implements IServerModeDetails {
 			IPath relPath = null;
 			// AS7's basedir may change, so pull from there
 			if (isAS7Structure()) {
-				String raw = server.getAttribute(RSEUtils.RSE_BASE_DIR, IJBossRuntimeResourceConstants.AS7_STANDALONE);
+				String raw = getServerOrWC().getAttribute(RSEUtils.RSE_BASE_DIR, IJBossRuntimeResourceConstants.AS7_STANDALONE);
 				relPath = new Path(raw).append(IJBossRuntimeResourceConstants.AS7_DEPLOYMENTS);
 			} else {
 				// Remote servers at this time do not allow arbitrary configuration locations. 
@@ -69,16 +74,16 @@ public class RSEServerModeDetails implements IServerModeDetails {
 			if( relPath == null ) 
 				return null;
 			if( !relative) 
-				return RSEUtils.makeGlobal(server, relPath).toString();
-			return RSEUtils.makeRelative(server, relPath).toString();
+				return RSEUtils.makeGlobal(getServerOrWC(), relPath).toString();
+			return RSEUtils.makeRelative(getServerOrWC(), relPath).toString();
 		}
 		if( PROP_SERVER_TMP_DEPLOYMENTS_FOLDER_REL.equals(prop) || PROP_SERVER_TMP_DEPLOYMENTS_FOLDER_ABS.equals(prop)) {
 			boolean relative = PROP_SERVER_TMP_DEPLOYMENTS_FOLDER_REL.equals(prop);
 			IPath relPath = null;
 			if( isAS7Structure()) {
-				String raw = server.getAttribute(RSEUtils.RSE_BASE_DIR, IJBossRuntimeResourceConstants.AS7_STANDALONE);
-				if( new Path(raw).isAbsolute() && raw.startsWith(RSEUtils.getRSEHomeDir(server))) {
-					return new Path(raw).makeRelativeTo(new Path(RSEUtils.getRSEHomeDir(server))).toString();
+				String raw = getServerOrWC().getAttribute(RSEUtils.RSE_BASE_DIR, IJBossRuntimeResourceConstants.AS7_STANDALONE);
+				if( new Path(raw).isAbsolute() && raw.startsWith(RSEUtils.getRSEHomeDir(getServerOrWC()))) {
+					return new Path(raw).makeRelativeTo(new Path(RSEUtils.getRSEHomeDir(getServerOrWC()))).toString();
 				}
 				relPath = new Path(raw)
 					.append(IJBossRuntimeResourceConstants.FOLDER_TMP).makeRelative();
@@ -88,30 +93,30 @@ public class RSEServerModeDetails implements IServerModeDetails {
 			if( relPath == null ) 
 				return null;
 			if( !relative) 
-				return RSEUtils.makeGlobal(server, relPath).toString();
-			return RSEUtils.makeRelative(server, relPath).toString();
+				return RSEUtils.makeGlobal(getServerOrWC(), relPath).toString();
+			return RSEUtils.makeRelative(getServerOrWC(), relPath).toString();
 		}
 
 		
 		if( PROP_AS7_CONFIG_FILE.equals(prop)) {
-			return RSEUtils.getRSEConfigFile(server);
+			return RSEUtils.getRSEConfigFile(getServerOrWC());
 		}
 		return null;
 	}
 	
 	/* Get a global path which includes the config name */
 	private IPath getServerLT6RelativeConfigPath(String prefix, String suffix) {
-		String config = RSEUtils.getRSEConfigName(server);
+		String config = RSEUtils.getRSEConfigName(getServerOrWC());
 		if( config == null )
 			return null;
 		IPath p = new Path(prefix).append(config);
 		if( suffix != null )
 			p = p.append(suffix);
-		return RSEUtils.makeGlobal(server, p);
+		return RSEUtils.makeGlobal(getServerOrWC(), p);
 	}
 	
 	private boolean isAS7Structure() {
-		ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
+		ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(getServerOrWC());
 		if (sep != null && sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS) {
 			return true;
 		}

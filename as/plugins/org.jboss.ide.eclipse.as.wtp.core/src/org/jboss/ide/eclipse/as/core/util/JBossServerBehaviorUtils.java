@@ -15,6 +15,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 
 /**
  * TODO These methods should be put into ServerConverter
@@ -34,4 +35,15 @@ public class JBossServerBehaviorUtils {
 			return null;
 		}
 	}
+	
+
+	public static IControllableServerBehavior getControllableBehavior(ILaunchConfiguration configuration) throws CoreException {
+		return getControllableBehavior(ServerUtil.getServer(configuration));
+	}
+	
+	public static IControllableServerBehavior getControllableBehavior(IServer server) {
+		IControllableServerBehavior behavior = (IControllableServerBehavior) server.getAdapter(IControllableServerBehavior.class);
+		return behavior;
+	}
+	
 }

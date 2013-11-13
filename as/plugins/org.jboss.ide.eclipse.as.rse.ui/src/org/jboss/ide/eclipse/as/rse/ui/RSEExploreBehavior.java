@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.rse.core.model.IHost;
 import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
 import org.eclipse.rse.services.files.IHostFile;
 import org.eclipse.rse.subsystems.files.core.subsystems.IRemoteFile;
@@ -24,6 +25,7 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.rse.core.RSEFrameworkUtils;
 import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
 import org.jboss.ide.eclipse.as.ui.IExploreBehavior;
@@ -40,8 +42,10 @@ public class RSEExploreBehavior implements IExploreBehavior {
 			remoteFolder = ds.getDeploymentLocation(module, true);
 		}
 		try {
-			method.getFileService();
-			method.ensureConnection(new NullProgressMonitor());
+			String connectionName = RSEUtils.getRSEConnectionName(server);
+			IHost host = RSEFrameworkUtils.findHost(connectionName);
+			RSEFrameworkUtils.ensureActiveConnection(ds.getServer(), 
+					RSEFrameworkUtils.findFileTransferSubSystem(host), new NullProgressMonitor());
 			IHostFile file = method.getFileService().getFile(remoteFolder.removeLastSegments(1).toOSString(), remoteFolder.lastSegment(), new NullProgressMonitor());
 			String path = remoteFolder.toString();
 			

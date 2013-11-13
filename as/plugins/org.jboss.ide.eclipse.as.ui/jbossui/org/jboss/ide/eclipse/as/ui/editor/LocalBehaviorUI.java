@@ -47,8 +47,10 @@ public class LocalBehaviorUI implements IDeploymentTypeUI {
 			callback.setErrorMessage(null);
 		else {
 			ServerExtendedProperties props = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(callback.getServer());
-			IStatus status = props.verifyServerStructure();
-			callback.setErrorMessage(status.isOK() ? null : status.getMessage());
+			if( props != null ) {
+				IStatus status = props.verifyServerStructure();
+				callback.setErrorMessage(status.isOK() ? null : status.getMessage());
+			}
 		}
 	}
 	

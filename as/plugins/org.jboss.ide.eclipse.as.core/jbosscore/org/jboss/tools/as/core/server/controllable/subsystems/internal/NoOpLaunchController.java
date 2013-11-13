@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2013 Red Hat, Inc. 
+ * Copyright (c) 2014 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -20,6 +20,7 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ILaunchServerController;
 
@@ -49,8 +50,8 @@ public class NoOpLaunchController extends AbstractSubsystemController implements
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		IControllableServerBehavior beh = getServerBehavior(configuration);
 		if( beh != null ) {
-			beh.setServerStarting();
-			beh.setServerStarted();
+			((ControllableServerBehavior)beh).setServerStarting();
+			((ControllableServerBehavior)beh).setServerStarted();
 		} else {
 			// TODO throw error
 		}

@@ -59,6 +59,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerEx
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManagerServicePoller;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.rse.core.RSEFrameworkUtils;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
@@ -294,7 +295,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			}
 			
 			public IHost findHost(String name) {
-				return RSEUtils.findHost(name, hosts);
+				return RSEFrameworkUtils.findHost(name, hosts);
 			}
 
 			public Combo getCombo() {
@@ -402,7 +403,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 
 	@Deprecated
 	public static IHost findHost(String name, IHost[] hosts) {
-		return RSEUtils.findHost(name, hosts);
+		return RSEFrameworkUtils.findHost(name, hosts);
 	}
 	
 	@Deprecated

@@ -203,6 +203,7 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 		return false;
 	}
 	
+	// Can this method even actually remove stuff inside a zip?? How does this even manage to work?
 	protected IStatus[] removeModule(IServer server, String deployRoot, IModule[] module) {
 		IPath deployPath = getOutputFilePath(module);
         final ArrayList<IStatus> status = new ArrayList<IStatus>();

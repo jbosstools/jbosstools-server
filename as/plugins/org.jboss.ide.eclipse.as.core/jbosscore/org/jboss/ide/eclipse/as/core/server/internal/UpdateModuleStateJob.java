@@ -20,15 +20,17 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.Server;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IModuleStateController;
 
 public class UpdateModuleStateJob extends Job {
 	private IServer server;
 	private IServerModuleStateVerifier verifier;
+	private IModuleStateController controller;
 	private boolean wait;
 	private int maxWait;
 	
 	public UpdateModuleStateJob(IServer server) {
-		this(server, null, false, 0);
+		this(server, (IServerModuleStateVerifier)null, false, 0);
 	}
 
 	public UpdateModuleStateJob(IServer server, IServerModuleStateVerifier verifier) {
@@ -47,11 +49,23 @@ public class UpdateModuleStateJob extends Job {
 			this.verifier = verifier;
 		}
 	}
-
+	
+	public UpdateModuleStateJob(IModuleStateController controller, IServer server) {
+		this(controller, server, false, 0);
+	}
+	
+	public UpdateModuleStateJob(IModuleStateController controller, IServer server, boolean wait, int maxWait) {
+		super("Check module status for server " + server.getName()); //$NON-NLS-1$
+		this.wait = wait;
+		this.maxWait = maxWait;
+		this.server = server;
+		this.controller = controller;
+	}
+	
 
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
-		if( verifier == null )
+		if( verifier == null && controller == null)
 			return Status.CANCEL_STATUS;
 		if( server.getServerState() != IServer.STATE_STARTED)
 			return Status.OK_STATUS;
@@ -76,7 +90,7 @@ public class UpdateModuleStateJob extends Job {
 			long thisLoopStart = System.currentTimeMillis();
 			for( int i = 0; i < modules.length; i++ ) {
 				IModule[] temp = new IModule[]{modules[i]};
-				int state = verifier.getModuleState(server, temp, new SubProgressMonitor(monitor, 1000));
+				int state = getModuleState(temp, new SubProgressMonitor(monitor, 1000));
 				((Server)server).setModuleState(temp, state);
 				boolean started = state == IServer.STATE_STARTED;
 				allStarted = allStarted && started;
@@ -103,10 +117,17 @@ public class UpdateModuleStateJob extends Job {
 			
 			//boolean started = verifier.isModuleStarted(server, temp, new SubProgressMonitor(monitor, 1000));
 			//int state = started ? IServer.STATE_STARTED : IServer.STATE_STOPPED;
-			int state = verifier.getModuleState(server, temp, new SubProgressMonitor(monitor, 1000));
+			int state = getModuleState(temp, new SubProgressMonitor(monitor, 1000));
 			((Server)server).setModuleState(temp, state);
 		}
 		return Status.OK_STATUS;
 	}
 	
+	private int getModuleState(IModule[] temp, IProgressMonitor monitor) {
+		if( verifier != null )
+			return verifier.getModuleState(server, temp, new SubProgressMonitor(monitor, 1000));
+		if( controller != null )
+			return controller.getModuleState(temp, new SubProgressMonitor(monitor, 1000));
+		return IServer.STATE_UNKNOWN;
+	}
 }

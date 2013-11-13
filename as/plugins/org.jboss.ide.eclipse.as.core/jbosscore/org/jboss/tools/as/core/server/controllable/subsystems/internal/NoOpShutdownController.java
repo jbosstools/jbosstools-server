@@ -13,6 +13,7 @@ package org.jboss.tools.as.core.server.controllable.subsystems.internal;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IServerShutdownController;
 
@@ -31,8 +32,8 @@ public class NoOpShutdownController extends AbstractSubsystemController
 	public void stop(boolean force) {
 		IControllableServerBehavior beh = getControllableBehavior();
 		if( beh != null ) {
-			beh.setServerStopping();
-			beh.setServerStopped();
+			((ControllableServerBehavior)beh).setServerStopping();
+			((ControllableServerBehavior)beh).setServerStopped();
 		}
 	}
 }

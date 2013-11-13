@@ -25,8 +25,12 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ISubsystemController;
  * 
  * If instantiated with only an IServer,  
  * setters may fail with an IllegalStateException, depending on the implementation.
+ * 
+ * @since 3.0
  */
 public interface IModuleDeployPathController extends ISubsystemController {
+	public static final String SYSTEM_ID = "moduleDeployPath"; //$NON-NLS-1$
+	
 	
 	/**
 	 * In the event that any returned paths are relative paths, this 
@@ -42,6 +46,14 @@ public interface IModuleDeployPathController extends ISubsystemController {
 	 */
 	public static final String ENV_DEFAULT_TMP_DEPLOY_FOLDER = "IModuleDeployPathController.TmpDeployFolder";  //$NON-NLS-1$
 
+	
+	/**
+	 * This is a non-required property key. The value at this property key must be an instance of {@link IDeploymentOptionsController}
+	 * If a value is found at this property key, the controller at the value will be queried for a deploy or temporary deploy 
+	 * path. This key will be checked only if no value is found at the other respective keys.  
+	 */
+	public static final String ENV_DEPLOYMENT_OPTIONS_CONTROLLER = "IModuleDeployPathController.DeploymentOptionsController";  //$NON-NLS-1$
+	
 	
 	/**
 	 * This is an optional property for use when targeting a remote windows system 
@@ -63,6 +75,9 @@ public interface IModuleDeployPathController extends ISubsystemController {
 	 * For example, given a war nested in an ear, it will return something like:
 	 * 		/home/user/server/deploy/App.ear/Web.war
 	 * 
+	 * In the case of binary modules, the module's name and assumed suffix
+	 * will not be included, since binary modules will publish their contents
+	 * directly rather than inside a containing folder/zip. 
 	 * @param module
 	 * @return
 	 */

@@ -56,23 +56,28 @@
          <attribute name="system" type="string" use="required">
             <annotation>
                <documentation>
-                  Which major system this subsystem is an implementation of. For examploe, modules, publish, fs, or mgmt. This value may be any one of the existing systems, or a new arbitrary value for which you have decided to name your system type.
+                  Which major system this subsystem is an implementation of. For example, modules, publish, fs, or mgmt. This value may be any one of the existing systems, or a new arbitrary value for which you have decided to name your system type.
                </documentation>
             </annotation>
          </attribute>
          <attribute name="serverTypes" type="string" use="required">
             <annotation>
                <documentation>
-                  A list of server type id&apos;s for which this implementation is valid
+                  A list of server type id&apos;s for which this implementation is valid. The list should be comma-separated.
                </documentation>
             </annotation>
          </attribute>
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
-                  The ID of this subsystem.  The id must be unique for each server type. As an example of this, you may have customSystem.bigCat with implementation class Tiger (valid for AS 3-6)   and customServer.bigCat with implementation class Lion (valid for AS =&gt; 7).  
-
-It will be deemed an error if two implementations are available with the same id for the same server type.
+                  The ID of this subsystem.  The id must be unique for each server type. 
+                  As an example of this, you may have jmxSystem.customAuth with implementation 
+                  class StandardAuth (valid for AS 3-6), and 
+                  jmxSystem.customAuth with implementation class ManagementAuth (valid for AS =&gt; 7).   
+                  
+                  It will be deemed an error if two implementations are available with the same id 
+                  for the same server type. The error will be logged as a notice to developers, however, 
+                  one will be chosen to be returned. This is to ensure at least some functionality remains.
                </documentation>
             </annotation>
          </attribute>
@@ -155,7 +160,7 @@ It will be deemed an error if two implementations are available with the same id
          <meta.section type="since"/>
       </appinfo>
       <documentation>
-         [Enter the first release in which this extension point appears.]
+         3.0.0
       </documentation>
    </annotation>
 

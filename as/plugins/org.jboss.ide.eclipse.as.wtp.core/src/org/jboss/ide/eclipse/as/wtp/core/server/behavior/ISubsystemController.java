@@ -13,7 +13,7 @@ package org.jboss.ide.eclipse.as.wtp.core.server.behavior;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerAttributes;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.SubsystemModel.SubsystemType;
 
 /**
@@ -23,21 +23,15 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.SubsystemModel.Subsyste
  * @since 3.0
  */
 public interface ISubsystemController {
-	/**
-	 * A key for the environment of the subsystem which should point to an IServerWorkingCopy if available 
-	 */
-	public static final String ENV_WORKING_COPY = "ISubsystemController.WorkingCopy"; //$NON-NLS-1$
-
 	
 	/**
 	 * This method is not intended to be called by clients, and is a framework
 	 * method to initialize the subsystem controller.   
 	 * 
-	 * 
 	 * @param server
 	 * @param type
 	 */
-	public void initialize(IServer server, SubsystemType type, Map<String, Object> environment);
+	public void initialize(IServerAttributes server, SubsystemType type, Map<String, Object> environment);
 	
 	/**
 	 * Get the subsystem id

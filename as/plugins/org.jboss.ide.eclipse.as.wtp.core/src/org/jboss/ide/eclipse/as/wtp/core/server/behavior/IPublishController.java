@@ -22,6 +22,10 @@ import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
  * @since 3.0
  */
 public interface IPublishController extends ISubsystemController {
+	
+	public static final String SYSTEM_ID = "publish";
+
+	
 	/**
 	 * A delegate for ServerBehaviourDelegate.canPublish()
 	 * {@link ServerBehaviourDelegate}
@@ -45,28 +49,23 @@ public interface IPublishController extends ISubsystemController {
 	 * This may include setting up remote connections, stopping
 	 * deployment scanners, or any other BEFORE tasks.  
 	 * 
-	 * 
-	 * @param behaviour
 	 * @param monitor
 	 * @throws CoreException
 	 */
-	public void publishStart(ControllableServerBehavior behaviour, IProgressMonitor monitor) throws CoreException;
+	public void publishStart( IProgressMonitor monitor) throws CoreException;
 	
 	/**
 	 * Finish the publish operation for the given server behavior. 
 	 * This may include closing remote connections, re-starting
 	 * deployment scanners, or any other AFTER tasks.  
 	 * 
-	 * 
-	 * @param behaviour
 	 * @param monitor
 	 * @throws CoreException
 	 */
-	public int publishFinish(ControllableServerBehavior behaviour, IProgressMonitor monitor) throws CoreException;
+	public void publishFinish(IProgressMonitor monitor) throws CoreException;
 
 	/**
 	 * Publish this module
-	 * @param behaviour The behaviour associated with this server
 	 * @param kind The kind of publish, as a constant from IServer
 	 * @param deltaKind The kind of delta, as a constant from ServerBehaviourDelegate
 	 * @param module  The module to be published
@@ -74,10 +73,10 @@ public interface IPublishController extends ISubsystemController {
 	 * @return An IServer.STATE_XXX constant, or -1 if the behaviour should not change server state
 	 * @throws CoreException
 	 */
-	public int publishModule(ControllableServerBehavior behaviour, int kind, int deltaKind, IModule[] module, IProgressMonitor monitor) throws CoreException;
+	public int publishModule(int kind, int deltaKind, IModule[] module, IProgressMonitor monitor) throws CoreException;
 
 	/**
-	 * A delegate for ServerBehaviourDelegate.publisherver(int kind, IProgressMonitor monitor)
+	 * A delegate for ServerBehaviourDelegate.publishServer(int kind, IProgressMonitor monitor)
 	 * Begin the publish of the server
 	 * {@link ServerBehaviourDelegate}
 	 * 

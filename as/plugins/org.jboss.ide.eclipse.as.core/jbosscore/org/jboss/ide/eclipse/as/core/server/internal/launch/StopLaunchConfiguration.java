@@ -13,22 +13,31 @@ package org.jboss.ide.eclipse.as.core.server.internal.launch;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.ILaunchConfiguration;
-import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
+import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 
+/**
+ * This is a legacy class still in use for shutting down application servers 
+ * less than AS-7
+ */
 public class StopLaunchConfiguration extends AbstractJBossStartLaunchConfiguration {
+	
+	public StopLaunchConfiguration() {
+		super();
+	}
 	
 	@Override
 	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor)
 			throws CoreException {
-		IDelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
-		if (!jbsBehavior.canStop(mode).isOK())
-			throw new CoreException(jbsBehavior.canStart(mode));
-		if (LaunchCommandPreferences.isIgnoreLaunchCommand(jbsBehavior.getServer())) {
-			((DelegatingServerBehavior)jbsBehavior).setServerStopping();
-			((DelegatingServerBehavior)jbsBehavior).setServerStopped();
+		IServer s = ServerUtil.getServer(configuration);
+		IControllableServerBehavior jbsBehavior = JBossServerBehaviorUtils.getControllableBehavior(configuration);
+		if (LaunchCommandPreferences.isIgnoreLaunchCommand(s)) {
+			((ControllableServerBehavior)jbsBehavior).setServerStopping();
+			((ControllableServerBehavior)jbsBehavior).setServerStopped();
 			return false;
 		}
 		return true;

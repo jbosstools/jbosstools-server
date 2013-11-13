@@ -48,6 +48,8 @@ public class ControllerEnvironment {
 	 * @return
 	 */
 	public ControllerEnvironment addRequiredProperties(String system, String[] key, String[] val) {
+		if( key == null || val == null )
+			return this;
 		StringBuilder builder = new StringBuilder();
 		for( int i = 0; i < key.length;i++ ) {
 			if( key[i] != null ) {

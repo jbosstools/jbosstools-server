@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.as.test.core.parametized.server.behavior.controllable;
+package org.jboss.tools.as.test.core.subsystems;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,8 +20,8 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllerEnvironment;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ISubsystemController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.SubsystemModel;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.SubsystemModel.SubsystemType;
-import org.jboss.tools.as.test.core.parametized.server.behavior.controllable.impl.System1aSubsystem;
-import org.jboss.tools.as.test.core.parametized.server.behavior.controllable.impl.System6Subsystem;
+import org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem;
+import org.jboss.tools.as.test.core.subsystems.impl.System6Subsystem;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -129,6 +129,9 @@ public class ServerSubsystemTest1 extends TestCase {
 			assertTrue(types.length == 2);
 			ISubsystemController controller = c.createSubsystemController(null, "customServer1", "system3", null, null, null);
 			assertNotNull(controller);
+			// system3.implB  is marked as the default in plugin.xml.
+			// However it is missing a dependency and is therefore invalid,
+			// so it is not chosen on a search for system3
 			assertTrue(controller.getSubsystemId().equals("system3.implA"));
 		} catch(CoreException ce) {
 			fail(ce.getMessage());

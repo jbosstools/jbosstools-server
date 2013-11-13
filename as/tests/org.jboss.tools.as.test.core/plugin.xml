@@ -75,7 +75,7 @@
    <extension
          point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
       <subsystem
-            class="org.jboss.tools.as.test.core.parametized.server.behavior.controllable.impl.System1aSubsystem"
+            class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
             id="system1.implA"
             name="implA"
             serverTypes="customServer1"
@@ -88,7 +88,7 @@
    <extension
          point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
       <subsystem
-            class="org.jboss.tools.as.test.core.parametized.server.behavior.controllable.impl.System1aSubsystem"
+            class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
             id="system2.implA"
             name="implA"
             serverTypes="customServer1"
@@ -98,7 +98,7 @@
          </properties>
       </subsystem>
       <subsystem
-            class="org.jboss.tools.as.test.core.parametized.server.behavior.controllable.impl.System1aSubsystem"
+            class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
             id="system2.implB"
             name="implB"
             serverTypes="customServer1"
@@ -116,14 +116,14 @@
    <extension
          point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
       <subsystem
-            class="org.jboss.tools.as.test.core.parametized.server.behavior.controllable.impl.System1aSubsystem"
+            class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
             id="system3.implA"
             name="implA"
             serverTypes="customServer1"
             system="system3">
       </subsystem>
       <subsystem
-            class="org.jboss.tools.as.test.core.parametized.server.behavior.controllable.impl.System1aSubsystem"
+            class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
             id="system3.implB"
             name="implB"
             serverTypes="customServer1"
@@ -151,7 +151,7 @@
    <extension
          point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
       <subsystem
-            class="org.jboss.tools.as.test.core.parametized.server.behavior.controllable.impl.System1aSubsystem"
+            class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
             id="system4.implSingleton"
             name="implSingleton"
             serverTypes="customServer1"
@@ -163,7 +163,7 @@
       
       
       <subsystem
-            class="org.jboss.tools.as.test.core.parametized.server.behavior.controllable.impl.System1aSubsystem"
+            class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
             id="system4a.tiger"
             name="tiger"
             serverTypes="customServer1"
@@ -173,7 +173,7 @@
             </properties>
       </subsystem>
       <subsystem
-            class="org.jboss.tools.as.test.core.parametized.server.behavior.controllable.impl.System1aSubsystem"
+            class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
             id="system4a.mantis"
             name="mantis"
             serverTypes="customServer1"
@@ -193,7 +193,7 @@
    <extension
          point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
       <subsystem
-            class="org.jboss.tools.as.test.core.parametized.server.behavior.controllable.impl.System1aSubsystem"
+            class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
             id="system5.implSingleton5"
             name="implSingleton5"
             serverTypes="customServer1"
@@ -211,7 +211,7 @@
    <extension
          point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
       <subsystem
-            class="org.jboss.tools.as.test.core.parametized.server.behavior.controllable.impl.System6Subsystem"
+            class="org.jboss.tools.as.test.core.subsystems.impl.System6Subsystem"
             id="system6.implSingleton6"
             name="implSingleton6"
             serverTypes="customServer1"
@@ -229,7 +229,7 @@
       <extension
          point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
       <subsystem
-            class="org.jboss.tools.as.test.core.parametized.server.behavior.controllable.impl.System1aSubsystem"
+            class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
             id="system7.implSingleton7"
             name="implSingleton7"
             serverTypes="customServer1"
@@ -244,7 +244,7 @@
       <extension
          point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
       <subsystem
-            class="org.jboss.tools.as.test.core.parametized.server.behavior.controllable.impl.System1aSubsystem"
+            class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
             id="system8.implSingleton8"
             name="implSingleton8"
             serverTypes="customServer1"

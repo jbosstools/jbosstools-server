@@ -10,11 +10,15 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -26,13 +30,78 @@ import org.jboss.ide.eclipse.as.core.ExtensionManager.IServerJMXRunnable;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
+import org.jboss.ide.eclipse.as.core.publishers.JSTPublisherXMLToucher;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.util.IEventCodes;
+import org.jboss.ide.eclipse.as.core.util.RemotePath;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IFilesystemController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IModuleStateController;
+import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
+import org.jboss.tools.as.core.server.controllable.systems.IDeploymentOptionsController;
+import org.jboss.tools.as.core.server.controllable.systems.IModuleDeployPathController;
 
-public class JBossLT6ModuleStateVerifier implements IServerModuleStateVerifier {
+public class JBossLT6ModuleStateVerifier extends AbstractSubsystemController implements IModuleStateController, IServerModuleStateVerifier {
+	// Dependencies
+	
+	/*
+	 * The deployment options gives us access to things like
+	 * where the deployment root dir for a server should be,
+	 * or whether the server prefers zipped settings
+	 */
+	private IDeploymentOptionsController deploymentOptions;
+	
+	/*
+	 * The deploy path controller helps us to discover
+	 * a module's root deployment directory
+	 */
+	private IModuleDeployPathController deployPathController;
+	
+	/*
+	 * A filesystem controller gives us access to 
+	 * a way to transfer individual files
+	 */
+	private IFilesystemController filesystemController;
+	
 	public JBossLT6ModuleStateVerifier() {
 		// Nothing
 	}
+	
+
+	/*
+	 * Get the system for deployment options such as zipped or not
+	 * We must pass in a custom environment here. 
+	 */
+	protected IDeploymentOptionsController getDeploymentOptions() throws CoreException {
+		if( deploymentOptions == null ) {
+			deploymentOptions = (IDeploymentOptionsController)findDependency(IDeploymentOptionsController.SYSTEM_ID);
+		}
+		return deploymentOptions;
+	}
+	
+	/*
+	 * get the system for deploy path for a given module
+	 */
+	protected IModuleDeployPathController getDeployPathController() throws CoreException {
+		if( deployPathController == null ) {
+			Map<String, Object> env = new HashMap<String, Object>(getEnvironment());
+			env.put(IModuleDeployPathController.ENV_DEPLOYMENT_OPTIONS_CONTROLLER, getDeploymentOptions());
+			deployPathController = (IModuleDeployPathController)findDependency(IModuleDeployPathController.SYSTEM_ID, getServer().getServerType().getId(), env);
+		}
+		return deployPathController;
+	}
+
+	/*
+	 * get the filesystem controller for transfering files
+	 */
+	protected IFilesystemController getFilesystemController() throws CoreException {
+		if( filesystemController == null ) {
+			filesystemController = (IFilesystemController)findDependency(IFilesystemController.SYSTEM_ID);
+		}
+		return filesystemController;
+	}
+
+	
 	
 	public boolean isModuleStarted(final IServer server, final IModule[] module,
 			final IProgressMonitor monitor) {
@@ -171,5 +240,69 @@ public class JBossLT6ModuleStateVerifier implements IServerModuleStateVerifier {
 		} catch(InstanceNotFoundException infe) {
 			return false;
 		}
+	}
+
+	@Override
+	public boolean canRestartModule(IModule[] module) {
+		if( module.length == 1 ) 
+			return true;
+		return false;
+	}
+
+	@Override
+	public int startModule(IModule[] module, IProgressMonitor monitor)
+			throws CoreException {
+		// This impl is unable to stop or start a module; only restart		
+		return getServer().getModuleState(module);
+	}
+
+	@Override
+	public int stopModule(IModule[] module, IProgressMonitor monitor)
+			throws CoreException {
+		// This impl is unable to stop or start a module; only restart		
+		return getServer().getModuleState(module);
+	}
+
+
+	private IPath getModuleDeployRoot(IModule[] module) throws CoreException {
+		// Find dependency will throw a CoreException if an object is not found, rather than return null
+		IDeploymentOptionsController opts = getDeploymentOptions();
+		IModuleDeployPathController depPath = getDeployPathController();
+		return new RemotePath(depPath.getDeployDirectory(module), 
+				opts.getPathSeparatorCharacter());
+	}
+	
+	@Override
+	public int restartModule(IModule[] module, IProgressMonitor monitor)
+			throws CoreException {
+		IPath archiveDestination = getModuleDeployRoot(module);
+		IFilesystemController controller = getFilesystemController();
+
+		if( ServerModelUtilities.isBinaryModule(module[module.length-1]) || getDeploymentOptions().prefersZippedDeployments()) {
+			controller.touchResource(archiveDestination, monitor);
+		} else {
+			JSTPublisherXMLToucher.getInstance().touch(archiveDestination, module[0], controller);
+		}
+		return IServer.STATE_STARTED;
+	}
+	
+	@Override
+	public int getModuleState(IModule[] module, IProgressMonitor monitor) {
+		return getModuleState(getServer(), module, monitor);
+	}
+
+	@Override
+	public boolean isModuleStarted(IModule[] module, IProgressMonitor monitor) {
+		return isModuleStarted(getServer(), module, monitor);
+	}
+
+	@Override
+	public void waitModuleStarted(IModule[] module, IProgressMonitor monitor) {
+		waitModuleStarted(getServer(), module, monitor);
+	}
+
+	@Override
+	public void waitModuleStarted(IModule[] module, int maxDelay) {
+		waitModuleStarted(getServer(), module, maxDelay);
 	}
 }

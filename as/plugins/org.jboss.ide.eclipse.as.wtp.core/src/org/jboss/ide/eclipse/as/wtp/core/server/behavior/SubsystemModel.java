@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerAttributes;
 import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
 
 /**
@@ -227,7 +228,7 @@ public class SubsystemModel {
 	 * @return
 	 * @throws CoreException
 	 */
-	public ISubsystemController createSubsystemController(IServer server, String system, Map<String, Object> env) throws CoreException {
+	public ISubsystemController createSubsystemController(IServerAttributes server, String system, Map<String, Object> env) throws CoreException {
 		return createSubsystemController(server, system, (Map<String,String>)null, null, env);
 	}
 
@@ -245,7 +246,7 @@ public class SubsystemModel {
 	 * @return
 	 * @throws CoreException
 	 */
-	public ISubsystemController createSubsystemController(IServer server, String system, 
+	public ISubsystemController createSubsystemController(IServerAttributes server, String system, 
 			Map<String, String> requiredProperties, String defaultSubsystem, 
 			Map<String, Object> environment) throws CoreException {
 		return createSubsystemController(server, server.getServerType().getId(), system, requiredProperties, defaultSubsystem, environment);
@@ -286,7 +287,7 @@ public class SubsystemModel {
 	 * @return
 	 * @throws CoreException
 	 */
-	public ISubsystemController createSubsystemController(IServer server, String serverType, String system, 
+	public ISubsystemController createSubsystemController(IServerAttributes server, String serverType, String system, 
 			Map<String, String> requiredProperties, String defaultSubsystem, 
 			Map<String, Object> environment) throws CoreException {
 		SubsystemType[] types = getSubsystemTypes(serverType, system);
@@ -305,7 +306,7 @@ public class SubsystemModel {
 		
 		SubsystemType selected = null;
 		if( defaultSubsystem != null ) {
-			// See if we can find the one the one they want as default
+			// See if we can find the one they want as default
 			if( types.length > 0 ) {
 				SubsystemType tmp = findSubsystemWithId(types, defaultSubsystem); 
 				selected = tmp == null ? types[0] : tmp;
@@ -330,8 +331,8 @@ public class SubsystemModel {
 		
 		
 		
-		String msg = "No subsystem found for servertype " + serverType + " and system type " + system;
 		if( selected == null ) {
+			String msg = "No subsystem found for servertype " + serverType + " and system type " + system;
 			throw new CoreException(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, msg));
 		}
 		
@@ -340,6 +341,7 @@ public class SubsystemModel {
 			c.initialize(server, selected, environment);
 			return c;
 		} catch(CoreException ce) {
+			String msg = "Error creating subsystem " + selected.getId() + " for server type " + serverType;
 			throw new CoreException(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, msg, ce));
 		}
 	}
@@ -348,7 +350,7 @@ public class SubsystemModel {
 		String key = system + AbstractSubsystemController.REQUIRED_PROPERTIES_ENV_KEY;
 		HashMap<String, String> requiredProps = null;
 		Object val1 = environment.get(key);
-		if( val1 != null && val1 instanceof String) {
+		if( val1 instanceof String) {
 			String val = (String)val1;
 			requiredProps = new HashMap<String, String>();
 			String[] perReq = val.split(";");
@@ -386,16 +388,14 @@ public class SubsystemModel {
 	}
 	
 	private SubsystemType[] findTypesWithProperties(SubsystemType[] types, Map<String, String> requiredProps) {
-		if( requiredProps == null )
-			return types;
-		if( requiredProps.size() == 0)
+		if( requiredProps == null || requiredProps.size() == 0)
 			return types;
 		
 		ArrayList<SubsystemType> matching = new ArrayList<SubsystemType>();
 		for( int i = 0; i < types.length; i++ ) {
 			boolean matchesAll = true;
 			Iterator<String> j = requiredProps.keySet().iterator();
-			while(j.hasNext()) {
+			while(j.hasNext() && matchesAll) {
 				String k = j.next();
 				String v = requiredProps.get(k);
 				String typeVal = types[i].props.get(k);
@@ -490,7 +490,7 @@ public class SubsystemModel {
 			}
 			if( matched.length ==  0 || allInvalid(matched)) {
 				warningsErrors.add(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, 
-						"Invalid controller: - missing required dependent system ")); // TODO clean this
+						"Invalid controller: - missing required dependent system " + requiredSystem[i])); // TODO clean this
 			}
 		}
 

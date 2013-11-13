@@ -14,14 +14,20 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
-import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 
 /**
  * A subsystem controller for handling operations dealing with module state
  * 
  * @since 3.0
  */
-public interface IModuleStateController extends ISubsystemController, IServerModuleStateVerifier {
+public interface IModuleStateController extends ISubsystemController {
+	
+	/**
+	 * The name of the system this interface relates to
+	 */
+	public static final String SYSTEM_ID = "modules";
+	
+	
 	/**
 	 * Checks whether the given module on the server can be restarted.
 	 * See the specification of 
@@ -39,8 +45,9 @@ public interface IModuleStateController extends ISubsystemController, IServerMod
 	 * @param monitor a progress monitor, or <code>null</code> if progress
 	 *    reporting and cancellation are not desired
 	 * @exception CoreException if an error occurs while trying to restart the module
+	 * @return The new state of the module
 	 */
-	public void startModule(IModule[] module, IProgressMonitor monitor) throws CoreException;
+	public int startModule(IModule[] module, IProgressMonitor monitor) throws CoreException;
 
 	/**
 	 * Stops the given module on the server. See the specification of 
@@ -50,8 +57,10 @@ public interface IModuleStateController extends ISubsystemController, IServerMod
 	 * @param monitor a progress monitor, or <code>null</code> if progress
 	 *    reporting and cancellation are not desired
 	 * @exception CoreException if an error occurs while trying to restart the module
-	 */
-	public void stopModule(IModule[] module, IProgressMonitor monitor) throws CoreException;
+	 * @return The new state of the module
+	 */	
+	public int stopModule(IModule[] module, IProgressMonitor monitor) throws CoreException;
+	
 	/**
 	 * Restarts the given module on the server. See the specification of
 	 * {@link ServerBehaviourDelegate#restartModule(IModule[], IProgressMonitor)}
@@ -59,6 +68,33 @@ public interface IModuleStateController extends ISubsystemController, IServerMod
 	 * @param monitor a progress monitor, or <code>null</code> if progress
 	 *    reporting and cancellation are not desired
 	 * @exception CoreException if an error occurs while trying to restart the module
+	 * @return The new state of the module
 	 */
-	public void restartModule(IModule[] module, IProgressMonitor monitor) throws CoreException;
+	public int restartModule(IModule[] module, IProgressMonitor monitor) throws CoreException;
+	
+	
+	/**
+	 * Get the running state of the given module
+	 * @param server
+	 * @param module
+	 * @param monitor
+	 * @return IServer.STATE_XXX flag
+	 */
+	public int getModuleState(IModule module[], IProgressMonitor monitor);
+	
+	/**
+	 * Check to see if the module is started on the server
+	 */
+	public boolean isModuleStarted(IModule module[], IProgressMonitor monitor);
+	
+	/**
+	 * Wait until the module is started on the server
+	 */
+	public void waitModuleStarted( IModule module[], IProgressMonitor monitor);
+	
+	/**
+	 * Wait until the module is started on the server with a max delay as provided
+	 */
+	public void waitModuleStarted(IModule module[], int maxDelay);
+	
 }

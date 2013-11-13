@@ -10,9 +10,6 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.rse.core;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -22,36 +19,33 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.rse.core.RSECorePlugin;
 import org.eclipse.rse.core.model.IHost;
-import org.eclipse.rse.core.subsystems.ISubSystem;
-import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
 import org.eclipse.rse.services.files.IFileService;
 import org.eclipse.rse.subsystems.files.core.servicesubsystem.IFileServiceSubSystem;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractPublishMethod;
-import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
 import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServerBehaviour;
 import org.jboss.ide.eclipse.as.core.server.IJBoss6Server;
 import org.jboss.ide.eclipse.as.core.server.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
-import org.jboss.ide.eclipse.as.core.util.IEventCodes;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.ProgressMonitorUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
-import org.jboss.ide.eclipse.as.rse.core.RSERemotePublishHandler.NamedRunnableWithProgress;
 
 public class RSEPublishMethod extends AbstractPublishMethod {
 
 	public static final String RSE_ID = "rse"; //$NON-NLS-1$
 	
 	private IDeployableServerBehaviour behaviour;
-	
+	private IFileServiceSubSystem fileSubSystem = null;
+	private IPath remoteRootFolder;
+
 	@Override
 	public String getPublishMethodId() {
 		return RSE_ID;
@@ -64,18 +58,15 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 	public IDeployableServerBehaviour getBehaviour() {
 		return this.behaviour;
 	}
-	
-	private IFileServiceSubSystem fileSubSystem = null;
-	private IPath remoteRootFolder;
-	
+		
 	@Override
 	public void publishStart(IDeployableServerBehaviour behaviour,
 			IProgressMonitor monitor) throws CoreException {
 		monitor.beginTask("Beginning Publish for server " + behaviour.getServer().getName(), 300);
-		super.publishStart(behaviour, AbstractServerToolsPublisher.getSubMon(monitor, 100));
+		super.publishStart(behaviour, ProgressMonitorUtil.getSubMon(monitor, 100));
 		this.behaviour = behaviour;
 		loadRemoteDeploymentDetails();
-		IStatus connected = ensureConnection(AbstractServerToolsPublisher.getSubMon(monitor, 100));
+		IStatus connected = RSEFrameworkUtils.ensureActiveConnection(behaviour.getServer(), getFileServiceSubSystem(), ProgressMonitorUtil.getSubMon(monitor, 100));
 		if( !connected.isOK() ) {
 			throw new CoreException(connected);
 		}
@@ -157,40 +148,6 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 		return behaviour.getServer();
 	}
 	
-	public IStatus ensureConnection(IProgressMonitor monitor) {
-		monitor.beginTask("Verifying connectivity to remote server", 200);
-		Exception caught = null;
-		Trace.trace(Trace.STRING_FINER, "Ensuring connection to remote server for server " + getServer().getName());
-		if (fileSubSystem != null && !fileSubSystem.isConnected()) {
-		    try {
-		    	fileSubSystem.connect(AbstractServerToolsPublisher.getSubMon(monitor, 100), false);
-		    } catch (Exception e) {
-				Trace.trace(Trace.STRING_FINER, "Exception connecting to remote server: " + e.getMessage());
-		    	// I'd rather not catch raw Exception, but that's all they throw
-				caught = e;
-		    }
-		}
-		boolean isConnected = fileSubSystem != null && fileSubSystem.isConnected();
-		String connectionName = RSEUtils.getRSEConnectionName(behaviour.getServer());
-		if( isConnected ) {
-			// The RSE tools might be mistaken here. The user may in fact have lost internet connectivity
-			NamedRunnableWithProgress run = new NamedRunnableWithProgress("Accessing Remote System Root") {
-				public Object run(IProgressMonitor monitor) throws CoreException,
-						SystemMessageException, RuntimeException {
-					getFileService().getRoots(monitor);
-					return Status.OK_STATUS;
-				}
-			};
-			IProgressMonitor childMonitor = AbstractServerToolsPublisher.getSubMon(monitor, 100);
-			Exception e = RSERemotePublishHandler.wrapRemoteCallStatusTimeLimit(run, "null", "null", null, 15000, childMonitor);
-			if( e == null )
-				return Status.OK_STATUS;
-			return new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL,
-					"The remote server " + connectionName + " is currently not responding to file system requests.", e);
-		}
-		return new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL,
-				"Unable to communicate with remote connection: " + connectionName, caught);
-	}
 	
 	public IPath getRemoteRootFolder() {
 		if( remoteRootFolder == null )
@@ -206,6 +163,7 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 	public IFileServiceSubSystem getFileServiceSubSystem() {
 		return fileSubSystem;
 	}
+	
 	public IFileService getFileService() throws CoreException {
 		if( fileSubSystem == null ) {
 			try {
@@ -219,37 +177,22 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 	}
 	
 	protected void loadRemoteDeploymentDetails() throws CoreException{
-		Trace.trace(Trace.STRING_FINER, "Ensuring RSE is initialized");
-		RSEUtils.waitForFullInit();
 		Trace.trace(Trace.STRING_FINER, "Loading remote deployment details for server " + getServer().getName());
-		String connectionName = RSEUtils.getRSEConnectionName(behaviour.getServer());
-		IDeployableServer ds = ServerConverter.getDeployableServer(behaviour.getServer());
-		String deployRoot = RSEUtils.getDeployRootFolder(ds);
+		String deployRoot = RSEUtils.getDeployRootFolder(behaviour.getServer());
 		if( deployRoot == null )
 			throw new CoreException(new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, "Server has null deploy root folder. This may be caused by a missing runtime, or improperly configured server adapter"));
 		this.remoteRootFolder = new Path(deployRoot);
 		
-		IHost host = RSEUtils.findHost(connectionName);
+		// Host stuff
+		Trace.trace(Trace.STRING_FINER, "Ensuring RSE is initialized");
+		RSEFrameworkUtils.waitForFullInit();
+		String connectionName = RSEUtils.getRSEConnectionName(behaviour.getServer());
+		IHost host = RSEFrameworkUtils.findHost(connectionName);
 		if( host == null )
 			throw new CoreException(new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, "RSE Host Not Found."));
-		fileSubSystem = findFileTransferSubSystem(host);
+		fileSubSystem = RSEFrameworkUtils.findFileTransferSubSystem(host);
 	}
 	
-	/*  approved files subsystems *
-		ftp.files
-		local.files
-		ssh.files
-	 */
-	protected static List<String> APPROVED_FILE_SYSTEMS = 
-		Arrays.asList(new String[]{ "ftp.files", "local.files", "ssh.files", "dstore.files"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	public static IFileServiceSubSystem findFileTransferSubSystem(IHost host) {
-		ISubSystem[] systems = RSECorePlugin.getTheSystemRegistry().getSubSystems(host);
-		for( int i = 0; i < systems.length; i++ ) {
-			if( APPROVED_FILE_SYSTEMS.contains(systems[i].getConfigurationId()))
-				return (IFileServiceSubSystem)systems[i];
-		}
-		return null;
-	}
 	
 	public IPublishCopyCallbackHandler getCallbackHandler(IPath path, IServer server) {
 		return new RSERemotePublishHandler(path, this);

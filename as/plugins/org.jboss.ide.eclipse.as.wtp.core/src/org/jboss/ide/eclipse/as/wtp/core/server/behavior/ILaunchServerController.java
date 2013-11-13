@@ -20,6 +20,10 @@ import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
  * @since 3.0
  */
 public interface ILaunchServerController extends ISubsystemController, ILaunchConfigurationDelegate {
+	public static final String SYSTEM_ID = "launch";
+
+	
+	
 	/**
 	 * Is the server in a position that it can be started?
 	 * @param launchMode

@@ -17,6 +17,9 @@ import org.eclipse.core.runtime.IStatus;
  */
 public interface IServerShutdownController extends ISubsystemController {
 
+	public static final String SYSTEM_ID = "shutdown";
+
+	
 	/**
 	 * Is the server in a position to be shutdown?
 	 * @return

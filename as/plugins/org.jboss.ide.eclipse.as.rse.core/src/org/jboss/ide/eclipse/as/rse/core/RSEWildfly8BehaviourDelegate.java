@@ -16,6 +16,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossBehaviourDelegate;
 /**
  * This class is an internal implementation and is not
  * intended to be subclassed or instantiated by external clients.  
+ * @deprecated
  */
 public class RSEWildfly8BehaviourDelegate extends RSEJBoss7BehaviourDelegate
 		implements IJBossBehaviourDelegate {

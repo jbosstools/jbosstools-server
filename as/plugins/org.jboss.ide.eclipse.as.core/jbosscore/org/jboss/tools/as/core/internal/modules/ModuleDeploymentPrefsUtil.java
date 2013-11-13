@@ -16,9 +16,8 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
-import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.util.RemotePath;
+import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
 /**
  * Several utility methods for modules related to deployment preferences
@@ -156,41 +155,43 @@ public class ModuleDeploymentPrefsUtil {
 	 * @return
 	 */
 	public IPath getModuleNestedDeployPath(IModule[] moduleTree, String rootFolder, IServerAttributes server, char separator) {
-		IPath root = new RemotePath( rootFolder, separator );
 		String modName, name, uri, suffixedName;
-		for( int i = 0; i < moduleTree.length; i++ ) {	
-			boolean found = false;
-			if( i == 0 ) {
-				// If this is the root module, we can customize the output name
-				DeploymentPreferences prefs = DeploymentPreferencesLoader.loadPreferencesFromServer(server);
-				DeploymentTypePrefs typePrefs = prefs.getOrCreatePreferences();
-				DeploymentModulePrefs modPrefs = typePrefs.getModulePrefs(moduleTree[0]);
-				if( modPrefs != null ) {
-					String outName = modPrefs.getProperty(IJBossToolingConstants.LOCAL_DEPLOYMENT_OUTPUT_NAME);
-					if( outName != null && !outName.equals("")) { //$NON-NLS-1$
-						found = true;
-						root = root.append(outName);
-					}
-				}
-			} 
-			
-			// If it's a child module, or the property is not set,
-			// we must respect the deployment model... 
-			if( !found ) {
-				modName = moduleTree[i].getName();
-				name = new RemotePath(modName, separator).lastSegment();
-				suffixedName = name + getDefaultSuffix(moduleTree[i]);
-				uri = ModuleResourceUtil.getParentRelativeURI(moduleTree, i, suffixedName);
-				root = root.append(uri);
-			}
+		IPath root = new RemotePath( rootFolder, separator );
+		
+		// First handle the root module
+		String customName = getOutputNameFromSettings(server, moduleTree[0]);
+		if( customName != null ) {
+			root = root.append(customName);
+		} else {
+			modName = moduleTree[0].getName();
+			name = new RemotePath(modName, separator).lastSegment();
+			suffixedName = name + getDefaultSuffix(moduleTree[0]);
+			root = root.append(suffixedName);
 		}
-		return root;
+		// now add the rest via the standard model (check each module's path relative to parent etc)
+		return root.append(getRootModuleRelativePath(server, moduleTree));
 	}
 	
+	@Deprecated
+	public IPath getRootModuleRelativePath(IServerAttributes server, IModule[] moduleTree) {
+		return ServerModelUtilities.getRootModuleRelativePath(server, moduleTree);
+	}
 	
+	private String getOutputNameFromSettings(IServerAttributes server, IModule module) {
+		DeploymentPreferences prefs = DeploymentPreferencesLoader.loadPreferencesFromServer(server);
+		DeploymentTypePrefs typePrefs = prefs.getOrCreatePreferences();
+		DeploymentModulePrefs modPrefs = typePrefs.getModulePrefs(module);
+		if( modPrefs != null ) {
+			String outName = modPrefs.getProperty(IJBossToolingConstants.LOCAL_DEPLOYMENT_OUTPUT_NAME);
+			if( outName != null && !outName.equals("")) { //$NON-NLS-1$
+				return outName;
+			}
+		}
+		return null;
+	}
 	
 	/**
-	 * Get the default suffix for this module
+	 * Get the default suffix for the last entry in this module array
 	 * @param module
 	 */
 	public String getDefaultSuffix(IModule[] module) {
@@ -201,45 +202,20 @@ public class ModuleDeploymentPrefsUtil {
 	/**
 	 * Get the default suffix for this module
 	 * @param module
+	 * @deprecated
 	 */
 	public String getDefaultSuffix(IModule module) {
-		String type = null;
-		if( module != null ) 
-			type = module.getModuleType().getId();
-		return getDefaultSuffix(type);
+		return ServerModelUtilities.getDefaultSuffixForModule(module);
 	}
 	
 	/**
 	 * Get the suffix from this module type
 	 * @param type
 	 * @return
+	 * @deprecated
 	 */
 	public String getDefaultSuffix(String type) {
-		// TODO
-		// VirtualReferenceUtilities.INSTANCE. has utility methods to help!!
-		String suffix = null;
-		if( IWTPConstants.FACET_EAR.equals(type)) 
-			suffix = IWTPConstants.EXT_EAR;
-		else if( IWTPConstants.FACET_WEB.equals(type) || IWTPConstants.FACET_STATIC_WEB.equals(type)) 
-			suffix = IWTPConstants.EXT_WAR;
-		else if( IWTPConstants.FACET_WEB_FRAGMENT.equals(type))
-			suffix = IWTPConstants.EXT_JAR;
-		else if( IWTPConstants.FACET_UTILITY.equals(type)) 
-			suffix = IWTPConstants.EXT_JAR;
-		else if( IWTPConstants.FACET_CONNECTOR.equals(type)) 
-			suffix = IWTPConstants.EXT_RAR;
-		else if( IWTPConstants.FACET_ESB.equals(type))
-			suffix = IWTPConstants.EXT_ESB;
-		else if( "jboss.package".equals(type)) //$NON-NLS-1$ 
-			// no suffix required, name already has it
-			suffix = ""; //$NON-NLS-1$
-		else if( "jboss.singlefile".equals(type)) //$NON-NLS-1$
-			suffix = ""; //$NON-NLS-1$
-		else if( "jst.jboss.sar".equals(type)) //$NON-NLS-1$
-			suffix = IWTPConstants.EXT_SAR;
-		if( suffix == null )
-			suffix = IWTPConstants.EXT_JAR;
-		return suffix;
+		return ServerModelUtilities.getDefaultSuffixForModuleType(type);
 	}
 	
 	

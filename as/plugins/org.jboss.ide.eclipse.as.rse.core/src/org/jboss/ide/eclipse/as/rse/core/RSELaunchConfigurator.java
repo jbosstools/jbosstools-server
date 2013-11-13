@@ -65,7 +65,7 @@ public class RSELaunchConfigurator implements ILaunchConfigConfigurator {
 				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JBOSS_SERVER_BASE_URL, null);
 		
 		String connectionName = RSEUtils.getRSEConnectionName(jbossServer.getServer());
-		IHost host = RSEUtils.findHost(connectionName);
+		IHost host = RSEFrameworkUtils.findHost(connectionName);
 		String remoteSafe = RSEUtils.pathToRemoteSystem(host, rseHome, IJBossRuntimeResourceConstants.SERVER);
 
 		// Use new flag which forces dir instead (safer)

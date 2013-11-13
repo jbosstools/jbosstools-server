@@ -19,6 +19,8 @@ package org.jboss.ide.eclipse.as.wtp.core.server.behavior;
  * @since 3.0
  */
 public interface IServerDetailsController extends ISubsystemController {
+	public static final String SYSTEM_ID = "serverDetails";
+	
 
 	/**
 	 * Retrieve the property's value as understood by this subsystem
