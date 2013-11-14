@@ -34,6 +34,7 @@ import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -71,7 +72,8 @@ public class JBossServerWizardFragment extends WizardFragment implements IComple
 		handle.setImageDescriptor (getImageDescriptor());
 		IRuntime r = (IRuntime) getTaskModel()
 			.getObject(TaskModel.TASK_RUNTIME);
-		String version = r.getRuntimeType().getVersion();
+		JBossExtendedProperties props = (JBossExtendedProperties)r.getAdapter(JBossExtendedProperties.class);
+		String version = props.getRuntimeTypeVersionString();
 		if( isEAP() && version.startsWith("5.")) //$NON-NLS-1$
 			version = "5.x"; //$NON-NLS-1$
 		String description = NLS.bind(
