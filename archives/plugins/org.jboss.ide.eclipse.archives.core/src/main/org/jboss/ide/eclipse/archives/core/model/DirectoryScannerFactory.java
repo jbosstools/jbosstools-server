@@ -252,6 +252,7 @@ public class DirectoryScannerFactory {
 	    		if( requiredFolders.get(includedFile.getAbsolutePath()) != null )
 	    			return; // all done
 	    		addMatchToMap(includedFile, requiredFolders);
+	    		tmpParentWrapper = includedFile.getParentFile();
 	    	}
 	    }
 	    
