@@ -155,6 +155,8 @@ public class RuntimeMatcher {
 		ArrayList<IRuntime> list = new ArrayList<IRuntime>();
 		IRuntime[] all = ServerCore.getRuntimes();
 		for( int i = 0; i < all.length; i++ ) {
+			if( all[i] == null || all[i].getRuntimeType() == null )
+				continue;
 			String rtType =all[i].getRuntimeType().getId();
 			if( rtType.equals(rep.wtpId)) {
 				if( rep.stacksRuntimeType == null )
