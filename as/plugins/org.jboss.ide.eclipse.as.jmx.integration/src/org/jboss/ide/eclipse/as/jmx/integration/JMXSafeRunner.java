@@ -14,7 +14,6 @@ import java.util.HashMap;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.IJMXRunnable;
@@ -26,8 +25,8 @@ public class JMXSafeRunner {
 	
 	public JMXSafeRunner(IServer s) {
 		this.server = s;
-		user = ServerConverter.getJBossServer(s).getUsername();
-		pass = ServerConverter.getJBossServer(s).getPassword();
+		user = null;
+		pass = null;
 	}
 	
 	public void setUser(String user) {
@@ -42,9 +41,7 @@ public class JMXSafeRunner {
 	}
 	
 	public static void run(IServer s, IJMXRunnable r) throws JMXException {
-		String user = ServerConverter.getJBossServer(s).getUsername();
-		String pass = ServerConverter.getJBossServer(s).getPassword();
-		run(s,r,user,pass);
+		run(s,r,null, null);
 	}
 	
 	public static void run(IServer s, IJMXRunnable r, String user, String pass) throws JMXException {

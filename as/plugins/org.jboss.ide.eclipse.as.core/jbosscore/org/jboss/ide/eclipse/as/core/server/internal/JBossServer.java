@@ -236,19 +236,43 @@ public class JBossServer extends DeployableServer
 	}
 	
 	// first class parameters
+	@Override
 	public String getUsername() {
 		return getAttribute(SERVER_USERNAME, "admin"); //$NON-NLS-1$
 	}
+	
+	/**
+	 * Get this value raw, as it is currently stored, with no defaults 
+	 * @return
+	 */
+	public String getRawUsername() {
+		return getAttribute(SERVER_USERNAME, (String)null);
+	}
+
+	
 	public void setUsername(String name) {
 		setAttribute(SERVER_USERNAME, name);
 	}
-
+	
+	@Override
 	public String getPassword() {
 		String s = ServerUtil.getFromSecureStorage(getServer(), SERVER_PASSWORD);
 		if( s == null )
 			return getAttribute(SERVER_PASSWORD, "admin"); //$NON-NLS-1$
 		return s;
 	}
+	
+	/**
+	 * Get this password as it is currently stored, without any default values appended
+	 */
+	public String getRawPassword() {
+		String s = ServerUtil.getFromSecureStorage(getServer(), SERVER_PASSWORD);
+		if( s == null )
+			return getAttribute(SERVER_PASSWORD, (String)null);
+		return s;
+	}
+
+	
 	public void setPassword(String pass) {
 		try {
 			ServerUtil.storeInSecureStorage(getServer(), SERVER_PASSWORD, pass);
