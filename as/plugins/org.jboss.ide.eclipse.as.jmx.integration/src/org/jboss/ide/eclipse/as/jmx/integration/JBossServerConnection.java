@@ -29,12 +29,14 @@ import org.eclipse.wst.server.core.ServerEvent;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.jmx.integration.JMXUtil.CredentialException;
 import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.IConnectionProvider;
-import org.jboss.tools.jmx.core.IConnectionProviderEventEmitter;
 import org.jboss.tools.jmx.core.IConnectionProviderListener;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.IJMXRunnable;
@@ -120,13 +122,24 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 	public void run(IJMXRunnable runnable, HashMap<String, String> prefs) throws JMXException {
 		boolean force = prefs.get("force") == null ? false : Boolean.parseBoolean(prefs.get("force"));
 		if( force || server.getServerState() == IServer.STATE_STARTED) {
-			String defaultUser = ServerConverter.getJBossServer(server).getUsername();
-			String defaultPass = ServerConverter.getJBossServer(server).getPassword();
+			IJBossServer jbs = ServerConverter.getJBossServer(server);
+			String storedOrDefaultUser = jbs.getUsername();
+			String storedOrDefaultPass = jbs.getPassword();
+			String rawStoredUser = ((JBossServer)jbs).getRawUsername();
+			String rawStoredPassword = ((JBossServer)jbs).getRawPassword();
+			
+			// If these are passed in directly, then use them
 			String user = prefs.get("user");
 			String pass = prefs.get("pass");
-			if( shouldUseDefaultCredentials()) {
-				user = (user == null ? defaultUser : user);
-				pass = (pass == null ? defaultPass : pass);
+			
+			if( user == null || pass == null ) {
+				// Nothing passed in directly, so lets use the stored raw values
+				user = rawStoredUser;
+				pass = rawStoredPassword;
+			}
+			if( shouldUseDefaultCredentials() && (user == null || pass == null)) {
+				user = (user == null ? storedOrDefaultUser : user);
+				pass = (pass == null ? storedOrDefaultPass : pass);
 			}
 			run(server, runnable, user, pass);
 		}
