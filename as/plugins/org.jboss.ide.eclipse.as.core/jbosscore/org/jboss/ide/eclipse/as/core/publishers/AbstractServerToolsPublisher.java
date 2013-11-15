@@ -152,7 +152,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		}
 		if( tree2.length == 0 ) 
 			return new Path(publishMethod.getPublishDefaultRootFolder(server.getServer()));
-		return server.getDeploymentLocation(moduleTree, true);
+		return server.getDeploymentLocation(tree2, true);
 	}
 
 	
