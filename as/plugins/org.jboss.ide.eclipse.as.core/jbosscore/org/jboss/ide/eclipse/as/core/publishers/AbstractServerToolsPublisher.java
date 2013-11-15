@@ -237,8 +237,12 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		
 		Trace.trace(Trace.STRING_FINER, "full publish completed for module " + module.getName()); //$NON-NLS-1$
 		monitor.done();
-		if( list.size() > 0 ) 
-			return createMultiStatus(list, module);
+		if( list.size() > 0 ) {
+			IStatus ms = createMultiStatus(list, module);
+			// A list of OK status messages are not an error unless the MultiStatus is an error
+			if( !ms.isOK())
+				return createMultiStatus(list, module);
+		}
 
 		Status status = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, 
 				IEventCodes.JST_PUB_FULL_SUCCESS, 

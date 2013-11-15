@@ -43,7 +43,7 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
-import org.jboss.ide.eclipse.as.rse.core.RSERemotePublishHandler.RunnableWithProgress2;
+import org.jboss.ide.eclipse.as.rse.core.RSERemotePublishHandler.NamedRunnableWithProgress;
 
 public class RSEPublishMethod extends AbstractPublishMethod {
 
@@ -163,10 +163,11 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 		String connectionName = RSEUtils.getRSEConnectionName(behaviour.getServer());
 		if( isConnected ) {
 			// The RSE tools might be mistaken here. The user may in fact have lost internet connectivity
-			RunnableWithProgress2 run = new RunnableWithProgress2("Accessing Remote System Root") {
-				public void run(IProgressMonitor monitor) throws CoreException,
+			NamedRunnableWithProgress run = new NamedRunnableWithProgress("Accessing Remote System Root") {
+				public Object run(IProgressMonitor monitor) throws CoreException,
 						SystemMessageException, RuntimeException {
 					getFileService().getRoots(monitor);
+					return Status.OK_STATUS;
 				}
 			};
 			IProgressMonitor childMonitor = AbstractServerToolsPublisher.getSubMon(monitor, 100);
