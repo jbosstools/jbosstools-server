@@ -38,6 +38,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBoss6Server;
 import org.jboss.ide.eclipse.as.core.server.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.IEventCodes;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -98,6 +99,11 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 	}
 	
 	protected void startDeploymentScanner() {
+		// This block of code should only be entered for AS < 7, and NOT for deploy-only server
+		JBossExtendedProperties eprops = (JBossExtendedProperties) behaviour.getServer().loadAdapter(JBossExtendedProperties.class, null);
+		if( eprops.getFileStructure() != JBossExtendedProperties.FILE_STRUCTURE_SERVER_CONFIG_DEPLOY)
+			return;
+		
 		Trace.trace(Trace.STRING_FINER, "Starting remote deployment scanner for server " + getServer().getName());
 		String cmd = getDeploymentScannerCommand(new NullProgressMonitor(), true);
 		if( cmd != null )
@@ -105,6 +111,11 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 	}
 
 	protected void stopDeploymentScanner() {
+		// This block of code should only be entered for AS < 7, and NOT for deploy-only server
+		JBossExtendedProperties eprops = (JBossExtendedProperties) behaviour.getServer().loadAdapter(JBossExtendedProperties.class, null);
+		if( eprops.getFileStructure() != JBossExtendedProperties.FILE_STRUCTURE_SERVER_CONFIG_DEPLOY)
+			return;
+		
 		Trace.trace(Trace.STRING_FINER, "Stopping remote deployment scanner for server " + getServer().getName());
 		String cmd = getDeploymentScannerCommand(new NullProgressMonitor(), false);
 		if( cmd != null )
