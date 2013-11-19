@@ -85,20 +85,26 @@ public class ClosedProjectPublishTest extends TestCase {
 		
 		// publish, verify the contents are still there
 		server.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
+		JobUtils.waitForIdle();
 		assertTrue(p.append("WEB-INF").append("web.xml").toFile().exists());
 		
 		server.publish(IServer.PUBLISH_FULL, new NullProgressMonitor());
+		JobUtils.waitForIdle();
 		assertTrue(p.append("WEB-INF").append("web.xml").toFile().exists());
 		
 		addOrRemoveModuleWithPublish(new IModule[]{module}, false);
+		JobUtils.waitForIdle();
 		
 		assertFalse(p.append("WEB-INF").append("web.xml").toFile().exists());
 		
 		addOrRemoveModuleWithPublish(new IModule[]{module}, true);
+		JobUtils.waitForIdle();
 		assertFalse(p.append("WEB-INF").append("web.xml").toFile().exists());
 		module.getProject().open(new NullProgressMonitor() );
+		JobUtils.waitForIdle();
 		assertFalse(p.append("WEB-INF").append("web.xml").toFile().exists());
 		server.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
+		JobUtils.waitForIdle();
 		assertTrue(p.append("WEB-INF").append("web.xml").toFile().exists());
 		
 	}
