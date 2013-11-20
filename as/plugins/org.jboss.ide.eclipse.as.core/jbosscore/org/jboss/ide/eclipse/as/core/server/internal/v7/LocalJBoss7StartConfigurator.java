@@ -94,11 +94,18 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 	@Override
 	protected List<String> getClasspath(JBossServer server, IJBossServerRuntime runtime, List<String> currentClasspath) throws CoreException {
 		IVMInstall vmInstall = runtime.getVM();
-		List<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
-		classpath.add(LaunchConfigUtils.getModulesClasspathEntry(server));
-		LaunchConfigUtils.addJREEntry(vmInstall, classpath);
-		List<String> runtimeClassPaths = LaunchConfigUtils.toStrings(classpath);
-		return runtimeClassPaths;
+		IRuntimeClasspathEntry modulesEntry = LaunchConfigUtils.getModulesClasspathEntry(server); 
+		IRuntimeClasspathEntry jreEntry = LaunchConfigUtils.getJREEntry(vmInstall);
+		String modulesMemento = modulesEntry == null ? null : modulesEntry.getMemento();
+		String jreMemento = jreEntry == null ? null : jreEntry.getMemento();
+		
+		List<String> classpath = new ArrayList<String>();
+		classpath.addAll(currentClasspath);
+		if( modulesMemento != null && !classpath.contains(modulesMemento))
+			classpath.add(modulesMemento);
+		if( jreMemento != null && !classpath.contains(jreMemento))
+			classpath.add(jreMemento);
+		return classpath;
 	}
 
 	@Override
