@@ -12,6 +12,9 @@ package org.jboss.tools.as.test.core.parametized.server.publishing.defect;
 
 import junit.framework.TestCase;
 
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceDescription;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -21,6 +24,7 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerUtil;
+import org.eclipse.wst.validation.ValidationFramework;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.tools.as.test.core.ASMatrixTests;
@@ -33,9 +37,7 @@ import org.jboss.tools.test.util.JobUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 public class ClosedProjectPublishTest extends TestCase {
-	
 	private IServer server;
 	private IModule module;
 	public ClosedProjectPublishTest() {
@@ -43,6 +45,8 @@ public class ClosedProjectPublishTest extends TestCase {
 
 	@Before
 	public void setUp() throws Exception {
+		ValidationFramework.getDefault().suspendAllValidation(true);
+		setAutoBuildEnabled(false);
 		String param_serverType = IJBossToolingConstants.SERVER_AS_71;
 		IServer s = ServerCreationTestUtils.createMockServerWithRuntime(param_serverType, getClass().getName() + param_serverType);
     	
@@ -56,6 +60,8 @@ public class ClosedProjectPublishTest extends TestCase {
 	
 	@After
 	public void tearDown() throws Exception {
+		setAutoBuildEnabled(true);
+		ValidationFramework.getDefault().suspendAllValidation(false);
 		JobUtils.waitForIdle(100);
 		ServerCreationTestUtils.deleteAllServersAndRuntimes();
 		ProjectUtility.deleteAllProjects();
@@ -70,6 +76,7 @@ public class ClosedProjectPublishTest extends TestCase {
 		else
 			wc.modifyModules(new IModule[]{}, module, new NullProgressMonitor());
 		server = wc.save(true, new NullProgressMonitor());
+		JobUtils.waitForIdle();
 		server.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
 	}
 	
@@ -81,6 +88,7 @@ public class ClosedProjectPublishTest extends TestCase {
 		assertTrue(p.append("WEB-INF").append("web.xml").toFile().exists());
 		
 		module.getProject().close(new NullProgressMonitor() );
+		ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.INCREMENTAL_BUILD, new NullProgressMonitor());
 		JobUtils.waitForIdle();
 		
 		// publish, verify the contents are still there
@@ -93,14 +101,17 @@ public class ClosedProjectPublishTest extends TestCase {
 		assertTrue(p.append("WEB-INF").append("web.xml").toFile().exists());
 		
 		addOrRemoveModuleWithPublish(new IModule[]{module}, false);
-		JobUtils.waitForIdle();
 		
+		JobUtils.waitForIdle();
 		assertFalse(p.append("WEB-INF").append("web.xml").toFile().exists());
 		
 		addOrRemoveModuleWithPublish(new IModule[]{module}, true);
 		JobUtils.waitForIdle();
 		assertFalse(p.append("WEB-INF").append("web.xml").toFile().exists());
+		
+		
 		module.getProject().open(new NullProgressMonitor() );
+		ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.INCREMENTAL_BUILD, new NullProgressMonitor());
 		JobUtils.waitForIdle();
 		assertFalse(p.append("WEB-INF").append("web.xml").toFile().exists());
 		server.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
@@ -108,4 +119,16 @@ public class ClosedProjectPublishTest extends TestCase {
 		assertTrue(p.append("WEB-INF").append("web.xml").toFile().exists());
 		
 	}
+	
+	private void setAutoBuildEnabled( boolean b) {
+        IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        if (workspace.isAutoBuilding()) {
+                IWorkspaceDescription description = workspace.getDescription();
+                description.setAutoBuilding(false);
+                try {
+                	workspace.setDescription(description);
+                }catch(CoreException ce) {}
+        }
+	}
+	
 }
