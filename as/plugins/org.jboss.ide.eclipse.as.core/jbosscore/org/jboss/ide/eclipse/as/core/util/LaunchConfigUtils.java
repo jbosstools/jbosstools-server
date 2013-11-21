@@ -51,21 +51,30 @@ public class LaunchConfigUtils {
 	 *            the classpath entries to add to
 	 */
 	public static void addJREEntry(IVMInstall vmInstall, List<IRuntimeClasspathEntry> cp) {
+		IRuntimeClasspathEntry got = getJREEntry(vmInstall);
+		if( got != null )
+			cp.add(got);
+	}
+
+	public static IRuntimeClasspathEntry getJREEntry(IVMInstall vmInstall) {
 		if (vmInstall != null) {
 			try {
 				String name = vmInstall.getName();
 				String installTypeId = vmInstall.getVMInstallType().getId();
-				cp.add(JavaRuntime.newRuntimeContainerClasspathEntry(
+				IRuntimeClasspathEntry jreEntry = JavaRuntime.newRuntimeContainerClasspathEntry(
 						new Path(JavaRuntime.JRE_CONTAINER).append(installTypeId).append(name),
-						IRuntimeClasspathEntry.BOOTSTRAP_CLASSES));
+						IRuntimeClasspathEntry.BOOTSTRAP_CLASSES);
+				return jreEntry;
 			} catch (CoreException e) {
 				IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
 						Messages.LaunchConfigJREError, e);
 				JBossServerCorePlugin.getDefault().getLog().log(s);
 			}
 		}
+		return null;
 	}
 
+	
 	public static void addToolsJar(IVMInstall vmInstall, List<IRuntimeClasspathEntry> cp) {
 		File f = vmInstall.getInstallLocation();
 		File c1 = new File(f, IConstants.LIB);
@@ -91,7 +100,7 @@ public class LaunchConfigUtils {
 		ArrayList<String> list = new ArrayList<String>();
 		while (cpi.hasNext()) {
 			IRuntimeClasspathEntry entry = cpi.next();
-				list.add(entry.getMemento());
+			list.add(entry.getMemento());
 		}
 
 		return list;
