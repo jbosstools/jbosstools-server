@@ -106,14 +106,14 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 		IVMInstall vmInstall = runtime.getVM();
 		IRuntimeClasspathEntry modulesEntry = LaunchConfigUtils.getModulesClasspathEntry(server); 
 		IRuntimeClasspathEntry jreEntry = LaunchConfigUtils.getJREEntry(vmInstall);
-		String modulesMemento = modulesEntry.getMemento();
-		String jreMemento = jreEntry.getMemento();
+		String modulesMemento = modulesEntry == null ? null : modulesEntry.getMemento();
+		String jreMemento = jreEntry == null ? null : jreEntry.getMemento();
 		
 		List<String> classpath = new ArrayList<String>();
 		classpath.addAll(currentClasspath);
-		if( !classpath.contains(modulesMemento))
+		if( modulesMemento != null && !classpath.contains(modulesMemento))
 			classpath.add(modulesMemento);
-		if( !classpath.contains(jreMemento))
+		if( jreMemento != null && !classpath.contains(jreMemento))
 			classpath.add(jreMemento);
 		return classpath;
 	}
