@@ -13,6 +13,8 @@ package org.jboss.tools.as.test.core.parametized.server.publishing.defect;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -23,11 +25,16 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.tools.as.test.core.internal.utils.ResourceUtils;
+import org.jboss.tools.as.test.core.internal.utils.classpath.WorkspaceTestUtil;
 import org.jboss.tools.as.test.core.internal.utils.wtp.CreateProjectOperationsUtility;
 import org.jboss.tools.as.test.core.internal.utils.wtp.JavaEEFacetConstants;
 import org.jboss.tools.as.test.core.internal.utils.wtp.OperationTestCase;
 import org.jboss.tools.as.test.core.parametized.server.publishing.AbstractPublishingTest;
 import org.jboss.tools.test.util.JobUtils;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -50,6 +57,31 @@ public class RepublishDefectTest extends AbstractPublishingTest {
 		count++;
 	}
 
+	private static boolean preTestAutoBuild;
+	@BeforeClass
+	public static void beforeClassSetup() {
+		preTestAutoBuild = WorkspaceTestUtil.isAutoBuildEnabled();
+	}
+	@AfterClass
+	public static void afterClassTeardown() {
+		WorkspaceTestUtil.setAutoBuildEnabled(preTestAutoBuild);
+	}
+	
+	@Before
+	public void setUp() throws Exception {
+		super.setUp();
+		WorkspaceTestUtil.setAutoBuildEnabled(false);
+		JobUtils.waitForIdle();
+		ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.INCREMENTAL_BUILD, new NullProgressMonitor());
+		JobUtils.waitForIdle();
+	}
+	
+	@After 
+	public void tearDown() throws Exception {
+		WorkspaceTestUtil.setAutoBuildEnabled(true);
+		super.tearDown();
+	}
+	
 	protected void createProjects() throws Exception {
     	IDataModel dm = CreateProjectOperationsUtility.getEARDataModel(ap("ear"), "thatContent", null, null, JavaEEFacetConstants.EAR_5, true);
     	OperationTestCase.runAndVerify(dm);
@@ -77,7 +109,9 @@ public class RepublishDefectTest extends AbstractPublishingTest {
 		else
 			wc.modifyModules(new IModule[]{}, module, new NullProgressMonitor());
 		server = wc.save(true, new NullProgressMonitor());
+		JobUtils.waitForIdle();
 		server.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
+		JobUtils.waitForIdle();
 	}
 	
 	
@@ -98,6 +132,8 @@ public class RepublishDefectTest extends AbstractPublishingTest {
 		assertFalse(earPath.toFile().exists());
 		
 		ResourceUtils.deleteProject(ap("d1v"));
+		ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.INCREMENTAL_BUILD, new NullProgressMonitor());
+		JobUtils.waitForIdle();
 		
 		// republish the ear
 		addOrRemoveModuleWithPublish(ear, true);
@@ -106,7 +142,10 @@ public class RepublishDefectTest extends AbstractPublishingTest {
 		// recreate the war
 		IDataModel dyn1Model = CreateProjectOperationsUtility.getWebDataModel(ap("d1v"), ap("ear"), null, null, null, JavaEEFacetConstants.WEB_23, true);
     	OperationTestCase.runAndVerify(dyn1Model);
-    	JobUtils.waitForIdle(1000);
+		JobUtils.waitForIdle();
+		ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.INCREMENTAL_BUILD, new NullProgressMonitor());
+		JobUtils.waitForIdle();
+		
 		server.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
 		JBIDE6184EarHasDynProjs(earPath, true);
 	}
