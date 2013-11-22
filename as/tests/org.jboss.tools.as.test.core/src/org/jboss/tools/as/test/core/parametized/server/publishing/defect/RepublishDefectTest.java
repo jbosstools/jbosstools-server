@@ -13,6 +13,8 @@ package org.jboss.tools.as.test.core.parametized.server.publishing.defect;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -28,6 +30,8 @@ import org.jboss.tools.as.test.core.internal.utils.wtp.JavaEEFacetConstants;
 import org.jboss.tools.as.test.core.internal.utils.wtp.OperationTestCase;
 import org.jboss.tools.as.test.core.parametized.server.publishing.AbstractPublishingTest;
 import org.jboss.tools.test.util.JobUtils;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -50,6 +54,19 @@ public class RepublishDefectTest extends AbstractPublishingTest {
 		count++;
 	}
 
+	@Before
+	public void setUp() throws Exception {
+		super.setUp();
+		setAutoBuildEnabled(false);
+		ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.INCREMENTAL_BUILD, new NullProgressMonitor());
+	}
+	
+	@After 
+	public void tearDown() throws Exception {
+		setAutoBuildEnabled(true);
+		super.tearDown();
+	}
+	
 	protected void createProjects() throws Exception {
     	IDataModel dm = CreateProjectOperationsUtility.getEARDataModel(ap("ear"), "thatContent", null, null, JavaEEFacetConstants.EAR_5, true);
     	OperationTestCase.runAndVerify(dm);
@@ -98,6 +115,8 @@ public class RepublishDefectTest extends AbstractPublishingTest {
 		assertFalse(earPath.toFile().exists());
 		
 		ResourceUtils.deleteProject(ap("d1v"));
+		ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.INCREMENTAL_BUILD, new NullProgressMonitor());
+		JobUtils.waitForIdle();
 		
 		// republish the ear
 		addOrRemoveModuleWithPublish(ear, true);
@@ -106,7 +125,10 @@ public class RepublishDefectTest extends AbstractPublishingTest {
 		// recreate the war
 		IDataModel dyn1Model = CreateProjectOperationsUtility.getWebDataModel(ap("d1v"), ap("ear"), null, null, null, JavaEEFacetConstants.WEB_23, true);
     	OperationTestCase.runAndVerify(dyn1Model);
-    	JobUtils.waitForIdle(1000);
+		JobUtils.waitForIdle();
+		ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.INCREMENTAL_BUILD, new NullProgressMonitor());
+		JobUtils.waitForIdle();
+		
 		server.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
 		JBIDE6184EarHasDynProjs(earPath, true);
 	}

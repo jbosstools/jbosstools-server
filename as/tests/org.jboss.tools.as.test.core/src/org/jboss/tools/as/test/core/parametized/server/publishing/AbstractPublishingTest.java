@@ -18,6 +18,8 @@ import java.util.Iterator;
 import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -363,4 +365,19 @@ public abstract class AbstractPublishingTest extends TestCase {
 		}
 	}
 
+	
+
+	protected void setAutoBuildEnabled( boolean b) {
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		if (workspace.isAutoBuilding()) {
+			IWorkspaceDescription description = workspace.getDescription();
+			description.setAutoBuilding(false);
+			try {
+				workspace.setDescription(description);
+			}catch(CoreException ce) {
+			}
+        }
+	}
+	
+	
 }
