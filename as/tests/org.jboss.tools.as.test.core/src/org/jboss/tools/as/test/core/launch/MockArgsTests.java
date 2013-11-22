@@ -24,11 +24,11 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.server.IProcessProvider;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
 import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
-import org.jboss.tools.as.test.core.parametized.server.ServerParameterUtils;
+import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,8 +41,9 @@ public class MockArgsTests extends TestCase  {
 	private IServer server;
 	@Parameters
 	public static Collection<Object[]> data() {
-		 return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerTypeParamterers());
+		 return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerTypeParameters());
 	}
+	
 	public MockArgsTests(String serverType) {
 		this.serverType = serverType;
 	}
@@ -58,14 +59,18 @@ public class MockArgsTests extends TestCase  {
 	protected IServer runAndVerifyArgs() {
 		IServer server = ServerCreationTestUtils.createMockServerWithRuntime(serverType, serverType);
 		IServer fixed = setMockDetails(server);
-		String command = runAndGetCommand(fixed);
+		
+		IProcess p = runAndGetProcess(server);
+		assertNotNull("Process must not be null", p);
+		String command =  (p == null ? null : p.getAttribute(IProcess.ATTR_CMDLINE));
+
 		assertFalse("No args found from process for server type " + server.getServerType().getId(), 
 				command == null || command.trim().length() == 0);
 		
 		try {
-			LocalJBossServerRuntime rt = (LocalJBossServerRuntime)server.getRuntime().loadAdapter(LocalJBossServerRuntime.class, new NullProgressMonitor());
-			String defaultArgs = rt.getDefaultRunArgs().replace("\"", "");
-			String defaultVMArgs = rt.getDefaultRunVMArgs().replace("\"", "");
+			JBossExtendedProperties props = (JBossExtendedProperties)server.loadAdapter(JBossExtendedProperties.class, new NullProgressMonitor());
+			String defaultArgs = props.getDefaultLaunchArguments().getStartDefaultProgramArgs().replace("\"", "");
+			String defaultVMArgs = props.getDefaultLaunchArguments().getStartDefaultProgramArgs().replace("\"", "");
 			assertTrue(command.replace("\"", "").contains(defaultArgs.trim()));
 			
 			// This is done bc the only difference here will be in the "program name" argument, 
@@ -91,9 +96,12 @@ public class MockArgsTests extends TestCase  {
 			// re-get it and check the changes
 			ILaunchConfiguration launchConfig = server.getLaunchConfiguration(false, null);
 			String vmArgs = launchConfig.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, (String)null);
-			LocalJBossServerRuntime rt = (LocalJBossServerRuntime)server.getRuntime().loadAdapter(LocalJBossServerRuntime.class, new NullProgressMonitor());
 			assertFalse(vmArgs == null);
-			assertFalse(vmArgs.equals(rt.getDefaultRunVMArgs()));
+			
+			JBossExtendedProperties props = (JBossExtendedProperties)server.loadAdapter(JBossExtendedProperties.class, new NullProgressMonitor());
+			String defaultVMArgs = props.getDefaultLaunchArguments().getStartDefaultProgramArgs().replace("\"", "");
+
+			assertFalse(vmArgs.equals(defaultVMArgs));
 			
 			// Assert that some other args were put back in
 			assertTrue(vmArgs.trim().length() > "hello".length());
@@ -110,13 +118,13 @@ public class MockArgsTests extends TestCase  {
 		int loops = 0;
 		DelegatingServerBehavior behavior = (DelegatingServerBehavior)server.loadAdapter(DelegatingServerBehavior.class, null);
 		
-		while(loops < 50) {
+		while(loops < 500) {
 			if( ((IProcessProvider)behavior.getDelegate()).getProcess() != null ) {
 				return ((IProcessProvider)behavior.getDelegate()).getProcess();
 			}
 			try {
 				loops++;
-				Thread.sleep(1000);
+				Thread.sleep(100);
 			} catch(Exception e){}
 		}
 		return null;

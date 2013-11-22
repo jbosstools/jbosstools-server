@@ -51,7 +51,6 @@ public class JBossDefaultLaunchArguments implements IDefaultLaunchArguments, IJB
 	 */
 	public JBossDefaultLaunchArguments(IRuntime rt) {
 		this.runtime = rt;
-		serverHome = getLocalRuntimeHomeDirectory();
 	}
 
 	
@@ -60,9 +59,17 @@ public class JBossDefaultLaunchArguments implements IDefaultLaunchArguments, IJB
 	}
 	
 	protected IPath getServerHome() {
-		IServerModeDetails det = (IServerModeDetails)Platform.getAdapterManager().getAdapter(server, IServerModeDetails.class);
-		String homeDir = det.getProperty(IServerModeDetails.PROP_SERVER_HOME);
-		return new Path(homeDir);
+		// If we have a set server home, use it
+		if( serverHome != null)
+			return serverHome;
+		// Get from server-mode data (local/rse)
+		if( server != null ) {
+			IServerModeDetails det = (IServerModeDetails)Platform.getAdapterManager().getAdapter(server, IServerModeDetails.class);
+			String homeDir = det.getProperty(IServerModeDetails.PROP_SERVER_HOME);
+			return new Path(homeDir);
+		}
+		// We have no server, so, just use the runtime's homedir
+		return getLocalRuntimeHomeDirectory();
 	}
 		
 	protected IRuntime getRuntime() {
