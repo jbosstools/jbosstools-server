@@ -18,6 +18,8 @@ import java.util.Iterator;
 import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -359,8 +361,7 @@ public abstract class AbstractPublishingTest extends TestCase {
 			IPath next = iterator.next();
 			IPath nextTrimmed = next.removeFirstSegments(root.segmentCount());
 			de.schlichtherle.io.File toCheck = new de.schlichtherle.io.File(f, nextTrimmed.toString(), ArchiveDetector.DEFAULT);
-			assertEquals(toCheck.exists(), exists);
+			assertEquals("File " + next.toOSString() + (exists ? " should " : " should not ") + "exist", toCheck.exists(), exists);
 		}
-	}
-
+	}	
 }
