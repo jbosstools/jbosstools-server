@@ -25,13 +25,16 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.tools.as.test.core.internal.utils.ResourceUtils;
+import org.jboss.tools.as.test.core.internal.utils.classpath.WorkspaceTestUtil;
 import org.jboss.tools.as.test.core.internal.utils.wtp.CreateProjectOperationsUtility;
 import org.jboss.tools.as.test.core.internal.utils.wtp.JavaEEFacetConstants;
 import org.jboss.tools.as.test.core.internal.utils.wtp.OperationTestCase;
 import org.jboss.tools.as.test.core.parametized.server.publishing.AbstractPublishingTest;
 import org.jboss.tools.test.util.JobUtils;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -54,16 +57,28 @@ public class RepublishDefectTest extends AbstractPublishingTest {
 		count++;
 	}
 
+	private static boolean preTestAutoBuild;
+	@BeforeClass
+	public static void beforeClassSetup() {
+		preTestAutoBuild = WorkspaceTestUtil.isAutoBuildEnabled();
+	}
+	@AfterClass
+	public static void afterClassTeardown() {
+		WorkspaceTestUtil.setAutoBuildEnabled(preTestAutoBuild);
+	}
+	
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
-		setAutoBuildEnabled(false);
+		WorkspaceTestUtil.setAutoBuildEnabled(false);
+		JobUtils.waitForIdle();
 		ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.INCREMENTAL_BUILD, new NullProgressMonitor());
+		JobUtils.waitForIdle();
 	}
 	
 	@After 
 	public void tearDown() throws Exception {
-		setAutoBuildEnabled(true);
+		WorkspaceTestUtil.setAutoBuildEnabled(true);
 		super.tearDown();
 	}
 	
@@ -94,7 +109,9 @@ public class RepublishDefectTest extends AbstractPublishingTest {
 		else
 			wc.modifyModules(new IModule[]{}, module, new NullProgressMonitor());
 		server = wc.save(true, new NullProgressMonitor());
+		JobUtils.waitForIdle();
 		server.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
+		JobUtils.waitForIdle();
 	}
 	
 	

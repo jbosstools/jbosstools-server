@@ -361,23 +361,7 @@ public abstract class AbstractPublishingTest extends TestCase {
 			IPath next = iterator.next();
 			IPath nextTrimmed = next.removeFirstSegments(root.segmentCount());
 			de.schlichtherle.io.File toCheck = new de.schlichtherle.io.File(f, nextTrimmed.toString(), ArchiveDetector.DEFAULT);
-			assertEquals(toCheck.exists(), exists);
+			assertEquals("File " + next.toOSString() + (exists ? " should " : " should not ") + "exist", toCheck.exists(), exists);
 		}
-	}
-
-	
-
-	protected void setAutoBuildEnabled( boolean b) {
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		if (workspace.isAutoBuilding()) {
-			IWorkspaceDescription description = workspace.getDescription();
-			description.setAutoBuilding(false);
-			try {
-				workspace.setDescription(description);
-			}catch(CoreException ce) {
-			}
-        }
-	}
-	
-	
+	}	
 }
