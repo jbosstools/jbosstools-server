@@ -11,6 +11,6 @@
 	<packaging>eclipse-test-plugin</packaging>
 	<properties>
 		<coverage.filter>org.jboss.ide.eclipse.archives.ui*</coverage.filter>
-		<emma.instrument.bundles>org.jboss.ide.eclipse.archives.ui</emma.instrument.bundles>
+		<!--<emma.instrument.bundles>org.jboss.ide.eclipse.archives.ui</emma.instrument.bundles>-->
 	</properties>
 </project>
