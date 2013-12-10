@@ -12,7 +12,7 @@
 	
 	<properties>
 		<coverage.filter>org.jboss.ide.eclipse.archives.webtools*</coverage.filter>
-		<emma.instrument.bundles>org.jboss.ide.eclipse.archives.webtools</emma.instrument.bundles>
+		<!--<emma.instrument.bundles>org.jboss.ide.eclipse.archives.webtools</emma.instrument.bundles>-->
 	</properties>
 
 	
