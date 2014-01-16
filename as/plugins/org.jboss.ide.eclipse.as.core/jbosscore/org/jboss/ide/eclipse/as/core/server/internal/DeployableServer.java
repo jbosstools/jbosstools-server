@@ -35,11 +35,14 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServerBehaviour;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.IMultiModuleURLProvider;
+import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
+import org.jboss.tools.as.core.server.controllable.systems.IModuleDeployPathController;
 
 public class DeployableServer extends ServerDelegate implements IDeployableServer, IMultiModuleURLProvider {
 
@@ -250,12 +253,36 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	 * @since 2.4
 	 */
 	public IPath getDeploymentLocation(IModule[] module, boolean deep) {
-		return PublishUtil.getDeployPath(createPublishMethod(), module, this, deep);
+		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(getServer());
+		if( beh != null ) {
+			try {
+				IModuleDeployPathController controller = (IModuleDeployPathController)beh.getController(IModuleDeployPathController.SYSTEM_ID);
+				IPath ret =  controller.getDeployDirectory(module).removeLastSegments(1);
+				return ret;
+			} catch(CoreException ce) {
+				// TODO log
+				return null;
+			}
+		} else {
+			return PublishUtil.getDeployPath(createPublishMethod(), module, this, deep);
+		}
 	}
 	/**
 	 * @since 2.4
 	 */
 	public IPath getTempDeploymentLocation(IModule[] module, boolean deep) {
-		return PublishUtil.getTempDeployPath(createPublishMethod(), module, this, deep);
+		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(getServer());
+		if( beh != null ) {
+			try {
+				IModuleDeployPathController controller = (IModuleDeployPathController)beh.getController(IModuleDeployPathController.SYSTEM_ID);
+				IPath ret =  controller.getTemporaryDeployDirectory(module).removeLastSegments(1);
+				return ret;
+			} catch(CoreException ce) {
+				// TODO log
+				return null;
+			}
+		} else {
+			return PublishUtil.getTempDeployPath(createPublishMethod(), module, this, deep);
+		}
 	}
 }

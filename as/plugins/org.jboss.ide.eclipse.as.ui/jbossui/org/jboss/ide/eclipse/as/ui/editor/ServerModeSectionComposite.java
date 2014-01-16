@@ -30,24 +30,25 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledPageBook;
+import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.util.SocketUtil;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IDeployableServerBehaviour;
 import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel;
 import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel.Behaviour;
 import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel.BehaviourImpl;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.FormUtils;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI.IServerModeUICallback;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 
 public class ServerModeSectionComposite extends Composite {
 	private ArrayList<DeployUIAdditions> deployAdditions;
@@ -138,10 +139,13 @@ public class ServerModeSectionComposite extends Composite {
 	    	nameList[i] = deployAdditions.get(i).behaviourName;
 	    }
 	    deployTypeCombo.setItems(nameList);
-		IDeployableServerBehaviour ds = ServerConverter.getDeployableServerBehavior(callback.getServer().getOriginal());
+	    
+		String serverTypeId = callback.getServer().getServerType().getId();
+		IServer original = callback.getServer().getOriginal();
+		IControllableServerBehavior ds = original == null ? null : JBossServerBehaviorUtils.getControllableBehavior(callback.getServer().getOriginal());
 		String current = null;
 		if( ds != null ) {
-			Behaviour b = BehaviourModel.getModel().getBehaviour(callback.getServer().getOriginal().getServerType().getId());
+			Behaviour b = BehaviourModel.getModel().getBehaviour(serverTypeId);
 			String behaviourType = DeploymentPreferenceLoader.getCurrentDeploymentMethodTypeId(
 					callback.getServer().getOriginal(), getDefaultServerMode());
 			if( b.getImpl(behaviourType) != null )
@@ -149,7 +153,6 @@ public class ServerModeSectionComposite extends Composite {
 		} else {
 			String host = callback.getServer().getHost();
 			BehaviourImpl impl = null;
-			String serverTypeId = callback.getServer().getServerType().getId();
 			if( SocketUtil.isLocalhost(host)) {
 				impl = BehaviourModel.getModel().getBehaviour(serverTypeId).getImpl(getDefaultLocalServerMode());
 			} else {

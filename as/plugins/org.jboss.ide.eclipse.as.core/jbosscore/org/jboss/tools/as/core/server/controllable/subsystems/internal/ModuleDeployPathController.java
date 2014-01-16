@@ -10,6 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.tools.as.core.server.controllable.subsystems.internal;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -18,7 +19,9 @@ import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 import org.jboss.tools.as.core.internal.modules.DeploymentModulePrefs;
 import org.jboss.tools.as.core.internal.modules.DeploymentPreferences;
@@ -40,6 +43,14 @@ public class ModuleDeployPathController extends AbstractSubsystemController
 		String ret = (String)getEnvironment().get(ENV_DEFAULT_DEPLOY_FOLDER);
 		if( ret == null ) {
 			IDeploymentOptionsController c = (IDeploymentOptionsController)getEnvironment().get(ENV_DEPLOYMENT_OPTIONS_CONTROLLER);
+			if( c == null ) {
+				try {
+					IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(getServer());
+					c = (IDeploymentOptionsController)beh.getController(IDeploymentOptionsController.SYSTEM_ID);
+				} catch(CoreException ce) {
+					// TODO log
+				}
+			}
 			if( c != null )
 				return c.getDeploymentsRootFolder(true);
 		}
@@ -74,22 +85,20 @@ public class ModuleDeployPathController extends AbstractSubsystemController
 	}
 
 	@Override
-	public String getDeployDirectory(IModule[] module) {
+	public IPath getDeployDirectory(IModule[] module) {
 		IServerAttributes server = getServerOrWC();
 		boolean isBinaryObject = ServerModelUtilities.isBinaryModule(module);
 		IPath fullPath = new ModuleDeploymentPrefsUtil().getModuleTreeDestinationFullPath(module, server, getDefaultDeployFolder(), getTargetSystemSeparator());
 		if( isBinaryObject )
 			fullPath = fullPath == null ? null : fullPath.removeLastSegments(1);
-		String ret = fullPath == null ? null : fullPath.toOSString();
-		return ret;
+		return fullPath;
 	}
 
 	@Override
-	public String getTemporaryDeployDirectory(IModule[] module) {
+	public IPath getTemporaryDeployDirectory(IModule[] module) {
 		IServerAttributes server = getServerOrWC();
 		IPath fullPath = new ModuleDeploymentPrefsUtil().getModuleTempDeployPath(module, server, getDefaultTmpDeployFolder(), getTargetSystemSeparator());
-		String ret = fullPath == null ? null : fullPath.toOSString();
-		return ret;
+		return fullPath;
 	}
 
 	private void verifyWorkingCopy() throws IllegalStateException {

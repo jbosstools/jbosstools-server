@@ -37,10 +37,8 @@ public class ControllableServerLaunchConfiguration implements
 		ILaunchConfigurationDelegate2 {
 	private ILaunchServerController delegate = null;
 	protected ILaunchServerController getController(ILaunchConfiguration configuration) throws CoreException {
-		if( delegate == null ) {
-			IControllableServerBehavior jbsBehavior = JBossServerBehaviorUtils.getControllableBehavior(configuration);
-			delegate = (ILaunchServerController)jbsBehavior.getController(IControllableServerBehavior.SYSTEM_LAUNCH);
-		}
+		IControllableServerBehavior jbsBehavior = JBossServerBehaviorUtils.getControllableBehavior(configuration);
+		delegate = (ILaunchServerController)jbsBehavior.getController(IControllableServerBehavior.SYSTEM_LAUNCH);
 		if( delegate == null ) {
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Unable to locate launch delegate for server")); //$NON-NLS-1$
 		}

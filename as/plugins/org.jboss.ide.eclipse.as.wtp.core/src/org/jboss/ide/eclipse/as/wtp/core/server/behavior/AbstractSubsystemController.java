@@ -20,7 +20,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
-import org.jboss.ide.eclipse.as.wtp.core.server.behavior.SubsystemModel.SubsystemType;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.SubsystemModel.Subsystem;
 
 /**
  * @since 3.0
@@ -29,7 +29,7 @@ public abstract class AbstractSubsystemController implements ISubsystemControlle
 	static final String REQUIRED_PROPERTIES_ENV_KEY = ".RESERVED_requiredProperties";
 	
 	
-	private SubsystemType subsystemType = null;
+	private Subsystem subsystem = null;
 	private IServerAttributes server;
 	private Map<String, Object> environment = null;
 	
@@ -94,35 +94,35 @@ public abstract class AbstractSubsystemController implements ISubsystemControlle
 	protected ISubsystemController findDependency(String system, String serverType, Map<String, Object> environment) throws CoreException {
 
 		// If we're declared to require a specific subsystem, pull that one first and ignore the environment
-		Map<String, String> reqs = subsystemType.getRequiredSubsystems();
+		Map<String, String> reqs = subsystem.getRequiredSubsystems();
 		String defaultSubsystem = reqs.get(system);
 		return SubsystemModel.getInstance().createSubsystemController(server, serverType, system, (Map<String,String>)null, defaultSubsystem, environment);
 	}
 	
-	public void initialize(IServerAttributes server, SubsystemType type, Map<String, Object> environment) {
+	public void initialize(IServerAttributes server, Subsystem type, Map<String, Object> environment) {
 		this.server = server;
-		this.subsystemType = type;
+		this.subsystem = type;
 		this.environment = (environment == null ? new HashMap<String, Object>() : environment);
 	}
 	
-	public String getSubsystemId() {
-		if( subsystemType != null )
-			return subsystemType.getId();
+	public String getSubsystemMappedId() {
+		if( subsystem != null )
+			return subsystem.getMappedId();
 		return null;
 	}
 
 	public String getSystemId() {
-		if( subsystemType != null )
-			return subsystemType.getSystem();
+		if( subsystem != null )
+			return subsystem.getSystemId();
 		return null;
 	}
 
 	public IStatus validate() {
-		if( subsystemType != null ) {
-			if( subsystemType.isValid()) {
+		if( subsystem != null ) {
+			if( subsystem.isValid()) {
 				return Status.OK_STATUS;
 			}
-			return subsystemType.getValidationError();
+			return subsystem.getValidationError();
 		}
 		// This should never occur unless the framework did not instantiate the object
 		return Status.OK_STATUS;

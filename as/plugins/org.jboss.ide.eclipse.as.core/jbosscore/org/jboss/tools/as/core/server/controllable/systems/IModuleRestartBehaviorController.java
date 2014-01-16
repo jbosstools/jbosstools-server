@@ -24,7 +24,7 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ISubsystemController;
  */
 public interface IModuleRestartBehaviorController extends ISubsystemController {
 	
-	public static final String SYSTEM_ID = "restartBehavior"; //$NON-NLS-1$
+	public static final String SYSTEM_ID = "module.restart.behavior"; //$NON-NLS-1$
 	
 	/**
 	 * Does the given module require a restart based on the resources that are being published.

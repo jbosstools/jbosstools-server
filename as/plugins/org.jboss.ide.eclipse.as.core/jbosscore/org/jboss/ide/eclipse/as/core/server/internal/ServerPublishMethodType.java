@@ -18,7 +18,10 @@ import org.eclipse.core.runtime.IContributor;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
-
+/**
+ * 
+ * @deprecated
+ */
 public class ServerPublishMethodType implements IJBossServerPublishMethodType {
 
 	private String typeId, name;

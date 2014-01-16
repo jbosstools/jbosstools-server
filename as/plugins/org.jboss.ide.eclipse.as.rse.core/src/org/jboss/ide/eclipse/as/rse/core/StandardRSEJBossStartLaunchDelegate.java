@@ -26,9 +26,7 @@ import org.eclipse.rse.services.shells.IHostShellChangeEvent;
 import org.eclipse.rse.services.shells.IHostShellOutputListener;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
-import org.jboss.ide.eclipse.as.core.server.IPollResultListener;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
-import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.AbstractJBossStartLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
@@ -106,38 +104,7 @@ public class StandardRSEJBossStartLaunchDelegate extends
 	}
 	
 	protected void pollServer(IServer server, final boolean expectedState) {
-		// IF shutting down a process started OUTSIDE of eclipse, force use the web poller, 
-		// since there's no process watch for shutdowns
-		IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, server);
-		pollServer(server, expectedState, poller);
-	}
-
-	protected void pollServer(IServer server, boolean expectedState, IServerStatePoller poller) {
-		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(server);
-		PollThread pollThread = (PollThread)beh.getSharedData(IDeployableServerBehaviorProperties.POLL_THREAD);
-		pollThread = PollThreadUtils.pollServer(expectedState, poller, pollThread, onPollingFinished(server), server);
-		beh.putSharedData(IDeployableServerBehaviorProperties.POLL_THREAD, pollThread);
-	}
-	
-
-	protected IPollResultListener onPollingFinished(final IServer server) {
-		return new IPollResultListener() {
-
-			@Override
-			public void stateNotAsserted(boolean expectedState, boolean currentState) {
-				server.stop(true);
-			}
-
-			@Override
-			public void stateAsserted(boolean expectedState, boolean currentState) {
-				IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(server);
-				if (currentState == IServerStatePoller.SERVER_UP) {
-					((ControllableServerBehavior)beh).setServerStarted();
-				} else {
-					((ControllableServerBehavior)beh).setServerStopped();
-				}
-			}
-		};
+		PollThreadUtils.pollServer(server, expectedState);
 	}
 	
 	/*

@@ -22,6 +22,10 @@ import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractJBossBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
+/**
+ * 
+ * @deprecated
+ */
 
 public abstract class AbstractRSEBehaviourDelegate extends AbstractJBossBehaviourDelegate {
 	

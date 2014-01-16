@@ -297,9 +297,8 @@ public class LocalFilesystemController extends AbstractSubsystemController imple
 			return new MultiStatus(ASWTPToolsPlugin.PLUGIN_ID,  
 					IEventCodes.JST_PUB_FAIL, arr, 
 					NLS.bind(Messages.errorDeleting, dir.getAbsolutePath()), null);
-					
 		}
-		return null;
+		return Status.OK_STATUS;
 	}
 
 	/**

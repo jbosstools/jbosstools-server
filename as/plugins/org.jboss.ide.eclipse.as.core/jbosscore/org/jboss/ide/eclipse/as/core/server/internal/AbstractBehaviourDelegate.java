@@ -24,6 +24,10 @@ import org.jboss.ide.eclipse.as.core.server.IServerModeDetails;
 /**
  * A complete stub implementation of the interface
  */
+/**
+ * 
+ * @deprecated
+ */
 public abstract class AbstractBehaviourDelegate implements IJBossBehaviourDelegate {
 
 	protected IDelegatingServerBehavior actualBehavior;

@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.tools.as.core.server.controllable.systems;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ISubsystemController;
 
@@ -81,14 +82,14 @@ public interface IModuleDeployPathController extends ISubsystemController {
 	 * @param module
 	 * @return
 	 */
-	public String getDeployDirectory(IModule[] module);
+	public IPath getDeployDirectory(IModule[] module);
 	
 	/**
 	 * Get a absolute path of the temporary deploy folder for this module
 	 * @param module
 	 * @return
 	 */
-	public String getTemporaryDeployDirectory(IModule[] module);
+	public IPath getTemporaryDeployDirectory(IModule[] module);
 	
 	/**
 	 * Set the output name for this module in the preference store

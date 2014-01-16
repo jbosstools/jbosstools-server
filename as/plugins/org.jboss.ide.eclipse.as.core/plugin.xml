@@ -1550,85 +1550,127 @@
          point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
       <subsystem
             system="moduleDeployPath"
-            id="moduleDeployPath.xmlprefs"
+            id="moduleDeployPath.xmlprefs.default"
             name="Customize Module Deployment Paths"
-            serverTypes="%AllJBTServerTypes"
             class="org.jboss.tools.as.core.server.controllable.subsystems.internal.ModuleDeployPathController">
       </subsystem>
+      <subsystemMapping
+            id="moduleDeployPath.xmlprefs.default"
+            mappedId="moduleDeployPath.xmlprefs"
+            serverTypes="%AllJBTServerTypes">
+      </subsystemMapping>
+      
+      
       <subsystem
             system="deploymentOptions"
-            id="deploymentOptions.local"
+            id="deploymentOptions.local.default"
             name="Server Deployment Settings (Local)"
-            serverTypes="%AllJBTServerTypes"
             class="org.jboss.tools.as.core.server.controllable.subsystems.internal.LocalDeploymentOptionsController">
          <properties>
             <property key="target" value="local"></property>
          </properties>
       </subsystem>
+      <subsystemMapping
+            id="deploymentOptions.local.default"
+            mappedId="deploymentOptions.local"
+            serverTypes="%AllJBTServerTypes">
+      </subsystemMapping>
+
+      
       <subsystem
             system="launch"
-            id="launch.standard.local"
+            id="launch.standard.local.default"
             name="Launch JBoss Server (Local)"
-            serverTypes="%AllJBossServerTypes"
             class="org.jboss.tools.as.core.server.controllable.subsystems.internal.LocalJBossLaunchController">
          <properties>
             <property key="target" value="local"></property>
          </properties>
       </subsystem>
+      <subsystemMapping
+            id="launch.standard.local.default"
+            mappedId="launch.standard.local"
+            serverTypes="%AllJBossServerTypes">
+      </subsystemMapping>
+      
+      
       <subsystem
             system="serverDetails"
-            id="serverDetails.local"
+            id="serverDetails.local.default"
             name="Server Details (Local)"
-            serverTypes="%AllJBTServerTypes"
             class="org.jboss.ide.eclipse.as.core.server.internal.LocalServerModeDetails">
          <properties>
             <property key="target" value="local"></property>
          </properties>
       </subsystem>
+      <subsystemMapping
+            id="serverDetails.local.default"
+            mappedId="serverDetails.local"
+            serverTypes="%AllJBTServerTypes">
+      </subsystemMapping>
+
       
       <subsystem
             system="shutdown"
-            id="shutdown.legacy"
+            id="shutdown.legacy.default"
             name="Shutdown Server"
-            serverTypes="%ServerTypesJBoss6OrLower"
             class="org.jboss.tools.as.core.server.controllable.subsystems.internal.LocalLegacyShutdownController">
          <properties>
             <property key="target" value="local"></property>
          </properties>
       </subsystem>
+      <subsystemMapping
+            id="shutdown.legacy.default"
+            mappedId="shutdown.legacy"
+            serverTypes="%ServerTypesJBoss6OrLower">
+      </subsystemMapping>
+      
       <subsystem
             system="shutdown"
-            id="shutdown.management"
+            id="shutdown.management.as7"
             name="Shutdown Server via Management"
-            serverTypes="org.jboss.ide.eclipse.as.70,org.jboss.ide.eclipse.as.71,org.jboss.ide.eclipse.as.eap.60,org.jboss.ide.eclipse.as.eap.61,org.jboss.ide.eclipse.as.wildfly.80"
             class="org.jboss.tools.as.core.server.controllable.subsystems.internal.ManagementShutdownController">
       </subsystem>
-      
+      <subsystemMapping
+            id="shutdown.management.as7"
+            mappedId="shutdown.management"
+            serverTypes="org.jboss.ide.eclipse.as.70,org.jboss.ide.eclipse.as.71,org.jboss.ide.eclipse.as.eap.60,org.jboss.ide.eclipse.as.eap.61,org.jboss.ide.eclipse.as.wildfly.80">
+      </subsystemMapping>
+
       
       
       <subsystem
             system="filesystem"
-            id="filesystem.local"
+            id="filesystem.local.default"
             name="Filesystem Support (Local)"
-            serverTypes="%AllJBTServerTypes"
             class="org.jboss.ide.eclipse.as.wtp.core.server.behavior.LocalFilesystemController">
          <properties>
             <property key="target" value="local"></property>
          </properties>
       </subsystem>
+      <subsystemMapping
+            id="filesystem.local.default"
+            mappedId="filesystem.local"
+            serverTypes="%AllJBTServerTypes">
+      </subsystemMapping>
+      
+      
       <subsystem
             system="module.restart.behavior"
-            id="module.restart.behavior.regex"
+            id="module.restart.behavior.regex.default"
             name="Module Restart Pattern Matcher"
-            serverTypes="%AllJBTServerTypes"
             class="org.jboss.tools.as.core.server.controllable.subsystems.internal.StandardModuleRestartBehaviorController">
       </subsystem>
+      <subsystemMapping
+            id="module.restart.behavior.regex.default"
+            mappedId="module.restart.behavior.regex"
+            serverTypes="%AllJBTServerTypes">
+      </subsystemMapping>
+
       
       <subsystem
             system="publish"
-            id="publish.filesystem"
+            id="publish.filesystem.default"
             name="Filesystem Publish Controller"
-            serverTypes="%AllJBTServerTypes"
             class="org.jboss.tools.as.core.server.controllable.subsystems.internal.StandardFileSystemPublishController">
          <dependencies>
             <requires system="filesystem"></requires>
@@ -1637,13 +1679,19 @@
             <requires system="module.restart.behavior"></requires>
          </dependencies>
       </subsystem>
+      <subsystemMapping
+            id="publish.filesystem.default"
+            mappedId="publish.filesystem"
+            serverTypes="%AllJBTServerTypes">
+      </subsystemMapping>
+
+      
       
       <!-- A filesystem publish controller that suspends and resumes deployment scanners, for use in as lessthan 7 -->
       <subsystem
             system="publish"
-            id="publish.filesystem.suspendScanners"
+            id="publish.filesystem.suspendScanners.default"
             name="Suspended Deployment Scanner Filesystem Publish Controller"
-            serverTypes="%AllJBossServerTypes"
             class="org.jboss.tools.as.core.server.controllable.subsystems.internal.SuspendedScannersFileSystemPublishController">
          <dependencies>
             <requires system="filesystem"></requires>
@@ -1653,30 +1701,50 @@
             <!-- optional dependency on <requires system="moduleState"></requires> -->
          </dependencies>
       </subsystem>
+      <subsystemMapping
+            id="publish.filesystem.suspendScanners.default"
+            mappedId="publish.filesystem.suspendScanners"
+            serverTypes="%AllJBossServerTypes">
+      </subsystemMapping>
       
       
       <!-- Some no-op stub implementations -->
       <subsystem
             system="modules"
-            id="modules.noop"
+            id="modules.noop.default"
             name="Module Controller - Stub Implementation"
-            serverTypes="%AllJBTServerTypes"
             class="org.jboss.tools.as.core.server.controllable.subsystems.internal.NoOpModuleController">
       </subsystem>
+      <subsystemMapping
+            id="modules.noop.default"
+            mappedId="modules.noop"
+            serverTypes="%AllJBTServerTypes">
+      </subsystemMapping>
+
       <subsystem
             system="launch"
-            id="launch.noop"
+            id="launch.noop.default"
             name="Launch Controller - Stub Implementation"
-            serverTypes="org.jboss.ide.eclipse.as.systemCopyServer"
             class="org.jboss.tools.as.core.server.controllable.subsystems.internal.NoOpLaunchController">
       </subsystem>
+      <subsystemMapping
+            id="launch.noop.default"
+            mappedId="launch.noop"
+            serverTypes="org.jboss.ide.eclipse.as.systemCopyServer">
+      </subsystemMapping>
+      
+      
       <subsystem
             system="shutdown"
-            id="shutdown.noop"
+            id="shutdown.noop.default"
             name="Shutdown Controller - Stub Implementation"
-            serverTypes="org.jboss.ide.eclipse.as.systemCopyServer"
             class="org.jboss.tools.as.core.server.controllable.subsystems.internal.NoOpShutdownController">
       </subsystem>
+      <subsystemMapping
+            id="shutdown.noop.default"
+            mappedId="shutdown.noop"
+            serverTypes="org.jboss.ide.eclipse.as.systemCopyServer">
+      </subsystemMapping>
       
 	</extension>
 

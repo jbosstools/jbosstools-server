@@ -15,7 +15,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.server.core.IModule;
-
+/**
+ *  @deprecated
+ */
 public interface IJBossBehaviourDelegate {
 
 	public String getBehaviourTypeId();

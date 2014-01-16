@@ -94,7 +94,7 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 		controller.initialize(server, null, null);
 		int result = controller.publishModule(IServer.PUBLISH_INCREMENTAL, ServerBehaviourDelegate.ADDED, module, null);
 		assertEquals(result, IServer.PUBLISH_STATE_NONE);
-		String s = controller.getDeployPathController().getDeployDirectory(module);
+		String s = controller.getDeployPathController().getDeployDirectory(module).toOSString();
 		assertTrue(new Path(s).toFile().exists());
 		assertEquals(testIsZip(), new Path(s).toFile().isFile());
 		verifyList(new Path(s), Arrays.asList(getLeafPaths()), true);
@@ -107,7 +107,7 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 		controller.initialize(server, null, null);
 		int result = controller.publishModule(IServer.PUBLISH_INCREMENTAL, ServerBehaviourDelegate.ADDED, module, null);
 		assertEquals(result, IServer.PUBLISH_STATE_UNKNOWN);
-		String s = controller.getDeployPathController().getDeployDirectory(module);
+		String s = controller.getDeployPathController().getDeployDirectory(module).toOSString();
 		assertFalse(new Path(s).toFile().exists());
 	}
 
@@ -132,7 +132,7 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 		controller.initialize(server, null, null);
 		int result = controller.publishModule(IServer.PUBLISH_INCREMENTAL, ServerBehaviourDelegate.ADDED, module, null);
 		assertEquals(result, IServer.PUBLISH_STATE_NONE);
-		String s = controller.getDeployPathController().getDeployDirectory(module);
+		String s = controller.getDeployPathController().getDeployDirectory(module).toOSString();
 		assertTrue(new Path(s).toFile().exists());
 		assertTrue(new Path(s).toFile().isDirectory()); // No matter what, this should be a folder, not a zip
 		IModuleResource[] resources = ModuleResourceUtil.getResources(module[0], new NullProgressMonitor());
@@ -158,12 +158,12 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 		int resultUtil = controller.publishModule(IServer.PUBLISH_INCREMENTAL, ServerBehaviourDelegate.ADDED, module, null);
 		assertEquals(resultUtil, IServer.PUBLISH_STATE_NONE);
 		
-		String webDepDir = controller.getDeployPathController().getDeployDirectory(new IModule[]{module[0]});
+		String webDepDir = controller.getDeployPathController().getDeployDirectory(new IModule[]{module[0]}).toOSString();
 		assertTrue(new Path(webDepDir).toFile().exists());
 		assertEquals(testIsZip(), new Path(webDepDir).toFile().isFile());
 		verifyList(new Path(webDepDir), Arrays.asList(new IPath[]{new Path("index.html")}), true);
 		
-		String utilDepDir = controller.getDeployPathController().getDeployDirectory(module);
+		String utilDepDir = controller.getDeployPathController().getDeployDirectory(module).toOSString();
 		if( !testIsZip()) {
 			// we're not testing in zip mode, so utilDepDir should exist and should be a forced zip file
 			assertTrue(new Path(utilDepDir).toFile().exists());
@@ -196,16 +196,16 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 		int resultUtil = controller.publishModule(IServer.PUBLISH_INCREMENTAL, ServerBehaviourDelegate.ADDED, module, null);
 		assertEquals(resultUtil, IServer.PUBLISH_STATE_NONE);
 		
-		String earDepDir = controller.getDeployPathController().getDeployDirectory(new IModule[]{module[0]});
+		String earDepDir = controller.getDeployPathController().getDeployDirectory(new IModule[]{module[0]}).toOSString();
 		assertTrue(new Path(earDepDir).toFile().exists());
 		assertEquals(testIsZip(), new Path(earDepDir).toFile().isFile());
 		verifyList(new Path(earDepDir), Arrays.asList(new IPath[]{new Path("META-INF/application.xml")}), true);
 
 		
-		String webDepDir = controller.getDeployPathController().getDeployDirectory(new IModule[]{module[0],module[1]});
+		String webDepDir = controller.getDeployPathController().getDeployDirectory(new IModule[]{module[0],module[1]}).toOSString();
 		utilInWebInEarRemovals_verifyWeb(webDepDir, earDepDir, true);
 		
-		String utilDepDir = controller.getDeployPathController().getDeployDirectory(module);
+		String utilDepDir = controller.getDeployPathController().getDeployDirectory(module).toOSString();
 		utilInWebInEarRemovals_verifyUtil(utilDepDir, earDepDir, true);
 	}
 	
@@ -229,7 +229,7 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 		int resultUtil = controller.publishModule(IServer.PUBLISH_INCREMENTAL, ServerBehaviourDelegate.ADDED, module, null);
 		assertEquals(resultUtil, IServer.PUBLISH_STATE_NONE);
 		
-		String earDepDir = controller.getDeployPathController().getDeployDirectory(new IModule[]{module[0]});
+		String earDepDir = controller.getDeployPathController().getDeployDirectory(new IModule[]{module[0]}).toOSString();
 		assertTrue(new Path(earDepDir).toFile().exists());
 		assertEquals(testIsZip(), new Path(earDepDir).toFile().isFile());
 		verifyList(new Path(earDepDir), Arrays.asList(new IPath[]{new Path("META-INF/application.xml")}), true);
@@ -313,17 +313,17 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 		assertEquals(resultUtil, IServer.PUBLISH_STATE_NONE);
 		
 		// Verify ear still published
-		String earDepDir = controller.getDeployPathController().getDeployDirectory(new IModule[]{module[0]});
+		String earDepDir = controller.getDeployPathController().getDeployDirectory(new IModule[]{module[0]}).toOSString();
 		assertTrue(new Path(earDepDir).toFile().exists());
 		assertEquals(testIsZip(), new Path(earDepDir).toFile().isFile());
 		verifyList(new Path(earDepDir), Arrays.asList(new IPath[]{new Path("META-INF/application.xml")}), true);
 
 		// verify web still published
-		String webDepDir = controller.getDeployPathController().getDeployDirectory(new IModule[]{module[0],module[1]});
+		String webDepDir = controller.getDeployPathController().getDeployDirectory(new IModule[]{module[0],module[1]}).toOSString();
 		utilInWebInEarRemovals_verifyWeb(webDepDir, earDepDir, true);
 		
 		// Verify util deleted
-		String utilDepDir = controller.getDeployPathController().getDeployDirectory(module);
+		String utilDepDir = controller.getDeployPathController().getDeployDirectory(module).toOSString();
 		utilInWebInEarRemovals_verifyUtil(utilDepDir, earDepDir, false);
 		
 		// Now remove hte web

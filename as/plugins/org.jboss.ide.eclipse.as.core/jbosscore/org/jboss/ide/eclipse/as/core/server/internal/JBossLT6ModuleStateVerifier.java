@@ -268,7 +268,7 @@ public class JBossLT6ModuleStateVerifier extends AbstractSubsystemController imp
 		// Find dependency will throw a CoreException if an object is not found, rather than return null
 		IDeploymentOptionsController opts = getDeploymentOptions();
 		IModuleDeployPathController depPath = getDeployPathController();
-		return new RemotePath(depPath.getDeployDirectory(module), 
+		return new RemotePath(depPath.getDeployDirectory(module).toOSString(), 
 				opts.getPathSeparatorCharacter());
 	}
 	

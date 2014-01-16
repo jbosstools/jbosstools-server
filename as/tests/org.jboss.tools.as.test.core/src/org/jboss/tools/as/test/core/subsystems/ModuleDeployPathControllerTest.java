@@ -25,7 +25,6 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.RemotePath;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ISubsystemController;
-import org.jboss.ide.eclipse.as.wtp.core.server.behavior.SubsystemModel.SubsystemType;
 import org.jboss.tools.as.core.server.controllable.systems.IModuleDeployPathController;
 import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.internal.utils.MockModule;
@@ -38,8 +37,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class ModuleDeployPathControllerTest extends TestCase {
+	private static String SYSTEM = IModuleDeployPathController.SYSTEM_ID;
+	private static String SUBSYSTEM = "moduleDeployPath.xmlprefs";
+
+	
 	public ModuleDeployPathControllerTest() {
 	}
+	
 	private IServer server;
 	@Before
 	public void setUp() {
@@ -55,15 +59,15 @@ public class ModuleDeployPathControllerTest extends TestCase {
 	public void testResolution() {
 		ModelSubclass c = new ModelSubclass();
 		String serverType = IJBossToolingConstants.DEPLOY_ONLY_SERVER;
-		String system = "module.deploy.path";
-		String subsystem = "module.deploy.path.xmlprefs";
-		SubsystemType[] types = c.getSubsystemTypes(serverType, system);
+		String system = SYSTEM;
+		String subsystem = SUBSYSTEM;
+		Object[] types = c.getSubsystemMappings(serverType, system);
 		assertTrue(types != null);
 		assertTrue(types.length == 1);
 		try {
 			ISubsystemController controller = c.createSubsystemController(server,system, null, null, null);
 			assertNotNull(controller);
-			assertTrue(controller.getSubsystemId().equals(subsystem));
+			assertTrue(controller.getSubsystemMappedId().equals(subsystem));
 			assertTrue(controller instanceof IModuleDeployPathController);
 			// with no env, the controller is missing critical data
 			assertFalse(controller.validate().isOK());
@@ -97,9 +101,9 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		assertEquals(".jar", contr.getDefaultSuffix(MockModuleUtil.createMockUtilModule()));
 		assertEquals(".ear", contr.getDefaultSuffix(MockModuleUtil.createMockEarModule()));
 		
-		String tmpDir = contr.getTemporaryDeployDirectory(asArray(MockModuleUtil.createMockWebModule()));
+		String tmpDir = contr.getTemporaryDeployDirectory(asArray(MockModuleUtil.createMockWebModule())).toOSString();
 		assertEquals(tmpDir, initialTmpDeployDir);
-		String depDir = contr.getDeployDirectory(asArray(MockModuleUtil.createMockWebModule()));
+		String depDir = contr.getDeployDirectory(asArray(MockModuleUtil.createMockWebModule())).toOSString();
 		String expected = initialDeployDir + "/" + MockModuleUtil.createMockWebModule().getName() + ".war";
 		assertEquals(expected, depDir);
 	}
@@ -120,9 +124,9 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		((MockModule)ear).addChildModule(web, uri);
 		IModule[] webInEar = new IModule[]{ear, web};
 		
-		String tmpDir = contr.getTemporaryDeployDirectory(webInEar);
+		String tmpDir = contr.getTemporaryDeployDirectory(webInEar).toOSString();
 		assertEquals(tmpDir, initialTmpDeployDir);
-		String depDir = contr.getDeployDirectory(webInEar);
+		String depDir = contr.getDeployDirectory(webInEar).toOSString();
 		String expected = initialDeployDir + "/" 
 				+ earWithSuffix + "/" + uri;
 		assertEquals(expected, depDir);
@@ -145,9 +149,9 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		((MockModule)web).addChildModule(util, uri);
 		IModule[] utilInWeb = new IModule[]{web, util};
 		
-		String tmpDir = contr.getTemporaryDeployDirectory(utilInWeb);
+		String tmpDir = contr.getTemporaryDeployDirectory(utilInWeb).toOSString();
 		assertEquals(tmpDir, initialTmpDeployDir);
-		String depDir = contr.getDeployDirectory(utilInWeb);
+		String depDir = contr.getDeployDirectory(utilInWeb).toOSString();
 		String expected = initialDeployDir + "/" 
 				+ warWithSuffix + "/" + uri;
 		assertEquals(expected, depDir);
@@ -175,9 +179,9 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		((MockModule)ear).addChildModule(web, uriWar);
 		IModule[] utilInWebInEar = new IModule[]{ear, web, util};
 		
-		String tmpDir = contr.getTemporaryDeployDirectory(utilInWebInEar);
+		String tmpDir = contr.getTemporaryDeployDirectory(utilInWebInEar).toOSString();
 		assertEquals(tmpDir, initialTmpDeployDir);
-		String depDir = contr.getDeployDirectory(utilInWebInEar);
+		String depDir = contr.getDeployDirectory(utilInWebInEar).toOSString();
 		String expected = initialDeployDir + "/" 
 				+ earWithSuffix + "/" + uriWar + "/" + uriUtil;
 		assertEquals(expected, depDir);
@@ -252,7 +256,7 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		}
 		
 		IModuleDeployPathController contr2 = buildEnv(initial, initialTmp, null, separator);
-		String depDir = contr2.getDeployDirectory(new IModule[]{web});
+		String depDir = contr2.getDeployDirectory(new IModule[]{web}).toOSString();
 		assertEquals(expectedPrefix + web.getName() + ".war", depDir);
 	}
 
@@ -302,7 +306,7 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		}
 		
 		IModuleDeployPathController contr2 = buildEnv(initial, initialTmp, null, separator);
-		String tmpDeploy = contr2.getTemporaryDeployDirectory(new IModule[]{web});
+		String tmpDeploy = contr2.getTemporaryDeployDirectory(new IModule[]{web}).toOSString();
 		assertEquals(expectedPrefix, tmpDeploy);
 	}
 
@@ -359,11 +363,11 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		((MockModule)ear).addChildModule(web, uriWar);
 		IModule[] utilInWebInEar = new IModule[]{ear, web, util};
 		
-		String tmpDir = contr.getTemporaryDeployDirectory(utilInWebInEar);
+		String tmpDir = contr.getTemporaryDeployDirectory(utilInWebInEar).toOSString();
 		assertEquals(tmpDir, initialTmpDeployDir);
 		String expected = initialDeployDir + sep2 
 				+ earWithSuffix + sep2 + uriWar + sep2 + uriUtil;
-		String depDir = contr.getDeployDirectory(utilInWebInEar);
+		String depDir = contr.getDeployDirectory(utilInWebInEar).toOSString();
 		assertEquals(expected, depDir);
 		
 		IServerWorkingCopy wc = server.createWorkingCopy();
@@ -375,7 +379,7 @@ public class ModuleDeployPathControllerTest extends TestCase {
 			fail(ce.getMessage());
 		}
 		IModuleDeployPathController contr3 = buildEnv(initialDeployDir, initialTmpDeployDir, null, sep);
-		String depDirInnerUtil = contr3.getDeployDirectory(utilInWebInEar);
+		String depDirInnerUtil = contr3.getDeployDirectory(utilInWebInEar).toOSString();
 		String expectedResult = expectedPrefix + earWithSuffix + sep2 + uriWar + sep2 + uriUtil;
 		assertEquals(expectedResult, depDirInnerUtil);
 	}
@@ -388,9 +392,9 @@ public class ModuleDeployPathControllerTest extends TestCase {
 	private IModuleDeployPathController buildEnv(String dep, String tmpDep, IServerWorkingCopy wc, Character targetSystemSeparator) {
 		ModelSubclass c = new ModelSubclass();
 		String serverType = IJBossToolingConstants.DEPLOY_ONLY_SERVER;
-		String system = "module.deploy.path";
-		String subsystem = "module.deploy.path.xmlprefs";
-		SubsystemType[] types = c.getSubsystemTypes(serverType, system);
+		String system = SYSTEM;
+		String subsystem = SUBSYSTEM;
+		Object[] types = c.getSubsystemMappings(serverType, system);
 		assertTrue(types != null);
 		assertTrue(types.length == 1);
 		HashMap<String, Object> env = new HashMap<String, Object>();
@@ -403,7 +407,7 @@ public class ModuleDeployPathControllerTest extends TestCase {
 			IServerAttributes serverToUse = (wc == null ? server : wc);
 			ISubsystemController controller = c.createSubsystemController(serverToUse,system, null, null, env);
 			assertNotNull(controller);
-			assertTrue(controller.getSubsystemId().equals(subsystem));
+			assertTrue(controller.getSubsystemMappedId().equals(subsystem));
 			assertTrue(controller instanceof IModuleDeployPathController);
 			return (IModuleDeployPathController)controller;
 		} catch(CoreException ce) {
@@ -415,12 +419,13 @@ public class ModuleDeployPathControllerTest extends TestCase {
 	public void testControllerFoundForAllServers() {
 		String[] all = ServerParameterUtils.getAllJBossServerTypeParameters();
 		ModelSubclass c = new ModelSubclass();
-		String system = "module.deploy.path";
+		String system = SYSTEM;
+		String subsystem = SUBSYSTEM;
 		for( int i = 0; i < all.length; i++) {
-			SubsystemType[] types = c.getSubsystemTypes(all[i], system);
+			Object[] types = c.getSubsystemMappings(all[i], system);
 			assertTrue(types != null);
 			assertTrue(types.length == 1);
-			assertEquals("module.deploy.path.xmlprefs", types[0].getId());
+			assertEquals(subsystem, c.getSubsystemMappedId(types[0]));
 		}
 
 	}

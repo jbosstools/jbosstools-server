@@ -18,7 +18,10 @@
       </annotation>
       <complexType>
          <sequence minOccurs="1" maxOccurs="unbounded">
-            <element ref="subsystem"/>
+            <choice>
+               <element ref="subsystem"/>
+               <element ref="subsystemMapping"/>
+            </choice>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -57,13 +60,6 @@
             <annotation>
                <documentation>
                   Which major system this subsystem is an implementation of. For example, modules, publish, fs, or mgmt. This value may be any one of the existing systems, or a new arbitrary value for which you have decided to name your system type.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="serverTypes" type="string" use="required">
-            <annotation>
-               <documentation>
-                  A list of server type id&apos;s for which this implementation is valid. The list should be comma-separated.
                </documentation>
             </annotation>
          </attribute>
@@ -149,6 +145,32 @@
             <annotation>
                <documentation>
                   
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="subsystemMapping">
+      <complexType>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The subsystem&apos;s unique id as declared in its subsystem element
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="mappedId" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The id this subsystem will have when mapped to a server
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="serverTypes" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The comma-separated list of server types this mapping will apply to.
                </documentation>
             </annotation>
          </attribute>

@@ -19,7 +19,7 @@ import org.jboss.ide.eclipse.as.core.util.RemotePath;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllerEnvironment;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ISubsystemController;
-import org.jboss.ide.eclipse.as.wtp.core.server.behavior.SubsystemModel.SubsystemType;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.SubsystemModel.SubsystemMapping;
 import org.jboss.tools.as.core.server.controllable.systems.IDeploymentOptionsController;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
 import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
@@ -33,9 +33,10 @@ import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(value = Parameterized.class)
 public class DeploymentSettingsControllerTest extends TestCase {
-	private static final String SYSTEM = "deploy.settings.rootpath";
-	private static final String LOCAL_SUBSYSTEM = "deploy.settings.rootpath.local";
-	private static final String RSE_SUBSYSTEM = "deploy.settings.rootpath.remote";
+	private static final String SYSTEM = IDeploymentOptionsController.SYSTEM_ID;
+	private static final String LOCAL_SUBSYSTEM = "deploymentOptions.local";
+	private static final String RSE_SUBSYSTEM = "deploymentOptions.rse";
+	
 	private String serverType;
 	private IServer server;
 	@Parameters
@@ -63,7 +64,7 @@ public class DeploymentSettingsControllerTest extends TestCase {
 		ModelSubclass c = new ModelSubclass();
 		String system = SYSTEM;
 		
-		SubsystemType[] types = c.getSubsystemTypes(serverType, system);
+		SubsystemMapping[] types = c.getSubsystemMappings(serverType, system);
 		assertTrue(types != null );
 		assertTrue(types.length == 2);
 		
@@ -72,16 +73,16 @@ public class DeploymentSettingsControllerTest extends TestCase {
 		for( int j = 0; j < types.length; j++ ) {
 			ISubsystemController controller = null;
 			try {
-				controller = c.createControllerForSubsystem(server, system, types[j].getId());
+				controller = c.createControllerForSubsystem(server, system, c.getSubsystemMappedId(types[j]));
 			}catch(CoreException ce) {
-				fail("Error creating controller for " + system + ", " + serverType + ", " + types[j].getId());
+				fail("Error creating controller for " + system + ", " + serverType + ", " +c.getSubsystemMappedId(types[j]));
 			}
 			assertNotNull(controller);
 			assertTrue(controller.getSystemId().equals(system));
 			assertTrue(controller instanceof IDeploymentOptionsController);
-			if( controller.getSubsystemId().equals(LOCAL_SUBSYSTEM))
+			if( controller.getSubsystemMappedId().equals(LOCAL_SUBSYSTEM))
 				foundLocal = true;
-			if( controller.getSubsystemId().equals(RSE_SUBSYSTEM))
+			if( controller.getSubsystemMappedId().equals(RSE_SUBSYSTEM))
 				foundRemote = true;
 		}
 		if( !foundLocal || !foundRemote )
@@ -98,7 +99,7 @@ public class DeploymentSettingsControllerTest extends TestCase {
 		assertNotNull(controller);
 		assertEquals(controller.getSystemId(),system);
 		assertTrue(controller instanceof IDeploymentOptionsController);
-		assertEquals(controller.getSubsystemId(), RSE_SUBSYSTEM);
+		assertEquals(controller.getSubsystemMappedId(), RSE_SUBSYSTEM);
 		assertEquals(controller.getClass().getSimpleName(),"RSEDeploymentOptionsController");
 		
 
@@ -107,7 +108,7 @@ public class DeploymentSettingsControllerTest extends TestCase {
 		assertNotNull(controller);
 		assertEquals(controller.getSystemId(),system);
 		assertTrue(controller instanceof IDeploymentOptionsController);
-		assertEquals(controller.getSubsystemId(), LOCAL_SUBSYSTEM);
+		assertEquals(controller.getSubsystemMappedId(), LOCAL_SUBSYSTEM);
 		assertEquals(controller.getClass().getSimpleName(), ("LocalDeploymentOptionsController"));
 
 	}

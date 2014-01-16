@@ -19,6 +19,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -43,16 +45,85 @@ public class SubsystemModel {
 		
 	/**
 	 * A map of the following structure:
-	 *    serverTypeId -> HashMap<subsystemId, subsystemType >
+	 *    serverTypeId -> HashMap<mappedId, SubsystemMapping >
 	 */
-	private Map<String, Map<String, SubsystemType>> model;
-	public static class SubsystemType {
-		// Are all dependencies available
+	private Map<String, Map<String, SubsystemMapping>> mappedModel;
+	
+	/**
+	 * A map of subsystems, from id to their instance
+	 */
+	private Map<String, SubsystemType> subsystemModel;
+
+	
+	public static class Subsystem {
+		private SubsystemMapping mapping;
+		public Subsystem(SubsystemMapping mapping) {
+			this.mapping = mapping;
+		}
+		public String getSubsystemId() {
+			return mapping.getSubsystemId();
+		}
+		public String getSystemId() {
+			return mapping.getSubsystem().getSystem();
+		}
+		public String getMappedId() {
+			return mapping.getMappedId();
+		}
+		public Map<String, String> getRequiredSubsystems() {
+			return mapping.getSubsystem().getRequiredSubsystems();
+		}
+		public boolean isValid() {
+			return mapping.isValid();
+		}
+		public IStatus getValidationError() {
+			return mapping.getValidationError();
+		}
+	}
+	
+	/**
+	 * Exposed for testing only
+	 */
+	public class SubsystemMapping {
 		private boolean isValid = true;
 		private IStatus validationError;
+		private String serverTypeId;
+		private String mappedId;
+		private String subsystemId;
 		
+		public SubsystemMapping(String server, String mappedId, String subsystemId) {
+			this.serverTypeId = server;
+			this.mappedId = mappedId;
+			this.subsystemId = subsystemId;
+		}
+		
+		public boolean isValid() {
+			return isValid;
+		}
+		public String getServerType() {
+			return serverTypeId;
+		}
+		
+		public IStatus getValidationError() {
+			return validationError;
+		}
+		public String getSubsystemId() {
+			return subsystemId;
+		}
+		public String getMappedId() {
+			return mappedId;
+		}
+		public SubsystemType getSubsystem() {
+			return subsystemModel.get(subsystemId);
+		}
+	}
+	
+	
+	/**
+	 * The subsystem type, exposed for testing only
+	 */
+	protected static class SubsystemType {
+		// Are all dependencies available
 		private String system;
-		private String[] serverTypes;
 		private String id;
 		private String name;
 		private IConfigurationElement element;
@@ -64,8 +135,6 @@ public class SubsystemModel {
 			this.element = element;
 			name = element.getAttribute("name");
 			id = element.getAttribute("id");
-			String typesTmp = element.getAttribute("serverTypes");
-			serverTypes = typesTmp == null ? new String[0] : typesTmp.split(",");
 			system = element.getAttribute("system");
 			
 			// Calculate dependencies
@@ -123,12 +192,6 @@ public class SubsystemModel {
 		public String getName() {
 			return name;
 		}
-		public boolean isValid() {
-			return isValid;
-		}
-		public IStatus getValidationError() {
-			return validationError;
-		}
 		
 		public String toString() {
 			return getSystem() + " - " + getId();
@@ -137,33 +200,31 @@ public class SubsystemModel {
 		
 	/**
 	 * Return only subsystem types for this server for the appropriate system
-	 * @param server
+	 * @param serverTypeId
 	 * @param system
 	 * @return
 	 */
-	protected SubsystemType[] getSubsystemTypes(String serverType, String system) {
+	protected SubsystemMapping[] getSubsystemMappings(String serverType, String system) {
 		checkLoaded();
-		Map<String, SubsystemType> ret = model.get(serverType);
-		if( ret != null ) {
-			Collection<SubsystemType> ret2 = ret.values();
-			// If we're not filtering on a system category, return
+		Map<String, SubsystemMapping> serverSubsystems = mappedModel.get(serverType);
+		if( serverSubsystems != null ) {
+			Collection<SubsystemMapping> mappings = serverSubsystems.values();
 			if( system == null ) {
-				return (SubsystemType[]) ret2.toArray(new SubsystemType[ret2.size()]);
+				return mappings.toArray(new SubsystemMapping[mappings.size()]);
 			}
-			
 			// otherwise get rid of any that dont match category
-			ArrayList<SubsystemType> clone = new ArrayList<SubsystemType>(ret2);
-			Iterator<SubsystemType> i = clone.iterator();
-			SubsystemType tmp = null;
+			ArrayList<SubsystemMapping> clone = new ArrayList<SubsystemMapping>(mappings);
+			Iterator<SubsystemMapping> i = clone.iterator();
+			SubsystemMapping tmp = null;
 			while(i.hasNext()) {
 				tmp = i.next();
-				if( !tmp.system.equals(system)) {
+				if( !tmp.getSubsystem().getSystem().equals(system)) {
 					i.remove();
 				}
 			}
-			return (SubsystemType[]) clone.toArray(new SubsystemType[clone.size()]);
+			return (SubsystemMapping[]) clone.toArray(new SubsystemMapping[clone.size()]);
 		}
-		return null;
+		return new SubsystemMapping[0];
 	}
 
 	
@@ -202,7 +263,7 @@ public class SubsystemModel {
 			String serverType, String system, String subsystemId,
 			Map<String, Object> env) throws CoreException {
 		ISubsystemController c = createSubsystemController(server, serverType, system, null, subsystemId, env);
-		if( c.getSubsystemId().equals(subsystemId))
+		if( c.getSubsystemMappedId().equals(subsystemId))
 			return c;
 		return null;
 	}
@@ -290,7 +351,8 @@ public class SubsystemModel {
 	public ISubsystemController createSubsystemController(IServerAttributes server, String serverType, String system, 
 			Map<String, String> requiredProperties, String defaultSubsystem, 
 			Map<String, Object> environment) throws CoreException {
-		SubsystemType[] types = getSubsystemTypes(serverType, system);
+		checkLoaded();
+		SubsystemMapping[] types = getSubsystemMappings(serverType, system);
 		if( types == null )
 			return null;
 		
@@ -304,44 +366,44 @@ public class SubsystemModel {
 		}
 		
 		
-		SubsystemType selected = null;
+		SubsystemMapping selectedMapping = null;
 		if( defaultSubsystem != null ) {
 			// See if we can find the one they want as default
 			if( types.length > 0 ) {
-				SubsystemType tmp = findSubsystemWithId(types, defaultSubsystem); 
-				selected = tmp == null ? types[0] : tmp;
+				SubsystemMapping tmp = findSubsystemWithMappedId(types, defaultSubsystem); 
+				selectedMapping = tmp == null ? types[0] : tmp;
 			} 		
 		}
 		
-		if( selected == null ) {
+		if( selectedMapping == null ) {
 			// The one they wanted as default is not found, or they did not set a default
 			// Check for a default property on the types
-			SubsystemType[] defaultsSet = findTypesWithProperty(types, "default", "true");
+			SubsystemMapping[] defaultsSet = findMappingsWithProperty(types, "default", "true");
 			
 			// There may be multiple marked default (which would be a bug), use the first one
 			if( defaultsSet.length > 0 ) {
-				selected = defaultsSet[0];
+				selectedMapping = defaultsSet[0];
 				// TODO log warning?
 			} else {
 				// None marked default, use the first acceptable
 				if( types.length > 0 )
-					selected = types[0];
+					selectedMapping = types[0];
 			}
 		} 
 		
 		
 		
-		if( selected == null ) {
+		if( selectedMapping == null ) {
 			String msg = "No subsystem found for servertype " + serverType + " and system type " + system;
 			throw new CoreException(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, msg));
 		}
 		
 		try {
-			ISubsystemController c = selected.createController();
-			c.initialize(server, selected, environment);
+			ISubsystemController c = selectedMapping.getSubsystem().createController();
+			c.initialize(server, new Subsystem(selectedMapping), environment);
 			return c;
 		} catch(CoreException ce) {
-			String msg = "Error creating subsystem " + selected.getId() + " for server type " + serverType;
+			String msg = "Error creating subsystem " + selectedMapping.mappedId + " for server type " + serverType;
 			throw new CoreException(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, msg, ce));
 		}
 	}
@@ -362,15 +424,15 @@ public class SubsystemModel {
 		return requiredProps;
 	}
 	
-	private SubsystemType findSubsystemWithId(SubsystemType[] types, String id) {
+	private SubsystemMapping findSubsystemWithMappedId(SubsystemMapping[] types, String id) {
 		for( int i = 0; i < types.length; i++ ) {
-			if( types[i].id.equals(id))
+			if( types[i].mappedId.equals(id))
 				return types[i];
 		}
 		return null;
 	}
 	
-	private SubsystemType[] findTypesWithProperty(SubsystemType[] types, String key, String val) {
+	private SubsystemMapping[] findMappingsWithProperty(SubsystemMapping[] types, String key, String val) {
 		if( key == null || val == null )
 			return types;
 		Map<String, String> m = new HashMap<String, String>();
@@ -378,38 +440,38 @@ public class SubsystemModel {
 		return findTypesWithProperties(types, m);
 	}
 
-	private SubsystemType[] removeInvalidTypes(SubsystemType[] types) {
-		ArrayList<SubsystemType> matching = new ArrayList<SubsystemType>();
+	private SubsystemMapping[] removeInvalidTypes(SubsystemMapping[] types) {
+		ArrayList<SubsystemMapping> matching = new ArrayList<SubsystemMapping>();
 		for( int i = 0; i < types.length; i++ ) {
 			if( types[i].isValid) 
 				matching.add(types[i]);
 		}
-		return (SubsystemType[]) matching.toArray(new SubsystemType[matching.size()]);
+		return (SubsystemMapping[]) matching.toArray(new SubsystemMapping[matching.size()]);
 	}
 	
-	private SubsystemType[] findTypesWithProperties(SubsystemType[] types, Map<String, String> requiredProps) {
+	private SubsystemMapping[] findTypesWithProperties(SubsystemMapping[] types, Map<String, String> requiredProps) {
 		if( requiredProps == null || requiredProps.size() == 0)
 			return types;
 		
-		ArrayList<SubsystemType> matching = new ArrayList<SubsystemType>();
+		ArrayList<SubsystemMapping> matching = new ArrayList<SubsystemMapping>();
 		for( int i = 0; i < types.length; i++ ) {
 			boolean matchesAll = true;
 			Iterator<String> j = requiredProps.keySet().iterator();
 			while(j.hasNext() && matchesAll) {
 				String k = j.next();
 				String v = requiredProps.get(k);
-				String typeVal = types[i].props.get(k);
+				String typeVal = types[i].getSubsystem().props.get(k);
 				if( !v.equals(typeVal))
 					matchesAll = false;
 			}
 			if( matchesAll ) 
 				matching.add(types[i]);
 		}
-		return (SubsystemType[]) matching.toArray(new SubsystemType[matching.size()]);
+		return matching.toArray(new SubsystemMapping[matching.size()]);
 	}
 	
 	private void checkLoaded() {
-		if( model == null ) {
+		if( subsystemModel == null ) {
 			loadModel();
 		}
 	}
@@ -418,35 +480,48 @@ public class SubsystemModel {
 	private synchronized void loadModel() {
 		ArrayList<IStatus> warningsErrors = new ArrayList<IStatus>();
 		
-		// First create the model
-		model = new HashMap<String, Map<String, SubsystemType>>();
+		// First create the models
+		subsystemModel = new HashMap<String, SubsystemType>();
+		mappedModel = new HashMap<String, Map<String,SubsystemMapping>>();
+		
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
 		IConfigurationElement[] cf = registry.getConfigurationElementsFor(ASWTPToolsPlugin.PLUGIN_ID, "serverSubsystem"); //$NON-NLS-1$
 		for( int i = 0; i < cf.length; i++ ) {
-			SubsystemType type = new SubsystemType(cf[i]);
-			if( allAttributesPresent(type)) {
-				for( int k = 0; k < type.serverTypes.length; k++ ) {
-					Map<String, SubsystemType> map = model.get(type.serverTypes[k]);
-					if( map == null ) {
-						map = new HashMap<String, SubsystemType>();
-						model.put(type.serverTypes[k], map);
-					}
-					if( map.containsKey(type.id)){
-						// ERROR, two types added at the same key for the same server
-						warningsErrors.add(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, 
-								"Invalid - 2 controllers for same server,system,subsystem combination")); // TODO clean message
-					} else {
-						map.put(type.id, type);
-					}
+			String name = cf[i].getName();
+			if( "subsystem".equals(name)) {
+				SubsystemType type = new SubsystemType(cf[i]);
+				SubsystemType existing = subsystemModel.get(type.id);
+				if( existing != null ) {
+					warningsErrors.add(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, 
+					"Invalid - 2 subsystems have been declared with the same unique id: " + type.id));
+				} else if( hasRequiredSubsystemAttributes(type)){
+					subsystemModel.put(type.id, type);
+				} else {
+					warningsErrors.add(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, 
+					"Invalid - Subsystem missing required attributes: " + type.id));
 				}
-			} else {
-				// TODO log not adding this one because it is invalid
-				warningsErrors.add(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, 
-						"Invalid controller: - missing attributes" + type.id));
+			} else if ( "subsystemMapping".equals(name)) {
+				String subsystemId = cf[i].getAttribute("id");
+				String mappedId = cf[i].getAttribute("mappedId");
+				String serverTypes = cf[i].getAttribute("serverTypes");
+				if( subsystemId != null && mappedId != null && serverTypes != null) {
+					String[] split = serverTypes.split(",");
+					for( int j = 0; j < split.length; j++ ) {
+						Map m = mappedModel.get(split[j]);
+						if( m == null ) {
+							m = new HashMap<String, String>();
+							mappedModel.put(split[j], m);
+						}
+						mappedModel.get(split[j]).put(mappedId, new SubsystemMapping(split[j], mappedId, subsystemId));
+					}
+				} else {
+					warningsErrors.add(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, 
+					"Invalid - Subsystem Mapping missing required attributes: " + subsystemId + ", " + mappedId + ", " + serverTypes));
+				}
 			}
 		}
 		
-		// Now validate it
+		// Now validate the entire model after all mappings and systems have been loaded
 		IStatus[] extra = validateModel();
 		warningsErrors.addAll(Arrays.asList(extra));
 		MultiStatus ms = new MultiStatus(ASWTPToolsPlugin.PLUGIN_ID, 0, 
@@ -459,19 +534,26 @@ public class SubsystemModel {
 	
 	private IStatus[] validateModel() {
 		ArrayList<IStatus> warningsErrors = new ArrayList<IStatus>();
-		Iterator<String> i = model.keySet().iterator();
+		Iterator<String> i = mappedModel.keySet().iterator();
 		while(i.hasNext()) {
 			String serverType = i.next();
-			Map<String, SubsystemType> val = model.get(serverType);
-			Collection<SubsystemType> types = val.values();
-			Iterator<SubsystemType> it = types.iterator();
+			Map<String, SubsystemMapping> val = mappedModel.get(serverType);
+			Collection<SubsystemMapping> types = val.values();
+			Iterator<SubsystemMapping> it = types.iterator();
 			while(it.hasNext()) {
-				SubsystemType sub = it.next();
-				IStatus s = validateSubsystem(serverType, sub);
-				if( !s.isOK()) {
-					sub.isValid = false;
-					sub.validationError = s;
-					warningsErrors.add(s);
+				SubsystemMapping mapping = it.next();
+				SubsystemType type = mapping.getSubsystem();
+				if( type != null ) {
+					IStatus s = validateSubsystemMapping(mapping);
+					if( !s.isOK()) {
+						mapping.isValid = false;
+						mapping.validationError = s;
+						warningsErrors.add(s);
+					}
+
+				} else {
+					warningsErrors.add(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, 
+					"Invalid - Mapped Subsystem does not exist: " + serverType + ", " + type.id));
 				}
 			}
 		}
@@ -479,32 +561,36 @@ public class SubsystemModel {
 	}
 	
 	// Has potential to cause infinite recursion (?)
-	private IStatus validateSubsystem(String serverType, SubsystemType subsys) {
+	private IStatus validateSubsystemMapping(SubsystemMapping mapping) {
 		ArrayList<IStatus> warningsErrors = new ArrayList<IStatus>();
-		String[] requiredSystem = subsys.requiredSystems;
+		String serverType = mapping.getServerType();
+		
+		// First we validate requirements on generic systems
+		String[] requiredSystem = mapping.getSubsystem().getRequiredSystems();
 		for( int i = 0; i < requiredSystem.length; i++ ) {
-			SubsystemType[] matched = getSubsystemTypes(serverType, requiredSystem[i]);
+			SubsystemMapping[] mappingsForSystem = getSubsystemMappings(serverType, requiredSystem[i]);
 			// ensure all dependent subsystems have been validated first
-			for( int k = 0; k < matched.length; k++ ) {
-				validateSubsystem(serverType, matched[k]);
+			for( int k = 0; k < mappingsForSystem.length; k++ ) {
+				validateSubsystemMapping(mappingsForSystem[k]);
 			}
-			if( matched.length ==  0 || allInvalid(matched)) {
+			if( mappingsForSystem.length ==  0 || allInvalid(mappingsForSystem)) {
 				warningsErrors.add(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, 
 						"Invalid controller: - missing required dependent system " + requiredSystem[i])); // TODO clean this
 			}
 		}
-
-		Map<String, String> m = subsys.requiredSubsystems;
+		
+		// Now we validate requirements on specific subsystem mapped id's.  
+		Map<String, String> m = mapping.getSubsystem().getRequiredSubsystems();
 		Iterator<String> j = m.keySet().iterator();
 		while(j.hasNext()) {
 			String system2 = j.next();
 			String subsys2 = m.get(system2); 
 			
-			SubsystemType[] matched = getSubsystemTypes(serverType, system2);
+			SubsystemMapping[] matched = getSubsystemMappings(serverType, system2);
 			boolean found = false;
-			SubsystemType found2 = null;
+			SubsystemMapping found2 = null;
 			for( int k = 0; k < matched.length && !found; k++ ) {
-				if( matched[k].getId().equals(subsys2)) {
+				if( matched[k].mappedId.equals(subsys2)) {
 					found = true;
 					found2 = matched[k];
 				}
@@ -513,7 +599,7 @@ public class SubsystemModel {
 				warningsErrors.add(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, 
 						"Invalid controller: - missing required dependent subsystem ")); // TODO clean this
 			} else {
-				validateSubsystem(serverType, found2);
+				validateSubsystemMapping(found2);
 				if( !found2.isValid ) {
 					warningsErrors.add(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, 
 							"Invalid controller: - required subsystem has errors: " + found2.validationError)); // TODO clean this
@@ -521,18 +607,17 @@ public class SubsystemModel {
 			}
 		}
 		IStatus[] allErrors = (IStatus[]) warningsErrors.toArray(new IStatus[warningsErrors.size()]);
-		return new MultiStatus(ASWTPToolsPlugin.PLUGIN_ID, 0, allErrors, "Errors validating serverType=" + serverType + " and subsystem " + subsys.id, null);
+		return new MultiStatus(ASWTPToolsPlugin.PLUGIN_ID, 0, allErrors, "Errors validating subsystem mapping=" + serverType + " and subsystem id " + mapping.getSubsystem().getId(), null);
 	}
 	
-	private boolean allInvalid(SubsystemType[] matched) {
+	private boolean allInvalid(SubsystemMapping[] matched) {
 		for( int i = 0; i < matched.length; i++ ) 
 			if( matched[i].isValid)
 				return false;
 		return true;
 	}
 	
-	private boolean allAttributesPresent(SubsystemType type) {
-		return type.element != null && type.id != null && type.serverTypes != null && type.system != null;
+	private boolean hasRequiredSubsystemAttributes(SubsystemType type) {
+		return type.element != null && type.id != null && type.system != null;
 	}	
-	
 }

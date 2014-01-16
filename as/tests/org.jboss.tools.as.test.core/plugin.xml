@@ -78,9 +78,13 @@
             class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
             id="system1.implA"
             name="implA"
-            serverTypes="customServer1"
             system="system1">
       </subsystem>
+      <subsystemMapping
+            id="system1.implA"
+            serverTypes="customServer1"
+            mappedId="system1.implA">
+      </subsystemMapping>
    </extension>
 
 
@@ -91,7 +95,6 @@
             class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
             id="system2.implA"
             name="implA"
-            serverTypes="customServer1"
             system="system2">
          <properties>
             <property key="someKey" value="someVal"/>
@@ -101,13 +104,22 @@
             class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
             id="system2.implB"
             name="implB"
-            serverTypes="customServer1"
             system="system2">
          <properties>
             <property key="default" value="true"/>
             <property key="otherKey" value="otherVal"/>
          </properties>
       </subsystem>
+      <subsystemMapping
+            id="system2.implA"
+            mappedId="system2.implA"
+            serverTypes="customServer1">
+      </subsystemMapping>
+      <subsystemMapping
+            id="system2.implB"
+            mappedId="system2.implB"
+            serverTypes="customServer1">
+      </subsystemMapping>
    </extension>
 
 
@@ -137,6 +149,16 @@
             </requires>
          </dependencies>
       </subsystem>
+      <subsystemMapping
+            id="system3.implA"
+            mappedId="system3.implA"
+            serverTypes="customServer1">
+      </subsystemMapping>
+      <subsystemMapping
+            id="system3.implB"
+            mappedId="system3.implB"
+            serverTypes="customServer1">
+      </subsystemMapping>
    </extension>
 
 
@@ -166,7 +188,6 @@
             class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
             id="system4a.tiger"
             name="tiger"
-            serverTypes="customServer1"
             system="system4a">
             <properties>
                <property key="animal" value="tiger"/>
@@ -176,12 +197,28 @@
             class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
             id="system4a.mantis"
             name="mantis"
-            serverTypes="customServer1"
             system="system4a">
             <properties>
                <property key="animal" value="mantis"/>
             </properties>
       </subsystem>
+
+      <subsystemMapping
+            id="system4.implSingleton"
+            mappedId="system4.implSingleton"
+            serverTypes="customServer1">
+      </subsystemMapping>
+      <subsystemMapping
+            id="system4a.tiger"
+            mappedId="system4a.tiger"
+            serverTypes="customServer1">
+      </subsystemMapping>
+      <subsystemMapping
+            id="system4a.mantis"
+            mappedId="system4a.mantis"
+            serverTypes="customServer1">
+      </subsystemMapping>
+
    </extension>
 
 	<!-- 
@@ -196,12 +233,16 @@
             class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
             id="system5.implSingleton5"
             name="implSingleton5"
-            serverTypes="customServer1"
             system="system5">
          <dependencies>
             <requires system="system4"/>
          </dependencies>
       </subsystem>
+      <subsystemMapping
+            id="system5.implSingleton5"
+            mappedId="system5.implSingleton5"
+            serverTypes="customServer1">
+      </subsystemMapping>
 	</extension>
 
 	<!-- 
@@ -214,12 +255,16 @@
             class="org.jboss.tools.as.test.core.subsystems.impl.System6Subsystem"
             id="system6.implSingleton6"
             name="implSingleton6"
-            serverTypes="customServer1"
             system="system6">
          <dependencies>
             <requires system="system4a"/>
          </dependencies>
       </subsystem>
+      <subsystemMapping
+            id="system6.implSingleton6"
+            mappedId="system6.implSingleton6"
+            serverTypes="customServer1">
+      </subsystemMapping>
 	</extension>
 
 
@@ -238,6 +283,11 @@
             <requires system="system4a" subsystem="system4a.mantis"/>
          </dependencies>
       </subsystem>
+      <subsystemMapping
+            id="system7.implSingleton7"
+            mappedId="system7.implSingleton7"
+            serverTypes="customServer1">
+      </subsystemMapping>
 	</extension>
 
 
@@ -253,6 +303,11 @@
             <requires system="system4a" subsystem="system4a.tiger"/>
          </dependencies>
       </subsystem>
+      <subsystemMapping
+            id="system8.implSingleton8"
+            mappedId="system8.implSingleton8"
+            serverTypes="customServer1">
+      </subsystemMapping>
 	</extension>
 
    

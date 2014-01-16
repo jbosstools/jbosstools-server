@@ -42,9 +42,8 @@
          point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
       <subsystem
             system="deploymentOptions"
-            id="deploymentOptions.rse"
+            id="deploymentOptions.rse.default"
             name="Server Deployment Settings (RSE)"
-            serverTypes="%AllJBTServerTypes"
             class="org.jboss.ide.eclipse.as.rse.core.subsystems.RSEDeploymentOptionsController">
          <properties>
             <property
@@ -53,45 +52,74 @@
             </property>
          </properties>
       </subsystem>
+      <subsystemMapping
+            id="deploymentOptions.rse.default"
+            mappedId="deploymentOptions.rse"
+            serverTypes="%AllJBTServerTypes">
+      </subsystemMapping>
+      
+      
       <subsystem
             system="filesystem"
-            id="filesystem.rse"
+            id="filesystem.rse.default"
             name="Filesystem (RSE)"
-            serverTypes="%AllJBTServerTypes"
             class="org.jboss.ide.eclipse.as.rse.core.subsystems.RSEFilesystemController">
          <properties>
             <property key="target" value="rse"></property>
          </properties>
       </subsystem>
+      <subsystemMapping
+            id="filesystem.rse.default"
+            mappedId="filesystem.rse"
+            serverTypes="%AllJBTServerTypes">
+      </subsystemMapping>
+      
+      
       <subsystem
             system="serverDetails"
-            id="serverDetails.rse"
+            id="serverDetails.rse.default"
             name="Server Details (RSE)"
-            serverTypes="%AllJBTServerTypes"
             class="org.jboss.ide.eclipse.as.rse.core.RSEServerModeDetails">
          <properties>
             <property key="target" value="rse"></property>
          </properties>
       </subsystem>
+      <subsystemMapping
+            id="serverDetails.rse.default"
+            mappedId="serverDetails.rse"
+            serverTypes="%AllJBTServerTypes">
+      </subsystemMapping>
+      
       <subsystem
             system="launch"
-            id="launch.standard.rse"
+            id="launch.standard.rse.default"
             name="Launch JBoss Server (RSE)"
-            serverTypes="%AllJBossServerTypes"
             class="org.jboss.ide.eclipse.as.rse.core.subsystems.RSEJBossLaunchController">
          <properties>
             <property key="target" value="rse"></property>
          </properties>
       </subsystem>
+      <subsystemMapping
+            id="launch.standard.rse.default"
+            mappedId="launch.standard.rse"
+            serverTypes="%AllJBossServerTypes">
+      </subsystemMapping>
+            
+      
       <subsystem
             system="shutdown"
-            id="shutdown.rse.commandline"
+            id="shutdown.rse.commandline.default"
             name="Shutdown Server (Remote Command Line)"
-            serverTypes="%ServerTypesJBoss6OrLower"
             class="org.jboss.ide.eclipse.as.rse.core.subsystems.RSECommandLineShutdownController">
          <properties>
             <property key="target" value="rse"></property>
          </properties>
       </subsystem>
+      <subsystemMapping
+            id="shutdown.rse.commandline.default"
+            mappedId="shutdown.rse.commandline"
+            serverTypes="%ServerTypesJBoss6OrLower">
+      </subsystemMapping>
+      
 	</extension>
 </plugin>

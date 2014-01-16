@@ -14,7 +14,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.server.core.IServerAttributes;
-import org.jboss.ide.eclipse.as.wtp.core.server.behavior.SubsystemModel.SubsystemType;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.SubsystemModel.Subsystem;
 
 /**
  * 
@@ -31,13 +31,13 @@ public interface ISubsystemController {
 	 * @param server
 	 * @param type
 	 */
-	public void initialize(IServerAttributes server, SubsystemType type, Map<String, Object> environment);
+	public void initialize(IServerAttributes server, Subsystem type, Map<String, Object> environment);
 	
 	/**
 	 * Get the subsystem id
 	 * @return
 	 */
-	public String getSubsystemId();
+	public String getSubsystemMappedId();
 
 	/**
 	 * Get the subsystem id
