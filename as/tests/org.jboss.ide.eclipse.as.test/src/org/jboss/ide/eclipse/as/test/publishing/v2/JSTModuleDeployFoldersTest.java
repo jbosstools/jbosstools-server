@@ -19,21 +19,19 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerUtil;
-import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
 import org.jboss.ide.eclipse.as.test.publishing.AbstractDeploymentTest;
 import org.jboss.ide.eclipse.as.test.util.ServerRuntimeUtils;
 import org.jboss.ide.eclipse.as.test.util.wtp.JavaEEFacetConstants;
 import org.jboss.ide.eclipse.as.test.util.wtp.OperationTestCase;
 import org.jboss.ide.eclipse.as.test.util.wtp.ProjectCreationUtil;
+import org.jboss.tools.as.core.internal.modules.DeploymentModulePrefs;
+import org.jboss.tools.as.core.internal.modules.DeploymentPreferences;
+import org.jboss.tools.as.core.internal.modules.DeploymentPreferencesLoader;
 
 public class JSTModuleDeployFoldersTest extends AbstractJSTDeploymentTester {
 	protected String getModuleName() {
@@ -96,13 +94,12 @@ public class JSTModuleDeployFoldersTest extends AbstractJSTDeploymentTester {
 		
 		// THIS NEEDS A REAL API. THIS IS HORRIBLE
 		IModule mod = ServerUtil.getModule(project);
-		DeploymentPreferences prefs = DeploymentPreferenceLoader.loadPreferencesFromServer(server);
-		DeploymentModulePrefs p = prefs.getOrCreatePreferences(LocalPublishMethod.LOCAL_PUBLISH_METHOD)
-				.getOrCreateModulePrefs(mod);
+		DeploymentPreferences prefs = DeploymentPreferencesLoader.loadPreferencesFromServer(server);
+		DeploymentModulePrefs p = prefs.getOrCreatePreferences().getOrCreateModulePrefs(mod);
 		p.setProperty(IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC, "/newRoot");
 		p.setProperty(IJBossToolingConstants.LOCAL_DEPLOYMENT_TEMP_LOC, "/newTempRoot");
 		IServerWorkingCopy wc = server.createWorkingCopy();
-		DeploymentPreferenceLoader.savePreferencesToServerWorkingCopy(wc, prefs);
+		DeploymentPreferencesLoader.savePreferencesToServerWorkingCopy(wc, prefs);
 		server = wc.save(true, null);
 
 		

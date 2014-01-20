@@ -37,6 +37,9 @@ public class ControllableServerLaunchConfiguration implements
 		ILaunchConfigurationDelegate2 {
 	private ILaunchServerController delegate = null;
 	protected ILaunchServerController getController(ILaunchConfiguration configuration) throws CoreException {
+		if( delegate != null ) 
+			return delegate;
+		
 		IControllableServerBehavior jbsBehavior = JBossServerBehaviorUtils.getControllableBehavior(configuration);
 		delegate = (ILaunchServerController)jbsBehavior.getController(IControllableServerBehavior.SYSTEM_LAUNCH);
 		if( delegate == null ) {

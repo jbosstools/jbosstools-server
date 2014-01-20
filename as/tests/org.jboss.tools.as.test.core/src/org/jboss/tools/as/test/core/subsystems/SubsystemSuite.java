@@ -16,6 +16,10 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
+	BrowseBehaviorSubsystemResolutionTest.class,
+	ExploreBehaviorSubsystemResolutionTest.class,
+	TabGroupSubsystemResolutionTest.class,
+	XPathPortDiscoveryResolutionTest.class,
 	ServerSubsystemTest1.class,
 	ModulePathFilterUtilityTest.class,
 	ModuleRestartBehaviorControllerTest.class,

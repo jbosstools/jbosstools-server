@@ -15,6 +15,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 
+@Deprecated
 public interface IDeployableServerBehaviour {
 	public IServer getServer();
 	public boolean changedFileRequiresModuleRestart(IModuleFile mf);

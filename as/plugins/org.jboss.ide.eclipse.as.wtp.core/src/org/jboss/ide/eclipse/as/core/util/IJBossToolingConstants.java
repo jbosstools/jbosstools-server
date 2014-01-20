@@ -10,8 +10,6 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.util;
 
-import org.eclipse.core.runtime.IPath;
-import org.jboss.ide.eclipse.as.wtp.core.Messages;
 
 /**
  * @noimplement This interface is not intended to be implemented by clients.
@@ -154,31 +152,12 @@ public interface IJBossToolingConstants {
 	public static final String SHUTDOWN_POLLER_KEY = "org.jboss.ide.eclipse.as.core.server.attributes.shutdownPollerKey"; //$NON-NLS-1$
 	public static final String SERVER_USERNAME = "org.jboss.ide.eclipse.as.core.server.userName"; //$NON-NLS-1$
 	public static final String SERVER_PASSWORD = "org.jboss.ide.eclipse.as.core.server.password"; //$NON-NLS-1$
-	public static final String JNDI_PORT = "org.jboss.ide.eclipse.as.core.server.jndiPort"; //$NON-NLS-1$
-	public static final String JNDI_PORT_DETECT = "org.jboss.ide.eclipse.as.core.server.jndiPortAutoDetect"; //$NON-NLS-1$
-	public static final String JNDI_PORT_DETECT_XPATH = "org.jboss.ide.eclipse.as.core.server.jndiPortAutoDetect.XPath"; //$NON-NLS-1$
-	public static final String JNDI_PORT_DEFAULT_XPATH = Messages.Ports + IPath.SEPARATOR + "JNDI"; //$NON-NLS-1$
-	public static final int    JNDI_DEFAULT_PORT = 1099;
-	
+
+	@Deprecated
 	public static final String WEB_PORT = "org.jboss.ide.eclipse.as.core.server.webPort"; //$NON-NLS-1$
+	@Deprecated
 	public static final String WEB_PORT_DETECT= "org.jboss.ide.eclipse.as.core.server.webPortAutoDetect"; //$NON-NLS-1$
-	public static final String WEB_PORT_DETECT_XPATH = "org.jboss.ide.eclipse.as.core.server.webPortAutoDetect.XPath"; //$NON-NLS-1$
-	public static final String WEB_PORT_DEFAULT_XPATH = Messages.Ports + IPath.SEPARATOR + "JBoss Web"; //$NON-NLS-1$
-	public static final int    JBOSS_WEB_DEFAULT_PORT = 8080;
-	
-	public static final String AS7_MANAGEMENT_PORT = "org.jboss.ide.eclipse.as.core.server.as7.managementPort"; //$NON-NLS-1$
-	public static final String AS7_MANAGEMENT_PORT_DETECT= "org.jboss.ide.eclipse.as.core.server.as7.managementPortAutoDetect"; //$NON-NLS-1$
-	public static final String AS7_MANAGEMENT_PORT_DETECT_XPATH = "org.jboss.ide.eclipse.as.core.server.as7.managementPortAutoDetect.XPath"; //$NON-NLS-1$
-	public static final String AS7_MANAGEMENT_PORT_DEFAULT_XPATH = Messages.Ports + IPath.SEPARATOR + "JBoss Management"; //$NON-NLS-1$
-	public static final int    AS7_MANAGEMENT_PORT_DEFAULT_PORT = 9999;
-	public static final int    WILDFLY8_MANAGEMENT_PORT_DEFAULT_PORT = 9990;
-	
-	public static final String PORT_OFFSET = "org.jboss.ide.eclipse.as.core.server.portOffset"; //$NON-NLS-1$
-	public static final String PORT_OFFSET_DETECT= "org.jboss.ide.eclipse.as.core.server.portOffsetAutoDetect"; //$NON-NLS-1$
-	public static final String PORT_OFFSET_DETECT_XPATH = "org.jboss.ide.eclipse.as.core.server.portOffsetAutoDetect.XPath"; //$NON-NLS-1$
-	public static final String PORT_OFFSET_DEFAULT_XPATH = Messages.Ports + IPath.SEPARATOR + "Port Offset"; //$NON-NLS-1$
-	public static final int    PORT_OFFSET_DEFAULT_PORT = 0;
-	
+
 	
 	/*
 	 * Should we add deployment scanners on startup?

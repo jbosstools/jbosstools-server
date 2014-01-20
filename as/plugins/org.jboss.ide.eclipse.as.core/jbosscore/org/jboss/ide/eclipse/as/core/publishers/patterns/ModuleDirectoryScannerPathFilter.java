@@ -14,9 +14,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
-import org.jboss.ide.eclipse.as.core.modules.ResourceModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.publishers.patterns.internal.PublishFilterDirectoryScanner;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
+import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
 
 /**
  * @since 2.3
@@ -60,7 +60,7 @@ public class ModuleDirectoryScannerPathFilter implements IModulePathFilter {
 	 */
 	public ModuleDirectoryScannerPathFilter(IModule module, 
 			String[] includes, String[] excludes) throws CoreException {
-		raw = ResourceModuleResourceUtil.getMembers(module);
+		raw = ModuleResourceUtil.getMembers(module);
 		scanner = new PublishFilterDirectoryScanner(raw);
 		scanner.setIncludes(includes);
 		scanner.setExcludes(excludes);

@@ -11,8 +11,10 @@
 package org.jboss.ide.eclipse.as.core.util;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
@@ -41,8 +43,11 @@ public class JBossServerBehaviorUtils {
 		return getControllableBehavior(ServerUtil.getServer(configuration));
 	}
 	
-	public static IControllableServerBehavior getControllableBehavior(IServer server) {
+	public static IControllableServerBehavior getControllableBehavior(IServerAttributes server) {
 		IControllableServerBehavior behavior = (IControllableServerBehavior) server.getAdapter(IControllableServerBehavior.class);
+		if( behavior == null ) {
+			behavior = (IControllableServerBehavior) server.loadAdapter(IControllableServerBehavior.class, new NullProgressMonitor());
+		}
 		return behavior;
 	}
 	

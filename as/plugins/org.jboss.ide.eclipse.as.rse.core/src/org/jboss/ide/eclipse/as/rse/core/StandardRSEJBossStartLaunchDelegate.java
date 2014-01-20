@@ -136,11 +136,13 @@ public class StandardRSEJBossStartLaunchDelegate extends
 		listener = new IHostShellOutputListener() {
 			public void shellOutputChanged(IHostShellChangeEvent event) {
 				IHostOutput[] out = event.getLines();
+				String s = null;
 				for (int i = 0; i < out.length; i++) {
-					if( out[i].toString().startsWith(ECHO_KEY_DISCOVER_PID)) {
+					s = out[i].toString();
+					if( s.startsWith(ECHO_KEY_DISCOVER_PID)) {
 						// pid found
-						int lastColon = out[i].toString().lastIndexOf(DELIMETER);
-						String pid = out[i].toString().substring(lastColon+1);
+						int lastColon = s.lastIndexOf(DELIMETER);
+						String pid = s.substring(lastColon+1);
 						behavior.putSharedData(IDeployableServerBehaviorProperties.PROCESS_ID, pid);
 					}
 				}

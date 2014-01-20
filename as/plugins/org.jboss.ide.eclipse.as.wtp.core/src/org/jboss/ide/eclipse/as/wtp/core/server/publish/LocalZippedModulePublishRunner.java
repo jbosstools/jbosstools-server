@@ -134,7 +134,7 @@ public class LocalZippedModulePublishRunner extends ModuleResourceUtil {
 		removedMonitor.beginTask("Deleting removed modules", removed.size() * 100);
 		// Handle the removed children that are not returned by getChildModules
 		Iterator<IModule[]> i = removed.iterator();
-		while(i.hasNext()) {
+		while(i.hasNext() && !monitor.isCanceled()) {
 			results.addAll(Arrays.asList(removeModule(i.next())));
 			removedMonitor.worked(100);
 		}
@@ -259,7 +259,7 @@ public class LocalZippedModulePublishRunner extends ModuleResourceUtil {
 		if( children == null )
 			return;
 		monitor.beginTask("Assembling child modules", children.length * 100);
-		for( int i = 0; i < children.length; i++ ) {
+		for( int i = 0; i < children.length && !monitor.isCanceled(); i++ ) {
 			if( ServerModelUtilities.isBinaryModule(children[i]))
 				results.addAll(Arrays.asList(fullBinaryPublish(module, children[i], ProgressMonitorUtil.submon(monitor, 100))));
 			else

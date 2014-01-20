@@ -28,6 +28,7 @@ import org.eclipse.rse.subsystems.files.core.servicesubsystem.IFileServiceSubSys
 import org.eclipse.rse.subsystems.files.core.subsystems.IRemoteFile;
 import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.util.ProgressMonitorUtil;
+import org.jboss.ide.eclipse.as.rse.core.IFileServiceProvider;
 import org.jboss.ide.eclipse.as.rse.core.RSEFrameworkUtils;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
 import org.jboss.ide.eclipse.as.rse.core.util.RemoteCallWrapperUtility;
@@ -35,7 +36,7 @@ import org.jboss.ide.eclipse.as.rse.core.util.RemoteCallWrapperUtility.NamedRunn
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IFilesystemController;
 
-public class RSEFilesystemController extends AbstractSubsystemController implements IFilesystemController  {
+public class RSEFilesystemController extends AbstractSubsystemController implements IFilesystemController, IFileServiceProvider  {
 	/**
 	 * This variable is here to help ensure that multiple remote requests to create
 	 * the same directory are not made. This ensures each folder is only
@@ -165,7 +166,7 @@ public class RSEFilesystemController extends AbstractSubsystemController impleme
 	/*
 	 * Load the file service subsystem
 	 */
-	private IFileServiceSubSystem getFileServiceSubSystem() throws CoreException {
+	public IFileServiceSubSystem getFileServiceSubSystem() throws CoreException {
 		if( fileSubSystem == null ) {
 			// initialize 
 			Trace.trace(Trace.STRING_FINER, "Ensuring RSE is initialized");
@@ -182,7 +183,7 @@ public class RSEFilesystemController extends AbstractSubsystemController impleme
 	/*
 	 * Get the file service
 	 */
-	private IFileService getFileService() throws CoreException {
+	public IFileService getFileService() throws CoreException {
 		return getFileServiceSubSystem().getFileService();
 	}
 }

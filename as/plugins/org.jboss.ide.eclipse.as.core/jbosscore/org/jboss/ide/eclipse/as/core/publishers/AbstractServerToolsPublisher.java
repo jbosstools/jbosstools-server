@@ -34,7 +34,6 @@ import org.eclipse.wst.server.core.util.ProjectModule;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.Trace;
-import org.jboss.ide.eclipse.as.core.modules.ResourceModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServerBehaviour;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
@@ -43,6 +42,7 @@ import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.util.IEventCodes;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.util.ProgressMonitorUtil;
 import org.jboss.ide.eclipse.as.core.util.PublishCopyUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
@@ -50,6 +50,7 @@ import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
 /**
  * Class suitable for parsing any properly formed servertools-api module
+ * @deprecated
  */
 public abstract class AbstractServerToolsPublisher implements IJBossServerPublisher {
 	protected IModuleResourceDelta[] delta;
@@ -262,7 +263,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 				IPath path = new Path(pm.getPath(children[i]));
 				IModule[] tmpTree = PublishUtil.combine(moduleTree, children[i]);
 				File childFile = createForceZippedChild(deployRoot, children[i], tmpTree, errors);
-				resources = ResourceModuleResourceUtil.addFileToModuleResources(
+				resources = ModuleResourceUtil.addFileToModuleResources(
 						tmpTree, new Path("/"), resources, path, childFile); //$NON-NLS-1$
 			}
 			

@@ -27,6 +27,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 
+@Deprecated
 public class BehaviourModel {
 	private static BehaviourModel model;
 	public static synchronized BehaviourModel getModel() {

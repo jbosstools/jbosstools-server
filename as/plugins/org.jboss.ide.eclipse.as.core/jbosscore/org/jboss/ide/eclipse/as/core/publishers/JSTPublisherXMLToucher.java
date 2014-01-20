@@ -33,8 +33,6 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IFilesystemController;
  * This class has become obsolete once modules no longer required
  * descriptors, and since as7 provides other mechanisms for restarting modules.
  * 
- * There is an API concern in the edits made here. 
- * IDescriptorToucher was technically public (though should nto have been)
  */
 public class JSTPublisherXMLToucher {
 	public static JSTPublisherXMLToucher instance;

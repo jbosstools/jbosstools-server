@@ -8,10 +8,11 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.ui;
+package org.jboss.ide.eclipse.as.ui.subsystems;
 
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ISubsystemController;
 
 /**
  * This class represents a way to explore a given server/module
@@ -19,7 +20,10 @@ import org.eclipse.wst.server.core.IServer;
  * require different dialogs or perhaps even initialization 
  * of connections. 
  */
-public interface IExploreBehavior {
+public interface IExploreBehavior extends ISubsystemController {
+	
+	public static final String SYSTEM_ID = "exploreBehavior"; //$NON-NLS-1$
+	
 	/**
 	 * Can this behavior properly explore the given server / module?
 	 * @param server

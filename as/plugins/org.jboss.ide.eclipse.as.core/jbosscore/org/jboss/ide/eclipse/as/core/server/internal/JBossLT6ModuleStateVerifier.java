@@ -41,6 +41,15 @@ import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 import org.jboss.tools.as.core.server.controllable.systems.IDeploymentOptionsController;
 import org.jboss.tools.as.core.server.controllable.systems.IModuleDeployPathController;
 
+/**
+ * An implementation of the {@link IModuleStateController}.
+ * This specific implementation is filesystem-based, and is geared for JBoss servers
+ * of version 6 or below. 
+ * 
+ * This implementation cannot stop or start a module. It can only restart a module. 
+ * It does this by touching the relevent descriptors on the deployment so the deployment
+ * scanner redeploys the application.  
+ */
 public class JBossLT6ModuleStateVerifier extends AbstractSubsystemController implements IModuleStateController, IServerModuleStateVerifier {
 	// Dependencies
 	
@@ -92,7 +101,7 @@ public class JBossLT6ModuleStateVerifier extends AbstractSubsystemController imp
 	}
 
 	/*
-	 * get the filesystem controller for transfering files
+	 * get the filesystem controller for transferring files
 	 */
 	protected IFilesystemController getFilesystemController() throws CoreException {
 		if( filesystemController == null ) {
@@ -244,7 +253,7 @@ public class JBossLT6ModuleStateVerifier extends AbstractSubsystemController imp
 
 	@Override
 	public boolean canRestartModule(IModule[] module) {
-		if( module.length == 1 ) 
+		if( module.length == 1 && module[0] != null) 
 			return true;
 		return false;
 	}
@@ -275,6 +284,10 @@ public class JBossLT6ModuleStateVerifier extends AbstractSubsystemController imp
 	@Override
 	public int restartModule(IModule[] module, IProgressMonitor monitor)
 			throws CoreException {
+		if( !canRestartModule(module)) {
+			return getServer().getModuleState(module);
+		}
+		
 		IPath archiveDestination = getModuleDeployRoot(module);
 		IFilesystemController controller = getFilesystemController();
 

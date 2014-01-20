@@ -27,6 +27,9 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
+/**
+ * @deprecated
+ */
 public class JBoss7JSTPublisher extends AbstractServerToolsPublisher {
 	
 	public IStatus publishModule(
@@ -71,7 +74,6 @@ public class JBoss7JSTPublisher extends AbstractServerToolsPublisher {
 	protected void markModuleRequiresRestart(IPath deployPath, IModule[] moduleTree,
 			IJBossServerPublishMethod method, IPublishCopyCallbackHandler handler) throws CoreException {
 		boolean useAS7Behavior = DeploymentMarkerUtils.supportsJBoss7MarkerDeployment(server.getServer());
-		System.out.println("Mark " + deployPath + " for restart");   //$NON-NLS-1$ //$NON-NLS-2$
 		if( !useAS7Behavior) { 
 			// Simply touch the descriptor as needed
 			JSTPublisherXMLToucher.getInstance().touch(deployPath, 

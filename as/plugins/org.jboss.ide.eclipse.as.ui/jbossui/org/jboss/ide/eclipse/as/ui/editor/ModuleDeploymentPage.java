@@ -44,13 +44,13 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
+import org.jboss.tools.as.core.internal.modules.DeploymentModulePrefs;
+import org.jboss.tools.as.core.internal.modules.DeploymentPreferences;
+import org.jboss.tools.as.core.internal.modules.DeploymentPreferencesLoader;
 
 /**
  * This class was replaced by {@link DeploymentPage}
@@ -151,7 +151,7 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 	}
 
 	public void createPartControl(Composite parent) {
-		preferences = DeploymentPreferenceLoader.loadPreferencesFromServer(server.getOriginal());
+		preferences = DeploymentPreferencesLoader.loadPreferencesFromServer(server.getOriginal());
 		ScrolledForm innerContent = createPageStructure(parent);
 		addDeploymentLocationControls(innerContent.getBody(), null);
 		
@@ -240,7 +240,7 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 	}
 	
 	public void savePreferencesToWorkingCopy() {
-		DeploymentPreferenceLoader.savePreferencesToServerWorkingCopy(helper, preferences);
+		DeploymentPreferencesLoader.savePreferencesToServerWorkingCopy(helper, preferences);
 	}
 
 	public String makeGlobal(String path) {

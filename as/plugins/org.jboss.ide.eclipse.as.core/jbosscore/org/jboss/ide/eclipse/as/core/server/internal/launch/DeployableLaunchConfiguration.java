@@ -23,7 +23,7 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ILaunchServerController
 
 /**
  * Not deprecated, still in use by the deploy-only server.
- * This class can be cleaned further but removing the constnats will be API break
+ * This class can be cleaned further but removing the constants will be API break
  */
 public class DeployableLaunchConfiguration implements
 		ILaunchConfigurationDelegate {

@@ -88,6 +88,7 @@ public class AS7DeploymentScannerUtility {
 		try {
 			executeWithResult(server, request);
 		} catch(Exception e) {
+			JBossServerCorePlugin.log(e);
 			return false;
 		}
 		return true;

@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.IJBossBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.server.IServerModeDetails;
@@ -40,8 +41,17 @@ public class ServerModeDetailsAdapterFactory implements IAdapterFactory, IJBossT
 		if( adaptableObject instanceof IServer ) {
 			IServer ao = (IServer)adaptableObject;
 			
-			// Following lines should be removed / deprecated
 			ServerBehaviourDelegate del = (ServerBehaviourDelegate)ao.loadAdapter(ServerBehaviourDelegate.class, null);
+			if( del instanceof ControllableServerBehavior) {
+				try {
+					ControllableServerBehavior del2 = (ControllableServerBehavior)del;
+					return (IServerModeDetails)del2.getController(IServerDetailsController.SYSTEM_ID);
+				} catch(CoreException ce) {
+					JBossServerCorePlugin.log(ce);
+				}
+			}
+			
+			// Following lines should be removed / deprecated
 			if( del instanceof IDelegatingServerBehavior) {
 				IJBossBehaviourDelegate del2 = ((IDelegatingServerBehavior)del).getDelegate();
 				if( del2 instanceof AbstractJBossBehaviourDelegate) {
@@ -49,15 +59,6 @@ public class ServerModeDetailsAdapterFactory implements IAdapterFactory, IJBossT
 				}
 			}
 			
-			// New impl here
-			if( del instanceof ControllableServerBehavior) {
-				try {
-					ControllableServerBehavior del2 = (ControllableServerBehavior)del;
-					return (IServerModeDetails)del2.getController(IServerDetailsController.SYSTEM_ID);
-				} catch(CoreException ce) {
-					// TODO log this error
-				}
-			}
 		}
 		return null;
 	}

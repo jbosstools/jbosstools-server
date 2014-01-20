@@ -8,16 +8,17 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.ui.editor;
+package org.jboss.ide.eclipse.as.ui.subsystems.internal;
 
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.server.core.IServerAttributes;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
-import org.jboss.ide.eclipse.as.ui.IBrowseBehavior;
+import org.jboss.ide.eclipse.as.ui.subsystems.IBrowseBehavior;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
 
-public class LocalBrowseBehavior implements IBrowseBehavior {
+public class LocalBrowseBehavior extends AbstractSubsystemController implements IBrowseBehavior {
 	public String openBrowseDialog(IServerAttributes server, String original) {
 		DirectoryDialog d = new DirectoryDialog(new Shell());
 		String filterPath = ServerUtil.makeGlobal(server.getRuntime(), new Path(original)).toString();

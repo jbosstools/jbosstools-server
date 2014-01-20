@@ -56,12 +56,14 @@ public class StandardLocalJBossStartLaunchDelegate extends
 		IProcess[] processes = launch.getProcesses();
 		IServer server = ServerUtil.getServer(configuration);
 		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(configuration);
-		ProcessTerminatedDebugListener debug = new ProcessTerminatedDebugListener(ServerUtil.getServer(configuration), processes[0]);
-		if( beh != null ) {
-			beh.putSharedData(IDeployableServerBehaviorProperties.PROCESS, processes[0]);
-			beh.putSharedData(IDeployableServerBehaviorProperties.DEBUG_LISTENER, debug);
-		}
-		DebugPlugin.getDefault().addDebugEventListener(debug);
+		if( processes != null && processes.length >= 1 && processes[0] != null ) {
+			ProcessTerminatedDebugListener debug = new ProcessTerminatedDebugListener(ServerUtil.getServer(configuration), processes[0]);
+			if( beh != null ) {
+				beh.putSharedData(IDeployableServerBehaviorProperties.PROCESS, processes[0]);
+				beh.putSharedData(IDeployableServerBehaviorProperties.DEBUG_LISTENER, debug);
+			}
+			DebugPlugin.getDefault().addDebugEventListener(debug);
+		} 
 		
 		// Initiate Polling!
 		PollThreadUtils.pollServer(server, IServerStatePoller.SERVER_UP);

@@ -21,7 +21,6 @@ import org.eclipse.wst.server.core.model.IModuleResource;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.publishers.patterns.ModuleDirectoryScannerPathFilter;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
-import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
 
@@ -35,7 +34,7 @@ import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
  * and this should be changed!!
  * 
  */
-public class ResourceModuleResourceUtil extends ModuleResourceUtil {
+public class ResourceModuleResourceUtil  {
 	/**
 	 * @since 2.3
 	 */

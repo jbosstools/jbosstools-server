@@ -10,15 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server;
 
-import org.eclipse.core.runtime.IPath;
-import org.jboss.ide.eclipse.as.wtp.core.Messages;
 
 public interface IJBoss6Server {
-	public static final String JMX_RMI_PORT = "org.jboss.ide.eclipse.as.core.server.jmxrmiport"; //$NON-NLS-1$
-	public static final String JMX_RMI_PORT_DETECT = "org.jboss.ide.eclipse.as.core.server.jmxrmiport_AutoDetect"; //$NON-NLS-1$
-	public static final String JMX_RMI_PORT_DETECT_XPATH = "org.jboss.ide.eclipse.as.core.server.jmxrmiport_AutoDetect.XPath"; //$NON-NLS-1$
-	public static final String JMX_RMI_PORT_DEFAULT_XPATH = Messages.Ports + IPath.SEPARATOR + "JMX RMI Port"; //$NON-NLS-1$
-	public static final int JMX_RMI_DEFAULT_PORT = 1090;
-	
 	public int getJMXRMIPort();
 }

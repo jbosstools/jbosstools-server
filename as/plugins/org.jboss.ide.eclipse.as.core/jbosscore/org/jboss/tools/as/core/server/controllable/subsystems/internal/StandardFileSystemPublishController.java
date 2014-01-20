@@ -31,6 +31,7 @@ import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
+import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.Trace;
@@ -38,6 +39,7 @@ import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.modules.ResourceModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.publishers.JSTPublisherXMLToucher;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilterProvider;
@@ -61,7 +63,9 @@ import org.jboss.tools.as.core.server.controllable.systems.IModuleRestartBehavio
 
 /**
  * This class drives the standard publishing operation.
- * It will also delegate 
+ * It will also delegate to legacy or override controllers if one is found 
+ * that matches the given module type. 
+ * It has been demonstrated to work with legacy publishers. 
  */
 public class StandardFileSystemPublishController extends AbstractSubsystemController
 		implements IPublishController {
@@ -106,7 +110,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 	
 	protected IModuleRestartBehaviorController getModuleRestartBehaviorController() throws CoreException {
 		if( restartController == null ) {
-			restartController = (IModuleRestartBehaviorController)findDependency(IModuleRestartBehaviorController.SYSTEM_ID);
+			restartController = (IModuleRestartBehaviorController)findDependencyFromBehavior(IModuleRestartBehaviorController.SYSTEM_ID);
 		}
 		return restartController;
 	}
@@ -117,7 +121,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 	 */
 	protected IDeploymentOptionsController getDeploymentOptions() throws CoreException {
 		if( deploymentOptions == null ) {
-			deploymentOptions = (IDeploymentOptionsController)findDependency(IDeploymentOptionsController.SYSTEM_ID);
+			deploymentOptions = (IDeploymentOptionsController)findDependencyFromBehavior(IDeploymentOptionsController.SYSTEM_ID);
 		}
 		return deploymentOptions;
 	}
@@ -353,7 +357,21 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 	// If this is a bpel or osgi or some other strange publisher, 
 	// allow the delegate to handle the publish
 	private IPublishController findDelegatePublishController(IModule[] module) {
-		return null; // TODO
+		// First try to find a new delegate for this module type
+		// TODO , no mechanism yet
+		
+		// If none are found, lets look for legacy ones. 
+		String existingMode = getServer().getAttribute(IDeployableServer.SERVER_MODE, "local"); //$NON-NLS-1$
+		IJBossServerPublisher pub = ExtensionManager.getDefault().getPublisher(getServer(), module, existingMode);
+		if( pub != null ) {
+			// return a legacy wrapper. 
+			LegacyPublisherWrapperController c = new LegacyPublisherWrapperController();
+			c.initialize(getServer(), null,  null);
+			c.setLegacyPublisher(pub);
+			// TODO log a warning that this is a legacy publisher and must be converted ??
+			return c;
+		}
+		return null; 
 	}
 
 	// Does the given server prefer zipped deployment?
@@ -429,7 +447,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 	 * @return
 	 */
 	private boolean parentModuleIsForcedZip(IModule[] moduleTree) {
-		ArrayList<IModule> tmp = new ArrayList<IModule>();
+		ArrayList<IModule> tmp = new ArrayList(Arrays.asList(moduleTree)); 
 		tmp.addAll(Arrays.asList(moduleTree));
 		tmp.remove(tmp.size()-1);
 		while( tmp.size() > 0 ) {

@@ -19,7 +19,7 @@
             hasConfiguration="false"
             id="org.jboss.ide.eclipse.as.systemCopyServer"
             initialState="started"
-            launchConfigId="org.jboss.ide.eclipse.as.core.deployOnlyLaunchConfig"
+            launchConfigId="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
             launchModes="run"
             name="%deploy.server.name"
             runtime="false"
@@ -574,14 +574,6 @@
             modes="run"
             name="Stop Server"
             public="false">
-      </launchConfigurationType>
-      <launchConfigurationType
-            category="JBoss"
-            delegate="org.jboss.ide.eclipse.as.core.server.internal.launch.DeployableLaunchConfiguration"
-            id="org.jboss.ide.eclipse.as.core.deployOnlyLaunchConfig"
-            modes="run"
-            name="No-op Server Launch Configuration"
-            public="true">
       </launchConfigurationType>
    </extension>
 
@@ -1470,18 +1462,6 @@
    <!-- NEW_SERVER_ADAPTER Add the behaviour extension for a new server type above this line --> 
    
    
-   
-   <!-- The default publisher declaration. -->
-   <extension
-         point="org.jboss.ide.eclipse.as.core.publishers">
-      <publisher
-            class="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher"
-            priority="15"
-            zipDelegate="false">
-      </publisher>
-   </extension>
-   
-   
    <extension
           point="org.eclipse.wst.server.core.moduleArtifactAdapters">
        <moduleArtifactAdapter
@@ -1685,6 +1665,19 @@
             serverTypes="%AllJBTServerTypes">
       </subsystemMapping>
 
+
+      <subsystem
+            system="publish"
+            id="publish.management.default"
+            name="Management Publish Controller"
+            class="org.jboss.tools.as.core.server.controllable.subsystems.internal.ManagementPublishController">
+      </subsystem>
+      <subsystemMapping
+            id="publish.management.default"
+            mappedId="publish.management"
+            serverTypes="%ServerTypesJBoss7OrHigher">
+      </subsystemMapping>
+
       
       
       <!-- A filesystem publish controller that suspends and resumes deployment scanners, for use in as lessthan 7 -->
@@ -1706,7 +1699,20 @@
             mappedId="publish.filesystem.suspendScanners"
             serverTypes="%AllJBossServerTypes">
       </subsystemMapping>
-      
+
+
+	<!-- subsystem for reoslving ports -->
+      <subsystem
+            system="server.ports"
+            id="server.ports.xpaths"
+            name="Port Discovery Controller"
+            class="org.jboss.tools.as.core.server.controllable.subsystems.internal.XPathsPortsController">
+      </subsystem>
+      <subsystemMapping
+            id="server.ports.xpaths"
+            mappedId="server.ports.default"
+            serverTypes="%AllJBossServerTypes">
+      </subsystemMapping>
       
       <!-- Some no-op stub implementations -->
       <subsystem

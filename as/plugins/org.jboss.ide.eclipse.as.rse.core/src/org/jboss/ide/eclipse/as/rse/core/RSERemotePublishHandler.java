@@ -36,6 +36,7 @@ import org.jboss.ide.eclipse.as.rse.core.util.RemoteCallWrapperUtility.NamedRunn
 /**
  * This class is being replaced by a subsystem framework. Please see
  * {@link RSEFilesystemController}
+ * @deprecated
  */
 public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 	protected IPath root;

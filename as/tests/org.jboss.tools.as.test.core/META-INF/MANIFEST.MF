@@ -65,7 +65,9 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.rse.subsystems.shells.dstore,
  org.jboss.tools.runtime.core;bundle-version="2.1.0",
  org.jboss.tools.common.core;bundle-version="3.5.0",
- org.jboss.tools.as.runtimes.integration;bundle-version="2.4.100"
+ org.jboss.tools.as.runtimes.integration;bundle-version="2.4.100",
+ org.eclipse.rse.subsystems.files.core;bundle-version="3.3.1",
+ org.eclipse.rse.services;bundle-version="3.2.200"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.jboss.tools.as.test.core,

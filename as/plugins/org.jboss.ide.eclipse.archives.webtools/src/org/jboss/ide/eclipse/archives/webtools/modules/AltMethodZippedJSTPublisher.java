@@ -42,6 +42,7 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
  * This class is in charge of RSE zipped publishing for flexible projects.
  * It extends the functionality of the local zipped publishing class
  * by uploading the file after building it in a temporary directory
+ * @deprecated
  */
 public class AltMethodZippedJSTPublisher implements IJBossServerPublisher {
 	

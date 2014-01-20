@@ -7,6 +7,7 @@
  * 
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Red Hat Inc - Modifications to allow arbitrary system separators
  *******************************************************************************/
 package org.jboss.ide.eclipse.as.core.util;
 
@@ -15,9 +16,15 @@ import java.util.Arrays;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 
 /** 
- * The standard implementation of the <code>IPath</code> interface.
+ * A fork of The standard implementation of the <code>IPath</code> interface.
+ * This fork has changed in that it also allows a system separator to be passed in,
+ * for use with remote systems. 
+ * 
+ * @see Path
+ * 
  * Paths are always maintained in canonicalized form.  That is, parent
  * references (i.e., <code>../../</code>) and duplicate separators are 
  * resolved.  For example,

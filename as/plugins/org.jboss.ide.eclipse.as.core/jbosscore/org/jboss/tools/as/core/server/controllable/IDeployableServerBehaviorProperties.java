@@ -39,7 +39,7 @@ public interface IDeployableServerBehaviorProperties {
 	public static final String DEBUG_LISTENER = "DeployableServerBehavior.DebugListener"; //$NON-NLS-1$\
 	
 	/**
-	 * A key for shared data, the value should be a a Boolean
+	 * A key for shared data, the value should be a Boolean
 	 */
 	public static final String NEXT_STOP_REQUIRES_FORCE = "DeployableServerBehavior.RequiresForceStop"; //$NON-NLS-1$\
 	

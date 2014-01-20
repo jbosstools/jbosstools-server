@@ -91,7 +91,6 @@ public class UpdateModuleStateJob extends Job {
 			for( int i = 0; i < modules.length; i++ ) {
 				IModule[] temp = new IModule[]{modules[i]};
 				int state = getModuleState(temp, new SubProgressMonitor(monitor, 1000));
-				((Server)server).setModuleState(temp, state);
 				boolean started = state == IServer.STATE_STARTED;
 				allStarted = allStarted && started;
 				((Server)server).setModuleState(temp, state);

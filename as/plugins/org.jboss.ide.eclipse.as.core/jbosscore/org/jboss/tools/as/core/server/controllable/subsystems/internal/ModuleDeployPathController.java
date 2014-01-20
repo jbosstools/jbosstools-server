@@ -19,11 +19,8 @@ import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
-import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
-import org.jboss.tools.as.core.internal.modules.DeploymentModulePrefs;
 import org.jboss.tools.as.core.internal.modules.DeploymentPreferences;
 import org.jboss.tools.as.core.internal.modules.DeploymentPreferencesLoader;
 import org.jboss.tools.as.core.internal.modules.ModuleDeploymentPrefsUtil;
@@ -33,24 +30,43 @@ import org.jboss.tools.as.core.server.controllable.systems.IModuleDeployPathCont
 /**
  * This controller is in charge of manipulating the deployment preferences model
  * which is stored in the server object. 
+ * 
+ * It requires several environment variables to work, specifically, knowing 
+ * the root directory for which modules' paths should be calculated against. 
+ * These can either be set directly in the environment, or, 
+ * an IDeploymentOptionsController may be in the environment for use. 
+ * 
+ * As a last resort, this will ask the behavior for a IDeploymentOptionsController
+ * to use. 
  */
 public class ModuleDeployPathController extends AbstractSubsystemController
 		implements IModuleDeployPathController {
+	
+	// An optional controller which may be resolved to calculate default deploy folder etc. 
+	private IDeploymentOptionsController options;
+	
 	public ModuleDeployPathController() {
 		super();
 	}
+	
+	private IDeploymentOptionsController getDeploymentOptions() {
+		if( options == null ) {
+			options = (IDeploymentOptionsController)getEnvironment().get(ENV_DEPLOYMENT_OPTIONS_CONTROLLER);
+			if( options == null ) {
+				try {
+					options = (IDeploymentOptionsController)findDependencyFromBehavior(IDeploymentOptionsController.SYSTEM_ID);
+				} catch(CoreException ce) {
+					JBossServerCorePlugin.log(ce.getStatus());
+				}
+			}
+		}
+		return options;
+	}
+	
 	protected String getDefaultDeployFolder() {
 		String ret = (String)getEnvironment().get(ENV_DEFAULT_DEPLOY_FOLDER);
 		if( ret == null ) {
-			IDeploymentOptionsController c = (IDeploymentOptionsController)getEnvironment().get(ENV_DEPLOYMENT_OPTIONS_CONTROLLER);
-			if( c == null ) {
-				try {
-					IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(getServer());
-					c = (IDeploymentOptionsController)beh.getController(IDeploymentOptionsController.SYSTEM_ID);
-				} catch(CoreException ce) {
-					// TODO log
-				}
-			}
+			IDeploymentOptionsController c = getDeploymentOptions();
 			if( c != null )
 				return c.getDeploymentsRootFolder(true);
 		}
@@ -60,7 +76,7 @@ public class ModuleDeployPathController extends AbstractSubsystemController
 	protected String getDefaultTmpDeployFolder() {
 		String ret = (String)getEnvironment().get(ENV_DEFAULT_TMP_DEPLOY_FOLDER);
 		if( ret == null ) {
-			IDeploymentOptionsController c = (IDeploymentOptionsController)getEnvironment().get(ENV_DEPLOYMENT_OPTIONS_CONTROLLER);
+			IDeploymentOptionsController c = getDeploymentOptions();
 			if( c != null )
 				return c.getDeploymentsTemporaryFolder(true);
 		}
@@ -69,8 +85,12 @@ public class ModuleDeployPathController extends AbstractSubsystemController
 
 	protected char getTargetSystemSeparator() {
 		Character c = (Character)getEnvironment().get(ENV_TARGET_OS_SEPARATOR);
-		if( c == null )
-			return java.io.File.separatorChar;
+		if( c == null ) {
+			IDeploymentOptionsController cont =getDeploymentOptions();
+			if( cont == null )
+				return java.io.File.separatorChar;
+			return cont.getPathSeparatorCharacter();
+		}
 		return c.charValue();
 	}
 	
@@ -87,10 +107,7 @@ public class ModuleDeployPathController extends AbstractSubsystemController
 	@Override
 	public IPath getDeployDirectory(IModule[] module) {
 		IServerAttributes server = getServerOrWC();
-		boolean isBinaryObject = ServerModelUtilities.isBinaryModule(module);
 		IPath fullPath = new ModuleDeploymentPrefsUtil().getModuleTreeDestinationFullPath(module, server, getDefaultDeployFolder(), getTargetSystemSeparator());
-		if( isBinaryObject )
-			fullPath = fullPath == null ? null : fullPath.removeLastSegments(1);
 		return fullPath;
 	}
 
@@ -109,30 +126,26 @@ public class ModuleDeployPathController extends AbstractSubsystemController
 
 	@Override
 	public void setOutputName(IModule module, String name) throws IllegalStateException {
-		verifyWorkingCopy();
-		DeploymentPreferences prefs = DeploymentPreferencesLoader.loadPreferencesFromServer(getServerOrWC());
-		DeploymentModulePrefs modPrefs = prefs.getOrCreatePreferences().getOrCreateModulePrefs(module);
-		modPrefs.setProperty(IJBossToolingConstants.LOCAL_DEPLOYMENT_OUTPUT_NAME, name);		
-		DeploymentPreferencesLoader.savePreferencesToServerWorkingCopy(getWorkingCopy(), prefs);
+		setModuleDeploymentPreference(module, IJBossToolingConstants.LOCAL_DEPLOYMENT_OUTPUT_NAME, name);
 	}
 
 	@Override
 	public void setDeployDirectory(IModule module, String directory) throws IllegalStateException {
-		verifyWorkingCopy();
-		DeploymentPreferences prefs = DeploymentPreferencesLoader.loadPreferencesFromServer(getServerOrWC());
-		DeploymentModulePrefs modPrefs = prefs.getOrCreatePreferences().getOrCreateModulePrefs(module);
-		modPrefs.setProperty(IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC, directory);
-		DeploymentPreferencesLoader.savePreferencesToServerWorkingCopy(getWorkingCopy(), prefs);
+		setModuleDeploymentPreference(module, IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC, directory);
 	}
 
 	@Override
 	public void setTemporaryDeployDirectory(IModule module, String directory) throws IllegalStateException {
+		setModuleDeploymentPreference(module, IJBossToolingConstants.LOCAL_DEPLOYMENT_TEMP_LOC, directory);
+	}
+	
+	protected void setModuleDeploymentPreference(IModule module, String key, String val) {
 		verifyWorkingCopy();
 		DeploymentPreferences prefs = DeploymentPreferencesLoader.loadPreferencesFromServer(getServerOrWC());
-		DeploymentModulePrefs modPrefs = prefs.getOrCreatePreferences().getOrCreateModulePrefs(module);
-		modPrefs.setProperty(IJBossToolingConstants.LOCAL_DEPLOYMENT_TEMP_LOC, directory);		
+		prefs.setModulePreferenceValue(module, key, val);
 		DeploymentPreferencesLoader.savePreferencesToServerWorkingCopy(getWorkingCopy(), prefs);
 	}
+	
 
 	@Override
 	public String getDefaultSuffix(IModule module) {
@@ -144,10 +157,12 @@ public class ModuleDeployPathController extends AbstractSubsystemController
 		IStatus s = super.validate();
 		if( !s.isOK())
 			return s;
-		if( missingProperty(ENV_DEFAULT_DEPLOY_FOLDER))
-			return invalid();
-		if( missingProperty(ENV_DEFAULT_TMP_DEPLOY_FOLDER))
-			return invalid();
+		if(missingProperty(ENV_DEPLOYMENT_OPTIONS_CONTROLLER)) {
+			if( missingProperty(ENV_DEFAULT_DEPLOY_FOLDER))
+				return invalid();
+			if( missingProperty(ENV_DEFAULT_TMP_DEPLOY_FOLDER))
+				return invalid();
+		}
 		return Status.OK_STATUS;
 	}
 	private boolean missingProperty(String key) {

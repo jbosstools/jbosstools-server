@@ -21,8 +21,8 @@ import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.util.ModuleFolder;
-import org.jboss.ide.eclipse.as.core.modules.ResourceModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
+import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
 
 /**
  * This class is a default implementation for two of the three IModulePathFilter
@@ -47,7 +47,7 @@ public class ModulePathFilterUtility {
 	}
 	
     public IModuleResource[] getCleanedMembers(IModule module) throws CoreException {
-    	return getCleanedChildren(ResourceModuleResourceUtil.getMembers(module));
+    	return getCleanedChildren(ModuleResourceUtil.getMembers(module));
     }
 
 	
@@ -88,7 +88,7 @@ public class ModulePathFilterUtility {
     
     private IModuleResource[] getCleanedChildren(IModuleResource[] children) {
     	// Depth-first cleaning
-    	ArrayList<IModuleResource> cleaned = new ArrayList<IModuleResource>();
+    	ArrayList<IModuleResource> cleaned = new ArrayList<IModuleResource>(children.length);
     	IModuleResource tmp = null;
     	for( int i = 0; i < children.length; i++ ) {
     		tmp = getCleanedResource(children[i]);

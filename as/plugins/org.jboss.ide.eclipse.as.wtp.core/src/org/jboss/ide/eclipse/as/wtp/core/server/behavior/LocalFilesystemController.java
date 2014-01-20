@@ -130,12 +130,7 @@ public class LocalFilesystemController extends AbstractSubsystemController imple
 		} finally {
 			if (tempFile != null && tempFile.exists())
 				tempFile.deleteOnExit();
-			try {
-				if (in != null)
-					in.close();
-			} catch (Exception ex) {
-				// ignore. We do not return warning statuses. 
-			}
+			StreamUtils.safeClose(in);
 		}
 		return null;
 	}

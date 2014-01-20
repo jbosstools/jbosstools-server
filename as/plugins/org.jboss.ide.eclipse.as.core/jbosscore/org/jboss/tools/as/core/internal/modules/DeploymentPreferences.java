@@ -12,8 +12,8 @@ package org.jboss.tools.as.core.internal.modules;
 
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Set;
 
+import org.eclipse.wst.server.core.IModule;
 import org.jboss.tools.foundation.core.xml.IMemento;
 import org.jboss.tools.foundation.core.xml.XMLMemento;
 
@@ -89,4 +89,10 @@ public class DeploymentPreferences {
 		child.putString(KEY, key);
 		child.putString(VALUE, val);
 	}
+	
+	public void setModulePreferenceValue(IModule module, String key, String val) {
+		 DeploymentModulePrefs modPrefs = getOrCreatePreferences().getOrCreateModulePrefs(module);
+		 modPrefs.setProperty(key, val);    
+	}
+	
 }

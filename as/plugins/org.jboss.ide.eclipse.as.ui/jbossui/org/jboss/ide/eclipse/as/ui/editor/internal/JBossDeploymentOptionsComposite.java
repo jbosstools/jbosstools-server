@@ -24,7 +24,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -62,7 +61,6 @@ import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.editor.DeploymentPage;
 import org.jboss.ide.eclipse.as.ui.editor.EditorExtensionManager;
-import org.jboss.ide.eclipse.as.ui.editor.ModuleDeploymentPage;
 
 /**
  * This class is an internal class for displaying
@@ -72,7 +70,7 @@ import org.jboss.ide.eclipse.as.ui.editor.ModuleDeploymentPage;
 public class JBossDeploymentOptionsComposite extends Composite implements PropertyChangeListener {
 	
 	protected static final String MAIN = LocalPublishMethod.LOCAL_PUBLISH_METHOD;
-	private DeploymentPage page;
+	private StandardDeploymentPageController controller;
 	private Text deployText, tempDeployText;
 	private Button metadataRadio, serverRadio, customRadio, currentRadioSelection;
 	private Button deployButton, tempDeployButton;
@@ -89,28 +87,28 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 	
 	private IServerWorkingCopy lastWC;
 	
-	public JBossDeploymentOptionsComposite(Composite parent, DeploymentPage page) {
+	public JBossDeploymentOptionsComposite(Composite parent, StandardDeploymentPageController page) {
 		super(parent, SWT.NONE);
-		this.page = page;
+		this.controller = page;
 		setLayout(new GridLayout(1,true));
 		createDefaultComposite(this);
 	}
 
 	protected String openBrowseDialog(String original) {
 		String mode = getServer().getAttributeHelper().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
-		org.jboss.ide.eclipse.as.ui.IBrowseBehavior beh = EditorExtensionManager.getDefault().getBrowseBehavior(mode);
+		org.jboss.ide.eclipse.as.ui.subsystems.IBrowseBehavior beh = EditorExtensionManager.getDefault().getBrowseBehavior(mode);
 		if( beh == null )
 			beh = EditorExtensionManager.getDefault().getBrowseBehavior(LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
-		return beh.openBrowseDialog(page.getServer(), original);
+		return beh.openBrowseDialog(controller.getPage().getServer(), original);
 	}
 
 	
 	public DeploymentPage getPage() {
-		return page;
+		return controller.getPage();
 	}
 
 	protected ServerAttributeHelper getHelper() {
-		return page.getHelper();
+		return getPage().getHelper();
 	}
 	
 	public Button getServerRadio() {
@@ -148,7 +146,7 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 		String mode = getHelper().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
 		if(!LocalPublishMethod.LOCAL_PUBLISH_METHOD.equals(mode))
 			return false;
-		IServer s = page.getServer().getOriginal();
+		IServer s = getPage().getServer().getOriginal();
 		ServerExtendedProperties props = (ServerExtendedProperties)s.loadAdapter(ServerExtendedProperties.class, null);
 		if( props == null )
 			return true;
@@ -190,8 +188,7 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 	 */
 	
 	protected Composite createDefaultComposite(Composite parent) {
-
-		lastWC = page.getServer();
+		lastWC = getPage().getServer();
 		lastWC.addPropertyChangeListener(this);
 
 		FormToolkit toolkit = new FormToolkit(parent.getDisplay());
@@ -203,7 +200,7 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 
 		toolkit.paintBordersFor(composite);
 		section.setClient(composite);
-		page.getSaveStatus();
+		getPage().getSaveStatus();
 		updateWidgets();
 		return section;
 	}
@@ -256,7 +253,7 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 
 		zipListener = new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
-				page.execute(new SetZipCommand());
+				getPage().execute(new SetZipCommand());
 			}
 
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -312,7 +309,7 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 		enableDisableWidgets.add(deployText);
 		deployListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				page.execute(new SetDeployDirCommand());
+				getPage().execute(new SetDeployDirCommand());
 			}
 		};
 		deployText.addModifyListener(deployListener);
@@ -327,7 +324,7 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 			public void widgetSelected(SelectionEvent e) {
 				String x = openBrowseDialog(deployText.getText());
 				if (x != null) {
-					deployText.setText(page.makeRelative(x));
+					deployText.setText(makeRelative(x));
 				}
 			}
 		});
@@ -342,7 +339,7 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 
 		tempDeployListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				page.execute(new SetTempDeployDirCommand());
+				getPage().execute(new SetTempDeployDirCommand());
 			}
 		};
 		tempDeployText.addModifyListener(tempDeployListener);
@@ -357,7 +354,7 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 			public void widgetSelected(SelectionEvent e) {
 				String x = openBrowseDialog(tempDeployText.getText());
 				if (x != null)
-					tempDeployText.setText(page.makeRelative(x));
+					tempDeployText.setText(makeRelative(x));
 			}
 		});
 
@@ -427,13 +424,13 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 		
 		
 		if(showTempAndDeployTexts()) {
-			IJBossServer jbs = ServerConverter.getJBossServer(page.getServer().getOriginal());
+			IJBossServer jbs = ServerConverter.getJBossServer(getPage().getServer().getOriginal());
 			String newDir = getHelper().getAttribute(IDeployableServer.DEPLOY_DIRECTORY, 
 					jbs == null ? "" : jbs.getDeployFolder()); //$NON-NLS-1$
 			String newTemp = getHelper().getAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, 
 					jbs == null ? "" : jbs.getTempDeployFolder()); //$NON-NLS-1$
-			newDir = ServerUtil.makeRelative(page.getServer().getRuntime(), new Path(newDir)).toString();
-			newTemp = ServerUtil.makeRelative(page.getServer().getRuntime(), new Path(newTemp)).toString();
+			newDir = ServerUtil.makeRelative(getPage().getServer().getRuntime(), new Path(newDir)).toString();
+			newTemp = ServerUtil.makeRelative(getPage().getServer().getRuntime(), new Path(newTemp)).toString();
 			deployText.removeModifyListener(deployListener);
 			if( !deployText.getText().equals(newDir))
 				deployText.setText(newDir);
@@ -453,7 +450,7 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 	public void radioSelected(Object c) {
 		if (c == currentRadioSelection)
 			return; // do nothing
-		page.execute(new RadioClickedCommand((Button)c, currentRadioSelection));
+		getPage().execute(new RadioClickedCommand((Button)c, currentRadioSelection));
 		currentRadioSelection = (Button)c;
 	}
 	
@@ -481,7 +478,7 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 		private Text text;
 		private ModifyListener listener;
 		public SetDeployDirCommand() {
-			super(page.getServer(), Messages.EditorSetDeployLabel);
+			super(getPage().getServer(), Messages.EditorSetDeployLabel);
 			this.text = deployText;
 			this.newDir = deployText.getText();
 			this.listener = deployListener;
@@ -491,12 +488,12 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 			getHelper().setAttribute(IDeployableServer.DEPLOY_DIRECTORY, newDir);
 			lastCustomDeploy = newDir;
 			updateWidgets();
-			page.getSaveStatus();
+			getPage().getSaveStatus();
 		}
 		public void undo() {
 			getHelper().setAttribute(IDeployableServer.DEPLOY_DIRECTORY, oldDir);
 			updateWidgets();
-			page.getSaveStatus();
+			getPage().getSaveStatus();
 		}
 	}
 
@@ -504,20 +501,20 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 		boolean oldVal;
 		boolean newVal;
 		public SetZipCommand() {
-			super(page.getServer(), Messages.EditorZipDeployments);
+			super(getPage().getServer(), Messages.EditorZipDeployments);
 			oldVal = getHelper().getAttribute(IDeployableServer.ZIP_DEPLOYMENTS_PREF, false);
 			newVal = zipDeployWTPProjects.getSelection();
 		}
 		public void execute() {
 			getHelper().setAttribute(IDeployableServer.ZIP_DEPLOYMENTS_PREF, newVal);
-			page.getSaveStatus();
+			getPage().getSaveStatus();
 		}
 		public void undo() {
 			zipDeployWTPProjects.removeSelectionListener(zipListener);
 			zipDeployWTPProjects.setSelection(oldVal);
 			getHelper().setAttribute(IDeployableServer.ZIP_DEPLOYMENTS_PREF, oldVal);
 			zipDeployWTPProjects.addSelectionListener(zipListener);
-			page.getSaveStatus();
+			getPage().getSaveStatus();
 		}
 	}
 	
@@ -527,7 +524,7 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 		private Text text;
 		private ModifyListener listener;
 		public SetTempDeployDirCommand() {
-			super(page.getServer(), Messages.EditorSetTempDeployLabel);
+			super(getPage().getServer(), Messages.EditorSetTempDeployLabel);
 			text = tempDeployText;
 			newDir = tempDeployText.getText();
 			listener = tempDeployListener;
@@ -537,12 +534,12 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 			getHelper().setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, newDir);
 			lastCustomTemp = newDir;
 			updateWidgets();
-			page.getSaveStatus();
+			getPage().getSaveStatus();
 		}
 		public void undo() {
 			getHelper().setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, oldDir);
 			updateWidgets();
-			page.getSaveStatus();
+			getPage().getSaveStatus();
 		}
 	}
 	
@@ -552,7 +549,7 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 		private String oldTemp, newTemp;
 		private String id;
 		public RadioClickedCommand(Button clicked, Button previous) {
-			super(page.getServer(), Messages.EditorSetRadioClicked);
+			super(getPage().getServer(), Messages.EditorSetRadioClicked);
 			newSelection = clicked;
 			oldSelection = previous;
 			id = server.getId();
@@ -569,7 +566,7 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 			helper.setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, newTemp);
 			helper.setAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, newType);
 			updateWidgets();
-			page.getSaveStatus();
+			getPage().getSaveStatus();
 		}
 		
 		protected void handleMetadataRadioSelected() {
@@ -630,7 +627,7 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 			getHelper().setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, oldTemp);
 			getHelper().setAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, oldType);
 			updateWidgets();
-			page.getSaveStatus();
+			getPage().getSaveStatus();
 		}
 	}
 	
@@ -639,22 +636,22 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 	}
 
 	private String getDeployDir() {
-		if( page.getServer().getRuntime() == null )
+		if( getPage().getServer().getRuntime() == null )
 			return "";//$NON-NLS-1$
-		return ModuleDeploymentPage.makeRelative(getServer().getDeployFolder(), 
-					page.getServer().getRuntime());
+		return makeRelative(getServer().getDeployFolder(), 
+				getPage().getServer().getRuntime());
 	}
 
 	private String getTempDeployDir() {
-		if( page.getServer().getRuntime() == null)
+		if( getPage().getServer().getRuntime() == null)
 			return "";//$NON-NLS-1$
 		return 
-			ModuleDeploymentPage.makeRelative(getServer().getTempDeployFolder(), 
-					page.getServer().getRuntime());
+			makeRelative(getServer().getTempDeployFolder(), 
+					getPage().getServer().getRuntime());
 	}
 
 	private IDeployableServer getServer() {
-		return (IDeployableServer) page.getServer().loadAdapter(
+		return (IDeployableServer) getPage().getServer().loadAdapter(
 				IDeployableServer.class, new NullProgressMonitor());
 	}
 	
@@ -662,7 +659,7 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 		// server has been saved. Remove property change listener from last wc and add to newest
 		if( lastWC != null )
 			lastWC.removePropertyChangeListener(this);
-		lastWC = page.getServer();
+		lastWC = getPage().getServer();
 		if( lastWC != null )
 			lastWC.addPropertyChangeListener(this);
 	}
@@ -672,7 +669,7 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 			if( shouldCreateMetadataRadio() ) {
 				metadataRadio.setEnabled(shouldEnableMetadataRadio());
 				if(!metadataRadio.isEnabled() && metadataRadio.getSelection()) {
-					page.execute(new RadioClickedCommand(serverRadio, currentRadioSelection));
+					getPage().execute(new RadioClickedCommand(serverRadio, currentRadioSelection));
 				}
 			}
 		} 
@@ -711,5 +708,13 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 			return shouldEnableMetadataRadio();
 		return true;
 	}
-
+	
+	
+	private String makeRelative(String path) {
+		return makeRelative(path, getPage().getServer().getRuntime());
+	}
+	
+	private static String makeRelative(String path, IRuntime runtime) {
+		return ServerUtil.makeRelative(runtime, new Path(path)).toString();
+	}
 }

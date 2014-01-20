@@ -14,7 +14,6 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jdt.internal.launching.environments.EnvironmentsManager;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 
 public class Wildfly80ExtendedProperties extends JBossAS710ExtendedProperties {
@@ -45,7 +44,7 @@ public class Wildfly80ExtendedProperties extends JBossAS710ExtendedProperties {
 	
 	@Override
 	public String getJMXUrl() {
-			return getJMXUrl(IJBossToolingConstants.WILDFLY8_MANAGEMENT_PORT_DEFAULT_PORT, "service:jmx:http-remoting-jmx"); //$NON-NLS-1$
+			return getJMXUrl(9990, "service:jmx:http-remoting-jmx"); //$NON-NLS-1$
 	}
 	
 	@Override

@@ -27,7 +27,6 @@ import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
@@ -79,7 +78,7 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 		if( exposeManagement ) {
 			String host = server.getHost();
 			ServerDelegate sd = (ServerDelegate) server.loadAdapter(ServerDelegate.class, new NullProgressMonitor());
-			int defPort = IJBossToolingConstants.AS7_MANAGEMENT_PORT_DEFAULT_PORT;
+			int defPort = 9999;
 			int port = (sd instanceof IManagementPortProvider) ? 
 					((IManagementPortProvider)sd).getManagementPort() : defPort;
 			ret += " --controller=" + host + ":" + port;

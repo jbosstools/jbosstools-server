@@ -13,6 +13,7 @@ package org.jboss.tools.as.core.server.controllable.subsystems.internal;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IModuleStateController;
 
@@ -25,7 +26,7 @@ public class NoOpModuleController extends AbstractSubsystemController implements
 	@Override
 	public int getModuleState(IModule[] module, IProgressMonitor monitor) {
 		// TODO Auto-generated method stub
-		return 0;
+		return IServer.STATE_UNKNOWN;
 	}
 
 	@Override

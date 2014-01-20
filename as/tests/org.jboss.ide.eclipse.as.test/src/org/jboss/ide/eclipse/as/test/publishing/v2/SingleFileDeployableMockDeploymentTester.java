@@ -33,13 +33,13 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.internal.ServerPreferences;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.test.util.IOUtil;
 import org.jboss.ide.eclipse.as.test.util.ServerRuntimeUtils;
+import org.jboss.tools.as.core.internal.modules.DeploymentModulePrefs;
+import org.jboss.tools.as.core.internal.modules.DeploymentPreferences;
+import org.jboss.tools.as.core.internal.modules.DeploymentPreferencesLoader;
 
 public class SingleFileDeployableMockDeploymentTester extends AbstractJSTDeploymentTester {
 	public void setUp() throws Exception {
@@ -111,11 +111,11 @@ public class SingleFileDeployableMockDeploymentTester extends AbstractJSTDeploym
 		IPath moduleDeployRoot = serverDeployRoot.append(relativeFolder);
 		moduleDeployRoot.toFile().mkdirs();
 		IModule[] mods = singleFolderCreateModules(folderName);
-		DeploymentPreferences prefs = DeploymentPreferenceLoader.loadPreferencesFromServer(server);
+		DeploymentPreferences prefs = DeploymentPreferencesLoader.loadPreferencesFromServer(server);
 		DeploymentModulePrefs p = prefs.getOrCreatePreferences().getOrCreateModulePrefs(mods[0]);
 		p.setProperty(IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC, relativeFolder);
 		ServerAttributeHelper helper = new ServerAttributeHelper(server, server.createWorkingCopy());
-		DeploymentPreferenceLoader.savePreferencesToServerWorkingCopy(helper, prefs);
+		DeploymentPreferencesLoader.savePreferencesToServerWorkingCopy(helper, prefs);
 		server = helper.save(true, new NullProgressMonitor());
 		singleFolderPublishAndVerify(moduleDeployRoot, folderName, mods);
 	}
@@ -126,11 +126,11 @@ public class SingleFileDeployableMockDeploymentTester extends AbstractJSTDeploym
 		IPath moduleDeployRoot = ServerRuntimeUtils.getBaseDir().append("absoluteFolder.place");
 		moduleDeployRoot.toFile().mkdirs();
 		IModule[] mods = singleFolderCreateModules(folderName);
-		DeploymentPreferences prefs = DeploymentPreferenceLoader.loadPreferencesFromServer(server);
+		DeploymentPreferences prefs = DeploymentPreferencesLoader.loadPreferencesFromServer(server);
 		DeploymentModulePrefs p = prefs.getOrCreatePreferences().getOrCreateModulePrefs(mods[0]);
 		p.setProperty(IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC, moduleDeployRoot.toOSString());
 		ServerAttributeHelper helper = new ServerAttributeHelper(server, server.createWorkingCopy());
-		DeploymentPreferenceLoader.savePreferencesToServerWorkingCopy(helper, prefs);
+		DeploymentPreferencesLoader.savePreferencesToServerWorkingCopy(helper, prefs);
 		server = helper.save(true, new NullProgressMonitor());
 		singleFolderPublishAndVerify(moduleDeployRoot, folderName, mods);
 	}

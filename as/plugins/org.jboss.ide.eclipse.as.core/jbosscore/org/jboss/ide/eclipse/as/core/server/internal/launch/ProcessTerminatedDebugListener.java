@@ -37,6 +37,12 @@ import org.jboss.tools.as.core.server.controllable.IDeployableServerBehaviorProp
 public class ProcessTerminatedDebugListener implements IDebugEventSetListener {
 	private IProcess myProcess;
 	private IServer server;
+	
+	/**
+	 * Create a process-terminated debug listener for the given server and process combination
+	 * @param server  a non-null server
+	 * @param process a non-null process
+	 */
 	public ProcessTerminatedDebugListener(IServer server, IProcess process) {
 		this.myProcess = process;
 		this.server = server;

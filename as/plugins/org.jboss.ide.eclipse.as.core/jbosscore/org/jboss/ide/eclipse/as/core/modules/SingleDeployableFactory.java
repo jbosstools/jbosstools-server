@@ -56,6 +56,7 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
+import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
 import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
 import org.osgi.service.prefs.BackingStoreException;
 
@@ -318,7 +319,7 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 
 		public IModuleResource[] members() throws CoreException {
 			if( isBinary() && resource instanceof IFile) {
-				IModuleResource resource2 = ResourceModuleResourceUtil.createResource(resource);
+				IModuleResource resource2 = ModuleResourceUtil.createResource(resource);
 				return new IModuleResource[]{resource2};
 			}
 			/*
@@ -328,7 +329,7 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 			 * and so we ensure that here. 
 			 */
 			if( !isBinary() && resource instanceof IContainer) {
-				IModuleResource[] resource2 = ResourceModuleResourceUtil.createChildrenResources(
+				IModuleResource[] resource2 = ModuleResourceUtil.createChildrenResources(
 						(IContainer)resource, new Path("/")); //$NON-NLS-1$
 				return resource2;
 			}

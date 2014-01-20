@@ -22,7 +22,6 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
-import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
 
 /**
@@ -66,14 +65,15 @@ public class ControllableServerBehavior extends ServerBehaviourDelegate implemen
 	
 	/**
 	 * Find the default subsystem controller for the given system with 
-	 * an environment to be passed to it
+	 * an environment to be passed to it.  This method will also check the server
+	 * for hard-coded overrides on which subsystem impl to choose, if they are set on the server. 
 	 * 
 	 * @param system
 	 * @param env
 	 * @return
 	 * @throws CoreException
 	 */
-	protected ISubsystemController getController(String system, ControllerEnvironment env) throws CoreException {
+	public ISubsystemController getController(String system, ControllerEnvironment env) throws CoreException {
 		
 		// FIrst check if the server has a hard-coded subsystem to choose for this system
 		String propOverride = PROPERTY_PREFIX + system;
@@ -173,14 +173,10 @@ public class ControllableServerBehavior extends ServerBehaviourDelegate implemen
 		controller.restartModule(module, monitor);
 	}
 
-
-	
-	// TODO launch polling
 	public void setServerStarting() {
 		synchronized(serverStateLock) {
 			setServerState(IServer.STATE_STARTING);
 		}
-		pollServer(IServerStatePoller.SERVER_UP);
 	}
 
 	public void setServerStarted() {
@@ -193,15 +189,13 @@ public class ControllableServerBehavior extends ServerBehaviourDelegate implemen
 		synchronized(serverStateLock) {
 			setServerState(IServer.STATE_STOPPING);
 		}
-		pollServer(IServerStatePoller.SERVER_DOWN);
 	}
 	
 	public void setServerStopped() {
 		synchronized(serverStateLock) {
 			setServerState(IServer.STATE_STOPPED);
 		}
-		IModule[] mods = getServer().getModules();
-		setModulesStopped(new IModule[]{}, mods);
+		setModulesStopped(new IModule[]{}, getServer().getModules());
 	}
 	
 	protected void setModulesStopped(IModule[] parent, IModule[] children) {
@@ -260,27 +254,9 @@ public class ControllableServerBehavior extends ServerBehaviourDelegate implemen
 			return ce.getStatus();
 		}
 	}
-	
-	
 
 	public void setRunMode(String mode) {
 		setMode(mode);
-	}
-	
-	// TODO search via subsystems
-	protected void pollServer(final boolean expectedState) {
-		// IF shutting down a process started OUTSIDE of eclipse, force use the web poller, 
-		// since there's no process watch for shutdowns
-//		if( expectedState == IServerStatePoller.SERVER_DOWN && !isProcessRunning() ) {
-//			IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, getServer());
-//			// Only override the poller if it is currently set to the process terminated poller
-//			if( poller.getPollerType().getId().equals(ProcessTerminatedPoller.POLLER_ID))
-//				poller = PollThreadUtils.getPoller(WebPortPoller.WEB_POLLER_ID);
-//			pollServer(expectedState, poller);
-//		} else {
-//			IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, getServer());
-//			pollServer(expectedState, poller);
-//		}
 	}
 
 }

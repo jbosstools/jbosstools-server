@@ -13,52 +13,64 @@ package org.jboss.ide.eclipse.as.rse.ui;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.rse.core.model.IHost;
 import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
+import org.eclipse.rse.services.files.IFileService;
 import org.eclipse.rse.services.files.IHostFile;
+import org.eclipse.rse.subsystems.files.core.servicesubsystem.IFileServiceSubSystem;
 import org.eclipse.rse.subsystems.files.core.subsystems.IRemoteFile;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
-import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
+import org.jboss.ide.eclipse.as.core.util.RemotePath;
+import org.jboss.ide.eclipse.as.rse.core.IFileServiceProvider;
 import org.jboss.ide.eclipse.as.rse.core.RSEFrameworkUtils;
-import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
-import org.jboss.ide.eclipse.as.ui.IExploreBehavior;
+import org.jboss.ide.eclipse.as.ui.subsystems.IExploreBehavior;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IFilesystemController;
+import org.jboss.tools.as.core.server.controllable.systems.IDeploymentOptionsController;
+import org.jboss.tools.as.core.server.controllable.systems.IModuleDeployPathController;
 
-public class RSEExploreBehavior implements IExploreBehavior {
+public class RSEExploreBehavior extends AbstractSubsystemController implements IExploreBehavior {
 	public void openExplorer(IServer server, IModule[] module) {
-		IDeployableServer ds = ServerConverter.getDeployableServer(server);
-		String remote = RSEUtils.getDeployRootFolder(ds);
-		IPath remoteFolder = new Path(remote == null ? "/" : remote);
-		IJBossServerPublishMethodType type = BehaviourModel.getPublishMethodType(server, null);
-		RSEPublishMethod method = (RSEPublishMethod)type.createPublishMethod();
-		method.setBehaviour(ServerConverter.getDeployableServerBehavior(server));
-		if( module != null ) {
-			remoteFolder = ds.getDeploymentLocation(module, true);
-		}
+		IPath remoteFolder = null;
 		try {
-			String connectionName = RSEUtils.getRSEConnectionName(server);
-			IHost host = RSEFrameworkUtils.findHost(connectionName);
-			RSEFrameworkUtils.ensureActiveConnection(ds.getServer(), 
-					RSEFrameworkUtils.findFileTransferSubSystem(host), new NullProgressMonitor());
-			IHostFile file = method.getFileService().getFile(remoteFolder.removeLastSegments(1).toOSString(), remoteFolder.lastSegment(), new NullProgressMonitor());
-			String path = remoteFolder.toString();
+			IControllableServerBehavior cs = JBossServerBehaviorUtils.getControllableBehavior(server);
+			if( module == null ) {
+				IDeploymentOptionsController controller = (IDeploymentOptionsController)cs.getController(IDeploymentOptionsController.SYSTEM_ID);
+				remoteFolder = new RemotePath(controller.getDeploymentsRootFolder(true), controller.getPathSeparatorCharacter());
+			} else {
+				IModuleDeployPathController controller = (IModuleDeployPathController)cs.getController(IModuleDeployPathController.SYSTEM_ID);
+				remoteFolder = controller.getDeployDirectory(module);
+			}
 			
-			IRemoteFile rf = method.getFileServiceSubSystem().getRemoteFileObject(path, null);
-			
-			SystemShowInTableAction act = new SystemShowInTableAction(Display.getDefault().getActiveShell()); 
-			act.setSelectedObject(rf);
-			act.run();
-		} catch(SystemMessageException e) {
-			
+			IFilesystemController fsController = (IFilesystemController)cs.getController(IFilesystemController.SYSTEM_ID);
+			if( fsController != null && fsController instanceof IFileServiceProvider) {
+				IFileService fs = ((IFileServiceProvider)fsController).getFileService();
+				IFileServiceSubSystem fsSubsystem = ((IFileServiceProvider)fsController).getFileServiceSubSystem();
+
+				String connectionName = RSEUtils.getRSEConnectionName(server);
+				IHost host = RSEFrameworkUtils.findHost(connectionName);
+				RSEFrameworkUtils.ensureActiveConnection(server, 
+						RSEFrameworkUtils.findFileTransferSubSystem(host), new NullProgressMonitor());
+				IHostFile file = fs.getFile(remoteFolder.removeLastSegments(1).toOSString(), remoteFolder.lastSegment(), new NullProgressMonitor());
+				String path = remoteFolder.toString();
+				
+				IRemoteFile rf = fsSubsystem.getRemoteFileObject(path, null);
+				
+				SystemShowInTableAction act = new SystemShowInTableAction(Display.getDefault().getActiveShell()); 
+				act.setSelectedObject(rf);
+				act.run();
+			}
 		} catch(CoreException ce) {
-			
+			RSEUIPlugin.log(ce);
+		} catch(SystemMessageException sme) {
+			RSEUIPlugin.log(sme);
 		}
+		
 	}
 
 	@Override

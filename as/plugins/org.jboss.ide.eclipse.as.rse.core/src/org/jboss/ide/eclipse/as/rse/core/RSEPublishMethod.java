@@ -38,6 +38,7 @@ import org.jboss.ide.eclipse.as.core.util.ProgressMonitorUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 
+@Deprecated
 public class RSEPublishMethod extends AbstractPublishMethod {
 
 	public static final String RSE_ID = "rse"; //$NON-NLS-1$

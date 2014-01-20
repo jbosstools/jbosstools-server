@@ -10,8 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.tools.as.wst.server.ui.xpl;
 
-import java.util.HashMap;
-
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
@@ -25,18 +24,20 @@ import org.eclipse.ui.navigator.CommonViewer;
 import org.eclipse.ui.navigator.ICommonActionExtensionSite;
 import org.eclipse.ui.navigator.ICommonViewerSite;
 import org.eclipse.ui.navigator.ICommonViewerWorkbenchSite;
-import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
-import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
-import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
+import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
-import org.jboss.ide.eclipse.as.ui.actions.ExploreUtils;
-import org.jboss.ide.eclipse.as.ui.editor.EditorExtensionManager;
+import org.jboss.ide.eclipse.as.ui.Messages;
+import org.jboss.ide.eclipse.as.ui.subsystems.IExploreBehavior;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.CommonActionProviderUtils;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 public class ExploreActionProvider extends CommonActionProvider {
 	
-	
+	public final static String EXPLORE = Messages.ExploreUtils_Action_Text;
+	public final static String EXPLORE_DESCRIPTION = Messages.ExploreUtils_Description;
+
 	private ICommonActionExtensionSite actionSite;
 	private CommonViewer cv;
 	public ExploreActionProvider() {
@@ -65,8 +66,8 @@ public class ExploreActionProvider extends CommonActionProvider {
 				runExplore();
 			}
 		};
-		exploreAction.setText(ExploreUtils.EXPLORE);
-		exploreAction.setDescription(ExploreUtils.EXPLORE_DESCRIPTION);
+		exploreAction.setText(EXPLORE);
+		exploreAction.setDescription(EXPLORE_DESCRIPTION);
 		exploreAction.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.EXPLORE_IMAGE));
 	}
 	 
@@ -74,13 +75,20 @@ public class ExploreActionProvider extends CommonActionProvider {
 		runExplore(getServer(), getModuleServer());
 	}
 	
-	private org.jboss.ide.eclipse.as.ui.IExploreBehavior getExploreBehavior(String mode) {
-		return EditorExtensionManager.getDefault().getExploreBehavior(mode);
+	private org.jboss.ide.eclipse.as.ui.subsystems.IExploreBehavior getExploreBehavior(IServer server) {
+		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(server);
+		if( beh != null ) {
+			try {
+				return (IExploreBehavior)beh.getController(IExploreBehavior.SYSTEM_ID);
+			} catch( CoreException ce) {
+				JBossServerUIPlugin.log(ce.getStatus());
+			}
+		}
+		return null;
 	}
 	
 	private void runExplore(IServer server, ModuleServer ms) {
-		String mode = getServer().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
-		org.jboss.ide.eclipse.as.ui.IExploreBehavior beh = getExploreBehavior(mode);
+		org.jboss.ide.eclipse.as.ui.subsystems.IExploreBehavior beh = getExploreBehavior(server);
 		if( beh != null )
 			beh.openExplorer(server, ms == null ? null : ms.module);
 	}
@@ -88,8 +96,7 @@ public class ExploreActionProvider extends CommonActionProvider {
 	public void fillContextMenu(IMenuManager menu) {
 		IServer server = getServer();
 		if(server!=null) {
-			String mode = server.getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
-			org.jboss.ide.eclipse.as.ui.IExploreBehavior beh = getExploreBehavior(mode);
+			org.jboss.ide.eclipse.as.ui.subsystems.IExploreBehavior beh = getExploreBehavior(server);
 			if( beh == null || !beh.canExplore(getServer(), getModuleServer() == null ? null : getModuleServer().module))
 				return;
 			if( getModuleServer() != null || getServer() != null ) {

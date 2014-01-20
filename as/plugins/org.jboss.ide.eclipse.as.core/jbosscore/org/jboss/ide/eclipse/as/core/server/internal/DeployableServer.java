@@ -29,12 +29,15 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerPort;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServerBehaviour;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.IMultiModuleURLProvider;
+import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
@@ -240,6 +243,7 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	
 	/**
 	 * @since 2.4
+	 * @deprecated
 	 */
 	public IJBossServerPublishMethod createPublishMethod() {
 		IDeployableServerBehaviour beh = ServerConverter.getDeployableServerBehavior(getServer());
@@ -247,17 +251,28 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 			IJBossServerPublishMethod method = ((DeployableServerBehavior)beh).createPublishMethod();
 			return method;
 		}
-		return null;
+		// legacy
+		IJBossServerPublishMethodType type = DeploymentPreferenceLoader.getCurrentDeploymentMethodType(getServer());
+		if( type != null )
+			return type.createPublishMethod();
+		return new LocalPublishMethod(); // sensible default
 	}
+	
 	/**
+	 * This will give the deploy location path of the given module.
+	 * Example:
+	 *    [earmodule][webmodule] with deep = true will return {deploy-root}/earmodule.ear/webmodule.war
+	 *    [earmodule][webmodule] with deep = false will return {deploy-root}/earmodule.ear
+	 *     
 	 * @since 2.4
 	 */
 	public IPath getDeploymentLocation(IModule[] module, boolean deep) {
 		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(getServer());
 		if( beh != null ) {
 			try {
+				IModule[] moduleToTest = deep ? module : new IModule[]{module[0]};
 				IModuleDeployPathController controller = (IModuleDeployPathController)beh.getController(IModuleDeployPathController.SYSTEM_ID);
-				IPath ret =  controller.getDeployDirectory(module).removeLastSegments(1);
+				IPath ret =  controller.getDeployDirectory(moduleToTest);
 				return ret;
 			} catch(CoreException ce) {
 				// TODO log

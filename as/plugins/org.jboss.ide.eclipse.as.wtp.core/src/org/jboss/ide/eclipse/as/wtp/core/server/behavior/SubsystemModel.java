@@ -19,8 +19,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -534,10 +532,9 @@ public class SubsystemModel {
 	
 	private IStatus[] validateModel() {
 		ArrayList<IStatus> warningsErrors = new ArrayList<IStatus>();
-		Iterator<String> i = mappedModel.keySet().iterator();
-		while(i.hasNext()) {
-			String serverType = i.next();
-			Map<String, SubsystemMapping> val = mappedModel.get(serverType);
+		for (Map.Entry<String, Map<String, SubsystemMapping>> entry : mappedModel.entrySet()) {
+		    String serverType = entry.getKey();
+		    Map<String, SubsystemMapping> val = entry.getValue();
 			Collection<SubsystemMapping> types = val.values();
 			Iterator<SubsystemMapping> it = types.iterator();
 			while(it.hasNext()) {
@@ -581,11 +578,9 @@ public class SubsystemModel {
 		
 		// Now we validate requirements on specific subsystem mapped id's.  
 		Map<String, String> m = mapping.getSubsystem().getRequiredSubsystems();
-		Iterator<String> j = m.keySet().iterator();
-		while(j.hasNext()) {
-			String system2 = j.next();
-			String subsys2 = m.get(system2); 
-			
+		for (Map.Entry<String, String> entry : m.entrySet()) {
+		    String system2 = entry.getKey();
+		    Object subsys2 = entry.getValue();
 			SubsystemMapping[] matched = getSubsystemMappings(serverType, system2);
 			boolean found = false;
 			SubsystemMapping found2 = null;

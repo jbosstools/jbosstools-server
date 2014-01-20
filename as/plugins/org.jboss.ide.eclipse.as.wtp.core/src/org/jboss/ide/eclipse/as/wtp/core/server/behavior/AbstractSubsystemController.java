@@ -62,9 +62,30 @@ public abstract class AbstractSubsystemController implements ISubsystemControlle
 		return environment;
 	}
 	
+	/**
+	 * Find a dependency by calling the behavior and asking it for the proper controller. 
+	 * This ensures that the most up-to-date dependency based on current server state is found. 
+	 * 
+	 * @param system
+	 * @return
+	 * @throws CoreException
+	 */
+	protected ISubsystemController findDependencyFromBehavior(String system) throws CoreException {
+		return getControllableBehavior() == null ? null : getControllableBehavior().getController(system);
+	}
+
+	/**
+	 * Find a dependency via the SubsystemModel using the environment flags to help
+	 * locate one that matches all the requirements in terms of properties. 
+	 * 
+	 * @param system
+	 * @return
+	 * @throws CoreException
+	 */
 	protected ISubsystemController findDependency(String system) throws CoreException {
 		return findDependency(system, server.getServerType().getId());
 	}
+	
 	
 	/**
 	 * This method should not be used and is only exposed for testing purposes.

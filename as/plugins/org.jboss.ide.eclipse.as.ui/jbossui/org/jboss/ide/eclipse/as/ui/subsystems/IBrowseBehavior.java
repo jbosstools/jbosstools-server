@@ -8,9 +8,10 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.ui;
+package org.jboss.ide.eclipse.as.ui.subsystems;
 
 import org.eclipse.wst.server.core.IServerAttributes;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ISubsystemController;
 
 /**
  * A previously internal interface, this is in charge
@@ -19,7 +20,10 @@ import org.eclipse.wst.server.core.IServerAttributes;
  * @author rob
  *
  */
-public interface IBrowseBehavior {
+public interface IBrowseBehavior extends ISubsystemController {
+	
+	public static final String SYSTEM_ID = "browseBehavior"; //$NON-NLS-1$
+	
 	/**
 	 * Open a browse dialog of some sort inside the workspace
 	 * to display the contents of the given path on the given server.

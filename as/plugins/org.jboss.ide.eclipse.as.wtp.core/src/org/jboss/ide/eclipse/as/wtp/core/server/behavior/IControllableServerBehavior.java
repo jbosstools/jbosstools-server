@@ -43,4 +43,14 @@ public interface IControllableServerBehavior {
 	 */
 	public ISubsystemController getController(String system) throws CoreException;
 	
+	/**
+	 * Allows a client to get a controller for a specific system with specific flags set. 
+	 * 
+	 * @param system
+	 * @param env
+	 * @return
+	 * @throws CoreException
+	 */
+	public ISubsystemController getController(String system, ControllerEnvironment env) throws CoreException;
+	
 }

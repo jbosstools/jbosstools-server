@@ -15,10 +15,10 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.jboss.ide.eclipse.as.ui.IBrowseBehavior;
-import org.jboss.ide.eclipse.as.ui.IExploreBehavior;
-import org.jboss.ide.eclipse.as.ui.IJBossLaunchTabProvider;
 import org.jboss.ide.eclipse.as.ui.editor.EditorExtensionManager;
+import org.jboss.ide.eclipse.as.ui.subsystems.IBrowseBehavior;
+import org.jboss.ide.eclipse.as.ui.subsystems.IExploreBehavior;
+import org.jboss.ide.eclipse.as.ui.subsystems.IJBossLaunchTabProvider;
 import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.internal.utils.MatrixUtils;
 import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;

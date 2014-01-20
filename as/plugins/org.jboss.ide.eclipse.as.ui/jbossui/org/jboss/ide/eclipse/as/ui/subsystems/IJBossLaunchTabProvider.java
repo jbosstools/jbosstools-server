@@ -8,14 +8,21 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.ui;
+package org.jboss.ide.eclipse.as.ui.subsystems;
 
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ISubsystemController;
 
 /**
  * AN extracted interface from a previously nested class. 
  * Simply return a number of ILaunchConfigurationTab objects. 
  */
-public interface IJBossLaunchTabProvider {
+public interface IJBossLaunchTabProvider extends ISubsystemController {
+	public static final String SYSTEM_ID = "launchTabProvider"; //$NON-NLS-1$
+	
+	/**
+	 * Create the tabs for the server
+	 * @return
+	 */
 	public ILaunchConfigurationTab[] createTabs();
 }

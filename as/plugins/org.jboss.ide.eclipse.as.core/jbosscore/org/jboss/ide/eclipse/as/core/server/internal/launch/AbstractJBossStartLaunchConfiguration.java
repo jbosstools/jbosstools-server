@@ -69,7 +69,7 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 		IStatus s = server.canStart(mode);
 		Trace.trace(Trace.STRING_FINEST, "Ensuring Server can start: " + s.getMessage()); //$NON-NLS-1$
 		if (!s.isOK())
-			throw new CoreException(server.canStart(mode));
+			throw new CoreException(s);
 		
 		IControllableServerBehavior jbsBehavior = JBossServerBehaviorUtils.getControllableBehavior(server);
 		if (LaunchCommandPreferences.isIgnoreLaunchCommand(server)) {

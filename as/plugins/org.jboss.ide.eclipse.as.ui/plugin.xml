@@ -76,18 +76,6 @@
             description="%jbossLaunchconfigurationTabGroupDescription"
             id="org.jboss.ide.eclipse.as.core.jbossLaunchTabGroup"
             type="org.jboss.ide.eclipse.as.core.server.startupConfiguration"/>
-
-      <launchConfigurationTabGroup
-            class="org.jboss.ide.eclipse.as.ui.launch.JBoss7LaunchConfigurationTabGroup"
-            description="%jbossLaunchconfigurationTabGroupDescription"
-            id="org.jboss.ide.eclipse.as.core.jboss7LaunchTabGroup"
-            type="org.jboss.ide.eclipse.as.core.server.JBoss7StartupConfiguration"/>
-      <launchConfigurationTabGroup
-            class="org.jboss.ide.eclipse.as.ui.launch.DeployOnlyLaunchConfigGroup"
-            description="A no-op launch configuration"
-            id="org.jboss.ide.eclipse.as.systemCopyServer"
-            type="org.jboss.ide.eclipse.as.core.deployOnlyLaunchConfig">
-      </launchConfigurationTabGroup>
    </extension>
 
 
@@ -678,10 +666,10 @@
  <extension
          point="org.jboss.ide.eclipse.as.ui.DeployMethodUI">
       <ui
-            browseBehavior="org.jboss.ide.eclipse.as.ui.editor.LocalBrowseBehavior"
+            browseBehavior="org.jboss.ide.eclipse.as.ui.subsystems.internal.LocalBrowseBehavior"
             class="org.jboss.ide.eclipse.as.ui.editor.LocalBehaviorUI"
             deployMethodId="local"
-            exploreBehavior="org.jboss.tools.as.wst.server.ui.xpl.LocalExploreBehavior">
+            exploreBehavior="org.jboss.ide.eclipse.as.ui.subsystems.internal.LocalExploreBehavior">
          <launchTabProvider
                class="org.jboss.ide.eclipse.as.ui.launch.JBossLaunchConfigurationTabGroup$JBossStandardTabProvider"
                serverTypes="%ServerTypesJBoss6OrLower">
@@ -700,4 +688,86 @@
       </ui>
    </extension>
  
+    <extension
+         point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
+      <subsystem
+            system="exploreBehavior"
+            id="exploreBehavior.local.default"
+            name="Explore Server or Modules (Local)"
+            class="org.jboss.ide.eclipse.as.ui.subsystems.internal.LocalExploreBehavior">
+         <properties>
+            <property
+                  key="target"
+                  value="local">
+            </property>
+         </properties>
+      </subsystem>
+      <subsystemMapping
+            id="exploreBehavior.local.default"
+            mappedId="exploreBehavior.local"
+            serverTypes="%AllJBTServerTypes">
+      </subsystemMapping>
+
+
+      <subsystem
+            system="browseBehavior"
+            id="browseBehavior.local.default"
+            name="Browse Server or Modules (Local)"
+            class="org.jboss.ide.eclipse.as.ui.subsystems.internal.LocalBrowseBehavior">
+         <properties>
+            <property
+                  key="target"
+                  value="local">
+            </property>
+         </properties>
+      </subsystem>
+      <subsystemMapping
+            id="browseBehavior.local.default"
+            mappedId="browseBehavior.local"
+            serverTypes="%AllJBTServerTypes">
+      </subsystemMapping>
+      
+      <subsystem
+            system="launchTabProvider"
+            id="launchTabProvider.local.asLegacy"
+            name="Launch Tabs (Local)"
+            class="org.jboss.ide.eclipse.as.ui.subsystems.internal.JBoss7StandardTabProvider">
+         <properties>
+            <property
+                  key="target"
+                  value="local">
+            </property>
+         </properties>
+      </subsystem>
+      <subsystemMapping
+            id="launchTabProvider.local.asLegacy"
+            mappedId="launchTabProvider.local"
+            serverTypes="%ServerTypesJBoss6OrLower">
+      </subsystemMapping>
+ 
+       <subsystem
+            system="deploymentPage"
+            id="deploymentPage.standard"
+            name="Deployment Page"
+            class="org.jboss.ide.eclipse.as.ui.editor.internal.StandardDeploymentPageController">
+      </subsystem>
+      <subsystemMapping
+            id="deploymentPage.standard"
+            mappedId="deploymentPage.standard"
+            serverTypes="%AllJBTServerTypes">
+      </subsystemMapping>
+      
+      <subsystem
+            system="deploymentPage"
+            id="deploymentPage.management"
+            name="Deployment Page"
+            class="org.jboss.ide.eclipse.as.ui.editor.internal.ManagementDeploymentPageController">
+      </subsystem>
+      <subsystemMapping
+            id="deploymentPage.management"
+            mappedId="deploymentPage.management"
+            serverTypes="%ServerTypesJBoss7OrHigher">
+      </subsystemMapping>
+ 
+   </extension>      
 </plugin>

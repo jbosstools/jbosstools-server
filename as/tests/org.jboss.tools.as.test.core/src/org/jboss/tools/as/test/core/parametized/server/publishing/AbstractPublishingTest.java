@@ -35,11 +35,11 @@ import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.DeploymentMarkerUtils;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.tools.as.core.internal.modules.DeploymentModulePrefs;
+import org.jboss.tools.as.core.internal.modules.DeploymentPreferences;
+import org.jboss.tools.as.core.internal.modules.DeploymentPreferencesLoader;
 import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.internal.MockPublishMethod4;
 import org.jboss.tools.as.test.core.internal.utils.IOUtil;
@@ -161,12 +161,12 @@ public abstract class AbstractPublishingTest extends TestCase {
 	}
 
 	public static void setCustomDeployOverride(IServerWorkingCopy wc, IModule rootModule, String outputName, String outputDir, String temporaryDir) {
-		DeploymentPreferences prefs = DeploymentPreferenceLoader.loadPreferencesFromServer(wc);
+		DeploymentPreferences prefs = DeploymentPreferencesLoader.loadPreferencesFromServer(wc);
 		DeploymentModulePrefs modPrefs = prefs.getOrCreatePreferences().getOrCreateModulePrefs(rootModule);
 		modPrefs.setProperty(IJBossToolingConstants.LOCAL_DEPLOYMENT_TEMP_LOC, temporaryDir);
 		modPrefs.setProperty(IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC, outputDir);
 		modPrefs.setProperty(IJBossToolingConstants.LOCAL_DEPLOYMENT_OUTPUT_NAME, outputName);
-		DeploymentPreferenceLoader.savePreferencesToServerWorkingCopy(wc, prefs);
+		DeploymentPreferencesLoader.savePreferencesToServerWorkingCopy(wc, prefs);
 	}
 
 	protected void setupZipParam(IServerWorkingCopy wc) {

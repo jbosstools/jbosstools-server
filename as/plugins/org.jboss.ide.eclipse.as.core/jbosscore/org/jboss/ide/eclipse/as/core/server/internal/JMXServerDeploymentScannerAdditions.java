@@ -116,7 +116,7 @@ public class JMXServerDeploymentScannerAdditions extends AbstractDeploymentScann
 		final Exception[] e = new Exception[1];
 		final Object waitObject = new Object();
 		final Boolean[] subtaskComplete = new Boolean[1];
-		subtaskComplete[0] = new Boolean(false);
+		subtaskComplete[0] = Boolean.FALSE;
 		Thread t = new Thread() {
 			public void run() {
 				Exception exception = null;
@@ -127,7 +127,7 @@ public class JMXServerDeploymentScannerAdditions extends AbstractDeploymentScann
 				}
 				synchronized(waitObject) {
 					e[0] = exception;
-					subtaskComplete[0] = new Boolean(true);
+					subtaskComplete[0] = Boolean.TRUE;
 					waitObject.notifyAll();
 				}
 			}
