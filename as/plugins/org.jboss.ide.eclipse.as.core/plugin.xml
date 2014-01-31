@@ -1600,7 +1600,7 @@
       </subsystem>
       <subsystemMapping
             id="shutdown.legacy.default"
-            mappedId="shutdown.legacy"
+            mappedId="shutdown.default"
             serverTypes="%ServerTypesJBoss6OrLower">
       </subsystemMapping>
       
@@ -1612,8 +1612,8 @@
       </subsystem>
       <subsystemMapping
             id="shutdown.management.as7"
-            mappedId="shutdown.management"
-            serverTypes="org.jboss.ide.eclipse.as.70,org.jboss.ide.eclipse.as.71,org.jboss.ide.eclipse.as.eap.60,org.jboss.ide.eclipse.as.eap.61,org.jboss.ide.eclipse.as.wildfly.80">
+            mappedId="shutdown.default"
+            serverTypes="%ServerTypesJBoss7OrHigher">
       </subsystemMapping>
 
       
@@ -1649,7 +1649,7 @@
       
       <subsystem
             system="publish"
-            id="publish.filesystem.default"
+            id="publish.filesystem.standard"
             name="Filesystem Publish Controller"
             class="org.jboss.tools.as.core.server.controllable.subsystems.internal.StandardFileSystemPublishController">
          <dependencies>
@@ -1660,9 +1660,9 @@
          </dependencies>
       </subsystem>
       <subsystemMapping
-            id="publish.filesystem.default"
-            mappedId="publish.filesystem"
-            serverTypes="%AllJBTServerTypes">
+            id="publish.filesystem.standard"
+            mappedId="publish.filesystem.default"
+            serverTypes="org.jboss.ide.eclipse.as.systemCopyServer">
       </subsystemMapping>
 
 
@@ -1671,6 +1671,9 @@
             id="publish.management.default"
             name="Management Publish Controller"
             class="org.jboss.tools.as.core.server.controllable.subsystems.internal.ManagementPublishController">
+         <properties>
+            <property key="target" value="management"></property>
+         </properties>
       </subsystem>
       <subsystemMapping
             id="publish.management.default"
@@ -1683,7 +1686,7 @@
       <!-- A filesystem publish controller that suspends and resumes deployment scanners, for use in as lessthan 7 -->
       <subsystem
             system="publish"
-            id="publish.filesystem.suspendScanners.default"
+            id="publish.filesystem.suspendScanners"
             name="Suspended Deployment Scanner Filesystem Publish Controller"
             class="org.jboss.tools.as.core.server.controllable.subsystems.internal.SuspendedScannersFileSystemPublishController">
          <dependencies>
@@ -1695,8 +1698,8 @@
          </dependencies>
       </subsystem>
       <subsystemMapping
-            id="publish.filesystem.suspendScanners.default"
-            mappedId="publish.filesystem.suspendScanners"
+            id="publish.filesystem.suspendScanners"
+            mappedId="publish.filesystem.default"
             serverTypes="%AllJBossServerTypes">
       </subsystemMapping>
 
@@ -1714,6 +1717,45 @@
             serverTypes="%AllJBossServerTypes">
       </subsystemMapping>
       
+      
+      <subsystem
+            system="modules"
+            id="modules.state.legacy"
+            name="Module Controller"
+            class="org.jboss.ide.eclipse.as.core.server.internal.JBossLT6ModuleStateVerifier">
+      </subsystem>
+      <subsystemMapping
+            id="modules.state.legacy"
+            mappedId="modules.default"
+            serverTypes="%ServerTypesJBossLessThan6">
+      </subsystemMapping>
+
+      <subsystem
+            system="modules"
+            id="modules.state.jb6"
+            name="Module Controller"
+            class="org.jboss.ide.eclipse.as.core.server.internal.JBoss6ModuleStateVerifier">
+      </subsystem>
+      <subsystemMapping
+            id="modules.state.jb6"
+            mappedId="modules.default"
+            serverTypes="%ServerTypesJBossLessThan6">
+      </subsystemMapping>
+
+      <subsystem
+            system="modules"
+            id="modules.state.wf"
+            name="Module Controller"
+            class="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ModuleStateVerifier">
+      </subsystem>
+      <subsystemMapping
+            id="modules.state.wf"
+            mappedId="modules.default"
+            serverTypes="%ServerTypesJBoss7OrHigher">
+      </subsystemMapping>
+      
+      
+      
       <!-- Some no-op stub implementations -->
       <subsystem
             system="modules"
@@ -1724,7 +1766,7 @@
       <subsystemMapping
             id="modules.noop.default"
             mappedId="modules.noop"
-            serverTypes="%AllJBTServerTypes">
+            serverTypes="org.jboss.ide.eclipse.as.systemCopyServer">
       </subsystemMapping>
 
       <subsystem
@@ -1751,8 +1793,19 @@
             mappedId="shutdown.noop"
             serverTypes="org.jboss.ide.eclipse.as.systemCopyServer">
       </subsystemMapping>
-      
 	</extension>
+	
+    <extension
+          point="org.jboss.ide.eclipse.as.wtp.core.serverProfile">
+       <serverProfile id="local" serverTypes="%AllJBossServerTypes">
+          <subsystem system="deploymentOptions" subsystem="deploymentOptions.local"/>
+          <subsystem system="launch" subsystem="launch.standard.local"/>
+          <subsystem system="serverDetails" subsystem="serverDetails.local"/>
+          <subsystem system="shutdown" subsystem="shutdown.default"/>
+          <subsystem system="filesystem" subsystem="filesystem.local"/>
+          <subsystem system="publish" subsystem="publish.filesystem.default"/>
+       </serverProfile>
+    </extension>
 
 
 </plugin>

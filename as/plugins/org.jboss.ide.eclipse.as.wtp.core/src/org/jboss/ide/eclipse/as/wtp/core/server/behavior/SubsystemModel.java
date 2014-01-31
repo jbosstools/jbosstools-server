@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2013 Red Hat, Inc. 
+ * Copyright (c) 2014 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -373,6 +373,10 @@ public class SubsystemModel {
 			} 		
 		}
 		
+		if( types.length == 1 ) {
+			selectedMapping = types[0];
+		}
+		
 		if( selectedMapping == null ) {
 			// The one they wanted as default is not found, or they did not set a default
 			// Check for a default property on the types
@@ -384,8 +388,10 @@ public class SubsystemModel {
 				// TODO log warning?
 			} else {
 				// None marked default, use the first acceptable
-				if( types.length > 0 )
-					selectedMapping = types[0];
+				if( types.length > 1 ) {
+					String msg = "Unable to choose a subsystem. Multiple subsystems found for servertype " + serverType + " and system type " + system;
+					throw new CoreException(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, msg));
+				}
 			}
 		} 
 		

@@ -81,7 +81,9 @@ public class ExploreActionProvider extends CommonActionProvider {
 			try {
 				return (IExploreBehavior)beh.getController(IExploreBehavior.SYSTEM_ID);
 			} catch( CoreException ce) {
-				JBossServerUIPlugin.log(ce.getStatus());
+				// We should not log this. It is possible the server is in a mode where it cannot explore anything,
+				// For example there's no way to explore a managed deployment.
+				// In this case, the explore action is simply not enabled. 
 			}
 		}
 		return null;

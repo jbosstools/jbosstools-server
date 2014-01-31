@@ -143,7 +143,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 	 */
 	protected IFilesystemController getFilesystemController() throws CoreException {
 		if( filesystemController == null ) {
-			filesystemController = (IFilesystemController)findDependency(IFilesystemController.SYSTEM_ID);
+			filesystemController = (IFilesystemController)findDependencyFromBehavior(IFilesystemController.SYSTEM_ID);
 		}
 		return filesystemController;
 	}
@@ -448,7 +448,6 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 	 */
 	private boolean parentModuleIsForcedZip(IModule[] moduleTree) {
 		ArrayList<IModule> tmp = new ArrayList(Arrays.asList(moduleTree)); 
-		tmp.addAll(Arrays.asList(moduleTree));
 		tmp.remove(tmp.size()-1);
 		while( tmp.size() > 0 ) {
 			IModule[] tmpArray = tmp.toArray(new IModule[tmp.size()]);

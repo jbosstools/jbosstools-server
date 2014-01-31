@@ -155,7 +155,12 @@ public class ServerSubsystemTest1 extends TestCase {
 			assertTrue(controller.getSubsystemMappedId().equals("system4.implSingleton"));
 			assertTrue(controller instanceof System1aSubsystem);
 			System1aSubsystem tmp = (System1aSubsystem)controller;
-			assertNotNull(tmp.findDependency("system4a", "customServer1"));
+			try { 
+				tmp.findDependency("system4a", "customServer1");
+				fail();
+			} catch(CoreException ce) {
+				// cannot choose between the systems
+			}
 			
 			
 			// Repeat with an environment indicating our system4a dependency must have prop1=val1
@@ -211,8 +216,14 @@ public class ServerSubsystemTest1 extends TestCase {
 			assertTrue(system4.getSubsystemMappedId().equals("system4.implSingleton"));
 			assertTrue(system4 instanceof System1aSubsystem);
 			System1aSubsystem tmp4 = (System1aSubsystem)system4;
-			ISubsystemController system4a =tmp4.findDependency("system4a", "customServer1"); 
-			assertNotNull(system4a);
+			ISubsystemController system4a = null;
+			try {
+				system4a =tmp4.findDependency("system4a", "customServer1"); 
+				assertNotNull(system4a);
+				fail();
+			} catch(CoreException ce) {
+				
+			}
 			
 			
 			// Repeat with an environment indicating our system4a dependency must have prop1=val1

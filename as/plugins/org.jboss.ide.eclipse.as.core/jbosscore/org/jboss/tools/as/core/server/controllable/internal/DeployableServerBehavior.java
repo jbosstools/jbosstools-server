@@ -13,11 +13,13 @@ package org.jboss.tools.as.core.server.controllable.internal;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.internal.RecentlyUpdatedServerLaunches;
@@ -26,9 +28,11 @@ import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExt
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllerEnvironment;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ILaunchServerController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IModuleStateController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IServerShutdownController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ISubsystemController;
-import org.jboss.ide.eclipse.as.wtp.core.server.behavior.SubsystemModel;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 
 /**
  * This is the behavior class for a deploy-only server
@@ -41,30 +45,24 @@ public class DeployableServerBehavior extends ControllableServerBehavior {
 		if( SYSTEM_PUBLISH.equals(system)) {
 			return getPublishController();
 		}
+		// pull from our profile method
+		return getController(system, null);
 		
-		try {
-			// Default to returning an implementation that matches the current server mode (local, rse, etc)
-			return getControllerForTarget(system);
-		} catch(CoreException ce) {
-			// Ignore this. No subsystem matches that flag
-		}
-		// Use superclass impl to get whatever matches
-		return super.getController(system);
-	}
-
-	protected ISubsystemController getControllerForTarget(String system) throws CoreException {
-		return getControllerForTarget(system, new ControllerEnvironment());
-	}
-	
-	protected ISubsystemController getControllerForTarget(String system, ControllerEnvironment env) throws CoreException {
-		String existingMode = getServer().getAttribute(IDeployableServer.SERVER_MODE, "local"); //$NON-NLS-1$
-		env.addRequiredProperty(system, "target", existingMode); //$NON-NLS-1$
-		return super.getController(system, env);
 	}
 	
 	@Override
 	protected ILaunchServerController getLaunchController() throws CoreException {
-		return (ILaunchServerController)getControllerForTarget(ILaunchServerController.SYSTEM_ID);
+		return (ILaunchServerController)getController(ILaunchServerController.SYSTEM_ID, null);
+	}
+	
+	@Override
+	protected IModuleStateController getModuleStateController() throws CoreException {
+		return (IModuleStateController)getController(IModuleStateController.SYSTEM_ID, null);
+	}
+
+	@Override
+	protected IServerShutdownController getShutdownController() throws CoreException {
+		return (IServerShutdownController)getController(IServerShutdownController.SYSTEM_ID, null);
 	}
 	
 	@Override
@@ -74,8 +72,28 @@ public class DeployableServerBehavior extends ControllableServerBehavior {
 		if( o != null ) {
 			return (IPublishController)o;
 		}
-		return (IPublishController)super.getController(IPublishController.SYSTEM_ID, null);
+		return (IPublishController)getController(IPublishController.SYSTEM_ID, null);
 	}
+	
+	/**
+	 * Use the profile model to find a subsystem for the given profile
+	 */
+	@Override
+	public ISubsystemController getController(String system, ControllerEnvironment env) throws CoreException {
+		// Check override props
+		ISubsystemController ret = getOverrideController(system, env);
+		if( ret == null ) {
+			// Check profile
+			String profile = getServer().getAttribute(IDeployableServer.SERVER_MODE, "local"); //$NON-NLS-1$
+			ret = ServerProfileModel.getDefault().getController(getServer(), profile, system, env);
+		}
+		if( ret == null ) {
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 0, 
+					"Unable to locate system " + system + " for server " + getServer().getName(), null)); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		return ret;
+	}
+
 	
 
 	@Override

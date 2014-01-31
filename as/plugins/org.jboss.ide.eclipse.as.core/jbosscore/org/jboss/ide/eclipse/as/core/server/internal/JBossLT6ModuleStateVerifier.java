@@ -83,7 +83,7 @@ public class JBossLT6ModuleStateVerifier extends AbstractSubsystemController imp
 	 */
 	protected IDeploymentOptionsController getDeploymentOptions() throws CoreException {
 		if( deploymentOptions == null ) {
-			deploymentOptions = (IDeploymentOptionsController)findDependency(IDeploymentOptionsController.SYSTEM_ID);
+			deploymentOptions = (IDeploymentOptionsController)findDependencyFromBehavior(IDeploymentOptionsController.SYSTEM_ID);
 		}
 		return deploymentOptions;
 	}
@@ -105,7 +105,7 @@ public class JBossLT6ModuleStateVerifier extends AbstractSubsystemController imp
 	 */
 	protected IFilesystemController getFilesystemController() throws CoreException {
 		if( filesystemController == null ) {
-			filesystemController = (IFilesystemController)findDependency(IFilesystemController.SYSTEM_ID);
+			filesystemController = (IFilesystemController)findDependencyFromBehavior(IFilesystemController.SYSTEM_ID);
 		}
 		return filesystemController;
 	}

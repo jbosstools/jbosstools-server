@@ -696,10 +696,7 @@
             name="Explore Server or Modules (Local)"
             class="org.jboss.ide.eclipse.as.ui.subsystems.internal.LocalExploreBehavior">
          <properties>
-            <property
-                  key="target"
-                  value="local">
-            </property>
+            <property key="target" value="local"/>
          </properties>
       </subsystem>
       <subsystemMapping
@@ -715,10 +712,7 @@
             name="Browse Server or Modules (Local)"
             class="org.jboss.ide.eclipse.as.ui.subsystems.internal.LocalBrowseBehavior">
          <properties>
-            <property
-                  key="target"
-                  value="local">
-            </property>
+            <property key="target" value="local"/>
          </properties>
       </subsystem>
       <subsystemMapping
@@ -733,16 +727,13 @@
             name="Launch Tabs (Local)"
             class="org.jboss.ide.eclipse.as.ui.subsystems.internal.JBoss7StandardTabProvider">
          <properties>
-            <property
-                  key="target"
-                  value="local">
-            </property>
+            <property key="target" value="local"/>
          </properties>
       </subsystem>
       <subsystemMapping
             id="launchTabProvider.local.asLegacy"
             mappedId="launchTabProvider.local"
-            serverTypes="%ServerTypesJBoss6OrLower">
+            serverTypes="%AllJBossServerTypes">
       </subsystemMapping>
  
        <subsystem
@@ -762,12 +753,29 @@
             id="deploymentPage.management"
             name="Deployment Page"
             class="org.jboss.ide.eclipse.as.ui.editor.internal.ManagementDeploymentPageController">
+         <properties>
+            <property key="target" value="management"></property>
+         </properties>
       </subsystem>
       <subsystemMapping
             id="deploymentPage.management"
             mappedId="deploymentPage.management"
             serverTypes="%ServerTypesJBoss7OrHigher">
       </subsystemMapping>
- 
    </extension>      
+   
+   
+   <extension
+          point="org.jboss.ide.eclipse.as.wtp.core.serverProfile">
+       <serverProfile id="local" serverTypes="%AllJBossServerTypes">
+          <subsystem system="launchTabProvider" subsystem="launchTabProvider.local"/>
+       </serverProfile>
+       <serverProfile id="local" serverTypes="%AllJBTServerTypes">
+          <subsystem system="exploreBehavior" subsystem="exploreBehavior.local"/>
+          <subsystem system="browseBehavior" subsystem="browseBehavior.local"/>
+          <subsystem system="deploymentPage" subsystem="deploymentPage.standard"/>
+       </serverProfile>
+    </extension>
+   
+   
 </plugin>

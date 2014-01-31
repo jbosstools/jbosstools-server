@@ -117,9 +117,21 @@
       </subsystem>
       <subsystemMapping
             id="shutdown.rse.commandline.default"
-            mappedId="shutdown.rse.commandline"
+            mappedId="shutdown.rse.default"
             serverTypes="%ServerTypesJBoss6OrLower">
       </subsystemMapping>
-      
 	</extension>
+	
+	<extension
+          point="org.jboss.ide.eclipse.as.wtp.core.serverProfile">
+       <serverProfile id="rse" serverTypes="%AllJBossServerTypes">
+          <subsystem system="deploymentOptions" subsystem="deploymentOptions.rse"/>
+          <subsystem system="launch" subsystem="launch.standard.rse"/>
+          <subsystem system="serverDetails" subsystem="serverDetails.rse"/>
+          <subsystem system="shutdown" subsystem="shutdown.default"/>
+          <subsystem system="filesystem" subsystem="filesystem.rse"/>
+       </serverProfile>
+    </extension>
+	
+	
 </plugin>

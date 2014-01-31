@@ -27,6 +27,7 @@ import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
+import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.DeploymentMarkerUtils;
 import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IFilesystemController;
@@ -414,9 +415,15 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 				
 				@Override
 				protected boolean hasBeenPublished(IModule[] mod) {
-					return beenPublished.get(mod);
+					Boolean b = beenPublished.get(mod);
+					if( b == null )
+						return false;
+					return b; 
 				}
-
+				protected IModule[] getChildModules(IModule[] parent) {
+					ServerDelegate sd = ((ServerDelegate)server.loadAdapter(ServerDelegate.class, null));
+					return sd.getChildModules(parent);
+				}
 			};
 		}
 		

@@ -74,18 +74,10 @@ public class ControllableServerBehavior extends ServerBehaviourDelegate implemen
 	 * @throws CoreException
 	 */
 	public ISubsystemController getController(String system, ControllerEnvironment env) throws CoreException {
-		
-		// FIrst check if the server has a hard-coded subsystem to choose for this system
-		String propOverride = PROPERTY_PREFIX + system;
-		String val = getServer().getAttribute(propOverride, (String)null);
-		ISubsystemController ret = null;
-		Map<String,Object> envMap =  env == null ? null : env.getMap();
-		if( val != null ) {
-			ret = SubsystemModel.getInstance().createControllerForSubsystem(
-					getServer(), getServer().getServerType().getId(), system, val, envMap);
-		} else {
+		ISubsystemController ret = getOverrideController(system, env);
+		if( ret == null ) {
 			// Otherwise, just get one from the model
-			ret = SubsystemModel.getInstance().createSubsystemController(getServer(), system, envMap);
+			ret = SubsystemModel.getInstance().createSubsystemController(getServer(), system, env == null ? null : env.getMap());
 		}
 		if( ret == null ) {
 			throw new CoreException(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, 0, 
@@ -94,6 +86,19 @@ public class ControllableServerBehavior extends ServerBehaviourDelegate implemen
 		return ret;
 	}
 	
+	
+	protected ISubsystemController getOverrideController(String system, ControllerEnvironment env) throws CoreException {
+		// FIrst check if the server has a hard-coded subsystem to choose for this system
+		String propOverride = PROPERTY_PREFIX + system;
+		String val = getServer().getAttribute(propOverride, (String)null);
+		ISubsystemController ret = null;
+		Map<String,Object> envMap =  env == null ? null : env.getMap();
+		if( val != null ) {
+			ret = SubsystemModel.getInstance().createControllerForSubsystem(
+					getServer(), getServer().getServerType().getId(), system, val, envMap);
+		}
+		return ret;
+	}
 	
 	protected IPublishController getPublishController() throws CoreException {
 		return (IPublishController)getController(SYSTEM_PUBLISH, null);
@@ -158,19 +163,22 @@ public class ControllableServerBehavior extends ServerBehaviourDelegate implemen
 	@Override
 	public void startModule(IModule[] module, IProgressMonitor monitor) throws CoreException {
 		IModuleStateController controller = getModuleStateController();
-		controller.startModule(module, monitor);
+		int newState = controller.startModule(module, monitor);
+		setModuleState(module, newState);
 	}
 
 	@Override
 	public void stopModule(IModule[] module, IProgressMonitor monitor) throws CoreException {
 		IModuleStateController controller = getModuleStateController();
-		controller.stopModule(module, monitor);
+		int newState = controller.stopModule(module, monitor);
+		setModuleState(module, newState);
 	}
 	
 	@Override
 	public void restartModule(IModule[] module, IProgressMonitor monitor) throws CoreException {
 		IModuleStateController controller = getModuleStateController();
-		controller.restartModule(module, monitor);
+		int newState = controller.restartModule(module, monitor);
+		setModuleState(module, newState);
 	}
 
 	public void setServerStarting() {

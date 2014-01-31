@@ -2,6 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension-point id="serverSubsystem" name="org.jboss.ide.eclipse.as.wtp.core.server.behavior.serverSubsystem" schema="schema/serverSubsystem.exsd"/>
+   <extension-point id="serverProfile" name="org.jboss.ide.eclipse.as.wtp.core.server.behavior.serverProfile" schema="schema/serverProfile.exsd"/>
    <extension
          point="org.eclipse.wst.common.modulecore.referenceResolver">
       <resolver
