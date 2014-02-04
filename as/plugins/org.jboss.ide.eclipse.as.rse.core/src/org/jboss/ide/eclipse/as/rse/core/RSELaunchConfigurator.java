@@ -56,13 +56,14 @@ public class RSELaunchConfigurator implements ILaunchConfigConfigurator {
 		String serverId = new JBossLaunchConfigProperties().getServerId(config);
 		IJBossServer jbossServer = ServerConverter.checkedFindJBossServer(serverId);
 		String rseHome = jbossServer.getServer().getAttribute(RSEUtils.RSE_SERVER_HOME_DIR, "");
+		String basedir = jbossServer.getServer().getAttribute(RSEUtils.RSE_BASE_DIR, "");
 		// initialize startup command to something reasonable
 		String currentArgs = config.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, ""); //$NON-NLS-1$
 		String currentVMArgs = config.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, ""); //$NON-NLS-1$
 
-		// Clear old flag which used url
-		currentArgs = ArgsUtil.setArg(currentArgs, null,
-				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JBOSS_SERVER_BASE_URL, null);
+		if( !"".equals(basedir))
+			currentArgs = ArgsUtil.setArg(currentArgs, null,
+					IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JBOSS_SERVER_BASE_URL, basedir);
 		
 		String connectionName = RSEUtils.getRSEConnectionName(jbossServer.getServer());
 		IHost host = RSEFrameworkUtils.findHost(connectionName);

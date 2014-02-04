@@ -27,10 +27,12 @@ import org.eclipse.wst.server.core.model.IModuleFile;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory;
 import org.jboss.tools.as.test.core.internal.MockPublishMethod4;
 import org.jboss.tools.as.test.core.internal.utils.IOUtil;
+import org.jboss.tools.as.test.core.internal.utils.MatrixUtils;
 import org.jboss.tools.as.test.core.internal.utils.ResourceUtils;
 import org.jboss.tools.as.test.core.internal.utils.wtp.CreateProjectOperationsUtility;
 import org.jboss.tools.as.test.core.internal.utils.wtp.JavaEEFacetConstants;
 import org.jboss.tools.as.test.core.internal.utils.wtp.OperationTestCase;
+import org.jboss.tools.as.test.core.parametized.server.ServerParameterUtils;
 import org.jboss.tools.test.util.JobUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,8 +47,12 @@ public class SingleDeployableFileTest extends AbstractPublishingTest {
 	
 	@Parameters
 	public static Collection<Object[]> params() {
-		ArrayList<Object[]> ret = defaultData();
-		return ret;
+		Object[] servers = ServerParameterUtils.getPublishServerTypes();
+		Object[] zipOption = ServerParameterUtils.getServerZipOptions();
+		Object[][] allOptions = new Object[][] {
+				servers, zipOption, new Object[]{ServerParameterUtils.DEPLOY_META}, new Object[]{ServerParameterUtils.DEPLOY_PERMOD_DEFAULT}
+		};
+		return MatrixUtils.toMatrix(allOptions);
 	}
 	
 	private String projectName;
@@ -94,20 +100,11 @@ public class SingleDeployableFileTest extends AbstractPublishingTest {
 	private void fullPublishAndVerify(int publishType, String expectedContents) throws CoreException, IOException  {
 		publishAndCheckError(server,publishType);
 		boolean isFullPublish = publishType == IServer.PUBLISH_FULL;
-		int[] vals = isFullPublish ? new int[] { 1,1,1} : new int[] {1,0,1};
-		vals[0] += isFullPublish ? getFullPublishChangedResourceCountModifier() : 0;
+		int[] vals = isFullPublish ? new int[] { 2,0} : new int[] {2,0};
+		// binary modules are always full publish really
+		vals[0] += getFullPublishChangedResourceCountModifier();
 		vals[1] += getFullPublishRemovedResourceCountModifier();
-		vals[2] += isFullPublish ? getFullPublishChangedResourceCountModifier() : 0;
-		verifyPublishMethodResults(vals[0], vals[1], vals[2]);
-		
-		IModuleFile[] f = MockPublishMethod4.getChangedFiles();
-		IModuleFile f2 = findBinaryModuleFile(f, "test.xml");
-		File asFile = (File)f2.getAdapter(File.class);
-		assertNotNull(asFile);
-		assertTrue(asFile.exists());
-		assertTrue(asFile.isFile());
-		assertFalse(IOUtil.isZip(asFile));
-		assertEquals(expectedContents, ResourceUtils.getContents(f2));		
+		verifyPublishMethodResults(vals[0], vals[1]);
 	}
 	
 	private IModuleFile findBinaryModuleFile(IModuleFile[] files, String name) {

@@ -12,7 +12,6 @@ package org.jboss.tools.as.test.core.parametized.server.publishing;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 
 import org.eclipse.core.resources.IFile;
@@ -26,14 +25,15 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.model.IModuleFile;
 import org.jboss.ide.eclipse.archives.core.util.internal.TrueZipUtil;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory;
-import org.jboss.tools.as.test.core.internal.MockPublishMethod4;
+import org.jboss.tools.as.test.core.internal.MockPublishMethodFilesystemController;
+import org.jboss.tools.as.test.core.internal.utils.MatrixUtils;
 import org.jboss.tools.as.test.core.internal.utils.ResourceUtils;
 import org.jboss.tools.as.test.core.internal.utils.wtp.CreateProjectOperationsUtility;
 import org.jboss.tools.as.test.core.internal.utils.wtp.JavaEEFacetConstants;
 import org.jboss.tools.as.test.core.internal.utils.wtp.OperationTestCase;
+import org.jboss.tools.as.test.core.parametized.server.ServerParameterUtils;
 import org.jboss.tools.test.util.JobUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,8 +47,12 @@ public class SingleDeployableFolderTest extends AbstractPublishingTest {
 
 	@Parameters
 	public static Collection<Object[]> params() {
-		ArrayList<Object[]> ret = defaultData();
-		return ret;
+		Object[] servers = ServerParameterUtils.getPublishServerTypes();
+		Object[] zipOption = ServerParameterUtils.getServerZipOptions();
+		Object[][] allOptions = new Object[][] {
+				servers, zipOption, new Object[]{ServerParameterUtils.DEPLOY_META}, new Object[]{ServerParameterUtils.DEPLOY_PERMOD_DEFAULT}
+		};
+		return MatrixUtils.toMatrix(allOptions);
 	}
 
 	private String projectName;
@@ -130,33 +134,27 @@ public class SingleDeployableFolderTest extends AbstractPublishingTest {
 	private void fullPublishAndVerify1(String file1Contents, String file2Contents) throws CoreException, IOException  {
 		publishAndCheckError(server,IServer.PUBLISH_FULL);
 		// initial full publish should be 3 changes, 1 remove, , and 2 temp files (or 1,0,1 for zip)
-		int[] vals = isZipped() ? new int[] { 1,0,1} : new int[] {3,1,2};
+		int[] vals = isZipped() ? new int[] { 1,0} : new int[] {3,0};
 		vals[0] += getFullPublishChangedResourceCountModifier();
 		vals[1] += getFullPublishRemovedResourceCountModifier();
-		vals[2] += getFullPublishChangedResourceCountModifier();
-		verifyPublishMethodResults(vals[0], vals[1], vals[2]);
+		verifyPublishMethodFilesystemResults(vals[0], vals[1]);
 	}
 
 	private void incrementalFilesChangedPublishAndVerify1(IPath[] filePath, String[] fileContents) throws CoreException, IOException  {
 		publishAndCheckError(server, IServer.PUBLISH_INCREMENTAL);
-		int[] vals = isZipped() ? new int[] { 1,0,1} : new int[] {filePath.length,0,filePath.length};
+		int[] vals = isZipped() ? new int[] { 1,0} : new int[] {filePath.length,0};
 		vals[0] += isZipped() ? getFullPublishChangedResourceCountModifier() : 1;
-		vals[1] += getFullPublishRemovedResourceCountModifier();
-		vals[2] += isZipped() ? getFullPublishChangedResourceCountModifier() : 0;
-		verifyPublishMethodResults(vals[0], vals[1], vals[2]);
+		vals[1] += isZipped() ? getFullPublishRemovedResourceCountModifier() : 0;
+		verifyPublishMethodFilesystemResults(vals[0], vals[1]);
 		
-		IModuleFile[] mf = MockPublishMethod4.getChangedFiles();
+		java.io.File[] changed = MockPublishMethodFilesystemController.StaticModel.getChangedFiles();
 		if (isZipped()) { 
-			verifyZipContents(mf, filePath, fileContents);
-		} else { 
-			verifyWorkspaceContents(mf, filePath, fileContents);
+			verifyZipContents(changed, filePath, fileContents);
 		}
 	}
 	private void incrementalFilesRemovedPublishAndVerify1(IPath filePath) throws CoreException, IOException  {
 		publishAndCheckError(server, IServer.PUBLISH_INCREMENTAL);
-		IPath[] changed = MockPublishMethod4.getChanged();
-		IPath[] removed = MockPublishMethod4.getRemoved();
-		IPath[] temp = MockPublishMethod4.getTempPaths();
+		IPath[] removed = MockPublishMethodFilesystemController.StaticModel.getRemoved();
 		//System.out.println("   " + changed.length + ", " + removed.length + ", " + temp.length);
 		if( !isZipped() ) {
 			boolean foundRemoved = false;
@@ -166,7 +164,7 @@ public class SingleDeployableFolderTest extends AbstractPublishingTest {
 			}
 			assertTrue("Incremental removal has failed", foundRemoved);
 		} else {
-			File foundZip = findZip(MockPublishMethod4.getChangedFiles());
+			File foundZip = findZip(MockPublishMethodFilesystemController.StaticModel.getChangedFiles());
 			de.schlichtherle.io.File zipRoot = new de.schlichtherle.io.File(foundZip, new TrueZipUtil.JarArchiveDetector());
 			de.schlichtherle.io.File removed2 = new de.schlichtherle.io.File(zipRoot, filePath.removeFirstSegments(1).toString());
 			assertFalse(removed2.exists());

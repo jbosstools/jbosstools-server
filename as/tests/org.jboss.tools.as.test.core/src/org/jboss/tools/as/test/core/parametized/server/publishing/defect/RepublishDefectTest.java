@@ -46,7 +46,7 @@ public class RepublishDefectTest extends AbstractPublishingTest {
 	
 	@Parameters
 	public static Collection<Object[]> params() {
-		return defaultData();
+		return minimalData();
 	}
 	
 	private int myCount;

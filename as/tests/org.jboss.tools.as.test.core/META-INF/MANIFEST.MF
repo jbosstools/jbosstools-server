@@ -67,7 +67,18 @@ Require-Bundle: org.eclipse.ui,
  org.jboss.tools.common.core;bundle-version="3.5.0",
  org.jboss.tools.as.runtimes.integration;bundle-version="2.4.100",
  org.eclipse.rse.subsystems.files.core;bundle-version="3.3.1",
- org.eclipse.rse.services;bundle-version="3.2.200"
+ org.eclipse.rse.services;bundle-version="3.2.200",
+ org.eclipse.rse.services.files.ftp;bundle-version="3.0.500",
+ org.eclipse.rse.services.local;bundle-version="2.1.500",
+ org.eclipse.rse.services.ssh;bundle-version="3.2.100",
+ org.eclipse.rse.services.telnet;bundle-version="2.0.400",
+ org.eclipse.rse.subsystems.files.ftp;bundle-version="2.2.0",
+ org.eclipse.rse.subsystems.files.local;bundle-version="2.1.300",
+ org.eclipse.rse.subsystems.processes.core;bundle-version="3.1.300",
+ org.eclipse.rse.subsystems.processes.local;bundle-version="2.1.400",
+ org.eclipse.rse.subsystems.shells.core;bundle-version="3.1.300",
+ org.eclipse.rse.subsystems.shells.local;bundle-version="2.1.400",
+ org.eclipse.rse.subsystems.terminals.core;bundle-version="1.0.300"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.jboss.tools.as.test.core,

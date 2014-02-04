@@ -213,6 +213,9 @@ public class BuildDeployTest extends TestCase {
 	}
 	
 	protected void setupServer() throws CoreException {
+		int initialServerCount = ServerCore.getServers().length;
+		int initialRuntimeCount = ServerCore.getRuntimes().length;
+		
 		pluginMetadata = ASArchivesIntegrationTest.getDefault().getStateLocation();
 		pluginMetadata.toFile().mkdirs();
 		pluginMetadata.append("server1").toFile().mkdirs();
@@ -252,8 +255,8 @@ public class BuildDeployTest extends TestCase {
 		server = wc.save(true, new NullProgressMonitor());
 		
 		// some asserts
-		assertTrue(ServerCore.getRuntimes().length == 1);
-		assertTrue(ServerCore.getServers().length == 1);
+		assertEquals(ServerCore.getRuntimes().length, initialRuntimeCount+1);
+		assertEquals(ServerCore.getServers().length, initialServerCount+1);
 		
 		textDeployedFile = deploy.append(OUT_JAR).append(FILE_NAME).toFile();
 	}

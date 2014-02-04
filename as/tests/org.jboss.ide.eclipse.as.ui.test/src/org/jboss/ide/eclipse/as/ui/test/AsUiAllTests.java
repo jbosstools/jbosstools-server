@@ -18,7 +18,6 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	ServerModeUIExtensionTest.class,
 	NewServerWizardTest.class
 })
 public class AsUiAllTests {

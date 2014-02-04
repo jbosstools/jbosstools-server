@@ -234,7 +234,11 @@ public class RSEUtils {
      */
 	public static String pathToRemoteSystem(IHost host, String path, String tail) {
 		char sep = getRemoteSystemSeparatorCharacter(host);
-		return new RemotePath(path, sep).append(tail).toOSString();
+		IPath rp = new RemotePath(path, sep);
+		if( tail != null ) {
+			rp = rp.append(tail);
+		}
+		return rp.toOSString();
 	}
 	
 	/**

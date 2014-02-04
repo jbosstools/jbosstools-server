@@ -135,11 +135,9 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 		assertEquals(result, IServer.PUBLISH_STATE_NONE);
 		String s = controller.getDeployPathController().getDeployDirectory(module).toOSString();
 		assertTrue(new Path(s).toFile().exists());
-		assertTrue(new Path(s).toFile().isDirectory()); // No matter what, this should be a folder, not a zip
+		assertTrue(new Path(s).toFile().isFile()); 
 		IModuleResource[] resources = ModuleResourceUtil.getResources(module[0], new NullProgressMonitor());
 		assertTrue(resources.length == 1);
-		assertTrue(new Path(s).append(resources[0].getName()).toFile().exists());
-		assertTrue(new Path(s).append(resources[0].getName()).toFile().isFile());
 	}
 
 	// Force nested zips

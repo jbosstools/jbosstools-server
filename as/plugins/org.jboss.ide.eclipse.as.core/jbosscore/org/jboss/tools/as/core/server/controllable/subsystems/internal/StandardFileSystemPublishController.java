@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.tools.as.core.server.controllable.subsystems.internal;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -40,6 +41,7 @@ import org.jboss.ide.eclipse.as.core.modules.ResourceModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.publishers.JSTPublisherXMLToucher;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServerBehaviour;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilterProvider;
@@ -190,8 +192,23 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		validate();
 		// handle markers / touch xml files depending on server version
 		ensureModulesRestarted();
+		IServer s = getServer();
+		((Server)s).setServerPublishState(getUpdatedPublishState(s));
 	}
 
+	private int getUpdatedPublishState(IServer server) {
+        IModule[] modules = server.getModules();
+        boolean allpublished= true;
+        for (int i = 0; i < modules.length; i++) {
+        	if(server.getModulePublishState(new IModule[]{modules[i]})!=IServer.PUBLISH_STATE_NONE)
+                allpublished=false;
+        }
+        if(allpublished)
+        	return IServer.PUBLISH_STATE_NONE;
+        return IServer.PUBLISH_STATE_INCREMENTAL;
+	}
+
+	
 	@Override
 	public int publishModule(int kind,
 			int deltaKind, IModule[] module, IProgressMonitor monitor)
@@ -256,6 +273,12 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		IStatus[] ret = null;
 		String msgForFailure = null; // This is the message to use in a failure status IF it fails. We set it just in case
 		IModulePathFilter filter = ResourceModuleResourceUtil.findDefaultModuleFilter(module[module.length-1]);
+
+		if( isBinaryObject ) {
+			return handleBinaryModule(module, archiveDestination);
+ 		}
+		
+		
 		if( publishType == IJBossServerPublisher.FULL_PUBLISH ) {
 			PublishModuleFullRunner runner = new PublishModuleFullRunner(getFilesystemController(), archiveDestination);
 			IModuleResource[] filtered = filter == null ? ModuleResourceUtil.getMembers(module[module.length-1]) : filter.getFilteredMembers();
@@ -277,7 +300,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 			MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_INC_FAIL, 
 					NLS.bind(msgForFailure, module[module.length-1].getName()), null);
 			for( int i = 0; i < ret.length; i++ ) {
-				if( !ret[i].isOK())
+				if( ret[i] != null && !ret[i].isOK())
 					ms.add(ret[i]);
 			}
 			if( ms.getChildren().length > 0 ) {
@@ -286,6 +309,33 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 			}
 		}
 		return IServer.PUBLISH_STATE_NONE;
+	}
+	
+	private int handleBinaryModule(IModule[] module, IPath archiveDestination) throws CoreException {
+		// Handle the publish here
+		// binary modules should only have 1 resource in them. 
+		IModuleResource[] all = ModuleResourceUtil.getMembers(module[module.length-1]);
+		if( all != null ) {
+			if( all.length > 0 && all[0] != null ) {
+				IModuleResource r = all[0];
+				File f = ModuleResourceUtil.getFile(r);
+				IPath folder = archiveDestination.removeLastSegments(1); 
+				IStatus s1 = getFilesystemController().makeDirectoryIfRequired(folder, new NullProgressMonitor());
+				IStatus result = null;
+				if( s1 != null && !s1.isOK()) {
+					result = s1;
+				} else {
+					IStatus s2 = getFilesystemController().copyFile(f, archiveDestination, new NullProgressMonitor());
+					result = s2;
+				}
+				
+				markModulePublished(module, IJBossServerPublisher.FULL_PUBLISH);
+				if( result != null && !result.isOK())
+			        ServerLogger.getDefault().log(getServer(), result);
+				return result == null || result.isOK() ? IServer.PUBLISH_STATE_NONE : IServer.PUBLISH_STATE_FULL;
+			}
+		}
+		return IServer.PUBLISH_STATE_UNKNOWN;
 	}
 	
 	private int removeModule(IModule[] module, IPath remote, IProgressMonitor monitor) throws CoreException {
@@ -350,7 +400,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 			markModulePublished(module, IJBossServerPublisher.FULL_PUBLISH);
 			if( result != null )
 		        ServerLogger.getDefault().log(getServer(), result);
-			return result.isOK() ? IServer.PUBLISH_STATE_NONE : IServer.PUBLISH_STATE_UNKNOWN;
+			return result == null || result.isOK() ? IServer.PUBLISH_STATE_NONE : IServer.PUBLISH_STATE_UNKNOWN;
 		}
 	}
 	

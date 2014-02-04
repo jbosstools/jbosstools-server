@@ -254,9 +254,13 @@ public class JBossServer extends DeployableServer
 	}
 	
 	
+	/*
+	 * WTF method??
+	 */
 	public boolean hasJMXProvider() {
-		DeployableServerBehavior beh = (DeployableServerBehavior)getServer().loadAdapter(
-				DeployableServerBehavior.class, new NullProgressMonitor());
+		org.jboss.tools.as.core.server.controllable.internal.DeployableServerBehavior beh = 
+		(org.jboss.tools.as.core.server.controllable.internal.DeployableServerBehavior)getServer().loadAdapter(
+				org.jboss.tools.as.core.server.controllable.internal.DeployableServerBehavior.class, new NullProgressMonitor());
 		if( beh == null )
 			return false;
 		return true;

@@ -308,7 +308,52 @@
             mappedId="system8.implSingleton8"
             serverTypes="customServer1">
       </subsystemMapping>
+      
+      
+      <!-- Backwards compat for existing tests (lame)  --> 
+      <subsystem
+            system="filesystem"
+            id="filesystem.mock4.default"
+            name="Filesystem Support (Mock4)"
+            class="org.jboss.tools.as.test.core.internal.MockPublishMethodFilesystemController">
+         <properties>
+            <property key="target" value="mock4"></property>
+         </properties>
+      </subsystem>
+      <subsystemMapping
+            id="filesystem.mock4.default"
+            mappedId="filesystem.local"
+            serverTypes="%AllJBTServerTypes">
+      </subsystemMapping>
+      
 	</extension>
 
+   
+   <!-- Backwards compat for old unit tests that I hope to remove -->
+   
+       <extension
+          point="org.jboss.ide.eclipse.as.wtp.core.serverProfile">
+       <serverProfile id="mock4" serverTypes="org.jboss.ide.eclipse.as.systemCopyServer">
+          <subsystem system="deploymentOptions" subsystem="deploymentOptions.local"/>
+          <subsystem system="serverDetails" subsystem="serverDetails.local"/>
+          <subsystem system="filesystem" subsystem="filesystem.local"/>
+       </serverProfile>
+       <serverProfile id="mock4" serverTypes="%AllJBossServerTypes">
+          <subsystem system="deploymentOptions" subsystem="deploymentOptions.local"/>
+          <subsystem system="launch" subsystem="launch.standard.local"/>
+          <subsystem system="serverDetails" subsystem="serverDetails.local"/>
+          <subsystem system="shutdown" subsystem="shutdown.default"/>
+          <subsystem system="filesystem" subsystem="filesystem.local"/>
+          <subsystem system="publish" subsystem="publish.filesystem.default"/>
+       </serverProfile>
+       <serverProfile id="mock4" serverTypes="%AllJBossServerTypes">
+          <subsystem system="launchTabProvider" subsystem="launchTabProvider.local"/>
+       </serverProfile>
+       <serverProfile id="mock4" serverTypes="%AllJBTServerTypes">
+          <subsystem system="exploreBehavior" subsystem="exploreBehavior.local"/>
+          <subsystem system="browseBehavior" subsystem="browseBehavior.local"/>
+          <subsystem system="deploymentPage" subsystem="deploymentPage.standard"/>
+       </serverProfile>
+    </extension>
    
 </plugin>

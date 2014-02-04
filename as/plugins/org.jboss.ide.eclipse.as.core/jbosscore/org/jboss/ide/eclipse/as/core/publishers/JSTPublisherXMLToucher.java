@@ -102,7 +102,8 @@ public class JSTPublisherXMLToucher {
 	public void touch(IPath root, IModule module, IFilesystemController controller) throws CoreException {
 		String id = module.getModuleType().getId();
 		IDescriptorToucher toucher = map.get(id);
-		toucher.touchDescriptors(root, controller);
+		if( toucher != null )
+			toucher.touchDescriptors(root, controller);
 	}
 	
 	// Touch all XML if we don't know what we're doing

@@ -35,7 +35,6 @@ import org.jboss.ide.eclipse.archives.webtools.IntegrationPlugin;
 import org.jboss.ide.eclipse.archives.webtools.Messages;
 import org.jboss.ide.eclipse.archives.webtools.modules.PackageModuleFactory.PackagedModuleDelegate;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 
 /**
@@ -82,15 +81,15 @@ public class ArchivesModuleModelListener extends AbstractBuildListener implement
 	public void publish(IArchive pkg, String servers, int publishType) {
 		IModule[] module = getModule(pkg);
 		if( module[0] == null ) return;
-		DeployableServerBehavior[] serverBehaviors = ArchivesModuleModelListener.getServers(servers);
-		if( serverBehaviors != null ) {
-			for( int i = 0; i < serverBehaviors.length; i++ ) {
-				if( !publishing.contains(serverBehaviors[i].getServer())) {
+		IServer[] servers2 = ArchivesModuleModelListener.getServers(servers);
+		if( servers2 != null ) {
+			for( int i = 0; i < servers2.length; i++ ) {
+				if( !publishing.contains(servers2[i])) {
 					try {
-						serverBehaviors[i].getServer().addPublishListener(publishListener);
-						publish(serverBehaviors[i].getServer(), publishType, module );
+						servers2[i].addPublishListener(publishListener);
+						publish(servers2[i], publishType, module );
 					} finally {
-						serverBehaviors[i].getServer().removePublishListener(publishListener);
+						servers2[i].removePublishListener(publishListener);
 					}
 				}
 			}
@@ -120,27 +119,23 @@ public class ArchivesModuleModelListener extends AbstractBuildListener implement
 		return (PackagedModuleDelegate)mod.loadAdapter(PackagedModuleDelegate.class, new NullProgressMonitor());
 	}
 
-	protected IDeployableServer getDeployableServerFromBehavior(DeployableServerBehavior dsb) {
-		IServer server = dsb.getServer();
+	protected IDeployableServer getDeployableServerFromBehavior(IServer server) {
 		IDeployableServer ids = (IDeployableServer)server.loadAdapter(IDeployableServer.class, new NullProgressMonitor());
 		return ids;
 	}
 
-	public static DeployableServerBehavior[] getServers(String servers) {
+	public static IServer[] getServers(String servers) {
 		if( servers == null || "".equals(servers))//$NON-NLS-1$
 			return null;
-		ArrayList<DeployableServerBehavior> list = new ArrayList<DeployableServerBehavior>();
+		ArrayList<IServer> list = new ArrayList<IServer>();
 		String[] byId = servers.split(",");//$NON-NLS-1$
 		for( int i = 0; i < byId.length; i++ ) {
 			IServer server = ServerCore.findServer(byId[i]);
 			if( server != null ) {
-				Object o = server.loadAdapter(DeployableServerBehavior.class, new NullProgressMonitor());
-				if( o != null ) {
-					list.add((DeployableServerBehavior)o);
-				}
+				list.add(server);
 			}
 		}
-		return list.toArray(new DeployableServerBehavior[list.size()]);
+		return list.toArray(new IServer[list.size()]);
 	}
 
 	/*
@@ -149,13 +144,13 @@ public class ArchivesModuleModelListener extends AbstractBuildListener implement
 	 */
 	public void packageBuildTypeChanged(IArchive topLevelPackage, boolean isExploded) {
 		String servers = topLevelPackage.getProperty(ArchivesModuleModelListener.DEPLOY_SERVERS);
-		DeployableServerBehavior[] serverBehaviors = ArchivesModuleModelListener.getServers(servers);
-		if( serverBehaviors != null ) {
+		IServer[] servers2 = ArchivesModuleModelListener.getServers(servers);
+		if( servers2 != null ) {
 			IPath sourcePath, destPath;
 			IDeployableServer depServer;
-			for( int i = 0; i < serverBehaviors.length; i++ ) {
+			for( int i = 0; i < servers2.length; i++ ) {
 				sourcePath = topLevelPackage.getArchiveFilePath();
-				depServer = getDeployableServerFromBehavior(serverBehaviors[i]);
+				depServer = getDeployableServerFromBehavior(servers2[i]);
 				destPath = new Path(depServer.getDeployFolder()).append(sourcePath.lastSegment());
 				FileUtil.safeDelete(destPath.toFile());
 				FileUtil.fileSafeCopy(sourcePath.toFile(), destPath.toFile());

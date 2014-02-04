@@ -293,7 +293,7 @@ public class LocalZippedModulePublishRunner extends ModuleResourceUtil {
 		// Handle the removed children that are not returned by getChildModules
 		Iterator<IModule[]> i = working.iterator();
 		while(i.hasNext()) {
-			IModule[] removedArray = i.next();
+			IModule[] removedArray = i.next();	IModule[] moduleAsArray = new IModule[]{module};
 			if( removedArray.length == 1 || !removedArray[0].getId().equals(module.getId())) {
 				i.remove();
 			}
@@ -453,9 +453,15 @@ public class LocalZippedModulePublishRunner extends ModuleResourceUtil {
 	}
 	
 	protected List<IModule[]> getRemovedModules() {
-		ArrayList<IModule[]> list = new ArrayList<IModule[]>();
-		((Server)server).getServerPublishInfo().addRemovedModules(list);
-		return list;
+		List<IModule[]> l = ((Server)server).getAllModules();
+		int size = l.size();
+		((Server)server).getServerPublishInfo().addRemovedModules(l);
+		if( l.size() > size ) {
+			// if any were added
+			List<IModule[]> l2 = l.subList(size, l.size()-1);
+			return l2;
+		}
+		return new ArrayList<IModule[]>();
 	}
 	
 	protected boolean hasBeenPublished(IModule[] mod) {

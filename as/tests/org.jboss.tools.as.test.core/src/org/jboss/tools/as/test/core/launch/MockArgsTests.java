@@ -22,10 +22,10 @@ import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.jboss.ide.eclipse.as.core.server.IProcessProvider;
-import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
+import org.jboss.tools.as.core.server.controllable.IDeployableServerBehaviorProperties;
 import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
 import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
@@ -116,11 +116,13 @@ public class MockArgsTests extends TestCase  {
 		} catch( CoreException ce) {}
 		
 		int loops = 0;
-		DelegatingServerBehavior behavior = (DelegatingServerBehavior)server.loadAdapter(DelegatingServerBehavior.class, null);
+		ControllableServerBehavior behavior = (ControllableServerBehavior)server.loadAdapter(ControllableServerBehavior.class, null);
 		
 		while(loops < 500) {
-			if( ((IProcessProvider)behavior.getDelegate()).getProcess() != null ) {
-				return ((IProcessProvider)behavior.getDelegate()).getProcess();
+			Object p = behavior.getSharedData(IDeployableServerBehaviorProperties.PROCESS);
+			if( p != null ) {
+				assertTrue(p instanceof IProcess);
+				return (IProcess)p;
 			}
 			try {
 				loops++;
