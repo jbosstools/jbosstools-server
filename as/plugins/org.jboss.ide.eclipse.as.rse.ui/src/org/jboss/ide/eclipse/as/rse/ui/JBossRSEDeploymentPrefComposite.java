@@ -39,7 +39,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
-import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
+import org.jboss.ide.eclipse.as.rse.core.RSEFrameworkUtils;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
 import org.jboss.ide.eclipse.as.rse.ui.RSEDeploymentPreferenceUI.RSEDeploymentPreferenceComposite;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
@@ -159,7 +159,7 @@ public class JBossRSEDeploymentPrefComposite extends
 		}
 		pm.worked(100);
 		
-		IFileServiceSubSystem fileSubSystem = RSEPublishMethod.findFileTransferSubSystem(host);
+		IFileServiceSubSystem fileSubSystem = RSEFrameworkUtils.findFileTransferSubSystem(host);
 		if( fileSubSystem == null ) {
 			pm.done(); 
 			return getTestFailStatus(NLS.bind(RSEUIMessages.FILE_SUBSYSTEM_NOT_FOUND, host.getName()));

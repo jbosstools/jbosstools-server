@@ -22,6 +22,7 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerUtil;
+import org.eclipse.wst.server.core.internal.Server;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractDeploymentScannerAdditions;
 import org.jboss.ide.eclipse.as.core.server.internal.JMXServerDeploymentScannerAdditions;
@@ -178,6 +179,10 @@ public class DeploymentScannerAdditionsTest extends TestCase  {
 			fail("Could not set server mode to non-local");
 		}
 		
+		// pretend the server is started
+		((Server)s).setServerState(IServer.STATE_STARTED);
+		
+		
 		// Accepts will also check if the proper server type is here
 		ServerExtendedProperties props = (ServerExtendedProperties)s.loadAdapter(ServerExtendedProperties.class, null);
 		boolean usesManagement = props != null && 
@@ -208,6 +213,16 @@ public class DeploymentScannerAdditionsTest extends TestCase  {
 			}
 			public boolean accepts(IServer server) {
 				return true;
+			}
+			@Override
+			public void suspendScanners(IServer server) {
+				// TODO Auto-generated method stub
+				
+			}
+			@Override
+			public void resumeScanners(IServer server) {
+				// TODO Auto-generated method stub
+				
 			}
 		};
 	}

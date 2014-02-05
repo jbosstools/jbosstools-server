@@ -27,6 +27,9 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
+/**
+ * @deprecated
+ */
 public class JBoss7JSTPublisher extends AbstractServerToolsPublisher {
 	
 	public IStatus publishModule(
@@ -71,8 +74,7 @@ public class JBoss7JSTPublisher extends AbstractServerToolsPublisher {
 	protected void markModuleRequiresRestart(IPath deployPath, IModule[] moduleTree,
 			IJBossServerPublishMethod method, IPublishCopyCallbackHandler handler) throws CoreException {
 		boolean useAS7Behavior = DeploymentMarkerUtils.supportsJBoss7MarkerDeployment(server.getServer());
-		System.out.println("Mark " + deployPath + " for restart");  //$NON-NLS-1$//$NON-NLS-2$
-		if( !useAS7Behavior) {
+		if( !useAS7Behavior) { 
 			// Simply touch the descriptor as needed
 			JSTPublisherXMLToucher.getInstance().touch(deployPath, 
 					moduleTree[moduleTree.length-1], handler);
@@ -85,7 +87,7 @@ public class JBoss7JSTPublisher extends AbstractServerToolsPublisher {
 	private void doDeployRequired(IJBossServerPublishMethod method,IDeployableServer server,
 			IModule[] moduleTree, IProgressMonitor monitor ) throws CoreException {
 		IPath p = server.getDeploymentLocation(moduleTree, true);
-		Trace.trace(Trace.STRING_FINER, "Marking path " + p + " as requiring a .dodeploy marker, but NOT creating the file yet"); //$NON-NLS-1$ //$NON-NLS-2$
+		Trace.trace(Trace.STRING_FINER, "Marking path " + p + " as requiring a .dodeploy marker, but NOT creating the file yet");  //$NON-NLS-1$ //$NON-NLS-2$
 		DelegatingJBoss7ServerBehavior beh = ServerConverter.
 				convertServer(server.getServer(),DelegatingJBoss7ServerBehavior.class);
 		beh.markDoDeploy(p);

@@ -42,6 +42,11 @@ import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
  * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
  * (repeatedly) as the API evolves.
  * </p>
+ * 
+ * This class will soon be deprecated, to be replaced by the following two classes:
+ * 		{@link PublishModuleIncrementalRunner}
+ * 		{@link PublishModuleFullRunner}
+ * 
  * @since 2.4
  */
 public final class PublishCopyUtil {

@@ -29,12 +29,12 @@ import org.eclipse.jst.server.core.ServerProfilerDelegate;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
-import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.IServerAlreadyStartedHandler;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
@@ -46,61 +46,72 @@ import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 
 /**
+ * This class clones much behavior from the upstream jdt class for launching standard java configs.
+ * The cloning is necessary because the upstream class does not easily allow
+ * the injection of wtp code related to server profiling. 
+ * 
+ * We also do things like check if the server is already up, 
+ * verify the server has a proper structure, or handle the scenario
+ * where a server is already started (show a dialog).  
+ * 
  * @author Rob Stryker
  */
 public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJavaLaunchConfigurationDelegate {
-
+	
 	@Override
 	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor)
 			throws CoreException {
-		IDelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
-		IStatus s = jbsBehavior.canStart(mode);
-
+		IServer server = ServerUtil.getServer(configuration);
+		IStatus s = server.canStart(mode);
 		Trace.trace(Trace.STRING_FINEST, "Ensuring Server can start: " + s.getMessage()); //$NON-NLS-1$
 		if (!s.isOK())
-			throw new CoreException(jbsBehavior.canStart(mode));
-		if (LaunchCommandPreferences.isIgnoreLaunchCommand(jbsBehavior.getServer())) {
+			throw new CoreException(s);
+		
+		IControllableServerBehavior jbsBehavior = JBossServerBehaviorUtils.getControllableBehavior(server);
+		if (LaunchCommandPreferences.isIgnoreLaunchCommand(server)) {
 			Trace.trace(Trace.STRING_FINEST, "Server is marked as ignore Launch. Marking as started."); //$NON-NLS-1$
-			((DelegatingServerBehavior)jbsBehavior).setServerStarted();
+			((ControllableServerBehavior)jbsBehavior).setServerStarted();
 			return false;
 		}
 		
 		Trace.trace(Trace.STRING_FINEST, "Verifying server structure"); //$NON-NLS-1$
-		JBossExtendedProperties props = ExtendedServerPropertiesAdapterFactory.getJBossExtendedProperties(jbsBehavior.getServer());
+		JBossExtendedProperties props = ExtendedServerPropertiesAdapterFactory.getJBossExtendedProperties(server);
 		IStatus status = props.verifyServerStructure();
 		if( !status.isOK() ) {
-			((DelegatingServerBehavior)jbsBehavior).setServerStopped();
+			((ControllableServerBehavior)jbsBehavior).setServerStopped();
 			throw new CoreException(status);
 		}
 		
 		Trace.trace(Trace.STRING_FINEST, "Verifying jdk is available if server requires jdk"); //$NON-NLS-1$
 		boolean requiresJDK = props.requiresJDK();
 		if( requiresJDK) {
-			IRuntime rt = jbsBehavior.getServer().getRuntime();
+			IRuntime rt = server.getRuntime();
 			IJBossServerRuntime rt2 = RuntimeUtils.getJBossServerRuntime(rt);
 			IVMInstall vm = rt2.getVM();
 			
 			if( !JavaUtils.isJDK(vm)) {
 				// JBIDE-14568 do not BLOCK launch, but log error
 				Trace.trace(Trace.STRING_FINEST, "The VM to launch server '" +  //$NON-NLS-1$
-						jbsBehavior.getServer().getName() + "' does not appear to be a JDK: " + vm.getInstallLocation().getAbsolutePath()); //$NON-NLS-1$
+						server.getName() + "' does not appear to be a JDK: " + vm.getInstallLocation().getAbsolutePath()); //$NON-NLS-1$
 				IStatus stat = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
 						NLS.bind(Messages.launch_requiresJDK, 
-								jbsBehavior.getServer().getName(),
+								server.getName(),
 								vm.getInstallLocation().getAbsolutePath()));
-				ServerLogger.getDefault().log(jbsBehavior.getServer(), stat);
+				ServerLogger.getDefault().log(server, stat);
 			}
 		}
 
 		
 		Trace.trace(Trace.STRING_FINEST, "Checking if similar server is already up on the same ports."); //$NON-NLS-1$
-		IStatus startedStatus = isServerStarted(jbsBehavior);
+		IStatus startedStatus = isServerStarted(server);
 		boolean started = startedStatus.isOK();
 		if (started) {
 			Trace.trace(Trace.STRING_FINEST, "A server is already started. Now handling the already started scenario."); //$NON-NLS-1$
-			return handleAlreadyStartedScenario(jbsBehavior, startedStatus);
+			return handleAlreadyStartedScenario(server, startedStatus);
 		}
 
 		Trace.trace(Trace.STRING_FINEST, "A full launch will now proceed."); //$NON-NLS-1$
@@ -112,14 +123,14 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 	 * Should ideally use the poller that the server says is its poller,
 	 * but some pollers such as timeout poller 
 	 */
-	protected IStatus isServerStarted(IDelegatingServerBehavior jbsBehavior) {
-		return PollThreadUtils.isServerStarted(jbsBehavior);
+	protected IStatus isServerStarted(IServer server) {
+		return PollThreadUtils.isServerStarted(server);
 	}
 	
-	protected boolean handleAlreadyStartedScenario(	IDelegatingServerBehavior jbsBehavior, IStatus startedStatus) {
-		IServerAlreadyStartedHandler handler = ExtensionManager.getDefault().getAlreadyStartedHandler(jbsBehavior.getServer());
+	protected boolean handleAlreadyStartedScenario(	IServer server, IStatus startedStatus) {
+		IServerAlreadyStartedHandler handler = ExtensionManager.getDefault().getAlreadyStartedHandler(server);
 		if( handler != null ) {
-			int handlerResult = handler.promptForBehaviour(jbsBehavior.getServer(), startedStatus);
+			int handlerResult = handler.promptForBehaviour(server, startedStatus);
 			if( handlerResult == IServerAlreadyStartedHandler.CONTINUE_STARTUP) {
 				return true;
 			}
@@ -129,16 +140,30 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 		}
 		Trace.trace(Trace.STRING_FINEST, "There is no handler available to prompt the user. The server will be set to started automatically. "); //$NON-NLS-1$
 		// force server to started mode
-		((DelegatingServerBehavior)jbsBehavior).setServerStarted();
+		IControllableServerBehavior jbsBehavior = JBossServerBehaviorUtils.getControllableBehavior(server);
+		((ControllableServerBehavior)jbsBehavior).setServerStarted();
 		return false;
 	}
 	
+	@Deprecated  // Renamed
 	public void preLaunch(ILaunchConfiguration configuration,
+			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
+		beforeVMRunner(configuration, mode, launch, monitor);
+	}
+	
+	protected void beforeVMRunner(ILaunchConfiguration configuration,
 			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		// override me
 	}
 
+	
+
+	@Deprecated  // Renamed
 	public void postLaunch(ILaunchConfiguration configuration,
+			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
+		afterVMRunner(configuration, mode, launch, monitor);
+	}
+	protected void afterVMRunner(ILaunchConfiguration configuration,
 			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		// override me
 	}
@@ -157,6 +182,12 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 
 	protected void actualLaunch(ILaunchConfiguration configuration,
 			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
+		fireVMRunner(configuration, mode, launch, monitor);
+	}
+	
+	protected void fireVMRunner(ILaunchConfiguration configuration,
+			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
+
 		// And off we go!
 		IVMInstall vm = verifyVMInstall(configuration);
 		IVMRunner runner = vm.getVMRunner(mode);

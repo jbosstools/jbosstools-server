@@ -34,6 +34,7 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
+import org.jboss.tools.as.test.core.internal.MockPublishMethodFilesystemController;
 import org.jboss.tools.as.test.core.internal.utils.ComponentReferenceUtils;
 import org.jboss.tools.as.test.core.internal.utils.ResourceUtils;
 import org.jboss.tools.as.test.core.internal.utils.classpath.ASToolsInternalVariableInitializer;
@@ -119,6 +120,7 @@ public class DeploymentAssemblyArchivePathVarTest extends AbstractComponentPubli
 	@Test
 	public void testVariableReference() throws Exception {
 		verifyFileFoundInModule(jarFolder, jarName, getExpectedFileCount());
+		MockPublishMethodFilesystemController.StaticModel.clearAll();
 		server.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
 		IPath earPath = getLocalPublishMethodDeployRoot();
 		ArrayList<IPath> toFind = new ArrayList<IPath>();

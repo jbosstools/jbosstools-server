@@ -54,12 +54,7 @@
    
    <extension
          point="org.jboss.ide.eclipse.as.core.publishers">
-      <publisher
-            class="org.jboss.ide.eclipse.archives.webtools.modules.AltMethodZippedJSTPublisher"
-            priority="3"
-            zipDelegate="true">
-      </publisher>
-            <publisher
+     <publisher
             class="org.jboss.ide.eclipse.archives.webtools.modules.OSGiPublisher"
             priority="20"
             zipDelegate="false">

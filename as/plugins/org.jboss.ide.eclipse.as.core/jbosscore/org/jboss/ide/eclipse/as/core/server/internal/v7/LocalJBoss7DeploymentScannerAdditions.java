@@ -45,6 +45,7 @@ public class LocalJBoss7DeploymentScannerAdditions extends AbstractDeploymentSca
 	 * @param server
 	 * @param folders
 	 */
+	@Override
 	protected void ensureScannersAdded(final IServer server, final String[] folders) {
 		Trace.trace(Trace.STRING_FINER, "Adding AS7 Deployment Scanners"); //$NON-NLS-1$
 		ArrayList<String> asList = new ArrayList<String>();
@@ -115,7 +116,8 @@ public class LocalJBoss7DeploymentScannerAdditions extends AbstractDeploymentSca
 		Trace.trace(Trace.STRING_FINER, "Finished Adding AS7 Deployment Scanners"); //$NON-NLS-1$
 	}
 	
-	protected void ensureScannersRemoved(final IServer server, final String[] folders) {
+	@Override
+	protected void ensureScannersRemoved(final IServer server, String[] folders) {
 		Map<String, String> props = loadScannersFromServer(server);
 		AS7DeploymentScannerUtility util = new AS7DeploymentScannerUtility(); 
 		Iterator<String> i = props.keySet().iterator();
@@ -126,6 +128,17 @@ public class LocalJBoss7DeploymentScannerAdditions extends AbstractDeploymentSca
 			}
 		}
 	}
+	
+	protected void setAllScannerEnablement(final IServer server, boolean state) {
+		Map<String, String> props = loadScannersFromServer(server);
+		AS7DeploymentScannerUtility util = new AS7DeploymentScannerUtility(); 
+		Iterator<String> i = props.keySet().iterator();
+		while(i.hasNext()) {
+			String scannerName = i.next();
+			util.setScannerEnabled(server, scannerName, state);
+		}
+	}	
+	
 
 	protected Map<String, String> loadScannersFromServer(IServer server) {
 		return new AS7DeploymentScannerUtility().getDeploymentScannersFromServer(server, false);
@@ -169,6 +182,17 @@ public class LocalJBoss7DeploymentScannerAdditions extends AbstractDeploymentSca
 	@Override
 	public boolean canCustomizeTimeout() {
 		return true;
+	}
+	@Override
+	public void suspendScanners(IServer server)
+			throws UnsupportedOperationException {
+		setAllScannerEnablement(server, false);
+	}
+	
+	@Override
+	public void resumeScanners(IServer server)
+			throws UnsupportedOperationException {
+		setAllScannerEnablement(server, true);
 	}
 
 }

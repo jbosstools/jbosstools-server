@@ -19,11 +19,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.jboss.ide.eclipse.as.ui.IBrowseBehavior;
-import org.jboss.ide.eclipse.as.ui.IExploreBehavior;
-import org.jboss.ide.eclipse.as.ui.IJBossLaunchTabProvider;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
+import org.jboss.ide.eclipse.as.ui.subsystems.IBrowseBehavior;
+import org.jboss.ide.eclipse.as.ui.subsystems.IExploreBehavior;
+import org.jboss.ide.eclipse.as.ui.subsystems.IJBossLaunchTabProvider;
 
+@Deprecated
 public class EditorExtensionManager {
 
 	private static final String EXTENSION_ID = "DeployMethodUI"; //$NON-NLS-1$

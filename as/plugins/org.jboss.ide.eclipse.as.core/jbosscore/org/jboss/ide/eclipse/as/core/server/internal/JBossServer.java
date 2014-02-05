@@ -12,25 +12,16 @@ package org.jboss.ide.eclipse.as.core.server.internal;
 
 import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.DEPLOY;
 import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.JBOSSTOOLS_TMP;
-import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.JBOSS_WEB_DEFAULT_PORT;
-import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.JNDI_DEFAULT_PORT;
-import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.JNDI_PORT;
-import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.JNDI_PORT_DEFAULT_XPATH;
-import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.JNDI_PORT_DETECT;
-import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.JNDI_PORT_DETECT_XPATH;
 import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.SERVER_AS_50;
 import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.SERVER_PASSWORD;
 import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.SERVER_USERNAME;
 import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.TEMP_DEPLOY;
 import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.TMP;
-import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.WEB_PORT;
-import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.WEB_PORT_DEFAULT_XPATH;
-import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.WEB_PORT_DETECT;
-import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.WEB_PORT_DETECT_XPATH;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -41,18 +32,16 @@ import org.eclipse.equinox.security.storage.StorageException;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IURLProvider;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
-import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
+import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
-import org.jboss.tools.foundation.core.expressions.ExpressionResolutionException;
-import org.jboss.tools.foundation.core.expressions.ExpressionResolver;
+import org.jboss.tools.as.core.server.controllable.systems.IPortsController;
 
 /**
  * 
@@ -185,8 +174,7 @@ public class JBossServer extends DeployableServer
 	}
 	
 	public int getJNDIPort() {
-		return getPortOffset() + findPort(JNDI_PORT, JNDI_PORT_DETECT, JNDI_PORT_DETECT_XPATH, 
-				JNDI_PORT_DEFAULT_XPATH, JNDI_DEFAULT_PORT);
+		return findPort(IPortsController.KEY_JNDI, 1099);
 	}
 	
 	protected int getWebPort() {
@@ -194,46 +182,28 @@ public class JBossServer extends DeployableServer
 	}
 
 	public int getJBossWebPort() {
-		return getPortOffset() + findPort(WEB_PORT, WEB_PORT_DETECT, WEB_PORT_DETECT_XPATH, 
-				WEB_PORT_DEFAULT_XPATH, JBOSS_WEB_DEFAULT_PORT);
+		return findPort(IPortsController.KEY_WEB, 8080);
 	}
 	
 	/**
 	 * @since 2.4
 	 */
 	protected int getPortOffset() {
-		return 0;
+		return findPort(IPortsController.KEY_PORT_OFFSET, 0);
 	}
 
-	protected int findPort(String attributeKey, String detectKey, String xpathKey, String defaultXPath, int defaultValue) {
-		boolean detect = getAttribute(detectKey, true);
-		String result = null;
-		if( !detect ) {
-			result = getAttribute(attributeKey, (String)null);
-		} else {
-			String xpath = getAttribute(xpathKey, defaultXPath);
-			XPathQuery query = XPathModel.getDefault().getQuery(getServer(), new Path(xpath));
-			if(query!=null) {
-				query.refresh(); // Limited refresh only if files have changed
-				result = query.getFirstResult();
+	protected int findPort(int key, int defaultValue) {
+		try {
+			IPortsController pc = (IPortsController)JBossServerBehaviorUtils.getControllableBehavior(getServer()).getController(IPortsController.SYSTEM_ID);
+			if( pc != null ) {
+				return pc.findPort(key, defaultValue);
 			}
-		}
-		
-		if( result != null ) {
-			result = resolveXPathResult(result);
-
-			try {
-				return Integer.parseInt(result);
-			} catch(NumberFormatException nfe) {
-				return defaultValue;
-			}
+		} catch(CoreException ce) {
+			JBossServerCorePlugin.log(ce.getStatus());
 		}
 		return defaultValue;
 	}
 	
-	protected String resolveXPathResult(String result) {
-		return new ExpressionResolver().resolveIgnoreErrors(result);
-	}
 	
 	// first class parameters
 	@Override
@@ -284,9 +254,13 @@ public class JBossServer extends DeployableServer
 	}
 	
 	
+	/*
+	 * WTF method??
+	 */
 	public boolean hasJMXProvider() {
-		DeployableServerBehavior beh = (DeployableServerBehavior)getServer().loadAdapter(
-				DeployableServerBehavior.class, new NullProgressMonitor());
+		org.jboss.tools.as.core.server.controllable.internal.DeployableServerBehavior beh = 
+		(org.jboss.tools.as.core.server.controllable.internal.DeployableServerBehavior)getServer().loadAdapter(
+				org.jboss.tools.as.core.server.controllable.internal.DeployableServerBehavior.class, new NullProgressMonitor());
 		if( beh == null )
 			return false;
 		return true;

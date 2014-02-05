@@ -10,6 +10,10 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server;
 
+/**
+ * 
+ * @deprecated
+ */
 public interface IJBossServerPublishMethodType {
 	public String getId();
 	public String getName();

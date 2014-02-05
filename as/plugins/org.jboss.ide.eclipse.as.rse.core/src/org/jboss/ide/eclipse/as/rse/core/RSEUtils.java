@@ -14,11 +14,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.rse.core.RSECorePlugin;
 import org.eclipse.rse.core.model.IHost;
-import org.eclipse.rse.core.subsystems.ISubSystem;
 import org.eclipse.rse.services.shells.IHostShell;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
@@ -26,19 +24,32 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
-import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.RemotePath;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
+import org.jboss.ide.eclipse.as.rse.core.subsystems.RSEDeploymentOptionsController;
 
-/* 
- * Some of this code will need to be abstracted out from JBossServer
- * and turned into a proper API, but in as simple a way as possible
+/**
+ * This class should be more accurately labeled working with properties 
+ * on an IServer object that relate to rse usage. It accomplishes things
+ * like checking server mode, remote server home, deployment folder, 
+ * etc. 
  */
 public class RSEUtils {
 	
+   /**
+     * The Unix separator character.
+     */
+    private static final char UNIX_SEPARATOR = '/';
+
+    /**
+     * The Windows separator character.
+     */
+    private static final char WINDOWS_SEPARATOR = '\\';
+    
+    
 	/**
 	 * A key which represents either the configuration name of as < 7 server (default or all), 
 	 * or, in as >= 7, represents the configuration FILE name (standalone.xml, etc)
@@ -71,7 +82,7 @@ public class RSEUtils {
 	 */
 	public static final String RSE_MODE = "rse";
 
-	public static String getRSEConnectionName(IServer server) {
+	public static String getRSEConnectionName(IServerAttributes server) {
 		return server.getAttribute(RSEUtils.RSE_SERVER_HOST, RSE_SERVER_DEFAULT_HOST);
 	}
 
@@ -116,97 +127,75 @@ public class RSEUtils {
 	}
 
 	public static String getDeployRootFolder(IDeployableServer server) {
-		return getDeployRootFolder(server.getServer(), server.getDeployLocationType());
-	}
-
-	/* Copied from JBossServer.getDeployFolder(etc) */
-	public static String getDeployRootFolder(IServer server, String type) {
-		if (JBossServer.DEPLOY_CUSTOM.equals(type)) {
-			String val = server.getAttribute(JBossServer.DEPLOY_DIRECTORY, (String) null);
-			if (val != null) {
-				IPath val2 = new Path(val);
-				return makeGlobal(server, val2).toString();
-			}
-			// if no value is set, default to metadata
-			type = JBossServer.DEPLOY_SERVER;
-		}
-		// This should *NOT* happen, so if it does, we will default to server
-		// location
-		else if (JBossServer.DEPLOY_METADATA.equals(type)) {
-			type = JBossServer.DEPLOY_SERVER;
-		}
-		if (JBossServer.DEPLOY_SERVER.equals(type)) {
-			// TODO !!!! Need API (nmaybe in JBossServer?) so servers can
-			// override this behavior
-			// Cannot move this code to JBossServer because this requires an
-			// RSE-specific key!! Damn!
-			ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
-			if (sep != null && sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS) {
-				return getBaseDirectoryPath(server).append(IJBossRuntimeResourceConstants.AS7_DEPLOYMENTS).toString();
-			} else {
-				String loc = IConstants.SERVER;
-				String config = getRSEConfigName(server);
-				if( loc == null || config == null )
-					return null;
-				IPath p = new Path(loc).append(config)
-						.append(IJBossRuntimeResourceConstants.DEPLOY);
-				return makeGlobal(server, p).toString();
-			}
-		}
-		return null;
+		return getDeployRootFolder(server.getServer());
 	}
 	
-	protected static IPath getBaseDirectoryPath(IServer server) {
+	/**
+	 * Get the deploy root for a given server 
+	 * @param server
+	 * @return
+	 * @since 3.0
+	 */
+	public static String getDeployRootFolder(IServer server) {
+		RSEDeploymentOptionsController controller = new RSEDeploymentOptionsController();
+		controller.initialize(server, null, null);
+		return controller.getDeploymentsRootFolder(true);
+	}
+
+
+	// This method is unsafe when accessing a remote windows machine from non-windows
+	@Deprecated
+	protected static IPath getBaseDirectoryPath(IServerAttributes server) {
+		return getBaseDirectoryPath(server, java.io.File.pathSeparatorChar);
+	}
+	
+	protected static IPath getBaseDirectoryPath(IServerAttributes server, char sep) {
 		String val = server.getAttribute(RSE_BASE_DIR, IJBossRuntimeResourceConstants.AS7_STANDALONE);
-		IPath valPath = new Path(val);
+		IPath valPath = new RemotePath(val, sep);
 		if( valPath.isAbsolute())
 			return valPath;
-		return makeGlobal(server, valPath);	
+		IPath ret = makeGlobal(server, valPath, sep);
+		return ret;
 	}
-	
-	public static String getBaseDirectory(IServer server) {
-		return getBaseDirectoryPath(server).toString();
-	}
-	
 
-	public static IPath makeRelative(IServer server, IPath p) {
-		if (p.isAbsolute()) {
-			if (new Path(getRSEHomeDir(server)).isPrefixOf(p)) { 
-				return p.makeRelativeTo(new Path(getRSEHomeDir(server)));
+	public static String getBaseDirectory(IServerAttributes server, char separator) {
+		return getBaseDirectoryPath(server, separator).toOSString();
+	}
+	
+	// This signature may not work very well when on linux connected to remote windows
+	public static IPath makeRelative(IServerAttributes server, IPath p) {
+		return makeRelative(server, p, java.io.File.pathSeparatorChar);
+	}
+	
+	public static IPath makeRelative(IServerAttributes server, IPath p, char sep) {
+		RemotePath p1 = new RemotePath(p.toString(), sep);
+		if (p1.isAbsolute()) {
+			RemotePath rseHome = new RemotePath(getRSEHomeDir(server), sep);
+			if (rseHome.isPrefixOf(p1)) { 
+				return p1.makeRelativeTo(rseHome);
 			}
 		}
 		return p;
 	}
 
-	public static IPath makeGlobal(IServer server, IPath p) {
+	// This method may be error prone if running on linux against a remote windows
+	public static IPath makeGlobal(IServerAttributes server, IPath p) {
+		return makeGlobal(server, p, getRemoteSystemSeparatorCharacter(server));
+	}
+	
+	public static IPath makeGlobal(IServerAttributes server, IPath p, char sep) {
+
+		if( server.getRuntime() == null || server.getRuntime().getLocation() == null) {
+			// Has nothing to be relative to, so just make the current path absolute
+			return p.makeAbsolute();
+		}
+
 		if (!p.isAbsolute()) {
-			return new Path(getRSEHomeDir(server)).append(p).makeAbsolute();
+			return new RemotePath(getRSEHomeDir(server), sep).makeAbsolute().append(p);
 		}
 		return p;
 	}
 
-	public static IHost findHost(String connectionName) {
-		IHost[] allHosts = RSECorePlugin.getTheSystemRegistry().getHosts();
-		return findHost(connectionName, allHosts);
-	}
-	
-	public static IHost findHost(String connectionName, IHost[] hosts) {
-		for (int i = 0; i < hosts.length; i++) {
-			if (hosts[i].getAliasName().equals(connectionName))
-				return hosts[i];
-		}
-		return null;
-	}
-
-	public static void waitForFullInit() throws CoreException {
-		try {
-			RSECorePlugin.waitForInitCompletion();
-		} catch (InterruptedException e) {
-			throw new CoreException(new Status(IStatus.ERROR,
-					org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID,
-					"The RSE model initialization has been interrupted."));
-		}
-	}
 
 	public static IServer setServerToRSEMode(IServer server, IHost newHost) throws CoreException {
 		IServerWorkingCopy wc = server.createWorkingCopy();
@@ -234,53 +223,51 @@ public class RSEUtils {
 				&& shell.isActive();
 	}
 	
-	   /**
-     * The Unix separator character.
-     */
-    private static final char UNIX_SEPARATOR = '/';
-
     /**
-     * The Windows separator character.
-     */
-    private static final char WINDOWS_SEPARATOR = '\\';
-	public static String pathToRemoteSystem(IHost host, String path, String append) {
-		boolean hostIsWindows = isHostWindows(host);
-		char sep = hostIsWindows ? WINDOWS_SEPARATOR : UNIX_SEPARATOR;
-		boolean endsWithSep = path.endsWith(Character.toString(WINDOWS_SEPARATOR)) || path.endsWith(Character.toString(UNIX_SEPARATOR));
-		String path2 = append == null ? path :
-			// ensure we have a trailing separator before appending the 'append'
-			(endsWithSep ? path : path + sep) + append;
-		String path3 = hostIsWindows ? separatorsToWindows(path2) : separatorsToUnix(path2);
-		return path3;
-	}
-	private static boolean isHostWindows(IHost host) {
-		String sysType = host.getSystemType().getId();
-		if( sysType.equals("org.eclipse.rse.systemtype.windows"))
-			return true;
-		ISubSystem[] systems = RSECorePlugin.getTheSystemRegistry().getSubSystems(host);
-		for( int i = 0; i < systems.length; i++ ) {
-			if( systems[i].getConfigurationId().equals("dstore.windows.files"))
-				return true;
-		}
-		return false;
-	}
-    public static String separatorsToUnix(String path) {
-        if (path == null || path.indexOf(WINDOWS_SEPARATOR) == -1) {
-            return path;
-        }
-        return path.replace(WINDOWS_SEPARATOR, UNIX_SEPARATOR);
-    }
-
-    /**
-     * Converts all separators to the Windows separator of backslash.
+     * Returns an OS-compliant path for a remote system with the given base
+     * and a tail to append on it.
      * 
-     * @param path  the path to be changed, null ignored
-     * @return the updated path
+     * @param host
+     * @param path
+     * @param append
+     * @return
      */
-    public static String separatorsToWindows(String path) {
-        if (path == null || path.indexOf(UNIX_SEPARATOR) == -1) {
-            return path;
-        }
-        return path.replace(UNIX_SEPARATOR, WINDOWS_SEPARATOR);
-    }
+	public static String pathToRemoteSystem(IHost host, String path, String tail) {
+		char sep = getRemoteSystemSeparatorCharacter(host);
+		IPath rp = new RemotePath(path, sep);
+		if( tail != null ) {
+			rp = rp.append(tail);
+		}
+		return rp.toOSString();
+	}
+	
+	/**
+	 * Is this server's stored host property an rse host that has windows subsystems
+	 * @param server
+	 * @return
+	 */
+	public static boolean connectedToWindowsHost(IServerAttributes server) {
+		IHost host = RSEFrameworkUtils.findHost(RSEUtils.getRSEConnectionName(server));
+		return host == null ? false : RSEFrameworkUtils.isHostWindows(host);
+	}
+	
+	/**
+	 * Get the separator character for the remote system
+	 * @param server
+	 * @return
+	 */
+	public static char getRemoteSystemSeparatorCharacter(IServerAttributes server) {
+		return connectedToWindowsHost(server) ? WINDOWS_SEPARATOR :  UNIX_SEPARATOR;
+	}
+	
+	/**
+	 * 
+	 * @param host
+	 * @return
+	 * @since 3.0
+	 */
+	public static char getRemoteSystemSeparatorCharacter(IHost host) {
+		boolean win = (host == null ? false : RSEFrameworkUtils.isHostWindows(host));
+		return win ? WINDOWS_SEPARATOR :  UNIX_SEPARATOR;
+	}
 }

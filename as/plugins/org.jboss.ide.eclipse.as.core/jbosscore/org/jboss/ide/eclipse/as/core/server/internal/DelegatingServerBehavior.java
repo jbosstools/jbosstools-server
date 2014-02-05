@@ -41,7 +41,7 @@ import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 /**
  * 
  * @author Rob Stryker
- *
+ * @deprecated
  */
 public class DelegatingServerBehavior extends DeployableServerBehavior implements IDelegatingServerBehavior {
 		

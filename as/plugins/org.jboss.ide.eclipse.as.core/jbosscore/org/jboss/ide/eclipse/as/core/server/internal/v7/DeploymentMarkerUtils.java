@@ -36,6 +36,7 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IFilesystemController;
 
 /**
  * 
@@ -234,6 +235,28 @@ public class DeploymentMarkerUtils {
 
 	public static String getDoDeployMarkerName(String file) {
 		return file + DO_DEPLOY;
+	}
+	
+	
+	/*
+	 * New methods for use with IFilesystemController
+	 */
+	public static IStatus removedDeployFailedMarker(IPath module, IFilesystemController controller) throws CoreException {
+		IPath folder = module.removeLastSegments(1);
+		IPath p = folder.append(getFailedMarkerName(module.lastSegment()));
+		return controller.deleteResource(p, new NullProgressMonitor());
+	}
+
+	public static IStatus removedDeployedMarker(IPath module, IFilesystemController controller) throws CoreException {
+		IPath folder = module.removeLastSegments(1);
+		IPath p = folder.append(getDeployedMarker(module.lastSegment()));
+		return controller.deleteResource(p, new NullProgressMonitor());
+	}
+
+	public static IStatus createDoDeployMarker(IPath module, IFilesystemController controller) throws CoreException {
+		IPath folder = module.removeLastSegments(1);
+		IPath p = folder.append(getDoDeployMarkerName(module.lastSegment()));
+		return controller.touchResource(p, new NullProgressMonitor());
 	}
 }
 

@@ -73,6 +73,7 @@ public class RSEUtilsTest extends TestCase {
 		assertTrue(args.contains("c:\\apps\\jboss\\jboss-eap-5.1\\lib\\endorsed"));
 		assertTrue(args.contains("c:\\apps\\jboss\\jboss-eap-5.1\\server"));
 		assertTrue(args.contains("c:\\apps\\jboss\\jboss-eap-5.1\\bin\\native"));
+		assertFalse(args.contains("=null"));
 	}
 
 	

@@ -7,8 +7,6 @@
  * 
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
- * 
- * TODO: Logging and Progress Monitors
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.rse.core;
 
@@ -31,9 +29,15 @@ import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.util.IEventCodes;
 import org.jboss.ide.eclipse.as.core.util.ProgressMonitorUtil;
-import org.jboss.tools.foundation.core.jobs.BarrierProgressWaitJob;
-import org.jboss.tools.foundation.core.jobs.BarrierProgressWaitJob.IRunnableWithProgress;
+import org.jboss.ide.eclipse.as.rse.core.subsystems.RSEFilesystemController;
+import org.jboss.ide.eclipse.as.rse.core.util.RemoteCallWrapperUtility;
+import org.jboss.ide.eclipse.as.rse.core.util.RemoteCallWrapperUtility.NamedRunnableWithProgress;
 
+/**
+ * This class is being replaced by a subsystem framework. Please see
+ * {@link RSEFilesystemController}
+ * @deprecated
+ */
 public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 	protected IPath root;
 	protected RSEPublishMethod method;
@@ -47,23 +51,13 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 		return shouldRestartModule;
 	}
 	
-	abstract static class NamedRunnableWithProgress implements IRunnableWithProgress {
-		private String name;
-		public NamedRunnableWithProgress(String name){
-			this.name = name;
-		}
-		public String getName() {
-			return name;
-		}
-	}
-	
 	protected static IStatus generateFailStatus(String message, String resource, RSEPublishMethod method, Exception sme) {
 		String exceptionMsg = sme.getMessage();
 		if( "Missing element for : ''".equals(exceptionMsg)) {
 			sme = new Exception("The requested path is not found on the remote system.", sme);
 		}
 		String connectionName = method == null ? null : RSEUtils.getRSEConnectionName(method.getBehaviour().getServer());
-		IHost host = connectionName == null ? null : RSEUtils.findHost(connectionName);
+		IHost host = connectionName == null ? null : RSEFrameworkUtils.findHost(connectionName);
 		IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL,
 				NLS.bind(message, resource, host == null ? null : host.getName()), sme);
 		return s;
@@ -75,70 +69,18 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 		return wrapRemoteCall(runnable, remoteResource, failErrorMessage, true, 
 				method, monitor);
 	}
-
-	static IStatus[] wrapRemoteCall(final NamedRunnableWithProgress runnable, 
-			final String remoteResource, final String failErrorMessage, 
-			final boolean alwaysThrow, RSEPublishMethod method, final IProgressMonitor monitor) throws CoreException, RuntimeException  {
-		IStatus s = wrapRemoteCall2(runnable, remoteResource, failErrorMessage, 
-				alwaysThrow, method, monitor);
-		return s == null ? new IStatus[]{} : new IStatus[]{s};
-	}
 	
 	static Exception wrapRemoteCallStatusTimeLimit(final NamedRunnableWithProgress runnable, 
-			final String remoteResource, final String failErrorMessage, 
+			final String remoteResource, final String failErrorMessage,
 			RSEPublishMethod method, final int maxDelay, final IProgressMonitor monitor) {
-		Thread t = new Thread("Remote call timer") {
-			public void run() {
-				try {
-					Thread.sleep(maxDelay);
-					monitor.setCanceled(true);
-				} catch( InterruptedException ie) {
-					// Do Nothing
-				}
-			}
-		};
-		t.start();
-		try {
-			wrapRemoteCall2(runnable, remoteResource, failErrorMessage,
-					true, method, monitor);
-		} catch (CoreException e) {
-			if( e.getStatus().getSeverity() == IStatus.CANCEL ) {
-				return new CoreException(new Status(IStatus.CANCEL,RSECorePlugin.PLUGIN_ID, 
-						"The remote operation has been canceled because it did not finish in the alloted time (" + maxDelay + "ms)"));
-			}
-			return e;
-		} catch (RuntimeException e) {
-			return e;
-		} finally {
-			t.interrupt();
-		}
-		return null;
+		return RemoteCallWrapperUtility.wrapRemoteCallStatusTimeLimit(method.getServer(), runnable, remoteResource, failErrorMessage, maxDelay, monitor);
 	}
 	
-	static IStatus wrapRemoteCall2(final NamedRunnableWithProgress runnable, 
+	static IStatus[] wrapRemoteCall(final NamedRunnableWithProgress runnable, 
 			final String remoteResource, final String failErrorMessage, 
 			final boolean alwaysThrow, final RSEPublishMethod method, final IProgressMonitor monitor) throws CoreException, RuntimeException  {
-		monitor.setTaskName(runnable.getName());
-		BarrierProgressWaitJob j = new BarrierProgressWaitJob(runnable.getName(),  runnable);
-		j.schedule();
-		// This join will also poll the provided monitor for cancelations
-		j.monitorSafeJoin(monitor);
-		if( j.getReturnValue() != null)
-			return (IStatus)j.getReturnValue();
-		if( j.getThrowable() != null ) {
-			if(j.getThrowable() instanceof SystemMessageException) {
-				IStatus stat = generateFailStatus(failErrorMessage, 
-						remoteResource, method, ((SystemMessageException)j.getThrowable()));
-				if( alwaysThrow )
-					throw new CoreException(stat);
-				else
-					return stat;
-			}
-			if( j.getThrowable() instanceof CoreException )
-				throw new CoreException(((CoreException)j.getThrowable()).getStatus());
-			throw new RuntimeException(j.getThrowable());
-		}
-		return Status.CANCEL_STATUS;
+		IStatus ret = RemoteCallWrapperUtility.wrapRemoteCall(method.getServer(), runnable, remoteResource, failErrorMessage, alwaysThrow, monitor);
+		return ret == null ? new IStatus[0] : new IStatus[]{ret};
 	}
 	
 	public IStatus[] copyFile(final IModuleFile mf, final IPath path,

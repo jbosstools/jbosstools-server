@@ -76,6 +76,25 @@ public class AS7DeploymentScannerUtility {
 		return true;
 	}
 	
+	public boolean setScannerEnabled(final IServer server, String scannerName, boolean enabled) {
+		ModelNode op = new ModelNode();
+		op.get("operation").set("write-attribute"); //$NON-NLS-1$ //$NON-NLS-2$
+		op.get("name").set("scan-enabled"); //$NON-NLS-1$ //$NON-NLS-2$
+		op.get("value").set(enabled); //$NON-NLS-1$
+		ModelNode addr = op.get("address"); //$NON-NLS-1$
+		addr.add("subsystem", "deployment-scanner");  //$NON-NLS-1$//$NON-NLS-2$
+		addr.add("scanner", scannerName); //$NON-NLS-1$ 
+		final String request = op.toJSONString(true);
+		try {
+			executeWithResult(server, request);
+		} catch(Exception e) {
+			JBossServerCorePlugin.log(e);
+			return false;
+		}
+		return true;
+	}
+	
+	
 	public HashMap<String, Integer> getDeploymentScannerIntervals(final IServer server) {
 		Scanner[] scanners = getDeploymentScanners(server);
 		HashMap<String, Integer> retval=new HashMap<String, Integer>();
@@ -116,11 +135,13 @@ public class AS7DeploymentScannerUtility {
 				int interval = result.get("scan-interval").asBigInteger().intValue();//$NON-NLS-1$
 				int timeout = result.get("deployment-timeout").asBigInteger().intValue(); //$NON-NLS-1$
 				String path5 = result.get("path").toString();//$NON-NLS-1$
+				boolean enabled = result.get("scan-enabled").asBoolean(); //$NON-NLS-1$
 				Scanner s = new Scanner();
 				s.name = scannerName;
 				s.address = path5;
 				s.interval = interval;
 				s.timeout = timeout;
+				s.enabled = enabled;
 				list.add(s);
 			}
 		}
@@ -135,6 +156,7 @@ public class AS7DeploymentScannerUtility {
 		private int timeout;
 		private String address;
 		private String relativeTo;
+		private boolean enabled;
 
 		public String getName() {
 			return name;
@@ -156,6 +178,9 @@ public class AS7DeploymentScannerUtility {
 		}
 		public String getAddress() {
 			return address;
+		}
+		public boolean getEnabled() {
+			return enabled;
 		}
 	}
 	

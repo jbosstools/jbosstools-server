@@ -18,14 +18,23 @@ import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.model.IModuleResource;
-import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.publishers.patterns.ModuleDirectoryScannerPathFilter;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
-import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
-public class ResourceModuleResourceUtil extends ModuleResourceUtil {
+
+/**
+ * This class is intended  for use to discover includes and excludes patterns
+ * from a component-core (wtp-style) project. It is then used 
+ * to filter the members and return a clean post-filter module resource tree
+ * which can be used during publish. 
+ * 
+ * This class has absolutely no reason to extend ModuleResourceUtil
+ * and this should be changed!!
+ * 
+ */
+public class ResourceModuleResourceUtil  {
 	/**
 	 * @since 2.3
 	 */
@@ -42,8 +51,7 @@ public class ResourceModuleResourceUtil extends ModuleResourceUtil {
 	 * @since 2.3
 	 */
 	public static IModuleResource[] getFilteredMembers(IModule module, String inc, String exc) throws CoreException {
-		ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, null);
-		ModuleDirectoryScannerPathFilter filter = new ModuleDirectoryScannerPathFilter(md.members(), inc, exc);
+		ModuleDirectoryScannerPathFilter filter = new ModuleDirectoryScannerPathFilter(module, inc, exc);
 		return filter.getFilteredMembers();
 	}
 	
@@ -65,7 +73,7 @@ public class ResourceModuleResourceUtil extends ModuleResourceUtil {
 		}
 		try {
 			ModuleDirectoryScannerPathFilter filter = 
-					new ModuleDirectoryScannerPathFilter(getMembers(module), 
+					new ModuleDirectoryScannerPathFilter(module, 
 					    inclusionPatterns, exclusionPatterns);
 			return filter;
 		} catch( CoreException ce ) {

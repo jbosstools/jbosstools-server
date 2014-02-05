@@ -14,6 +14,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 
+import org.apache.tools.ant.property.GetProperty;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -48,18 +49,19 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.ui.ServerUICore;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
+import org.jboss.ide.eclipse.as.ui.editor.internal.ChangeModuleDeploymentPropertyCommand;
+import org.jboss.tools.as.core.internal.modules.DeploymentModulePrefs;
+import org.jboss.tools.as.core.internal.modules.DeploymentPreferences;
 
 /**
  * 
  * This class represents primarily a tree viewer with columns capable of 
  * customizing deployment locations on a per-module basis for a given server. 
  * 
- * @since 2.5
+ * @since 3.0
  */
 public class ModuleDeploymentOptionsComposite extends Composite implements PropertyChangeListener {
 	protected static final String ALL = Messages.EditorDeploymentPageFilterAll;
@@ -78,13 +80,13 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 	private TreeViewer viewer;
 	private Combo filterCombo; 
 	private Text filterText;
-	private IModuleDeploymentOptionsPersister partner;
+	private DeploymentPage partner;
 	
 	private IServerWorkingCopy lastWC;
 	protected ArrayList<IModule> possibleModules;
 	private FormToolkit tk;
 	
-	public ModuleDeploymentOptionsComposite(Composite parent, IModuleDeploymentOptionsPersister partner, FormToolkit tk, DeploymentPreferences prefs) {
+	public ModuleDeploymentOptionsComposite(Composite parent, DeploymentPage partner, FormToolkit tk, DeploymentPreferences prefs) {
 		super(parent, SWT.NONE);
 		this.partner = partner;
 		this.preferences = prefs;
@@ -153,6 +155,7 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 		
 		ModifyListener ml =new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
+				refreshPossibleModules();
 				resetFilterTextState();
 				viewer.setInput(""); //$NON-NLS-1$
 			}
@@ -203,7 +206,7 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 		return new ModulePageContentProvider();
 	}
 	protected ICellModifier createViewerCellModifier() {
-		return new ModuleDeploymentCellModifier();
+		return new ModuleDeploymentCellModifier(this);
 	}
 	
 	/*
@@ -257,7 +260,21 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 	
 	
 	
-	private class ModuleDeploymentCellModifier implements ICellModifier {
+	protected static class ModuleDeploymentCellModifier implements ICellModifier {
+		private ModuleDeploymentOptionsComposite composite;
+		public ModuleDeploymentCellModifier(ModuleDeploymentOptionsComposite composite) {
+			this.composite = composite;
+		}
+		
+		protected ModuleDeploymentOptionsComposite getComposite() {
+			return composite;
+		}
+		protected DeploymentPreferences getPreferences() {
+			return composite.getPreferences();
+		}
+		protected TreeViewer getViewer() {
+			return composite.getViewer();
+		}
 		public boolean canModify(Object element, String property) {
 			if( property == COLUMN_NAME)
 				return false;
@@ -265,10 +282,10 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 		}
 
 		public Object getValue(Object element, String property) {
-			DeploymentModulePrefs p = preferences.getOrCreatePreferences(MAIN)
+			DeploymentModulePrefs p = getPreferences().getOrCreatePreferences()
 					.getOrCreateModulePrefs((IModule) element);
 			if (property == COLUMN_LOC) {
-				return getOutputFolderAndName(p, (IModule)element);
+				return composite.getOutputFolderAndName(p, (IModule)element);
 			}
 			if (property == COLUMN_TEMP_LOC) {
 				String ret = p.getProperty(COLUMN_TEMP_LOC);
@@ -281,7 +298,7 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 		public void modify(Object element, String property, Object value) {
 
 			IModule module = (IModule) ((TreeItem) element).getData();
-			DeploymentModulePrefs p = preferences.getOrCreatePreferences(MAIN)
+			DeploymentModulePrefs p = getPreferences().getOrCreatePreferences()
 					.getOrCreateModulePrefs(module);
 			if (property == COLUMN_LOC) {
 				String outputName, outPath;
@@ -292,19 +309,30 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 					outputName = new Path(((String)value)).lastSegment();
 					outPath = ((String)value).substring(0, ((String)value).length()-outputName.length());
 				}
-				partner.firePropertyChangeCommand(p, 
+				getComposite().firePropertyChangeCommand(p, 
 						new String[]{COLUMN_LOC, OUTPUT_NAME},
 						new String[]{outPath,outputName},
 						Messages.EditorEditDeployLocCommand);
-				viewer.refresh();
+				getComposite().getViewer().refresh();
 			} else if (property == COLUMN_TEMP_LOC) {
-				partner.firePropertyChangeCommand(p, 
+				getComposite().firePropertyChangeCommand(p, 
 						new String[] { COLUMN_TEMP_LOC },
 						new String[] {(String) value}, 
 						Messages.EditorEditDeployLocCommand);
-				viewer.refresh();
+				getComposite().getViewer().refresh();
 			}
 		}
+	}
+	
+	protected DeploymentPreferences getPreferences() {
+		return preferences;
+	}
+	protected TreeViewer getViewer() {
+		return viewer;
+	}
+
+	public void firePropertyChangeCommand(DeploymentModulePrefs p, String[] keys, String[] vals, String cmdName) {
+		partner.execute(new ChangeModuleDeploymentPropertyCommand(partner, preferences, p, keys,vals,cmdName, viewer));
 	}
 
 	private class ModulePageContentProvider implements ITreeContentProvider {
@@ -389,13 +417,13 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 					return m.getName();
 				if (columnIndex == 1) {
 					DeploymentModulePrefs modPref = preferences
-							.getOrCreatePreferences(MAIN)
+							.getOrCreatePreferences()
 							.getOrCreateModulePrefs(m);
 					return getOutputFolderAndName(modPref, m);
 				}
 				if (columnIndex == 2) {
 					DeploymentModulePrefs modPref = preferences
-							.getOrCreatePreferences(MAIN)
+							.getOrCreatePreferences()
 							.getOrCreateModulePrefs(m);
 					String result = modPref.getProperty(COLUMN_TEMP_LOC);
 					if (result != null)
@@ -436,14 +464,14 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 	}
 	
 	
-	private String getDefaultOutputName(IModule module) {
+	protected String getDefaultOutputName(IModule module) {
 		String lastSegment = new Path(module.getName()).lastSegment();
 		String suffix = PublishUtil.getSuffix(module.getModuleType().getId());
 		String ret = lastSegment.endsWith(suffix) ? lastSegment : lastSegment + suffix;
 		return  ret;
 	}
 	
-	private String getOutputFolderAndName(DeploymentModulePrefs modPref, IModule m) {
+	protected String getOutputFolderAndName(DeploymentModulePrefs modPref, IModule m) {
 		String folder = modPref.getProperty(COLUMN_LOC);
 		String outputName = modPref.getProperty(OUTPUT_NAME);
 		outputName = outputName == null || outputName.length() == 0

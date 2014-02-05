@@ -16,6 +16,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 
+/**
+ * 
+ * @deprecated
+ */
 public interface IJBossServerPublishMethod {
 //	public IJBossServerPublishMethodType getPublishMethodType();
 	public void publishStart(IDeployableServerBehaviour behaviour, IProgressMonitor monitor) throws CoreException;

@@ -14,4 +14,76 @@
          </launchTabProvider>
       </ui>
    </extension>
+   
+   <extension
+         point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
+      <subsystem
+            system="exploreBehavior"
+            id="exploreBehavior.rse.default"
+            name="Explore Server or Modules (RSE)"
+            class="org.jboss.ide.eclipse.as.rse.ui.RSEExploreBehavior">
+         <properties>
+            <property
+                  key="target"
+                  value="rse">
+            </property>
+         </properties>
+      </subsystem>
+      <subsystemMapping
+            id="exploreBehavior.rse.default"
+            mappedId="exploreBehavior.rse"
+            serverTypes="%AllJBTServerTypes">
+      </subsystemMapping>
+
+
+      <subsystem
+            system="browseBehavior"
+            id="browseBehavior.rse.default"
+            name="Browse Server or Modules (RSE)"
+            class="org.jboss.ide.eclipse.as.rse.ui.RSEBrowseBehavior">
+         <properties>
+            <property
+                  key="target"
+                  value="rse">
+            </property>
+         </properties>
+      </subsystem>
+      <subsystemMapping
+            id="browseBehavior.rse.default"
+            mappedId="browseBehavior.rse"
+            serverTypes="%AllJBTServerTypes">
+      </subsystemMapping>
+      
+      <subsystem
+            system="launchTabProvider"
+            id="launchTabProvider.rse.default"
+            name="Launch Tabs (RSE)"
+            class="org.jboss.ide.eclipse.as.rse.ui.RSELaunchTabProvider">
+         <properties>
+            <property
+                  key="target"
+                  value="rse">
+            </property>
+         </properties>
+      </subsystem>
+      <subsystemMapping
+            id="launchTabProvider.rse.default"
+            mappedId="launchTabProvider.rse"
+            serverTypes="%AllJBossServerTypes">
+      </subsystemMapping>
+   </extension>      
+   
+   
+    <extension
+          point="org.jboss.ide.eclipse.as.wtp.core.serverProfile">
+       <serverProfile id="rse" serverTypes="%AllJBossServerTypes">
+          <subsystem system="launchTabProvider" subsystem="launchTabProvider.rse"/>
+       </serverProfile>
+       <serverProfile id="rse" serverTypes="%AllJBTServerTypes">
+          <subsystem system="exploreBehavior" subsystem="exploreBehavior.rse"/>
+          <subsystem system="browseBehavior" subsystem="browseBehavior.rse"/>
+          <subsystem system="deploymentPage" subsystem="deploymentPage.standard"/>
+       </serverProfile>
+    </extension>
+   
 </plugin>

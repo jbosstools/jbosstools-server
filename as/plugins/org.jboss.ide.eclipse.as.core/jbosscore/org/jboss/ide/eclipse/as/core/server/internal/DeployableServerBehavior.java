@@ -41,6 +41,7 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 /**
  * @author Rob Stryker
+ * @deprecated
  */
 public class DeployableServerBehavior extends ServerBehaviourDelegate 
 	implements IDeployableServerBehaviour {

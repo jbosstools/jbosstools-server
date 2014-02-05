@@ -26,6 +26,10 @@ import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+/**
+ * 
+ * @deprecated
+ */
 
 public abstract class AbstractJBossBehaviourDelegate extends AbstractBehaviourDelegate {
 

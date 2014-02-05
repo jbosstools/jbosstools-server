@@ -22,6 +22,10 @@ import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 
+/**
+ * 
+ * @deprecated
+ */
 public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
 
 	private IJBoss7ManagerService service;

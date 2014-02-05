@@ -46,4 +46,17 @@ public interface IDeploymentScannerModifier {
 	 * @return
 	 */
 	public Job getRemoveDeploymentScannerJob(IServer server);
+	
+	/**
+	 * Suspend all deployment scanners from running
+	 * @param server
+	 */
+	public void suspendScanners(IServer server) throws UnsupportedOperationException;
+	
+	/**
+	 * Set all deployment scanners to enabled
+	 * @param server
+	 */
+	public void resumeScanners(IServer server)throws UnsupportedOperationException;
+	
 }

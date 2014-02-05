@@ -30,6 +30,10 @@ import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
  * This class is an internal implementation and is not
  * intended to be subclassed or instantiated by external clients.  
  */
+/**
+ * 
+ * @deprecated
+ */
 public class RSEJBoss7BehaviourDelegate extends RSEBehaviourDelegate {
 
 	private IJBoss7ManagerService service;

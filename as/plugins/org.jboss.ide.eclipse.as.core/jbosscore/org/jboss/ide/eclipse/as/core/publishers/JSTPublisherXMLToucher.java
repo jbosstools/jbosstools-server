@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.HashMap;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -23,7 +24,16 @@ import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IFilesystemController;
 
+/**
+ * This class is mostly legacy code for as < 7, and used in use cases
+ * where a module must be forcibly restarted via the filesystem only.
+ * This typically means touching the descriptor file for that module.
+ * This class has become obsolete once modules no longer required
+ * descriptors, and since as7 provides other mechanisms for restarting modules.
+ * 
+ */
 public class JSTPublisherXMLToucher {
 	public static JSTPublisherXMLToucher instance;
 	public static JSTPublisherXMLToucher getInstance() {
@@ -32,25 +42,28 @@ public class JSTPublisherXMLToucher {
 		return instance;
 	}
 	
-	public interface IDescriptorToucher {
+	private interface IDescriptorToucher {
+		@Deprecated
 		public void touchDescriptors(IPath moduleRoot, IPublishCopyCallbackHandler handler);
+		public void touchDescriptors(IPath moduleRoot, IFilesystemController controller) throws CoreException;	
 	}
-	
-	public static class PathDescriptorToucher implements IDescriptorToucher {
-		private IPath[] paths;
+
+	private static class PathDescriptorToucher implements IDescriptorToucher {
+		private IPath path;
 		// Takes relative paths
 		public PathDescriptorToucher(String s) {
-			this(new Path(s));
+			this.path = (s == null ? null : new Path(s));
 		}
-		public PathDescriptorToucher(IPath p) {
-			this(new IPath[]{p});
-		}
-		public PathDescriptorToucher(IPath[] path) {
-			this.paths = path == null ? new IPath[0] : path;
-		}
+		@Deprecated
 		public void touchDescriptors(IPath moduleRoot, IPublishCopyCallbackHandler handler) {
-			for( int i = 0; i < paths.length; i++ ) {
-				handler.touchResource(paths[i], new NullProgressMonitor());
+			handler.touchResource(path, new NullProgressMonitor());
+		}
+		public void touchDescriptors(IPath moduleRoot, IFilesystemController controller) throws CoreException {
+			// We should only touch xml files that *already* exist here
+			// We don't want to create a random empty application.xml for example
+			IPath toTouch = moduleRoot.append(path);
+			if( controller.isFile(toTouch, new NullProgressMonitor())) {
+				controller.touchResource(toTouch, new NullProgressMonitor());				
 			}
 		}
 	}
@@ -76,6 +89,7 @@ public class JSTPublisherXMLToucher {
 		map.put(typeId, toucher);
 	}
 	
+	@Deprecated
 	public void touch(IPath root, IModule module, IPublishCopyCallbackHandler handler) {
 		String id = module.getModuleType().getId();
 		IDescriptorToucher toucher = map.get(id);
@@ -85,8 +99,16 @@ public class JSTPublisherXMLToucher {
 			toucher.touchDescriptors(root, handler);
 	}
 	
+	public void touch(IPath root, IModule module, IFilesystemController controller) throws CoreException {
+		String id = module.getModuleType().getId();
+		IDescriptorToucher toucher = map.get(id);
+		if( toucher != null )
+			toucher.touchDescriptors(root, controller);
+	}
 	
 	// Touch all XML if we don't know what we're doing
+	// This method doesn't even use the callback handler! it's using local!
+	@Deprecated
 	protected void defaultTouch(IPath deployPath) {
 		// adjust timestamps
 		FileFilter filter = new FileFilter() {

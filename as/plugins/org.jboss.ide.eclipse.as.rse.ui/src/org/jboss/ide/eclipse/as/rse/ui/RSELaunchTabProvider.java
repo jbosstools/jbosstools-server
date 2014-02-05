@@ -32,15 +32,16 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 import org.jboss.ide.eclipse.as.rse.core.RSELaunchConfigProperties;
-import org.jboss.ide.eclipse.as.ui.IJBossLaunchTabProvider;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
+import org.jboss.ide.eclipse.as.ui.subsystems.IJBossLaunchTabProvider;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
 
 /**
  * @author Rob Stryker
  * @author André Dietisheim
  *
  */
-public class RSELaunchTabProvider implements IJBossLaunchTabProvider {
+public class RSELaunchTabProvider extends AbstractSubsystemController implements IJBossLaunchTabProvider {
 
 	public ILaunchConfigurationTab[] createTabs() {
 		return new ILaunchConfigurationTab[]{

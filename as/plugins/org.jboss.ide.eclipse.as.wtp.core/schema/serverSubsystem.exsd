@@ -1,0 +1,217 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.jboss.ide.eclipse.as.wtp.core" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appinfo>
+         <meta.schema plugin="org.jboss.ide.eclipse.as.wtp.core" id="serverSubsystem" name="serverSubsystem"/>
+      </appinfo>
+      <documentation>
+         [Enter description of this extension point.]
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
+      </annotation>
+      <complexType>
+         <sequence minOccurs="1" maxOccurs="unbounded">
+            <choice>
+               <element ref="subsystem"/>
+               <element ref="subsystemMapping"/>
+            </choice>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="subsystem">
+      <complexType>
+         <sequence>
+            <element ref="properties" minOccurs="0" maxOccurs="1"/>
+            <element ref="dependencies" minOccurs="0" maxOccurs="1"/>
+         </sequence>
+         <attribute name="system" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Which major system this subsystem is an implementation of. For example, modules, publish, fs, or mgmt. This value may be any one of the existing systems, or a new arbitrary value for which you have decided to name your system type.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The ID of this subsystem.  The id must be unique for each server type. 
+                  As an example of this, you may have jmxSystem.customAuth with implementation 
+                  class StandardAuth (valid for AS 3-6), and 
+                  jmxSystem.customAuth with implementation class ManagementAuth (valid for AS =&gt; 7).   
+                  
+                  It will be deemed an error if two implementations are available with the same id 
+                  for the same server type. The error will be logged as a notice to developers, however, 
+                  one will be chosen to be returned. This is to ensure at least some functionality remains.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A user visible string
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn=":org.jboss.ide.eclipse.as.wtp.core.server.behavior.ISubsystemController"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="properties">
+      <complexType>
+         <sequence minOccurs="1" maxOccurs="unbounded">
+            <element ref="property"/>
+         </sequence>
+      </complexType>
+   </element>
+
+   <element name="property">
+      <complexType>
+         <attribute name="key" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="value" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="dependencies">
+      <complexType>
+         <sequence>
+            <element ref="requires" minOccurs="1" maxOccurs="unbounded"/>
+         </sequence>
+      </complexType>
+   </element>
+
+   <element name="requires">
+      <complexType>
+         <attribute name="system" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="subsystem" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="subsystemMapping">
+      <complexType>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The subsystem&apos;s unique id as declared in its subsystem element
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="mappedId" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The id this subsystem will have when mapped to a server
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="serverTypes" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The comma-separated list of server types this mapping will apply to.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="since"/>
+      </appinfo>
+      <documentation>
+         3.0.0
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="examples"/>
+      </appinfo>
+      <documentation>
+         [Enter extension point usage example here.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="apiinfo"/>
+      </appinfo>
+      <documentation>
+         [Enter API information here.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="implementation"/>
+      </appinfo>
+      <documentation>
+         [Enter information about supplied implementation of this extension point.]
+      </documentation>
+   </annotation>
+
+
+</schema>

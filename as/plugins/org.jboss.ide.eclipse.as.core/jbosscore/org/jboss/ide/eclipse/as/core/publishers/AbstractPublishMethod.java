@@ -24,6 +24,7 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServerBehaviour;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 
+@Deprecated
 public abstract class AbstractPublishMethod implements IJBossServerPublishMethod {
 	public abstract String getPublishMethodId();
 

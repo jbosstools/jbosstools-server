@@ -204,14 +204,20 @@ public class ModuleResourceUtil {
 		return delegate == null ? 0 : countMembers(resources);
 	}
 	
+	
 	public static int countMembers(IModuleResource[] resources) {
+		return countMembers(resources, false);
+	}
+	public static int countMembers(IModuleResource[] resources, boolean includeFolders) {
 		int count = 0;
 		if( resources == null ) return 0;
 		for( int i = 0; i < resources.length; i++ ) {
 			if( resources[i] instanceof IModuleFile ) {
 				count++;
 			} else if( resources[i] instanceof IModuleFolder ) {
-				count += countMembers(((IModuleFolder)resources[i]).members());
+				count += countMembers(((IModuleFolder)resources[i]).members(), includeFolders);
+				if( includeFolders) 
+					count++;
 			}
 		}
 		return count;

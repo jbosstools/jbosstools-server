@@ -30,6 +30,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
+@Deprecated
 public class DelegatingStartLaunchConfiguration extends AbstractJBossStartLaunchConfiguration {
 	public ArrayList<IJBossLaunchDelegate> getSetupParticipants(IServer server) {
 		return BehaviourModel.getModel().getSetupParticipants(server);

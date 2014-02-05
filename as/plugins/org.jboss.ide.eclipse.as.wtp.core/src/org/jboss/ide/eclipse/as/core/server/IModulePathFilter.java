@@ -12,9 +12,21 @@ package org.jboss.ide.eclipse.as.core.server;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.server.core.model.IModuleResource;
+import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 
 /**
- * @since 2.4
+ * This interface represents a module path filter. 
+ * It is capable of determining whether a given IModuleResource should
+ * be included, as well as returning "cleaned" module resource trees
+ * and delta trees. 
+ * 
+ * Since implementations may choose to optimize results via caching, 
+ * instances are not expected to return continuing or changing results. 
+ * Changes to an underlying IModule or its members would require a 
+ * new instance of the filter from which to create clean trees.
+ * 
+ * 
+ * @since 2.4  Modified in 3.0
  */
 public interface IModulePathFilter {
 	/**
@@ -33,9 +45,20 @@ public interface IModulePathFilter {
 	
 	/**
 	 * The easiest way to get a new clean pre-filtered list of members
-	 * that actually need to be published 
+	 * that actually need to be published
 	 * 
 	 * @return  the filtered list of members
 	 */
 	public IModuleResource[] getFilteredMembers() throws CoreException;
+	
+	/**
+	 * Given a delta array, acquire a new delta array without any 
+	 * files that would ordinarily be ignored by the filter
+	 * 
+	 * @param delta A module resource delta to be filtered
+	 * @return delta A new delta cleaned of objects to be ignored
+	 * @throws CoreException
+	 * @since 3.0
+	 */
+	public IModuleResourceDelta[] getFilteredDelta(IModuleResourceDelta[] delta) throws CoreException;
 }

@@ -29,7 +29,7 @@ package org.jboss.ide.eclipse.as.core.server;
  * 
  * This interface is provisional API and is not intendd to be implemented
  * by clients outside of ASTools at this time. 
- * @since 2.5
+ * @since 3.0
  */
 public interface IServerModeDetails {
 	

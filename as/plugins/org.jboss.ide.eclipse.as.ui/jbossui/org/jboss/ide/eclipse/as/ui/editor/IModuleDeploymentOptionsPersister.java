@@ -12,10 +12,10 @@ package org.jboss.ide.eclipse.as.ui.editor;
 
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.server.IServerWorkingCopyProvider;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
+import org.jboss.tools.as.core.internal.modules.DeploymentModulePrefs;
 
 /**
- * @since 2.5
+ * @since 3.0
  */
 public interface IModuleDeploymentOptionsPersister extends IServerWorkingCopyProvider {
 	/**

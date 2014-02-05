@@ -43,6 +43,10 @@ import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 
+/**
+ * 
+ * @deprecated
+ */
 public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 
 	public static final String MARK_DO_DEPLOY = "org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher.markUndeploy"; //$NON-NLS-1$

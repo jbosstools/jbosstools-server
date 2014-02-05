@@ -26,6 +26,10 @@ import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
+/**
+ * 
+ * @deprecated
+ */
 
 public class RSEBehaviourDelegate extends AbstractRSEBehaviourDelegate {
 

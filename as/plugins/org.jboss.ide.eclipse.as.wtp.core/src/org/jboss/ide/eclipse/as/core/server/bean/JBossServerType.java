@@ -44,7 +44,7 @@ public class JBossServerType implements IJBossToolingConstants {
 	public static final JBossServerType WILDFLY80 = new ServerBeanTypeWildfly80();
 	public static final JBossServerType JPP6 = new ServerBeanTypeJPP6();
 	/**
-	 * @since 2.5 (actually 2.4.101)
+	 * @since 3.0 (actually 2.4.101)
 	 */
 	public static final JBossServerType JPP61 = new ServerBeanTypeJPP61();
 	public static final JBossServerType UNKNOWN_AS71_PRODUCT = new ServerBeanTypeUnknownAS71Product();	
@@ -125,7 +125,7 @@ public class JBossServerType implements IJBossToolingConstants {
 	 * @param systemFile
 	 * @return an underlying type id, or the id of this JBossServerType
 	 * 		   if the condition does not provide an underlying type. 
-	 * @since 2.5 (actually 2.4.101)
+	 * @since 3.0 (actually 2.4.101)
 	 */
 
 	public String getUnderlyingTypeId(File root) {
@@ -206,7 +206,7 @@ public class JBossServerType implements IJBossToolingConstants {
 		 * @param location
 		 * @param systemFile
 		 * @return an ID, or null if the JBossServerType does not represent a class of different types.
-		 * @since 2.5 (actually 2.4.101)
+		 * @since 3.0 (actually 2.4.101)
 		 */
 		public String getUnderlyingTypeId(File location, File systemFile) {
 			return null;

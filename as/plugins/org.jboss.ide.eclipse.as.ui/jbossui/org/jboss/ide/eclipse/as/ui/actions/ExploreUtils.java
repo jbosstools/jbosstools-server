@@ -13,19 +13,11 @@ package org.jboss.ide.eclipse.as.ui.actions;
 import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.wst.server.core.IModule;
-import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
-import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
-import org.jboss.ide.eclipse.as.ui.Messages;
 
 /**
  * 
@@ -39,8 +31,6 @@ import org.jboss.ide.eclipse.as.ui.Messages;
 public class ExploreUtils {
 
 	public final static String PATH = "{%}"; //$NON-NLS-1$
-	public final static String EXPLORE = Messages.ExploreUtils_Action_Text;
-	public final static String EXPLORE_DESCRIPTION = Messages.ExploreUtils_Description;
 	private static String exploreFolderCommand;
 	private static String[] exploreFolderCommandArray;
 	private static String[] exploreFileCommandArray;
@@ -99,45 +89,6 @@ public class ExploreUtils {
 			}
 			exploreFileCommand = exploreFolderCommand;
 		}
-	}
-	
-	public static String getDeployDirectory(IServer server) {
-		IDeployableServer deployableServer = ServerConverter.getDeployableServer(server);
-		if (server != null && deployableServer != null) {
-			return deployableServer.getDeployFolder();
-		}
-		String ret = server.getAttribute(IDeployableServer.DEPLOY_DIRECTORY,(String) null); //$NON-NLS-1$
-		if( ret != null )
-			return ret.trim();
-		
-		// Other runtimes like tomcat / default behavior (?)
-		IRuntime rt = server.getRuntime();
-		if( rt != null ) {
-			return rt.getLocation().toString();
-		}
-		
-		return null; // No idea
-	}
-	
-	public static boolean canExplore(IServer server) {
-		String deployDirectory = ExploreUtils.getDeployDirectory(server);
-		if (deployDirectory == null || deployDirectory.length() <= 0 && new File(deployDirectory).exists()) {
-			return false;
-		}
-		if (ExploreUtils.getExploreCommand() == null) {
-			return false;
-		}
-		return true;
-	}
-	public static boolean canExplore(IServer server, IModule[] modules) {
-		IDeployableServer ds = ServerConverter.getDeployableServer(server);
-		if( ds != null ) {
-			IPath p = ds.getDeploymentLocation(modules, false); 
-			if (p == null || !p.toFile().exists() || ExploreUtils.getExploreCommand() == null)
-				return false;
-			return true;
-		}
-		return false;
 	}
 	
 	public static void explore(String name) {

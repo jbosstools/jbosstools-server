@@ -15,12 +15,16 @@ import java.util.ArrayList;
 
 import junit.framework.TestCase;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
+import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.util.ModuleFile;
 import org.eclipse.wst.server.core.util.ModuleFolder;
+import org.jboss.ide.eclipse.as.core.publishers.patterns.ModulePathFilterUtility;
 import org.jboss.ide.eclipse.as.core.publishers.patterns.internal.PublishFilterDirectoryScanner;
+import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.test.publishing.AbstractDeploymentTest;
 
 public class PublishFilterDirectoryScannerTest extends TestCase {
@@ -156,10 +160,33 @@ public class PublishFilterDirectoryScannerTest extends TestCase {
 		assertFalse(scanner.isIncludedFile("resources/css/two.css"));
 		assertFalse(scanner.isRequiredMember("resources"));
 		
-		IModuleResource[] cleaned = scanner.getCleanedMembers();
+		IModuleResource[] cleaned = getCleanedMembersWrapper(members,  scanner);
 		assertEquals(27, countAllResources(members));
 		int postTotal = countAllResources(cleaned);
 		assertEquals(4, postTotal);
+	}
+	
+	/*
+	 * Create a mock IModulePathFilter to run this
+	 */
+	private IModuleResource[] getCleanedMembersWrapper(
+			IModuleResource[] original,
+			final PublishFilterDirectoryScanner scanner) {
+		scanner.scan();
+		IModulePathFilter mock = new IModulePathFilter(){
+			public boolean shouldInclude(IModuleResource moduleResource) {
+				return scanner.isRequiredMember(moduleResource);
+			}
+			public IModuleResource[] getFilteredMembers() throws CoreException {
+				return null;
+			}
+			public IModuleResourceDelta[] getFilteredDelta(
+					IModuleResourceDelta[] delta) throws CoreException {
+				return null;
+			}
+		};
+		return new ModulePathFilterUtility(mock).getCleanedMembers(original);
+		
 	}
 
 	public void testExcludesDeepFolder() {
@@ -174,7 +201,7 @@ public class PublishFilterDirectoryScannerTest extends TestCase {
 		assertFalse(scanner.isRequiredMember("WEB-INF/pages"));
 		assertFalse(scanner.isIncludedMember("WEB-INF/pages/navbar.html"));
 		assertFalse(scanner.isRequiredMember("WEB-INF/pages/navbar.html"));
-		assertEquals(24, countAllResources(scanner.getCleanedMembers()));
+		assertEquals(24, countAllResources(getCleanedMembersWrapper(members, scanner)));
 	}
 	
 	public void testExcludesTrailingSlash() {
@@ -182,14 +209,14 @@ public class PublishFilterDirectoryScannerTest extends TestCase {
 		scanner.setIncludes(new String[]{"**/*"});
 		scanner.setExcludes(new String[]{"WEB-INF/pages"});
 		scanner.scan();
-		assertEquals(27, countAllResources(scanner.getCleanedMembers()));
+		assertEquals(27, countAllResources(getCleanedMembersWrapper(members, scanner)));
 	}
 	public void testExcludesTrailingSlash2() {
 		PublishFilterDirectoryScanner scanner = new PublishFilterDirectoryScanner(members);
 		scanner.setIncludes(new String[]{"**/*"});
 		scanner.setExcludes(new String[]{"WEB-INF/pages/"});
 		scanner.scan();
-		assertEquals(24, countAllResources(scanner.getCleanedMembers()));
+		assertEquals(24, countAllResources(getCleanedMembersWrapper(members, scanner)));
 	}
 	
 	public void testCommaSeparatedExcludes() {
@@ -197,7 +224,7 @@ public class PublishFilterDirectoryScannerTest extends TestCase {
 		scanner.setIncludes(new String[]{"**/*"});
 		scanner.setExcludes(new String[]{ "WEB-INF/pages/","WEB-INF/classes/foo/bar/"});
 		scanner.scan();
-		assertEquals(22, countAllResources(scanner.getCleanedMembers()));
+		assertEquals(22, countAllResources(getCleanedMembersWrapper(members, scanner)));
 	}
 
 	public void testCommaSeparatedExcludesAutoSplit() {
@@ -205,14 +232,14 @@ public class PublishFilterDirectoryScannerTest extends TestCase {
 		scanner.setIncludes(new String[]{"**/*"});
 		scanner.setExcludes("WEB-INF/pages/,WEB-INF/classes/foo/bar/");
 		scanner.scan();
-		assertEquals(22, countAllResources(scanner.getCleanedMembers()));
+		assertEquals(22, countAllResources(getCleanedMembersWrapper(members, scanner)));
 	}
 	public void testExcludesMorePowerful() {
 		PublishFilterDirectoryScanner scanner = new PublishFilterDirectoryScanner(members);
 		scanner.setIncludes("**/*,WEB-INF/classes/foo/bar/");
 		scanner.setExcludes("WEB-INF/classes/foo/");
 		scanner.scan();
-		assertEquals(22, countAllResources(scanner.getCleanedMembers()));
+		assertEquals(22, countAllResources(getCleanedMembersWrapper(members, scanner)));
 	}
 	
 	// deep count

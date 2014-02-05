@@ -11,12 +11,12 @@
 package org.jboss.ide.eclipse.as.core.server.internal;
 
 import org.jboss.ide.eclipse.as.core.server.IJBoss6Server;
+import org.jboss.tools.as.core.server.controllable.systems.IPortsController;
 
 public class JBoss6Server extends JBossServer implements IJBoss6Server {
 
 	public int getJMXRMIPort() {
-		return findPort(JMX_RMI_PORT, JMX_RMI_PORT_DETECT, JMX_RMI_PORT_DETECT_XPATH, 
-				JMX_RMI_PORT_DEFAULT_XPATH, JMX_RMI_DEFAULT_PORT);
+		return findPort(IPortsController.KEY_JMX_RMI, 1090);
 	}
 
 }

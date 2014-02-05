@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.core.server;
 
 import org.eclipse.core.runtime.IStatus;
 
+@Deprecated
 public interface IDelegatingServerBehavior extends IDeployableServerBehaviour {
 	public IJBossBehaviourDelegate getDelegate();
 	public IStatus canStart(String launchMode);

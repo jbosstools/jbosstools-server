@@ -255,7 +255,7 @@ public class Fileset implements Cloneable, IRuntimeProvider {
 	
 	private IVariableResolver resolver;
 	/**
-	 * @since 2.5
+	 * @since 3.0
 	 */
 	protected void setVariableResolver(IVariableResolver resolver) {
 		this.resolver = resolver;

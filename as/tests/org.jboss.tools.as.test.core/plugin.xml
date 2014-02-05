@@ -67,4 +67,293 @@
             readOnly="true">
       </classpathVariableInitializer>
    </extension>
+   
+   
+   
+   
+   <!-- NEW server behavior implementation using subsystems   -->
+   <extension
+         point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
+      <subsystem
+            class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
+            id="system1.implA"
+            name="implA"
+            system="system1">
+      </subsystem>
+      <subsystemMapping
+            id="system1.implA"
+            serverTypes="customServer1"
+            mappedId="system1.implA">
+      </subsystemMapping>
+   </extension>
+
+
+	<!-- Test 2,  two for the same system, one has default-->
+   <extension
+         point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
+      <subsystem
+            class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
+            id="system2.implA"
+            name="implA"
+            system="system2">
+         <properties>
+            <property key="someKey" value="someVal"/>
+         </properties>
+      </subsystem>
+      <subsystem
+            class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
+            id="system2.implB"
+            name="implB"
+            system="system2">
+         <properties>
+            <property key="default" value="true"/>
+            <property key="otherKey" value="otherVal"/>
+         </properties>
+      </subsystem>
+      <subsystemMapping
+            id="system2.implA"
+            mappedId="system2.implA"
+            serverTypes="customServer1">
+      </subsystemMapping>
+      <subsystemMapping
+            id="system2.implB"
+            mappedId="system2.implB"
+            serverTypes="customServer1">
+      </subsystemMapping>
+   </extension>
+
+
+
+	<!-- Test 3,  Dependency test-->
+   <extension
+         point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
+      <subsystem
+            class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
+            id="system3.implA"
+            name="implA"
+            serverTypes="customServer1"
+            system="system3">
+      </subsystem>
+      <subsystem
+            class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
+            id="system3.implB"
+            name="implB"
+            serverTypes="customServer1"
+            system="system3">
+         <properties>
+            <property key="default" value="true"/>
+         </properties>
+         <dependencies>
+            <requires
+                  system="missingSystem">
+            </requires>
+         </dependencies>
+      </subsystem>
+      <subsystemMapping
+            id="system3.implA"
+            mappedId="system3.implA"
+            serverTypes="customServer1">
+      </subsystemMapping>
+      <subsystemMapping
+            id="system3.implB"
+            mappedId="system3.implB"
+            serverTypes="customServer1">
+      </subsystemMapping>
+   </extension>
+
+
+
+
+	<!-- 
+		Test 4,  Dependency with required attribute test
+	    This test will query for a system4 implementation,
+	    and verify that it resolves a dependent subsystem
+	    based on the required properties.
+	-->
+   <extension
+         point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
+      <subsystem
+            class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
+            id="system4.implSingleton"
+            name="implSingleton"
+            serverTypes="customServer1"
+            system="system4">
+         <dependencies>
+            <requires system="system4a"/>
+         </dependencies>
+      </subsystem>
+      
+      
+      <subsystem
+            class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
+            id="system4a.tiger"
+            name="tiger"
+            system="system4a">
+            <properties>
+               <property key="animal" value="tiger"/>
+            </properties>
+      </subsystem>
+      <subsystem
+            class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
+            id="system4a.mantis"
+            name="mantis"
+            system="system4a">
+            <properties>
+               <property key="animal" value="mantis"/>
+            </properties>
+      </subsystem>
+
+      <subsystemMapping
+            id="system4.implSingleton"
+            mappedId="system4.implSingleton"
+            serverTypes="customServer1">
+      </subsystemMapping>
+      <subsystemMapping
+            id="system4a.tiger"
+            mappedId="system4a.tiger"
+            serverTypes="customServer1">
+      </subsystemMapping>
+      <subsystemMapping
+            id="system4a.mantis"
+            mappedId="system4a.mantis"
+            serverTypes="customServer1">
+      </subsystemMapping>
+
+   </extension>
+
+	<!-- 
+		Test 5,  Dependency with required attribute test, second level
+		A test5 system impl will depend on the singleton impl from test4. 
+		This will test that the environment properly passes down requirements
+		more than 1 layer. 
+	-->
+   <extension
+         point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
+      <subsystem
+            class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
+            id="system5.implSingleton5"
+            name="implSingleton5"
+            system="system5">
+         <dependencies>
+            <requires system="system4"/>
+         </dependencies>
+      </subsystem>
+      <subsystemMapping
+            id="system5.implSingleton5"
+            mappedId="system5.implSingleton5"
+            serverTypes="customServer1">
+      </subsystemMapping>
+	</extension>
+
+	<!-- 
+		Test 6,  Dependency resolution customized by subclass 
+		based on values in the given environment
+	-->
+   <extension
+         point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
+      <subsystem
+            class="org.jboss.tools.as.test.core.subsystems.impl.System6Subsystem"
+            id="system6.implSingleton6"
+            name="implSingleton6"
+            system="system6">
+         <dependencies>
+            <requires system="system4a"/>
+         </dependencies>
+      </subsystem>
+      <subsystemMapping
+            id="system6.implSingleton6"
+            mappedId="system6.implSingleton6"
+            serverTypes="customServer1">
+      </subsystemMapping>
+	</extension>
+
+
+
+
+  <!-- Test 7 and 8: verify a requiremnt on a specific subsystem is resolved -->
+      <extension
+         point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
+      <subsystem
+            class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
+            id="system7.implSingleton7"
+            name="implSingleton7"
+            serverTypes="customServer1"
+            system="system7">
+         <dependencies>
+            <requires system="system4a" subsystem="system4a.mantis"/>
+         </dependencies>
+      </subsystem>
+      <subsystemMapping
+            id="system7.implSingleton7"
+            mappedId="system7.implSingleton7"
+            serverTypes="customServer1">
+      </subsystemMapping>
+	</extension>
+
+
+      <extension
+         point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
+      <subsystem
+            class="org.jboss.tools.as.test.core.subsystems.impl.System1aSubsystem"
+            id="system8.implSingleton8"
+            name="implSingleton8"
+            serverTypes="customServer1"
+            system="system8">
+         <dependencies>
+            <requires system="system4a" subsystem="system4a.tiger"/>
+         </dependencies>
+      </subsystem>
+      <subsystemMapping
+            id="system8.implSingleton8"
+            mappedId="system8.implSingleton8"
+            serverTypes="customServer1">
+      </subsystemMapping>
+      
+      
+      <!-- Backwards compat for existing tests (lame)  --> 
+      <subsystem
+            system="filesystem"
+            id="filesystem.mock4.default"
+            name="Filesystem Support (Mock4)"
+            class="org.jboss.tools.as.test.core.internal.MockPublishMethodFilesystemController">
+         <properties>
+            <property key="target" value="mock4"></property>
+         </properties>
+      </subsystem>
+      <subsystemMapping
+            id="filesystem.mock4.default"
+            mappedId="filesystem.local"
+            serverTypes="%AllJBTServerTypes">
+      </subsystemMapping>
+      
+	</extension>
+
+   
+   <!-- Backwards compat for old unit tests that I hope to remove -->
+   
+       <extension
+          point="org.jboss.ide.eclipse.as.wtp.core.serverProfile">
+       <serverProfile id="mock4" serverTypes="org.jboss.ide.eclipse.as.systemCopyServer">
+          <subsystem system="deploymentOptions" subsystem="deploymentOptions.local"/>
+          <subsystem system="serverDetails" subsystem="serverDetails.local"/>
+          <subsystem system="filesystem" subsystem="filesystem.local"/>
+       </serverProfile>
+       <serverProfile id="mock4" serverTypes="%AllJBossServerTypes">
+          <subsystem system="deploymentOptions" subsystem="deploymentOptions.local"/>
+          <subsystem system="launch" subsystem="launch.standard.local"/>
+          <subsystem system="serverDetails" subsystem="serverDetails.local"/>
+          <subsystem system="shutdown" subsystem="shutdown.default"/>
+          <subsystem system="filesystem" subsystem="filesystem.local"/>
+          <subsystem system="publish" subsystem="publish.filesystem.default"/>
+       </serverProfile>
+       <serverProfile id="mock4" serverTypes="%AllJBossServerTypes">
+          <subsystem system="launchTabProvider" subsystem="launchTabProvider.local"/>
+       </serverProfile>
+       <serverProfile id="mock4" serverTypes="%AllJBTServerTypes">
+          <subsystem system="exploreBehavior" subsystem="exploreBehavior.local"/>
+          <subsystem system="browseBehavior" subsystem="browseBehavior.local"/>
+          <subsystem system="deploymentPage" subsystem="deploymentPage.standard"/>
+       </serverProfile>
+    </extension>
+   
 </plugin>

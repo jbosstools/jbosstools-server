@@ -52,16 +52,12 @@ import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathCategory;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
-import org.jboss.ide.eclipse.as.core.server.IJBoss6Server;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
-import org.jboss.ide.eclipse.as.core.util.ExpressionResolverUtil;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.dialogs.ChangePortDialog;
 import org.jboss.ide.eclipse.as.ui.dialogs.ChangePortDialog.ChangePortDialogInfo;
-import org.jboss.tools.foundation.core.expressions.ExpressionResolutionException;
+import org.jboss.tools.as.core.server.controllable.subsystems.internal.XPathsPortsController;
 import org.jboss.tools.foundation.core.expressions.ExpressionResolver;
 
 /**
@@ -148,11 +144,11 @@ public class PortSection extends ServerEditorSection {
 	public static class JNDIPortEditorExtension extends PortEditorExtension {
 		public JNDIPortEditorExtension() {
 			super(Messages.EditorJNDIPort, 
-					IJBossServerConstants.JNDI_PORT_DETECT_XPATH,
-					IJBossServerConstants.JNDI_PORT_DETECT,
-					IJBossServerConstants.JNDI_PORT,
-					IJBossServerConstants.JNDI_PORT_DEFAULT_XPATH,
-					IJBossToolingConstants.JNDI_DEFAULT_PORT,
+					XPathsPortsController.JNDI_PORT_DETECT_XPATH,
+					XPathsPortsController.JNDI_PORT_DETECT,
+					XPathsPortsController.JNDI_PORT,
+					XPathsPortsController.JNDI_PORT_DEFAULT_XPATH,
+					XPathsPortsController.JNDI_DEFAULT_PORT,
 					Messages.EditorChangeJNDICommandName);
 		}
 	}
@@ -160,11 +156,11 @@ public class PortSection extends ServerEditorSection {
 	public static class WebPortEditorExtension extends PortEditorExtension {
 		public WebPortEditorExtension() {
 			super(Messages.EditorWebPort, 
-					IJBossServerConstants.WEB_PORT_DETECT_XPATH,
-					IJBossServerConstants.WEB_PORT_DETECT,
-					IJBossServerConstants.WEB_PORT,
-					IJBossServerConstants.WEB_PORT_DEFAULT_XPATH, 
-					IJBossToolingConstants.JBOSS_WEB_DEFAULT_PORT,
+					XPathsPortsController.WEB_PORT_DETECT_XPATH,
+					XPathsPortsController.WEB_PORT_DETECT,
+					XPathsPortsController.WEB_PORT,
+					XPathsPortsController.WEB_PORT_DEFAULT_XPATH, 
+					XPathsPortsController.JBOSS_WEB_DEFAULT_PORT,
 					Messages.EditorChangeWebCommandName);
 		}
 	}
@@ -172,11 +168,11 @@ public class PortSection extends ServerEditorSection {
 	public static class JBoss6JMXRMIPortEditorExtension extends PortEditorExtension {
 		public JBoss6JMXRMIPortEditorExtension() {
 			super(Messages.EditorJMXRMIPort, 
-					IJBoss6Server.JMX_RMI_PORT_DETECT_XPATH,
-					IJBoss6Server.JMX_RMI_PORT_DETECT,
-					IJBoss6Server.JMX_RMI_PORT,
-					IJBoss6Server.JMX_RMI_PORT_DEFAULT_XPATH,
-					IJBoss6Server.JMX_RMI_DEFAULT_PORT,
+					XPathsPortsController.JMX_RMI_PORT_DETECT_XPATH,
+					XPathsPortsController.JMX_RMI_PORT_DETECT,
+					XPathsPortsController.JMX_RMI_PORT,
+					XPathsPortsController.JMX_RMI_PORT_DEFAULT_XPATH,
+					XPathsPortsController.JMX_RMI_DEFAULT_PORT,
 					Messages.EditorChangeJMXRMICommandName);
 		}
 	}
@@ -185,22 +181,22 @@ public class PortSection extends ServerEditorSection {
 	public static class JBoss7ManagementPortEditorExtension extends PortEditorExtension {
 		public JBoss7ManagementPortEditorExtension() {
 			super(Messages.EditorAS7ManagementPort, 
-					IJBossToolingConstants.AS7_MANAGEMENT_PORT_DETECT_XPATH,
-					IJBossToolingConstants.AS7_MANAGEMENT_PORT_DETECT,
-					IJBossToolingConstants.AS7_MANAGEMENT_PORT,
-					IJBossToolingConstants.AS7_MANAGEMENT_PORT_DEFAULT_XPATH,
-					IJBossToolingConstants.AS7_MANAGEMENT_PORT_DEFAULT_PORT,
+					XPathsPortsController.AS7_MANAGEMENT_PORT_DETECT_XPATH,
+					XPathsPortsController.AS7_MANAGEMENT_PORT_DETECT,
+					XPathsPortsController.AS7_MANAGEMENT_PORT,
+					XPathsPortsController.AS7_MANAGEMENT_PORT_DEFAULT_XPATH,
+					XPathsPortsController.AS7_MANAGEMENT_PORT_DEFAULT_PORT,
 					Messages.EditorChangeAS7ManagementCommandName);
 		}
 	}
 	public static class JBoss7PortOffsetEditorExtension extends PortEditorExtension implements IPortOffsetProvider {
 		public JBoss7PortOffsetEditorExtension() {
 			super(Messages.EditorAS7PortOffset, 
-					IJBossToolingConstants.PORT_OFFSET_DETECT_XPATH,
-					IJBossToolingConstants.PORT_OFFSET_DETECT,
-					IJBossToolingConstants.PORT_OFFSET,
-					IJBossToolingConstants.PORT_OFFSET_DEFAULT_XPATH,
-					IJBossToolingConstants.PORT_OFFSET_DEFAULT_PORT,
+					XPathsPortsController.PORT_OFFSET_DETECT_XPATH,
+					XPathsPortsController.PORT_OFFSET_DETECT,
+					XPathsPortsController.PORT_OFFSET_KEY,
+					XPathsPortsController.PORT_OFFSET_DEFAULT_XPATH,
+					XPathsPortsController.PORT_OFFSET_DEFAULT_PORT,
 					Messages.EditorChangeAS7ManagementCommandName);
 		}
 		protected void listenerEvent(Event event) {

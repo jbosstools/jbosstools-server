@@ -68,8 +68,6 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
@@ -77,6 +75,8 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
+import org.jboss.tools.as.core.internal.modules.DeploymentModulePrefs;
+import org.jboss.tools.as.core.internal.modules.DeploymentPreferences;
 
 /**
  * 
@@ -128,7 +128,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 	
 	protected String openBrowseDialog(String original) {
 		String mode = getServer().getAttributeHelper().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
-		org.jboss.ide.eclipse.as.ui.IBrowseBehavior beh = EditorExtensionManager.getDefault().getBrowseBehavior(mode);
+		org.jboss.ide.eclipse.as.ui.subsystems.IBrowseBehavior beh = EditorExtensionManager.getDefault().getBrowseBehavior(mode);
 		if( beh == null )
 			beh = EditorExtensionManager.getDefault().getBrowseBehavior(LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
 		return beh.openBrowseDialog(page.getServer(), original);
@@ -816,7 +816,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		}
 
 		public Object getValue(Object element, String property) {
-			DeploymentModulePrefs p = preferences.getOrCreatePreferences(MAIN)
+			DeploymentModulePrefs p = preferences.getOrCreatePreferences()
 					.getOrCreateModulePrefs((IModule) element);
 			if (property == COLUMN_LOC) {
 				return getOutputFolderAndName(p, (IModule)element);
@@ -832,7 +832,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		public void modify(Object element, String property, Object value) {
 
 			IModule module = (IModule) ((TreeItem) element).getData();
-			DeploymentModulePrefs p = preferences.getOrCreatePreferences(MAIN)
+			DeploymentModulePrefs p = preferences.getOrCreatePreferences()
 					.getOrCreateModulePrefs(module);
 			if (property == COLUMN_LOC) {
 				String outputName, outPath;
@@ -934,13 +934,13 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 					return m.getName();
 				if (columnIndex == 1) {
 					DeploymentModulePrefs modPref = preferences
-							.getOrCreatePreferences(MAIN)
+							.getOrCreatePreferences()
 							.getOrCreateModulePrefs(m);
 					return getOutputFolderAndName(modPref, m);
 				}
 				if (columnIndex == 2) {
 					DeploymentModulePrefs modPref = preferences
-							.getOrCreatePreferences(MAIN)
+							.getOrCreatePreferences()
 							.getOrCreateModulePrefs(m);
 					String result = modPref.getProperty(COLUMN_TEMP_LOC);
 					if (result != null)

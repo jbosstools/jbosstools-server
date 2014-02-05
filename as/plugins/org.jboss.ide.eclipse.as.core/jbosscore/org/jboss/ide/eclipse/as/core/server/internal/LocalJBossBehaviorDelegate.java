@@ -56,6 +56,10 @@ import org.jboss.ide.eclipse.as.core.util.ThreadUtils;
  * launch configuration may all try to change these details at varying times. 
  *
  */
+/**
+ * 
+ * @deprecated
+ */
 public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate 
 	implements IProcessProvider {
 	

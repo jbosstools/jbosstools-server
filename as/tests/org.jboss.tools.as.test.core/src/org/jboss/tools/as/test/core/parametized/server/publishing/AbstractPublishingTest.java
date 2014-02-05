@@ -14,12 +14,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -31,21 +30,19 @@ import org.eclipse.wst.server.core.internal.ServerPreferences;
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.jboss.ide.eclipse.archives.core.util.internal.TrueZipUtil;
-import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
-import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.DeploymentMarkerUtils;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
-import org.jboss.ide.eclipse.as.core.util.ServerUtil;
+import org.jboss.tools.as.core.internal.modules.DeploymentModulePrefs;
+import org.jboss.tools.as.core.internal.modules.DeploymentPreferences;
+import org.jboss.tools.as.core.internal.modules.DeploymentPreferencesLoader;
 import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.internal.MockPublishMethod4;
+import org.jboss.tools.as.test.core.internal.MockPublishMethodFilesystemController;
 import org.jboss.tools.as.test.core.internal.utils.IOUtil;
 import org.jboss.tools.as.test.core.internal.utils.MatrixUtils;
 import org.jboss.tools.as.test.core.internal.utils.ResourceUtils;
@@ -72,6 +69,18 @@ public abstract class AbstractPublishingTest extends TestCase {
 		return MatrixUtils.toMatrix(allOptions);
 	}
 
+	public static ArrayList<Object[]> minimalData() {
+		Object[] servers = ServerParameterUtils.getPublishServerTypes();
+		Object[] zipOption = ServerParameterUtils.getServerZipOptions();
+		Object[] defaultDeployLoc = new Object[]{ServerParameterUtils.DEPLOY_META};
+		Object[] perModOverrides = new Object[]{ServerParameterUtils.DEPLOY_PERMOD_DEFAULT};
+		Object[][] allOptions = new Object[][] {
+				servers, zipOption, defaultDeployLoc, perModOverrides
+		};
+		return MatrixUtils.toMatrix(allOptions);
+	}
+
+	
 	protected String param_serverType;
 	protected String param_zip;
 	protected String param_deployLoc;
@@ -96,13 +105,19 @@ public abstract class AbstractPublishingTest extends TestCase {
 
 	@Before
 	public void setUp() throws Exception {
+		setUp(true);
+	}
+	
+	protected void setUp(boolean setMock4) throws Exception {
 		printConstructor();
 		ServerPreferences.getInstance().setAutoPublishing(false);
 		ValidationFramework.getDefault().suspendAllValidation(true);
 		JobUtils.waitForIdle();
 		server = ServerCreationTestUtils.createMockServerWithRuntime(param_serverType, getClass().getName() + param_serverType);
 		wc = server.createWorkingCopy();
-		setMockPublishMethod4(wc);
+		if( setMock4) {
+			setMockPublishMethod4(wc);
+		}
 		setupZipParam(wc);
 		setupDeployTypeParam(wc);
 		createProjects();
@@ -159,12 +174,12 @@ public abstract class AbstractPublishingTest extends TestCase {
 	}
 
 	public static void setCustomDeployOverride(IServerWorkingCopy wc, IModule rootModule, String outputName, String outputDir, String temporaryDir) {
-		DeploymentPreferences prefs = DeploymentPreferenceLoader.loadPreferencesFromServer(wc);
+		DeploymentPreferences prefs = DeploymentPreferencesLoader.loadPreferencesFromServer(wc);
 		DeploymentModulePrefs modPrefs = prefs.getOrCreatePreferences().getOrCreateModulePrefs(rootModule);
 		modPrefs.setProperty(IJBossToolingConstants.LOCAL_DEPLOYMENT_TEMP_LOC, temporaryDir);
 		modPrefs.setProperty(IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC, outputDir);
 		modPrefs.setProperty(IJBossToolingConstants.LOCAL_DEPLOYMENT_OUTPUT_NAME, outputName);
-		DeploymentPreferenceLoader.savePreferencesToServerWorkingCopy(wc, prefs);
+		DeploymentPreferencesLoader.savePreferencesToServerWorkingCopy(wc, prefs);
 	}
 
 	protected void setupZipParam(IServerWorkingCopy wc) {
@@ -263,7 +278,7 @@ public abstract class AbstractPublishingTest extends TestCase {
 	/* Should remove a .failed marker */
 	protected int getFullPublishRemovedResourceCountModifier() {
 		if( DeploymentMarkerUtils.supportsJBoss7MarkerDeployment(server))
-			return 1;
+			return 2; // We delete .deployed and .failed
 		return 0;
 	}
 
@@ -271,6 +286,7 @@ public abstract class AbstractPublishingTest extends TestCase {
 	/* Util methods to do the checking */
 	protected static void publishAndCheckError(IServer server, int pubType) {
 		MockPublishMethod4.resetPublish();
+		MockPublishMethodFilesystemController.StaticModel.clearAll();
 		server.publish(pubType, new NullProgressMonitor());
 		JobUtils.waitForIdle();
 		if( MockPublishMethod4.getError() != null ) {
@@ -280,16 +296,20 @@ public abstract class AbstractPublishingTest extends TestCase {
 			fail("Error when publishing: " + t.getMessage());
 		}
 	}
-	protected void verifyPublishMethodResults(int changed, int removed, int temp) {
-		IPath[] changed2 = MockPublishMethod4.getChanged();
-		IPath[] removed2 = MockPublishMethod4.getRemoved();
-		IPath[] temp2 = MockPublishMethod4.getTempPaths();
-		String t = "   " + changed2.length + ", " + removed2.length + ", " + temp2.length;
-//		System.out.println(t);
+	protected void verifyPublishMethodResults(int changed, int removed) {
+		IPath[] changed2 = MockPublishMethodFilesystemController.StaticModel.getChanged();
+		IPath[] removed2 = MockPublishMethodFilesystemController.StaticModel.getRemoved();
 		assertEquals(changed2.length, changed);
 		assertEquals(removed2.length, removed);
-		assertEquals(temp2.length,    temp);
 	}
+	
+	protected void verifyPublishMethodFilesystemResults(int changed, int removed) {
+		IPath[] changed2 = MockPublishMethodFilesystemController.StaticModel.getChanged();
+		IPath[] removed2 = MockPublishMethodFilesystemController.StaticModel.getRemoved();
+		assertEquals(changed2.length, changed);
+		assertEquals(removed2.length, removed);
+	}
+
 	
 	protected IModuleFile findModuleFile(IModuleFile[] files, IPath path) {
 		for( int j = 0; j < files.length; j++ ) {
@@ -301,8 +321,14 @@ public abstract class AbstractPublishingTest extends TestCase {
 	}
 	
 	protected void verifyZipContents(IModuleFile[] files, IPath[] paths, String[] contents) throws CoreException, IOException {
-		File foundZip = findZip(files);
-		
+		verifyZipContents(findZip(files), paths, contents);
+	}
+	
+	protected void verifyZipContents(java.io.File[] files, IPath[] paths, String[] contents) throws CoreException, IOException {
+		verifyZipContents(findZip(files), paths, contents);
+	}
+	
+	protected void verifyZipContents(java.io.File foundZip, IPath[] paths, String[] contents) throws CoreException, IOException {
 		for( int i = 0; i < paths.length; i++ ) {
 			IPath relative = paths[i].removeFirstSegments(1);
 			de.schlichtherle.io.File zipRoot = new de.schlichtherle.io.File(foundZip, new TrueZipUtil.JarArchiveDetector());
@@ -313,6 +339,8 @@ public abstract class AbstractPublishingTest extends TestCase {
 			assertEquals(b2, contents[i]);
 		}
 	}
+
+	
 	protected void verifyWorkspaceContents(IModuleFile[] files, IPath[] paths, String[] contents) throws CoreException, IOException {
 		for( int i = 0; i < paths.length; i++ ) {
 			IModuleFile mf = findModuleFile(files, paths[i].removeFirstSegments(1));
@@ -322,6 +350,7 @@ public abstract class AbstractPublishingTest extends TestCase {
 			assertEquals("File contents does not match expected contents", s, contents[i]);
 		}
 	}
+
 
 	protected File findZip(IModuleFile[] files) {
 		File foundZip = null;
@@ -338,7 +367,23 @@ public abstract class AbstractPublishingTest extends TestCase {
 		assertNotNull("Could not find a zipped file in the deployment", foundZip);
 		return foundZip;
 	}
-	
+
+	protected File findZip(java.io.File[] files) {
+		File foundZip = null;
+		for( int i = 0; i < files.length; i++ ) {
+			File f = files[i];
+			assertNotNull(f);
+			boolean isZip = IOUtil.isZip(f);
+			if( isZip && foundZip == null ) {
+				foundZip = f;
+			} else if( isZip ) {
+				fail("Multiple top level zips found in zipped deployment");
+			}
+		}
+		assertNotNull("Could not find a zipped file in the deployment", foundZip);
+		return foundZip;
+	}
+
 	
 
 	protected IModule[] getModule(IProject p) {
@@ -353,7 +398,12 @@ public abstract class AbstractPublishingTest extends TestCase {
 		return path;
 	}
 	
-	protected void verifyList(IPath root, ArrayList<IPath> list, boolean exists) {
+	/*
+	 * Given an IPath representing a root folder, verify 
+	 * all relative paths in list exist or do not exist (as per the exists flag)
+	 */
+	protected void verifyList(IPath root, List<IPath> list, boolean exists) {
+		File[] changed = MockPublishMethodFilesystemController.StaticModel.getChangedFiles();
 		Iterator<IPath> iterator = list.iterator();
 		ArchiveDetector detector = isZipped() ? new TrueZipUtil.JarArchiveDetector() : ArchiveDetector.DEFAULT;
 		while(iterator.hasNext()) {

@@ -228,10 +228,10 @@ public class RSEHostShellModel {
 	}
 
 	public static IShellService findShellService(IServer server) throws CoreException {
-		RSEUtils.waitForFullInit();
+		RSEFrameworkUtils.waitForFullInit();
 		if( server != null ) {
 			String connectionName = RSEUtils.getRSEConnectionName(server);
-			IHost host = RSEUtils.findHost(connectionName);
+			IHost host = RSEFrameworkUtils.findHost(connectionName);
 			if( host == null ) {
 				throw new CoreException(new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, 
 						"Host \"" + connectionName + "\" not found. Host may have been deleted or RSE model may not be completely loaded"));
@@ -239,14 +239,7 @@ public class RSEHostShellModel {
 			
 			// ensure connections 
 			new ConnectAllSubsystemsUtil(host).run(new NullProgressMonitor());
-			
-			ISubSystem[] systems = RSECorePlugin.getTheSystemRegistry().getSubSystems(host);
-			for( int i = 0; i < systems.length; i++ ) {
-				if( systems[i] instanceof IShellServiceSubSystem) {
-					IShellService service = ((IShellServiceSubSystem)systems[i]).getShellService();
-					return service;
-				}
-			}
+			return RSEFrameworkUtils.findHostShellSystem(host);
 		}
 		throw new CoreException(new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, 
 				"No Shell Service Found"));

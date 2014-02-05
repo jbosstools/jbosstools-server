@@ -16,6 +16,7 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
@@ -93,5 +94,135 @@ public class JMXServerDeploymentScannerAdditions extends AbstractDeploymentScann
 	public Job getRemoveDeploymentScannerJob(IServer server) {
 		// Unsupported
 		return null;
+	}
+	
+	protected void suspendDeployment(IServer server, MBeanServerConnection connection, IProgressMonitor monitor) throws Exception {
+		ObjectName name = new ObjectName(IJBossRuntimeConstants.DEPLOYMENT_SCANNER_MBEAN_NAME);
+		launchDeployCommand(server, connection, name, IJBossRuntimeConstants.STOP, monitor);
+	}
+	
+
+	
+	protected void resumeDeployment(IServer server, MBeanServerConnection connection, IProgressMonitor monitor) throws Exception {
+		monitor.beginTask("Resuming Deployment Scanner", 1000); //$NON-NLS-1$
+		ObjectName name = new ObjectName(IJBossRuntimeConstants.DEPLOYMENT_SCANNER_MBEAN_NAME);
+		launchDeployCommand(server, connection, name, IJBossRuntimeConstants.START, monitor);
+		monitor.worked(1000);
+		monitor.done();
+	}
+	
+	protected void launchDeployCommand(final IServer server, final MBeanServerConnection connection, final ObjectName objectName, 
+			final String methodName, IProgressMonitor monitor) throws Exception {
+		final Exception[] e = new Exception[1];
+		final Object waitObject = new Object();
+		final Boolean[] subtaskComplete = new Boolean[1];
+		subtaskComplete[0] = Boolean.FALSE;
+		Thread t = new Thread() {
+			public void run() {
+				Exception exception = null;
+				try {
+					executeDeploymentCommand(connection, objectName, methodName);
+				} catch( Exception ex ) {
+					exception = ex;
+				}
+				synchronized(waitObject) {
+					e[0] = exception;
+					subtaskComplete[0] = Boolean.TRUE;
+					waitObject.notifyAll();
+				}
+			}
+		};
+		t.start();
+		int count = 0;
+		while(t.isAlive() && !monitor.isCanceled() && count <= 4000) {
+			count+= 1000;
+			synchronized(waitObject) {
+				if( subtaskComplete[0].booleanValue() )
+					break;
+				waitObject.wait(1000);
+			}
+		}
+		synchronized(waitObject) {
+			if( !subtaskComplete[0].booleanValue()) {
+				t.interrupt();
+				IStatus status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.DEPLOYMENT_SCANNER_TRANSITION_CANCELED, Messages.JMXScannerCanceled, null);
+				ServerLogger.getDefault().log(server, status);
+			} else if( e[0] != null ) {
+				String error = methodName.equals(IJBossRuntimeConstants.START) ? Messages.JMXResumeScannerError : Messages.JMXPauseScannerError;
+				IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.DEPLOYMENT_SCANNER_TRANSITION_FAILED, error, e[0]);
+				ServerLogger.getDefault().log(server, status);
+			}
+		}
+	}
+	
+
+	protected void executeDeploymentCommand(MBeanServerConnection connection, ObjectName objectName, String methodName) throws Exception {
+		connection.invoke(objectName, methodName, new Object[] {  }, new String[] {});
+	}
+	
+	public Job getSuspendScannerJob(final IServer server) {
+		return new Job("Suspend Deployment Scanner") { //$NON-NLS-1$
+			protected IStatus run(final IProgressMonitor monitor) {
+				ExtensionManager.getDefault().getJMXRunner().beginTransaction(server, this);
+				IServerJMXRunnable r = new IServerJMXRunnable() {
+					public void run(MBeanServerConnection connection) throws Exception {
+						suspendDeployment(server, connection, monitor);
+					}
+				};
+				try {
+					ExtensionManager.getDefault().getJMXRunner().run(server, r);
+				} catch( CoreException jmxe ) {
+					IStatus status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.SUSPEND_DEPLOYMENT_SCANNER, Messages.JMXPauseScannerError, jmxe);
+					ServerLogger.getDefault().log(server, status);
+					return status;
+				}
+				return Status.OK_STATUS;
+			}
+		};
+	}
+
+	public Job getResumeScannerJob(final IServer server) {
+		return new Job("Suspend Deployment Scanner") { //$NON-NLS-1$
+			protected IStatus run(final IProgressMonitor monitor) {
+				IServerJMXRunnable r = new IServerJMXRunnable() {
+					public void run(MBeanServerConnection connection) throws Exception {
+						resumeDeployment(server, connection, monitor);
+					}
+				};
+				try {
+					ExtensionManager.getDefault().getJMXRunner().run(server, r);
+				} catch( CoreException jmxe ) {
+					IStatus status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.RESUME_DEPLOYMENT_SCANNER, 
+							Messages.JMXResumeScannerError, jmxe);
+					ServerLogger.getDefault().log(server, status);
+					return status;
+				} finally {
+					ExtensionManager.getDefault().getJMXRunner().endTransaction(server, this);
+				}
+				return Status.OK_STATUS;
+			}
+		};
+	}
+
+	@Override
+	public void suspendScanners(IServer server) {
+		Job j = getSuspendScannerJob(server);
+		j.schedule();
+		try {
+			j.join();
+		} catch(InterruptedException ie) {
+			// Ignore
+		}
+	}
+	
+	@Override
+	public void resumeScanners(IServer server) {
+		Job j = getResumeScannerJob(server);
+		j.schedule();
+		try {
+			j.join();
+		} catch(InterruptedException ie) {
+			// Ignore
+		}
 	}
 }

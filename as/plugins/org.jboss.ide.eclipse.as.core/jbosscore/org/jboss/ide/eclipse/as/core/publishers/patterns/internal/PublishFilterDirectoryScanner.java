@@ -11,10 +11,8 @@
 
 package org.jboss.ide.eclipse.as.core.publishers.patterns.internal;
 
-import java.util.ArrayList;
 import java.util.Vector;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.model.IModuleFile;
@@ -54,14 +52,11 @@ import org.jboss.tools.archives.scanner.VirtualDirectoryScanner;
 public class PublishFilterDirectoryScanner extends VirtualDirectoryScanner<ModuleResourceTreeNode> {
     /** The directories which were found and did not match any includes, but must be created because files under it are required */
     protected Vector<String> dirsNotIncludedButRequired;
-        
-    private IModuleResource[] resources;
     
     /**
      * Sole constructor.
      */
     public PublishFilterDirectoryScanner(IModuleResource[] resources) {
-    	this.resources = resources;
     	this.dirsNotIncludedButRequired  = new Vector<String>();
     	IModuleFolder mf = new ModuleFolder(null, "", new Path("/")); //$NON-NLS-1$ //$NON-NLS-2$
     	((ModuleFolder)mf).setMembers(resources);
@@ -163,42 +158,5 @@ public class PublishFilterDirectoryScanner extends VirtualDirectoryScanner<Modul
     		}
     	}
     	throw new IllegalStateException("Requested Path Not Found"); //$NON-NLS-1$
-    }
-    
-    private IModuleResource[] cleaned = null;
-    public IModuleResource[] getCleanedMembers() {
-    	if( cleaned == null )
-    		cleaned = getCleanedChildren(null);
-    	return cleaned;
-    }
-
-    public IModuleResource[] getCleanedChildren(IModuleFolder parent) {
-    	IModuleResource[] children = (parent == null ? resources : parent.members());
-    	// Depth-first cleaning
-    	ArrayList<IModuleResource> cleaned = new ArrayList<IModuleResource>();
-    	IModuleResource tmp = null;
-    	for( int i = 0; i < children.length; i++ ) {
-    		tmp = getCleanedResource(children[i]);
-    		if( tmp != null )
-    			cleaned.add(tmp);
-    	}
-    	
-    	return cleaned.toArray(new IModuleResource[cleaned.size()]);
-    }
-    
-    private IModuleResource getCleanedResource(IModuleResource r) {
-    	if( r instanceof IModuleFile && isIncludedFile((IModuleFile)r)) {
-    		return r; // No need to clone or clean since there are no setters
-    	}
-    	// IF the folder is included, OR, some file below it is included, this folder must be created
-    	if( r instanceof IModuleFolder && isRequiredMember(r)) {
-    		// Cloning folders
-    		IModuleFolder o = (IModuleFolder)r;
-    		IContainer c = (IContainer)r.getAdapter(IContainer.class);
-    		ModuleFolder mf = new ModuleFolder(c, o.getName(), o.getModuleRelativePath());
-    		mf.setMembers(getCleanedChildren(o));
-    		return mf;
-    	}
-    	return null;
     }
 }

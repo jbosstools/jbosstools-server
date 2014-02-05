@@ -196,7 +196,7 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	}
 	
 	/**
-	 * @since 2.5
+	 * @since 3.0
 	 */
 	protected void baseDirBrowsePressed() {
 		File file = null;

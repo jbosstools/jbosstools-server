@@ -11,6 +11,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -21,20 +22,24 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
+import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7DeploymentState;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
+import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IModuleStateController;
 
-public class JBoss7ModuleStateVerifier implements IServerModuleStateVerifier {
-	public void waitModuleStarted(IServer server, IModule[] module, int maxDelay) {
+public class JBoss7ModuleStateVerifier extends AbstractSubsystemController implements IModuleStateController, IServerModuleStateVerifier {
+	public void waitModuleStarted(IServer server, IModule[] module, final int maxDelay) {
 		final NullProgressMonitor monitor = new NullProgressMonitor();
 		Thread t = new Thread(){
 			public void run() {
 				try {
-					Thread.sleep(20000);
+					Thread.sleep(maxDelay);
 				} catch(InterruptedException ie) {
 					return;
 				}
@@ -142,5 +147,70 @@ public class JBoss7ModuleStateVerifier implements IServerModuleStateVerifier {
 					NLS.bind(er, module[0].getName(), server.getName()), e);
 			ServerLogger.getDefault().log(server, s);
 		}
+	}
+	
+
+	@Override
+	public int stopModule(IModule[] module, IProgressMonitor monitor) throws CoreException  {
+		return changeModuleStateTo(module, IServer.STATE_STOPPED, monitor);	
+	}
+	
+	@Override
+	public int startModule(IModule[] module, IProgressMonitor monitor) throws CoreException {
+		return changeModuleStateTo(module, IServer.STATE_STARTED, monitor);
+	}
+	
+	public int changeModuleStateTo(IModule[] module, int state, IProgressMonitor monitor) throws CoreException {
+		AS7ManagementDetails details = new AS7ManagementDetails(getServer());
+		IJBossServer jbs = ServerConverter.getJBossServer(getServer());
+		String deploymentName = jbs.getDeploymentLocation(module, true).lastSegment();
+		try {
+			IJBoss7ManagerService service = JBoss7ManagerUtil.getService(getServer());
+			if( service == null ) {
+				throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Management service for server not found.")); //$NON-NLS-1$
+			} else if(state == IServer.STATE_STARTED ) {
+				service.deploySync(details, deploymentName, null, false, monitor);
+			} else if (state == IServer.STATE_STOPPED) {
+				service.undeploySync(details, deploymentName, false, monitor);
+			} else {
+				throw new IllegalArgumentException("Only states IServer.STATE_STARTED and IServer.STATE_STOPPED are supported"); //$NON-NLS-1$
+			}
+			return state;
+		} catch(JBoss7ManangerException j7me) {
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, j7me.getMessage(),j7me));
+		}
+	}
+
+	@Override
+	public int restartModule(IModule[] module, IProgressMonitor monitor) throws CoreException {
+		stopModule(module, monitor);
+		return startModule(module, monitor);
+	}
+
+	@Override
+	public boolean canRestartModule(IModule[] module) {
+		if( module.length == 1 ) 
+			return true;
+		return false;
+	}
+
+	@Override
+	public int getModuleState(IModule[] module, IProgressMonitor monitor) {
+		return getModuleState(getServer(), module, monitor);
+	}
+
+	@Override
+	public boolean isModuleStarted(IModule[] module, IProgressMonitor monitor) {
+		return isModuleStarted(getServer(), module, monitor);
+	}
+
+	@Override
+	public void waitModuleStarted(IModule[] module, IProgressMonitor monitor) {
+		waitModuleStarted(getServer(), module, monitor);
+	}
+
+	@Override
+	public void waitModuleStarted(IModule[] module, int maxDelay) {
+		waitModuleStarted(getServer(), module, maxDelay);
 	}
 }

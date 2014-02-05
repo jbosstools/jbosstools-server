@@ -36,6 +36,7 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServerBehaviour;
 import org.jboss.ide.eclipse.as.core.server.IPublishCopyCallbackHandler;
 
+@Deprecated
 public class LocalCopyCallback implements IPublishCopyCallbackHandler {
 
 	private static final File tempDir = ServerPlugin.getInstance().getStateLocation().toFile();

@@ -18,9 +18,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 
 /**
- * 
- * @author Rob Stryker
- *
+ * @deprecated   Cannot remove immediately, for legacy cases (bpel osgi etc)
  */
 public interface IJBossServerPublisher {
 	public static final int NO_PUBLISH = 0;

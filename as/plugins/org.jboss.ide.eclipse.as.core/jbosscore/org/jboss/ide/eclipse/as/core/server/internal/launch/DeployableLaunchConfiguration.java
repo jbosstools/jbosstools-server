@@ -18,9 +18,12 @@ import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ILaunchServerController;
 
 /**
- * Not deprecated, still in use by the deploy-only server
+ * Not deprecated, still in use by the deploy-only server.
+ * This class can be cleaned further but removing the constants will be API break
  */
 public class DeployableLaunchConfiguration implements
 		ILaunchConfigurationDelegate {
@@ -34,9 +37,24 @@ public class DeployableLaunchConfiguration implements
 		DeployableServerBehavior jbossServerBehavior = (DeployableServerBehavior) server.getAdapter(DeployableServerBehavior.class);
 		return jbossServerBehavior;
 	}
+	
+	private static ControllableServerBehavior getControllableBehavior(ILaunchConfiguration configuration) throws CoreException {
+		IServer server = ServerUtil.getServer(configuration);
+		ControllableServerBehavior beh = (ControllableServerBehavior) server.getAdapter(ControllableServerBehavior.class);
+		return beh;
+	}
 
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
+		// New impl
+		ControllableServerBehavior beh = getControllableBehavior(configuration);
+		if( beh != null ) {
+			ILaunchServerController c = (ILaunchServerController)beh.getController(ControllableServerBehavior.SYSTEM_LAUNCH);
+			c.launch(configuration, mode, launch, monitor);
+			return;
+		}
+		
+		// Legacy impl
 		String action = configuration.getAttribute(ACTION_KEY, START);
 		DeployableServerBehavior behavior = getServerBehavior(configuration);
 		if( START.equals(action)) behavior.setServerStarted();

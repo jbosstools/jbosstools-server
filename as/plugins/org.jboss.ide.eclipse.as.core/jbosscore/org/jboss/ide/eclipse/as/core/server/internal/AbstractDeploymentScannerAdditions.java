@@ -10,8 +10,10 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.core.server.internal;
 
+import java.io.File;
 import java.util.ArrayList;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -21,16 +23,20 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IDeploymentScannerModifier;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.IServerModeDetails;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
+import org.jboss.ide.eclipse.as.core.util.RemotePath;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
+import org.jboss.tools.as.core.server.controllable.systems.IDeploymentOptionsController;
 
 /**
- * @since 2.5
+ * @since 3.0
  */
 public abstract class AbstractDeploymentScannerAdditions implements IDeploymentScannerModifier {
 	// Can this listener handle this server?
@@ -93,8 +99,7 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 
 	
 	protected String getServerMode(IServer server) {
-		IJBossServerPublishMethodType publishType = DeploymentPreferenceLoader.getCurrentDeploymentMethodType(server);
-		return publishType == null ? null : publishType.getId();
+		return DeploymentPreferenceLoader.getCurrentDeploymentMethodTypeId(server, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
 	}
 	
 	/**
@@ -133,6 +138,20 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 				folders.add(custom1);
 		}
 
+		// Discover the proper separator character for the paths being used
+		char sep = File.separatorChar;
+		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(server);
+		if( beh != null ) {
+			try {
+				IDeploymentOptionsController cont = (IDeploymentOptionsController)beh.getController(IDeploymentOptionsController.SYSTEM_ID);
+				if( cont != null ) {
+					sep = cont.getPathSeparatorCharacter();
+				}
+			} catch(CoreException ce) {
+				// Ignore
+			}
+		}
+		
 		IModule[] modules2 = org.eclipse.wst.server.core.ServerUtil.getModules(server.getServerType().getRuntimeType().getModuleTypes());
 		if (modules2 != null) {
 			int size = modules2.length;
@@ -140,9 +159,11 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 				IModule[] module = new IModule[] { modules2[i] };
 				IStatus status = server.canModifyModules(module, null, null);
 				if (status != null && status.getSeverity() != IStatus.ERROR) {
-					String tempFolder = ds.getDeploymentLocation(module, false).toString();
-					if( !folders.contains(tempFolder))
-						folders.add(tempFolder);
+					String moduleDeploy = ds.getDeploymentLocation(module, false).toString();
+					// we don't want the location. we want its parent. 
+					moduleDeploy = new RemotePath(moduleDeploy, sep).removeLastSegments(1).toOSString();
+					if( !folders.contains(moduleDeploy))
+						folders.add(moduleDeploy);
 				}
 			}
 		}
@@ -175,7 +196,7 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 	 * can customize the scanner's interval 
 	 */
 	/**
-	 * @since 2.5
+	 * @since 3.0
 	 */
 	public boolean canCustomizeInterval() {
 		return false;
@@ -186,7 +207,7 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 	 * can customize the scanner's timeout 
 	 */
 	/**
-	 * @since 2.5
+	 * @since 3.0
 	 */
 	public boolean canCustomizeTimeout() {
 		return false;

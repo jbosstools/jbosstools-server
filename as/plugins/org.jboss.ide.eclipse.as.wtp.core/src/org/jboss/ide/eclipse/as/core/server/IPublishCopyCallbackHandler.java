@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.server.core.model.IModuleFile;
 
+@Deprecated
 public interface IPublishCopyCallbackHandler {
 	/**
 	 * Copy the file (mf) to a file related to the relative path (path). 

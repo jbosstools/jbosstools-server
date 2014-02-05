@@ -41,6 +41,7 @@ public class OSGiPublisher extends AltMethodZippedJSTPublisher {
 		return IServer.PUBLISH_STATE_NONE;
 	}
 	
+	@Override
 	protected IStatus handleLocalZipAndRemotePublish(
 			IJBossServerPublishMethod method,
 			IServer server, IModule[] module,
