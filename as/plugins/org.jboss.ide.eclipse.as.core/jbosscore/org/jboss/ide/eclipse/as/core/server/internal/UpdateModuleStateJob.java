@@ -36,7 +36,8 @@ public class UpdateModuleStateJob extends Job {
 	}
 	
 	public UpdateModuleStateJob(IServer server, IServerModuleStateVerifier verifier, boolean wait, int maxWait) {
-		super("Check module status for server " + server.getName()); //$NON-NLS-1$
+		super("Checking module status for server " + server.getName()); //$NON-NLS-1$
+		setSystem(true);
 		this.wait = wait;
 		this.maxWait = maxWait;
 		this.server = server;
