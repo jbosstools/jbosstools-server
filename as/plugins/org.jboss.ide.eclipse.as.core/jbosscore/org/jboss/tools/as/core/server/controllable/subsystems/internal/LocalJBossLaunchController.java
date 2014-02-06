@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.model.ILaunchConfigurationDelegate2;
 import org.jboss.ide.eclipse.as.core.server.ILaunchConfigConfigurator;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
@@ -29,8 +30,17 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ILaunchServerController
 /**
  * The default launch controller for all local launches
  */
-public class LocalJBossLaunchController  extends AbstractSubsystemController implements ILaunchServerController {
+public class LocalJBossLaunchController  extends AbstractSubsystemController implements ILaunchServerController, ILaunchConfigurationDelegate2 {
 
+	private StandardLocalJBossStartLaunchDelegate launchDelegate;
+	private StandardLocalJBossStartLaunchDelegate getLaunchDelegate() {
+		if( launchDelegate == null ) {
+			launchDelegate = new StandardLocalJBossStartLaunchDelegate();
+		}
+		return launchDelegate;
+	}
+	
+	
 	@Override
 	public IStatus canStart(String launchMode) {
 		return Status.OK_STATUS;
@@ -56,6 +66,7 @@ public class LocalJBossLaunchController  extends AbstractSubsystemController imp
 		return null;
 	}
 	
+	
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.debug.core.model.ILaunchConfigurationDelegate#launch(org.eclipse.debug.core.ILaunchConfiguration, java.lang.String, org.eclipse.debug.core.ILaunch, org.eclipse.core.runtime.IProgressMonitor)
@@ -67,6 +78,31 @@ public class LocalJBossLaunchController  extends AbstractSubsystemController imp
 		// and we just launch with our standard local launch delegate
 		// which checks things like if a server is up already, or 
 		// provides profiling integration with wtp's profiling for servers
-		new StandardLocalJBossStartLaunchDelegate().launch(configuration, mode, launch, monitor);
+		getLaunchDelegate().launch(configuration, mode, launch, monitor);
+	}
+
+	@Override
+	public ILaunch getLaunch(ILaunchConfiguration configuration, String mode)
+			throws CoreException {
+		// TODO Auto-generated method stub
+		return getLaunchDelegate().getLaunch(configuration, mode);
+	}
+
+	@Override
+	public boolean buildForLaunch(ILaunchConfiguration configuration,
+			String mode, IProgressMonitor monitor) throws CoreException {
+		return getLaunchDelegate().buildForLaunch(configuration, mode, monitor);
+	}
+
+	@Override
+	public boolean finalLaunchCheck(ILaunchConfiguration configuration,
+			String mode, IProgressMonitor monitor) throws CoreException {
+		return getLaunchDelegate().finalLaunchCheck(configuration, mode, monitor);
+	}
+
+	@Override
+	public boolean preLaunchCheck(ILaunchConfiguration configuration,
+			String mode, IProgressMonitor monitor) throws CoreException {
+		return getLaunchDelegate().preLaunchCheck(configuration, mode, monitor);
 	}
 }
