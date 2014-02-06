@@ -357,11 +357,11 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 			if( p.isAbsolute() ) {
 				return Messages.bind(Messages.rwf7_ConfigFileAbsoluteError, p.toString());
 			}
-			IPath actualPath = 
+			IPath actualPath = baseDirTextVal == null ? null : 
 					new Path(getAbsoluteBaseDir(baseDirTextVal, homeDir))
 					.append(IJBossRuntimeResourceConstants.CONFIGURATION).append(p);
-			if( !actualPath.toFile().exists()) {
-				return Messages.bind(Messages.rwf7_ConfigFileError, actualPath.toString());
+			if( actualPath == null || !actualPath.toFile().exists()) {
+				return Messages.bind(Messages.rwf7_ConfigFileError, actualPath == null ? null : actualPath.toString());
 			}
 		}
 		return null;

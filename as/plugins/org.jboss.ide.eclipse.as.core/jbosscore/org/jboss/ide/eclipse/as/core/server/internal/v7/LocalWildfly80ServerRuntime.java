@@ -16,9 +16,9 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 /* This class no longer seems necessary, as all overridden methods match those of the superclass */
 public class LocalWildfly80ServerRuntime extends LocalJBoss7ServerRuntime implements IJBossRuntimeConstants {
 	@Override
-	protected String getNextRuntimeName() {
+	protected String getRuntimeNameBase() {
 		String version = getRuntime().getRuntimeType().getVersion(); 
 		String base = Messages.wildflyServerName + " " + version + " " + Messages.runtime;  //$NON-NLS-1$//$NON-NLS-2$
-		return getNextRuntimeName(base);
+		return base;
 	}
 }

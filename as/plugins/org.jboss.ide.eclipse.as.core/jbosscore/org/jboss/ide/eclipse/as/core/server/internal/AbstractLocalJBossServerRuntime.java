@@ -35,9 +35,13 @@ public abstract class AbstractLocalJBossServerRuntime extends RuntimeDelegate im
 	}
 	
 	protected String getNextRuntimeName() {
+		return getNextRuntimeName(getRuntimeNameBase());
+	}
+	
+	protected String getRuntimeNameBase() {
 		String version = getRuntime().getRuntimeType().getVersion(); 
 		String base = Messages.jboss + " " + version + " " + Messages.runtime;  //$NON-NLS-1$//$NON-NLS-2$
-		return getNextRuntimeName(base);
+		return base;
 	}
 	
 	public abstract String getDefaultRunArgs();
