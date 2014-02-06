@@ -236,7 +236,7 @@ public class LocalFilesystemController extends AbstractSubsystemController imple
 				results = s;
 			}
 		}
-		return results;
+		return results == null ? Status.OK_STATUS : results;
 	}
 
 	/**
@@ -341,7 +341,7 @@ public class LocalFilesystemController extends AbstractSubsystemController imple
 			}
 		}
 		tmp.setLastModified(new Date().getTime());
-		return null;
+		return Status.OK_STATUS;
 	}
 
 	public boolean isFile(IPath absolutePath, IProgressMonitor monitor) throws CoreException {

@@ -345,7 +345,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		
 		Trace.trace(Trace.STRING_FINER, "Handling an unpublish"); //$NON-NLS-1$
 		IStatus results = getFilesystemController().deleteResource(remote, monitor);
-		if( !results.isOK()) {
+		if( results != null && !results.isOK()) {
 			MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_REMOVE_FAIL, 
 					"Unable to delete module", null); //$NON-NLS-1$
 			ms.add(results);
@@ -389,7 +389,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 			} else if( publishType == IJBossServerPublisher.INCREMENTAL_PUBLISH) {
 				result = runner.incrementalPublishModule(ProgressMonitorUtil.submon(monitor, 100));
 			}
-			if( result != null && result.isOK()) {
+			if( result == null || result.isOK()) {
 				if( tmpArchive.toFile().exists()) {
 					result = getFilesystemController().copyFile(tmpArchive.toFile(), archiveDestination, ProgressMonitorUtil.submon(monitor, 100));
 				} else {
@@ -398,7 +398,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 			}
 			// If a zipped module has changed, then it requires restart no matter what
 			markModulePublished(module, IJBossServerPublisher.FULL_PUBLISH);
-			if( result != null )
+			if( result != null && !result.isOK()) // log error
 		        ServerLogger.getDefault().log(getServer(), result);
 			return result == null || result.isOK() ? IServer.PUBLISH_STATE_NONE : IServer.PUBLISH_STATE_UNKNOWN;
 		}
