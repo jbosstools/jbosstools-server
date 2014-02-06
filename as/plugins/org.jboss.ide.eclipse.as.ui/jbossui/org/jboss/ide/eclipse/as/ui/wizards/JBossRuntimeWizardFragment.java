@@ -192,17 +192,10 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	protected void updateWizardHandle(Composite parent) {
 		// make modifications to parent
 		IRuntime r = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
-		
-		// TODO:  Unify with code in LocalJBossServerRuntime and in getHomeVersionWarning
-		JBossExtendedProperties props = (JBossExtendedProperties)r.getAdapter(JBossExtendedProperties.class);
-		String version = props.getRuntimeTypeVersionString();
-		
 		handle.setTitle( Messages.rwf_JBossRuntime);
-		String description = NLS.bind(
-				isEAP() ? Messages.JBEAP_version : Messages.JBAS_version,
-				version);
+		String descript = r.getRuntimeType().getDescription();
+		handle.setDescription(descript);
 		handle.setImageDescriptor(getImageDescriptor());
-		handle.setDescription(description);
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, "org.jboss.ide.eclipse.as.doc.user.new_server_runtime"); //$NON-NLS-1$
 	}
 	
