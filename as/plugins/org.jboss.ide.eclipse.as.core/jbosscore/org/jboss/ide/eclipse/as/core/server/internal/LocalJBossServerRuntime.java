@@ -41,14 +41,14 @@ public class LocalJBossServerRuntime extends AbstractLocalJBossServerRuntime imp
 		super.setDefaults(monitor);
 		setAttribute(IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, IJBossRuntimeResourceConstants.DEFAULT_CONFIGURATION);
 	}
-
+	
 	@Override
-	protected String getNextRuntimeName() {
+	protected String getRuntimeNameBase() {
 		JBossExtendedProperties props = getExtendedProperties();
 		String prefix = RuntimeUtils.isEAP(getRuntimeType()) ? Messages.jboss + " EAP" : Messages.jboss; //$NON-NLS-1$
 		String rtVersion = props.getRuntimeTypeVersionString();
 		String base = prefix + SPACE + rtVersion + SPACE + Messages.runtime;
-		return getNextRuntimeName(base);
+		return base;
 	}
 	
 	@Deprecated

@@ -68,19 +68,7 @@ public class JBossServerWizardFragment extends WizardFragment implements IComple
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
 		this.handle = handle;
 		// make modifications to parent
-		handle.setTitle(Messages.swf_Title);
-		handle.setImageDescriptor (getImageDescriptor());
-		IRuntime r = (IRuntime) getTaskModel()
-			.getObject(TaskModel.TASK_RUNTIME);
-		JBossExtendedProperties props = (JBossExtendedProperties)r.getAdapter(JBossExtendedProperties.class);
-		String version = props.getRuntimeTypeVersionString();
-		if( isEAP() && version.startsWith("5.")) //$NON-NLS-1$
-			version = "5.x"; //$NON-NLS-1$
-		String description = NLS.bind(
-				isEAP() ? Messages.JBEAP_version : Messages.JBAS_version,
-				version);
-		handle.setDescription(description);
-		
+		setPageDetails(handle);
 		
 		Composite main = new Composite(parent, SWT.NONE);
 		main.setLayout(new FormLayout());
@@ -91,6 +79,15 @@ public class JBossServerWizardFragment extends WizardFragment implements IComple
 
 		return main;
 	}
+	
+	protected void setPageDetails(IWizardHandle handle) {
+		handle.setTitle(Messages.swf_Title);
+		handle.setImageDescriptor (getImageDescriptor());
+		IRuntime r = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		String descript = r.getRuntimeType().getDescription();
+		handle.setDescription(descript);
+	}
+	
 
 	protected boolean isEAP() {
 		IRuntime rt = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);

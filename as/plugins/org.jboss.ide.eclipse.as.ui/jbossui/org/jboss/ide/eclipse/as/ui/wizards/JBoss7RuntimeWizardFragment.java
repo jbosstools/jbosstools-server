@@ -227,8 +227,8 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 			IPath actualPath = new Path(homeDir)
 					.append(IJBossRuntimeResourceConstants.AS7_STANDALONE)
 					.append(IJBossRuntimeResourceConstants.CONFIGURATION).append(p);
-			if( !actualPath.toFile().exists()) {
-				return Messages.bind(Messages.rwf7_ConfigFileError, actualPath.toString());
+			if( actualPath == null || !actualPath.toFile().exists()) {
+				return Messages.bind(Messages.rwf7_ConfigFileError, actualPath == null ? null : actualPath.toString());
 			}
 		}
 		return null;
