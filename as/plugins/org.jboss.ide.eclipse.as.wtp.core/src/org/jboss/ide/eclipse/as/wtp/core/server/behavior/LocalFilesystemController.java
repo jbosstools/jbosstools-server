@@ -30,9 +30,11 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.internal.Messages;
 import org.eclipse.wst.server.core.internal.ProgressUtil;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IEventCodes;
 import org.jboss.ide.eclipse.as.core.util.ProgressMonitorUtil;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.StreamUtils;
 import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
 
@@ -215,13 +217,32 @@ public class LocalFilesystemController extends AbstractSubsystemController imple
 	}
 	
 	protected File getTempFolder() {
+		// Grab from an environment var override
 		IPath tempFolder = (IPath)getEnvironment().get(ENV_TEMPORARY_DEPLOY_DIRECTORY);
-		if( tempFolder == null )
-			return tempDir;
-		File f = tempFolder.toFile();
-		if( !f.exists() )
-			f.mkdirs();
-		return f;
+		File f = null;
+		if( tempFolder != null ) {
+			f = tempFolder.toFile();
+		} else {
+			// Grab from the server itself
+			IDeployableServer ds = ServerConverter.getDeployableServer(getServer());
+			if( ds != null ) {
+				String t = ds.getTempDeployFolder();
+				if( t != null ) {
+					f = new File(t);
+				}
+			}
+		}
+		
+		if( f != null ) {
+			if( !f.exists() ) {
+				f.mkdirs();
+			}
+			if( f.exists()) 
+				return f;
+		}
+
+		// Last resort, return a default
+		return tempDir;
 	}
 	
 	public IStatus deleteResource(IPath absolutePath, IProgressMonitor monitor) throws CoreException {
