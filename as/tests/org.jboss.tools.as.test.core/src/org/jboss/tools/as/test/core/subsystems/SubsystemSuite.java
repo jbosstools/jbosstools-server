@@ -18,6 +18,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
 	BrowseBehaviorSubsystemResolutionTest.class,
 	ExploreBehaviorSubsystemResolutionTest.class,
+	PublishSubsystemResolutionTest.class,
 	TabGroupSubsystemResolutionTest.class,
 	XPathPortDiscoveryResolutionTest.class,
 	ServerSubsystemTest1.class,
