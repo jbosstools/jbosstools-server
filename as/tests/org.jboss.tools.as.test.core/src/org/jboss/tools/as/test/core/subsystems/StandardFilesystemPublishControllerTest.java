@@ -13,9 +13,6 @@ package org.jboss.tools.as.test.core.subsystems;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -27,25 +24,16 @@ import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
-import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.DeploymentMarkerUtils;
 import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
-import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IFilesystemController;
-import org.jboss.ide.eclipse.as.wtp.core.server.behavior.LocalFilesystemController;
-import org.jboss.ide.eclipse.as.wtp.core.server.publish.LocalZippedModulePublishRunner;
-import org.jboss.tools.as.core.server.controllable.subsystems.internal.LocalDeploymentOptionsController;
-import org.jboss.tools.as.core.server.controllable.subsystems.internal.ModuleDeployPathController;
 import org.jboss.tools.as.core.server.controllable.subsystems.internal.StandardFileSystemPublishController;
-import org.jboss.tools.as.core.server.controllable.subsystems.internal.StandardModuleRestartBehaviorController;
-import org.jboss.tools.as.core.server.controllable.systems.IDeploymentOptionsController;
-import org.jboss.tools.as.core.server.controllable.systems.IModuleDeployPathController;
-import org.jboss.tools.as.core.server.controllable.systems.IModuleRestartBehaviorController;
 import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.internal.utils.IOUtil;
 import org.jboss.tools.as.test.core.internal.utils.MockModule;
 import org.jboss.tools.as.test.core.internal.utils.MockModuleUtil;
 import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
 import org.jboss.tools.as.test.core.parametized.server.publishing.AbstractPublishingTest;
+import org.jboss.tools.as.test.core.subsystems.impl.CustomPublishController;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -91,7 +79,7 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 
 	@Test
 	public void testPublish() throws Exception { 
-		CustomController controller = new CustomController();
+		CustomPublishController controller = new CustomPublishController();
 		controller.initialize(server, null, null);
 		int result = controller.publishModule(IServer.PUBLISH_INCREMENTAL, ServerBehaviourDelegate.ADDED, module, null);
 		assertEquals(result, IServer.PUBLISH_STATE_NONE);
@@ -104,7 +92,7 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 	@Test
 	public void testPublishModuleDNE() throws Exception {  // module does not exist, so no action should be taken
 		((MockModule)module[0]).setExists(false);
-		CustomController controller = new CustomController();
+		CustomPublishController controller = new CustomPublishController();
 		controller.initialize(server, null, null);
 		int result = controller.publishModule(IServer.PUBLISH_INCREMENTAL, ServerBehaviourDelegate.ADDED, module, null);
 		assertEquals(result, IServer.PUBLISH_STATE_UNKNOWN);
@@ -129,7 +117,7 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 		module = createSimpleMockBinaryWebModule();
 		((MockModule)module[0]).setExists(true);
 		((MockModule)module[0]).setBinary(true);
-		CustomController controller = new CustomController();
+		CustomPublishController controller = new CustomPublishController();
 		controller.initialize(server, null, null);
 		int result = controller.publishModule(IServer.PUBLISH_INCREMENTAL, ServerBehaviourDelegate.ADDED, module, null);
 		assertEquals(result, IServer.PUBLISH_STATE_NONE);
@@ -149,7 +137,7 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 		((MockModule)module[1]).setExists(true);
 		((MockModule)module[1]).setBinary(false);
 		
-		CustomController controller = new CustomController();
+		CustomPublishController controller = new CustomPublishController();
 		controller.initialize(server, null, null);
 		// Now publish module[0]  and []{module[0],module[1]} 
 		int result = controller.publishModule(IServer.PUBLISH_INCREMENTAL, ServerBehaviourDelegate.ADDED, new IModule[]{module[0]}, null);
@@ -185,7 +173,7 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 		((MockModule)module[2]).setExists(true);
 		((MockModule)module[2]).setBinary(false);
 		
-		CustomController controller = new CustomController();
+		CustomPublishController controller = new CustomPublishController();
 		controller.initialize(server, null, null);
 		// Now publish module[0]  and []{module[0],module[1]} 
 		int result = controller.publishModule(IServer.PUBLISH_INCREMENTAL, ServerBehaviourDelegate.ADDED, new IModule[]{module[0]}, null);
@@ -218,7 +206,7 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 		((MockModule)module[2]).setExists(true);
 		((MockModule)module[2]).setBinary(false);
 		
-		CustomController controller = new CustomController();
+		CustomPublishController controller = new CustomPublishController();
 		controller.initialize(server, null, null);
 		// Now publish module[0]  and []{module[0],module[1]} 
 		int result = controller.publishModule(IServer.PUBLISH_INCREMENTAL, ServerBehaviourDelegate.ADDED, new IModule[]{module[0]}, null);
@@ -299,7 +287,7 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 	@Test
 	public void testUtilInWebInEarRemovals() throws Exception {  // module does not exist, so no action should be taken
 		testUtilInWebInEarMockModule();
-		CustomController controller = new CustomController();
+		CustomPublishController controller = new CustomPublishController();
 		controller.initialize(server, null, null);
 		
 		// Remove the util and publish again
@@ -351,86 +339,7 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 	 */
 	
 	
-	/*
-	 * This is a custom controller which basically extends StandardFileSystemPublishController
-	 * and just makes it more easily testable. 
-	 */
-	private class CustomController extends StandardFileSystemPublishController {
-		protected IModuleRestartBehaviorController getModuleRestartBehaviorController() throws CoreException {
-			StandardModuleRestartBehaviorController c = new StandardModuleRestartBehaviorController();
-			c.initialize(server, null, getEnvironment());
-			return c;
-		}
-		protected IDeploymentOptionsController getDeploymentOptions() throws CoreException {
-			LocalDeploymentOptionsController c = new LocalDeploymentOptionsController();
-			c.initialize(server, null, getEnvironment());
-			return c;
-		}
-		
-		protected IModuleDeployPathController getDeployPathController() throws CoreException {
-			ModuleDeployPathController c = new ModuleDeployPathController();
-			Map<String, Object> env2 = new HashMap<String, Object>(getEnvironment());
-			env2.put(IModuleDeployPathController.ENV_DEPLOYMENT_OPTIONS_CONTROLLER, getDeploymentOptions());
-			c.initialize(server, null, env2);
-			return c;
-		}
-		protected IFilesystemController getFilesystemController() throws CoreException {
-			IFilesystemController c = new LocalFilesystemController();
-			c.initialize(server, null, getEnvironment());
-			return c;
-		}
-		
-		private HashMap<IModule[], IModuleResourceDelta[]> deltaMap = new HashMap<IModule[], IModuleResourceDelta[]>();
-		private ArrayList<IModule[]> removedList = new ArrayList<IModule[]>();
-		private HashMap<IModule[], Boolean> beenPublished = new HashMap<IModule[], Boolean>();
-		
-		protected void setDeltaMap(IModule[] m, IModuleResourceDelta[] d) {
-			deltaMap.put(m, d);
-		}
-		protected void setRemovedList(ArrayList<IModule[]> list) {
-			this.removedList = list;
-		}
-		protected void setBeenPublished(IModule[] m, Boolean b) {
-			beenPublished.put(m,b);
-		}
-		
-		// Exposed only for unit tests to override
-		// The methods here typically ask a server for its actual publish information, 
-		//and since I'm not testing server.publish() but rather on a controller instance dirrectly,
-		//the server has no knowledge of the module, and I must mock this a bit. 
-		protected LocalZippedModulePublishRunner createZippedRunner(IModule m, IPath p) {
-			return new LocalZippedModulePublishRunner(getServer(), m,p, 
-					getModulePathFilterProvider()) {
-				@Override
-				protected IModuleResourceDelta[] getDeltaForModule(IModule[] module) {
-					return deltaMap.get(module);
-				}
-				
-				@Override
-				protected List<IModule[]> getRemovedModules() {
-					return removedList;
-				}
-				
-				@Override
-				protected boolean hasBeenPublished(IModule[] mod) {
-					Boolean b = beenPublished.get(mod);
-					if( b == null )
-						return false;
-					return b; 
-				}
-				protected IModule[] getChildModules(IModule[] parent) {
-					ServerDelegate sd = ((ServerDelegate)server.loadAdapter(ServerDelegate.class, null));
-					return sd.getChildModules(parent);
-				}
-			};
-		}
-		
-		@Override
-		protected IModuleResourceDelta[] getDeltaForModule(IModule[] module) {
-			return deltaMap.get(module);
-		}
 
-	}
 
 	private IModuleResourceDelta[] createDelta(IModule m) throws CoreException {
 		ArrayList<IModuleResource> l = new ArrayList<IModuleResource>();
