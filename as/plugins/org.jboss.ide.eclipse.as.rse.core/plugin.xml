@@ -130,6 +130,7 @@
           <subsystem system="serverDetails" subsystem="serverDetails.rse"/>
           <subsystem system="shutdown" subsystem="shutdown.default"/>
           <subsystem system="filesystem" subsystem="filesystem.rse"/>
+          <subsystem system="publish" subsystem="publish.filesystem.default"/> 
        </serverProfile>
     </extension>
 	
