@@ -41,7 +41,6 @@ import org.jboss.ide.eclipse.as.core.modules.ResourceModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.publishers.JSTPublisherXMLToucher;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IDeployableServerBehaviour;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilterProvider;
@@ -537,7 +536,34 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 			IModule m = tit.next();
 			if( moduleRequiresRestart(m)) {
 				restartModule(m);
+			} else if ( moduleRequiresRemovalCompletion(m)){
+				completeRemoval(m);
 			}
+		}
+	}
+	protected boolean moduleRequiresRemovalCompletion(IModule m) {
+		Iterator<IModule[]> it = publishType.keySet().iterator();
+		while(it.hasNext()) {
+			IModule[] mit = it.next();
+			if( mit.length == 1 && mit[0].equals(m) && publishType.get(mit) == IJBossServerPublisher.REMOVE_PUBLISH) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	protected void completeRemoval(IModule m) {
+		try {
+			IPath archiveDestination = getModuleDeployRoot(new IModule[]{m});
+			boolean useAS7Behavior = DeploymentMarkerUtils.supportsJBoss7MarkerDeployment(getServer());
+			// AS7-derived requires the .deployed markers to be removed. Other servers require no action
+			if( useAS7Behavior) {
+				IFilesystemController controller = getFilesystemController();
+				DeploymentMarkerUtils.removedDeployedMarker(archiveDestination, controller);
+				DeploymentMarkerUtils.removedDeployFailedMarker(archiveDestination, controller);
+			}
+		} catch(CoreException ce) {
+			JBossServerCorePlugin.log(ce);
 		}
 	}
 	
