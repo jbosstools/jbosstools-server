@@ -34,6 +34,9 @@ import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
  * @since 3.0
  */
 public class SubsystemModel {
+	public static final String REQUIRED_PROPERTIES_ENV_KEY = ".RESERVED_requiredProperties";
+	
+	
 	private static SubsystemModel instance;
 	public static SubsystemModel getInstance() {
 		if( instance == null )
@@ -59,7 +62,7 @@ public class SubsystemModel {
 			this.mapping = mapping;
 		}
 		public String getSubsystemId() {
-			return mapping.getSubsystemId();
+			return mapping.getSubsystem().getId();
 		}
 		public String getSystemId() {
 			return mapping.getSubsystem().getSystem();
@@ -288,9 +291,9 @@ public class SubsystemModel {
 	 * @throws CoreException
 	 */
 	public ISubsystemController createSubsystemController(IServerAttributes server, String system, Map<String, Object> env) throws CoreException {
-		return createSubsystemController(server, system, (Map<String,String>)null, null, env);
+		return createSubsystemController(server, system, (Map<String, String>)null, null, env);
 	}
-
+	
 	
 	/**
 	 * Create a subsystem controller for the given server type and system. A map of required
@@ -352,7 +355,7 @@ public class SubsystemModel {
 		checkLoaded();
 		SubsystemMapping[] types = getSubsystemMappings(serverType, system);
 		if( types == null )
-			return null;
+			types = new SubsystemMapping[0];
 		
 		types = removeInvalidTypes(types);
 		
@@ -412,9 +415,13 @@ public class SubsystemModel {
 		}
 	}
 	
+	
 	private Map<String, String> getRequiredPropsFromEnv(String system, Map<String, Object> environment) {
-		String key = system + AbstractSubsystemController.REQUIRED_PROPERTIES_ENV_KEY;
+		String key = system + REQUIRED_PROPERTIES_ENV_KEY;
 		HashMap<String, String> requiredProps = null;
+		if( environment == null )
+			return new HashMap<String, String>();
+		
 		Object val1 = environment.get(key);
 		if( val1 instanceof String) {
 			String val = (String)val1;

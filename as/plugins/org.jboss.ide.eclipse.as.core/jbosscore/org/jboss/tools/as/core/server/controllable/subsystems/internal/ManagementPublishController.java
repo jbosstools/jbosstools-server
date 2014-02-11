@@ -18,14 +18,13 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jst.javaee.ltk.core.participant.JavaEEServerRefRefactorParticipant.RemoveProjectFromServersChange;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResource;
-import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.modules.ResourceModuleResourceUtil;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilterProvider;
 import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
@@ -38,12 +37,15 @@ import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPrimaryPublishController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishControllerDelegate;
 import org.jboss.ide.eclipse.as.wtp.core.server.publish.LocalZippedModulePublishRunner;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
+import org.jboss.tools.as.core.server.controllable.util.PublishControllerUtility;
 
 public class ManagementPublishController extends AbstractSubsystemController
-		implements IPublishController {
+		implements IPublishController, IPrimaryPublishController {
 
 	private IJBoss7ManagerService service;
 	private AS7ManagementDetails managementDetails;
@@ -51,7 +53,6 @@ public class ManagementPublishController extends AbstractSubsystemController
 		if( service == null ) {
 			this.service = JBoss7ManagerUtil.getService(getServer());
 			this.managementDetails = new AS7ManagementDetails(getServer());
-
 		}
 		return service;
 	}
@@ -115,18 +116,20 @@ public class ManagementPublishController extends AbstractSubsystemController
 			return IServer.PUBLISH_STATE_NONE;
 		}
 		
-		int publishType = getPublishType(module, kind, deltaKind);
-		if( publishType == IJBossServerPublisher.NO_PUBLISH) {
+		// first see if we need to delegate to another custom publisher, such as bpel / osgi
+		IPublishControllerDelegate delegate = PublishControllerUtility.findDelegatePublishController(getServer(), module, true);
+		if( delegate != null ) {
+			return delegate.publishModule(kind, deltaKind, module, monitor);
+		}
+
+		
+		int publishType = PublishControllerUtility.getPublishType(getServer(), module, kind, deltaKind);
+		if( publishType == PublishControllerUtility.NO_PUBLISH) {
 			// Do nothing, server is stopped
 			return getServer().getModulePublishState(module);
 		}
-		if( publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
-			String name = module[0].getName() + getDefaultSuffix(module[0]);
-			IJBoss7DeploymentResult removeResult = getService().undeploySync(managementDetails, name, true,  monitor);
-			IStatus result = removeResult.getStatus();
-			if( result.isOK())
-				return IServer.PUBLISH_STATE_NONE;
-			return IServer.PUBLISH_STATE_FULL;
+		if( publishType == PublishControllerUtility.REMOVE_PUBLISH) {
+			return removeModule(module, monitor);
 		}
 		
 		
@@ -188,9 +191,9 @@ public class ManagementPublishController extends AbstractSubsystemController
 		LocalZippedModulePublishRunner runner = createZippedRunner(module, tmpArchive); 
 
 		IStatus result = null;
-		if( publishType == IJBossServerPublisher.FULL_PUBLISH) {
+		if( publishType == PublishControllerUtility.FULL_PUBLISH) {
 			result = runner.fullPublishModule(ProgressMonitorUtil.submon(monitor, 100));
-		} else if( publishType == IJBossServerPublisher.INCREMENTAL_PUBLISH) {
+		} else if( publishType == PublishControllerUtility.INCREMENTAL_PUBLISH) {
 			result = runner.incrementalPublishModule(ProgressMonitorUtil.submon(monitor, 100));
 		}
 		if( result != null && result.isOK()) {
@@ -209,26 +212,6 @@ public class ManagementPublishController extends AbstractSubsystemController
 	}
 	
 	
-	// Duplicated code. Unify with StandardFileSystemPublishController
-	private int getPublishType(IModule[] module, int kind, int deltaKind) {
-		int modulePublishState = getServer().getModulePublishState(module);
-		if( deltaKind == ServerBehaviourDelegate.ADDED ) 
-			return IJBossServerPublisher.FULL_PUBLISH;
-		else if (deltaKind == ServerBehaviourDelegate.REMOVED) {
-			return IJBossServerPublisher.REMOVE_PUBLISH;
-		} else if (kind == IServer.PUBLISH_FULL 
-				|| modulePublishState == IServer.PUBLISH_STATE_FULL 
-				|| kind == IServer.PUBLISH_CLEAN ) {
-			return IJBossServerPublisher.FULL_PUBLISH;
-		} else if (kind == IServer.PUBLISH_INCREMENTAL 
-				|| modulePublishState == IServer.PUBLISH_STATE_INCREMENTAL 
-				|| kind == IServer.PUBLISH_AUTO) {
-			if( ServerBehaviourDelegate.CHANGED == deltaKind ) 
-				return IJBossServerPublisher.INCREMENTAL_PUBLISH;
-		} 
-		return IJBossServerPublisher.NO_PUBLISH;
-	}
-	
 	private String getDefaultSuffix(IModule module) {
 		return ServerModelUtilities.getDefaultSuffixForModule(module);
 		
@@ -244,5 +227,29 @@ public class ManagementPublishController extends AbstractSubsystemController
 	
 	private LocalZippedModulePublishRunner createZippedRunner(IModule m, IPath p) {
 		return new LocalZippedModulePublishRunner(getServer(), m,p, getModulePathFilterProvider());
+	}
+
+	@Override
+	public int transferBuiltModule(IModule[] module, IPath srcFile,
+			IProgressMonitor monitor) throws CoreException {
+		String name = module[0].getName() + getDefaultSuffix(module[0]);
+		IJBoss7DeploymentResult removeResult = getService().undeploySync(managementDetails, name, true,  ProgressMonitorUtil.submon(monitor, 10));
+		IStatus status1 =(removeResult.getStatus());
+		
+		IJBoss7DeploymentResult result = getService().deploySync(managementDetails, name, srcFile.toFile(), 
+				true, ProgressMonitorUtil.submon(monitor, 100));
+		IStatus status2 =(result.getStatus());
+		return status1.isOK() && status2.isOK() ? IServer.PUBLISH_STATE_NONE : IServer.PUBLISH_STATE_UNKNOWN;
+	}
+
+	@Override
+	public int removeModule(IModule[] module, IProgressMonitor monitor)
+			throws CoreException {
+		String name = module[0].getName() + getDefaultSuffix(module[0]);
+		IJBoss7DeploymentResult removeResult = getService().undeploySync(managementDetails, name, true,  monitor);
+		IStatus result = removeResult.getStatus();
+		if( result.isOK())
+			return IServer.PUBLISH_STATE_NONE;
+		return IServer.PUBLISH_STATE_FULL;
 	}
 }

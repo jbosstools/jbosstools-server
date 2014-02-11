@@ -51,6 +51,7 @@ import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
 import de.schlichtherle.io.ArchiveDetector;
 
+@Deprecated
 public class LocalZippedPublisherUtil extends PublishUtil {
 	
 	private String deployRoot;

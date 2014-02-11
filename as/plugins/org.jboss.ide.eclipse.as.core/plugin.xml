@@ -1754,6 +1754,21 @@
             serverTypes="%ServerTypesJBoss7OrHigher">
       </subsystemMapping>
       
+      <!-- Publisher Controllers for specific module types. This one will not be mapped, and will be global  -->
+      <subsystem
+            system="publishDelegate"
+            id="publishDelegate.osgi.default"
+            name="OSGi Module Publish Controller"
+            class="org.jboss.tools.as.core.server.controllable.subsystems.internal.OSGiPublishController">
+            <properties>
+               <property key="moduleType:jboss.osgi" value="true"/>
+            </properties>
+      </subsystem>
+      <subsystemMapping
+            id="publishDelegate.osgi.default"
+            mappedId="publishDelegate.osgi.default"
+            serverTypes="%AllJBTServerTypes">
+      </subsystemMapping>
       
       <!-- Some no-op stub implementations -->
       <subsystem

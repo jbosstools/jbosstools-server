@@ -31,8 +31,6 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
-import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
-import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.Trace;
@@ -52,7 +50,9 @@ import org.jboss.ide.eclipse.as.core.util.ProgressMonitorUtil;
 import org.jboss.ide.eclipse.as.core.util.RemotePath;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IFilesystemController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPrimaryPublishController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishControllerDelegate;
 import org.jboss.ide.eclipse.as.wtp.core.server.publish.LocalZippedModulePublishRunner;
 import org.jboss.ide.eclipse.as.wtp.core.server.publish.PublishModuleFullRunner;
 import org.jboss.ide.eclipse.as.wtp.core.server.publish.PublishModuleIncrementalRunner;
@@ -60,6 +60,7 @@ import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 import org.jboss.tools.as.core.server.controllable.systems.IDeploymentOptionsController;
 import org.jboss.tools.as.core.server.controllable.systems.IModuleDeployPathController;
 import org.jboss.tools.as.core.server.controllable.systems.IModuleRestartBehaviorController;
+import org.jboss.tools.as.core.server.controllable.util.PublishControllerUtility;
 
 
 /**
@@ -69,7 +70,7 @@ import org.jboss.tools.as.core.server.controllable.systems.IModuleRestartBehavio
  * It has been demonstrated to work with legacy publishers. 
  */
 public class StandardFileSystemPublishController extends AbstractSubsystemController
-		implements IPublishController {
+		implements IPublishController, IPrimaryPublishController {
 
 	// Dependencies
 	
@@ -216,7 +217,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		validate();
 		
 		// first see if we need to delegate to another custom publisher, such as bpel / osgi
-		IPublishController delegate = findDelegatePublishController(module);
+		IPublishControllerDelegate delegate = PublishControllerUtility.findDelegatePublishController(getServer(),module, true);
 		if( delegate != null ) {
 			return delegate.publishModule(kind, deltaKind, module, monitor);
 		}
@@ -234,7 +235,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		boolean isBinaryObject = ServerModelUtilities.isBinaryModule(module);
 		boolean prefersZipped = prefersZipped();
 		IPath archiveDestination = getModuleDeployRoot(module);
-		int publishType = getPublishType(module, kind, deltaKind);
+		int publishType = PublishControllerUtility.getPublishType(getServer(), module, kind, deltaKind);
 
 		
 		// If we're a top-level binary module, we don't get zipped. Odds are we're already zipped, or a simple xml file
@@ -244,7 +245,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		}
 		
 		// Handle removals of modules
-		if( publishType == IJBossServerPublisher.REMOVE_PUBLISH){
+		if( publishType == PublishControllerUtility.REMOVE_PUBLISH){
 			return removeModule(module, archiveDestination, monitor);
 		}
 		
@@ -278,13 +279,13 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
  		}
 		
 		
-		if( publishType == IJBossServerPublisher.FULL_PUBLISH ) {
+		if( publishType == PublishControllerUtility.FULL_PUBLISH ) {
 			PublishModuleFullRunner runner = new PublishModuleFullRunner(getFilesystemController(), archiveDestination);
 			IModuleResource[] filtered = filter == null ? ModuleResourceUtil.getMembers(module[module.length-1]) : filter.getFilteredMembers();
 			ret = runner.fullPublish(filtered, monitor);
 			requiresRestart.put(module, true);
 			msgForFailure = Messages.FullPublishFail; 
-		} else if( publishType == IJBossServerPublisher.INCREMENTAL_PUBLISH) {
+		} else if( publishType == PublishControllerUtility.INCREMENTAL_PUBLISH) {
 			PublishModuleIncrementalRunner runner = new PublishModuleIncrementalRunner(getFilesystemController(), archiveDestination);
 			IModuleResourceDelta[] cleanDelta = filter != null ? filter.getFilteredDelta(getDeltaForModule(module)) : getDeltaForModule(module);
 			requiresRestart.put(module, getModuleRestartBehaviorController().moduleRequiresRestart(module, cleanDelta));
@@ -328,7 +329,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 					result = s2;
 				}
 				
-				markModulePublished(module, IJBossServerPublisher.FULL_PUBLISH);
+				markModulePublished(module, PublishControllerUtility.FULL_PUBLISH);
 				if( result != null && !result.isOK())
 			        ServerLogger.getDefault().log(getServer(), result);
 				return result == null || result.isOK() ? IServer.PUBLISH_STATE_NONE : IServer.PUBLISH_STATE_FULL;
@@ -349,11 +350,11 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 					"Unable to delete module", null); //$NON-NLS-1$
 			ms.add(results);
 			ServerLogger.getDefault().log(getServer(),ms);
-			markModulePublished(module, IJBossServerPublisher.REMOVE_PUBLISH);
+			markModulePublished(module, PublishControllerUtility.REMOVE_PUBLISH);
 			return IServer.PUBLISH_STATE_UNKNOWN;
 		}
 		
-		markModulePublished(module, IJBossServerPublisher.REMOVE_PUBLISH);
+		markModulePublished(module, PublishControllerUtility.REMOVE_PUBLISH);
 		Trace.trace(Trace.STRING_FINER, "Deleted deployment resource: " + remote.toOSString()); //$NON-NLS-1$
 		return IServer.PUBLISH_STATE_NONE;
 	}
@@ -365,7 +366,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 			return IServer.PUBLISH_STATE_NONE;
 		}
 		
-		if( publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
+		if( publishType == PublishControllerUtility.REMOVE_PUBLISH) {
 			return removeModule(module, archiveDestination, monitor);
 		} else {
 			// Skip any wtp-deleted-module for a full or incremental publish
@@ -383,9 +384,9 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 			monitor.beginTask("Packaging Module", 200); //$NON-NLS-1$
 			
 			IStatus result = null;
-			if( publishType == IJBossServerPublisher.FULL_PUBLISH) {
+			if( publishType == PublishControllerUtility.FULL_PUBLISH) {
 				result = runner.fullPublishModule(ProgressMonitorUtil.submon(monitor, 100));
-			} else if( publishType == IJBossServerPublisher.INCREMENTAL_PUBLISH) {
+			} else if( publishType == PublishControllerUtility.INCREMENTAL_PUBLISH) {
 				result = runner.incrementalPublishModule(ProgressMonitorUtil.submon(monitor, 100));
 			}
 			if( result == null || result.isOK()) {
@@ -396,33 +397,13 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 				}
 			}
 			// If a zipped module has changed, then it requires restart no matter what
-			markModulePublished(module, IJBossServerPublisher.FULL_PUBLISH);
+			markModulePublished(module, PublishControllerUtility.FULL_PUBLISH);
 			if( result != null && !result.isOK()) // log error
 		        ServerLogger.getDefault().log(getServer(), result);
 			return result == null || result.isOK() ? IServer.PUBLISH_STATE_NONE : IServer.PUBLISH_STATE_UNKNOWN;
 		}
 	}
 	
-	// If this is a bpel or osgi or some other strange publisher, 
-	// allow the delegate to handle the publish
-	private IPublishController findDelegatePublishController(IModule[] module) {
-		// First try to find a new delegate for this module type
-		// TODO , no mechanism yet
-		
-		// If none are found, lets look for legacy ones. 
-		String existingMode = getServer().getAttribute(IDeployableServer.SERVER_MODE, "local"); //$NON-NLS-1$
-		IJBossServerPublisher pub = ExtensionManager.getDefault().getPublisher(getServer(), module, existingMode);
-		if( pub != null ) {
-			// return a legacy wrapper. 
-			LegacyPublisherWrapperController c = new LegacyPublisherWrapperController();
-			c.initialize(getServer(), null,  null);
-			c.setLegacyPublisher(pub);
-			// TODO log a warning that this is a legacy publisher and must be converted ??
-			return c;
-		}
-		return null; 
-	}
-
 	// Does the given server prefer zipped deployment?
 	private boolean prefersZipped() throws CoreException {
 		return getDeploymentOptions().prefersZippedDeployments();
@@ -446,37 +427,6 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 	
 	private void markModulePublished(IModule[] module, int type) {
 		publishType.put(module, type);
-	}
-	
-	/**
-	 * Given the various flags, return which of the following options 
-	 * our publishers should perform:
-	 *    1) A full publish
-	 *    2) A removed publish (remove the module)
-	 *    3) An incremental publish, or
-	 *    4) No publish at all. 
-	 * @param module
-	 * @param kind
-	 * @param deltaKind
-	 * @return
-	 */
-	private int getPublishType(IModule[] module, int kind, int deltaKind) {
-		int modulePublishState = getServer().getModulePublishState(module);
-		if( deltaKind == ServerBehaviourDelegate.ADDED ) 
-			return IJBossServerPublisher.FULL_PUBLISH;
-		else if (deltaKind == ServerBehaviourDelegate.REMOVED) {
-			return IJBossServerPublisher.REMOVE_PUBLISH;
-		} else if (kind == IServer.PUBLISH_FULL 
-				|| modulePublishState == IServer.PUBLISH_STATE_FULL 
-				|| kind == IServer.PUBLISH_CLEAN ) {
-			return IJBossServerPublisher.FULL_PUBLISH;
-		} else if (kind == IServer.PUBLISH_INCREMENTAL 
-				|| modulePublishState == IServer.PUBLISH_STATE_INCREMENTAL 
-				|| kind == IServer.PUBLISH_AUTO) {
-			if( ServerBehaviourDelegate.CHANGED == deltaKind ) 
-				return IJBossServerPublisher.INCREMENTAL_PUBLISH;
-		} 
-		return IJBossServerPublisher.NO_PUBLISH;
 	}
 	
 	/**
@@ -614,11 +564,11 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 				int type = publishType.get(fromMap);
 				Object t = requiresRestart.get(fromMap);
 				boolean matchesPattern = t != null && ((Boolean)t).booleanValue();
-				boolean isRemovedChild = (fromMap.length > 1 && type == IJBossServerPublisher.REMOVE_PUBLISH);
+				boolean isRemovedChild = (fromMap.length > 1 && type == PublishControllerUtility.REMOVE_PUBLISH);
 				// If we're a child and we're removed, the parent must be restarted
 				// if we match a restart pattern, the parent must be restarted
 				// if we're full published, the parent must be restarted
-				if( matchesPattern || type == IJBossServerPublisher.FULL_PUBLISH
+				if( matchesPattern || type == PublishControllerUtility.FULL_PUBLISH
 						|| isRemovedChild)
 					return true;
 			}
@@ -636,6 +586,25 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 	protected IModuleResourceDelta[] getDeltaForModule(IModule[] module) {
 		IModuleResourceDelta[] deltas = ((Server)getServer()).getPublishedResourceDelta(module);
 		return deltas;
+	}
+
+	@Override
+	public int transferBuiltModule(IModule[] module, IPath srcFile,
+			IProgressMonitor monitor) throws CoreException {
+		IPath archiveDestination = getModuleDeployRoot(module);
+		IStatus result = getFilesystemController().copyFile(srcFile.toFile(), archiveDestination,monitor);
+		// If a zipped module has changed, then it requires restart no matter what
+		markModulePublished(module, PublishControllerUtility.FULL_PUBLISH);
+		if( result != null && !result.isOK()) // log error
+	        ServerLogger.getDefault().log(getServer(), result);
+		return result == null || result.isOK() ? IServer.PUBLISH_STATE_NONE : IServer.PUBLISH_STATE_UNKNOWN;
+	}
+
+	@Override
+	public int removeModule(IModule[] module, IProgressMonitor monitor)
+			throws CoreException {
+		IPath archiveDestination = getModuleDeployRoot(module);
+		return removeModule(module, archiveDestination, monitor);
 	}
 
 }

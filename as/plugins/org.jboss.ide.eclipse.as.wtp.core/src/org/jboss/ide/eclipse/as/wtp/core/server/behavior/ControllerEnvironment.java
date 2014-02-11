@@ -51,6 +51,10 @@ public class ControllerEnvironment {
 		if( key == null || val == null )
 			return this;
 		StringBuilder builder = new StringBuilder();
+		String propKey = system + AbstractSubsystemController.REQUIRED_PROPERTIES_ENV_KEY;
+		String existing = (String)map.get(propKey);
+		if( existing != null )
+			builder.append(existing);
 		for( int i = 0; i < key.length;i++ ) {
 			if( key[i] != null ) {
 				builder.append(key[i]);
@@ -59,7 +63,6 @@ public class ControllerEnvironment {
 				builder.append(";");
 			}
 		}
-		String propKey = system + AbstractSubsystemController.REQUIRED_PROPERTIES_ENV_KEY;
 		map.put(propKey, builder.toString());
 		return this;
 	}

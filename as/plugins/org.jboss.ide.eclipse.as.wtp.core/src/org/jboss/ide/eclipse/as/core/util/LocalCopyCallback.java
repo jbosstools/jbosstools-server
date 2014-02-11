@@ -47,6 +47,7 @@ public class LocalCopyCallback implements IPublishCopyCallbackHandler {
 	private IServer server;
 	private IPath deployRootFolder;
 	private IPath tmpDeployRootFolder;
+	@Deprecated
 	public LocalCopyCallback(IServer server, IPath deployFolder, IPath temporaryFolder ) {
 		this.server = server;
 		this.deployRootFolder = deployFolder;

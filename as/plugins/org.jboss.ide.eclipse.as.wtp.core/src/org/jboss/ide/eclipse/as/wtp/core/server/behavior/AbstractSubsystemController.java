@@ -26,7 +26,7 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.SubsystemModel.Subsyste
  * @since 3.0
  */
 public abstract class AbstractSubsystemController implements ISubsystemController {
-	static final String REQUIRED_PROPERTIES_ENV_KEY = ".RESERVED_requiredProperties";
+	static final String REQUIRED_PROPERTIES_ENV_KEY = SubsystemModel.REQUIRED_PROPERTIES_ENV_KEY;
 	
 	
 	private Subsystem subsystem = null;
