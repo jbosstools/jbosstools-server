@@ -16,11 +16,18 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.LocalFilesystemController;
 import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.internal.utils.IOUtil;
+import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
 import org.junit.After;
 import org.junit.Test;
 
@@ -114,7 +121,28 @@ public class LocalFilesystemSubsystemTest extends TestCase {
 		assertTrue(tmpfile.toFile().exists());
 	}
 
-	
+	@Test
+	public void testTemporaryDeployFolderForServer() throws Exception {
+		try {
+			IServer server = ServerCreationTestUtils.createMockServerWithRuntime(IJBossToolingConstants.DEPLOY_ONLY_SERVER, getClass().getName() + IJBossToolingConstants.DEPLOY_ONLY_SERVER);
+			IServerWorkingCopy wc = server.createWorkingCopy();
+			IDeployableServer ds = ServerConverter.getDeployableServer(wc);
+			ds.setDeployLocationType(IDeployableServer.DEPLOY_CUSTOM);
+			ds.setTempDeployFolder(getStateLocationPath("someotherpath2").toOSString());
+			server = wc.save(false, new NullProgressMonitor());
+			
+			TestLocalFilesystemController controller = new TestLocalFilesystemController();
+			controller.initialize(server, null, null);
+			
+			File f = controller.getTempFolder();
+			assertEquals(f.getName(), "someotherpath2");
+		} catch(CoreException ce) {
+			fail();
+		} finally {
+			ASMatrixTests.cleanup();
+		}
+
+	}
 	
 	private Map<String, Object> createEnvironmentTempFolder1() {
 		HashMap<String, Object> env = new HashMap<String, Object>();
@@ -128,6 +156,8 @@ public class LocalFilesystemSubsystemTest extends TestCase {
 	private IPath getStateLocationPath(String path) {
 		return ASMatrixTests.getDefault().getStateLocation().append(path);
 	}
+	
+	
 	
 	public class TestLocalFilesystemController extends LocalFilesystemController {
 		// Since the temp folder is technically an internal implementation detail, 
