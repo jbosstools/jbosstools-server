@@ -75,7 +75,8 @@ public class ServerUtil {
 
 	public static IPath makeRelative(IRuntime rt, IPath p) {
 		if( p.isAbsolute() && rt != null) {
-			if(rt.getLocation().isPrefixOf(p)) {
+			IPath rtLoc = rt.getLocation();
+			if(rtLoc != null && rtLoc.isPrefixOf(p)) {
 				int size = rt.getLocation().toOSString().length();
 				return new Path(p.toOSString().substring(size)).makeRelative();
 			}
