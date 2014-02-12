@@ -21,6 +21,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.rse.services.shells.IHostShell;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
@@ -75,6 +76,9 @@ public class RSECommandLineShutdownController extends AbstractSubsystemControlle
 		}
 
 		((ControllableServerBehavior)getControllableBehavior()).setServerStopping();
+		// launch poll thread
+		PollThreadUtils.pollServer(getServer(), IServerStatePoller.SERVER_DOWN);
+
 		IStatus shutdownStatus = gracefullStop();
 		if (!shutdownStatus.isOK()) {
 			// The shutdown failed. This indicates a bad command or nonfunctional shutdown command
