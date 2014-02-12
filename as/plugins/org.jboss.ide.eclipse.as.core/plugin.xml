@@ -1739,7 +1739,7 @@
       <subsystemMapping
             id="modules.state.jb6"
             mappedId="modules.default"
-            serverTypes="%ServerTypesJBossLessThan6">
+            serverTypes="org.jboss.ide.eclipse.as.60,org.jboss.ide.eclipse.as.eap.50">
       </subsystemMapping>
 
       <subsystem
@@ -1753,7 +1753,6 @@
             mappedId="modules.default"
             serverTypes="%ServerTypesJBoss7OrHigher">
       </subsystemMapping>
-      
       
       
       <!-- Some no-op stub implementations -->
@@ -1797,18 +1796,15 @@
 	
     <extension
           point="org.jboss.ide.eclipse.as.wtp.core.serverProfile">
-       <serverProfile id="local" serverTypes="%AllJBossServerTypes">
+       <serverProfile id="local" serverTypes="%AllJBTServerTypes">
           <subsystem system="deploymentOptions" subsystem="deploymentOptions.local"/>
-          <subsystem system="launch" subsystem="launch.standard.local"/>
           <subsystem system="serverDetails" subsystem="serverDetails.local"/>
-          <subsystem system="shutdown" subsystem="shutdown.default"/>
           <subsystem system="filesystem" subsystem="filesystem.local"/>
-          <subsystem system="publish" subsystem="publish.filesystem.default"/>
        </serverProfile>
-       <serverProfile id="local" serverTypes="org.jboss.ide.eclipse.as.systemCopyServer">
-          <subsystem system="deploymentOptions" subsystem="deploymentOptions.local"/>
-          <subsystem system="serverDetails" subsystem="serverDetails.local"/>
-          <subsystem system="filesystem" subsystem="filesystem.local"/>
+       <serverProfile id="local" serverTypes="%AllJBossServerTypes">
+          <subsystem system="launch" subsystem="launch.standard.local"/>
+          <subsystem system="shutdown" subsystem="shutdown.default"/>
+          <subsystem system="publish" subsystem="publish.filesystem.default"/>
        </serverProfile>
     </extension>
 
