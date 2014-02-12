@@ -32,16 +32,15 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ILaunchServerController
  * If behavior must change based on settings, the single entry point
  * must delegate to the currently active implementation. 
  * 
+ * This class cannot keep state! It must pull all state from the 
+ * launch configuration that has been passed in. 
  */
 public class ControllableServerLaunchConfiguration implements
 		ILaunchConfigurationDelegate2 {
-	private ILaunchServerController delegate = null;
 	protected ILaunchServerController getController(ILaunchConfiguration configuration) throws CoreException {
-		if( delegate != null ) 
-			return delegate;
 		
 		IControllableServerBehavior jbsBehavior = JBossServerBehaviorUtils.getControllableBehavior(configuration);
-		delegate = (ILaunchServerController)jbsBehavior.getController(IControllableServerBehavior.SYSTEM_LAUNCH);
+		ILaunchServerController delegate = (ILaunchServerController)jbsBehavior.getController(IControllableServerBehavior.SYSTEM_LAUNCH);
 		if( delegate == null ) {
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Unable to locate launch delegate for server")); //$NON-NLS-1$
 		}
