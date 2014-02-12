@@ -206,6 +206,7 @@ public class ExtensionManager {
 	}
 	
 	private ArrayList<PublisherWrapper> publishers;	
+	@Deprecated
 	public IJBossServerPublisher getPublisher(IServer server, IModule[] module, String deployMethod) {
 		if( publishers == null ) 
 			loadPublishers();
@@ -220,6 +221,7 @@ public class ExtensionManager {
 		return null;
 	}
 
+	@Deprecated
 	private void loadPublishers() {
 		ArrayList<PublisherWrapper> publishers = new ArrayList<PublisherWrapper>();
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
@@ -255,6 +257,7 @@ public class ExtensionManager {
 		Collections.sort(this.publishers, comparator);
 	}
 	
+	@Deprecated
 	private class PublisherWrapper {
 		private int priority;
 		private IJBossServerPublisher publisher;
@@ -280,6 +283,7 @@ public class ExtensionManager {
 		}
 	}
 	
+	@Deprecated
 	public IJBossServerPublisher[] getZippedPublishers() {
 		if( publishers == null ) 
 			loadPublishers();
