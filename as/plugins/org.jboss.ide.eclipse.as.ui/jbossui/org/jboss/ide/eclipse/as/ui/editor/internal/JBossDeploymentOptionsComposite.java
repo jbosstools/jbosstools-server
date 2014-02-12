@@ -455,21 +455,10 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 	}
 	
 	protected boolean isZippedPublisherAvailable() {
-		/*
-		 * Maybe use IJBossServerPublishMethodType type = DeploymentPreferenceLoader.getCurrentDeploymentMethodType(getServer());
-		 * But this class has no reference to the server, and it also might not want to go by stored data,
-		 * but rather the combo in the ModuleDeploymentPage somehow? 
-		 */
-
-		// String method = DeploymentPreferenceLoader.getCurrentDeploymentMethodType(getServer()).getId();
-		String method = LocalPublishMethod.LOCAL_PUBLISH_METHOD;
-		IJBossServerPublisher[] publishers = 
-			ExtensionManager.getDefault().getZippedPublishers();
-		for( int i = 0; i < publishers.length; i++ ) {
-			if( publishers[i].accepts(method, getServer().getServer(), null))
-				return true;
-		}
-		return false;
+		// Zipped publisher is always available after rewrite.
+		// ASTools now depends on archives and doesn't need to do weird logic
+		// to find a zipped publisher
+		return true;
 	}
 	
 	public class SetDeployDirCommand extends ServerCommand {
