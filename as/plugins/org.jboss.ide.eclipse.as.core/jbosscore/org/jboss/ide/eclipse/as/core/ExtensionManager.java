@@ -12,8 +12,6 @@ package org.jboss.ide.eclipse.as.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -24,13 +22,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerType;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IProvideCredentials;
 import org.jboss.ide.eclipse.as.core.server.IServerAlreadyStartedHandler;
 import org.jboss.ide.eclipse.as.core.server.IServerProvider;
@@ -205,98 +200,6 @@ public class ExtensionManager {
 		return null;
 	}
 	
-	private ArrayList<PublisherWrapper> publishers;	
-	@Deprecated
-	public IJBossServerPublisher getPublisher(IServer server, IModule[] module, String deployMethod) {
-		if( publishers == null ) 
-			loadPublishers();
-		Iterator<PublisherWrapper> i = publishers.iterator();
-		PublisherWrapper wrapper;
-		while(i.hasNext()) {
-			wrapper = i.next();
-			IJBossServerPublisher publisher = wrapper.publisher;
-			if( publisher.accepts(deployMethod, server, module))
-				return wrapper.getNewInstance();
-		}
-		return null;
-	}
-
-	@Deprecated
-	private void loadPublishers() {
-		ArrayList<PublisherWrapper> publishers = new ArrayList<PublisherWrapper>();
-		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerCorePlugin.PLUGIN_ID, "publishers"); //$NON-NLS-1$
-		for( int i = 0; i < cf.length; i++ ) {
-			try {
-				Object clazz = cf[i].createExecutableExtension("class"); //$NON-NLS-1$
-				String priority = cf[i].getAttribute("priority"); //$NON-NLS-1$
-				String zipDelegate = cf[i].getAttribute("zipDelegate"); //$NON-NLS-1$
-				int p = -1; 
-				try {
-					p = Integer.parseInt(priority);
-				} catch( NumberFormatException nfe) {
-					// Should never ever happen since these are our extensions
-					JBossServerCorePlugin.log(new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, 
-							"Publisher id " + cf[i].getAttribute("class") + " has non-integer priority: " + priority));   //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
-				}
-				publishers.add(new PublisherWrapper(p, zipDelegate, (IJBossServerPublisher)clazz, cf[i]));
-			} catch( CoreException e ) {
-				IStatus status = new MultiStatus(
-						JBossServerCorePlugin.PLUGIN_ID, IStatus.ERROR,
-						new IStatus[] { e.getStatus() },
-						Messages.ExtensionManager_could_not_load_publishers, e);
-				JBossServerCorePlugin.getDefault().getLog().log(status);
-			}
-		}
-		this.publishers = publishers;
-		Comparator<PublisherWrapper> comparator = new Comparator<PublisherWrapper>() {
-			public int compare(PublisherWrapper o1, PublisherWrapper o2) {
-				return o2.priority - o1.priority;
-			} 
-		};
-		Collections.sort(this.publishers, comparator);
-	}
-	
-	@Deprecated
-	private class PublisherWrapper {
-		private int priority;
-		private IJBossServerPublisher publisher;
-		private boolean isZipDelegate = false;
-		private IConfigurationElement element;
-		private PublisherWrapper(int priority, String zipDelegate, IJBossServerPublisher publisher, IConfigurationElement element) {
-			this.priority = priority;
-			this.publisher = publisher;
-			isZipDelegate = Boolean.parseBoolean(zipDelegate);
-			this.element = element;
-		}
-		private IJBossServerPublisher getNewInstance() {
-			try {
-				Object clazz = element.createExecutableExtension("class"); //$NON-NLS-1$
-				return (IJBossServerPublisher)clazz;
-			} catch( CoreException ce ) {
-				JBossServerCorePlugin.log(ce.getStatus());
-			}
-			return publisher;
-		}
-		public String toString() {
-			return element.getAttribute("class"); //$NON-NLS-1$
-		}
-	}
-	
-	@Deprecated
-	public IJBossServerPublisher[] getZippedPublishers() {
-		if( publishers == null ) 
-			loadPublishers();
-		ArrayList<IJBossServerPublisher> list = new ArrayList<IJBossServerPublisher>();
-		Iterator<PublisherWrapper> i = publishers.iterator();
-		PublisherWrapper wrapper;
-		while(i.hasNext()) {
-			wrapper = i.next();
-			if( wrapper.isZipDelegate )
-				list.add( wrapper.getNewInstance() );
-		}
-		return list.toArray(new IJBossServerPublisher[list.size()]);
-	}
 	
 	// API extension
 	public static interface IServerJMXRunnable {

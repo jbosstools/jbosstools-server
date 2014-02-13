@@ -28,17 +28,17 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
-import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.IEventCodes;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 
 public class JMXServerDeploymentScannerAdditions extends AbstractDeploymentScannerAdditions {
 	public JMXServerDeploymentScannerAdditions() {
 		
 	}
 	public boolean accepts(IServer server) {
-		if( !LocalPublishMethod.LOCAL_PUBLISH_METHOD.equals(getServerMode(server)))
+		if( !ServerProfileModel.DEFAULT_SERVER_PROFILE.equals(getServerMode(server)))
 			return false;
 		
 		ServerExtendedProperties props = (ServerExtendedProperties)server.loadAdapter(ServerExtendedProperties.class, null);

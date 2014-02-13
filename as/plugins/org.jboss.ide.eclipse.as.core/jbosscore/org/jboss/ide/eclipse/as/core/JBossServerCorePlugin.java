@@ -29,7 +29,6 @@ import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
-import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerListener;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.osgi.framework.BundleContext;
@@ -85,9 +84,6 @@ public class JBossServerCorePlugin extends Plugin  {
 		final Hashtable<String, String> props = new Hashtable<String, String>(4);
 		props.put(DebugOptions.LISTENER_SYMBOLICNAME, PLUGIN_ID);
 		context.registerService(DebugOptionsListener.class.getName(), new Trace(), props);
-		
-		// Temporary
-		BehaviourModel.getModel();
 		
 	}
 

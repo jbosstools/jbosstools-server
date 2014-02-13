@@ -34,13 +34,8 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.util.SocketUtil;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
-import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel;
-import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel.Behaviour;
-import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel.BehaviourImpl;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
@@ -49,6 +44,7 @@ import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI.IServerModeUICallback;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 
 public class ServerModeSectionComposite extends Composite {
 	private ArrayList<DeployUIAdditions> deployAdditions;
@@ -145,24 +141,18 @@ public class ServerModeSectionComposite extends Composite {
 		IControllableServerBehavior ds = original == null ? null : JBossServerBehaviorUtils.getControllableBehavior(callback.getServer().getOriginal());
 		String current = null;
 		if( ds != null ) {
-			Behaviour b = BehaviourModel.getModel().getBehaviour(serverTypeId);
-			String behaviourType = DeploymentPreferenceLoader.getCurrentDeploymentMethodTypeId(
-					callback.getServer().getOriginal(), getDefaultServerMode());
-			if( b.getImpl(behaviourType) != null )
-				current = b.getImpl(behaviourType).getName();
+			current = ServerProfileModel.getProfile(callback.getServer());
 		} else {
 			String host = callback.getServer().getHost();
-			BehaviourImpl impl = null;
 			if( SocketUtil.isLocalhost(host)) {
-				impl = BehaviourModel.getModel().getBehaviour(serverTypeId).getImpl(getDefaultLocalServerMode());
+				current = "local";
 			} else {
 				// socket is not localhost, hard code this for now
-				impl = BehaviourModel.getModel().getBehaviour(serverTypeId).getImpl(getDefaultRemoteServerMode());
+				current = "rse";
 			}
-			current = impl.getName();
 			callback.execute(new ChangeServerPropertyCommand(
 					callback.getServer(), IDeployableServer.SERVER_MODE, 
-					impl.getId(), Messages.EditorChangeServerMode));
+					current, Messages.EditorChangeServerMode));
 		}
 		if( current != null ) {
 			int index = deployTypeCombo.indexOf(current);
@@ -183,10 +173,10 @@ public class ServerModeSectionComposite extends Composite {
 	
 	/* Set what our default local and remote modes are */
 	protected String getDefaultServerMode() {
-		return LocalPublishMethod.LOCAL_PUBLISH_METHOD;
+		return ServerProfileModel.DEFAULT_SERVER_PROFILE;
 	}
 	protected String getDefaultLocalServerMode() {
-		return LocalPublishMethod.LOCAL_PUBLISH_METHOD;
+		return getDefaultServerMode();
 	}
 	protected String getDefaultRemoteServerMode() {
 		return "rse"; //$NON-NLS-1$
@@ -270,14 +260,14 @@ public class ServerModeSectionComposite extends Composite {
 	}
 
 	// Load the deploy type ui elements (local / rse / other)
+	// TODO this needs rewrite
 	private void loadDeployTypeData() {
 		deployAdditions = new ArrayList<DeployUIAdditions>();
-		Behaviour b = BehaviourModel.getModel().getBehaviour(callback.getServer().getServerType().getId());
-		BehaviourImpl[] supportedBehaviours = b.getImplementations();
-		for( int i = 0; i < supportedBehaviours.length; i++) {
-			IDeploymentTypeUI ui = EditorExtensionManager.getDefault().getPublishPreferenceUI(supportedBehaviours[i].getId());
-			deployAdditions.add(new DeployUIAdditions(supportedBehaviours[i].getName(), 
-					supportedBehaviours[i].getId(), ui));
+		String[] supported = new String[]{"local","rse"};
+		for( int i = 0; i < supported.length; i++) {
+			IDeploymentTypeUI ui = EditorExtensionManager.getDefault().getPublishPreferenceUI(supported[i]);
+			deployAdditions.add(new DeployUIAdditions(supported[i], 
+					supported[i], ui));
 		}
 	}
 
@@ -314,7 +304,7 @@ public class ServerModeSectionComposite extends Composite {
 						ui.behaviourId, "Change server mode"));
 				String deployType = null;
 				if( shouldChangeDefaultDeployType(callback.getServer())) {
-					if( ui.behaviourId.equals(LocalPublishMethod.LOCAL_PUBLISH_METHOD)) {
+					if( ui.behaviourId.equals(getDefaultLocalServerMode())) {
 						deployType = IDeployableServer.DEPLOY_METADATA;
 					} else {
 						deployType = IDeployableServer.DEPLOY_SERVER;
@@ -341,7 +331,7 @@ public class ServerModeSectionComposite extends Composite {
 		private String oldVal;
 		private String newVal;
 		public ChangeServerPropertyCommand(IServerWorkingCopy server, String key, String val, String commandName) {
-			this(server, key, val, LocalPublishMethod.LOCAL_PUBLISH_METHOD, commandName);
+			this(server, key, val, ServerProfileModel.DEFAULT_SERVER_PROFILE, commandName);
 		}
 		
 		public ChangeServerPropertyCommand(IServerWorkingCopy server, String key, String val, String oldDefault, String commandName) {

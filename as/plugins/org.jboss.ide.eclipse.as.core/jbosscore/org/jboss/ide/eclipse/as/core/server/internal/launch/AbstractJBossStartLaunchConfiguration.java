@@ -30,6 +30,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
+import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
@@ -37,7 +38,6 @@ import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.IServerAlreadyStartedHandler;
-import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
@@ -240,9 +240,8 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 				ServerProfilerDelegate.configureProfiling(launch, vm, runConfig, monitor);
 			} catch (CoreException ce) {
 				IServer server = org.eclipse.wst.server.core.ServerUtil.getServer(configuration);
-				DelegatingServerBehavior jbsb = (DelegatingServerBehavior) server.getAdapter(DelegatingServerBehavior.class);
+				ServerBehaviourDelegate jbsb = (ServerBehaviourDelegate) server.getAdapter(ServerBehaviourDelegate.class);
 				jbsb.stop(true);
-				// genericServer.stopImpl();
 				throw ce;
 			}
 		}

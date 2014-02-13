@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.IStreamListener;
+import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
@@ -43,22 +44,24 @@ import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IProcessProvider;
-import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerCreationUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.test.ASTest;
-import org.jboss.ide.eclipse.as.test.publishing.AbstractDeploymentTest;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
+import org.jboss.tools.as.core.server.controllable.IDeployableServerBehaviorProperties;
 import org.jboss.tools.test.util.JobUtils;
 import org.osgi.framework.Bundle;
 
 public class ServerRuntimeUtils extends TestCase {
+	public static String BUNDLE_NAME = "org.jboss.ide.eclipse.as.test";
+	
 	
 	public static final IVMInstall VM_INSTALL = JavaRuntime.getDefaultVMInstall();
 	public static final String DEFAULT_CONFIG = "default";
@@ -306,12 +309,12 @@ public class ServerRuntimeUtils extends TestCase {
 	
 	// Find a file in our bundle
 	protected static File getFileLocation(String path) throws CoreException {
-		Bundle bundle = Platform.getBundle(AbstractDeploymentTest.BUNDLE_NAME);
+		Bundle bundle = Platform.getBundle(BUNDLE_NAME);
 		URL url = null;
 		try {
 			url = FileLocator.resolve(bundle.getEntry(path));
 		} catch (IOException e) {
-			String msg = "Cannot find file " + path + " in " + AbstractDeploymentTest.BUNDLE_NAME;
+			String msg = "Cannot find file " + path + " in " + BUNDLE_NAME;
 			IStatus status = new Status(IStatus.ERROR, ASTest.PLUGIN_ID, msg, e);
 			throw new CoreException(status);
 		}
@@ -478,11 +481,12 @@ public class ServerRuntimeUtils extends TestCase {
 
 		
 	protected static IStreamMonitor getStreamMonitor(IServer server) {
-		DelegatingServerBehavior behavior = 
-			(DelegatingServerBehavior)server.loadAdapter(DelegatingServerBehavior.class, null);
-		if( behavior != null ) {
-			if( ((IProcessProvider)behavior.getDelegate()).getProcess() != null ) {
-				return ((IProcessProvider)behavior.getDelegate()).getProcess().getStreamsProxy().getOutputStreamMonitor();
+		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(server);
+		beh.getSharedData(IDeployableServerBehaviorProperties.PROCESS);
+		if( beh != null ) {
+			IProcess process = (IProcess)beh.getSharedData(IDeployableServerBehaviorProperties.PROCESS);
+			if( process != null ) {
+				return process.getStreamsProxy().getOutputStreamMonitor();
 			}
 		}
 		return null;

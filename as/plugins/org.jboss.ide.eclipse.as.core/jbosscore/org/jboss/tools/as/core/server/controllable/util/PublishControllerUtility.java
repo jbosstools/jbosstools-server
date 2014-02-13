@@ -14,14 +14,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
-import org.jboss.ide.eclipse.as.core.ExtensionManager;
-import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllerEnvironment;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishControllerDelegate;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ISubsystemController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.SubsystemModel;
-import org.jboss.tools.as.core.server.controllable.subsystems.internal.LegacyPublisherWrapperController;
 
 public class PublishControllerUtility {
 	/**
@@ -115,18 +111,6 @@ public class PublishControllerUtility {
 			return (IPublishControllerDelegate)c;
 		} catch(CoreException ce) {
 			// Ignore, no delegate found for this module type...  probably uses standard publishing, no override
-		}
-		
-		// If none are found, lets look for legacy ones.   TODO remove this once bpel is converted
-		String existingMode = server.getAttribute(IDeployableServer.SERVER_MODE, "local"); //$NON-NLS-1$
-		IJBossServerPublisher pub = ExtensionManager.getDefault().getPublisher(server, module, existingMode);
-		if( pub != null ) {
-			// return a legacy wrapper. 
-			LegacyPublisherWrapperController c = new LegacyPublisherWrapperController();
-			c.initialize(server, null,  null);
-			c.setLegacyPublisher(pub);
-			// TODO log a warning that this is a legacy publisher and must be converted ??
-			return c;
 		}
 		return null; 
 	}

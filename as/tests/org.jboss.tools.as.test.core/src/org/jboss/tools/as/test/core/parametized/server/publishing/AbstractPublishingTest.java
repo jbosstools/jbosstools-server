@@ -41,7 +41,6 @@ import org.jboss.tools.as.core.internal.modules.DeploymentModulePrefs;
 import org.jboss.tools.as.core.internal.modules.DeploymentPreferences;
 import org.jboss.tools.as.core.internal.modules.DeploymentPreferencesLoader;
 import org.jboss.tools.as.test.core.ASMatrixTests;
-import org.jboss.tools.as.test.core.internal.MockPublishMethod4;
 import org.jboss.tools.as.test.core.internal.MockPublishMethodFilesystemController;
 import org.jboss.tools.as.test.core.internal.utils.IOUtil;
 import org.jboss.tools.as.test.core.internal.utils.MatrixUtils;
@@ -138,7 +137,6 @@ public abstract class AbstractPublishingTest extends TestCase {
 	}
 	
 	protected void setMockPublishMethod4(IServerWorkingCopy wc) {
-		MockPublishMethod4.reset();
 		wc.setAttribute(IDeployableServer.SERVER_MODE, "mock4");
 	}
 	
@@ -165,8 +163,6 @@ public abstract class AbstractPublishingTest extends TestCase {
 			overrideTemp = getRelativeTempOverrideFolder();
 		}
 		setCustomDeployOverride(module, null, overrideFolder, overrideTemp);
-		MockPublishMethod4.setExpectedRoot(overrideFolder);
-		MockPublishMethod4.setExpectedTempRoot(overrideTemp);
 	}
 	
 	protected void setCustomDeployOverride(IModule rootModule, String outputName, String outputDir, String temporaryDir) {
@@ -221,8 +217,6 @@ public abstract class AbstractPublishingTest extends TestCase {
 		}
 		serverDeployPath = ds.getDeployFolder();
 		serverTempDeployPath = ds.getTempDeployFolder();
-		MockPublishMethod4.setExpectedRoot(serverDeployPath);
-		MockPublishMethod4.setExpectedTempRoot(serverTempDeployPath);
 
 	}
 	
@@ -285,16 +279,9 @@ public abstract class AbstractPublishingTest extends TestCase {
 	
 	/* Util methods to do the checking */
 	protected static void publishAndCheckError(IServer server, int pubType) {
-		MockPublishMethod4.resetPublish();
 		MockPublishMethodFilesystemController.StaticModel.clearAll();
 		server.publish(pubType, new NullProgressMonitor());
 		JobUtils.waitForIdle();
-		if( MockPublishMethod4.getError() != null ) {
-			Throwable t = MockPublishMethod4.getError();
-			System.out.println("   " + t.getMessage());
-			t.printStackTrace();
-			fail("Error when publishing: " + t.getMessage());
-		}
 	}
 	protected void verifyPublishMethodResults(int changed, int removed) {
 		IPath[] changed2 = MockPublishMethodFilesystemController.StaticModel.getChanged();

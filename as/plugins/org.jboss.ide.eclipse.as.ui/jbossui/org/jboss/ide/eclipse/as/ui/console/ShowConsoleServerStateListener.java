@@ -19,10 +19,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerEvent;
 import org.eclipse.wst.server.ui.internal.view.servers.ShowInConsoleAction;
-import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 
 public class ShowConsoleServerStateListener extends UnitedServerListener {
 	private static ShowConsoleServerStateListener instance;
@@ -36,9 +35,10 @@ public class ShowConsoleServerStateListener extends UnitedServerListener {
 		JBossServer jbs = (JBossServer)server.loadAdapter(JBossServer.class, new NullProgressMonitor());
 		if( jbs != null && serverSwitchesToState(event, IServer.STATE_STARTING)) {
 			// do not launch console for remotes, for now
-			String type = DeploymentPreferenceLoader.getCurrentDeploymentMethodTypeId(server, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
-			if( !type.equals(LocalPublishMethod.LOCAL_PUBLISH_METHOD))
+			String type = ServerProfileModel.getProfile(server); 
+			if( !ServerProfileModel.DEFAULT_SERVER_PROFILE.equals(type))
 				return;
+			
 			new Thread() {
 				public void run() {
 					try {

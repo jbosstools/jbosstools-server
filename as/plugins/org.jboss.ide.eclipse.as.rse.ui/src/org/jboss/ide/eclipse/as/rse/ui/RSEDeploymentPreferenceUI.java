@@ -399,20 +399,4 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			wc.setAttribute(IJBossToolingConstants.SHUTDOWN_POLLER_KEY, pollId);
 		}
 	}
-	
-
-	@Deprecated
-	public static IHost findHost(String name, IHost[] hosts) {
-		return RSEFrameworkUtils.findHost(name, hosts);
-	}
-	
-	@Deprecated
-	public static String browseClicked4(Shell s, IHost host) {
-		return RSEBrowseBehavior.browseClicked(s,host,null);
-	}
-
-	@Deprecated
-	public static String browseClicked4(Shell s, IHost host, String path) {
-		return RSEBrowseBehavior.browseClicked(s, host, path);
-	}
 }

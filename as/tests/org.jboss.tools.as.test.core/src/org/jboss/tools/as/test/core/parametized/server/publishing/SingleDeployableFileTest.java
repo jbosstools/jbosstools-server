@@ -10,9 +10,7 @@
  ******************************************************************************/
 package org.jboss.tools.as.test.core.parametized.server.publishing;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 
 import org.eclipse.core.resources.IProject;
@@ -25,8 +23,6 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory;
-import org.jboss.tools.as.test.core.internal.MockPublishMethod4;
-import org.jboss.tools.as.test.core.internal.utils.IOUtil;
 import org.jboss.tools.as.test.core.internal.utils.MatrixUtils;
 import org.jboss.tools.as.test.core.internal.utils.ResourceUtils;
 import org.jboss.tools.as.test.core.internal.utils.wtp.CreateProjectOperationsUtility;

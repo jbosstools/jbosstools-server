@@ -38,8 +38,6 @@ import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.modules.ResourceModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.publishers.JSTPublisherXMLToucher;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
-import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilterProvider;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.DeploymentMarkerUtils;
@@ -495,7 +493,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		Iterator<IModule[]> it = publishType.keySet().iterator();
 		while(it.hasNext()) {
 			IModule[] mit = it.next();
-			if( mit.length == 1 && mit[0].equals(m) && publishType.get(mit) == IJBossServerPublisher.REMOVE_PUBLISH) {
+			if( mit.length == 1 && mit[0].equals(m) && publishType.get(mit) == PublishControllerUtility.REMOVE_PUBLISH) {
 				return true;
 			}
 		}

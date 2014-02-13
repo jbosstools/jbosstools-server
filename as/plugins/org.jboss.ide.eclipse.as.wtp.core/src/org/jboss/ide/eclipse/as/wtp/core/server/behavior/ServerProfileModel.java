@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerAttributes;
 import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
 
 /**
@@ -52,6 +53,21 @@ import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
  * 
  */
 public class ServerProfileModel {
+	private static final String SERVER_PROFILE_PROPERTY_KEY = "org.jboss.ide.eclipse.as.core.server.serverMode"; //$NON-NLS-1$
+	public static final String DEFAULT_SERVER_PROFILE = "local";
+	
+	public static String getProfile(IServerAttributes server) {
+		return getProfile(server, DEFAULT_SERVER_PROFILE);
+	}
+
+	public static String getProfile(IServerAttributes server, String defaultProfile) {
+		return server.getAttribute(SERVER_PROFILE_PROPERTY_KEY, defaultProfile);
+	}
+
+	
+	
+	
+	
 	private static ServerProfileModel profileModel;
 	public static ServerProfileModel getDefault() {
 		if( profileModel == null )

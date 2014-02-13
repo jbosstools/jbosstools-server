@@ -23,16 +23,15 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.Messages;
-import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IDeploymentScannerModifier;
 import org.jboss.ide.eclipse.as.core.server.IServerModeDetails;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.RemotePath;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.tools.as.core.server.controllable.systems.IDeploymentOptionsController;
 
 /**
@@ -99,7 +98,7 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 
 	
 	protected String getServerMode(IServer server) {
-		return DeploymentPreferenceLoader.getCurrentDeploymentMethodTypeId(server, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
+		return ServerProfileModel.getProfile(server);
 	}
 	
 	/**

@@ -32,7 +32,6 @@ import org.eclipse.equinox.security.storage.StorageException;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IURLProvider;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
@@ -62,7 +61,7 @@ public class JBossServer extends DeployableServer
 		// TODO move this to an extended properties setting
 		boolean defaultServerDeployment = isAS50() || isEAP(getServer());
 		setDeployLocationType(defaultServerDeployment ? IDeployableServer.DEPLOY_SERVER : IDeployableServer.DEPLOY_METADATA);
-		setAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
+		setAttribute(IDeployableServer.SERVER_MODE, "local"); //$NON-NLS-1$
 	}
 	
 	@Deprecated

@@ -16,6 +16,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
@@ -43,24 +44,25 @@ import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
-import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.IServerModeDetails;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
+import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.editor.DeploymentPage;
-import org.jboss.ide.eclipse.as.ui.editor.EditorExtensionManager;
+import org.jboss.ide.eclipse.as.ui.subsystems.IBrowseBehavior;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 
 /**
  * This class is an internal class for displaying
@@ -69,7 +71,8 @@ import org.jboss.ide.eclipse.as.ui.editor.EditorExtensionManager;
  */
 public class JBossDeploymentOptionsComposite extends Composite implements PropertyChangeListener {
 	
-	protected static final String MAIN = LocalPublishMethod.LOCAL_PUBLISH_METHOD;
+	protected static final String MAIN = ServerProfileModel.DEFAULT_SERVER_PROFILE;
+	
 	private StandardDeploymentPageController controller;
 	private Text deployText, tempDeployText;
 	private Button metadataRadio, serverRadio, customRadio, currentRadioSelection;
@@ -95,11 +98,17 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 	}
 
 	protected String openBrowseDialog(String original) {
-		String mode = getServer().getAttributeHelper().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
-		org.jboss.ide.eclipse.as.ui.subsystems.IBrowseBehavior beh = EditorExtensionManager.getDefault().getBrowseBehavior(mode);
-		if( beh == null )
-			beh = EditorExtensionManager.getDefault().getBrowseBehavior(LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
-		return beh.openBrowseDialog(controller.getPage().getServer(), original);
+		IControllableServerBehavior csb = JBossServerBehaviorUtils.getControllableBehavior(lastWC);
+		IBrowseBehavior beh = null;
+		if( csb != null ) {
+			try {
+				beh = (IBrowseBehavior)csb.getController(IBrowseBehavior.SYSTEM_ID);
+				return beh.openBrowseDialog(controller.getPage().getServer(), original);
+			} catch(CoreException ce) {
+				JBossServerUIPlugin.log(ce.getStatus());
+			}
+		}
+		return null;
 	}
 
 	
@@ -143,8 +152,8 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 		if( !shouldCreateMetadataRadio())
 			return false;
 		
-		String mode = getHelper().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
-		if(!LocalPublishMethod.LOCAL_PUBLISH_METHOD.equals(mode))
+		String mode = ServerProfileModel.getProfile(getPage().getServer());
+		if(!ServerProfileModel.DEFAULT_SERVER_PROFILE.equals(mode))
 			return false;
 		IServer s = getPage().getServer().getOriginal();
 		ServerExtendedProperties props = (ServerExtendedProperties)s.loadAdapter(ServerExtendedProperties.class, null);
@@ -570,10 +579,11 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 		protected void handleServerRadioSelected() {
 			if( server.getRuntime() != null && 
 					server.getRuntime().loadAdapter(IJBossServerRuntime.class, null) != null) {
-				String mode = getHelper().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
 				newDir = getServerRadioNewDeployDir();
 				newTemp = getServerRadioNewTempDeployDir();
-				if( mode.equals(LocalPublishMethod.LOCAL_PUBLISH_METHOD))
+
+				String mode = ServerProfileModel.getProfile(getPage().getServer());
+				if(ServerProfileModel.DEFAULT_SERVER_PROFILE.equals(mode))
 					new File(newTemp).mkdirs();
 			}
 		}

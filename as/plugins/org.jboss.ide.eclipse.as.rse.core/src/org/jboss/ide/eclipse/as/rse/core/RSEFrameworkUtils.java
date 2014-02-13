@@ -28,6 +28,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.util.IEventCodes;
 import org.jboss.ide.eclipse.as.core.util.ProgressMonitorUtil;
+import org.jboss.ide.eclipse.as.rse.core.util.RemoteCallWrapperUtility;
 import org.jboss.ide.eclipse.as.rse.core.util.RemoteCallWrapperUtility.NamedRunnableWithProgress;
 
 
@@ -166,7 +167,7 @@ public class RSEFrameworkUtils {
 				}
 			};
 			IProgressMonitor childMonitor = ProgressMonitorUtil.getSubMon(monitor, 100);
-			Exception e = RSERemotePublishHandler.wrapRemoteCallStatusTimeLimit(run, "null", "null", null, 15000, childMonitor);
+			Exception e = RemoteCallWrapperUtility.wrapRemoteCallStatusTimeLimit(server, run,  "null", null, 15000, childMonitor);
 			if( e == null )
 				return Status.OK_STATUS;
 			return new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL,

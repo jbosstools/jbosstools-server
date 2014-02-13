@@ -24,7 +24,6 @@ import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.util.ProjectModule;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.xpl.ModulePackager;
 import org.jboss.ide.eclipse.as.core.util.IEventCodes;
@@ -37,33 +36,6 @@ public class PublishUtil extends ModuleResourceUtil {
 	public static boolean DEEP = true;
 	public static boolean ROOT = false;
 	
-	/**
-	 * This method has not been updated to use a proper path character, and may provide
-	 * very wrong answers if calculating paths from linux to a windows machine
-	 * 
-	 * @param method
-	 * @param moduleTree
-	 * @param server
-	 * @param deep
-	 * @return
-	 */
-	public static IPath getDeployPath(IJBossServerPublishMethod method, IModule[] moduleTree, IDeployableServer server, boolean deep) {
-		String defaultFolder = method.getPublishDefaultRootFolder(server.getServer());
-		if( deep == ROOT )
-			return new ModuleDeploymentPrefsUtil().getModuleRootDestination(moduleTree, server.getServer(), defaultFolder, java.io.File.pathSeparatorChar);
-		return new ModuleDeploymentPrefsUtil().getModuleNestedDeployPath(moduleTree, defaultFolder, server.getServer());
-	}
-
-	/*
-	 * There's only one caller to this method and so the 'deep' parameter is not necessary
-	 * This method has not been updated for path-calculation against a windows machine
-	 */
-	public static IPath getTempDeployPath(IJBossServerPublishMethod method, IModule[] moduleTree, 
-			IDeployableServer server, boolean deep) {
-		String defaultFolder = method.getPublishDefaultRootTempFolder(server.getServer());
-		return new ModuleDeploymentPrefsUtil().getModuleTempDeployPath(moduleTree, server.getServer(), defaultFolder, java.io.File.pathSeparatorChar);
-	}
-
 	
 	/**
 	 * Given a folder to deploy this module, append the various

@@ -33,15 +33,14 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.ui.editor.ServerEditorSection;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
-import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePollerType;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 
 /**
  * 
@@ -138,7 +137,7 @@ public class PollerSection extends ServerEditorSection implements PropertyChange
 	}
 	
 	protected void findPossiblePollers() {
-		String currentMode = DeploymentPreferenceLoader.getCurrentServerBehaviorModeTypeId(server, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
+		String currentMode = ServerProfileModel.getProfile(server);
 		startupTypes = ExtensionManager.getDefault().getStartupPollers(server.getServerType(), currentMode);
 		shutdownTypes = ExtensionManager.getDefault().getShutdownPollers(server.getServerType(), currentMode);
 		startupTypesStrings = new String[startupTypes.length];

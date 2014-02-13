@@ -19,10 +19,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 
 public class LocalBehaviorUI implements IDeploymentTypeUI {
 	private IServerModeUICallback callback;
@@ -42,8 +41,8 @@ public class LocalBehaviorUI implements IDeploymentTypeUI {
 	}
 	
 	private void verify() {
-		String behaviourType = DeploymentPreferenceLoader.getCurrentDeploymentMethodTypeId(callback.getServer());
-		if( !LocalPublishMethod.LOCAL_PUBLISH_METHOD.equals(behaviourType))
+		String behaviourType = ServerProfileModel.getProfile(callback.getServer());
+		if( !ServerProfileModel.DEFAULT_SERVER_PROFILE.equals(behaviourType))
 			callback.setErrorMessage(null);
 		else {
 			ServerExtendedProperties props = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(callback.getServer());

@@ -33,7 +33,7 @@ import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
-import org.jboss.ide.eclipse.as.ui.wizards.JBossServerWizardFragment;
+import org.jboss.ide.eclipse.as.ui.wizards.ServerProfileWizardFragment;
 import org.jboss.tools.test.util.JobUtils;
 import org.jboss.tools.test.util.SwtUtils;
 import org.jboss.tools.test.util.WorkbenchUtils;
@@ -131,7 +131,7 @@ public class NewServerWizardTest extends TestCase implements ILogListener {
 		out.append(status.getMessage()).append('\n');
 		if(status.getException()!=null) {
 			status.getException().printStackTrace(new PrintWriter(out));
-			if(out.toString().contains(JBossServerWizardFragment.class.getName())) {
+			if(out.toString().contains(ServerProfileWizardFragment.class.getName())) {
 				fail(out.toString());
 			}
 		}
