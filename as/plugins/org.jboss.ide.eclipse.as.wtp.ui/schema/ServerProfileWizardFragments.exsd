@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.jboss.ide.eclipse.as.wtp.core" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="org.jboss.ide.eclipse.as.wtp.ui" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="org.jboss.ide.eclipse.as.wtp.core" id="serverProfile" name="org.jboss.ide.eclipse.as.wtp.core.server.behavior.serverProfile"/>
+         <meta.schema plugin="org.jboss.ide.eclipse.as.wtp.ui" id="ServerProfileWizardFragments" name="ServerProfileWizardFragments"/>
       </appinfo>
       <documentation>
          [Enter description of this extension point.]
@@ -18,7 +18,7 @@
       </annotation>
       <complexType>
          <sequence minOccurs="1" maxOccurs="unbounded">
-            <element ref="serverProfile"/>
+            <element ref="wizardFragment"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -47,60 +47,44 @@
       </complexType>
    </element>
 
-   <element name="serverProfile">
+   <element name="wizardFragment">
       <complexType>
-         <sequence minOccurs="1" maxOccurs="unbounded">
-            <choice>
-               <element ref="subsystem" minOccurs="1" maxOccurs="unbounded"/>
-               <element ref="initializer" minOccurs="1" maxOccurs="unbounded"/>
-            </choice>
-         </sequence>
-         <attribute name="id" type="string" use="required">
+         <attribute name="id" type="string">
             <annotation>
                <documentation>
-                  The id of the profile these settings are to be added to
+                  A unique id for this wizard fragment
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="profile" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A profile id for which this fragment will be shown
                </documentation>
             </annotation>
          </attribute>
          <attribute name="serverTypes" type="string" use="required">
             <annotation>
                <documentation>
-                  A comma-separated list of server types this configuration will apply to
+                  A comma-separated list of server types for which this fragment applies
                </documentation>
             </annotation>
          </attribute>
-      </complexType>
-   </element>
-
-   <element name="subsystem">
-      <complexType>
-         <attribute name="system" type="string" use="required">
-            <annotation>
-               <documentation>
-                  The system name.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="subsystem" type="string" use="required">
-            <annotation>
-               <documentation>
-                  The mapped id of the subsystem you are declaring to be the official implementation for this profile/system/server combination
-               </documentation>
-            </annotation>
-         </attribute>
-      </complexType>
-   </element>
-
-   <element name="initializer">
-      <complexType>
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  The wizard fragment class
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.jboss.ide.eclipse.as.wtp.core.server.behavior.IServerProfileInitializer"/>
+                  <meta.attribute kind="java" basedOn="org.eclipse.wst.server.ui.wizard.WizardFragment:"/>
                </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="weight" type="string">
+            <annotation>
+               <documentation>
+                  A weight
+               </documentation>
             </annotation>
          </attribute>
       </complexType>

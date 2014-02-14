@@ -41,7 +41,6 @@ import org.eclipse.ui.progress.IProgressService;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.rse.core.RSEFrameworkUtils;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
-import org.jboss.ide.eclipse.as.rse.ui.RSEDeploymentPreferenceUI.RSEDeploymentPreferenceComposite;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI.IServerModeUICallback;
 import org.jboss.ide.eclipse.as.ui.editor.ServerModeSectionComposite.ChangeServerPropertyCommand;

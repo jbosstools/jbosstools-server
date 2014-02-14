@@ -189,9 +189,17 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		updateJREs();
 	}
 	
+	protected IRuntime getRuntimeFromTaskModel() {
+		IRuntime r = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		if( r == null ) {
+			r = (IRuntime) getTaskModel().getObject(ServerProfileWizardFragment.TASK_CUSTOM_RUNTIME);
+		}
+		return r;
+	}
+	
 	protected void updateWizardHandle(Composite parent) {
 		// make modifications to parent
-		IRuntime r = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		IRuntime r = getRuntimeFromTaskModel();
 		handle.setTitle( Messages.rwf_JBossRuntime);
 		String descript = r.getRuntimeType().getDescription();
 		handle.setDescription(descript);
@@ -209,7 +217,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 
 	
 	protected boolean isEAP() {
-		IRuntime rt = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		IRuntime rt = getRuntimeFromTaskModel();
 		return RuntimeUtils.isEAP(rt);
 	}
 	
@@ -229,15 +237,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			// new runtime creation
 			IEclipsePreferences prefs2 = InstanceScope.INSTANCE.getNode(JBossServerUIPlugin.PLUGIN_ID);
 			String value = prefs2.get(IPreferenceKeys.RUNTIME_HOME_PREF_KEY_PREFIX + rt.getRuntimeType().getId(), null);
-
-			String locationDefault = Platform.getOS().equals(Platform.WS_WIN32) 
-					? "c:/program files/jboss-" : "/usr/bin/jboss-"; //$NON-NLS-1$ //$NON-NLS-2$
-			if( isEAP() )
-				locationDefault += "eap-"; //$NON-NLS-1$
-			JBossExtendedProperties props = (JBossExtendedProperties)rt.getAdapter(JBossExtendedProperties.class);
-			String version = props.getRuntimeTypeVersionString();
-			locationDefault += version + (version.endsWith(".x") ? "" : ".x");
-			homeDir = (value != null && value.length() != 0) ? value : locationDefault;
+			homeDir = (value != null && value.length() != 0) ? value : "";
 		} else {
 			// old runtime, load from it
 			homeDir = rt.getLocation().toOSString();
@@ -291,7 +291,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	}
 	
 	protected void fillWidgets() {
-		IRuntime rt = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		IRuntime rt = getRuntimeFromTaskModel();
 		if (rt != null) {
 			fillNameWidgets(rt);
 			fillHomeDir(rt);
@@ -301,8 +301,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	}
 
 	protected IJBossServerRuntime getRuntime() {
-		IRuntime r = (IRuntime) getTaskModel()
-				.getObject(TaskModel.TASK_RUNTIME);
+		IRuntime r = getRuntimeFromTaskModel();
 		IJBossServerRuntime ajbsrt = null;
 		if (r != null) {
 			ajbsrt = (IJBossServerRuntime) r
@@ -519,8 +518,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		configurations = new JBossConfigurationTableViewer(configGroup,
 		SWT.BORDER | SWT.SINGLE);
 		
-		IRuntime r = (IRuntime) getTaskModel()
-				.getObject(TaskModel.TASK_RUNTIME);
+		IRuntime r = getRuntimeFromTaskModel();
 		IRuntimeWorkingCopy runtimeWC = r.isWorkingCopy() ? ((IRuntimeWorkingCopy) r)
 				: r.createWorkingCopy();
 		IJBossServerRuntime srt = (IJBossServerRuntime) runtimeWC.loadAdapter(
@@ -675,6 +673,8 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	}
 
 	protected void updateErrorMessage() {
+		if( !beenEntered)
+			return;
 		String error = getErrorString();
 		if (error == null) {
 			String warn = getWarningString();
@@ -742,7 +742,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		String serverId = new ServerBeanLoader(loc).getServerAdapterId();
 		String rtId = serverId == null ? null : 
 				ServerCore.findServerType(serverId).getRuntimeType().getId();
-		IRuntime adapterRt = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		IRuntime adapterRt = getRuntimeFromTaskModel();
 		String adapterRuntimeId = adapterRt.getRuntimeType().getId();
 		if( !adapterRuntimeId.equals(rtId)) {
 			return NLS.bind(Messages.rwf_homeIncorrectVersionError, 
@@ -831,7 +831,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	
 	
 	protected List<IVMInstall> getValidJREs() {
-		IRuntime r = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		IRuntime r = getRuntimeFromTaskModel();
 		AbstractLocalJBossServerRuntime jbsrt = (AbstractLocalJBossServerRuntime)r.loadAdapter(AbstractLocalJBossServerRuntime.class, null);
 		return Arrays.asList(jbsrt.getValidJREs(getRuntimeType()));
 	}
@@ -846,14 +846,13 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	}
 	
 	protected void saveDetailsInRuntime() {
-		IRuntime r = (IRuntime) getTaskModel()
-				.getObject(TaskModel.TASK_RUNTIME);
+		IRuntime r = getRuntimeFromTaskModel();
 		IRuntimeWorkingCopy runtimeWC = r.isWorkingCopy() ? ((IRuntimeWorkingCopy) r)
 				: r.createWorkingCopy();
 		
 		saveBasicDetailsInRuntime(runtimeWC);
 		saveConfigurationDetailsInRuntime(runtimeWC);
-		getTaskModel().putObject(TaskModel.TASK_RUNTIME, runtimeWC);
+		//getTaskModel().putObject(TaskModel.TASK_RUNTIME, runtimeWC);  // unnecessary
 	}
 
 	protected void saveBasicDetailsInRuntime(IRuntimeWorkingCopy runtimeWC) {
@@ -880,7 +879,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
 		exit();
-		IRuntime rt = (IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		IRuntime rt = getRuntimeFromTaskModel();
 		if( rt instanceof IRuntimeWorkingCopy ) {
 			IRuntimeWorkingCopy r = (IRuntimeWorkingCopy) rt;
 			IRuntime saved = r.save(false, new NullProgressMonitor());
@@ -1073,7 +1072,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	}
 	
 	public IRuntimeType getRuntimeType() {
-		IRuntime r = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		IRuntime r = getRuntimeFromTaskModel();
 		return r.getRuntimeType();
 	}
 }

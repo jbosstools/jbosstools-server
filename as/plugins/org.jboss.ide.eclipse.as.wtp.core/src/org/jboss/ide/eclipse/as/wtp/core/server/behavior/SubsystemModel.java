@@ -127,6 +127,7 @@ public class SubsystemModel {
 		private String system;
 		private String id;
 		private String name;
+		private boolean requiresRuntime;
 		private IConfigurationElement element;
 		private String[] requiredSystems;
 		private HashMap<String, String> requiredSubsystems;
@@ -137,6 +138,8 @@ public class SubsystemModel {
 			name = element.getAttribute("name");
 			id = element.getAttribute("id");
 			system = element.getAttribute("system");
+			String reqRuntime = element.getAttribute("requiresRuntime");
+			requiresRuntime = reqRuntime == null ? false : new Boolean(reqRuntime).booleanValue();
 			
 			// Calculate dependencies
 			Set<String> reqSystems = new HashSet<String>();
@@ -181,7 +184,9 @@ public class SubsystemModel {
 		public Map<String, String> getRequiredSubsystems() {
 			return (Map<String, String>)requiredSubsystems.clone();
 		}
-		
+		public boolean requiresRuntime() {
+			return requiresRuntime;
+		}
 		public String getSystem() {
 			return system;
 		}
@@ -198,7 +203,35 @@ public class SubsystemModel {
 			return getSystem() + " - " + getId();
 		}
 	}
-		
+
+	/**
+	 * Return only subsystem types for this server for the appropriate system
+	 * @param serverTypeId
+	 * @param system
+	 * @return
+	 */
+	protected SubsystemMapping[] getAllMappings(String serverType) {
+		checkLoaded();
+		Map<String, SubsystemMapping> map = mappedModel.get(serverType);
+		if( map != null ) {
+			Collection<SubsystemMapping> vals = map.values();
+			return (SubsystemMapping[]) vals.toArray(new SubsystemMapping[vals.size()]);
+		}
+		return new SubsystemMapping[0];
+	}
+	
+	protected String[] getAllSystemsForServertype(String serverType) {
+		ArrayList<String> ret = new ArrayList<String>();
+		SubsystemMapping[] all = getAllMappings(serverType);
+		String sys = null;
+		for( int i = 0; i < all.length; i++ ) {
+			sys = all[i].getSubsystem().getSystem();
+			if( !ret.contains(sys))
+				ret.add(sys);
+		}
+		return (String[]) ret.toArray(new String[ret.size()]);
+	}
+	
 	/**
 	 * Return only subsystem types for this server for the appropriate system
 	 * @param serverTypeId
@@ -314,44 +347,9 @@ public class SubsystemModel {
 		return createSubsystemController(server, server.getServerType().getId(), system, requiredProperties, defaultSubsystem, environment);
 	}
 	
-	
-	/**
-	 * This signature is mostly unnecessary but is exposed for testing. 
-	 * Please use the other shorter signature, specifically those that do not
-	 * require the server type.
-	 * 
-	 *  This method will traverse the model from the extension points, 
-	 *  and find (and then instantiate a new instance of) a controller 
-	 *  that matches the given criteria. It will also prime the controller
-	 *  with a reference to the server, and its internal system type object.
-	 *  
-	 *  You should provide a server if your subsystem, or any of its dependent subsystems, 
-	 *  require any information from the server.  You must provide a system 
-	 *  that you are looking for (such as "publish" or "modules", and you may
-	 *  provide a map of required properties the system must have. 
-	 *  
-	 *  You may also list a default system id, such as "publish.carrierPidgeon" to 
-	 *  ensure in the case there are multiple possible "publish" systems that are valid, 
-	 *  "publish.carrierPidgeon" is the one selected. 
-	 *  
-	 *  In the event a default is not provided, requiredProperties are not provided, or
-	 *  any other reason there are multiple results, a flag "default" will be checked for the 
-	 *  value "true" on the subsystem's extension point data. 
-	 *  
-	 *  In the event there are *still* multiple matches, the first will be chosen. 
-	 * 
-	 * @param server
-	 * @param serverType
-	 * @param system
-	 * @param requiredProperties
-	 * @param defaultSubsystem
-	 * @param environment An environment to be passed in
-	 * @return
-	 * @throws CoreException
-	 */
-	public ISubsystemController createSubsystemController(IServerAttributes server, String serverType, String system, 
+	public SubsystemMapping getSubsystemMappingForCreation(String serverType, String system, 
 			Map<String, String> requiredProperties, String defaultSubsystem, 
-			Map<String, Object> environment) throws CoreException {
+			Map<String, Object> environment) throws CoreException {	
 		checkLoaded();
 		SubsystemMapping[] types = getSubsystemMappings(serverType, system);
 		if( types == null )
@@ -404,7 +402,47 @@ public class SubsystemModel {
 			String msg = "No subsystem found for servertype " + serverType + " and system type " + system;
 			throw new CoreException(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, msg));
 		}
-		
+		return selectedMapping;
+	}
+	/**
+	 * This signature is mostly unnecessary but is exposed for testing. 
+	 * Please use the other shorter signature, specifically those that do not
+	 * require the server type.
+	 * 
+	 *  This method will traverse the model from the extension points, 
+	 *  and find (and then instantiate a new instance of) a controller 
+	 *  that matches the given criteria. It will also prime the controller
+	 *  with a reference to the server, and its internal system type object.
+	 *  
+	 *  You should provide a server if your subsystem, or any of its dependent subsystems, 
+	 *  require any information from the server.  You must provide a system 
+	 *  that you are looking for (such as "publish" or "modules", and you may
+	 *  provide a map of required properties the system must have. 
+	 *  
+	 *  You may also list a default system id, such as "publish.carrierPidgeon" to 
+	 *  ensure in the case there are multiple possible "publish" systems that are valid, 
+	 *  "publish.carrierPidgeon" is the one selected. 
+	 *  
+	 *  In the event a default is not provided, requiredProperties are not provided, or
+	 *  any other reason there are multiple results, a flag "default" will be checked for the 
+	 *  value "true" on the subsystem's extension point data. 
+	 *  
+	 *  In the event there are *still* multiple matches, the first will be chosen. 
+	 * 
+	 * @param server
+	 * @param serverType
+	 * @param system
+	 * @param requiredProperties
+	 * @param defaultSubsystem
+	 * @param environment An environment to be passed in
+	 * @return
+	 * @throws CoreException
+	 */
+	public ISubsystemController createSubsystemController(IServerAttributes server, String serverType, String system, 
+		Map<String, String> requiredProperties, String defaultSubsystem, 
+		Map<String, Object> environment) throws CoreException {
+
+		SubsystemMapping selectedMapping = getSubsystemMappingForCreation(serverType, system, requiredProperties, defaultSubsystem, environment);
 		try {
 			ISubsystemController c = selectedMapping.getSubsystem().createController();
 			c.initialize(server, new Subsystem(selectedMapping), environment);
@@ -414,7 +452,6 @@ public class SubsystemModel {
 			throw new CoreException(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, msg, ce));
 		}
 	}
-	
 	
 	private Map<String, String> getRequiredPropsFromEnv(String system, Map<String, Object> environment) {
 		String key = system + REQUIRED_PROPERTIES_ENV_KEY;
@@ -628,4 +665,5 @@ public class SubsystemModel {
 	private boolean hasRequiredSubsystemAttributes(SubsystemType type) {
 		return type.element != null && type.id != null && type.system != null;
 	}	
+	
 }

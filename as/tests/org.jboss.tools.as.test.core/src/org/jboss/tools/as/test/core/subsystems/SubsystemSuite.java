@@ -32,6 +32,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	PublishRunnerTest.class,
 	ZippedPublishRunnerTest.class,
 	StandardFilesystemPublishControllerTest.class,
+	ServerProfileTest.class,
 })
 public class SubsystemSuite {
 }

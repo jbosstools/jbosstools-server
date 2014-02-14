@@ -94,6 +94,13 @@
                </appinfo>
             </annotation>
          </attribute>
+         <attribute name="requiresRuntime" type="boolean">
+            <annotation>
+               <documentation>
+                  If this subsystem requires your server to have a runtime, you should set this attribute to true. It will ensure that during server creation, your server has a runtime provided to it.   The default value is &apos;false&apos;
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 

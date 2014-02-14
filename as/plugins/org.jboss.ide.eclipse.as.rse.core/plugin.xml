@@ -130,6 +130,7 @@
           <subsystem system="filesystem" subsystem="filesystem.rse"/>
        </serverProfile>
        <serverProfile id="rse" serverTypes="%AllJBossServerTypes">
+       	  <initializer class="org.jboss.ide.eclipse.as.rse.core.subsystems.RSEProfileInitializer"/>
           <subsystem system="launch" subsystem="launch.standard.rse"/>
           <subsystem system="publish" subsystem="publish.filesystem.default"/> 
        </serverProfile>

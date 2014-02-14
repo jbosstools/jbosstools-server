@@ -33,10 +33,12 @@
             class="org.jboss.ide.eclipse.as.ui.wizards.JBossRuntimeWizardFragment"
             typeIds="%RuntimeTypesJBoss6OrLower"
         	id="org.jboss.ide.eclipse.as.ui.JBossRuntimeWizardFragment"/>
-      <fragment
+<!--      <fragment
             class="org.jboss.ide.eclipse.as.ui.wizards.JBossServerWizardFragment"
             id="org.jboss.ide.eclipse.as.ui.jbossServerWizardFragment"
-            typeIds="%ServerTypesJBoss6OrLower"/>
+            typeIds="%ServerTypesJBoss6OrLower"/>  -->
+    
+    <!-- New impl of server wizard - test -->        
       <fragment
             class="org.jboss.ide.eclipse.as.ui.wizards.JBoss7RuntimeWizardFragment"
             id="org.jboss.ide.eclipse.as.ui.jboss7RuntimeWizardFragment"
@@ -46,17 +48,15 @@
             id="org.jboss.ide.eclipse.as.ui.jboss72Eap61RuntimeWizardFragment"
             typeIds="org.jboss.ide.eclipse.as.runtime.eap.61"/>
       <fragment
-            class="org.jboss.ide.eclipse.as.ui.wizards.JBoss7ServerWizardFragment"
-            id="org.jboss.ide.eclipse.as.ui.jboss7ServerWizardFragment"
-            typeIds="%ServerTypesJBoss7"/>
-      <fragment
             class="org.jboss.ide.eclipse.as.ui.wizards.Wildfly80RuntimeWizardFragment"
             id="org.jboss.ide.eclipse.as.ui.Wildfly80RuntimeWizardFragment"
             typeIds="%RuntimeTypesWildfly8"/>
+            
       <fragment
-            class="org.jboss.ide.eclipse.as.ui.wizards.JBoss7ServerWizardFragment"
-            id="org.jboss.ide.eclipse.as.ui.wildfly8ServerWizardFragment"
-            typeIds="%ServerTypesWildfly8"/>
+            class="org.jboss.ide.eclipse.as.ui.wizards.ServerProfileWizardFragment"
+            id="org.jboss.ide.eclipse.as.ui.wizards.ServerProfileWizardFragment"
+            typeIds="%AllJBossServerTypes"/>
+            
       <!-- NEW_SERVER_ADAPTER  Add the wizard fragment (if applicable) for the new server adapter above this line -->
       <fragment
              class="org.jboss.ide.eclipse.as.ui.wizards.StrippedServerWizardFragment"

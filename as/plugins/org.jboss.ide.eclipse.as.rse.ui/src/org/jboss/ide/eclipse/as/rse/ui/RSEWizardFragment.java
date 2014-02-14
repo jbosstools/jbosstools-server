@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2011 Red Hat, Inc. 
+ * Copyright (c) 2014 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -12,35 +12,56 @@ package org.jboss.ide.eclipse.as.rse.ui;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
+import org.eclipse.wst.server.core.TaskModel;
+import org.eclipse.wst.server.ui.wizard.IWizardHandle;
+import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManagerServicePoller;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
-import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI;
+import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
+import org.jboss.ide.eclipse.as.ui.editor.DeploymentTypeUIUtil;
+import org.jboss.ide.eclipse.as.ui.editor.DeploymentTypeUIUtil.ICompletable;
+import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI.IServerModeUICallback;
 
-public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
-
-	public RSEDeploymentPreferenceUI() {
-		// Do nothing
+public class RSEWizardFragment extends WizardFragment {
+	private IWizardHandle handle;
+	public RSEWizardFragment() {
 	}
 
-	@Override 
-	public void fillComposite(Composite parent, IServerModeUICallback callback) {
+
+	protected void initWizardHandle() {
+		// make modifications to parent
+		handle.setTitle("Remote System Integration");
+		handle.setDescription("Please set the properties required for connecting to a remote system.");
+		String imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_LOGO;
+		handle.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(imageKey));
+	}
+
+	public boolean hasComposite() {
+		return true;
+	}
+	
+	public void performFinish(IProgressMonitor monitor) throws CoreException {
+		// do nothing
+	}
+	public Composite createComposite(Composite parent, IWizardHandle handle) {
+		this.handle = handle;
+		initWizardHandle();
 		parent.setLayout(new FillLayout());
 		RSEDeploymentPreferenceComposite composite = null;
 		
-		IServerWorkingCopy cServer = callback.getServer();
+		IServerWorkingCopy cServer = (IServerWorkingCopy)getTaskModel().getObject(TaskModel.TASK_SERVER);
 		IJBossServer jbs = cServer.getOriginal() == null ? 
 				ServerConverter.getJBossServer(cServer) :
 					ServerConverter.getJBossServer(cServer.getOriginal());
 		ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(cServer);
+		IServerModeUICallback callback = createLegacyCallback(handle);
 		if( jbs == null || sep == null)
 			composite = new DeployOnlyRSEPrefComposite(parent, SWT.NONE, callback);
 		else if( sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_SERVER_CONFIG_DEPLOY){
@@ -49,27 +70,16 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			composite = new JBoss7RSEDeploymentPrefComposite(parent, SWT.NONE, callback);
 		}
 		// NEW_SERVER_ADAPTER potential location for new server details
+		return composite;
 	}
 	
-	@Override
-	@Deprecated
-	public void performFinish(IServerModeUICallback callback, IProgressMonitor monitor) throws CoreException {
-		// Override the pollers to more sane defaults for RSE
-		// For now, hard code these options. One day, we might need an additional
-		// adapter factory for rse-specific initialization questions on a per-server basis
-		IServerWorkingCopy wc = callback.getServer();
-		// an as7-only key
-		boolean exposed = wc.getAttribute(IJBossToolingConstants.EXPOSE_MANAGEMENT_SERVICE, false);
-		if( !exposed ) {
-			// as<7 || ( as==7 && !exposed) uses poller
-			wc.setAttribute(IJBossToolingConstants.STARTUP_POLLER_KEY, WebPortPoller.WEB_POLLER_ID);
-			wc.setAttribute(IJBossToolingConstants.SHUTDOWN_POLLER_KEY, WebPortPoller.WEB_POLLER_ID);
-		} else {
-			// as7 && exposed
-			// TODO THIS NEEDS TO LIVE ELSEWHERE
-			String pollId = wc.getServerType().getId().equals(IJBossToolingConstants.SERVER_WILDFLY_80) ? JBoss7ManagerServicePoller.WILDFLY_POLLER_ID : JBoss7ManagerServicePoller.POLLER_ID;
-			wc.setAttribute(IJBossToolingConstants.STARTUP_POLLER_KEY, pollId);
-			wc.setAttribute(IJBossToolingConstants.SHUTDOWN_POLLER_KEY, pollId);
-		}
+	// TODO clean this out
+	private IServerModeUICallback createLegacyCallback(final IWizardHandle handle) {
+		return DeploymentTypeUIUtil.getCallback(getTaskModel(), handle, new ICompletable() {
+			public void setComplete(boolean complete) {
+				setComplete(complete);
+			}
+		});
 	}
+	
 }
