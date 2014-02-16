@@ -257,7 +257,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		boolean forceZip = forceZipModule(module);
 		boolean forzeZipAnyParent = parentModuleIsForcedZip(module);
 		
-		if( forceZip ) {
+		if( !isBinaryObject && forceZip ) {
 			// if we have to force-zip any of the parents, we already did zip this one as well
 			if( forzeZipAnyParent) {
 				// We can assume the parent was already published.
