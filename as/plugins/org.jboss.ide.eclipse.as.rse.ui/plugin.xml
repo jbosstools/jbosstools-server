@@ -85,5 +85,15 @@
           <subsystem system="deploymentPage" subsystem="deploymentPage.standard"/>
        </serverProfile>
     </extension>
+    <extension
+          point="org.jboss.ide.eclipse.as.wtp.ui.ServerProfileWizardFragments">
+       <wizardFragment
+             class="org.jboss.ide.eclipse.as.rse.ui.RSEWizardFragment"
+             id="rg.jboss.ide.eclipse.as.rse.ui.WizardFragment"
+             profile="rse"
+             serverTypes="%AllJBTServerTypes"
+             weight="5">
+       </wizardFragment>
+    </extension>
    
 </plugin>

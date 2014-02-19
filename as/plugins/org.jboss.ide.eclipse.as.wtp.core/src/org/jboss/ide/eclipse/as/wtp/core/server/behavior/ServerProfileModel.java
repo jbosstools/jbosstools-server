@@ -11,7 +11,9 @@
 package org.jboss.ide.eclipse.as.wtp.core.server.behavior;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
@@ -22,7 +24,9 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.SubsystemModel.SubsystemMapping;
 
 /**
  * This is a class responsible for keeping track of profiles as added through the 
@@ -34,7 +38,7 @@ import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
  * If a system for a given server type does not have a declared subsystem implementation
  * for a given profile, default resolution through the {@link SubsystemModel} will apply. 
  * 
- * The {@link SubsystemModel} will return a relevent subsystem, but may error if
+ * The {@link SubsystemModel} will return a relevant subsystem, but may error if
  * either no controller exists for the server type and system combination, 
  * or if multiple such implementations are available and the model does not know how
  * to choose one over another. 
@@ -44,7 +48,7 @@ import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
  * it is best to declare one implementation in a profile, or mark one as default. 
  * 
  * This class also allows the creation of initialization participants
- * which can help a new server being created to be initialized with relevent data
+ * which can help a new server being created to be initialized with relevant data
  * for a given profile. This feature is as of now unused, and is not guaranteed
  * to be supported in any way.  
  * 
@@ -64,8 +68,9 @@ public class ServerProfileModel {
 		return server.getAttribute(SERVER_PROFILE_PROPERTY_KEY, defaultProfile);
 	}
 
-	
-	
+	public static void setProfile(IServerWorkingCopy wc, String profile) {
+		wc.setAttribute(SERVER_PROFILE_PROPERTY_KEY, profile);
+	}
 	
 	
 	private static ServerProfileModel profileModel;
@@ -79,6 +84,42 @@ public class ServerProfileModel {
 	private ServerProfileModel() {
 		internal = new InternalProfileModel();
 		internal.load();
+	}
+	
+	public boolean profileRequiresRuntime(String serverType, String profile) {
+		String[] systems = SubsystemModel.getInstance().getAllSystemsForServertype(serverType);
+		ServerProfile sp = internal.getProfile(profile, serverType);
+		/// get A subsystem mapping for each system type that exists.
+		// See if any of those mappings require a runtime. 
+		for( int i = 0; i < systems.length; i++ ) {
+			try {
+				SubsystemMapping oneMapping = sp.getControllerMapping(serverType, systems[i], null);
+				if( oneMapping == null ) {
+					oneMapping = SubsystemModel.getInstance().getSubsystemMappingForCreation(serverType, systems[i], null, null, null);
+				}
+				if( oneMapping != null && oneMapping.getSubsystem() != null ) {
+					if(oneMapping.getSubsystem().requiresRuntime()) {
+						return true;
+					} 
+				} else {
+					// TODO log
+					System.out.println(i + " Error searching for serverType " + serverType + " and system type " + systems[i] + " using profile " + profile);
+				}
+			} catch(CoreException ce) {
+				// Intentionally do not log here. 
+				// This method should just return true or false to the best of its ability. 
+			}
+		}
+		return false;
+	}
+	
+	public ServerProfile[] getProfiles(String serverType) {
+		return internal.getProfiles(serverType);
+	}
+	
+	public IServerProfileInitializer[] getInitializers(String serverType, String profile) {
+		ServerProfile sp = internal.getProfile(profile, serverType);
+		return sp == null ? new IServerProfileInitializer[0] : sp.getInitializers();
 	}
 	
 	/**
@@ -157,12 +198,22 @@ public class ServerProfileModel {
 			}
 			return null;
 		}
+		
+		private ServerProfile[] getProfiles(String serverType) {
+			HashMap<String, ServerProfile> m = model.get(serverType);
+			if( m != null ) {
+				Collection<ServerProfile> profiles = m.values();
+				return profiles.toArray(new ServerProfile[profiles.size()]);
+			}
+			return new ServerProfile[0];
+		}
+		
 	}
 	
 	// Represents the data for a server + profile name combination
 	// A given profile/server combination can have many initializers
 	// ANd should have one subsystem type per system type or this will error
-	private static class ServerProfile {
+	public static class ServerProfile {
 		private HashMap<String, String> subsystems = new HashMap<String, String>();
 		private ArrayList<InitializerWrapper> initializers = new ArrayList<InitializerWrapper>();
 		
@@ -171,8 +222,16 @@ public class ServerProfileModel {
 			this.id = id;
 			this.serverType = serverType;
 		}
+		
+		public String getId() {
+			return id;
+		}
+		public String getServerType() {
+			return serverType;
+		}
+		
 		private void addConfigurationElement(IConfigurationElement el) throws CoreException {
-			IConfigurationElement[] initializers = el.getChildren("initializers");
+			IConfigurationElement[] initializers = el.getChildren("initializer");
 			for( int i = 0; i < initializers.length; i++ ) {
 				addInitializer(initializers[i]);
 			}
@@ -183,6 +242,20 @@ public class ServerProfileModel {
 			}
 			
 		}
+		
+		protected IServerProfileInitializer[] getInitializers() {
+			ArrayList<IServerProfileInitializer> valid = new ArrayList<IServerProfileInitializer>();
+			Iterator<InitializerWrapper> i = initializers.iterator();
+			InitializerWrapper wrapper;
+			while(i.hasNext()) {
+				wrapper = i.next();
+				if( wrapper.getInitializer() != null ) {
+					valid.add(wrapper.getInitializer());
+				}
+			}
+			return valid.toArray(new IServerProfileInitializer[valid.size()]);
+		}
+		
 		private void addInitializer(IConfigurationElement el) {
 			initializers.add(new InitializerWrapper(el));
 		}
@@ -210,6 +283,16 @@ public class ServerProfileModel {
 					server, server.getServerType().getId(), system, subsystem, envMap);
 			return null;
 		}
+		
+		public SubsystemMapping getControllerMapping(String serverType, String system, ControllerEnvironment environment) throws CoreException {
+			Map<String,Object> envMap =  environment == null ? null : environment.getMap();
+			String subsystem = subsystems.get(system);
+			if( subsystem != null )
+				return SubsystemModel.getInstance().getSubsystemMappingForCreation(
+					serverType, system, null, subsystem, envMap);
+			return null;
+		}
+
 	}
 	
 	private static class InitializerWrapper {
@@ -225,6 +308,7 @@ public class ServerProfileModel {
 					initializer = (IServerProfileInitializer)element.createExecutableExtension("class");
 				} catch(CoreException ce) {
 					failed = true;
+					ASWTPToolsPlugin.log(ce);
 				}
 			}
 			return initializer;

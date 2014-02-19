@@ -55,6 +55,7 @@ public class DownloadRuntimeServerUtil {
 		ArrayList<DownloadRuntime> retval = new ArrayList<DownloadRuntime>();
 		for( int i = 0; i < dlRuntimes.length; i++ ) {
 			DownloadRuntime rt = dlRuntimes[i];
+			System.out.println(getWTPRuntime(rt));
 			if( type.equals(getWTPRuntime(rt)))
 					retval.add(rt);
 		}

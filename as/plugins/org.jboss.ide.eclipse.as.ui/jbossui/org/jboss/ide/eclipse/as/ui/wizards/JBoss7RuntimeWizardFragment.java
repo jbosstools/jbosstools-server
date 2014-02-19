@@ -36,14 +36,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
-import org.eclipse.wst.server.core.TaskModel;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.JavaUtils;
-import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -263,7 +261,7 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	
 	@Override
 	protected void fillWidgets() {
-		IRuntime rt = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		IRuntime rt = getRuntimeFromTaskModel();
 		if (rt != null) {
 			try {
 				fillNameWidgets(rt);
@@ -429,7 +427,7 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	@Override
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
 		exit();
-		IRuntime rt = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		IRuntime rt = getRuntimeFromTaskModel();
 		((IRuntimeWorkingCopy) rt).setLocation(new Path(homeDir));
 		saveRuntimeLocationInPreferences(rt);
 	}
