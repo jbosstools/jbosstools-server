@@ -61,7 +61,7 @@ public class JBInitialSelectionProvider extends InitialSelectionProvider impleme
 	
 	public IServerType getDefaultServerType() {
 		IEclipsePreferences defaults = DefaultScope.INSTANCE.getNode(JBossServerUIPlugin.PLUGIN_ID);
-		String newestJBoss = defaults.get(DEFAULT_INITIAL_SERVER_TYPE, IJBossToolingConstants.SERVER_AS_71);
+		String newestJBoss = defaults.get(DEFAULT_INITIAL_SERVER_TYPE, IJBossToolingConstants.SERVER_EAP_61);
 		return ServerCore.findServerType(newestJBoss);
 	}
 
