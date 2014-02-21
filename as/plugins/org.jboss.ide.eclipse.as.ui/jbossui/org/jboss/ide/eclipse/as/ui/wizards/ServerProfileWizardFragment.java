@@ -243,6 +243,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 			if( runtimeSelIndex >= runtimes.length) {
 				// user clicked 'new...' so we need a new runtime fragment
 				getTaskModel().putObject(TASK_CUSTOM_RUNTIME, newRuntimeWorkingCopy);
+				getTaskModel().putObject(TaskModel.TASK_RUNTIME, null);
 				rt = newRuntimeWorkingCopy;
 			} else {
 				getTaskModel().putObject(TaskModel.TASK_RUNTIME, runtimes[runtimeSelIndex]);
