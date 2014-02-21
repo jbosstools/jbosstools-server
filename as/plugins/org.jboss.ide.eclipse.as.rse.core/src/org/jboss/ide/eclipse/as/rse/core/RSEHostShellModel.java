@@ -88,10 +88,9 @@ public class RSEHostShellModel {
 					throws CoreException, SystemMessageException {
 			resetStartupShell();
 			IServer s = ServerCore.findServer(serverId);
-			IShellService service = findShellService(s);
+			IShellService service = findShellService(s);			
 			try {
-				IHostShell hs = service.runCommand(initialWorkingDirectory, 
-									command, environment, monitor);
+				IHostShell hs = service.launchShell(initialWorkingDirectory, environment, new NullProgressMonitor());
 				listener = new IHostShellOutputListener() {
 					public void shellOutputChanged(IHostShellChangeEvent event) {
 						IHostOutput[] lines = event.getLines();
@@ -104,6 +103,7 @@ public class RSEHostShellModel {
 				};
 				startupShell = hs;
 				startupShell.addOutputListener(listener);
+				hs.writeToShell(command);
 				return hs;
 			} catch(SystemMessageException sme) {
 				throw sme; 
