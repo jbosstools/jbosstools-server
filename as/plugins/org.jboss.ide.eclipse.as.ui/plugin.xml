@@ -534,6 +534,7 @@
     <navigatorContent
           activeByDefault="true"
           contentProvider="org.jboss.ide.eclipse.as.ui.views.as7.management.content.ServerContentTreeContentProvider"
+          icon="$nl$/icons/console.gif"
           id="org.jboss.ide.eclipse.as.ui.extensions.content"
           labelProvider="org.jboss.ide.eclipse.as.ui.views.as7.management.content.ServerContentLabelProvider"
           name="%NavigatorContent_ServerContent"

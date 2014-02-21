@@ -68,7 +68,7 @@
        </enablement>
     </actionProvider>
     <navigatorContent
-          name="%NavigatorContent_JMX"
+          name="JMX"
           id="org.jboss.ide.eclipse.as.ui.extensions.jmx"
           icon="$nl$/icons/jmeth_obj.gif"
           activeByDefault="false"
