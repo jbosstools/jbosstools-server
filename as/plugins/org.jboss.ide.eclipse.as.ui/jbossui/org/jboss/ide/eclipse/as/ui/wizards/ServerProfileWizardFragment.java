@@ -239,6 +239,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 	private void runtimeComboChanged() {
 		int runtimeSelIndex = runtimeCombo.getSelectionIndex();
 		IRuntime rt = null;
+		IServer s = (IServer)getTaskModel().getObject(TaskModel.TASK_SERVER);
 		if( runtimeSelIndex != -1 ) {
 			if( runtimeSelIndex >= runtimes.length) {
 				// user clicked 'new...' so we need a new runtime fragment
@@ -250,10 +251,13 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 				getTaskModel().putObject(TASK_CUSTOM_RUNTIME, null);
 				rt = runtimes[runtimeSelIndex];
 			}
-			IServer s = (IServer)getTaskModel().getObject(TaskModel.TASK_SERVER);
 			if( rt != null && s instanceof IServerWorkingCopy) {
 				((IServerWorkingCopy)s).setRuntime(rt);
 			}
+		} else {
+			getTaskModel().putObject(TASK_CUSTOM_RUNTIME, null);
+			getTaskModel().putObject(TaskModel.TASK_RUNTIME, null);
+			((IServerWorkingCopy)s).setRuntime(null);
 		}
 		updateErrorMessage();
 	}
@@ -277,11 +281,12 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		updateErrorMessage();
 	}
 	private void useRuntimeChanged() {
+		runtimeCombo.setEnabled(useRuntimeButton.getSelection());
 		if( !useRuntimeButton.getSelection()) {
 			runtimeCombo.deselectAll();
+		} else {
+			runtimeCombo.select(0);
 		}
-		runtimeCombo.setEnabled(useRuntimeButton.getSelection());
-		runtimeCombo.select(0);
 		runtimeComboChanged();
 		updateErrorMessage();
 	}
