@@ -43,29 +43,29 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 
 	@Override
 	public void configure(ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
-
-		boolean detectStartupCommand = RSELaunchConfigProperties.isDetectStartupCommand(launchConfig, true);
-		String currentStartupCmd = RSELaunchConfigProperties.getStartupCommand(launchConfig);
+		RSELaunchConfigProperties propertyUtil = new RSELaunchConfigProperties();
+		boolean detectStartupCommand = propertyUtil.isDetectStartupCommand(launchConfig, true);
+		String currentStartupCmd = propertyUtil.getStartupCommand(launchConfig);
 		
 		// Set the default startup command
 		String defaultStartup = getLaunchCommand((JBossServer)jbossServer);
-		RSELaunchConfigProperties.setDefaultStartupCommand(defaultStartup, launchConfig);
+		propertyUtil.setDefaultStartupCommand(defaultStartup, launchConfig);
 		
 		// If we're auto-detecting, or user has not customized, use the default
 		if( detectStartupCommand || !isSet(currentStartupCmd)) {
-			RSELaunchConfigProperties.setStartupCommand(defaultStartup, launchConfig);
+			propertyUtil.setStartupCommand(defaultStartup, launchConfig);
 		}
 		
-		boolean detectShutdownCommand = RSELaunchConfigProperties.isDetectShutdownCommand(launchConfig, true);
-		String currentShutdownCmd = RSELaunchConfigProperties.getShutdownCommand(launchConfig);
+		boolean detectShutdownCommand = propertyUtil.isDetectShutdownCommand(launchConfig, true);
+		String currentShutdownCmd = propertyUtil.getShutdownCommand(launchConfig);
 		
 		// Set the default shutdown command
 		String defaultShutdownCommand = getDefaultShutdownCommand(jbossServer.getServer());
-		RSELaunchConfigProperties.setDefaultShutdownCommand(defaultShutdownCommand, launchConfig);
+		propertyUtil.setDefaultShutdownCommand(defaultShutdownCommand, launchConfig);
 		
 		// If we're auto-detecting, or user has not customized, use the default
 		if( detectShutdownCommand || !isSet(currentShutdownCmd)) {
-			RSELaunchConfigProperties.setShutdownCommand(defaultShutdownCommand, launchConfig);
+			propertyUtil.setShutdownCommand(defaultShutdownCommand, launchConfig);
 		}
 	}
 

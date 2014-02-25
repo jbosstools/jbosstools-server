@@ -21,6 +21,7 @@ public class EclipseServerExtendedProperties extends ServerExtendedProperties {
 		super(adaptable);
 	}
 
+	@Override
 	public String getNewFilesetDefaultRootFolder() {
 		return runtime.getLocation().toOSString();
 	}

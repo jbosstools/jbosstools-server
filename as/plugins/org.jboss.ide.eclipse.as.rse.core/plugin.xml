@@ -2,43 +2,6 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="org.jboss.ide.eclipse.as.core.behaviourExtension">
-      <behaviour
-            name="%RSEMethodName"
-            publishMethod="org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod"
-            serverTypes="org.jboss.ide.eclipse.as.systemCopyServer"
-            typeId="rse">
-      </behaviour>
-      <behaviour
-            behaviourDelegate="org.jboss.ide.eclipse.as.rse.core.RSEBehaviourDelegate"
-            launchDelegate="org.jboss.ide.eclipse.as.rse.core.RSEJBossStartLaunchDelegate"
-            name="%RSEMethodName"
-            publishMethod="org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod"
-            serverTypes="%ServerTypesJBoss6OrLower"
-            typeId="rse">
-      </behaviour>
-      <behaviour
-            behaviourDelegate="org.jboss.ide.eclipse.as.rse.core.RSEJBoss7BehaviourDelegate"
-            launchDelegate="org.jboss.ide.eclipse.as.rse.core.RSEJBoss7StartLaunchDelegate"
-            name="%RSEMethodName"
-            publishMethod="org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod"
-            serverTypes="%ServerTypesJBoss7"
-            typeId="rse">
-      </behaviour>
-      <behaviour
-            behaviourDelegate="org.jboss.ide.eclipse.as.rse.core.RSEWildfly8BehaviourDelegate"
-            launchDelegate="org.jboss.ide.eclipse.as.rse.core.RSEJBoss7StartLaunchDelegate"
-            name="%RSEMethodName"
-            publishMethod="org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod"
-            serverTypes="%ServerTypesWildfly8"
-            typeId="rse">
-      </behaviour>
-   </extension>
-   <!-- NEW_SERVER_ADAPTER  Add the new RSE behaviour delegate if needed for the new server above this line -->
-   
-   
-   
-   <extension
          point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
       <subsystem
             system="deploymentOptions"
@@ -104,13 +67,13 @@
             mappedId="launch.standard.rse"
             serverTypes="%AllJBossServerTypes">
       </subsystemMapping>
-            
+      
       
       <subsystem
             system="shutdown"
             id="shutdown.rse.commandline.default"
             name="Shutdown Server (Remote Command Line)"
-            class="org.jboss.ide.eclipse.as.rse.core.subsystems.RSECommandLineShutdownController">
+            class="org.jboss.ide.eclipse.as.rse.core.subsystems.RSEJBossCommandLineShutdownController">
          <properties>
             <property key="target" value="rse"></property>
          </properties>
@@ -120,6 +83,37 @@
             mappedId="shutdown.rse.default"
             serverTypes="%ServerTypesJBoss6OrLower">
       </subsystemMapping>
+	
+      
+      <subsystem
+            system="launch"
+            id="launch.standard.rse.deployOnly.default"
+            name="Launch Deploy-Only Server (RSE)"
+            class="org.jboss.ide.eclipse.as.rse.core.subsystems.RSECommandLineLaunchController">
+         <properties>
+            <property key="target" value="rse"></property>
+         </properties>
+      </subsystem>
+      <subsystemMapping
+            id="launch.standard.rse.deployOnly.default"
+            mappedId="launch.standard.rse"
+            serverTypes="org.jboss.ide.eclipse.as.systemCopyServer">
+      </subsystemMapping>
+            
+      <subsystem
+            system="shutdown"
+            id="shutdown.rse.commandline.deployOnly.default"
+            name="Shutdown Server (Remote Command Line)"
+            class="org.jboss.ide.eclipse.as.rse.core.subsystems.RSECommandLineShutdownController">
+         <properties>
+            <property key="target" value="rse"></property>
+         </properties>
+      </subsystem>
+      <subsystemMapping
+            id="shutdown.rse.commandline.deployOnly.default"
+            mappedId="shutdown.rse.default"
+            serverTypes="org.jboss.ide.eclipse.as.systemCopyServer">
+      </subsystemMapping>
 	</extension>
 	
 	<extension
@@ -128,13 +122,15 @@
           <subsystem system="deploymentOptions" subsystem="deploymentOptions.rse"/>
           <subsystem system="serverDetails" subsystem="serverDetails.rse"/>
           <subsystem system="filesystem" subsystem="filesystem.rse"/>
-       </serverProfile>
-       <serverProfile id="rse" serverTypes="%AllJBossServerTypes">
        	  <initializer class="org.jboss.ide.eclipse.as.rse.core.subsystems.RSEProfileInitializer"/>
           <subsystem system="launch" subsystem="launch.standard.rse"/>
           <subsystem system="publish" subsystem="publish.filesystem.default"/> 
        </serverProfile>
+       <!-- as7/wf shutdown is implied and not added, as only 1 shutdown impl is available -->
        <serverProfile id="rse" serverTypes="%ServerTypesJBoss6OrLower">
+          <subsystem system="shutdown" subsystem="shutdown.rse.default"/>
+       </serverProfile>
+       <serverProfile id="rse" serverTypes="org.jboss.ide.eclipse.as.systemCopyServer">
           <subsystem system="shutdown" subsystem="shutdown.rse.default"/>
        </serverProfile>
     </extension>

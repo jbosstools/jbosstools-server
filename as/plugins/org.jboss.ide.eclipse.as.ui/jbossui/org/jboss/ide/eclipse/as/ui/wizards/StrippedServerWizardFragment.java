@@ -54,22 +54,19 @@ public class StrippedServerWizardFragment extends WizardFragment {
 
 	private IWizardHandle handle;
 
-	private Label deployLabel, tmpDeployLabel, nameLabel;
-	private Text deployText, tmpDeployText, nameText;
+	private Label deployLabel, tmpDeployLabel;
+	private Text deployText, tmpDeployText;
 	private Button browse, tmpBrowse;
-	private String name, deployLoc, tmpDeployLoc;
+	private String deployLoc, tmpDeployLoc;
 
 	public StrippedServerWizardFragment() {
+		System.out.println("Constructor");
 	}
 
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
 		this.handle = handle;
 		Composite main = new Composite(parent, SWT.NONE);
 		main.setLayout(new FormLayout());
-
-		nameLabel = new Label(main, SWT.NONE);
-		nameText = new Text(main, SWT.BORDER);
-		nameLabel.setText(Messages.serverName);
 
 		deployLabel = new Label(main, SWT.NONE);
 		deployText = new Text(main, SWT.BORDER);
@@ -83,31 +80,20 @@ public class StrippedServerWizardFragment extends WizardFragment {
 		tmpDeployLabel.setText(Messages.swf_TempDeployDirectory);
 		tmpBrowse.setText(Messages.browse);
 
-		FormData namelData = new FormData();
-		namelData.top = new FormAttachment(0, 5);
-		namelData.left = new FormAttachment(0, 5);
-		nameLabel.setLayoutData(namelData);
-
-		FormData nametData = new FormData();
-		nametData.top = new FormAttachment(0, 5);
-		nametData.left = new FormAttachment(deployLabel, 5);
-		nametData.right = new FormAttachment(100, -5);
-		nameText.setLayoutData(nametData);
-
 		FormData lData = new FormData();
-		lData.top = new FormAttachment(nameText, 5);
+		lData.top = new FormAttachment(0, 5);
 		lData.left = new FormAttachment(0, 5);
 		deployLabel.setLayoutData(lData);
 
 		FormData tData = new FormData();
-		tData.top = new FormAttachment(nameText, 5);
+		tData.top = new FormAttachment(0, 5);
 		tData.left = new FormAttachment(deployLabel, 5);
 		tData.right = new FormAttachment(browse, -5);
 		deployText.setLayoutData(tData);
 
 		FormData bData = new FormData();
 		bData.right = new FormAttachment(100, -5);
-		bData.top = new FormAttachment(nameText, 5);
+		bData.top = new FormAttachment(0, 5);
 		browse.setLayoutData(bData);
 
 		lData = new FormData();
@@ -138,8 +124,6 @@ public class StrippedServerWizardFragment extends WizardFragment {
 
 		tmpDeployText.addModifyListener(ml);
 		deployText.addModifyListener(ml);
-		nameText.addModifyListener(ml);
-		nameText.setText(getDefaultNameText());
 		handle.setImageDescriptor(JBossServerUISharedImages
 				.getImageDescriptor(JBossServerUISharedImages.WIZBAN_JBOSS_LOGO));
 		return main;
@@ -167,7 +151,6 @@ public class StrippedServerWizardFragment extends WizardFragment {
 		if (status.isOK()) {
 			deployLoc = deployText.getText();
 			tmpDeployLoc = tmpDeployText.getText();
-			name = nameText.getText();
 			handle.setMessage("", IStatus.OK); //$NON-NLS-1$
 			handle.update();
 		} else {
@@ -176,10 +159,9 @@ public class StrippedServerWizardFragment extends WizardFragment {
 	}
 
 	protected IStatus checkErrors() {
-		if (findServer(nameText.getText()) != null) {
-			return new Status(IStatus.WARNING, JBossServerUIPlugin.PLUGIN_ID, IStatus.OK,
-					Messages.StrippedServerWizardFragment_NameInUseStatusMessage, null);
-		}
+		if( handle == null )
+			return Status.CANCEL_STATUS;
+		
 		File f = new File(deployText.getText());
 		if (!f.exists() || !f.isDirectory()) {
 			return new Status(IStatus.WARNING, JBossServerUIPlugin.PLUGIN_ID, IStatus.OK,
@@ -223,7 +205,9 @@ public class StrippedServerWizardFragment extends WizardFragment {
 		else
 			swc = s.createWorkingCopy();
 
-		deployText.setText(swc.getAttribute(DeployableServer.DEPLOY_DIRECTORY, "")); //$NON-NLS-1$
+		String currentdeploy = swc.getAttribute(DeployableServer.DEPLOY_DIRECTORY, "");
+		if(!currentdeploy.equals(""))//$NON-NLS-1$
+			deployText.setText(currentdeploy); 
 	}
 
 	public void exit() {
@@ -235,20 +219,23 @@ public class StrippedServerWizardFragment extends WizardFragment {
 		else
 			swc = s.createWorkingCopy();
 
-			swc.setName(name);
-			swc.setAttribute(DeployableServer.DEPLOY_DIRECTORY, deployLoc);
-			String tempFolder = JBossServerCorePlugin.getServerStateLocation(s)
+		swc.setAttribute(DeployableServer.DEPLOY_DIRECTORY, deployLoc);
+		String tempFolder = JBossServerCorePlugin.getServerStateLocation(s)
 					.append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute().toString();
-			swc.setAttribute(DeployableServer.TEMP_DEPLOY_DIRECTORY, tempFolder);
-			getTaskModel().putObject(TaskModel.TASK_SERVER, swc);
+		swc.setAttribute(DeployableServer.TEMP_DEPLOY_DIRECTORY, tempFolder);
+		getTaskModel().putObject(TaskModel.TASK_SERVER, swc);
 	}
 
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
-		IServerWorkingCopy serverWC = (IServerWorkingCopy) getTaskModel().getObject(TaskModel.TASK_SERVER);
+		IServer server = (IServer) getTaskModel().getObject(TaskModel.TASK_SERVER);
+		IServerWorkingCopy serverWC = null;
+		if( server instanceof IServerWorkingCopy) 
+			serverWC = (IServerWorkingCopy)server;
+		else
+			serverWC = server.createWorkingCopy();
 
 		try {
 			serverWC.setServerConfiguration(null);
-			serverWC.setName(name);
 			serverWC.setAttribute(DeployableServer.DEPLOY_DIRECTORY, deployLoc);
 			serverWC.setAttribute(DeployableServer.TEMP_DEPLOY_DIRECTORY, tmpDeployLoc);
 			getTaskModel().putObject(TaskModel.TASK_SERVER, serverWC);
@@ -263,20 +250,4 @@ public class StrippedServerWizardFragment extends WizardFragment {
 	public boolean hasComposite() {
 		return true;
 	}
-
-	private String getDefaultNameText() {
-		Object o = getTaskModel().getObject(TaskModel.TASK_SERVER);
-		return ((IServerWorkingCopy) o).getName();
-	}
-
-	private IServer findServer(String name) {
-		IServer[] servers = ServerCore.getServers();
-		for (int i = 0; i < servers.length; i++) {
-			IServer server = servers[i];
-			if (name.equals(server.getName()))
-				return server;
-		}
-		return null;
-	}
-
 }

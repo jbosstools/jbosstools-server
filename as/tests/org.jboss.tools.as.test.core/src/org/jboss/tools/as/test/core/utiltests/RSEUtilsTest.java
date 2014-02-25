@@ -92,7 +92,7 @@ public class RSEUtilsTest extends TestCase {
 	public String getStartArgsForServer(IServer s) {
 		try {
 			ILaunchConfiguration lc = s.getLaunchConfiguration(true, new NullProgressMonitor());
-			String currentStartupCmd = RSELaunchConfigProperties.getStartupCommand(lc);
+			String currentStartupCmd = new RSELaunchConfigProperties().getStartupCommand(lc);
 			return currentStartupCmd;
 		} catch (CoreException e) {
 			fail(e.getMessage());

@@ -32,6 +32,7 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.IMultiModuleURLProvider;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
@@ -55,6 +56,7 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 		} else {
 			getServerWorkingCopy().setName(ServerUtil.getDefaultServerName(getServer().getServerType().getName()));
 		}
+		setAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, true);
 	}
 	
 	public void importRuntimeConfiguration(IRuntime runtime, IProgressMonitor monitor) throws CoreException {

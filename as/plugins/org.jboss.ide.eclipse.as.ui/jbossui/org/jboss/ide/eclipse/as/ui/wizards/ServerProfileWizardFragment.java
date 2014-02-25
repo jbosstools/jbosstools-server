@@ -13,6 +13,7 @@ package org.jboss.ide.eclipse.as.ui.wizards;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -204,7 +205,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		
 		
 		IRuntime runtime = (IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME);
-		if( runtime == null ) {
+		if( runtime == null && !runtimeForbidden()) {
 			useRuntimeButton = new Button(main, SWT.CHECK);
 			useRuntimeButton.setText("Assign a runtime to this server");
 			FormData useRuntimeButtonData = UIUtil.createFormData2(requiresRuntimeLabel, 5, null, 0, 0,5,100,-5);
@@ -234,6 +235,31 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 			});
 			runtimeCombo.setEnabled(false);
 		}
+	}
+	
+	
+
+	/**
+	 * Because of the way servers are declared in extension points, 
+	 * a server must mark runtime="true" or runtime="false" in the plugin.xml to indicate
+	 * whether it requires a runtime or not. 
+	 * Unfortunately, a server must also still provide a runtimeType, or it cannot
+	 * deploy any modules at all. 
+	 * 
+	 * So in effect,  runtime="true" or runtime="false" functions more as a question
+	 * as to whether a runtime is "required" for the server to function. 
+	 * 
+	 * The remaining case, though, is how to tell if a server can optionally take a runtime,
+	 * or if it is forbidden. The deploy-only server and all jboss servers both 
+	 * have a runtime type, and also both mark runtime="false" (not required), but, 
+	 * a runtime is optional for the jboss servers, while it is forbidden for the 
+	 * deploy-only server.  
+	 * 
+	 * This new api is the only way we can designate whether one is forbidden or optional. 
+	 * @return
+	 */
+	protected boolean runtimeForbidden() {
+		return false;
 	}
 	
 	private void runtimeComboChanged() {
@@ -268,15 +294,17 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		ServerProfileModel.setProfile(serverWC, sp.getId());
 		boolean requires = ServerProfileModel.getDefault().profileRequiresRuntime(serverWC.getServerType().getId(), sp.getId());
 		requiresRuntime = requires;
-		requiresRuntimeLabel.setText("The selected profile " + (requiresRuntime ? "requires" : "does not require") + " a runtime.");
-		if( requires) {
-			if( useRuntimeButton != null ) {
-				useRuntimeButton.setSelection(true);
-				useRuntimeButton.setEnabled(false);
-				useRuntimeChanged();
+		if( !runtimeForbidden()) {
+			requiresRuntimeLabel.setText("The selected profile " + (requiresRuntime ? "requires" : "does not require") + " a runtime.");
+			if( requires) {
+				if( useRuntimeButton != null ) {
+					useRuntimeButton.setSelection(true);
+					useRuntimeButton.setEnabled(false);
+					useRuntimeChanged();
+				}
+			} else {
+				useRuntimeButton.setEnabled(true);
 			}
-		} else {
-			useRuntimeButton.setEnabled(true);
 		}
 		updateErrorMessage();
 	}
@@ -306,7 +334,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		if( selectedProfile == null ) {
 			return "Please select a profile for your server.";
 		}
-		if( useRuntimeButton.getSelection() && runtimeCombo != null && runtimeCombo.getSelectionIndex() == -1) {
+		if( runtimeCombo != null && useRuntimeButton.getSelection() && runtimeCombo.getSelectionIndex() == -1) {
 			return "Please select a runtime.";
 		}
 		return null;
@@ -366,13 +394,23 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 
 		// Add UI fragment contributions from other plugins for this server/profile combo
 		if( selectedProfile != null ) {
-			WizardFragment[] contributed = ProfileUI.getDefault().getWizardFragments(
+			WizardFragment[] contributed = getContributedFragments(
 					server.getServerType().getId(), selectedProfile.getId());
 			listImpl.addAll(Arrays.asList(contributed));
 		}
 		return listImpl;
 	}
 
+	private HashMap<String, WizardFragment[]> contributedFragments = new HashMap<String, WizardFragment[]>();
+	private WizardFragment[] getContributedFragments(String serverType, String profileId) {
+		String key = serverType + ":" + profileId;
+		if( contributedFragments.get(key) == null ) {
+			WizardFragment[] contributed = ProfileUI.getDefault().getWizardFragments(
+					serverType, profileId);
+			contributedFragments.put(key,  contributed);
+		}
+		return contributedFragments.get(key);
+	}
 
 	/**
 	 * This fragment will ensure that all initializers for this

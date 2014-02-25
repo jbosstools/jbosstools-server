@@ -73,7 +73,12 @@ public class RSEWizardFragment extends WizardFragment {
 		return composite;
 	}
 	
-	// TODO clean this out
+	/*
+	 * TODO clean this out
+	 * This code is here for legacy composites that are meant to work 
+	 * in both the editor and the new server wizard.
+	 * Unfortunately it is not very clean and lacks much functionality :( 
+	 */
 	private IServerModeUICallback createLegacyCallback(final IWizardHandle handle) {
 		return DeploymentTypeUIUtil.getCallback(getTaskModel(), handle, new ICompletable() {
 			public void setComplete(boolean complete) {

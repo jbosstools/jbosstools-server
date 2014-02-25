@@ -37,6 +37,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
@@ -54,6 +55,7 @@ public class JBossServer extends DeployableServer
 	
 	public void setDefaults(IProgressMonitor monitor) {
 		super.setDefaults(monitor);
+		setAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, false);
 		setAttribute("auto-publish-time", 1); //$NON-NLS-1$
 		setAttribute("id", getAttribute("id", (String)"") + new Date().getTime()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		setUsername("admin"); //$NON-NLS-1$

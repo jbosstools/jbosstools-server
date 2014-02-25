@@ -18,7 +18,7 @@
             description="%deploy.server.description"
             hasConfiguration="false"
             id="org.jboss.ide.eclipse.as.systemCopyServer"
-            initialState="started"
+            initialState="stopped"
             launchConfigId="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
             launchModes="run"
             name="%deploy.server.name"
@@ -1772,6 +1772,37 @@
             serverTypes="%AllJBTServerTypes">
       </subsystemMapping>
       
+      
+      <subsystem
+            system="launch"
+            id="launch.commandLine.local.default"
+            name="Command Line Launch Controller"
+            class="org.jboss.tools.as.core.server.controllable.subsystems.internal.CommandLineLaunchController">
+      </subsystem>
+      <subsystemMapping
+            id="launch.commandLine.local.default"
+            mappedId="launch.commandLine.local"
+            serverTypes="org.jboss.ide.eclipse.as.systemCopyServer">
+      </subsystemMapping>
+      
+      
+      <subsystem
+            system="shutdown"
+            id="shutdown.commandLine.local.default"
+            name="Shutdown Server"
+            class="org.jboss.tools.as.core.server.controllable.subsystems.internal.CommandLineShutdownController">
+         <properties>
+            <property key="target" value="local"></property>
+         </properties>
+      </subsystem>
+      <subsystemMapping
+            id="shutdown.commandLine.local.default"
+            mappedId="shutdown.commandLine.local"
+            serverTypes="org.jboss.ide.eclipse.as.systemCopyServer">
+      </subsystemMapping>
+      
+      
+      
       <!-- Some no-op stub implementations -->
       <subsystem
             system="modules"
@@ -1822,6 +1853,10 @@
           <subsystem system="launch" subsystem="launch.standard.local"/>
           <subsystem system="shutdown" subsystem="shutdown.default"/>
           <subsystem system="publish" subsystem="publish.filesystem.default"/>
+       </serverProfile>
+       <serverProfile id="local" serverTypes="org.jboss.ide.eclipse.as.systemCopyServer">
+          <subsystem system="launch" subsystem="launch.commandLine.local"/>
+          <subsystem system="shutdown" subsystem="shutdown.commandLine.local"/>
        </serverProfile>
     </extension>
 

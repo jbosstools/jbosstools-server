@@ -246,6 +246,12 @@ public class Messages extends NLS {
 	public static String EditorDeploymentPageFilterDeployed;
 	public static String EditorDeploymentPageFilterModuleName;
 
+	public static String CommandLineLaunchTab_TAB_NAME;
+	public static String CommandLineLaunchTab_START_COMMAND;
+	public static String CommandLineLaunchTab_STOP_COMMAND;
+	public static String CommandLineLaunchTab_AUTOMATICALLY_CALCULATE;
+
+	
 	
 	public static String ExploreUtils_Action_Text;
 	public static String ExploreUtils_Description;

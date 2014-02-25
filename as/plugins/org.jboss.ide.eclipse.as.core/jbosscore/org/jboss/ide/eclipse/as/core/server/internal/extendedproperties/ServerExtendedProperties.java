@@ -16,7 +16,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
-import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 public class ServerExtendedProperties {
 	protected IServer server;
@@ -101,5 +100,4 @@ public class ServerExtendedProperties {
 	public int getFileStructure() {
 		return FILE_STRUCTURE_UNKNOWN;
 	}
-	
 }

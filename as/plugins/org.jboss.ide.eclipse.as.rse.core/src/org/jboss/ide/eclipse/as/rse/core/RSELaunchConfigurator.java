@@ -102,21 +102,22 @@ public class RSELaunchConfigurator implements ILaunchConfigConfigurator {
 	public void configure(ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
 		String defaultLaunchCommand = getDefaultLaunchCommand(launchConfig);
 		String defaultStopCommand = getDefaultStopCommand(server);
+		RSELaunchConfigProperties propertyUtil = new RSELaunchConfigProperties();
 
-		RSELaunchConfigProperties.setDefaultStartupCommand(defaultLaunchCommand, launchConfig);
+		propertyUtil.setDefaultStartupCommand(defaultLaunchCommand, launchConfig);
 
-		boolean detectStartupCommand = RSELaunchConfigProperties.isDetectStartupCommand(launchConfig, true);
-		String currentStartupCmd = RSELaunchConfigProperties.getStartupCommand(launchConfig);
+		boolean detectStartupCommand = propertyUtil.isDetectStartupCommand(launchConfig, true);
+		String currentStartupCmd = propertyUtil.getStartupCommand(launchConfig);
 		if( detectStartupCommand || !isSet(currentStartupCmd)) {
-			RSELaunchConfigProperties.setStartupCommand(defaultLaunchCommand, launchConfig);
+			propertyUtil.setStartupCommand(defaultLaunchCommand, launchConfig);
 		}
 
-		RSELaunchConfigProperties.setDefaultShutdownCommand(defaultStopCommand, launchConfig);
+		propertyUtil.setDefaultShutdownCommand(defaultStopCommand, launchConfig);
 
-		boolean detectShutdownCommand = RSELaunchConfigProperties.isDetectShutdownCommand(launchConfig, true);
-		String currentStopCmd = RSELaunchConfigProperties.getShutdownCommand(launchConfig);
+		boolean detectShutdownCommand = propertyUtil.isDetectShutdownCommand(launchConfig, true);
+		String currentStopCmd = propertyUtil.getShutdownCommand(launchConfig);
 		if( detectShutdownCommand || !isSet(currentStopCmd)) {
-			RSELaunchConfigProperties.setShutdownCommand(defaultStopCommand, launchConfig);
+			propertyUtil.setShutdownCommand(defaultStopCommand, launchConfig);
 		}
 	}
 		

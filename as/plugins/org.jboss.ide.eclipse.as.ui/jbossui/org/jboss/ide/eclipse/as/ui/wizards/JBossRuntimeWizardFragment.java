@@ -167,13 +167,16 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 					public void run() {
 						if( downloads != null && downloads.length > 0 ) {
 							try {
-								downloadAndInstallButton.setEnabled(true);
-								downloadAndInstallButtonWrapper.setToolTipText(null);
+								if( !downloadAndInstallButton.isDisposed())
+									downloadAndInstallButton.setEnabled(true);
+								if( !downloadAndInstallButtonWrapper.isDisposed())
+									downloadAndInstallButtonWrapper.setToolTipText(null);
 							} catch(Throwable t) {
 								t.printStackTrace();
 							}
 						} else {
-							downloadAndInstallButtonWrapper.setToolTipText(Messages.rwf_downloadTooltipEmpty);
+							if( !downloadAndInstallButtonWrapper.isDisposed())
+								downloadAndInstallButtonWrapper.setToolTipText(Messages.rwf_downloadTooltipEmpty);
 						}
 					}
 				});

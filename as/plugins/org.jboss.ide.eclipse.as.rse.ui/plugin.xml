@@ -79,6 +79,9 @@
        <serverProfile id="rse" serverTypes="%AllJBossServerTypes">
           <subsystem system="launchTabProvider" subsystem="launchTabProvider.rse"/>
        </serverProfile>
+       <serverProfile id="rse" serverTypes="org.jboss.ide.eclipse.as.systemCopyServer">
+          <subsystem system="launchTabProvider" subsystem="launchTabProvider.commandLine"/>
+       </serverProfile>
        <serverProfile id="rse" serverTypes="%AllJBTServerTypes">
           <subsystem system="exploreBehavior" subsystem="exploreBehavior.rse"/>
           <subsystem system="browseBehavior" subsystem="browseBehavior.rse"/>
