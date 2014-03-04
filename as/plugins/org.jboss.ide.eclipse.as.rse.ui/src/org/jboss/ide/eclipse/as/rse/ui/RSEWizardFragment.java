@@ -12,7 +12,6 @@ package org.jboss.ide.eclipse.as.rse.ui;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -53,7 +52,8 @@ public class RSEWizardFragment extends WizardFragment {
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
 		this.handle = handle;
 		initWizardHandle();
-		parent.setLayout(new FillLayout());
+		Composite main = new Composite(parent, SWT.NONE);
+		main.setLayout(new FillLayout());
 		RSEDeploymentPreferenceComposite composite = null;
 		
 		IServerWorkingCopy cServer = (IServerWorkingCopy)getTaskModel().getObject(TaskModel.TASK_SERVER);
@@ -63,14 +63,14 @@ public class RSEWizardFragment extends WizardFragment {
 		ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(cServer);
 		IServerModeUICallback callback = createLegacyCallback(handle);
 		if( jbs == null || sep == null)
-			composite = new DeployOnlyRSEPrefComposite(parent, SWT.NONE, callback);
+			composite = new DeployOnlyRSEPrefComposite(main, SWT.NONE, callback);
 		else if( sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_SERVER_CONFIG_DEPLOY){
-			composite = new JBossRSEDeploymentPrefComposite(parent, SWT.NONE, callback);
+			composite = new JBossRSEDeploymentPrefComposite(main, SWT.NONE, callback);
 		} else if( sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS){
-			composite = new JBoss7RSEDeploymentPrefComposite(parent, SWT.NONE, callback);
+			composite = new JBoss7RSEDeploymentPrefComposite(main, SWT.NONE, callback);
 		}
 		// NEW_SERVER_ADAPTER potential location for new server details
-		return composite;
+		return main;
 	}
 	
 	/*
