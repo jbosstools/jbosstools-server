@@ -243,7 +243,7 @@ public class PollerSection extends ServerEditorSection implements PropertyChange
 			startPollerCombo.setEnabled(!b.booleanValue());
 			stopPollerCombo.setEnabled(!b.booleanValue());
 		}
-		if( propertyName.equals(IDeployableServer.SERVER_MODE)) {
+		if( ServerProfileModel.isProfileKey(propertyName)) {
 			refreshUI();
 		}
 	}

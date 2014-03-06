@@ -1426,43 +1426,6 @@
    </extension>
    
    <extension
-         point="org.jboss.ide.eclipse.as.core.behaviourExtension">
-      <behaviour
-            behaviourDelegate=""
-            name="Local"
-            publishMethod="org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod"
-            serverTypes="org.jboss.ide.eclipse.as.systemCopyServer"
-            typeId="local">
-      </behaviour>
-      <behaviour
-            behaviourDelegate="org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate"
-            launchDelegate="org.jboss.ide.eclipse.as.core.server.internal.launch.LocalJBossStartLaunchDelegate"
-            name="Local"
-            publishMethod="org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod"
-            serverTypes="%ServerTypesJBoss6OrLower"
-            typeId="local">
-      </behaviour>
-      <behaviour
-            behaviourDelegate="org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7BehaviorDelegate"
-            launchDelegate="org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7StartLaunchDelegate"
-            name="Local"
-            publishMethod="org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod"
-            serverTypes="%ServerTypesJBoss7"
-            typeId="local">
-      </behaviour>
-      <behaviour
-            behaviourDelegate="org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7BehaviorDelegate"
-            launchDelegate="org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7StartLaunchDelegate"
-            name="Local"
-            publishMethod="org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod"
-            serverTypes="%ServerTypesWildfly8"
-            typeId="local">
-      </behaviour>
-   </extension>
-   <!-- NEW_SERVER_ADAPTER Add the behaviour extension for a new server type above this line --> 
-   
-   
-   <extension
           point="org.eclipse.wst.server.core.moduleArtifactAdapters">
        <moduleArtifactAdapter
              class="org.jboss.ide.eclipse.as.core.modules.EarArtifactAdapter"
@@ -1563,9 +1526,6 @@
             id="launch.standard.local.default"
             name="Launch JBoss Server (Local)"
             class="org.jboss.tools.as.core.server.controllable.subsystems.internal.LocalJBossLaunchController">
-         <properties>
-            <property key="target" value="local"></property>
-         </properties>
       </subsystem>
       <subsystemMapping
             id="launch.standard.local.default"
@@ -1580,9 +1540,6 @@
             name="Server Details (Local)"
             requiresRuntime="true"
             class="org.jboss.ide.eclipse.as.core.server.internal.LocalServerModeDetails">
-         <properties>
-            <property key="target" value="local"></property>
-         </properties>
       </subsystem>
       <subsystemMapping
             id="serverDetails.local.default"
@@ -1596,9 +1553,6 @@
             id="shutdown.legacy.default"
             name="Shutdown Server"
             class="org.jboss.tools.as.core.server.controllable.subsystems.internal.LocalLegacyShutdownController">
-         <properties>
-            <property key="target" value="local"></property>
-         </properties>
       </subsystem>
       <subsystemMapping
             id="shutdown.legacy.default"
@@ -1625,9 +1579,6 @@
             id="filesystem.local.default"
             name="Filesystem Support (Local)"
             class="org.jboss.ide.eclipse.as.wtp.core.server.behavior.LocalFilesystemController">
-         <properties>
-            <property key="target" value="local"></property>
-         </properties>
       </subsystem>
       <subsystemMapping
             id="filesystem.local.default"
@@ -1673,9 +1624,6 @@
             id="publish.management.default"
             name="Management Publish Controller"
             class="org.jboss.tools.as.core.server.controllable.subsystems.internal.ManagementPublishController">
-         <properties>
-            <property key="target" value="management"></property>
-         </properties>
       </subsystem>
       <subsystemMapping
             id="publish.management.default"
@@ -1842,9 +1790,12 @@
       </subsystemMapping>
 	</extension>
 	
+	
+	<!-- Local profile -->
     <extension
           point="org.jboss.ide.eclipse.as.wtp.core.serverProfile">
        <serverProfile id="local" serverTypes="%AllJBTServerTypes">
+       	  <description name="Local" description="A profile configured for use on a local machine."/>
           <subsystem system="deploymentOptions" subsystem="deploymentOptions.local"/>
           <subsystem system="serverDetails" subsystem="serverDetails.local"/>
           <subsystem system="filesystem" subsystem="filesystem.local"/>
@@ -1859,6 +1810,21 @@
           <subsystem system="shutdown" subsystem="shutdown.commandLine.local"/>
        </serverProfile>
     </extension>
+
+
+	<!-- Local profile preferring management for as7 or above -->
+    <extension
+          point="org.jboss.ide.eclipse.as.wtp.core.serverProfile">
+       <serverProfile id="local.mgmt" serverTypes="%ServerTypesJBoss7OrHigher">
+          <initializer class="org.jboss.tools.as.core.server.controllable.profile.internal.LocalManagementProfileInitializer"/>
+       	  <description name="Local (Prefers Management Operations)" description="A profile configured for use on a local machine, preferring management operations wherever possible"/>
+          <subsystem system="launch" subsystem="launch.standard.local"/>
+          <subsystem system="shutdown" subsystem="shutdown.default"/>
+          <subsystem system="publish" subsystem="publish.management"/>
+          <subsystem system="serverDetails" subsystem="serverDetails.local"/>
+       </serverProfile>
+    </extension>
+
 
 
 </plugin>

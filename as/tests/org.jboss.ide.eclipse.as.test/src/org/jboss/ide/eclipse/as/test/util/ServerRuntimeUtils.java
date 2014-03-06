@@ -147,18 +147,6 @@ public class ServerRuntimeUtils extends TestCase {
 		return server;
 	}
 
-	public static IServer useMockPublishMethod(IServer server) throws CoreException {
-		IServerWorkingCopy wc = server.createWorkingCopy();
-		wc.setAttribute(IDeployableServer.SERVER_MODE, "mock");
-		return wc.save(true, new NullProgressMonitor());
-	}
-
-	public static IServer useMock2PublishMethod(IServer server) throws CoreException {
-		IServerWorkingCopy wc = server.createWorkingCopy();
-		wc.setAttribute(IDeployableServer.SERVER_MODE, "mock2");
-		return wc.save(true, new NullProgressMonitor());
-	}
-
 	public static IServer createMockDeployOnlyServer(String deployLocation, String tempDeployLocation) throws CoreException {
 		return createMockDeployOnlyServer(deployLocation, tempDeployLocation, "testRuntime", "testServer");
 	}

@@ -21,6 +21,7 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ISubsystemController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.tools.as.core.server.controllable.subsystems.internal.XPathsPortsController;
 import org.jboss.tools.as.core.server.controllable.systems.IPortsController;
 import org.jboss.tools.as.test.core.internal.utils.MatrixUtils;
@@ -54,7 +55,7 @@ public class XPathPortDiscoveryResolutionTest extends TestCase {
 	public void setUp() throws Exception {
 		server = ServerCreationTestUtils.createMockServerWithRuntime(serverType, getClass().getName() + serverType);
 		IServerWorkingCopy wc = server.createWorkingCopy();
-		wc.setAttribute(IDeployableServer.SERVER_MODE, mode);
+		ServerProfileModel.setProfile(wc, mode);
 		server = wc.save(false, new NullProgressMonitor());
 	}
 

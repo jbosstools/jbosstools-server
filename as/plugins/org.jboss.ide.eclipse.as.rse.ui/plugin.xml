@@ -1,18 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+   <!-- This part should be migrated. Not sure how to do it yet. -->
    <extension
          point="org.jboss.ide.eclipse.as.ui.DeployMethodUI">
-      <ui
-            browseBehavior="org.jboss.ide.eclipse.as.rse.ui.RSEBrowseBehavior"
-            class="org.jboss.ide.eclipse.as.rse.ui.RSEDeploymentPreferenceUI"
-            deployMethodId="rse"
-            exploreBehavior="org.jboss.ide.eclipse.as.rse.ui.RSEExploreBehavior">
-         <launchTabProvider
-               class="org.jboss.ide.eclipse.as.rse.ui.RSELaunchTabProvider"
-               serverTypes="%AllJBossServerTypes">
-         </launchTabProvider>
-      </ui>
+      <ui deployMethodId="rse"
+      	  class="org.jboss.ide.eclipse.as.rse.ui.RSEDeploymentPreferenceUI"/>
+      <ui deployMethodId="rse.mgmt"
+      	  class="org.jboss.ide.eclipse.as.rse.ui.RSEDeploymentPreferenceUI"/>
    </extension>
    
    <extension
@@ -22,12 +17,6 @@
             id="exploreBehavior.rse.default"
             name="Explore Server or Modules (RSE)"
             class="org.jboss.ide.eclipse.as.rse.ui.RSEExploreBehavior">
-         <properties>
-            <property
-                  key="target"
-                  value="rse">
-            </property>
-         </properties>
       </subsystem>
       <subsystemMapping
             id="exploreBehavior.rse.default"
@@ -41,12 +30,6 @@
             id="browseBehavior.rse.default"
             name="Browse Server or Modules (RSE)"
             class="org.jboss.ide.eclipse.as.rse.ui.RSEBrowseBehavior">
-         <properties>
-            <property
-                  key="target"
-                  value="rse">
-            </property>
-         </properties>
       </subsystem>
       <subsystemMapping
             id="browseBehavior.rse.default"
@@ -59,12 +42,6 @@
             id="launchTabProvider.rse.default"
             name="Launch Tabs (RSE)"
             class="org.jboss.ide.eclipse.as.rse.ui.RSELaunchTabProvider">
-         <properties>
-            <property
-                  key="target"
-                  value="rse">
-            </property>
-         </properties>
       </subsystem>
       <subsystemMapping
             id="launchTabProvider.rse.default"
@@ -88,14 +65,32 @@
           <subsystem system="deploymentPage" subsystem="deploymentPage.standard"/>
        </serverProfile>
     </extension>
+    
+    <extension
+          point="org.jboss.ide.eclipse.as.wtp.core.serverProfile">
+       <serverProfile id="rse.mgmt" serverTypes="%ServerTypesJBoss7OrHigher">
+          <subsystem system="deploymentPage" subsystem="deploymentPage.management"/>
+          <subsystem system="launchTabProvider" subsystem="launchTabProvider.rse"/>
+       </serverProfile>
+    </extension>
+    
+    
+    
     <extension
           point="org.jboss.ide.eclipse.as.wtp.ui.ServerProfileWizardFragments">
        <wizardFragment
-             class="org.jboss.ide.eclipse.as.rse.ui.RSEWizardFragment"
              id="rg.jboss.ide.eclipse.as.rse.ui.WizardFragment"
+             weight="5"
              profile="rse"
              serverTypes="%AllJBTServerTypes"
-             weight="5">
+             class="org.jboss.ide.eclipse.as.rse.ui.RSEWizardFragment">
+       </wizardFragment>
+       <wizardFragment
+             id="rg.jboss.ide.eclipse.as.rse.ui.rsemgmt.WizardFragment"
+             weight="5"
+             profile="rse.mgmt"
+             serverTypes="%ServerTypesJBoss7OrHigher"
+             class="org.jboss.ide.eclipse.as.rse.ui.RSEWizardFragment">
        </wizardFragment>
     </extension>
    

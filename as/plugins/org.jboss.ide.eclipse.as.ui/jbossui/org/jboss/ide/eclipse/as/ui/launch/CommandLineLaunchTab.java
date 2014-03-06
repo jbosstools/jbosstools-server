@@ -29,14 +29,21 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
+import org.jboss.ide.eclipse.as.core.server.internal.RecentlyUpdatedServerLaunches;
 import org.jboss.ide.eclipse.as.core.server.launch.CommandLineLaunchConfigProperties;
+import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IServerShutdownController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ISubsystemController;
+import org.jboss.tools.as.core.server.controllable.systems.ICommandLineShutdownController;
 
 public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 	
@@ -59,7 +66,14 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 	}
 	
 	protected void createGroups(Composite main) {
-
+		Group startGroup = createStartGroup(main);
+		Group stopGroup = createStopGroup(main);
+		// Set the layout data of the two main widgets
+		stopGroup.setLayoutData(UIUtil.createFormData(getStopCommandHeightHint(), SWT.DEFAULT, 50, 0, 100, -5, 0, 5, 100, -5));
+		startGroup.setLayoutData(UIUtil.createFormData(getStartCommandHeightHint(), SWT.DEFAULT, 0, 5, stopGroup, -5, 0, 5, 100, -5));
+	}
+	
+	protected Group createStartGroup(Composite main) {
 		// begin start group
 		Group startGroup = SWTFactory.createGroup(main, Messages.CommandLineLaunchTab_START_COMMAND, 
 				2, 1, GridData.FILL_HORIZONTAL);
@@ -73,8 +87,18 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 		gd.heightHint = getStartCommandHeightHint();
 		gd.widthHint = 100;
 		startText.setLayoutData(gd);
-
-		
+		return startGroup;
+	}
+	
+	protected Group createStopGroup(Composite main) {
+		if( supportsCommandLineShutdown) {
+			return createStopGroupWidgets(main);
+		}
+		// hide the shutdown tab when using mgmt??
+		return createStopUnavailableGroup(main, getShutdownController());
+	}
+	
+	protected Group createStopGroupWidgets(Composite main) {
 		// begin stop group
 		Group stopGroup = SWTFactory.createGroup(main, Messages.CommandLineLaunchTab_STOP_COMMAND, 2, 1, GridData.FILL_HORIZONTAL);
 		stopGroup.setLayout(new GridLayout(1, true));
@@ -84,14 +108,27 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 			autoStopArgs.setText(Messages.CommandLineLaunchTab_AUTOMATICALLY_CALCULATE);
 		}
 		stopText = new Text(stopGroup, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
-		gd = new GridData(GridData.FILL_BOTH);
+		GridData gd = new GridData(GridData.FILL_BOTH);
 		gd.heightHint = getStopCommandHeightHint();
 		gd.widthHint = 100;
 		stopText.setLayoutData(gd);
+		return stopGroup;
+	}
+	
+	
+	protected Group createStopUnavailableGroup(Composite main, ISubsystemController controller) {
+		// begin stop group
+		Group stopGroup = SWTFactory.createGroup(main, Messages.CommandLineLaunchTab_STOP_COMMAND, 2, 1, GridData.FILL_HORIZONTAL);
+		stopGroup.setLayout(new GridLayout(1, true));
 		
-		// Set the layout data of the two main widgets
-		stopGroup.setLayoutData(UIUtil.createFormData(getStopCommandHeightHint(), SWT.DEFAULT, 50, 0, 100, -5, 0, 5, 100, -5));
-		startGroup.setLayoutData(UIUtil.createFormData(getStartCommandHeightHint(), SWT.DEFAULT, 0, 5, stopGroup, -5, 0, 5, 100, -5));
+		Label stopErrorLabel = new Label(stopGroup, SWT.WRAP );
+		GridData gd = new GridData(GridData.FILL_BOTH);
+		gd.heightHint = getStopCommandHeightHint();
+		gd.widthHint = 100;
+		stopErrorLabel.setLayoutData(gd);
+		String controllerName = controller == null ? "null" : controller.getSubsystemName();
+		stopErrorLabel.setText("Your server adapter is not configured to use a command-line shutdown. It is configured to use the \"" + controllerName + "\" shutdown subsystem.");
+		return stopGroup;
 	}
 	
 	protected int getStartCommandHeightHint() {
@@ -143,12 +180,34 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 		};
 	}
 	
+	private boolean supportsCommandLineShutdown = supportsCommandLineShutdown();
+	protected boolean supportsCommandLineShutdown() {
+		IServerShutdownController c = getShutdownController();
+		if( c == null || !(c instanceof ICommandLineShutdownController))
+			return false;
+		return true;
+		
+	}
+	protected IServerShutdownController getShutdownController() {
+		IServer s = RecentlyUpdatedServerLaunches.getDefault().getRecentServer();
+		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(s);
+		try {
+			IServerShutdownController controller = (IServerShutdownController)beh.getController(IControllableServerBehavior.SYSTEM_SHUTDOWN);
+			return controller;
+		} catch(CoreException ce) {
+			JBossServerUIPlugin.getDefault().getLog().log(ce.getStatus());
+		}
+		return null;
+	}
+	
 	protected void addListeners() {
 		if( canAutoDetectCommand()) {
 			SelectionListener autoStartListener = getAutoStartListener();
-			SelectionListener autoStopListener = getAutoStopListener();
 			autoStartArgs.addSelectionListener(autoStartListener);
-			autoStopArgs.addSelectionListener(autoStopListener);
+			if(supportsCommandLineShutdown) {
+				SelectionListener autoStopListener = getAutoStopListener();
+				autoStopArgs.addSelectionListener(autoStopListener);
+			}
 		}
 		
 		ModifyListener textListener = new ModifyListener(){
@@ -156,7 +215,8 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 				persistInWorkingCopy(((ILaunchConfigurationWorkingCopy)initialConfig), true);
 			}};
 		startText.addModifyListener(textListener);
-		stopText.addModifyListener(textListener);
+		if( supportsCommandLineShutdown )
+			stopText.addModifyListener(textListener);
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
@@ -164,51 +224,64 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 	
 	public void initializeFrom(ILaunchConfiguration configuration) {
 		this.initialConfig = configuration;
+		boolean detectStartCommand, detectStopCommand;
+		detectStartCommand = detectStopCommand = false;
 		
 		try {
-			boolean detectStartCommand, detectStopCommand;
-			detectStartCommand = detectStopCommand = false;
 			CommandLineLaunchConfigProperties propUtil = getPropertyUtility();
 			String startCommand = propUtil.getStartupCommand(configuration);
-			String stopCommand = propUtil.getShutdownCommand(configuration);
 			startText.setText(startCommand == null ? "" : startCommand);
-			stopText.setText(stopCommand == null ? "" : stopCommand);
 			if( canAutoDetectCommand() ) {
-				
 				detectStartCommand = propUtil.isDetectStartupCommand(configuration, true);
 				autoStartArgs.setSelection(detectStartCommand);
-				detectStopCommand = propUtil.isDetectShutdownCommand(configuration, true);
-				autoStopArgs.setSelection(detectStopCommand);
 			}
-			
 			startText.setEditable(!canAutoDetectCommand() || !detectStartCommand);
 			startText.setEnabled(!canAutoDetectCommand() || !detectStartCommand);
 			
-			stopText.setEditable(!canAutoDetectCommand() || !detectStopCommand);
-			stopText.setEnabled(!canAutoDetectCommand() || !detectStopCommand);
-			
+			if( supportsCommandLineShutdown ){
+				String stopCommand = propUtil.getShutdownCommand(configuration);
+				stopText.setText(stopCommand == null ? "" : stopCommand);
+				if( canAutoDetectCommand() ) {
+					detectStopCommand = propUtil.isDetectShutdownCommand(configuration, true);
+					autoStopArgs.setSelection(detectStopCommand);
+				}
+				stopText.setEditable(!canAutoDetectCommand() || !detectStopCommand);
+				stopText.setEnabled(!canAutoDetectCommand() || !detectStopCommand);
+			}
 		} catch( CoreException ce) {
 			// This can only happen if loading properties from a launch config is f'd, 
 			// in which case it's a big eclipse issue
 			JBossServerUIPlugin.getDefault().getLog().log(new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, "Error loading details from launch configuration", ce));
 		}
 		addListeners();
+		
+		
+		// Disable all if launch is ignored
 		try {
 			IServer s = ServerUtil.getServer(configuration);
 			if (LaunchCommandPreferences.isIgnoreLaunchCommand(s)) {
-				setErrorMessage("Your server is currently configured to ignore startup and shutdown actions.");
-				startText.setEnabled(false);
-				stopText.setEnabled(false);
-				if( canAutoDetectCommand() ) {
-					autoStartArgs.setEnabled(false);
-					autoStopArgs.setEnabled(false);
-				}
+				disableTab();
 			}
 		} catch(CoreException ce) {
 			JBossServerUIPlugin.getDefault().getLog().log(ce.getStatus());
 		}
-		
 	}
+	
+	protected void disableTab() {
+		setErrorMessage("Your server is currently configured to ignore startup and shutdown actions.");
+		startText.setEnabled(false);
+		if( canAutoDetectCommand() ) {
+			autoStartArgs.setEnabled(false);
+		}
+		
+		if( supportsCommandLineShutdown ) {
+			stopText.setEnabled(false);
+			if( canAutoDetectCommand() ) {
+				autoStopArgs.setEnabled(false);
+			}
+		}
+	}
+	
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
 		persistInWorkingCopy(configuration, false);
 	}
@@ -216,12 +289,17 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 	protected void persistInWorkingCopy(ILaunchConfigurationWorkingCopy configuration, boolean updateButtons) {
 		CommandLineLaunchConfigProperties propUtil = getPropertyUtility();
 		propUtil.setStartupCommand(startText.getText(), configuration);
-		propUtil.setShutdownCommand(stopText.getText(), configuration);
-		
 		if( canAutoDetectCommand() ) {
 			propUtil.setDetectStartupCommand(autoStartArgs.getSelection(), configuration);
-			propUtil.setDetectShutdownCommand(autoStopArgs.getSelection(), configuration);
 		}
+		
+		if( supportsCommandLineShutdown ){
+			propUtil.setShutdownCommand(stopText.getText(), configuration);
+			if( canAutoDetectCommand() ) {
+				propUtil.setDetectShutdownCommand(autoStopArgs.getSelection(), configuration);
+			}
+		}
+		
 		if( updateButtons)
 			getLaunchConfigurationDialog().updateButtons();
 	}

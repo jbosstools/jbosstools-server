@@ -20,11 +20,11 @@ import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.internal.RecentlyUpdatedServerLaunches;
 import org.jboss.ide.eclipse.as.core.server.internal.UpdateModuleStateJob;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllerEnvironment;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ILaunchServerController;
@@ -84,7 +84,7 @@ public class DeployableServerBehavior extends ControllableServerBehavior {
 		ISubsystemController ret = getOverrideController(system, env);
 		if( ret == null ) {
 			// Check profile
-			String profile = getServer().getAttribute(IDeployableServer.SERVER_MODE, "local"); //$NON-NLS-1$
+			String profile = ServerProfileModel.getProfile(getServer());
 			ret = ServerProfileModel.getDefault().getController(getServer(), profile, system, env);
 		}
 		if( ret == null ) {
@@ -116,9 +116,9 @@ public class DeployableServerBehavior extends ControllableServerBehavior {
 	}
 	
 	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IProgressMonitor monitor) throws CoreException {
-		super.setupLaunchConfiguration(workingCopy, monitor);
 		// this hack is still required. See RecentlyUpdatedServerLaunches
 		RecentlyUpdatedServerLaunches.getDefault().setRecentServer(getServer());
+		super.setupLaunchConfiguration(workingCopy, monitor);
 	}
 
 	
@@ -130,7 +130,12 @@ public class DeployableServerBehavior extends ControllableServerBehavior {
 		IServer s = getServer();
 		JBossExtendedProperties properties = (JBossExtendedProperties)s.loadAdapter(JBossExtendedProperties.class, null);
 		if( properties != null ) {
-			Job scannerJob = properties.getDeploymentScannerModifier().getUpdateDeploymentScannerJob(s);
+			Job scannerJob = null;
+			boolean addScanners = getServer().getAttribute(IJBossToolingConstants.PROPERTY_ADD_DEPLOYMENT_SCANNERS, true);
+			if( addScanners ) {
+				scannerJob = properties.getDeploymentScannerModifier().getUpdateDeploymentScannerJob(s);
+			}
+				
 			
 			IServerModuleStateVerifier verifier = properties.getModuleStateVerifier();
 			Job moduleStateJob = null;

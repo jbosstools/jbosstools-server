@@ -26,6 +26,7 @@ import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
 import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 
 public class ServerCreationUtils {
 
@@ -70,7 +71,7 @@ public class ServerCreationUtils {
 		serverWC.setRuntime(currentRuntime);
 		serverWC.setName(serverName);
 		serverWC.setServerConfiguration(null);
-		serverWC.setAttribute(IDeployableServer.SERVER_MODE, mode); 
+		ServerProfileModel.setProfile(serverWC, mode);
 		return serverWC;
 	}
 	public static IServer createServer2(IRuntime currentRuntime, IServerType serverType, String serverName, String mode) throws CoreException {

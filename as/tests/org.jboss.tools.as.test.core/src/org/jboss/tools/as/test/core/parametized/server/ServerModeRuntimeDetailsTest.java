@@ -28,6 +28,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerEx
 import org.jboss.ide.eclipse.as.rse.core.RSECorePlugin;
 import org.jboss.ide.eclipse.as.rse.core.RSEServerModeDetails;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
 import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
 import org.junit.After;
@@ -80,7 +81,7 @@ public class ServerModeRuntimeDetailsTest extends TestCase {
 		
 		// Next try with rse mode
 		IServerWorkingCopy wc = server.createWorkingCopy();
-		wc.setAttribute(IDeployableServer.SERVER_MODE, "rse");
+		ServerProfileModel.setProfile(wc, "rse");
 		try {
 			server = wc.save(true,  new NullProgressMonitor());
 		} catch(CoreException ce) {
@@ -93,7 +94,7 @@ public class ServerModeRuntimeDetailsTest extends TestCase {
 		
 		// Now try with a garbage mode
 		wc = server.createWorkingCopy();
-		wc.setAttribute(IDeployableServer.SERVER_MODE, "garbage222");
+		ServerProfileModel.setProfile(wc, "garbage222");
 		try {
 			server = wc.save(true,  new NullProgressMonitor());
 		} catch(CoreException ce) {

@@ -49,13 +49,20 @@ public class LocalLegacyShutdownController extends AbstractSubsystemController
 	}
 
 	@Override
-
 	public void stop(boolean force) {
+		stop(force, true);
+	}
+	
+	protected void stop(boolean force, boolean removeScanners) {
+		if( removeScanners ) {
+			removeScanners();
+		}
+		
 		if( LaunchCommandPreferences.isIgnoreLaunchCommand(getServer())) {
 			((ControllableServerBehavior)getControllableBehavior()).setServerStopped();
 			return;
 		}
-		removeScanners();
+		
 		stopImpl(force);
 	}
 	

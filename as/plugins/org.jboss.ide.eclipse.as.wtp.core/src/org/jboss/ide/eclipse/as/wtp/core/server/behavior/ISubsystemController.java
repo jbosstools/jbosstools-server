@@ -44,6 +44,12 @@ public interface ISubsystemController {
 	 * @return
 	 */
 	public String getSystemId();
+	
+	/**
+	 * Get the subsystem name
+	 * @return
+	 */
+	public String getSubsystemName();
 
 	/**
 	 * This method validates whether the pre-requirements for this subsystem 

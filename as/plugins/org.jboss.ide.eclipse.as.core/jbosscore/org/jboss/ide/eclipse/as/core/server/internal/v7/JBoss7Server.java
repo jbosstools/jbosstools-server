@@ -30,6 +30,7 @@ public class JBoss7Server extends JBossServer implements IJBoss7Deployment, IMan
 		setUsername(null);
 		setPassword(null);
 		setAttribute(IJBossToolingConstants.STARTUP_POLLER_KEY, JBoss7ManagerServicePoller.POLLER_ID);
+		setAttribute(IJBossToolingConstants.SHUTDOWN_POLLER_KEY, JBoss7ManagerServicePoller.POLLER_ID);
 	}
 	public boolean hasJMXProvider() {
 		return getExtendedProperties().getJMXProviderType() != ServerExtendedProperties.JMX_NULL_PROVIDER;

@@ -15,24 +15,25 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManagerServicePoller;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IServerProfileInitializer;
 
-public class RSEProfileInitializer implements IServerProfileInitializer {
+public class RSEManagementProfileInitializer implements IServerProfileInitializer {
 
 	@Override
 	public void initialize(IServerWorkingCopy wc) throws CoreException {
 		boolean as7Style = isJBoss7Style(wc);
+		String pollId = WebPortPoller.WEB_POLLER_ID;
 		if( as7Style ) {
 			// as7 rse has following settings
 			wc.setAttribute(IJBossToolingConstants.LISTEN_ALL_HOSTS, true);
-			wc.setAttribute(IJBossToolingConstants.EXPOSE_MANAGEMENT_SERVICE, false);
-			// adding deployment scanners in as7/wf requires management
-			wc.setAttribute(IJBossToolingConstants.PROPERTY_ADD_DEPLOYMENT_SCANNERS, false);
-			wc.setAttribute(IJBossToolingConstants.PROPERTY_REMOVE_DEPLOYMENT_SCANNERS, false);
-		}
-		wc.setAttribute(IJBossToolingConstants.STARTUP_POLLER_KEY, WebPortPoller.WEB_POLLER_ID);
-		wc.setAttribute(IJBossToolingConstants.SHUTDOWN_POLLER_KEY, WebPortPoller.WEB_POLLER_ID);
+			wc.setAttribute(IJBossToolingConstants.EXPOSE_MANAGEMENT_SERVICE, true);
+			pollId = wc.getServerType().getId().equals(IJBossToolingConstants.SERVER_WILDFLY_80) 
+					? JBoss7ManagerServicePoller.WILDFLY_POLLER_ID : JBoss7ManagerServicePoller.POLLER_ID;
+		} 
+		wc.setAttribute(IJBossToolingConstants.STARTUP_POLLER_KEY, pollId);
+		wc.setAttribute(IJBossToolingConstants.SHUTDOWN_POLLER_KEY, pollId);
 	}
 	
 	private static boolean isJBoss7Style(IServerWorkingCopy server) {

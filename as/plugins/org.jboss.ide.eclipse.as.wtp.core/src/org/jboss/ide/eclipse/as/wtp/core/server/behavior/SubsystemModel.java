@@ -61,6 +61,9 @@ public class SubsystemModel {
 		public Subsystem(SubsystemMapping mapping) {
 			this.mapping = mapping;
 		}
+		public String getSubsystemName() {
+			return mapping.getSubsystem().getName();
+		}
 		public String getSubsystemId() {
 			return mapping.getSubsystem().getId();
 		}

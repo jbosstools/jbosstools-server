@@ -37,6 +37,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerEx
 import org.jboss.ide.eclipse.as.core.server.internal.v7.DeploymentMarkerUtils;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.tools.as.core.internal.modules.DeploymentModulePrefs;
 import org.jboss.tools.as.core.internal.modules.DeploymentPreferences;
 import org.jboss.tools.as.core.internal.modules.DeploymentPreferencesLoader;
@@ -137,7 +138,7 @@ public abstract class AbstractPublishingTest extends TestCase {
 	}
 	
 	protected void setMockPublishMethod4(IServerWorkingCopy wc) {
-		wc.setAttribute(IDeployableServer.SERVER_MODE, "mock4");
+		ServerProfileModel.setProfile(wc, "mock4");
 	}
 	
 	protected void createProjects() throws Exception {}

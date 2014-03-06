@@ -29,6 +29,7 @@ import org.jboss.ide.eclipse.as.core.util.RemotePath;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllerEnvironment;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ISubsystemController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.SubsystemModel.SubsystemMapping;
 import org.jboss.tools.as.core.server.controllable.systems.IDeploymentOptionsController;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
@@ -98,34 +99,10 @@ public class DeploymentSettingsControllerTest extends TestCase {
 		if( !foundLocal || !foundRemote )
 			fail("Must find both local and remote implementations for servertype " + serverType);
 	}
-	
-	@Test
-	public void testResolutionWithProperty() throws Exception {
-		ModelSubclass c = new ModelSubclass();
-		String system = SYSTEM;
 		
-		ISubsystemController controller = c.createSubsystemController(server, system,
-				new ControllerEnvironment().addRequiredProperty(system, "target", "rse").getMap());
-		assertNotNull(controller);
-		assertEquals(controller.getSystemId(),system);
-		assertTrue(controller instanceof IDeploymentOptionsController);
-		assertEquals(controller.getSubsystemMappedId(), RSE_SUBSYSTEM);
-		assertEquals(controller.getClass().getSimpleName(),"RSEDeploymentOptionsController");
-		
-
-		controller = c.createSubsystemController(server, system,
-				new ControllerEnvironment().addRequiredProperty(system, "target", "local").getMap());
-		assertNotNull(controller);
-		assertEquals(controller.getSystemId(),system);
-		assertTrue(controller instanceof IDeploymentOptionsController);
-		assertEquals(controller.getSubsystemMappedId(), LOCAL_SUBSYSTEM);
-		assertEquals(controller.getClass().getSimpleName(), ("LocalDeploymentOptionsController"));
-
-	}
-	
 	@Test
 	public void testGetAndSetZip() throws Exception {
-		IDeploymentOptionsController controller = createController("rse", null);
+		IDeploymentOptionsController controller = createController("rse", server, null);
 		assertFalse(controller.prefersZippedDeployments());
 		try {
 			controller.setPrefersZippedDeployments(true);
@@ -142,7 +119,7 @@ public class DeploymentSettingsControllerTest extends TestCase {
 		assertTrue(server.getAttribute(IDeployableServer.ZIP_DEPLOYMENTS_PREF, false) == true);
 
 		
-		controller = createController("local", null);
+		controller = createController("local", server, null);
 		assertTrue(controller.prefersZippedDeployments());
 		try {
 			controller.setPrefersZippedDeployments(false);
@@ -180,7 +157,7 @@ public class DeploymentSettingsControllerTest extends TestCase {
 		//The deploy only server is very different and must be tested separately
 		// It will not accept any other deploy-location-types other than custom
 		
-		IDeploymentOptionsController c = createController(controllerFlag,null, sep);
+		IDeploymentOptionsController c = createController(controllerFlag,server, sep);
 		assertEquals(c.getCurrentDeploymentLocationType(), IDeployableServer.DEPLOY_CUSTOM);
 		// verify the setter fails
 		try {
@@ -593,16 +570,13 @@ public class DeploymentSettingsControllerTest extends TestCase {
 	
 	
 	private IDeploymentOptionsController createController(String targetVal, IServerWorkingCopy wc) throws Exception {
-		return createController(targetVal, wc, null);
+		return createController(targetVal, wc == null ? server : wc, null);
 	}
-	private IDeploymentOptionsController createController(String targetVal, IServerWorkingCopy wc, Character cha) throws Exception {
-		ModelSubclass c = new ModelSubclass();
-		ControllerEnvironment env = new ControllerEnvironment().addRequiredProperty(SYSTEM, "target", targetVal);
-		env.addProperty(IDeploymentOptionsController.ENV_TARGET_OS_SEPARATOR, cha);
-		
-		IServerAttributes toUse = (wc == null ? server : wc);
-		IDeploymentOptionsController controller = (IDeploymentOptionsController)c.createSubsystemController(toUse, SYSTEM,
-				env.getMap());
+	private IDeploymentOptionsController createController(String profileId, IServerAttributes server, Character cha) throws Exception {
+		ControllerEnvironment env = new ControllerEnvironment().addProperty(IDeploymentOptionsController.ENV_TARGET_OS_SEPARATOR, cha);
+		ServerProfileModel.ServerProfile sp = ServerProfileModel.getDefault().getProfile(serverType, profileId);
+		IServer serverToUse = (server == null ? this.server : (IServer)server);
+		IDeploymentOptionsController controller = (IDeploymentOptionsController) sp.getController(serverToUse, SYSTEM, env );
 		return controller;
 	}
 	

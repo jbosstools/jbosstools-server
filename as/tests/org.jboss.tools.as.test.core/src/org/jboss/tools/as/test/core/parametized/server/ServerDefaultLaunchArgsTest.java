@@ -28,6 +28,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerEx
 import org.jboss.ide.eclipse.as.rse.core.RSECorePlugin;
 import org.jboss.ide.eclipse.as.rse.core.RSEServerModeDetails;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
 import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
 import org.junit.After;
@@ -100,7 +101,7 @@ public class ServerDefaultLaunchArgsTest extends TestCase {
 		
 		// Next try with rse mode
 		IServerWorkingCopy wc = server.createWorkingCopy();
-		wc.setAttribute(IDeployableServer.SERVER_MODE, "rse");
+		ServerProfileModel.setProfile(wc, "rse");
 		wc.setAttribute(RSEUtils.RSE_BASE_DIR, "standNOTalone");
 		wc.setAttribute(RSEUtils.RSE_SERVER_HOME_DIR, "/home/otherUser/jboss");
 		ServerExtendedProperties props2 = (ServerExtendedProperties)

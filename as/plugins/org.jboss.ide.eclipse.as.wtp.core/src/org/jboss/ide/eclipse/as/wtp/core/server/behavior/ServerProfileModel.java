@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.SubsystemModel.SubsystemMapping;
 
@@ -52,12 +53,19 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.SubsystemModel.Subsyste
  * for a given profile. This feature is as of now unused, and is not guaranteed
  * to be supported in any way.  
  * 
- * TODO Complete this implementation. Debatable how to do this and ensure it still works
- * even when not kicked off from the new server wizard.
- * 
  */
 public class ServerProfileModel {
 	private static final String SERVER_PROFILE_PROPERTY_KEY = "org.jboss.ide.eclipse.as.core.server.serverMode"; //$NON-NLS-1$
+	private static final String LEGACY_MODE_KEY = IDeployableServer.SERVER_MODE;
+	
+	/**
+	 * This is the default profile name for any and all server types that use this framework.
+	 * However, a server delegate can (and SHOULD) set the profile to a value 
+	 * in their setDefaults() method if they have specific profiles they want as the default for 
+	 * their server type. 
+	 * 
+	 * @see org.eclipse.wst.server.core.model.ServerDelegate#setDefaults(IProgressMonitor monitor))
+	 */
 	public static final String DEFAULT_SERVER_PROFILE = "local";
 	
 	public static String getProfile(IServerAttributes server) {
@@ -65,13 +73,16 @@ public class ServerProfileModel {
 	}
 
 	public static String getProfile(IServerAttributes server, String defaultProfile) {
-		return server.getAttribute(SERVER_PROFILE_PROPERTY_KEY, defaultProfile);
+		return server.getAttribute(SERVER_PROFILE_PROPERTY_KEY, server.getAttribute(LEGACY_MODE_KEY, defaultProfile));
 	}
 
 	public static void setProfile(IServerWorkingCopy wc, String profile) {
 		wc.setAttribute(SERVER_PROFILE_PROPERTY_KEY, profile);
 	}
 	
+	public static boolean isProfileKey(String key) {
+		return SERVER_PROFILE_PROPERTY_KEY.equals(key);
+	}
 	
 	private static ServerProfileModel profileModel;
 	public static ServerProfileModel getDefault() {
@@ -95,6 +106,8 @@ public class ServerProfileModel {
 			try {
 				SubsystemMapping oneMapping = sp.getControllerMapping(serverType, systems[i], null);
 				if( oneMapping == null ) {
+					// Not all possible systems are absolutely required for all profiles. 
+					// For example, a server using mgmt mode may not require a filesystem subsystem at all, since it will never use it. 
 					oneMapping = SubsystemModel.getInstance().getSubsystemMappingForCreation(serverType, systems[i], null, null, null);
 				}
 				if( oneMapping != null && oneMapping.getSubsystem() != null ) {
@@ -116,6 +129,18 @@ public class ServerProfileModel {
 	public ServerProfile[] getProfiles(String serverType) {
 		return internal.getProfiles(serverType);
 	}
+	
+	public ServerProfile getProfile(String serverType, String id) {
+		ServerProfile[] profiles = internal.getProfiles(serverType);
+		if( profiles != null ) {
+			for( int i = 0; i < profiles.length;i++) {
+				if( profiles[i].getId().equals(id))
+					return profiles[i];
+			}
+		}
+		return null;
+	}
+
 	
 	public IServerProfileInitializer[] getInitializers(String serverType, String profile) {
 		ServerProfile sp = internal.getProfile(profile, serverType);
@@ -218,6 +243,8 @@ public class ServerProfileModel {
 		private ArrayList<InitializerWrapper> initializers = new ArrayList<InitializerWrapper>();
 		
 		private String id, serverType;
+		private String visibleName, description;
+		
 		public ServerProfile(String id, String serverType) {
 			this.id = id;
 			this.serverType = serverType;
@@ -228,6 +255,19 @@ public class ServerProfileModel {
 		}
 		public String getServerType() {
 			return serverType;
+		}
+		
+		protected void setDescription(String desc) {
+			this.description = desc;
+		}
+		protected void setVisibleName(String name) {
+			this.visibleName = name;
+		}
+		public String getDescription() {
+			return this.description;
+		}
+		public String getVisibleName() {
+			return this.visibleName;
 		}
 		
 		private void addConfigurationElement(IConfigurationElement el) throws CoreException {
@@ -241,6 +281,18 @@ public class ServerProfileModel {
 				addSystemMapping(subsystems[i]);
 			}
 			
+			IConfigurationElement[] description = el.getChildren("description");
+			if( description.length > 0 ) {
+				if( description.length > 1 || this.description != null || this.visibleName != null) {
+					String id = el.getAttribute("id");
+					throw new CoreException(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID,
+							"Multiple descriptions declared for profile id " + id + " and server type " + serverType));
+				}
+				String name = description[0].getAttribute("name");
+				String desc = description[0].getAttribute("description");
+				setVisibleName(name);
+				setDescription(desc);
+			}
 		}
 		
 		protected IServerProfileInitializer[] getInitializers() {
@@ -276,14 +328,17 @@ public class ServerProfileModel {
 		}
 		
 		public ISubsystemController getController(IServer server, String system, ControllerEnvironment environment) throws CoreException {
+			return getController(server, server.getServerType().getId(), system, environment);
+		}
+		
+		public ISubsystemController getController(IServer server, String serverType, String system, ControllerEnvironment environment) throws CoreException {
 			Map<String,Object> envMap =  environment == null ? null : environment.getMap();
 			String subsystem = subsystems.get(system);
 			if( subsystem != null )
 				return SubsystemModel.getInstance().createControllerForSubsystem(
-					server, server.getServerType().getId(), system, subsystem, envMap);
+					server, serverType, system, subsystem, envMap);
 			return null;
-		}
-		
+		}		
 		public SubsystemMapping getControllerMapping(String serverType, String system, ControllerEnvironment environment) throws CoreException {
 			Map<String,Object> envMap =  environment == null ? null : environment.getMap();
 			String subsystem = subsystems.get(system);

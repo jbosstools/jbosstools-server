@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.tools.as.test.core.internal.utils.MatrixUtils;
 import org.jboss.tools.as.test.core.internal.utils.ResourceUtils;
 import org.jboss.tools.as.test.core.parametized.server.ServerParameterUtils;
@@ -63,7 +64,7 @@ public class AbstractComponentPublishingTest extends AbstractPublishingTest {
 
 	protected void completeSetUp() {
 		// Keep it local for REAL publishes
-		wc.setAttribute(IDeployableServer.SERVER_MODE, "local");
+		ServerProfileModel.setProfile(wc, ServerProfileModel.DEFAULT_SERVER_PROFILE);
 	}
 	
 	protected void verifyFileFoundInModule(String folder, String name, int expectedFileCount) throws Exception {

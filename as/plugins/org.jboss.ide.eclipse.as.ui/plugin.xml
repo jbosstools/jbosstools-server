@@ -661,26 +661,8 @@
  
  <extension
          point="org.jboss.ide.eclipse.as.ui.DeployMethodUI">
-      <ui
-            browseBehavior="org.jboss.ide.eclipse.as.ui.subsystems.internal.LocalBrowseBehavior"
-            class="org.jboss.ide.eclipse.as.ui.editor.LocalBehaviorUI"
-            deployMethodId="local"
-            exploreBehavior="org.jboss.ide.eclipse.as.ui.subsystems.internal.LocalExploreBehavior">
-         <launchTabProvider
-               class="org.jboss.ide.eclipse.as.ui.launch.JBossLaunchConfigurationTabGroup$JBossStandardTabProvider"
-               serverTypes="%ServerTypesJBoss6OrLower">
-         </launchTabProvider>
-         <launchTabProvider
-               class="org.jboss.ide.eclipse.as.ui.launch.JBoss7LaunchConfigurationTabGroup$JBoss7StandardTabProvider"
-               serverTypes="%ServerTypesJBoss7">
-         </launchTabProvider>
-         <launchTabProvider
-               class="org.jboss.ide.eclipse.as.ui.launch.JBoss7LaunchConfigurationTabGroup$JBoss7StandardTabProvider"
-               serverTypes="%ServerTypesWildfly8">
-         </launchTabProvider>
-         
-         <!-- NEW_SERVER_ADAPTER -->
-         
+      <ui deployMethodId="local"
+            class="org.jboss.ide.eclipse.as.ui.editor.LocalBehaviorUI">
       </ui>
    </extension>
  
@@ -780,18 +762,29 @@
    
    <extension
           point="org.jboss.ide.eclipse.as.wtp.core.serverProfile">
+       <serverProfile id="local" serverTypes="%AllJBTServerTypes">
+          <subsystem system="exploreBehavior" subsystem="exploreBehavior.local"/>
+          <subsystem system="browseBehavior" subsystem="browseBehavior.local"/>
+          <subsystem system="deploymentPage" subsystem="deploymentPage.standard"/>
+       </serverProfile>
        <serverProfile id="local" serverTypes="%AllJBossServerTypes">
           <subsystem system="launchTabProvider" subsystem="launchTabProvider.local"/>
        </serverProfile>
        <serverProfile id="local" serverTypes="org.jboss.ide.eclipse.as.systemCopyServer">
           <subsystem system="launchTabProvider" subsystem="launchTabProvider.commandLine"/>
        </serverProfile>
-       <serverProfile id="local" serverTypes="%AllJBTServerTypes">
-          <subsystem system="exploreBehavior" subsystem="exploreBehavior.local"/>
-          <subsystem system="browseBehavior" subsystem="browseBehavior.local"/>
-          <subsystem system="deploymentPage" subsystem="deploymentPage.standard"/>
+    </extension>
+   
+    <extension
+          point="org.jboss.ide.eclipse.as.wtp.core.serverProfile">
+       <serverProfile id="local.mgmt" serverTypes="%ServerTypesJBoss7OrHigher">
+          <subsystem system="deploymentPage" subsystem="deploymentPage.management"/>
+          <subsystem system="launchTabProvider" subsystem="launchTabProvider.local"/>
        </serverProfile>
     </extension>
+   
+   
+   
    
     <extension
           point="org.jboss.ide.eclipse.as.wtp.ui.ServerProfileWizardFragments">

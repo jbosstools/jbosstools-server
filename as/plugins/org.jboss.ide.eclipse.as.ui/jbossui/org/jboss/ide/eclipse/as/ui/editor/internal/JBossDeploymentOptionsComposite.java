@@ -664,7 +664,7 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 	}
 
 	public void propertyChange(PropertyChangeEvent evt) {
-		if( getShowRadios() && evt.getPropertyName().equals( IDeployableServer.SERVER_MODE)) { 
+		if( getShowRadios() && ServerProfileModel.isProfileKey(evt.getPropertyName())) { 
 			if( shouldCreateMetadataRadio() ) {
 				metadataRadio.setEnabled(shouldEnableMetadataRadio());
 				if(!metadataRadio.isEnabled() && metadataRadio.getSelection()) {

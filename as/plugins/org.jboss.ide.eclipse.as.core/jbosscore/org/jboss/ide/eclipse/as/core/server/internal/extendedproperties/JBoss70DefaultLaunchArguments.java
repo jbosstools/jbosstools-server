@@ -65,7 +65,6 @@ public class JBoss70DefaultLaunchArguments extends JBossDefaultLaunchArguments {
 
 		// don't like typing that big constants interface over and over; its ugly
 		IJBossRuntimeResourceConstants c = new IJBossRuntimeResourceConstants() {};
-		LocalJBoss7ServerRuntime jb7rt = (LocalJBoss7ServerRuntime)runtime.loadAdapter(LocalJBoss7ServerRuntime.class, null);
 		
 		IServerModeDetails det = (IServerModeDetails)Platform.getAdapterManager().getAdapter(server, IServerModeDetails.class);
 		String basedir = det.getProperty(IServerModeDetails.PROP_SERVER_BASE_DIR_ABS);

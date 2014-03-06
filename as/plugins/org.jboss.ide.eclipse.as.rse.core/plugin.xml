@@ -8,12 +8,6 @@
             id="deploymentOptions.rse.default"
             name="Server Deployment Settings (RSE)"
             class="org.jboss.ide.eclipse.as.rse.core.subsystems.RSEDeploymentOptionsController">
-         <properties>
-            <property
-                  key="target"
-                  value="rse">
-            </property>
-         </properties>
       </subsystem>
       <subsystemMapping
             id="deploymentOptions.rse.default"
@@ -27,9 +21,6 @@
             id="filesystem.rse.default"
             name="Filesystem (RSE)"
             class="org.jboss.ide.eclipse.as.rse.core.subsystems.RSEFilesystemController">
-         <properties>
-            <property key="target" value="rse"></property>
-         </properties>
       </subsystem>
       <subsystemMapping
             id="filesystem.rse.default"
@@ -43,9 +34,6 @@
             id="serverDetails.rse.default"
             name="Server Details (RSE)"
             class="org.jboss.ide.eclipse.as.rse.core.RSEServerModeDetails">
-         <properties>
-            <property key="target" value="rse"></property>
-         </properties>
       </subsystem>
       <subsystemMapping
             id="serverDetails.rse.default"
@@ -58,9 +46,6 @@
             id="launch.standard.rse.default"
             name="Launch JBoss Server (RSE)"
             class="org.jboss.ide.eclipse.as.rse.core.subsystems.RSEJBossLaunchController">
-         <properties>
-            <property key="target" value="rse"></property>
-         </properties>
       </subsystem>
       <subsystemMapping
             id="launch.standard.rse.default"
@@ -74,14 +59,11 @@
             id="shutdown.rse.commandline.default"
             name="Shutdown Server (Remote Command Line)"
             class="org.jboss.ide.eclipse.as.rse.core.subsystems.RSEJBossCommandLineShutdownController">
-         <properties>
-            <property key="target" value="rse"></property>
-         </properties>
       </subsystem>
       <subsystemMapping
             id="shutdown.rse.commandline.default"
             mappedId="shutdown.rse.default"
-            serverTypes="%ServerTypesJBoss6OrLower">
+            serverTypes="%AllJBossServerTypes">
       </subsystemMapping>
 	
       
@@ -119,21 +101,28 @@
 	<extension
           point="org.jboss.ide.eclipse.as.wtp.core.serverProfile">
        <serverProfile id="rse" serverTypes="%AllJBTServerTypes">
+       	  <initializer class="org.jboss.ide.eclipse.as.rse.core.subsystems.RSEProfileInitializer"/>
+       	  <description name="Remote" description="A profile configured for use with a remote system, using Eclipse RSE framework for issuing shell commands and file transfers."/>
           <subsystem system="deploymentOptions" subsystem="deploymentOptions.rse"/>
           <subsystem system="serverDetails" subsystem="serverDetails.rse"/>
           <subsystem system="filesystem" subsystem="filesystem.rse"/>
-       	  <initializer class="org.jboss.ide.eclipse.as.rse.core.subsystems.RSEProfileInitializer"/>
           <subsystem system="launch" subsystem="launch.standard.rse"/>
           <subsystem system="publish" subsystem="publish.filesystem.default"/> 
-       </serverProfile>
-       <!-- as7/wf shutdown is implied and not added, as only 1 shutdown impl is available -->
-       <serverProfile id="rse" serverTypes="%ServerTypesJBoss6OrLower">
-          <subsystem system="shutdown" subsystem="shutdown.rse.default"/>
-       </serverProfile>
-       <serverProfile id="rse" serverTypes="org.jboss.ide.eclipse.as.systemCopyServer">
-          <subsystem system="shutdown" subsystem="shutdown.rse.default"/>
+          <subsystem system="shutdown" subsystem="shutdown.rse.default"/> <!-- cmd line shutdown -->
        </serverProfile>
     </extension>
 	
+	<!-- RSE profile preferring management for as7 or above -->
+    <extension
+          point="org.jboss.ide.eclipse.as.wtp.core.serverProfile">
+       <serverProfile id="rse.mgmt" serverTypes="%ServerTypesJBoss7OrHigher">
+       	  <initializer class="org.jboss.ide.eclipse.as.rse.core.subsystems.RSEManagementProfileInitializer"/>
+       	  <description name="Remote (Prefers Management Operations)" description="A profile configured for use on a remote machine, preferring management operations wherever possible"/>
+          <subsystem system="launch" subsystem="launch.standard.rse"/>
+          <subsystem system="publish" subsystem="publish.management"/>
+          <subsystem system="serverDetails" subsystem="serverDetails.rse"/>
+          <subsystem system="shutdown" subsystem="shutdown.default"/> <!-- mgmt shutdown -->
+       </serverProfile>
+    </extension>
 	
 </plugin>

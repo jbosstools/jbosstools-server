@@ -138,6 +138,12 @@ public abstract class AbstractSubsystemController implements ISubsystemControlle
 		return null;
 	}
 
+	public String getSubsystemName() {
+		if( subsystem != null )
+			return subsystem.getSubsystemName();
+		return null;
+	}
+	
 	public IStatus validate() {
 		if( subsystem != null ) {
 			if( subsystem.isValid()) {

@@ -29,13 +29,14 @@ import org.jboss.ide.eclipse.as.core.server.internal.JMXServerDeploymentScannerA
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7DeploymentScannerAdditions;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.internal.utils.ResourceUtils;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
+import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
 import org.jboss.tools.as.test.core.internal.utils.wtp.CreateProjectOperationsUtility;
 import org.jboss.tools.as.test.core.internal.utils.wtp.JavaEEFacetConstants;
 import org.jboss.tools.as.test.core.internal.utils.wtp.OperationTestCase;
-import org.jboss.tools.as.test.core.parametized.server.ServerParameterUtils;
 import org.jboss.tools.as.test.core.parametized.server.publishing.AbstractPublishingTest;
 import org.junit.After;
 import org.junit.Test;
@@ -49,7 +50,7 @@ public class DeploymentScannerAdditionsTest extends TestCase  {
 	
 	@Parameters
 	public static Collection<Object[]> data() {
-		 return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerTypeParamterers());
+		 return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerTypeParameters());
 	}
 	
 	public DeploymentScannerAdditionsTest(String serverType) {
@@ -150,7 +151,7 @@ public class DeploymentScannerAdditionsTest extends TestCase  {
 		IServer s = ServerCreationTestUtils.createMockServerWithRuntime(serverType, serverType);
 		try {
 			IServerWorkingCopy wc = s.createWorkingCopy();
-			wc.setAttribute(IDeployableServer.SERVER_MODE, "mock5unknown");
+			ServerProfileModel.setProfile(wc, "mock5unknown");
 			s = wc.save(true, null);
 		} catch(CoreException ce) {
 			fail("Could not set server mode to non-local");

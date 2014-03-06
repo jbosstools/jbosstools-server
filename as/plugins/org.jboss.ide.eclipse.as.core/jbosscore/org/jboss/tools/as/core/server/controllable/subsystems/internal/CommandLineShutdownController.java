@@ -28,11 +28,10 @@ import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.ThreadUtils;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
-import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IServerShutdownController;
 import org.jboss.tools.as.core.server.controllable.IDeployableServerBehaviorProperties;
+import org.jboss.tools.as.core.server.controllable.systems.ICommandLineShutdownController;
 
-public class CommandLineShutdownController extends AbstractSubsystemController implements
-		IServerShutdownController {
+public class CommandLineShutdownController extends AbstractSubsystemController implements ICommandLineShutdownController {
 
 	@Override
 	public IStatus canStop() {

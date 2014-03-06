@@ -21,10 +21,10 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.rse.core.subsystems.RSEFilesystemController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.LocalFilesystemController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.internal.utils.IOUtil;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
@@ -60,7 +60,7 @@ public class RSEFilesystemSubsystemTest extends TestCase {
 		try {
 			server = ServerCreationTestUtils.createServerWithRuntime(serverType, getClass().getName() + serverType);
 			IServerWorkingCopy wc = server.createWorkingCopy();
-			wc.setAttribute(IDeployableServer.SERVER_MODE, "rse");
+			ServerProfileModel.setProfile(wc, "rse");
 			server = wc.save(true, new NullProgressMonitor());
 		} catch(CoreException ce) {
 			ce.printStackTrace();

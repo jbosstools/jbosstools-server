@@ -41,6 +41,7 @@ import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.tools.as.core.server.controllable.systems.IPortsController;
 
 /**
@@ -63,7 +64,7 @@ public class JBossServer extends DeployableServer
 		// TODO move this to an extended properties setting
 		boolean defaultServerDeployment = isAS50() || isEAP(getServer());
 		setDeployLocationType(defaultServerDeployment ? IDeployableServer.DEPLOY_SERVER : IDeployableServer.DEPLOY_METADATA);
-		setAttribute(IDeployableServer.SERVER_MODE, "local"); //$NON-NLS-1$
+		ServerProfileModel.setProfile(getServerWorkingCopy(), ServerProfileModel.DEFAULT_SERVER_PROFILE);
 	}
 	
 	@Deprecated

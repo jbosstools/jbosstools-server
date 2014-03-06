@@ -78,7 +78,7 @@ public class JBossDefaultLaunchArguments implements IDefaultLaunchArguments, IJB
 	
 	protected IJBossServerRuntime getJBossRuntime() {
 		IRuntime rt = getRuntime();
-		return (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, null);
+		return rt == null ? null : (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, null);
 	}
 	
 	public String getStartDefaultProgramArgs() {
@@ -104,8 +104,11 @@ public class JBossDefaultLaunchArguments implements IDefaultLaunchArguments, IJB
 	protected String getServerFlagArgs() {
 		// We assume that even if the server is in remote mode, the remote configuration
 		// matches the local very closely. 
-		if( JavaUtils.supportsServerMode(getJBossRuntime().getVM()))
-			return SERVER_ARG + SPACE;
+		// But if there's no local runtime, we'll just not include the -server flag
+		if( getJBossRuntime() != null ) {
+			if( JavaUtils.supportsServerMode(getJBossRuntime().getVM()))
+				return SERVER_ARG + SPACE;
+		}
 		return new String();
 	}
 	

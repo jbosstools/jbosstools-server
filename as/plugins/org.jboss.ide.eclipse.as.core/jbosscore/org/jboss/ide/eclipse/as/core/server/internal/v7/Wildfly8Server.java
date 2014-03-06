@@ -18,6 +18,7 @@ public class Wildfly8Server extends JBoss7Server {
 	public void setDefaults(IProgressMonitor monitor) {
 		super.setDefaults(monitor);
 		setAttribute(IJBossToolingConstants.STARTUP_POLLER_KEY, JBoss7ManagerServicePoller.WILDFLY_POLLER_ID);
+		setAttribute(IJBossToolingConstants.SHUTDOWN_POLLER_KEY, JBoss7ManagerServicePoller.WILDFLY_POLLER_ID);
 	}
 	
 	@Override

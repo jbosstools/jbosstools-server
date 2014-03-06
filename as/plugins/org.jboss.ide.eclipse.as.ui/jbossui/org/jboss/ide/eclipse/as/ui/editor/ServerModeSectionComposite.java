@@ -14,8 +14,6 @@ import java.util.ArrayList;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
@@ -32,9 +30,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledPageBook;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.eclipse.wst.server.core.util.SocketUtil;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
-import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
@@ -46,6 +42,12 @@ import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI.IServerModeUICallbac
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 
+/**
+ * A composite to choose a server mode (or profile) from a dropdown, and 
+ * fill in properties specific to that mode/profile. 
+ * 
+ * Recently modified to no longer allow changing of the profile. 
+ */
 public class ServerModeSectionComposite extends Composite {
 	private ArrayList<DeployUIAdditions> deployAdditions;
 	private Combo deployTypeCombo;
@@ -136,34 +138,21 @@ public class ServerModeSectionComposite extends Composite {
 	    }
 	    deployTypeCombo.setItems(nameList);
 	    
-		String serverTypeId = callback.getServer().getServerType().getId();
 		IServer original = callback.getServer().getOriginal();
 		IControllableServerBehavior ds = original == null ? null : JBossServerBehaviorUtils.getControllableBehavior(callback.getServer().getOriginal());
-		String current = null;
+		String currentProfileId = null;
 		if( ds != null ) {
-			current = ServerProfileModel.getProfile(callback.getServer());
-		} else {
-			String host = callback.getServer().getHost();
-			if( SocketUtil.isLocalhost(host)) {
-				current = "local";
-			} else {
-				// socket is not localhost, hard code this for now
-				current = "rse";
-			}
-			callback.execute(new ChangeServerPropertyCommand(
-					callback.getServer(), IDeployableServer.SERVER_MODE, 
-					current, Messages.EditorChangeServerMode));
+			currentProfileId = ServerProfileModel.getProfile(callback.getServer());
 		}
-		if( current != null ) {
-			int index = deployTypeCombo.indexOf(current);
+		if( currentProfileId != null ) {
+			ServerProfileModel.ServerProfile sp = ServerProfileModel.getDefault().getProfile(callback.getServer().getServerType().getId(), currentProfileId);
+			String currentProfileName = sp == null ? currentProfileId : sp.getVisibleName();
+			int index = deployTypeCombo.indexOf(currentProfileName);
 			if( index != -1 ) 
 				deployTypeCombo.select(index);
 		}
-	    deployTypeCombo.addModifyListener(new ModifyListener(){
-			public void modifyText(ModifyEvent e) {
-				deployTypeChanged(true);
-			}});
-	    deployTypeChanged(false);
+		updateProfilePagebook();
+	    deployTypeCombo.setEnabled(false);
 	}
 	
 	/* Return the currently selected behavior mode's ui object */
@@ -263,10 +252,13 @@ public class ServerModeSectionComposite extends Composite {
 	// TODO this needs rewrite
 	private void loadDeployTypeData() {
 		deployAdditions = new ArrayList<DeployUIAdditions>();
-		String[] supported = new String[]{"local","rse"};
+		String[] supported = new String[]{"local","rse", "local.mgmt", "rse.mgmt"};
 		for( int i = 0; i < supported.length; i++) {
 			IDeploymentTypeUI ui = EditorExtensionManager.getDefault().getPublishPreferenceUI(supported[i]);
-			deployAdditions.add(new DeployUIAdditions(supported[i], 
+			ServerProfileModel.ServerProfile sp = ServerProfileModel.getDefault().getProfile(callback.getServer().getServerType().getId(), supported[i]);
+			String name = (sp == null ? supported[i] : sp.getVisibleName());
+			deployAdditions.add(new DeployUIAdditions(
+					name, 
 					supported[i], ui));
 		}
 	}
@@ -275,7 +267,7 @@ public class ServerModeSectionComposite extends Composite {
 	 * The deploy type has changed, and so we should swap out
 	 * the deploy type widget to show the new mode's composite 
 	 */
-	private void deployTypeChanged(boolean fireEvent) {
+	private void updateProfilePagebook() {
 		int index = deployTypeCombo.getSelectionIndex();
 		if( index != -1 ) {
 			DeployUIAdditions ui = deployAdditions.get(index);
@@ -297,22 +289,6 @@ public class ServerModeSectionComposite extends Composite {
 				data.bottom = new FormAttachment(0, point.x-50);
 				form.getForm().layout(true, true);
 				form.getForm().reflow(true);
-			}
-			if( fireEvent ) {
-				callback.execute(new ChangeServerPropertyCommand(
-						callback.getServer(), IDeployableServer.SERVER_MODE, 
-						ui.behaviourId, "Change server mode"));
-				String deployType = null;
-				if( shouldChangeDefaultDeployType(callback.getServer())) {
-					if( ui.behaviourId.equals(getDefaultLocalServerMode())) {
-						deployType = IDeployableServer.DEPLOY_METADATA;
-					} else {
-						deployType = IDeployableServer.DEPLOY_SERVER;
-					}
-					callback.execute(new ChangeServerPropertyCommand(
-							callback.getServer(), IDeployableServer.DEPLOY_DIRECTORY_TYPE, 
-							deployType, "Change server's deploy location"));
-				}
 			}
 		} else {
 			// null selection

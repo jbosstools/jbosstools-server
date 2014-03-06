@@ -53,6 +53,7 @@
             <choice>
                <element ref="subsystem" minOccurs="1" maxOccurs="unbounded"/>
                <element ref="initializer" minOccurs="1" maxOccurs="unbounded"/>
+               <element ref="description"/>
             </choice>
          </sequence>
          <attribute name="id" type="string" use="required">
@@ -101,6 +102,25 @@
                <appinfo>
                   <meta.attribute kind="java" basedOn=":org.jboss.ide.eclipse.as.wtp.core.server.behavior.IServerProfileInitializer"/>
                </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="description">
+      <complexType>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A user-visible string representation of this profile
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="description" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A description of this profile / server type combination.
+               </documentation>
             </annotation>
          </attribute>
       </complexType>

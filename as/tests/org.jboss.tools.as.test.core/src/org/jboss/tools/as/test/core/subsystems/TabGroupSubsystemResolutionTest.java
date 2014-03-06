@@ -25,6 +25,7 @@ import org.jboss.ide.eclipse.as.ui.subsystems.internal.JBoss7StandardTabProvider
 import org.jboss.ide.eclipse.as.ui.subsystems.internal.JBossStandardTabProvider;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ISubsystemController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.tools.as.test.core.internal.utils.MatrixUtils;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
 import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
@@ -56,7 +57,7 @@ public class TabGroupSubsystemResolutionTest extends TestCase {
 	public void setUp() throws Exception {
 		server = ServerCreationTestUtils.createMockServerWithRuntime(serverType, getClass().getName() + serverType);
 		IServerWorkingCopy wc = server.createWorkingCopy();
-		wc.setAttribute(IDeployableServer.SERVER_MODE, mode);
+		ServerProfileModel.setProfile(wc, mode);
 		server = wc.save(false, new NullProgressMonitor());
 	}
 

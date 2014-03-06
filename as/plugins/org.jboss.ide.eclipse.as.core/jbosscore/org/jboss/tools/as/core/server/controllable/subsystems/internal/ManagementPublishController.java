@@ -185,7 +185,7 @@ public class ManagementPublishController extends AbstractSubsystemController
 	private File zipLocally(IModule module, int publishType, IProgressMonitor monitor) throws CoreException {
 		// Zip into a temporary folder, then transfer to the proper location
 		IPath localTempLocation = getMetadataTemporaryLocation(getServer());
-		String name = module.getName() + getDefaultSuffix(module);
+		String name = module.getName() + getDefaultSuffix(module); // TODO Pull from MODEL, DUH
 		IPath tmpArchive = localTempLocation.append(name);
 		
 		LocalZippedModulePublishRunner runner = createZippedRunner(module, tmpArchive); 

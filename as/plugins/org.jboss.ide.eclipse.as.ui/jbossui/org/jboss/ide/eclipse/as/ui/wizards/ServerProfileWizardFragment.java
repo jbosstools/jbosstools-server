@@ -73,6 +73,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 	private WizardFragment runtimeFragment;
 	private boolean requiresRuntime;
 	private Combo profileCombo;
+	private Label profileDescriptionLabel;
 	private Label requiresRuntimeLabel;
 	private Button useRuntimeButton;
 	private Combo runtimeCombo;
@@ -177,7 +178,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		profileCombo = new Combo(main, SWT.READ_ONLY);
 		String[] profileNames = new String[profiles.length];
 		for( int i = 0; i < profiles.length; i++ ) 
-			profileNames[i] = profiles[i].getId();
+			profileNames[i] = (profiles[i].getVisibleName() == null ? profiles[i].getId() : profiles[i].getVisibleName());
 		profileCombo.setItems(profileNames);
 		
 		Label comboLabel = new Label(main, SWT.NONE);
@@ -197,8 +198,14 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 			}
 		});
 		
+		profileDescriptionLabel = new Label(main, SWT.WRAP);
+		FormData profileDescriptionLabelData = UIUtil.createFormData2(profileCombo, 5, profileCombo, 100, 0,5,100,-5);
+		profileDescriptionLabelData.width = 300;
+		profileDescriptionLabel.setLayoutData(profileDescriptionLabelData);
+
+		
 		requiresRuntimeLabel = new Label(main, SWT.WRAP);
-		FormData requiresRuntimeLabelData = UIUtil.createFormData2(profileCombo, 5, null, 0, 0,5,100,-5);
+		FormData requiresRuntimeLabelData = UIUtil.createFormData2(profileDescriptionLabel, 15, null, 0, 0,5,100,-5);
 		requiresRuntimeLabelData.width = 300;
 		requiresRuntimeLabel.setLayoutData(requiresRuntimeLabelData);
 		
@@ -293,6 +300,10 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		IServerWorkingCopy serverWC = (IServerWorkingCopy) getTaskModel().getObject(TaskModel.TASK_SERVER);
 		ServerProfileModel.setProfile(serverWC, sp.getId());
 		boolean requires = ServerProfileModel.getDefault().profileRequiresRuntime(serverWC.getServerType().getId(), sp.getId());
+		
+		// description
+		profileDescriptionLabel.setText(sp.getDescription() == null ? "" : sp.getDescription());
+		
 		requiresRuntime = requires;
 		if( !runtimeForbidden()) {
 			requiresRuntimeLabel.setText("The selected profile " + (requiresRuntime ? "requires" : "does not require") + " a runtime.");

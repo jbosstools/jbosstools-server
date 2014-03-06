@@ -22,16 +22,18 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
-import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
+import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7DeploymentState;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IModuleStateController;
+import org.jboss.tools.as.core.server.controllable.systems.IModuleDeployPathController;
 
 public class JBoss7ModuleStateVerifier extends AbstractSubsystemController implements IModuleStateController, IServerModuleStateVerifier {
 	public void waitModuleStarted(IServer server, IModule[] module, final int maxDelay) {
@@ -162,8 +164,10 @@ public class JBoss7ModuleStateVerifier extends AbstractSubsystemController imple
 	
 	public int changeModuleStateTo(IModule[] module, int state, IProgressMonitor monitor) throws CoreException {
 		AS7ManagementDetails details = new AS7ManagementDetails(getServer());
-		IJBossServer jbs = ServerConverter.getJBossServer(getServer());
-		String deploymentName = jbs.getDeploymentLocation(module, true).lastSegment();
+		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(getServer());
+		IModuleDeployPathController controller = (IModuleDeployPathController)beh.getController(IModuleDeployPathController.SYSTEM_ID);
+		String deploymentName =  controller.getOutputName(module);
+
 		try {
 			IJBoss7ManagerService service = JBoss7ManagerUtil.getService(getServer());
 			if( service == null ) {

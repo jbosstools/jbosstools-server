@@ -24,6 +24,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.tools.as.test.core.internal.utils.ResourceUtils;
 import org.jboss.tools.as.test.core.internal.utils.classpath.WorkspaceTestUtil;
 import org.jboss.tools.as.test.core.internal.utils.wtp.CreateProjectOperationsUtility;
@@ -99,7 +100,7 @@ public class RepublishDefectTest extends AbstractPublishingTest {
 	
 	protected void completeSetUp() {
 		// Keep it local for REAL publishes
-		wc.setAttribute(IDeployableServer.SERVER_MODE, "local");
+		ServerProfileModel.setProfile(wc, ServerProfileModel.DEFAULT_SERVER_PROFILE);
 	}
 
 	private void addOrRemoveModuleWithPublish(IModule[] module, boolean add) throws CoreException {

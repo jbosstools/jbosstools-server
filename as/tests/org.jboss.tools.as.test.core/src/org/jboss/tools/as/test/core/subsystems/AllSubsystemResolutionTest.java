@@ -31,6 +31,7 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IServerDetailsController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IServerShutdownController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ISubsystemController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.tools.as.core.server.controllable.systems.IModuleDeployPathController;
 import org.jboss.tools.as.core.server.controllable.systems.IModuleRestartBehaviorController;
 import org.jboss.tools.as.core.server.controllable.systems.IPortsController;
@@ -110,7 +111,7 @@ public class AllSubsystemResolutionTest extends TestCase {
 	public void setUp() throws Exception {
 		server = ServerCreationTestUtils.createMockServerWithRuntime(serverType, getClass().getName() + serverType);
 		IServerWorkingCopy wc = server.createWorkingCopy();
-		wc.setAttribute(IDeployableServer.SERVER_MODE, mode);
+		ServerProfileModel.setProfile(wc, mode);
 		server = wc.save(false, new NullProgressMonitor());
 	}
 

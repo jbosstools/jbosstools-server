@@ -30,6 +30,7 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.RemotePath;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.rse.core.subsystems.RSEDeploymentOptionsController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 
 /**
  * This class should be more accurately labeled working with properties 
@@ -79,6 +80,7 @@ public class RSEUtils {
 	
 	/**
 	 * The name of this mode, which is just 'rse' 
+	 * This value is also the id of a server profile
 	 */
 	public static final String RSE_MODE = "rse";
 
@@ -97,7 +99,11 @@ public class RSEUtils {
 	}
 
 	public static String getRSEHomeDir(IServerAttributes server) {
-		return server.getAttribute(RSEUtils.RSE_SERVER_HOME_DIR, server.getRuntime().getLocation().toString());
+		String defaultVal = "";
+		if( server.getRuntime() != null && server.getRuntime().getLocation() != null ) {
+			defaultVal = server.getRuntime().getLocation().toString();
+		}
+		return server.getAttribute(RSEUtils.RSE_SERVER_HOME_DIR, defaultVal);
 	}
 
 	public static String checkedGetRSEHomeDir(IServerAttributes server) throws CoreException {
@@ -184,14 +190,14 @@ public class RSEUtils {
 	}
 	
 	public static IPath makeGlobal(IServerAttributes server, IPath p, char sep) {
-
-		if( server.getRuntime() == null || server.getRuntime().getLocation() == null) {
+		String home = getRSEHomeDir(server);
+		if( home == null) {
 			// Has nothing to be relative to, so just make the current path absolute
 			return p.makeAbsolute();
 		}
 
 		if (!p.isAbsolute()) {
-			return new RemotePath(getRSEHomeDir(server), sep).makeAbsolute().append(p);
+			return new RemotePath(home, sep).makeAbsolute().append(p);
 		}
 		return p;
 	}
@@ -199,7 +205,7 @@ public class RSEUtils {
 
 	public static IServer setServerToRSEMode(IServer server, IHost newHost) throws CoreException {
 		IServerWorkingCopy wc = server.createWorkingCopy();
-		wc.setAttribute(IDeployableServer.SERVER_MODE, RSE_MODE);
+		ServerProfileModel.setProfile(wc, RSE_MODE);
 		wc.setAttribute(RSE_SERVER_HOST, newHost.getAliasName());
 		wc.setAttribute("hostname", newHost.getHostName());
 		return wc.save(false, new NullProgressMonitor());
@@ -208,7 +214,7 @@ public class RSEUtils {
 	public static IServer setServerToRSEMode(IServer server, IHost newHost,
 			String jbossHome, String config) throws CoreException {
 		IServerWorkingCopy wc = server.createWorkingCopy();
-		wc.setAttribute(IDeployableServer.SERVER_MODE, RSE_MODE);
+		ServerProfileModel.setProfile(wc, RSE_MODE);
 		wc.setAttribute(RSE_SERVER_CONFIG, config);
 		wc.setAttribute(RSE_SERVER_HOME_DIR, jbossHome);
 		wc.setAttribute(RSE_SERVER_HOST, newHost.getAliasName());
