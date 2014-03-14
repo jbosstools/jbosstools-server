@@ -42,6 +42,7 @@ public class ServerBeanTypeEAP extends JBossServerType {
 			// TODO eap 6.1 will probably need a different adapter type
 			if( V6_1.equals(version)) return IJBossToolingConstants.SERVER_EAP_61;
 			if( V6_2.equals(version)) return IJBossToolingConstants.SERVER_EAP_61;
+			if( V6_3.equals(version)) return IJBossToolingConstants.SERVER_EAP_61;
 			return null;
 		}
 	}
