@@ -16,7 +16,7 @@ public class ServerBeanTypeUnknown extends JBossServerType {
 		super(
 			UNKNOWN_STR, UNKNOWN_STR,
 			"",//$NON-NLS-1$
-			new String[]{V7_0, V7_1, V7_2, V6_0, V6_1, V6_2, V5_1, V5_2, V5_3, V5_0, V4_3, V4_2, V4_0, V3_4, V3_3, V3_2}, 
+			new String[]{V7_0, V7_1, V7_2, V6_0, V6_1, V6_2, V6_3, V5_1, V5_2, V5_3, V5_0, V4_3, V4_2, V4_0, V3_4, V3_3, V3_2}, 
 			null);
 	}
 
