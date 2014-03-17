@@ -105,6 +105,8 @@ public class DownloadRuntimesProvider implements IDownloadRuntimesProvider {
 				dr.setProperty(PROP_WTP_RUNTIME, wtpRT);
 				dr.setProperty(LABEL_RUNTIME_CATEGORY, workingRT.getLabels().getProperty(LABEL_RUNTIME_CATEGORY));
 				dr.setProperty(LABEL_RUNTIME_TYPE, workingRT.getLabels().getProperty(LABEL_RUNTIME_TYPE));
+				if(workingRT.getLabels().get(DownloadRuntime.PROPERTY_REQUIRES_CREDENTIALS) != null ) 
+					dr.setProperty(DownloadRuntime.PROPERTY_REQUIRES_CREDENTIALS, workingRT.getLabels().get(DownloadRuntime.PROPERTY_REQUIRES_CREDENTIALS));
 				if( legacyId != null )
 					dr.setProperty(DownloadRuntime.PROPERTY_ALTERNATE_ID, id);
 				list.add(dr);
