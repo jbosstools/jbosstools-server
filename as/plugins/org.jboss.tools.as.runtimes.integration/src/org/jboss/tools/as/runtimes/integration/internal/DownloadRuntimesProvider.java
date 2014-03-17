@@ -97,6 +97,13 @@ public class DownloadRuntimesProvider implements IDownloadRuntimesProvider {
 				dr.setProperty(LABEL_RUNTIME_TYPE, workingRT.getLabels().getProperty(LABEL_RUNTIME_TYPE));
 				if( legacyId != null )
 					dr.setProperty(DownloadRuntime.PROPERTY_ALTERNATE_ID, id);
+				
+				// prepare for changes in stacks.yaml
+				Object requiresAuthLabel = workingRT.getLabels().get("requiresCredentials");
+				if( requiresAuthLabel != null && !Boolean.FALSE.equals(requiresAuthLabel)) {
+					// Disable download url when credentials are required. Use newer tools to have this support. See JBIDE-16765
+					dr.setUrl(null);
+				}
 				list.add(dr);
 			}
 			monitor.worked(100);
