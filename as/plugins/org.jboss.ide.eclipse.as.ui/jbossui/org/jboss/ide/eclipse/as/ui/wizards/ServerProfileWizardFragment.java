@@ -443,7 +443,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 				initializers[i].initialize(wc);
 			}
 			server = wc.save(false, null);
-			getTaskModel().putObject(TaskModel.TASK_SERVER, server);
+			getTaskModel().putObject(TaskModel.TASK_SERVER, server.createWorkingCopy());
 		}
 	};
 	
@@ -477,7 +477,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 					wc = ((IServerWorkingCopy)server);
 				}
 				wc.setRuntime(runtime);
-				getTaskModel().putObject(TaskModel.TASK_SERVER, wc.save(false, monitor));
+				getTaskModel().putObject(TaskModel.TASK_SERVER, wc.save(false, monitor).createWorkingCopy());
 			}
 		}
 	};
