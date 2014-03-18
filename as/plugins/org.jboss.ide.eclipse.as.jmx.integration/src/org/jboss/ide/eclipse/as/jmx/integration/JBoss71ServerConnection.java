@@ -93,10 +93,12 @@ public class JBoss71ServerConnection extends JBossServerConnection {
 						"Authentication against the remote JBoss instance has failed. Please verify your management credentials in the server editor.", ioe);
 				throw new JMXException(stat);
 			}
-			return null;
+			IStatus stat = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+					"There was an error connecting to " + s.getName() + " via JMX.  Please ensure your server is up and exposes its management ports via the -Djboss.bind.address.management=yourwebsite.com launch arguments", ioe);
+			throw new JMXException(stat);
 		} catch( RuntimeException re) {
 			IStatus stat = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
-					"Unable to reach JBoss instance. Please ensure your server is up and exposes its management ports via the -Djboss.bind.address.management=yourwebsite.com system property", re);
+					"Unable to reach JBoss instance. Please ensure your server is up and exposes its management ports via the -Djboss.bind.address.management=yourwebsite.com launch arguments", re);
 			throw new JMXException(stat);
 		}
 	}
@@ -104,8 +106,8 @@ public class JBoss71ServerConnection extends JBossServerConnection {
 	protected void cleanupConnection(IServer server, MBeanServerConnection connection) {
 		super.cleanupConnection(server, connection);
 	}
-	protected void checkState(IServer server) {
-		super.checkState(server);
+	protected void connectViaJmxIfRequired(IServer server) {
+		super.connectViaJmxIfRequired(server);
 		if( connectionToConnector != null && !isConnected() ) {
 			closeAllConnections();
 		}

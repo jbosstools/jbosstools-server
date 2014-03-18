@@ -32,7 +32,6 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.jmx.integration.JMXUtil.CredentialException;
 import org.jboss.tools.jmx.core.ExtensionManager;
@@ -224,8 +223,8 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 
 	
 	/* **************
-	 *  If there's a change in teh server state, then set my connection
-	 *  state properly.   If there's been a change then fire to teh listeners
+	 *  If there's a change in the server state, then set my connection
+	 *  state properly.   If there's been a change then fire to the listeners
 	 */
 
 	public void serverChanged(ServerEvent event) {
@@ -233,16 +232,25 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 		if ((eventKind & ServerEvent.SERVER_CHANGE) != 0) {
 			// server change event
 			if ((eventKind & ServerEvent.STATE_CHANGE) != 0) {
+				// server state has changed. If it's changed to started, let's connect to jmx
 				checkState(event.getServer());
 			}
 		}
 	}
 	
+	/**
+	 * This is a poorly named method which will basically launch a jmx connection
+	 * if the server has just been started. 
+	 * 
+	 * @param server
+	 * @deprecated
+	 */
 	protected void checkState(IServer server) {
-		IDeployableServer jbs = ServerConverter.getDeployableServer(server);
-		boolean supportsJMX = jbs != null && jbs.hasJMXProvider();
-		boolean started = server.getServerState() == IServer.STATE_STARTED;
-		if( started && supportsJMX ) {
+		connectViaJmxIfRequired(server);
+	}
+	
+	protected void connectViaJmxIfRequired(IServer server) {
+		if( shouldConnect(server)) {
 			launchConnectionJob(server);
 		} else {
 			root = null;
@@ -252,6 +260,25 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 				((AbstractJBossJMXConnectionProvider)getProvider()).fireChanged(JBossServerConnection.this);
 			}
 		}
+	}
+	
+	/**
+	 * Should we connect to this server now? 
+	 * 
+	 * @param server
+	 * @return
+	 */
+	protected boolean shouldConnect(IServer server) {
+		IDeployableServer jbs = ServerConverter.getDeployableServer(server);
+		boolean supportsJMX = jbs != null && jbs.hasJMXProvider();
+		boolean started = server.getServerState() == IServer.STATE_STARTED;
+		
+		// We require a runtime to launch jmx, because we load those client jars onto the classpath. 
+		boolean hasRuntime = server.getRuntime() != null;
+		if( started && supportsJMX && hasRuntime ) {
+			return true;
+		}
+		return false;
 	}
 	
 	protected void launchConnectionJob(final IServer server) {
@@ -309,6 +336,6 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 	}
 
 	public boolean canControl() {
-		return server.getServerState() == IServer.STATE_STARTED;
+		return server.getServerState() == IServer.STATE_STARTED && server.getRuntime() != null;
 	}
 }

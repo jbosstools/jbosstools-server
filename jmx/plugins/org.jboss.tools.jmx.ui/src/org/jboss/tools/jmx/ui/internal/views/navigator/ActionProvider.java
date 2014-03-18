@@ -58,10 +58,16 @@ public class ActionProvider extends CommonActionProvider {
     public void fillContextMenu(IMenuManager menu) {
     	IConnectionWrapper[] connections = getWrappersFromSelection();
     	if( connections != null && connections.length > 0) {
-	    	if( !anyConnected(connections) && allControlable(connections))
-	    		menu.add(new MBeanServerConnectAction(connections));
-	    	else if( allControlable(connections))
-	    		menu.add(new MBeanServerDisconnectAction(connections));
+    		boolean allControllable = allControlable(connections);
+	    	if( !anyConnected(connections)) {
+	    		MBeanServerConnectAction c = new MBeanServerConnectAction(connections);
+	    		menu.add(c);
+	    		c.setEnabled(allControllable);
+	    	} else {
+	    		MBeanServerDisconnectAction d = new MBeanServerDisconnectAction(connections);
+	    		menu.add(d);
+	    		d.setEnabled(allControllable);
+	    	}
 	    	if( connections.length == 1 ) {
 	    		String id = connections[0].getProvider().getId();
 	    		ConnectionProviderUI ui = UIExtensionManager.getConnectionProviderUI(id);

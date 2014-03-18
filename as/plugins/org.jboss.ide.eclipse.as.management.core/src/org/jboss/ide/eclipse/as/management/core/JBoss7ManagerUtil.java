@@ -31,7 +31,7 @@ public class JBoss7ManagerUtil {
 	 * @throws JBoss7ManangerException
 	 */
 	public static IJBoss7ManagerService getService(IServer server) throws JBoss7ManangerException  {
-		return getService(server.getRuntime().getRuntimeType().getId());
+		return getService(server.getServerType().getRuntimeType().getId());
 	}
 	
 	/**
