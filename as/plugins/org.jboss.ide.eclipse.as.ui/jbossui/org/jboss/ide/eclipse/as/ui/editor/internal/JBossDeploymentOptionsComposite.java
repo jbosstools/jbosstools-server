@@ -47,7 +47,6 @@ import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.IServerModeDetails;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
@@ -55,7 +54,6 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -63,6 +61,7 @@ import org.jboss.ide.eclipse.as.ui.editor.DeploymentPage;
 import org.jboss.ide.eclipse.as.ui.subsystems.IBrowseBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
+import org.jboss.tools.as.core.server.controllable.systems.IDeploymentOptionsController;
 
 /**
  * This class is an internal class for displaying
@@ -433,26 +432,29 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 		
 		
 		if(showTempAndDeployTexts()) {
-			IJBossServer jbs = ServerConverter.getJBossServer(getPage().getServer().getOriginal());
-			String newDir = getHelper().getAttribute(IDeployableServer.DEPLOY_DIRECTORY, 
-					jbs == null ? "" : jbs.getDeployFolder()); //$NON-NLS-1$
-			String newTemp = getHelper().getAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, 
-					jbs == null ? "" : jbs.getTempDeployFolder()); //$NON-NLS-1$
-			newDir = ServerUtil.makeRelative(getPage().getServer().getRuntime(), new Path(newDir)).toString();
-			newTemp = ServerUtil.makeRelative(getPage().getServer().getRuntime(), new Path(newTemp)).toString();
-			deployText.removeModifyListener(deployListener);
-			if( !deployText.getText().equals(newDir))
-				deployText.setText(newDir);
-			deployText.addModifyListener(deployListener);
-			tempDeployText.removeModifyListener(tempDeployListener);
-			if( !tempDeployText.getText().equals(newTemp))
-				tempDeployText.setText(newTemp);
-			tempDeployText.addModifyListener(tempDeployListener);
-			
-			deployText.setEnabled(shouldEnableControl(deployText));
-			tempDeployText.setEnabled(shouldEnableControl(tempDeployText));
-			deployButton.setEnabled(shouldEnableControl(deployButton));
-			tempDeployButton.setEnabled(shouldEnableControl(tempDeployButton));
+			try {
+				IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(getPage().getServer());
+				IDeploymentOptionsController deployOpts = (IDeploymentOptionsController)beh.getController(IDeploymentOptionsController.SYSTEM_ID);
+				String newDir = deployOpts.getDeploymentsRootFolder(true);
+				String newTemp = deployOpts.getDeploymentsTemporaryFolder(true);
+				
+				
+				deployText.removeModifyListener(deployListener);
+				if( !deployText.getText().equals(newDir))
+					deployText.setText(newDir);
+				deployText.addModifyListener(deployListener);
+				tempDeployText.removeModifyListener(tempDeployListener);
+				if( !tempDeployText.getText().equals(newTemp))
+					tempDeployText.setText(newTemp);
+				tempDeployText.addModifyListener(tempDeployListener);
+				
+				deployText.setEnabled(shouldEnableControl(deployText));
+				tempDeployText.setEnabled(shouldEnableControl(tempDeployText));
+				deployButton.setEnabled(shouldEnableControl(deployButton));
+				tempDeployButton.setEnabled(shouldEnableControl(tempDeployButton));
+			} catch(CoreException ce) {
+				JBossServerUIPlugin.log(ce.getStatus());
+			}
 		}
 	}
 	

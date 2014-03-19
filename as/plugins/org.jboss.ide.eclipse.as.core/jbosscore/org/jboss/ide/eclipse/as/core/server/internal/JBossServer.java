@@ -165,12 +165,14 @@ public class JBossServer extends DeployableServer
 			return JBossServerCorePlugin.getServerStateLocation(server).
 				append(TEMP_DEPLOY).makeAbsolute().toString();
 		} else if( type.equals(DEPLOY_SERVER)) {
-			String loc = jbsrt.getConfigLocation();
-			String config = jbsrt.getJBossConfiguration();
-			IPath p = new Path(loc)
-				.append(config).append(TMP)
-				.append(JBOSSTOOLS_TMP);
-			return ServerUtil.makeGlobal(jbsrt.getRuntime(), p).toString();
+			if( jbsrt != null ) {
+				String loc = jbsrt.getConfigLocation();
+				String config = jbsrt.getJBossConfiguration();
+				IPath p = new Path(loc)
+					.append(config).append(TMP)
+					.append(JBOSSTOOLS_TMP);
+				return ServerUtil.makeGlobal(jbsrt.getRuntime(), p).toString();
+			}
 		}
 		return null;
 	}

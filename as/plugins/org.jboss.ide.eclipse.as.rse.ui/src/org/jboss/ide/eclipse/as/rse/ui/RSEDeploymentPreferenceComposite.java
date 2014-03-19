@@ -12,6 +12,8 @@ package org.jboss.ide.eclipse.as.rse.ui;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -328,9 +330,19 @@ public abstract class RSEDeploymentPreferenceComposite extends Composite impleme
 				return;
 			Display.getDefault().asyncExec(new Runnable(){
 				public void run() {
+					List<String> before = (List<String>)Arrays.asList(combo.getItems());
 					combo.removeModifyListener(comboMListener);
 					refreshConnections();
 					combo.addModifyListener(comboMListener);
+					String[] after = combo.getItems();
+					// Find whichever is new, and select that. 
+					for( int i = 0; i < after.length; i++ ) {
+						if( !before.contains(after[i])) {
+							combo.select(i);
+							return;
+						}
+					}
+					
 				}
 			});
 		}

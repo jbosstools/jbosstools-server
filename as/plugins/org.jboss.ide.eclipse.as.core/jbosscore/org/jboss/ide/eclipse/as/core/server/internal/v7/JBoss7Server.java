@@ -58,9 +58,11 @@ public class JBoss7Server extends JBossServer implements IJBoss7Deployment, IMan
 		String type = getDeployLocationType();
 		if( DEPLOY_SERVER.equals(type)) {
 			IRuntime rt = getServer().getRuntime();
-			LocalJBoss7ServerRuntime jb7rt = (LocalJBoss7ServerRuntime)rt.loadAdapter(LocalJBoss7ServerRuntime.class, null);
-			IPath p = new Path(jb7rt.getBaseDirectory()).append(FOLDER_TMP);
-			return ServerUtil.makeGlobal(rt, p).toString();
+			if( rt != null ) {
+				LocalJBoss7ServerRuntime jb7rt = (LocalJBoss7ServerRuntime)rt.loadAdapter(LocalJBoss7ServerRuntime.class, null);
+				IPath p = new Path(jb7rt.getBaseDirectory()).append(FOLDER_TMP);
+				return ServerUtil.makeGlobal(rt, p).toString();
+			}
 		}
 		return getTempDeployFolder(this, type);
 	}
