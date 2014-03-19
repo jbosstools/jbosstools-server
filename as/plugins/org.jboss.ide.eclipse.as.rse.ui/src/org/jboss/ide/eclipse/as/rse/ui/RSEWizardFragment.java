@@ -82,7 +82,7 @@ public class RSEWizardFragment extends WizardFragment {
 	private IServerModeUICallback createLegacyCallback(final IWizardHandle handle) {
 		return DeploymentTypeUIUtil.getCallback(getTaskModel(), handle, new ICompletable() {
 			public void setComplete(boolean complete) {
-				setComplete(complete);
+				RSEWizardFragment.this.setComplete(complete);
 			}
 		});
 	}

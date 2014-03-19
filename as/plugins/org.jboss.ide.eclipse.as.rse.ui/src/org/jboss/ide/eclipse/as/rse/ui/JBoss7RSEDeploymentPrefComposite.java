@@ -12,16 +12,20 @@ package org.jboss.ide.eclipse.as.rse.ui;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.server.core.IRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
@@ -41,10 +45,13 @@ public class JBoss7RSEDeploymentPrefComposite extends
 
 	private Text rseConfigFileText;
 	private Button rseConfigFileBrowse;
+	private ControlDecoration serverHomeDecoration;
 
 	public JBoss7RSEDeploymentPrefComposite(Composite parent, int style,
 			IServerModeUICallback callback) {
 		super(parent, style, callback);
+		String error = validateWidgets(false);
+		callback.setComplete(error == null);
 	}
 
 	protected void createRSEWidgets(Composite child) {
@@ -67,9 +74,10 @@ public class JBoss7RSEDeploymentPrefComposite extends
 		serverHomeLabel.setLayoutData(UIUtil.createFormData2(child, 7,
 				null, 0, 0, 10, null, 0));
 		rseServerHome.setLayoutData(UIUtil.createFormData2(child, 5,
-				null, 0, serverHomeLabel, 5, rseBrowse, -5));
+				null, 0, serverHomeLabel, 10, rseBrowse, -5));
 		rseServerHome.setText(callback.getServer().getAttribute(
-				RSEUtils.RSE_SERVER_HOME_DIR, RSEUIMessages.UNSET_REMOTE_SERVER_HOME));
+				RSEUtils.RSE_SERVER_HOME_DIR, ""));
+		serverHomeDecoration = new ControlDecoration(rseServerHome, SWT.CENTER);
 		rseServerHome.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				serverHomeChanged();
@@ -143,6 +151,32 @@ public class JBoss7RSEDeploymentPrefComposite extends
 					callback.getServer(), RSEUtils.RSE_SERVER_HOME_DIR, rseServerHome.getText(), 
 					safeString, RSEUIMessages.CHANGE_REMOTE_SERVER_HOME));
 		}
+		validateWidgets();
+	}
+	
+	
+	protected String validateWidgets() {
+		return validateWidgets(true);
+	}
+	protected String validateWidgets(boolean updateErrorMessage) {
+
+		String errorMsg = null;
+		if( serverHomeDecoration != null ) {
+			boolean isEmpty = rseServerHome == null || rseServerHome.getText() == null || rseServerHome.getText().trim().isEmpty();
+			if( isEmpty ) {
+				serverHomeDecoration.setDescriptionText("Remote server home cannot be empty.");
+	            Image image = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_DEC_FIELD_ERROR);
+	            serverHomeDecoration.setImage(image);
+	            serverHomeDecoration.show();
+	            errorMsg = serverHomeDecoration.getDescriptionText();
+			} else {
+				serverHomeDecoration.hide();
+			}
+		}
+		if( updateErrorMessage ) {
+			callback.setErrorMessage(errorMsg);
+		}
+		return errorMsg;
 	}
 
 	

@@ -98,6 +98,11 @@ public class DeploymentTypeUIUtil {
 		public int getCallbackType() {
 			return WIZARD;
 		}
+		@Override
+		public void setComplete(boolean complete) {
+			if( completable != null )
+				completable.setComplete(complete);
+		}
 	}
 
 	
@@ -136,6 +141,10 @@ public class DeploymentTypeUIUtil {
 		}
 		public int getCallbackType() {
 			return EDITOR;
+		}
+		@Override
+		public void setComplete(boolean complete) {
+			// Do nothing
 		}
 	}
 	

@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.rse.core.model.IHost;
@@ -31,10 +32,12 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
@@ -50,6 +53,8 @@ public class JBossRSEDeploymentPrefComposite extends
 
 	private Text rseServerHome,rseServerConfig;
 	private Button rseBrowse, rseTest;
+	private ControlDecoration serverHomeDecoration;
+
 
 	public JBossRSEDeploymentPrefComposite(Composite parent, int style, IServerModeUICallback callback) {
 		super(parent, style, callback);
@@ -79,14 +84,18 @@ public class JBossRSEDeploymentPrefComposite extends
 		serverHomeLabel.setLayoutData(UIUtil.createFormData2(composite, 7,
 				null, 0, 0, 10, null, 0));
 		rseServerHome.setLayoutData(UIUtil.createFormData2(composite, 5,
-				null, 0, serverHomeLabel, 5, rseBrowse, -5));
+				null, 0, serverHomeLabel, 10, rseBrowse, -5));
 		rseServerHome.setText(callback.getServer().getAttribute(
-				RSEUtils.RSE_SERVER_HOME_DIR, RSEUIMessages.UNSET_REMOTE_SERVER_HOME));
+				RSEUtils.RSE_SERVER_HOME_DIR, ""));
+		
+		serverHomeDecoration = new ControlDecoration(rseServerHome, SWT.CENTER);
 		rseServerHome.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				serverHomeChanged();
 			}
 		});
+        
+		
 
 		Label serverConfigLabel = new Label(this, SWT.NONE);
 		serverConfigLabel.setText(RSEUIMessages.REMOTE_SERVER_CONFIG);
@@ -243,6 +252,21 @@ public class JBossRSEDeploymentPrefComposite extends
 			callback.execute(new ChangeServerPropertyCommand(
 					callback.getServer(), RSEUtils.RSE_SERVER_HOME_DIR, rseServerHome.getText(), 
 					safeString, RSEUIMessages.CHANGE_REMOTE_SERVER_HOME));
+		}
+		validateWidgets();
+	}
+	
+	protected void validateWidgets() {
+		if( serverHomeDecoration != null ) {
+			boolean isEmpty = rseServerHome == null || rseServerHome.getText() == null || rseServerHome.getText().trim().isEmpty();
+			if( isEmpty ) {
+				serverHomeDecoration.setDescriptionText("Remote server home cannot be empty.");
+	            Image image = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_DEC_FIELD_ERROR);
+	            serverHomeDecoration.setImage(image);
+	            serverHomeDecoration.show();
+			} else {
+				serverHomeDecoration.hide();
+			}
 		}
 	}
 

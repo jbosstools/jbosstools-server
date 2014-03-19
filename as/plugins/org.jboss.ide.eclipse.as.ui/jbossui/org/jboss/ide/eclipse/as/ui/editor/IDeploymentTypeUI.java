@@ -30,6 +30,7 @@ public interface IDeploymentTypeUI {
 		public void setErrorMessage(String msg);
 		public Object getAttribute(String key);
 		public int getCallbackType();
+		public void setComplete(boolean complete);
 	}
 	
 	/**
