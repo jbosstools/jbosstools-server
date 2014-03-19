@@ -13,6 +13,8 @@ package org.jboss.ide.eclipse.as.ui.wizards;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -120,7 +122,17 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		} catch(CoreException ce) {
 			JBossServerUIPlugin.log(ce.getStatus());
 		}
-		profiles = ServerProfileModel.getDefault().getProfiles(serverType);
+		ServerProfile[] tmpProfiles = ServerProfileModel.getDefault().getProfiles(serverType);
+		// sort by visible name
+		ArrayList<ServerProfile> tmpProfileList = new ArrayList<ServerProfile>(Arrays.asList(tmpProfiles));
+		Collections.sort(tmpProfileList, new Comparator<ServerProfile>(){
+			public int compare(ServerProfile arg0, ServerProfile arg1) {
+				String n1 = arg0.getVisibleName() == null ? arg0.getId() : arg0.getVisibleName();
+				String n2 = arg1.getVisibleName() == null ? arg1.getId() : arg1.getVisibleName();
+				return n1.compareTo(n2);
+			}
+		});
+		profiles =  tmpProfileList.toArray(new ServerProfile[tmpProfileList.size()]);
 
 		if( runtimeType != null ) {
 			ArrayList<IRuntime> validRuntimes = new ArrayList<IRuntime>();
