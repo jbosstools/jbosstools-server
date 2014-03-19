@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
 import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
+import org.jboss.ide.eclipse.as.wtp.core.Trace;
 
 /**
  * @since 3.0
@@ -444,10 +445,12 @@ public class SubsystemModel {
 	public ISubsystemController createSubsystemController(IServerAttributes server, String serverType, String system, 
 		Map<String, String> requiredProperties, String defaultSubsystem, 
 		Map<String, Object> environment) throws CoreException {
-
+		Trace.trace(Trace.STRING_FINER, "Creating subsystem controller for server type " + serverType + ", system " + system + " and default subsystem id " + defaultSubsystem);
 		SubsystemMapping selectedMapping = getSubsystemMappingForCreation(serverType, system, requiredProperties, defaultSubsystem, environment);
 		try {
+			Trace.trace(Trace.STRING_FINEST, "Found subsystem id " + selectedMapping.getSubsystemId() + " while searching server type " + serverType + ", system " + system + " and default subsystem id " + defaultSubsystem);
 			ISubsystemController c = selectedMapping.getSubsystem().createController();
+			Trace.trace(Trace.STRING_FINEST, "Subsystem created with class " + c.getClass().getCanonicalName());
 			c.initialize(server, new Subsystem(selectedMapping), environment);
 			return c;
 		} catch(CoreException ce) {

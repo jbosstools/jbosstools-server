@@ -27,6 +27,7 @@ import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
+import org.jboss.ide.eclipse.as.wtp.core.Trace;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.SubsystemModel.SubsystemMapping;
 
 /**
@@ -98,6 +99,7 @@ public class ServerProfileModel {
 	}
 	
 	public boolean profileRequiresRuntime(String serverType, String profile) {
+		Trace.trace(Trace.STRING_FINER, "Checking if profile " + profile + " for server type " + serverType + " requires a runtime");
 		String[] systems = SubsystemModel.getInstance().getAllSystemsForServertype(serverType);
 		ServerProfile sp = internal.getProfile(profile, serverType);
 		/// get A subsystem mapping for each system type that exists.
@@ -112,17 +114,17 @@ public class ServerProfileModel {
 				}
 				if( oneMapping != null && oneMapping.getSubsystem() != null ) {
 					if(oneMapping.getSubsystem().requiresRuntime()) {
+						Trace.trace(Trace.STRING_FINER, "Profile " + profile + " for server type " + serverType + " requires a runtime");
 						return true;
 					} 
 				} else {
-					// TODO log
-					System.out.println(i + " Error searching for serverType " + serverType + " and system type " + systems[i] + " using profile " + profile);
+					Trace.trace(Trace.STRING_FINER, "Profile " + profile + " for server type " + serverType + " cannot find a subsystem for system " + systems[i]);
 				}
 			} catch(CoreException ce) {
-				// Intentionally do not log here. 
-				// This method should just return true or false to the best of its ability. 
+				Trace.trace(Trace.STRING_FINER, "Non-critical error searching for a subsystem for system " + systems[i] + ", profile " + profile + ", and server type " + serverType);
 			}
 		}
+		Trace.trace(Trace.STRING_FINER, "Profile " + profile + " for server type " + serverType + " does not require a runtime");
 		return false;
 	}
 	
@@ -131,13 +133,16 @@ public class ServerProfileModel {
 	}
 	
 	public ServerProfile getProfile(String serverType, String id) {
+		Trace.trace(Trace.STRING_FINER, "Locating server profile " + id + " for server type " + serverType);
 		ServerProfile[] profiles = internal.getProfiles(serverType);
 		if( profiles != null ) {
 			for( int i = 0; i < profiles.length;i++) {
 				if( profiles[i].getId().equals(id))
+					Trace.trace(Trace.STRING_FINER, "Server profile " + id + " for server type " + serverType + " found.");
 					return profiles[i];
 			}
 		}
+		Trace.trace(Trace.STRING_FINER, "Server profile " + id + " for server type " + serverType + " not found.");
 		return null;
 	}
 
@@ -160,6 +165,7 @@ public class ServerProfileModel {
 	 */
 	public ISubsystemController getController(IServer server, String profile, String system, ControllerEnvironment environment) throws CoreException {
 		String serverType = server.getServerType().getId();
+		Trace.trace(Trace.STRING_FINER, "Locating subsystem controller for profile " + profile + " for server type " + serverType + " and system " + system);
 		ServerProfile sp = internal.getProfile(profile, serverType);
 		if( sp != null ) {
 			try {
@@ -315,7 +321,6 @@ public class ServerProfileModel {
 		private void addSystemMapping(IConfigurationElement el) throws CoreException {
 			String system = el.getAttribute("system");
 			String subsystem = el.getAttribute("subsystem");
-			System.out.println("Adding system Mapping for server=" + serverType + ",profile=" + id + ",system=" + system+",subsystem="+subsystem);
 			addSystemMapping(system, subsystem);
 		}
 		
