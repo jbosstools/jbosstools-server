@@ -380,9 +380,13 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 
 	private void trackNewServerEvent(int succesful) {
 		IServerAttributes server = (IServerAttributes)getTaskModel().getObject(TaskModel.TASK_SERVER);
-		String serverType = server.getServerType().getId();
+		String serverType = "UNKNOWN";
+		if(server.getServerType()!=null) {
+			serverType = server.getServerType().getId();
+		}
 		UsageEventType eventType = JBossServerUIPlugin.getDefault().getNewServerEventType();
 		UsageReporter.getInstance().trackEvent(eventType.event(serverType, succesful));
+		
 	}
 
 	@Override
