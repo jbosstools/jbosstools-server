@@ -48,15 +48,28 @@ public class DownloadRuntimesProvider implements IDownloadRuntimesProvider {
 	
 	@Override
 	public DownloadRuntime[] getDownloadableRuntimes(String requestType, IProgressMonitor monitor) {
-		if( downloads == null )
-			loadDownloadableRuntimes(monitor);
+		if( downloads == null ) {
+			ArrayList<DownloadRuntime> tmp = loadDownloadableRuntimes(monitor);
+			if( monitor.isCanceled()) {
+				// Return the incomplete list, but do not cache it
+				return (DownloadRuntime[]) tmp.toArray(new DownloadRuntime[tmp.size()]);
+			}
+			// Cache this, as its assumed to be complete
+			downloads = tmp;
+		}
 		return (DownloadRuntime[]) downloads.toArray(new DownloadRuntime[downloads.size()]);
 	}
 	
-	private synchronized void loadDownloadableRuntimes(IProgressMonitor monitor) {
+	/*
+	 * Return an arraylist of downloadruntime objects
+	 */
+	private synchronized ArrayList<DownloadRuntime> loadDownloadableRuntimes(IProgressMonitor monitor) {
 		monitor.beginTask(Messages.LoadRemoteRuntimes, 200);
 		Stacks[] stacksArr = getStacks(new SubProgressMonitor(monitor, 100));
 		ArrayList<DownloadRuntime> all = new ArrayList<DownloadRuntime>();
+		if( stacksArr == null )
+			return all;
+		
 		monitor.beginTask(Messages.CreateDownloadRuntimes, stacksArr.length * 100);		
 		for( int i = 0; i < stacksArr.length; i++ ) {
 			IProgressMonitor inner = new SubProgressMonitor(monitor, 100);
@@ -65,7 +78,7 @@ public class DownloadRuntimesProvider implements IDownloadRuntimesProvider {
 			}
 		}
 		monitor.done();
-		downloads = all;
+		return all;
 	}
 	
 	private void traverseStacks(Stacks stacks, ArrayList<DownloadRuntime> list, IProgressMonitor monitor) {
