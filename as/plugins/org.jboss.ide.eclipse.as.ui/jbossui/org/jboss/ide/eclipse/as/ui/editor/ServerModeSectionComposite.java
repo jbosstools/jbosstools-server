@@ -253,10 +253,11 @@ public class ServerModeSectionComposite extends Composite {
 	private void loadDeployTypeData() {
 		deployAdditions = new ArrayList<DeployUIAdditions>();
 		String[] supported = new String[]{"local","rse", "local.mgmt", "rse.mgmt"};
+		String serverType = callback.getServer().getServerType().getId();
 		for( int i = 0; i < supported.length; i++) {
 			IDeploymentTypeUI ui = EditorExtensionManager.getDefault().getPublishPreferenceUI(supported[i]);
-			ServerProfileModel.ServerProfile sp = ServerProfileModel.getDefault().getProfile(callback.getServer().getServerType().getId(), supported[i]);
-			String name = (sp == null ? supported[i] : sp.getVisibleName());
+			ServerProfileModel.ServerProfile sp = ServerProfileModel.getDefault().getProfile(serverType, supported[i]);
+			String name = (sp == null ? supported[i] : (sp.getVisibleName() == null ? sp.getId() : sp.getVisibleName()));
 			deployAdditions.add(new DeployUIAdditions(
 					name, 
 					supported[i], ui));

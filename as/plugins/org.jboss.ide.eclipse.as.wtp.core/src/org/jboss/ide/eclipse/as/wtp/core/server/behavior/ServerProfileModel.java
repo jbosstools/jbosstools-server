@@ -137,9 +137,10 @@ public class ServerProfileModel {
 		ServerProfile[] profiles = internal.getProfiles(serverType);
 		if( profiles != null ) {
 			for( int i = 0; i < profiles.length;i++) {
-				if( profiles[i].getId().equals(id))
+				if( profiles[i].getId().equals(id)) {
 					Trace.trace(Trace.STRING_FINER, "Server profile " + id + " for server type " + serverType + " found.");
 					return profiles[i];
+				}
 			}
 		}
 		Trace.trace(Trace.STRING_FINER, "Server profile " + id + " for server type " + serverType + " not found.");
