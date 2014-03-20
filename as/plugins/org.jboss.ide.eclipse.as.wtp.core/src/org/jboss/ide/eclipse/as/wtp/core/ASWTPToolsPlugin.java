@@ -11,14 +11,16 @@
 package org.jboss.ide.eclipse.as.wtp.core;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.jboss.tools.foundation.core.plugin.BaseCorePlugin;
+import org.jboss.tools.foundation.core.plugin.log.IPluginLog;
+import org.jboss.tools.foundation.core.plugin.log.StatusFactory;
 import org.osgi.framework.BundleContext;
 
 /**
  * The activator class controls the plug-in life cycle
  */
-public class ASWTPToolsPlugin extends Plugin {
+public class ASWTPToolsPlugin extends BaseCorePlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.jboss.ide.eclipse.as.wtp.core"; //$NON-NLS-1$
@@ -40,6 +42,7 @@ public class ASWTPToolsPlugin extends Plugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		super.registerDebugOptionsListener(PLUGIN_ID, new Trace(this), context);
 	}
 
 	/*
@@ -78,4 +81,24 @@ public class ASWTPToolsPlugin extends Plugin {
         log(IStatus.ERROR, message, e);
     }
 
+	/**
+	 * Get the IPluginLog for this plugin. This method 
+	 * helps to make logging easier, for example:
+	 * 
+	 *     FoundationCorePlugin.pluginLog().logError(etc)
+	 *  
+	 * @return IPluginLog object
+	 */
+	public static IPluginLog pluginLog() {
+		return getDefault().pluginLogInternal();
+	}
+
+	/**
+	 * Get a status factory for this plugin
+	 * @return status factory
+	 */
+	public static StatusFactory statusFactory() {
+		return getDefault().statusFactoryInternal();
+	}
+	
 }
