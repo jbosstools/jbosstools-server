@@ -28,7 +28,7 @@ public class Trace extends AbstractTrace implements DebugOptionsListener {
 	 */
 	Trace(ASWTPToolsPlugin p) {
 		super(p);
-		instance = new Trace(ASWTPToolsPlugin.getDefault());
+		instance = this;
 	}
 	
 	public static void trace(final String level, String s) {
