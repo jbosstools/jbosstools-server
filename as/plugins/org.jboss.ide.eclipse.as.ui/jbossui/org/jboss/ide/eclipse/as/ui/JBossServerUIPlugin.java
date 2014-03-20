@@ -31,14 +31,21 @@ import org.jboss.ide.eclipse.as.ui.dialogs.ModifyDeploymentScannerIntervalDialog
 import org.jboss.ide.eclipse.as.ui.dialogs.ServerAlreadyStartedDialog.ServerAlreadyStartedHandler;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.XPathRuntimeListener;
 import org.jboss.ide.eclipse.as.ui.wizards.JBInitialSelectionProvider;
+import org.jboss.tools.usage.event.UsageEventType;
+import org.jboss.tools.usage.event.UsageReporter;
 import org.osgi.framework.BundleContext;
 
 /**
  * The main plugin class to be used in the desktop.
  */
 public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
+	private static final String USAGE_COMPONENT_NAME = "server";
+
 	private static JBossServerUIPlugin plugin;
 	private ResourceBundle resourceBundle;
+
+	private UsageEventType newServerEventType;
+	private String usageComponentVersion = "";
 
 	// UI plugin id
 	public static final String PLUGIN_ID = "org.jboss.ide.eclipse.as.ui"; //$NON-NLS-1$
@@ -84,6 +91,13 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 		ServerCore.addServerLifecycleListener(selectionProvider);
 		ServerCore.addRuntimeLifecycleListener(XPathRuntimeListener.getDefault()); 
 		ExtensionManager.getDefault().setAlreadyStartedHandler(new ServerAlreadyStartedHandler());
+
+		newServerEventType = new UsageEventType(USAGE_COMPONENT_NAME, UsageEventType.getVersion(this), null, UsageEventType.NEW_ACTION, Messages.UsageEventTypeNewLabelDescription, UsageEventType.SUCCESFULL_FAILED_VALUE_DESCRIPTION);
+		UsageReporter.getInstance().registerEvent(newServerEventType);
+	}
+
+	public UsageEventType getNewServerEventType() {
+		return newServerEventType;
 	}
 
 	/**
