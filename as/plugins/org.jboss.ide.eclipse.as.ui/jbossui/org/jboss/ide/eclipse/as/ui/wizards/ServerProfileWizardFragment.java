@@ -52,6 +52,8 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IServerProfileInitializ
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel.ServerProfile;
 import org.jboss.ide.eclipse.as.wtp.ui.profile.ProfileUI;
+import org.jboss.tools.usage.event.UsageEventType;
+import org.jboss.tools.usage.event.UsageReporter;
 
 /**
  * 
@@ -370,7 +372,23 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 	public void exit() {
 	}
 
+	@Override
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
+		super.performFinish(monitor);
+		trackNewServerEvent(1);
+	}
+
+	private void trackNewServerEvent(int succesful) {
+		IServerAttributes server = (IServerAttributes)getTaskModel().getObject(TaskModel.TASK_SERVER);
+		String serverType = server.getServerType().getId();
+		UsageEventType eventType = JBossServerUIPlugin.getDefault().getNewServerEventType();
+		UsageReporter.getInstance().trackEvent(eventType.event(serverType, succesful));
+	}
+
+	@Override
+	public void performCancel(IProgressMonitor monitor) throws CoreException {
+		super.performCancel(monitor);
+		trackNewServerEvent(0);
 	}
 
 	public boolean isComplete() {
