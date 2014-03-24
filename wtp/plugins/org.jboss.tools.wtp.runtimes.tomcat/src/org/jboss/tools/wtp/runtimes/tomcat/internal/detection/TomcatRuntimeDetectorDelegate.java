@@ -45,6 +45,7 @@ public class TomcatRuntimeDetectorDelegate extends AbstractRuntimeDetectorDelega
 	@SuppressWarnings("nls")
 	protected static final String[] runtimeTypes = new String[] {
 		//Put most recent versions first, to avoid traversing the whole list while creating working copies in #getRuntimeWorkingCopyFromDir()
+		"org.eclipse.jst.server.tomcat.runtime.80",
 		"org.eclipse.jst.server.tomcat.runtime.70",
 		"org.eclipse.jst.server.tomcat.runtime.60",
 		"org.eclipse.jst.server.tomcat.runtime.55",
