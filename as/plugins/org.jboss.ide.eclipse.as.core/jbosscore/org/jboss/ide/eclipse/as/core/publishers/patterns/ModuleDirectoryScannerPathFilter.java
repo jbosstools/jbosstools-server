@@ -23,6 +23,8 @@ import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
  */
 public class ModuleDirectoryScannerPathFilter implements IModulePathFilter {
 
+	private static final String[] EMPTY_PATHS = new String[]{};
+	
 	private PublishFilterDirectoryScanner scanner;
 	private boolean scanned = false;
 	private IModuleResource[] raw;
@@ -48,6 +50,9 @@ public class ModuleDirectoryScannerPathFilter implements IModulePathFilter {
 		
 	// Explode a given string by comma
 	private static String[] explode(String pattern) {
+		if (pattern == null) {
+			return EMPTY_PATHS;
+		}
 		return pattern.split(","); //$NON-NLS-1$
 	}
 	
