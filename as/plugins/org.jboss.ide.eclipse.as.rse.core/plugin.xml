@@ -118,6 +118,7 @@
        <serverProfile id="rse.mgmt" serverTypes="%ServerTypesJBoss7OrHigher">
        	  <initializer class="org.jboss.ide.eclipse.as.rse.core.subsystems.RSEManagementProfileInitializer"/>
        	  <description name="Remote (Prefers Management Operations)" description="A profile configured for use on a remote machine, preferring management operations wherever possible"/>
+          <subsystem system="deploymentOptions" subsystem="deploymentOptions.rse"/> <!-- quick workaround JBIDE-16895 -->
           <subsystem system="launch" subsystem="launch.standard.rse"/>
           <subsystem system="publish" subsystem="publish.management"/>
           <subsystem system="serverDetails" subsystem="serverDetails.rse"/>
