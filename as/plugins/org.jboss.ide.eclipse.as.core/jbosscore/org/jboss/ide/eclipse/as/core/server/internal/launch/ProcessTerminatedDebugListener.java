@@ -25,6 +25,7 @@ import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.util.IEventCodes;
+import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
@@ -60,12 +61,19 @@ public class ProcessTerminatedDebugListener implements IDebugEventSetListener {
 	}
 	
 	private void handleProcessTerminatedEvent(ProcessTerminatedDebugListener listener) {
+		// get the process in the server's 'shared data'
+		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(server);
+		IProcess sharedProcess = (IProcess)beh.getSharedData(IDeployableServerBehaviorProperties.PROCESS);
+		
 		synchronized(this) {
 			// If there's a new process that's not equal to myProcess, 
 			// then the server is already starting again
-			if( listener.myProcess != null && !listener.myProcess.equals(myProcess)) 
+			if( sharedProcess != null && !sharedProcess.equals(myProcess)) {
 				return;
+			}
+			
 			if( server.getServerState() != IServer.STATE_STOPPED) {
+				// server is still running, so we should terminate it
 				Object pt = ((ControllableServerBehavior)getServerBehavior(server)).getSharedData(IDeployableServerBehaviorProperties.POLL_THREAD);
 				if( pt != null ) {
 					PollThreadUtils.cancelPolling(null, (PollThread)pt);
