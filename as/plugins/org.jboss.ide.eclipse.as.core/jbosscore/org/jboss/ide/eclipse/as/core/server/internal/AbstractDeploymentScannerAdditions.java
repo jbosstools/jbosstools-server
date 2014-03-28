@@ -14,6 +14,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -54,8 +55,12 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 
 	public void updateDeploymentScanners(final IServer server) {
 		if( acceptsSetting(server, IJBossToolingConstants.PROPERTY_ADD_DEPLOYMENT_SCANNERS, true)) {
-			String[] folders = getDeployLocationFolders(server);
-			ensureScannersAdded(server, folders);
+			try {
+				String[] folders = getDeployLocationFolders(server);
+				ensureScannersAdded(server, folders);
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -158,11 +163,14 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 				IModule[] module = new IModule[] { modules2[i] };
 				IStatus status = server.canModifyModules(module, null, null);
 				if (status != null && status.getSeverity() != IStatus.ERROR) {
-					String moduleDeploy = ds.getDeploymentLocation(module, false).toString();
-					// we don't want the location. we want its parent. 
-					moduleDeploy = new RemotePath(moduleDeploy, sep).removeLastSegments(1).toOSString();
-					if( !folders.contains(moduleDeploy))
-						folders.add(moduleDeploy);
+					IPath moduleDeployPath = ds.getDeploymentLocation(module, false);
+					if( moduleDeployPath != null ) {
+						String moduleDeploy = moduleDeployPath.toString();
+						// we don't want the location. we want its parent. 
+						moduleDeploy = new RemotePath(moduleDeploy, sep).removeLastSegments(1).toOSString();
+						if( !folders.contains(moduleDeploy))
+							folders.add(moduleDeploy);
+					}
 				}
 			}
 		}

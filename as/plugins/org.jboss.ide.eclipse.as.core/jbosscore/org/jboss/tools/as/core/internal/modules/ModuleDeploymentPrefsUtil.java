@@ -62,6 +62,8 @@ public class ModuleDeploymentPrefsUtil {
 		String folder = getPathPropertyFromDeploymentModulePrefs(
 				moduleTree, prefs, defaultFolder,
 				IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC, separator);
+		if( folder == null ) 
+			return null;
 		IPath ret = getModuleNestedDeployPath(moduleTree, folder, server, separator);
 		return new RemotePath(ret.toString(), separator);
 	}
@@ -81,6 +83,8 @@ public class ModuleDeploymentPrefsUtil {
 		String folder = getPathPropertyFromDeploymentModulePrefs(
 				moduleTree, prefs, defaultFolder,
 				IJBossToolingConstants.LOCAL_DEPLOYMENT_TEMP_LOC, separator);
+		if( folder == null )
+			return null;
 		return new RemotePath(folder, separator);
 	}
 

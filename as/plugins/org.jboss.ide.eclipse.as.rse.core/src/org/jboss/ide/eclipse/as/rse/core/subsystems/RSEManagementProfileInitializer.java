@@ -29,6 +29,12 @@ public class RSEManagementProfileInitializer implements IServerProfileInitialize
 			// as7 rse has following settings
 			wc.setAttribute(IJBossToolingConstants.LISTEN_ALL_HOSTS, true);
 			wc.setAttribute(IJBossToolingConstants.EXPOSE_MANAGEMENT_SERVICE, true);
+
+			// adding deployment scanners in as7/wf requires management, but, we do management-based deployment,
+			// and so we don't add deployment scanners for filesystem paths. 
+			wc.setAttribute(IJBossToolingConstants.PROPERTY_ADD_DEPLOYMENT_SCANNERS, false);
+			wc.setAttribute(IJBossToolingConstants.PROPERTY_REMOVE_DEPLOYMENT_SCANNERS, false);
+			
 			pollId = wc.getServerType().getId().equals(IJBossToolingConstants.SERVER_WILDFLY_80) 
 					? JBoss7ManagerServicePoller.WILDFLY_POLLER_ID : JBoss7ManagerServicePoller.POLLER_ID;
 		} 
