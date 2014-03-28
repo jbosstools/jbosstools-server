@@ -89,9 +89,26 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 	public ServerProfileWizardFragment() {
 		super();
 	}
+	
+	@Override
 	public void setComplete(boolean complete) {
 		super.setComplete(complete);
 	}
+
+	@Override
+	public boolean isComplete() {
+		return !hasDisposedWidgets() && super.isComplete();
+	}
+	
+	/*
+	 * Wizard fragments are re-used. This means the only way we can check if this is being used in a new wizard, or 
+	 * in a previous wizard, is to check whether any widgets are now disposed.  We'll check the most common widget, 
+	 * the description label. 
+	 */
+	protected boolean hasDisposedWidgets() {
+		return serverExplanationLabel.isDisposed();
+	}
+	
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
 		this.handle = handle;
 		
@@ -394,11 +411,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		super.performCancel(monitor);
 		trackNewServerEvent(0);
 	}
-
-	public boolean isComplete() {
-		return super.isComplete();
-	}
-
+	
 	public boolean hasComposite() {
 		return true;
 	}
