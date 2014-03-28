@@ -1617,21 +1617,13 @@
             mappedId="publish.filesystem.default"
             serverTypes="org.jboss.ide.eclipse.as.systemCopyServer">
       </subsystemMapping>
-
-
-      <subsystem
-            system="publish"
-            id="publish.management.default"
-            name="Management Publish Controller"
-            class="org.jboss.tools.as.core.server.controllable.subsystems.internal.ManagementPublishController">
-      </subsystem>
       <subsystemMapping
-            id="publish.management.default"
-            mappedId="publish.management"
+            id="publish.filesystem.standard"
+            mappedId="publish.filesystem.default"
             serverTypes="%ServerTypesJBoss7OrHigher">
       </subsystemMapping>
 
-      
+
       
       <!-- A filesystem publish controller that suspends and resumes deployment scanners, for use in as lessthan 7 -->
       <subsystem
@@ -1650,10 +1642,23 @@
       <subsystemMapping
             id="publish.filesystem.suspendScanners"
             mappedId="publish.filesystem.default"
-            serverTypes="%AllJBossServerTypes">
+            serverTypes="%ServerTypesJBoss6OrLower">
       </subsystemMapping>
 
 
+      <subsystem
+            system="publish"
+            id="publish.management.default"
+            name="Management Publish Controller"
+            class="org.jboss.tools.as.core.server.controllable.subsystems.internal.ManagementPublishController">
+      </subsystem>
+      <subsystemMapping
+            id="publish.management.default"
+            mappedId="publish.management"
+            serverTypes="%ServerTypesJBoss7OrHigher">
+      </subsystemMapping>
+
+      
 	<!-- subsystem for reoslving ports -->
       <subsystem
             system="server.ports"

@@ -113,10 +113,13 @@ public abstract class AbstractSubsystemController implements ISubsystemControlle
 	 * @throws CoreException 
 	 */
 	protected ISubsystemController findDependency(String system, String serverType, Map<String, Object> environment) throws CoreException {
-
-		// If we're declared to require a specific subsystem, pull that one first and ignore the environment
-		Map<String, String> reqs = subsystem.getRequiredSubsystems();
-		String defaultSubsystem = reqs.get(system);
+		String defaultSubsystem = null;
+		// Subsystem should never be null, but, some specific tests may have initialized it with a null. 
+		if( subsystem != null ) {
+			// If we're declared to require a specific subsystem, pull that one first and ignore the environment
+			Map<String, String> reqs = subsystem.getRequiredSubsystems();
+			defaultSubsystem = reqs.get(system);
+		}
 		return SubsystemModel.getInstance().createSubsystemController(server, serverType, system, (Map<String,String>)null, defaultSubsystem, environment);
 	}
 	
