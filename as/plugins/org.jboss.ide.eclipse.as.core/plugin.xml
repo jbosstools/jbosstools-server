@@ -1817,7 +1817,7 @@
           point="org.jboss.ide.eclipse.as.wtp.core.serverProfile">
        <serverProfile id="local.mgmt" serverTypes="%ServerTypesJBoss7OrHigher">
           <initializer class="org.jboss.tools.as.core.server.controllable.profile.internal.LocalManagementProfileInitializer"/>
-       	  <description name="Local (Prefers Management Operations)" description="A profile configured for use on a local machine, preferring management operations wherever possible"/>
+       	  <description name="Local (Use Management Operations)" description="A profile configured for use on a local machine, using management operations wherever possible."/>
           <subsystem system="launch" subsystem="launch.standard.local"/>
           <subsystem system="shutdown" subsystem="shutdown.default"/>
           <subsystem system="publish" subsystem="publish.management"/>
