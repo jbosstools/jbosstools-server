@@ -40,6 +40,7 @@ import org.jboss.ide.eclipse.as.core.publishers.JSTPublisherXMLToucher;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilterProvider;
+import org.jboss.ide.eclipse.as.core.server.internal.UpdateModuleStateJob;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.DeploymentMarkerUtils;
 import org.jboss.ide.eclipse.as.core.util.IEventCodes;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -48,6 +49,7 @@ import org.jboss.ide.eclipse.as.core.util.ProgressMonitorUtil;
 import org.jboss.ide.eclipse.as.core.util.RemotePath;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IFilesystemController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IModuleStateController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPrimaryPublishController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishControllerDelegate;
@@ -71,6 +73,11 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		implements IPublishController, IPrimaryPublishController {
 
 	// Dependencies
+
+	/*
+	 * An optional dependency for verifying or modifying the deploy state of a module
+	 */
+	private IModuleStateController moduleStateController;
 	
 	/*
 	 * The deployment options gives us access to things like
@@ -113,6 +120,24 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 			restartController = (IModuleRestartBehaviorController)findDependencyFromBehavior(IModuleRestartBehaviorController.SYSTEM_ID);
 		}
 		return restartController;
+	}
+	
+
+	/**
+	 * Access the optional module state controller. 
+	 * 
+	 * @return
+	 * @throws CoreException 
+	 */
+	protected IModuleStateController getModuleStateController() throws CoreException {
+		if( moduleStateController == null ) {
+			try {
+				moduleStateController = (IModuleStateController)findDependency(IModuleStateController.SYSTEM_ID);
+			} catch(CoreException ce) {
+				// Do not log; this is optional. But trace
+			}
+		}
+		return moduleStateController;
 	}
 	
 	/*
@@ -192,6 +217,13 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		ensureModulesRestarted();
 		IServer s = getServer();
 		((Server)s).setServerPublishState(getUpdatedPublishState(s));
+		
+
+		// update the wtp model with live module state from the server
+		IModuleStateController c = getModuleStateController();
+		if( c != null && getServer().getServerState() == IServer.STATE_STARTED) {
+			new UpdateModuleStateJob( c, getServer(), true, 15000).schedule(5000);
+		}
 	}
 
 	private int getUpdatedPublishState(IServer server) {

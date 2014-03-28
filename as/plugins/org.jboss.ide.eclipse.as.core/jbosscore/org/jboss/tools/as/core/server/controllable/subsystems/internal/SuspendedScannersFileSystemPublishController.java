@@ -14,9 +14,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IDeploymentScannerModifier;
-import org.jboss.ide.eclipse.as.core.server.internal.UpdateModuleStateJob;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
-import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IModuleStateController;
 
 /**
  * A filesystem publish controller which also suspends and resumes 
@@ -26,31 +24,6 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IModuleStateController;
  */
 public class SuspendedScannersFileSystemPublishController extends
 		StandardFileSystemPublishController {
-	
-	// Dependencies
-	
-	/*
-	 * An optional dependency for verifying or modifying the deploy state of a module
-	 */
-	private IModuleStateController moduleStateController;
-	
-
-	/**
-	 * Access the optional module state controller. 
-	 * 
-	 * @return
-	 * @throws CoreException 
-	 */
-	protected IModuleStateController getModuleStateController() throws CoreException {
-		if( moduleStateController == null ) {
-			try {
-				moduleStateController = (IModuleStateController)findDependency(IModuleStateController.SYSTEM_ID);
-			} catch(CoreException ce) {
-				// Do not log; this is optional. But trace
-			}
-		}
-		return moduleStateController;
-	}
 	
 	private IDeploymentScannerModifier getScannerModifier() {
 		JBossExtendedProperties properties = (JBossExtendedProperties)getServer().loadAdapter(JBossExtendedProperties.class, null);
@@ -74,7 +47,6 @@ public class SuspendedScannersFileSystemPublishController extends
 
 	@Override
 	public void publishFinish(IProgressMonitor monitor) throws CoreException {
-		super.publishFinish(monitor);
 		// Resume deployment scanners
 		if( getServer().getServerState() == IServer.STATE_STARTED ) {
 			IDeploymentScannerModifier mod = getScannerModifier();
@@ -82,11 +54,7 @@ public class SuspendedScannersFileSystemPublishController extends
 				mod.resumeScanners(getServer());
 			}
 		}
-		// update the wtp model with live module state from the server
-		IModuleStateController c = getModuleStateController();
-		if( c != null && getServer().getServerState() == IServer.STATE_STARTED) {
-			new UpdateModuleStateJob( c, getServer(), true, 15000).schedule(5000);
-		}
+		super.publishFinish(monitor);
 	}
 
 }
