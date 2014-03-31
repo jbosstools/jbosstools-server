@@ -1211,6 +1211,7 @@
          <uri name="http://www.jboss.org/j2ee/schema/jboss-common_5_1.xsd" uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-common_5_1.xsd"/>
          <uri name="http://www.jboss.org/j2ee/schema/jboss-ds_5_0.xsd" uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-ds_5_0.xsd"/>
          <uri name="http://www.jboss.org/j2ee/schema/jboss-web_5_1.xsd" uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-web_5_1.xsd"/>
+         <uri name="http://www.jboss.org/j2ee/schema/jboss-client_6_0.xsd" uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-client_6_0.xsd"/>
 		 <uri name="jaxws-config_2_0.xsd" uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jaxws-config_2_0.xsd"/>
 		 <uri name="persistence_2_0.xsd" uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/persistence_2_0.xsd"/>
          <uri name="urn:jboss:1.0" uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss_1_0.xsd"/>
