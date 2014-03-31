@@ -47,7 +47,7 @@ public class LogSession extends Group {
 
 	public void processLogLine(String line) {
 		// process "!SESSION <dateUnknownFormat> ----------------------------"
-		line = line.substring(9); // strip "!SESSION "
+		line = line.substring(8); // strip "!SESSION"
 		int delim = line.indexOf("----"); //$NON-NLS-1$ // single "-" may be in date, so take few for sure
 		if (delim == -1)
 			return;
