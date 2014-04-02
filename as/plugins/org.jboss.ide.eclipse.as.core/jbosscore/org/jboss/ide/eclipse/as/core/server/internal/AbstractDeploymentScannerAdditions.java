@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007 - 2013 Red Hat, Inc.
+ * Copyright (c) 2007 - 2014 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -118,6 +118,8 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 		String type = ds.getDeployLocationType();
 	
 		// inside server first, always there
+		char sep = getSeparatorCharacter(server);
+		
 		String insideServer = getInsideServerDeployFolder(server);
 		folders.add(insideServer);
 		
@@ -142,19 +144,7 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 				folders.add(custom1);
 		}
 
-		// Discover the proper separator character for the paths being used
-		char sep = File.separatorChar;
-		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(server);
-		if( beh != null ) {
-			try {
-				IDeploymentOptionsController cont = (IDeploymentOptionsController)beh.getController(IDeploymentOptionsController.SYSTEM_ID);
-				if( cont != null ) {
-					sep = cont.getPathSeparatorCharacter();
-				}
-			} catch(CoreException ce) {
-				// Ignore
-			}
-		}
+		
 		
 		IModule[] modules2 = org.eclipse.wst.server.core.ServerUtil.getModules(server.getServerType().getRuntimeType().getModuleTypes());
 		if (modules2 != null) {
@@ -179,6 +169,24 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 		return folders2;
 	}
 	
+	
+	protected char getSeparatorCharacter(IServer server) {
+		// Discover the proper separator character for the paths being used
+		char sep = File.separatorChar;
+		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(server);
+		if( beh != null ) {
+			try {
+				IDeploymentOptionsController cont = (IDeploymentOptionsController)beh.getController(IDeploymentOptionsController.SYSTEM_ID);
+				if( cont != null ) {
+					sep = cont.getPathSeparatorCharacter();
+				}
+			} catch(CoreException ce) {
+				// Ignore
+			}
+		}
+		return sep;
+	}
+	
 	/* 
 	 * Get the deploy folder for inside the server.
 	 *    server/default/deploy,  or
@@ -186,7 +194,9 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 	 */
 	protected String getInsideServerDeployFolder(IServer server) {
 		IServerModeDetails det = (IServerModeDetails)Platform.getAdapterManager().getAdapter(server, IServerModeDetails.class);
-		return det.getProperty(IServerModeDetails.PROP_SERVER_DEPLOYMENTS_FOLDER_ABS);
+		String unsafePath = det.getProperty(IServerModeDetails.PROP_SERVER_DEPLOYMENTS_FOLDER_ABS);
+		IPath p = new RemotePath(unsafePath, getSeparatorCharacter(server));
+		return p.toOSString();
 	}
 
 	/*
