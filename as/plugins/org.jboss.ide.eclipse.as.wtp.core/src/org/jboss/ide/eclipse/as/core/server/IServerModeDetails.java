@@ -27,7 +27,7 @@ package org.jboss.ide.eclipse.as.core.server;
  * 
  * Not all properties are valid for all server versions. 
  * 
- * This interface is provisional API and is not intendd to be implemented
+ * This interface is provisional API and is not intended to be implemented
  * by clients outside of ASTools at this time. 
  * @since 3.0
  */
