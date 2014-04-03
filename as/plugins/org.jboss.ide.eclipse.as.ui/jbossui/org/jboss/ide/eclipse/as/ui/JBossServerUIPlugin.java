@@ -89,6 +89,7 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 		UnitedServerListenerManager.getDefault().addListener(ShowConsoleServerStateListener.getDefault());
 		UnitedServerListenerManager.getDefault().addListener(as7ScannerAssist);
 		ServerCore.addServerLifecycleListener(selectionProvider);
+		ServerCore.addRuntimeLifecycleListener(selectionProvider);
 		ServerCore.addRuntimeLifecycleListener(XPathRuntimeListener.getDefault()); 
 		ExtensionManager.getDefault().setAlreadyStartedHandler(new ServerAlreadyStartedHandler());
 
