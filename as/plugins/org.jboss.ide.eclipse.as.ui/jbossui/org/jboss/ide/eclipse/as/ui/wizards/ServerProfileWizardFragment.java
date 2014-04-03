@@ -258,7 +258,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 			runtimeCombo = new Combo(main, SWT.READ_ONLY);
 			String[] runtimeNamesWithNew = new String[runtimeNames.length+1];
 			System.arraycopy(runtimeNames, 0, runtimeNamesWithNew, 0, runtimeNames.length);
-			runtimeNamesWithNew[runtimeNames.length] = "New..."; //$NON-NLS-1$
+			runtimeNamesWithNew[runtimeNames.length] = "Create new runtime (next page)"; //$NON-NLS-1$
 			runtimeCombo.setItems(runtimeNamesWithNew);
 			if( runtimeNamesWithNew.length > 0 ) {
 				runtimeComboChanged();
