@@ -16,6 +16,8 @@ import java.util.Arrays;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerLifecycleListener;
 import org.eclipse.wst.server.core.IServerType;
@@ -32,11 +34,19 @@ import org.osgi.service.prefs.BackingStoreException;
  */
 public class JBInitialSelectionProvider extends InitialSelectionProvider implements IServerLifecycleListener {
 	private static String LAST_SERVER_CREATED_KEY = "org.jboss.ide.eclipse.as.ui.wizards.LAST_SERVER_CREATED"; //$NON-NLS-1$
+	private static String LAST_RUNTIME_CREATED_KEY = "org.jboss.ide.eclipse.as.ui.wizards.LAST_RUNTIME_CREATED"; //$NON-NLS-1$
 	private static String DEFAULT_INITIAL_SERVER_TYPE = "DEFAULT_SERVER_TYPE"; //$NON-NLS-1$
+	private static String DEFAULT_INITIAL_RUNTIME_TYPE = "DEFAULT_RUNTIME_TYPE"; //$NON-NLS-1$
+	
+	private static final String LATEST_JBT_SERVER = IJBossToolingConstants.SERVER_WILDFLY_80;
+	private static final String LATEST_JBT_RUNTIME = IJBossToolingConstants.WILDFLY_80;
+	
+	
 	
 	public JBInitialSelectionProvider() {
 	}
 	
+	@Override
 	public IServerType getInitialSelection(IServerType[] serverTypes) {
 		ArrayList<IServerType> types = new ArrayList<IServerType>();
 		types.addAll(Arrays.asList(serverTypes));
@@ -61,7 +71,7 @@ public class JBInitialSelectionProvider extends InitialSelectionProvider impleme
 	
 	public IServerType getDefaultServerType() {
 		IEclipsePreferences defaults = DefaultScope.INSTANCE.getNode(JBossServerUIPlugin.PLUGIN_ID);
-		String newestJBoss = defaults.get(DEFAULT_INITIAL_SERVER_TYPE, IJBossToolingConstants.SERVER_EAP_61);
+		String newestJBoss = defaults.get(DEFAULT_INITIAL_SERVER_TYPE, LATEST_JBT_SERVER);
 		return ServerCore.findServerType(newestJBoss);
 	}
 
@@ -75,6 +85,38 @@ public class JBInitialSelectionProvider extends InitialSelectionProvider impleme
 			}
 		}
 	}
+	
+	@Override
+	public IRuntimeType getInitialSelection(IRuntimeType[] runtimeTypes) {
+		ArrayList<IRuntimeType> types = new ArrayList<IRuntimeType>();
+		types.addAll(Arrays.asList(runtimeTypes));
+		
+		// Find the last-selected one
+		IEclipsePreferences prefs =  InstanceScope.INSTANCE.getNode(JBossServerUIPlugin.PLUGIN_ID);
+		String last = prefs.get(LAST_RUNTIME_CREATED_KEY, null);
+		
+		IRuntime lastRuntime = last == null ? null : ServerCore.findRuntime(last);
+		IRuntimeType lastType = lastRuntime == null ? null : lastRuntime.getRuntimeType();
+		if( lastType != null && types.contains(lastType))
+			return lastType;
+		
+		// return default server type
+		IRuntimeType defaultType = getDefaultRuntimeType();
+		if( types.contains(defaultType))
+			return defaultType;
+		
+		// Else, just choose whatever they give us
+		return runtimeTypes[0];
+	}
+	
+
+	public IRuntimeType getDefaultRuntimeType() {
+		IEclipsePreferences defaults = DefaultScope.INSTANCE.getNode(JBossServerUIPlugin.PLUGIN_ID);
+		String newestJBoss = defaults.get(DEFAULT_INITIAL_RUNTIME_TYPE, LATEST_JBT_RUNTIME);
+		return ServerCore.findRuntimeType(newestJBoss);
+	}
+	
+	
 	public void serverChanged(IServer server) {
 		// Do Nothing
 	}
