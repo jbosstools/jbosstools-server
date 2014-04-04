@@ -796,6 +796,14 @@
              weight="5">
        </wizardFragment>
     </extension>
+    <extension
+          point="org.eclipse.wst.server.ui.serverEditorOverviewPageModifier">
+       <serverEditorOverviewPageModifier
+             class="org.jboss.ide.eclipse.as.ui.editor.AddRuntimeComboOverviewPageModifier"
+             id="org.jboss.ide.eclipse.as.ui.editor.AddRuntimeComboOverviewPageModifier"
+             serverTypes="%AllJBossServerTypes">
+       </serverEditorOverviewPageModifier>
+    </extension>
 
    
 </plugin>
