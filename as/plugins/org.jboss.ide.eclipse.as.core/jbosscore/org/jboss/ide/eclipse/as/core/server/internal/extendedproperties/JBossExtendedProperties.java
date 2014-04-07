@@ -143,10 +143,24 @@ public class JBossExtendedProperties extends ServerExtendedProperties {
 		// to avoid making too many classes with one method, 
 		// we'll handle below 6 here. Otherwise we need another 
 		// almost-empty extended properties class
-		String rtType = runtime.getRuntimeType().getId();
-		boolean isAS5 = (IJBossToolingConstants.AS_50.equals(rtType) ||
-				 IJBossToolingConstants.AS_51.equals(rtType) ||
-				 IJBossToolingConstants.EAP_50.equals(rtType));
+		String[] as5Types = new String[]{
+				IJBossToolingConstants.AS_50,
+				IJBossToolingConstants.AS_51,
+				IJBossToolingConstants.EAP_50,
+				IJBossToolingConstants.SERVER_AS_50,
+				IJBossToolingConstants.SERVER_AS_51,
+				IJBossToolingConstants.SERVER_EAP_50,
+				
+		};
+		boolean isAS5 = false;
+		String serverType = (server == null ? null : server.getServerType() == null ? null : server.getServerType().getId());
+		String rtType = (runtime == null ? null : runtime.getRuntimeType() == null ? null : runtime.getRuntimeType().getId());
+		for( int i = 0; i < as5Types.length; i++ ) {
+			if( as5Types[i].equals(serverType) || as5Types[i].equals(rtType)) {
+				isAS5 = true;
+				break;
+			}
+		}
 		
 		// IF we're AS 5, return the 5x args
 		if( isAS5 ) {

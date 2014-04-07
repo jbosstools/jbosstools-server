@@ -126,10 +126,13 @@ public class RSEUtils {
 	public static String getRSEConfigName(IServerAttributes server) {
 		IJBossServerRuntime runtime = RuntimeUtils.getJBossServerRuntime(server);
 		ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
-		boolean isAS7Style =(sep != null && sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS);
-		boolean useAS7 = isAS7Style && runtime instanceof LocalJBoss7ServerRuntime;
-		String defVal = useAS7 ? ((LocalJBoss7ServerRuntime)runtime).getConfigurationFile() : runtime.getJBossConfiguration(); 
-		return server.getAttribute(RSEUtils.RSE_SERVER_CONFIG,  runtime == null ? null : defVal);
+		String defVal = IJBossRuntimeResourceConstants.DEFAULT_CONFIGURATION;
+		if( runtime != null ) {
+			boolean isAS7Style =(sep != null && sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS);
+			boolean useAS7 = isAS7Style && runtime instanceof LocalJBoss7ServerRuntime;
+			defVal = useAS7 ? ((LocalJBoss7ServerRuntime)runtime).getConfigurationFile() : runtime.getJBossConfiguration(); 
+		}
+		return server.getAttribute(RSEUtils.RSE_SERVER_CONFIG, defVal);
 	}
 
 	public static String getDeployRootFolder(IDeployableServer server) {

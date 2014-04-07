@@ -79,6 +79,10 @@ public class RSELaunchConfigurator implements ILaunchConfigConfigurator {
 				IJBossRuntimeConstants.STARTUP_ARG_CONFIG_LONG,
 				RSEUtils.getRSEConfigName(jbossServer.getServer()));
 
+		currentArgs = ArgsUtil.setArg(currentArgs, 
+				IJBossRuntimeConstants.STARTUP_ARG_HOST_SHORT, null,
+				jbossServer.getServer().getHost());
+
 		currentVMArgs = ArgsUtil.setArg(currentVMArgs, null,
 				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.ENDORSED_DIRS,
 				RSEUtils.pathToRemoteSystem(host, rseHome, IJBossRuntimeResourceConstants.LIB + Path.SEPARATOR + 
