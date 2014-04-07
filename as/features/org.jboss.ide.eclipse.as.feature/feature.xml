@@ -80,6 +80,12 @@ Raleigh NC 27606 USA.
       <import feature="org.jboss.tools.runtime.core.feature"/>
       <import feature="org.jboss.tools.stacks.core.feature"/>
    </requires>
+   <plugin
+         id="org.jboss.tools.as.catalog"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.jboss.ide.eclipse.as.ui.mbeans"
