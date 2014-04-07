@@ -23,6 +23,10 @@ public class JBASConsoleWriter implements IJBASHostShellListener {
 		MessageConsoleStream out = myConsole.newMessageStream();
 		for( int i = 0; i < lines.length; i++ )
 			out.println(lines[i]);
+		
+		ConsolePlugin plugin = ConsolePlugin.getDefault();
+		IConsoleManager conMan = plugin.getConsoleManager();
+		conMan.showConsoleView(myConsole);
 	}
 	
 	private synchronized MessageConsole findConsole(String name) {
