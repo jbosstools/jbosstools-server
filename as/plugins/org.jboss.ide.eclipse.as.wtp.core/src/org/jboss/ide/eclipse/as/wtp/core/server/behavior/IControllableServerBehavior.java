@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.as.wtp.core.server.behavior;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.wst.server.core.IServer;
 
 public interface IControllableServerBehavior {
 	
@@ -20,6 +21,12 @@ public interface IControllableServerBehavior {
 	public static final String SYSTEM_LAUNCH = ILaunchServerController.SYSTEM_ID;
 	public static final String SYSTEM_SHUTDOWN = IServerShutdownController.SYSTEM_ID;
 	
+	
+	/**
+	 * Get the server object
+	 * @return
+	 */
+	public IServer getServer();
 	
 	/**
 	 * get some data from the behavior's shared data map
