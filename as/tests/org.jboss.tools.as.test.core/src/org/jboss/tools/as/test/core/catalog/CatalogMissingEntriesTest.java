@@ -23,6 +23,10 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.wst.xml.core.internal.XMLCorePlugin;
+import org.eclipse.wst.xml.core.internal.catalog.provisional.ICatalog;
+import org.eclipse.wst.xml.core.internal.catalog.provisional.ICatalogEntry;
+import org.eclipse.wst.xml.core.internal.catalog.provisional.INextCatalog;
 import org.jboss.tools.as.catalog.ServerCatalogCorePlugin;
 import org.osgi.framework.Bundle;
 
@@ -89,32 +93,25 @@ public class CatalogMissingEntriesTest extends TestCase {
 		}
 		return (String[]) list.toArray(new String[list.size()]);
 	}
+
+	private static void fillCatalogEntryList(ICatalog c, ArrayList<String> list) {
+		ICatalogEntry[] all = c.getCatalogEntries();
+		for( int i = 0; i < all.length; i++ ) {
+			String uri = all[i].getURI();
+			if( uri.contains(ServerCatalogCorePlugin.PLUGIN_ID))
+				list.add(all[i].getURI());
+		}
+		INextCatalog[] nextCatalogs = c.getNextCatalogs();
+		for( int i = 0; i < nextCatalogs.length; i++ ) {
+			fillCatalogEntryList(nextCatalogs[i].getReferencedCatalog(), list);
+		}
+	}
 	
 	private String[] getAllUris() {
-		ArrayList<String> list = new ArrayList<String>();
-		String extPt = "org.eclipse.wst.xml.core.catalogContributions";
-		IExtension[] extensions = findExtension(extPt);
-		for (int i = 0; i < extensions.length; i++) {
-			IConfigurationElement[] elements = extensions[i].getConfigurationElements();
-			for (int j = 0; j < elements.length; j++) {
-				String contrib =  elements[j].getContributor().getName();
-				if( contrib.equals("org.jboss.tools.as.catalog")) {
-					if( elements[j].getName().equals("catalogContribution")) {
-						IConfigurationElement[] children = elements[j].getChildren();
-						for( int k = 0; k < children.length; k++ ) {
-							if( children[k].getName().equals("public")) {
-								String uri = children[k].getAttribute("uri");
-								list.add(uri);
-							} else if( children[k].getName().equals("uri")) {
-								String uri = children[k].getAttribute("uri");
-								list.add(uri);
-							}
-						}
-					}
-				}
-			}
-		}
-		return (String[]) list.toArray(new String[list.size()]);
+		ICatalog xmlCatalog = XMLCorePlugin.getDefault().getDefaultXMLCatalog();
+		ArrayList<String> uriList = new ArrayList<String>();
+		fillCatalogEntryList(xmlCatalog, uriList);
+		return (String[]) uriList.toArray(new String[uriList.size()]);
 	}
 	
 // 

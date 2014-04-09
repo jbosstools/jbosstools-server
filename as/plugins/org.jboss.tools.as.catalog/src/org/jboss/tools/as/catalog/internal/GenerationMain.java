@@ -84,7 +84,7 @@ public class GenerationMain {
 		
 		public String toString() {
 			StringBuffer sb = new StringBuffer();
-			sb.append("\t\t<uri name=\"");
+			sb.append("\t\t<public publicId=\"");
 			sb.append(getName());
 			sb.append("\" uri=\"");
 			sb.append(getUri());
@@ -93,7 +93,7 @@ public class GenerationMain {
 		}
 		
 		String getUri() {
-			String uri = "platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/" + file.getName();
+			String uri = "xsd/" + file.getName();
 			return uri;
 		}
 		
@@ -179,6 +179,7 @@ public class GenerationMain {
 				return;
 			}
 			
+			
 			int end = contents.indexOf(">", start+1);
 			String substr = contents.substring(start, end);
 			//System.out.println(substr);
@@ -191,14 +192,30 @@ public class GenerationMain {
 			int webURLCloseQuote = contents.indexOf("\"", webURLOpenQuote+1);
 			webURL = contents.substring(webURLOpenQuote+1, webURLCloseQuote);
 			
-			String uri = "platform:/plugin/org.jboss.tools.as.catalog/schema/dtd/" + f.getName();
+			
+
+			/*
+			 
+			 
+		<public publicId="-//JBoss//DTD JBOSS JCA Config 5.0//EN"
+				uri="dtd/jboss-ds_5_0.dtd"/>
+		<system systemId="http://www.jboss.org/j2ee/dtd/jboss-ds_5_0.dtd"
+  				uri="dtd/jboss-ds_5_0.dtd" />    
+  				
+			 
+			 */
+			
+			String uri = "dtd/" + f.getName();
 			StringBuffer sb = new StringBuffer();
 			sb.append("\t\t\t<public publicId=\"");
 			sb.append(publicString);
 			sb.append("\"\n\t\t\t\turi=\"");
 			sb.append(uri);
-			sb.append("\"\n\t\t\t\twebURL=\"");
+			sb.append("\"/>\n");
+			sb.append("\t\t\t<system systemId=\"");
 			sb.append(webURL);
+			sb.append("\"\n\t\t\t\turi=\"");
+			sb.append(uri);
 			sb.append("\"/>\n");
 			toString = sb.toString();
 		}
