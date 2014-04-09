@@ -11,8 +11,8 @@
 package org.jboss.ide.eclipse.as.ui.wizards;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -21,9 +21,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.ProgressMonitorWrapper;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jdt.internal.debug.ui.jres.JREsPreferencePage;
@@ -33,6 +35,7 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceNode;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
@@ -42,7 +45,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.window.Window;
-import org.eclipse.jface.wizard.IWizardPage;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
@@ -71,8 +74,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
-import org.eclipse.ui.internal.dialogs.WorkbenchPreferenceDialog;
-import org.eclipse.ui.preferences.IWorkbenchPreferenceContainer;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
@@ -84,7 +85,6 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractLocalJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
@@ -94,10 +94,10 @@ import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.tools.as.runtimes.integration.util.DownloadRuntimeServerUtil;
-import org.jboss.tools.runtime.core.RuntimeCoreActivator;
+import org.jboss.tools.foundation.core.jobs.DelegatingProgressMonitor;
 import org.jboss.tools.runtime.core.model.DownloadRuntime;
-import org.jboss.tools.runtime.core.model.IDownloadRuntimes;
-import org.jboss.tools.runtime.ui.download.DownloadRuntimes;
+import org.jboss.tools.runtime.ui.internal.wizard.DownloadRuntimesWizard;
+import org.jboss.tools.runtime.ui.wizard.DownloadRuntimesTaskWizard;
 import org.osgi.service.prefs.BackingStoreException;
 
 /**
@@ -415,17 +415,76 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 
 	protected class DownloadAndInstallListener extends SelectionAdapter {
 		public void widgetSelected(SelectionEvent se) {
-			IDownloadRuntimes downloader = RuntimeCoreActivator.getDefault().getDownloader();
-			if( downloader != null ) {
-				HashMap<String, Object> data = new HashMap<String, Object>();
-				data.put(DownloadRuntimes.SHELL, downloadAndInstallButton.getShell() );
-				IRuntimeType type = getRuntimeType();
-				data.put(IDownloadRuntimes.RUNTIME_FILTER, new JBossASDownloadRuntimeFilter(type));
-				downloader.execute(data);
-				Boolean launched = (Boolean)data.get(IDownloadRuntimes.DOWNLOAD_LAUNCHED);
-				if( launched != null && launched.booleanValue()) {
-					((IWizardPage)handle).getWizard().performCancel();
-					((IWizardPage)handle).getWizard().getContainer().getShell().close();
+			
+			IRuntimeType type = getRuntimeType();
+			final DownloadRuntimesTaskWizard wizard = new DownloadRuntimesWizard(downloadAndInstallButton.getShell(), 
+					new JBossASDownloadRuntimeFilter(type));
+			wizard.getTaskModel().putObject(DownloadRuntimesTaskWizard.SUPPRESS_RUNTIME_CREATION, new Boolean(true));
+			WizardDialog dialog = new WizardDialog(downloadAndInstallButton.getShell(), wizard);
+			dialog.open();
+			final Job j = (Job)wizard.getTaskModel().getObject(DownloadRuntimesWizard.DOWNLOAD_JOB);
+			if( j != null ) {
+				// The job has been launched in the background
+				// We will run in the wizard another task that simply waits for the background
+				// job to complete. If the user cancels this runnable in the new server
+				// wizard, it will not cancel the background job. 
+				handle.setMessage("Your runtime is being downloaded. If you close this wizard, your download will continue, but your runtime adapter won't be configured.", IMessageProvider.INFORMATION);
+				handle.update();
+				try {
+					handle.run(true, true, new IRunnableWithProgress() {
+						@Override
+						public void run(IProgressMonitor monitor) throws InvocationTargetException,
+								InterruptedException {
+							// We get the delegating wrapper from the wizard
+							DelegatingProgressMonitor delMon = (DelegatingProgressMonitor)wizard.getTaskModel().getObject(DownloadRuntimesTaskWizard.DOWNLOAD_JOB_DELEGATING_PROGRESS_MONITOR);
+							delMon.add(new ProgressMonitorWrapper(monitor) {
+								// We override isCanceled here, so that if the user
+								// cancels the action in the new server wizard,
+								// it will not also cancel the download
+								public boolean isCanceled() {
+									return false;
+								}
+							});
+							
+							// We now wait for the real download job to complete, or for us to be canceled. 
+							final Boolean[] barrier = new Boolean[1];
+							JobChangeAdapter jobChange = new JobChangeAdapter() {
+								@Override
+								public void done(IJobChangeEvent event) {
+									barrier[0] = true;
+								}
+							};
+							j.addJobChangeListener(jobChange);
+							
+							while( barrier[0] == null && !monitor.isCanceled()) {
+								try {
+									Thread.sleep(500);
+								} catch(InterruptedException ie) {
+									// Ignore
+								}
+							}
+							
+							if( monitor.isCanceled()) {
+								j.removeJobChangeListener(jobChange);
+								return;
+							}
+							
+							// So the download job finished. Now we have to update the 
+							// server home with the newly unzipped path. 
+							final String newHomeDir = (String)wizard.getTaskModel().getObject(DownloadRuntimesTaskWizard.UNZIPPED_SERVER_HOME_DIRECTORY);
+							if( newHomeDir != null ) {
+								Display.getDefault().asyncExec(new Runnable() {
+									public void run() {
+										homeDirText.setText(newHomeDir);
+									}
+								});
+							}
+						}
+					});
+				} catch(InvocationTargetException ite) {
+					// Ignore
+				} catch( InterruptedException ie ) {
+					// Ignore
 				}
 			}
 		}
