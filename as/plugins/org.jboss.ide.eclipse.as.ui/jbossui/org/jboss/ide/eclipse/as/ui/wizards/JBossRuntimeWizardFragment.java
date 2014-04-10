@@ -428,7 +428,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 				// We will run in the wizard another task that simply waits for the background
 				// job to complete. If the user cancels this runnable in the new server
 				// wizard, it will not cancel the background job. 
-				handle.setMessage("Your runtime is being downloaded. If you close this wizard, your download will continue, but your runtime adapter won't be configured.", IMessageProvider.INFORMATION);
+				handle.setMessage(Messages.rwf_downloadWarning, IMessageProvider.INFORMATION);
 				handle.update();
 				try {
 					handle.run(true, true, new IRunnableWithProgress() {

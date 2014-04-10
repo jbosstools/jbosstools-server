@@ -51,6 +51,7 @@ public class Messages extends NLS {
 	public static String JBossRuntimeWizardFragment_DeleteConfigTitle;
 	public static String JBossRuntimeWizardFragment_MustSelectValidConfig;
 	public static String JBossRuntimeWizardFragment_OutputFolderExists;
+	public static String rwf_downloadWarning;
 	public static String rwf_DownloadRuntime;
 	public static String rwf_InstallingRuntimeJob;
 	public static String rwf_DownloadAndInstallRuntimeWizard;
