@@ -190,7 +190,7 @@ public class Fileset implements Cloneable, IRuntimeProvider {
 		if( !(other instanceof Fileset)) return false;
 		if( other == this ) return true;
 		Fileset o = (Fileset)other;
-		return o.getName().equals(getName()) && o.getFolder().equals(getFolder())
+		return o.getName().equals(getName()) && o.getRawFolder().equals(getRawFolder())
 			&& o.getIncludesPattern().equals(getIncludesPattern()) && o.getExcludesPattern().equals(getExcludesPattern());
 	}
 	public int hashCode() {
