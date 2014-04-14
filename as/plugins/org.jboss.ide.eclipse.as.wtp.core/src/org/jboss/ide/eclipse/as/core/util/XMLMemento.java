@@ -45,7 +45,8 @@ import org.xml.sax.InputSource;
  *    to org.jboss.ide.eclipse.as.core.util
  *    
  * May later move to COMMON
- *
+ * @deprecated 
+ * @see org.jboss.tools.foundation.core.xml.XMLMemento
  */
 public class XMLMemento implements IMemento {
 	private Document factory;

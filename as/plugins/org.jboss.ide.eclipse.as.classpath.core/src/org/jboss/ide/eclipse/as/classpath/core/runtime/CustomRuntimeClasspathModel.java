@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Red Hat, Inc.
+ * Copyright (c) 2014 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -10,28 +10,26 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.classpath.core.runtime;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.util.HashMap;
 
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.osgi.util.NLS;
-import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
-import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.archives.webtools.filesets.Fileset;
-import org.jboss.ide.eclipse.archives.webtools.filesets.FilesetUtil;
-import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
-import org.jboss.ide.eclipse.as.classpath.core.internal.Messages;
-import org.jboss.ide.eclipse.as.classpath.core.runtime.internal.DefaultClasspathJarLocator;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.cache.internal.InternalRuntimeClasspathModel;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.cache.internal.RuntimeClasspathModelIO;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.internal.DefaultClasspathModelLoader;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.util.XMLMemento;
 
 public class CustomRuntimeClasspathModel {
+	/**
+	 * A location to store these default settings.
+	 * Use of the term 'filesets' is legacy but must be maintained. 
+	 * 
+	 * Each runtime in {metadata}/org.jboss.ide.eclipse.as.server.core/filesets/runtimeClasspaths 
+	 * gets its own file.  This allows the format to change (if required) for newer runtime types,
+	 * if such a thing is needed. 
+	 * 
+	 * 
+	 */
 	protected static final IPath DEFAULT_CLASSPATH_FS_ROOT = JBossServerCorePlugin.getGlobalSettingsLocation().append("filesets").append("runtimeClasspaths"); //$NON-NLS-1$ //$NON-NLS-2$
 
 	private static CustomRuntimeClasspathModel instance;
@@ -41,96 +39,47 @@ public class CustomRuntimeClasspathModel {
 		return instance;
 	}
 	 
+	private HashMap<String, InternalRuntimeClasspathModel> modelMap;
+	private CustomRuntimeClasspathModel() {
+		modelMap = new HashMap<String, InternalRuntimeClasspathModel>();
+	}
+	
 	/**
 	 * @since 3.0
 	 */
 	public IRuntimePathProvider[] getEntries(IRuntimeType type) {
-		IRuntimePathProvider[] sets = loadFilesets(type);
-		if( sets == null ) {
-			return getDefaultEntries(type);
+		String id = type.getId();
+		if( modelMap.get(id) == null ) {
+			// Has not been read yet
+			InternalRuntimeClasspathModel model = new RuntimeClasspathModelIO().readModel(type);
+			if( model != null ) {
+				modelMap.put(id,  model);
+			} else {
+				// Create a default one somehow
+			}
 		}
-		return sets;
+		InternalRuntimeClasspathModel model = modelMap.get(id);
+		if( model != null ) {
+			return model.getStandardProviders();
+		}
+		return getDefaultEntries(type);
 	}
 	
 	/**
+	 * Used by UI for restore-defaults... ... 
+	 * UI needs to be updated to be able to handle a full model, 
+	 * not just a single set of entries. 
+	 * 
 	 * @since 3.0
 	 */
 	public IRuntimePathProvider[] getDefaultEntries(IRuntimeType type) {
-		return new DefaultClasspathJarLocator().getDefaultPathProviders(type);
+		InternalRuntimeClasspathModel model = new DefaultClasspathModelLoader().getDefaultRuntimeClasspathModel(type);
+		return model.getStandardProviders();
 	}
 	
-	public IPath[] getDefaultPaths(IRuntime rt) {
-		return getAllEntries(rt, getDefaultEntries(rt.getRuntimeType()));
-	}
-
-	/**
-	 * @since 3.0
-	 */
-	public IPath[] getAllEntries(IRuntime runtime, IRuntimePathProvider[] sets) {
-		return DefaultClasspathJarLocator.getAllEntries(runtime, sets);
-	}
-	
-	/*
-	 * Persistance of the model
-	 */
-	
-	private static IRuntimePathProvider[] loadFilesets(IRuntimeType rt) {
-		IPath fileToRead = DEFAULT_CLASSPATH_FS_ROOT.append(rt.getId());
-		Fileset[] sets = loadFilesets(fileToRead.toFile(), null);
-		if( sets != null ) {
-			RuntimePathProviderFileset[] newSets = new RuntimePathProviderFileset[sets.length];
-			for( int i = 0; i < sets.length; i++ ) {
-				newSets[i] = new RuntimePathProviderFileset(sets[i]);
-			}
-			return newSets;
-		}
-		return null;
-	}
-	
-	/**
-	 * Return a list of filesets, or null if none are found
-	 * @param file
-	 * @param server
-	 * @deprecated This method should be private. 
-	 * @return
-	 */
-	public static Fileset[] loadFilesets(File file, IServer server) {
-		try {
-			if( file != null && file.exists())
-				return FilesetUtil.loadFilesets(new FileInputStream(file), server);
-		} catch( FileNotFoundException fnfe) {
-			return null;
-		}
-		return null;
-	}
-
-	/**
-	 * @since 3.0
-	 */
-	public static void saveFilesets(IRuntimeType runtime, IRuntimePathProvider[] sets) {
-		if( !DEFAULT_CLASSPATH_FS_ROOT.toFile().exists()) {
-			DEFAULT_CLASSPATH_FS_ROOT.toFile().mkdirs();
-		}
-		IPath fileToWrite = DEFAULT_CLASSPATH_FS_ROOT.append(runtime.getId());
-		XMLMemento memento = XMLMemento.createWriteRoot("classpathProviders"); //$NON-NLS-1$
-		for( int i = 0; i < sets.length; i++ ) {
-			if( sets[i] instanceof Fileset) {
-				Fileset fs = (Fileset)sets[i];
-				XMLMemento child = (XMLMemento)memento.createChild("fileset");//$NON-NLS-1$
-				child.putString("name", fs.getName());//$NON-NLS-1$
-				child.putString("folder", fs.getRawFolder());//$NON-NLS-1$
-				child.putString("includes", fs.getIncludesPattern());//$NON-NLS-1$
-				child.putString("excludes", fs.getExcludesPattern());//$NON-NLS-1$	
-			} else {
-				// TODO
-			}
-		}
-		try {
-			memento.save(new FileOutputStream(fileToWrite.toFile()));
-		} catch( IOException ioe) {
-			IStatus status = new Status(IStatus.ERROR, ClasspathCorePlugin.PLUGIN_ID, 
-					NLS.bind(Messages.CouldNotSaveDefaultClasspathEntries, runtime.getId()), ioe);
-			ClasspathCorePlugin.getDefault().getLog().log(status);
-		}
+	public static void savePathProviders(IRuntimeType runtime, IRuntimePathProvider[] sets) {
+		InternalRuntimeClasspathModel m = new InternalRuntimeClasspathModel();
+		m.addProviders(sets);
+		new RuntimeClasspathModelIO().saveModel(runtime, m);
 	}
 }

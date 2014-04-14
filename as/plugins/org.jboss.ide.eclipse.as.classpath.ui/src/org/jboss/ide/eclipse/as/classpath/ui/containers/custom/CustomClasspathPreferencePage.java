@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Red Hat, Inc.
+ * Copyright (c) 2011-2104 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -36,25 +36,25 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
-import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.archives.webtools.filesets.Fileset;
-import org.jboss.ide.eclipse.archives.webtools.filesets.FilesetDialog;
 import org.jboss.ide.eclipse.archives.webtools.filesets.FilesetLabelProvider;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.IRuntimePathProvider;
-import org.jboss.ide.eclipse.as.classpath.core.runtime.RuntimePathProviderFileset;
 import org.jboss.ide.eclipse.as.classpath.ui.Messages;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
@@ -84,7 +84,7 @@ public class CustomClasspathPreferencePage extends ServerTypePreferencePage {
 			IRuntimeType rt = ServerCore.findRuntimeType(runtimeId);
 			list = rootComp.getDataForComboSelection(changed2[i]);
 			arr = (IRuntimePathProvider[]) list.toArray(new IRuntimePathProvider[list.size()]);
-			CustomRuntimeClasspathModel.saveFilesets(rt, arr);
+			CustomRuntimeClasspathModel.savePathProviders(rt, arr);
 			clearRuntimeTypeCachedClasspathEntries(rt);
 			IProject[] projectsTargeting = findProjectsTargeting(rt);
 			projectsNeedRefresh.addAll(Arrays.asList(projectsTargeting));
@@ -186,11 +186,13 @@ public class CustomClasspathPreferencePage extends ServerTypePreferencePage {
 		}
 		
 		protected LabelProvider getLabelProvider() {
-			return new FilesetLabelProvider(){
+			return new LabelProvider(){
+				public Image getImage(Object element) {
+		    		return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
+			    }
 			    public String getText(Object element) {
-			    	if( element instanceof Fileset ) {
-			    		Fileset fs = (Fileset)element;
-			    		return fs.getRawFolder() + " - [" + fs.getIncludesPattern() + "] - [" + fs.getExcludesPattern() + "]";
+			    	if( element instanceof IRuntimePathProvider ) {
+			    		return ((IRuntimePathProvider)element).getDisplayString();
 			    	}
 			        return super.getText(element);
 			    }
@@ -263,44 +265,16 @@ public class CustomClasspathPreferencePage extends ServerTypePreferencePage {
 			return id;
 		}
 		
-		protected class EntryFilesetDialog extends FilesetDialog {
-			protected EntryFilesetDialog(Shell parentShell,
-					String defaultLocation, IServer server) {
-				super(parentShell, defaultLocation, server);
-				setRequiresName(false);
-			}
-			public Fileset getFileset() {
-				return new RuntimePathProviderFileset(fileset);
-			}
-			protected void configureShell(Shell shell) {
-				super.configureShell(shell);
-				shell.setText("New Default Classpath Fileset Entry");
-			}
-
-			protected Control createDialogArea(Composite parent) {
-				Control c = super.createDialogArea(parent);
-				setTitle("New Default Classpath Fileset Entry");
-				setMessage("Create a new classpath fileset which can be added to all projects targeting this runtime-type");
-				return c;
-			}
-			protected String getDefaultIncludesPattern() {
-				return "**/*.jar"; //$NON-NLS-1$
-			}
-		}
-		
 		@Override
 		protected void addPressed() {
 			String id = getCurrentId();
 			IRuntimeType rtt = id == null ? null : ServerCore.findRuntimeType(id);
-			ServerExtendedProperties props = rtt == null ? null : 
-				(ServerExtendedProperties)Platform.getAdapterManager().getAdapter(rtt, ServerExtendedProperties.class);
-			String defaultLocation = props == null ? "" : props.getNewClasspathFilesetDefaultRootFolder();
-			FilesetDialog d = new EntryFilesetDialog(addButton.getShell(), defaultLocation, null);
-			d.setShowViewer(false);
-			if( d.open() == Window.OK) {
-				// For now, just add fileset
-				Fileset fs = d.getFileset();
-				addObject(fs);
+			RuntimeClasspathProviderWizard wizard = new RuntimeClasspathProviderWizard(rtt);
+			WizardDialog wd = new WizardDialog(addButton.getShell(), wizard);
+			if( wd.open() == Window.OK) {
+				IRuntimePathProvider ret = wizard.getRuntimePathProvider();
+				if( ret != null )
+					addObject(ret);
 			}
 		}
 		
@@ -317,6 +291,5 @@ public class CustomClasspathPreferencePage extends ServerTypePreferencePage {
 				names[i] = types[i].getName();
 			return names;
 		}
-
 	}
 }

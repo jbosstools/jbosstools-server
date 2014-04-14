@@ -21,6 +21,7 @@ import java.util.Map;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.launching.JavaRuntime;
@@ -29,22 +30,40 @@ import org.eclipse.wst.server.core.IRuntime;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.classpath.core.internal.Messages;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.RuntimeJarUtility;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.cache.internal.RuntimeClasspathCache;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.cache.internal.RuntimeKey;
 
 /**
  * This class uses the "throw everything you can find" strategy
  * in providing additions to the classpath.  Given a server runtime, 
  * it will try to add whatever could possibly ever be used.
  * 
- * @author Rob Stryker
- *
+ * This class expects the container path to have 1 
+ * additional argument:  the name of the runtime.
+ * 
+ * This class primarily handles caching and manipulating
+ * the list of jars into a proper returnable set. The 
+ * logic in *discovering* the set of jars is found in 
+ * RuntimeJarUtility.
  */
 public class ClientAllRuntimeClasspathProvider 
 		extends RuntimeClasspathProviderDelegate {
-
+	
+	// The path this container can be found under
+	public static final IPath CONTAINER_PATH = 
+			new Path("org.eclipse.jst.server.core.container") //$NON-NLS-1$
+			.append("org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget"); //$NON-NLS-1$
+	
+	
 	public ClientAllRuntimeClasspathProvider() {
 		// Do Nothing
 	}
 
+	/**
+	 * This is an internal class used during creation 
+	 * of the set of classpath entries. It should not
+	 * be used or referenced by clients. 
+	 */
 	public static class Entry {
 		private IPath path;
 		private String name;
