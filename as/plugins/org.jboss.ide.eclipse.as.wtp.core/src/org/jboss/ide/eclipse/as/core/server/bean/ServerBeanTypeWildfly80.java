@@ -29,9 +29,9 @@ public class ServerBeanTypeWildfly80 extends JBossServerType {
 			String mainFolder = JBossServerType.WILDFLY80.jbossSystemJarPath;
 			return scanFolderJarsForManifestProp(location, mainFolder, AS_RELEASE_MANIFEST_KEY, "8.");
 		}
-		public String getServerTypeId(String version) {
-			if( version.equals(V8_0)) return IJBossToolingConstants.SERVER_WILDFLY_80;
-			return null;
+		public String getServerTypeId(String version) {	
+			// Just return adapter type wf8 until we discover incompatibility. 
+			return IJBossToolingConstants.SERVER_WILDFLY_80;
 		}
 	}
 
