@@ -11,21 +11,45 @@
 
 package org.jboss.ide.eclipse.as.core.util;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
+import org.eclipse.wst.server.core.ServerUtil;
 
 /**
  * @author André Dietisheim
  */
 public class LaunchCommandPreferences {
 
+	@Deprecated
 	public static boolean isIgnoreLaunchCommand(IServerAttributes server) {
 		return isIgnoreLaunchCommand(server, false);
 	}
 	
+	@Deprecated
 	public static boolean isIgnoreLaunchCommand(IServerAttributes server, boolean defaultValue) {
 		return checkBooleanAttribute(server, IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, defaultValue );
 	}
 
+	public static boolean isIgnoreLaunchCommand(ILaunchConfiguration launch) throws CoreException {
+		return isIgnoreLaunchCommand(launch, false);
+	}
+	
+	public static boolean isIgnoreLaunchCommand(ILaunchConfiguration launch, boolean defaultValue) throws CoreException {
+		if( launch.hasAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS)) {
+			return launch.getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, defaultValue);
+		}
+		IServer server = ServerUtil.getServer(launch);
+		return checkBooleanAttribute(server, IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, defaultValue );
+	}
+
+	public static void setIgnoreLaunchCommand(ILaunchConfigurationWorkingCopy launch, boolean val) {
+		launch.setAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, val);
+	}
+	
+	
 	public static boolean listensOnAllHosts(IServerAttributes server) {
 		return listensOnAllHosts(server, false);
 	}

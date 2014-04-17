@@ -73,21 +73,6 @@ public class ServerModeSectionComposite extends Composite {
 		setLayout(new FormLayout());
 		
 		Control top = null;
-		if( showExecuteShellCheckbox()) {
-			executeShellScripts = new Button(this, SWT.CHECK);
-			executeShellScripts.setText(Messages.EditorDoNotLaunch);
-			FormData fd = UIUtil.createFormData2(0, 5, null, 0, 0, 5, null, 0);
-			executeShellScripts.setLayoutData(fd);
-			top = executeShellScripts;
-			executeShellScripts.setSelection(LaunchCommandPreferences.isIgnoreLaunchCommand(callback.getServer()));
-			executeShellScripts.addSelectionListener(new SelectionListener(){
-				public void widgetSelected(SelectionEvent e) {
-					executeShellToggled();
-				}
-				public void widgetDefaultSelected(SelectionEvent e) {
-				}}
-			);
-		}
 
 		if( showListenOnAllHostsCheckbox()) {
 			listenOnAllHosts = new Button(this, SWT.CHECK);
@@ -173,7 +158,7 @@ public class ServerModeSectionComposite extends Composite {
 	
 	/* Can this server type expose management port? */
 	protected boolean showExecuteShellCheckbox() {
-		return true;
+		return false;
 	}
 	/* Can this server type listen on all ports via -b flag? */
 	protected boolean showListenOnAllHostsCheckbox() {
@@ -195,12 +180,6 @@ public class ServerModeSectionComposite extends Composite {
 		return props;
 	}
 	
-	// Set the 'ignore launch' boolean on the server wc
-	protected void executeShellToggled() {
-		callback.execute(new ChangeServerPropertyCommand(
-				callback.getServer(), IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, 
-				new Boolean(executeShellScripts.getSelection()).toString(), Messages.EditorDoNotLaunchCommand));
-	}
 	
 	// Set the listen on all hosts boolean on the server wc
 	protected void listenOnAllHostsToggled() {

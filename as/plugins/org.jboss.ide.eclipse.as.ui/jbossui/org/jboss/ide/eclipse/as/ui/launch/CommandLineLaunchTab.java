@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.server.internal.RecentlyUpdatedServerLaunches;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties;
 import org.jboss.ide.eclipse.as.core.server.launch.CommandLineLaunchConfigProperties;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
@@ -49,6 +50,7 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 	
 	protected Text startText,stopText;
 	protected Button autoStartArgs, autoStopArgs;
+	protected Button ignoreLaunch;
 	protected ILaunchConfiguration initialConfig;
 	protected CommandLineLaunchConfigProperties propertyUtil;
 	
@@ -66,11 +68,20 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 	}
 	
 	protected void createGroups(Composite main) {
+
+		ignoreLaunch = new Button(main, SWT.CHECK);
+		ignoreLaunch.setText(Messages.LaunchConfigIgnoreLaunchButton);
+		ignoreLaunch.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				setTabEnablement(!ignoreLaunch.getSelection());
+			}
+		});
+		
 		Group startGroup = createStartGroup(main);
 		Group stopGroup = createStopGroup(main);
 		// Set the layout data of the two main widgets
+		startGroup.setLayoutData(UIUtil.createFormData(getStartCommandHeightHint(), SWT.DEFAULT, ignoreLaunch, 5, stopGroup, -5, 0, 5, 100, -5));
 		stopGroup.setLayoutData(UIUtil.createFormData(getStopCommandHeightHint(), SWT.DEFAULT, 50, 0, 100, -5, 0, 5, 100, -5));
-		startGroup.setLayoutData(UIUtil.createFormData(getStartCommandHeightHint(), SWT.DEFAULT, 0, 5, stopGroup, -5, 0, 5, 100, -5));
 	}
 	
 	protected Group createStartGroup(Composite main) {
@@ -228,6 +239,8 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 		detectStartCommand = detectStopCommand = false;
 		
 		try {
+			ignoreLaunch.setSelection(LaunchCommandPreferences.isIgnoreLaunchCommand(configuration));
+			
 			CommandLineLaunchConfigProperties propUtil = getPropertyUtility();
 			String startCommand = propUtil.getStartupCommand(configuration);
 			startText.setText(startCommand == null ? "" : startCommand);
@@ -258,8 +271,7 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 		
 		// Disable all if launch is ignored
 		try {
-			IServer s = ServerUtil.getServer(configuration);
-			if (LaunchCommandPreferences.isIgnoreLaunchCommand(s)) {
+			if (LaunchCommandPreferences.isIgnoreLaunchCommand(configuration)) {
 				disableTab();
 			}
 		} catch(CoreException ce) {
@@ -268,18 +280,24 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 	}
 	
 	protected void disableTab() {
-		setErrorMessage("Your server is currently configured to ignore startup and shutdown actions.");
-		startText.setEnabled(false);
+		setTabEnablement(false);
+	}
+	
+	protected void setTabEnablement(boolean val) {
+		startText.setEnabled(val);
 		if( canAutoDetectCommand() ) {
-			autoStartArgs.setEnabled(false);
+			autoStartArgs.setEnabled(val);
 		}
 		
 		if( supportsCommandLineShutdown ) {
-			stopText.setEnabled(false);
+			stopText.setEnabled(val);
 			if( canAutoDetectCommand() ) {
-				autoStopArgs.setEnabled(false);
+				autoStopArgs.setEnabled(val);
 			}
 		}
+		String msg = "Your server is currently configured to ignore startup and shutdown actions.";
+		setErrorMessage(val ? null : msg);
+		updateLaunchConfigurationDialog();
 	}
 	
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
@@ -299,6 +317,8 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 				propUtil.setDetectShutdownCommand(autoStopArgs.getSelection(), configuration);
 			}
 		}
+		
+		LaunchCommandPreferences.setIgnoreLaunchCommand(configuration, ignoreLaunch.getSelection());
 		
 		if( updateButtons)
 			getLaunchConfigurationDialog().updateButtons();

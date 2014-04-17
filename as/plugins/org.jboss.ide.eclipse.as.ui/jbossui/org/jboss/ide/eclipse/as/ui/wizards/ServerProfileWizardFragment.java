@@ -126,7 +126,9 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 			addRuntimeDetailsGroup(wrapper);
 		}
 		setProfile(this.selectedProfile);
-		runtimeComboChanged();
+		if( !runtimeForbidden()) {
+			runtimeComboChanged();
+		}
 		updateErrorMessage();
 		return wrapper;
 	}

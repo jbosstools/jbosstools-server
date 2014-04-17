@@ -302,6 +302,7 @@ public class Messages extends NLS {
 
 	public static String ServerJavaArgsSyncText;
 	public static String ServerJavaArgsSyncDesc;
+	public static String LaunchConfigIgnoreLaunchButton;
 	
 	public static String ServerContent_Type_root;
 	public static String ServerContent_Type_attributes;

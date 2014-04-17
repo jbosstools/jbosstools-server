@@ -37,6 +37,7 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePollerType;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -67,10 +68,6 @@ public class PollerSection extends ServerEditorSection implements PropertyChange
 		findPossiblePollers();
 		createUI(parent);
 		addListeners();
-		String ignoreLaunch = server.getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, (String)null);
-		Boolean b = new Boolean(ignoreLaunch);
-		startPollerCombo.setEnabled(!b.booleanValue());
-		stopPollerCombo.setEnabled(!b.booleanValue());
 	}
 	
 	protected void createUI(Composite parent) {
@@ -237,12 +234,6 @@ public class PollerSection extends ServerEditorSection implements PropertyChange
 	// Pollers aren't launched if server is assumed externally controlled
 	public void propertyChange(PropertyChangeEvent evt) {
 		String propertyName = evt.getPropertyName();
-		if( propertyName.equals(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS)) {
-			Object val = evt.getNewValue();
-			Boolean b = new Boolean((String)val);
-			startPollerCombo.setEnabled(!b.booleanValue());
-			stopPollerCombo.setEnabled(!b.booleanValue());
-		}
 		if( ServerProfileModel.isProfileKey(propertyName)) {
 			refreshUI();
 		}
@@ -250,7 +241,7 @@ public class PollerSection extends ServerEditorSection implements PropertyChange
 
 	public IStatus[] getSaveStatus() {
 		IStatus s = Status.OK_STATUS;
-		if( !server.getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, false)) {
+		if( !LaunchCommandPreferences.isIgnoreLaunchCommand(server)) {
 			if( startPollerCombo.getSelectionIndex() == -1 ) {
 				s = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, Messages.EditorStartupPollerNotSet);
 			}
