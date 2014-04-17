@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.ui.subsystems.IBrowseBehavior;
 import org.jboss.ide.eclipse.as.ui.subsystems.IExploreBehavior;
@@ -32,6 +33,7 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IServerDetailsControlle
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IServerShutdownController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ISubsystemController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
+import org.jboss.tools.as.core.server.controllable.systems.IDeploymentOptionsController;
 import org.jboss.tools.as.core.server.controllable.systems.IModuleDeployPathController;
 import org.jboss.tools.as.core.server.controllable.systems.IModuleRestartBehaviorController;
 import org.jboss.tools.as.core.server.controllable.systems.IPortsController;
@@ -73,6 +75,7 @@ public class AllSubsystemResolutionTest extends TestCase {
 				IFilesystemController.SYSTEM_ID,
 				IModuleRestartBehaviorController.SYSTEM_ID,
 				IServerDetailsController.SYSTEM_ID,
+				IDeploymentOptionsController.SYSTEM_ID,
 				IModuleDeployPathController.SYSTEM_ID,
 				IBrowseBehavior.SYSTEM_ID,
 				IExploreBehavior.SYSTEM_ID,
@@ -98,6 +101,16 @@ public class AllSubsystemResolutionTest extends TestCase {
 		String[] subsystems = getSubsystemsForAllServers();
 		Collection<Object[]> ret = MatrixUtils.toMatrix(new Object[][]{allServers, modes, subsystems});
 		ret.addAll(MatrixUtils.toMatrix(new Object[][]{jbossServers, modes, getSubsystemsForJBossServers()}));
+		
+		String[] as7Servers = new String[]{
+				IJBossToolingConstants.SERVER_AS_70,
+				IJBossToolingConstants.SERVER_AS_71,
+				IJBossToolingConstants.SERVER_WILDFLY_80,
+				IJBossToolingConstants.SERVER_EAP_60,
+				IJBossToolingConstants.SERVER_EAP_61
+		};
+		String[] as7Modes = new String[]{"local", "rse", null, "local.mgmt", "rse.mgmt"};
+		ret.addAll(MatrixUtils.toMatrix(new Object[][]{as7Servers, as7Modes, getSubsystemsForJBossServers()}));
 		return ret;
 	}
 	 
