@@ -17,12 +17,10 @@ import junit.framework.TestCase;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.rse.ui.RSELaunchTabProvider;
 import org.jboss.ide.eclipse.as.ui.subsystems.IJBossLaunchTabProvider;
 import org.jboss.ide.eclipse.as.ui.subsystems.internal.JBoss7StandardTabProvider;
-import org.jboss.ide.eclipse.as.ui.subsystems.internal.JBossStandardTabProvider;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ISubsystemController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
@@ -74,7 +72,7 @@ public class TabGroupSubsystemResolutionTest extends TestCase {
 		ISubsystemController controller = beh.getController(IJBossLaunchTabProvider.SYSTEM_ID);
 		assertNotNull(controller);
 		if( mode == null || mode.equals("local")) {
-			assertTrue(controller instanceof JBossStandardTabProvider || controller instanceof JBoss7StandardTabProvider);
+			assertTrue( controller instanceof JBoss7StandardTabProvider);
 		} else if( mode.equals("rse")) {
 			assertTrue(controller instanceof RSELaunchTabProvider);
 		}
