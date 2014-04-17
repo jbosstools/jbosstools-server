@@ -31,13 +31,12 @@ import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
-import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.Trace;
+import org.jboss.ide.eclipse.as.core.UserPrompter;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.IServerAlreadyStartedHandler;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
@@ -128,17 +127,17 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 	}
 	
 	protected boolean handleAlreadyStartedScenario(	IServer server, IStatus startedStatus) {
-		IServerAlreadyStartedHandler handler = ExtensionManager.getDefault().getAlreadyStartedHandler(server);
-		if( handler != null ) {
-			int handlerResult = handler.promptForBehaviour(server, startedStatus);
-			if( handlerResult == IServerAlreadyStartedHandler.CONTINUE_STARTUP) {
+		Object ret = JBossServerCorePlugin.getInstance().getPrompter().promptUser(UserPrompter.EVENT_CODE_SERVER_ALREADY_STARTED, server, startedStatus);
+		if( ret instanceof Integer ) {
+			int handlerResult = ((Integer)ret).intValue();
+			if( handlerResult == UserPrompter.RETURN_CODE_SAS_CONTINUE_STARTUP) {
 				return true;
 			}
-			if( handlerResult == IServerAlreadyStartedHandler.CANCEL) {
+			if( handlerResult == UserPrompter.RETURN_CODE_SAS_CANCEL) {
 				return false;
 			}
 		}
-		Trace.trace(Trace.STRING_FINEST, "There is no handler available to prompt the user. The server will be set to started automatically. "); //$NON-NLS-1$
+		Trace.trace(Trace.STRING_FINEST, "Either no handler available, or user selected continue. The server will be set to started automatically. "); //$NON-NLS-1$
 		// force server to started mode
 		IControllableServerBehavior jbsBehavior = JBossServerBehaviorUtils.getControllableBehavior(server);
 		((ControllableServerBehavior)jbsBehavior).setServerStarted();

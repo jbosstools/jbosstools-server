@@ -41,6 +41,9 @@ public class JBossServerCorePlugin extends Plugin  {
 	private static JBossServerCorePlugin plugin;
 	public static final String PLUGIN_ID = "org.jboss.ide.eclipse.as.core"; //$NON-NLS-1$
 	
+	
+	private UserPrompter prompter;
+	
 	/**
 	 * The constructor.
 	 */
@@ -84,7 +87,7 @@ public class JBossServerCorePlugin extends Plugin  {
 		final Hashtable<String, String> props = new Hashtable<String, String>(4);
 		props.put(DebugOptions.LISTENER_SYMBOLICNAME, PLUGIN_ID);
 		context.registerService(DebugOptionsListener.class.getName(), new Trace(), props);
-		
+		prompter = new UserPrompter();
 	}
 
 	/**
@@ -136,5 +139,8 @@ public class JBossServerCorePlugin extends Plugin  {
     public static void log(String message, Throwable e) {
         log(IStatus.ERROR, message, e);
     }
-
+    
+    public UserPrompter getPrompter() {
+    	return prompter;
+    }
 }

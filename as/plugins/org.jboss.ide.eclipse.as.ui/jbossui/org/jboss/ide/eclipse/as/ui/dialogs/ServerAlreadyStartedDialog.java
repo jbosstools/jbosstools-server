@@ -27,15 +27,12 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.server.IServerAlreadyStartedHandler;
+import org.jboss.ide.eclipse.as.core.UserPrompter;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 
-public class ServerAlreadyStartedDialog extends TitleAreaDialog {
-	public static class ServerAlreadyStartedHandler implements IServerAlreadyStartedHandler {
-		public boolean accepts(IServer server) {
-			return true;
-		}
+public class ServerAlreadyStartedDialog extends TitleAreaDialog  {
+	public static class ServerAlreadyStartedHandler implements UserPrompter.IPromptHandler {
 		public int promptForBehaviour(final IServer server, final IStatus status) {
 			final int[] result = new int[1]; 
 			Display.getDefault().syncExec(new Runnable() {
@@ -44,13 +41,21 @@ public class ServerAlreadyStartedDialog extends TitleAreaDialog {
 							Display.getDefault().getActiveShell()); 
 					int dResult = d.open();
 					if( dResult == Window.CANCEL ) {
-						result[0] = IServerAlreadyStartedHandler.CANCEL;
+						result[0] = UserPrompter.RETURN_CODE_SAS_CANCEL;
 					} else {
-						result[0] = d.launch ? IServerAlreadyStartedHandler.CONTINUE_STARTUP : IServerAlreadyStartedHandler.ONLY_CONNECT;
+						result[0] = d.launch ? UserPrompter.RETURN_CODE_SAS_CONTINUE_STARTUP 
+								: UserPrompter.RETURN_CODE_SAS_ONLY_CONNECT;
 					}
 				}
 			});
 			return result[0];
+		}
+		@Override
+		public Object promptUser(int code, Object... data) {
+			if( code == UserPrompter.EVENT_CODE_SERVER_ALREADY_STARTED ) {
+				return promptForBehaviour((IServer)data[0], (IStatus)data[1]);
+			}
+			return null;
 		}
 	}
 	
