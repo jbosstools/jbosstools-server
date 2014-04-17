@@ -30,7 +30,6 @@ import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.server.launch.CommandLineLaunchConfigProperties;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
-import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
@@ -53,8 +52,7 @@ public class StandardRSEStartLaunchDelegate extends
 	@Override
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		IServer server = LaunchConfigUtils.checkedGetServer(configuration);
-		if( LaunchCommandPreferences.isIgnoreLaunchCommand(server)) {
+		if( LaunchCommandPreferences.isIgnoreLaunchCommand(configuration)) {
 			return;
 		}
 		beforeVMRunner(configuration, mode, launch, monitor);
@@ -68,7 +66,7 @@ public class StandardRSEStartLaunchDelegate extends
 			String mode, IProgressMonitor monitor) throws CoreException {
 		IServer server = ServerUtil.getServer(configuration);
 		final IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(configuration);
-		boolean dontLaunch = LaunchCommandPreferences.isIgnoreLaunchCommand(server);
+		boolean dontLaunch = LaunchCommandPreferences.isIgnoreLaunchCommand(configuration);
 		if (dontLaunch || isStarted(server)) {
 			((ControllableServerBehavior)beh).setServerStarted();
 			return false;

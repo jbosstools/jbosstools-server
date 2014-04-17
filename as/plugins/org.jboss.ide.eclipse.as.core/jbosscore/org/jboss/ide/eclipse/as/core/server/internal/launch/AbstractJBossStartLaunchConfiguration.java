@@ -170,8 +170,7 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 	@Override
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		IServer server = LaunchConfigUtils.checkedGetServer(configuration);
-		if( LaunchCommandPreferences.isIgnoreLaunchCommand(server)) {
+		if( LaunchCommandPreferences.isIgnoreLaunchCommand(configuration)) {
 			return;
 		}
 		preLaunch(configuration, mode, launch, monitor);
