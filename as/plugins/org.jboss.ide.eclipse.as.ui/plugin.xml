@@ -784,6 +784,7 @@
        <serverProfile id="local.mgmt" serverTypes="%ServerTypesJBoss7OrHigher">
           <subsystem system="deploymentPage" subsystem="deploymentPage.management"/>
           <subsystem system="launchTabProvider" subsystem="launchTabProvider.local"/>
+          <subsystem system="exploreBehavior" subsystem="exploreBehavior.local"/>
        </serverProfile>
     </extension>
    
