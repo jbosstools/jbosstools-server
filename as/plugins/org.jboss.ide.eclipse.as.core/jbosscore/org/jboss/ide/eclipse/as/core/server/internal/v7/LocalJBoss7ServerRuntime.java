@@ -98,6 +98,10 @@ public class LocalJBoss7ServerRuntime extends LocalJBossServerRuntime implements
 		return getRuntime().getLocation().append(p).toFile().getAbsolutePath();
 	}
 	
+	
+	public String getRawBaseDirectory() {
+		return 	getAttribute(BASE_DIRECTORY, IJBossRuntimeResourceConstants.AS7_STANDALONE);
+	}
 	/**
 	 * Set a base directory, which may either be relative to the server home, 
 	 * or, a file-system absolute path. Setting the value of 'null' will

@@ -48,9 +48,13 @@
             typeIds="%RuntimeTypesWildfly8"/>
             
       <fragment
-            class="org.jboss.ide.eclipse.as.ui.wizards.ServerProfileWizardFragment"
-            id="org.jboss.ide.eclipse.as.ui.wizards.ServerProfileWizardFragment"
-            typeIds="%AllJBossServerTypes"/>
+            class="org.jboss.ide.eclipse.as.ui.wizards.LegacyServerProfileWizardFragment"
+            id="org.jboss.ide.eclipse.as.ui.wizards.LegacyServerProfileWizardFragment"
+            typeIds="%ServerTypesJBoss6OrLower"/>
+      <fragment
+            class="org.jboss.ide.eclipse.as.ui.wizards.LayeredProductServerWizardFragment"
+            id="org.jboss.ide.eclipse.as.ui.wizards.LayeredProductServerWizardFragment"
+            typeIds="%ServerTypesJBoss7OrHigher"/>
             
       <!-- NEW_SERVER_ADAPTER  Add the wizard fragment (if applicable) for the new server adapter above this line -->
       <fragment

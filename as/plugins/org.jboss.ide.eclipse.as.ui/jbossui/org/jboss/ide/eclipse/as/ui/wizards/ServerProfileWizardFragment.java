@@ -25,9 +25,10 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -72,12 +73,9 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 	
 	private IWizardHandle handle;
 	private ServerProfile selectedProfile;
-	private ServerProfile[] profiles;
 	private Label serverExplanationLabel; 
 	private WizardFragment runtimeFragment;
 	private boolean requiresRuntime;
-	private Combo profileCombo;
-	private Label profileDescriptionLabel;
 	private Label requiresRuntimeLabel;
 	private Button useRuntimeButton;
 	private Combo runtimeCombo;
@@ -85,6 +83,8 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 	private IRuntime[] runtimes;
 	private String[] runtimeNames;
 	private IRuntimeWorkingCopy newRuntimeWorkingCopy;
+	
+	private Composite profileComposite;
 	
 	public ServerProfileWizardFragment() {
 		super();
@@ -116,24 +116,34 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		setPageDetails(handle);
 		initializeModel();
 		setComplete(false);
-		Composite main = new Composite(parent, SWT.NONE);
-		main.setLayout(new FormLayout());
-		
-		createExplanationLabel(main);
-		createBehaviourGroup(main);
-		
+		Composite wrapper = new Composite(parent, SWT.NONE);
+		wrapper.setLayout(new GridLayout(1, true));
+
+		createExplanationLabel(wrapper);
+		this.profileComposite = createProfileSection(wrapper);
+		createRuntimeSection(wrapper);
+		if( !runtimeForbidden()) {
+			addRuntimeDetailsGroup(wrapper);
+		}
+		setProfile(this.selectedProfile);
+		runtimeComboChanged();
 		updateErrorMessage();
-		// now init defaults in the page
-		initializeWidgetDefaults();
-		updateErrorMessage();
-		return main;
+		return wrapper;
 	}
+
+	/**
+	 * Intended to be overridden by subclasses that wish to list details for their runtime
+	 * @param parent
+	 */
+	protected void addRuntimeDetailsGroup(Composite parent) {
+		// Do nothing
+	}
+	
 	
 	protected void initializeModel() {
 		newRuntimeWorkingCopy = null;
 		selectedProfile = null;
 		IServerAttributes server = (IServerAttributes)getTaskModel().getObject(TaskModel.TASK_SERVER);
-		String serverType = server.getServerType().getId();
 		IRuntimeType rtType = server.getServerType().getRuntimeType(); 
 		String runtimeType = rtType == null ? null : rtType.getId();
 		try {
@@ -141,17 +151,6 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		} catch(CoreException ce) {
 			JBossServerUIPlugin.log(ce.getStatus());
 		}
-		ServerProfile[] tmpProfiles = ServerProfileModel.getDefault().getProfiles(serverType);
-		// sort by visible name
-		ArrayList<ServerProfile> tmpProfileList = new ArrayList<ServerProfile>(Arrays.asList(tmpProfiles));
-		Collections.sort(tmpProfileList, new Comparator<ServerProfile>(){
-			public int compare(ServerProfile arg0, ServerProfile arg1) {
-				String n1 = arg0.getVisibleName() == null ? arg0.getId() : arg0.getVisibleName();
-				String n2 = arg1.getVisibleName() == null ? arg1.getId() : arg1.getVisibleName();
-				return n1.compareTo(n2);
-			}
-		});
-		profiles =  tmpProfileList.toArray(new ServerProfile[tmpProfileList.size()]);
 
 		if( runtimeType != null ) {
 			ArrayList<IRuntime> validRuntimes = new ArrayList<IRuntime>();
@@ -165,19 +164,6 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 			}
 			this.runtimes = validRuntimes.toArray(new IRuntime[validRuntimes.size()]);
 			this.runtimeNames = (String[]) runtimeNames.toArray(new String[runtimeNames.size()]);
-		}
-	}
-	
-	protected void initializeWidgetDefaults() {
-		IServerAttributes server = (IServerAttributes)getTaskModel().getObject(TaskModel.TASK_SERVER);
-		String currentProfile = ServerProfileModel.getProfile(server, ServerProfileModel.DEFAULT_SERVER_PROFILE);
-		int profileIndex = -1;
-		for( int i = 0; i < profiles.length && profileIndex == -1; i++ ) {
-			if( profiles[i].getId().equals(currentProfile)) {
-				profileCombo.select(i);
-				setProfile(profiles[i]);
-				break;
-			}
 		}
 	}
 	
@@ -196,55 +182,24 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 	
 	private void createExplanationLabel(Composite main) {
 		serverExplanationLabel = new Label(main, SWT.WRAP);
-		FormData data = new FormData();
-		data.top = new FormAttachment(0,5);
-		data.left = new FormAttachment(0,5);
-		data.right = new FormAttachment(100,-5);
-		data.width = 300;
-		serverExplanationLabel.setLayoutData(data);
+		GridData gd = new GridData();
+		gd.widthHint = 600;
+		serverExplanationLabel.setLayoutData(gd);
 		serverExplanationLabel.setText(Messages.swf_Explanation);
 	}
 
-	protected void createBehaviourGroup(Composite main) {
-		profileCombo = new Combo(main, SWT.READ_ONLY);
-		String[] profileNames = new String[profiles.length];
-		for( int i = 0; i < profiles.length; i++ ) 
-			profileNames[i] = (profiles[i].getVisibleName() == null ? profiles[i].getId() : profiles[i].getVisibleName());
-		profileCombo.setItems(profileNames);
+	protected void createRuntimeSection(Composite main) {
+		Composite runtimeWrap = new Composite(main, SWT.NONE);
+		runtimeWrap.setLayout(new FormLayout());
 		
-		Label comboLabel = new Label(main, SWT.NONE);
-		comboLabel.setText("Profile: ");
-		FormData labelData = UIUtil.createFormData2(serverExplanationLabel, 12, null, 0, 0,5,null,0);
-		comboLabel.setLayoutData(labelData);
-		
-		FormData groupData = UIUtil.createFormData2(serverExplanationLabel, 10, null, 0, comboLabel,5,null,0);
-		profileCombo.setLayoutData(groupData);
-		
-		profileCombo.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				int i = profileCombo.getSelectionIndex();
-				if( i != -1 ) {
-					setProfile(profiles[i]);
-				}
-			}
-		});
-		
-		profileDescriptionLabel = new Label(main, SWT.WRAP);
-		FormData profileDescriptionLabelData = UIUtil.createFormData2(profileCombo, 5, profileCombo, 100, 0,5,100,-5);
-		profileDescriptionLabelData.width = 300;
-		profileDescriptionLabel.setLayoutData(profileDescriptionLabelData);
-
-		
-		requiresRuntimeLabel = new Label(main, SWT.WRAP);
-		FormData requiresRuntimeLabelData = UIUtil.createFormData2(profileDescriptionLabel, 15, null, 0, 0,5,100,-5);
+		requiresRuntimeLabel = new Label(runtimeWrap, SWT.WRAP);
+		FormData requiresRuntimeLabelData = UIUtil.createFormData2(0, 15, null, 0, 0,5,100,-5);
 		requiresRuntimeLabelData.width = 300;
 		requiresRuntimeLabel.setLayoutData(requiresRuntimeLabelData);
 		
-		
-		
 		IRuntime runtime = (IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME);
 		if( runtime == null && !runtimeForbidden()) {
-			useRuntimeButton = new Button(main, SWT.CHECK);
+			useRuntimeButton = new Button(runtimeWrap, SWT.CHECK);
 			useRuntimeButton.setText("Assign a runtime to this server");
 			FormData useRuntimeButtonData = UIUtil.createFormData2(requiresRuntimeLabel, 5, null, 0, 0,5,100,-5);
 			useRuntimeButton.setLayoutData(useRuntimeButtonData);
@@ -255,7 +210,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 				}
 			});
 			
-			runtimeCombo = new Combo(main, SWT.READ_ONLY);
+			runtimeCombo = new Combo(runtimeWrap, SWT.READ_ONLY);
 			String[] runtimeNamesWithNew = new String[runtimeNames.length+1];
 			System.arraycopy(runtimeNames, 0, runtimeNamesWithNew, 0, runtimeNames.length);
 			runtimeNamesWithNew[runtimeNames.length] = "Create new runtime (next page)"; //$NON-NLS-1$
@@ -275,6 +230,86 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		}
 	}
 	
+	protected Composite createProfileSection(Composite main) {
+		ProfileComposite pc =  new ProfileComposite(main, SWT.NONE, this);
+		GridData gd = new GridData();
+		gd.widthHint = 500;
+		pc.setLayoutData(gd);
+		return pc;
+	}
+	
+	private static class ProfileComposite extends Composite {
+		private Combo profileCombo;
+		private Label profileDescriptionLabel;
+		private ServerProfile[] profiles;
+		private ServerProfileWizardFragment profileFragment;
+		ProfileComposite(Composite parent, int style, final ServerProfileWizardFragment profileFragment) {
+			super(parent, style);
+			setLayout(new FormLayout());
+			this.profileFragment = profileFragment;
+			initProfiles();
+			
+			profileCombo = new Combo(this, SWT.READ_ONLY);
+			String[] profileNames = new String[profiles.length];
+			for( int i = 0; i < profiles.length; i++ ) 
+				profileNames[i] = (profiles[i].getVisibleName() == null ? profiles[i].getId() : profiles[i].getVisibleName());
+			profileCombo.setItems(profileNames);
+			
+			Label comboLabel = new Label(this, SWT.NONE);
+			comboLabel.setText("Profile: ");
+			FormData labelData = UIUtil.createFormData2(0, 12, null, 0, 0,5,null,0);
+			comboLabel.setLayoutData(labelData);
+			
+			FormData groupData = UIUtil.createFormData2(0, 10, null, 0, comboLabel,5,null,0);
+			profileCombo.setLayoutData(groupData);
+			
+			profileCombo.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					int i = profileCombo.getSelectionIndex();
+					if( i != -1 ) {
+						profileFragment.setProfile(profiles[i]);
+						profileDescriptionLabel.setText(profiles[i].getDescription() == null ? "" : profiles[i].getDescription());
+					}
+				}
+			});
+			
+			profileDescriptionLabel = new Label(this, SWT.WRAP);
+			FormData profileDescriptionLabelData = UIUtil.createFormData2(profileCombo, 5, profileCombo, 100, 0,5,100,-5);
+			profileDescriptionLabelData.width = 300;
+			profileDescriptionLabel.setLayoutData(profileDescriptionLabelData);
+			initializeWidgetDefaults();
+		}
+		
+		protected void initProfiles() {
+			IServerAttributes server = (IServerAttributes)profileFragment.getTaskModel().getObject(TaskModel.TASK_SERVER);
+			String serverType = server.getServerType().getId();
+			ServerProfile[] tmpProfiles = ServerProfileModel.getDefault().getProfiles(serverType);
+			// sort by visible name
+			ArrayList<ServerProfile> tmpProfileList = new ArrayList<ServerProfile>(Arrays.asList(tmpProfiles));
+			Collections.sort(tmpProfileList, new Comparator<ServerProfile>(){
+				public int compare(ServerProfile arg0, ServerProfile arg1) {
+					String n1 = arg0.getVisibleName() == null ? arg0.getId() : arg0.getVisibleName();
+					String n2 = arg1.getVisibleName() == null ? arg1.getId() : arg1.getVisibleName();
+					return n1.compareTo(n2);
+				}
+			});
+			profiles =  tmpProfileList.toArray(new ServerProfile[tmpProfileList.size()]);
+		}
+		
+		protected void initializeWidgetDefaults() {
+			IServerAttributes server = (IServerAttributes)profileFragment.getTaskModel().getObject(TaskModel.TASK_SERVER);
+			String currentProfile = ServerProfileModel.getProfile(server, ServerProfileModel.DEFAULT_SERVER_PROFILE);
+			int profileIndex = -1;
+			for( int i = 0; i < profiles.length && profileIndex == -1; i++ ) {
+				if( profiles[i].getId().equals(currentProfile)) {
+					profileCombo.select(i);
+					profileFragment.setProfile(profiles[i]);
+					profileDescriptionLabel.setText(profiles[i].getDescription() == null ? "" : profiles[i].getDescription());
+					break;
+				}
+			}
+		}
+	}
 	
 
 	/**
@@ -300,7 +335,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		return false;
 	}
 	
-	private void runtimeComboChanged() {
+	protected void runtimeComboChanged() {
 		int runtimeSelIndex = runtimeCombo.getSelectionIndex();
 		IRuntime rt = null;
 		IServer s = (IServer)getTaskModel().getObject(TaskModel.TASK_SERVER);
@@ -326,17 +361,14 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		updateErrorMessage();
 	}
 	
-	private void setProfile(ServerProfile sp) {
+	protected void setProfile(ServerProfile sp) {
 		selectedProfile = sp;
 		IServerWorkingCopy serverWC = (IServerWorkingCopy) getTaskModel().getObject(TaskModel.TASK_SERVER);
 		ServerProfileModel.setProfile(serverWC, sp.getId());
 		boolean requires = ServerProfileModel.getDefault().profileRequiresRuntime(serverWC.getServerType().getId(), sp.getId());
-		
-		// description
-		profileDescriptionLabel.setText(sp.getDescription() == null ? "" : sp.getDescription());
-		
+
 		requiresRuntime = requires;
-		if( !runtimeForbidden()) {
+		if( !runtimeForbidden() && requiresRuntimeLabel != null && !requiresRuntimeLabel.isDisposed()) {
 			requiresRuntimeLabel.setText("The selected profile " + (requiresRuntime ? "requires" : "does not require") + " a runtime.");
 			if( requires) {
 				if( useRuntimeButton != null ) {
@@ -376,7 +408,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		if( selectedProfile == null ) {
 			return "Please select a profile for your server.";
 		}
-		if( runtimeCombo != null && useRuntimeButton.getSelection() && runtimeCombo.getSelectionIndex() == -1) {
+		if( runtimeCombo != null && !runtimeCombo.isDisposed() && useRuntimeButton.getSelection() && runtimeCombo.getSelectionIndex() == -1) {
 			return "Please select a runtime.";
 		}
 		return null;
