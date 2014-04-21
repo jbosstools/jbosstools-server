@@ -20,11 +20,14 @@ import org.jboss.ide.eclipse.as.rse.core.RSELaunchConfigurator;
 import org.jboss.ide.eclipse.as.rse.core.StandardRSEJBossStartLaunchDelegate;
 import org.jboss.ide.eclipse.as.rse.core.StandardRSEStartLaunchDelegate;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ILaunchServerController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IServerShutdownController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IShutdownControllerDelegate;
 
 /**
  * The default launch controller for all jboss server rse launches
  */
-public class RSEJBossLaunchController extends RSECommandLineLaunchController implements ILaunchServerController, ILaunchConfigurationDelegate2 {
+public class RSEJBossLaunchController extends RSECommandLineLaunchController 
+	implements ILaunchServerController, ILaunchConfigurationDelegate2, IShutdownControllerDelegate {
 
 	@Override
 	protected ILaunchConfigConfigurator getConfigurator() throws CoreException {
@@ -43,5 +46,13 @@ public class RSEJBossLaunchController extends RSECommandLineLaunchController imp
 			launchDelegate = new StandardRSEJBossStartLaunchDelegate();
 		}
 		return launchDelegate;
+	}
+
+
+	@Override
+	public IServerShutdownController getShutdownController() {
+		IServerShutdownController c = new RSEJBossCommandLineShutdownController();
+		c.initialize(getServer(), null, null);
+		return c;
 	}
 }
