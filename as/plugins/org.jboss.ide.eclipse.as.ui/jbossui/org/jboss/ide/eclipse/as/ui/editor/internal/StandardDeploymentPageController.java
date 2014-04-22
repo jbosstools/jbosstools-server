@@ -108,9 +108,9 @@ public class StandardDeploymentPageController extends
 	 */
 	protected void updateWidgetEnablement() {
 		final boolean enabled = shouldAllowModifications();
-		if( standardOptions != null )
+		if( standardOptions != null && !standardOptions.isDisposed())
 			standardOptions.setEnabled(enabled);
-		if( perModuleOptions != null )
+		if( perModuleOptions != null && !perModuleOptions.isDisposed())
 			perModuleOptions.setEnabled(enabled);
 	}
 	
