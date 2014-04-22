@@ -20,12 +20,14 @@ import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.modules.ResourceModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilterProvider;
+import org.jboss.ide.eclipse.as.core.server.internal.UpdateModuleStateJob;
 import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
 import org.jboss.ide.eclipse.as.core.util.IEventCodes;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -39,6 +41,7 @@ import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IModuleStateController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPrimaryPublishController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishControllerDelegate;
@@ -52,6 +55,12 @@ public class ManagementPublishController extends AbstractSubsystemController
 
 	private IJBoss7ManagerService service;
 	private AS7ManagementDetails managementDetails;
+
+	/*
+	 * An optional dependency for verifying or modifying the deploy state of a module
+	 */
+	private IModuleStateController moduleStateController;
+	
 	private IJBoss7ManagerService getService() {
 		if( service == null ) {
 			this.service = JBoss7ManagerUtil.getService(getServer());
@@ -99,9 +108,27 @@ public class ManagementPublishController extends AbstractSubsystemController
 
 	@Override
 	public void publishFinish(IProgressMonitor monitor) throws CoreException {
-		// intentionally blank
+		IServer s = getServer();
+		((Server)s).setServerPublishState(getUpdatedPublishState(s));
+
+		// update the wtp model with live module state from the server
+		IModuleStateController c = getModuleStateController();
+		if( c != null && getServer().getServerState() == IServer.STATE_STARTED) {
+			new UpdateModuleStateJob( c, getServer(), true, 15000).schedule(5000);
+		}
 	}
 
+	protected IModuleStateController getModuleStateController() throws CoreException {
+		if( moduleStateController == null ) {
+			try {
+				moduleStateController = (IModuleStateController)findDependency(IModuleStateController.SYSTEM_ID);
+			} catch(CoreException ce) {
+				// Do not log; this is optional. But trace
+			}
+		}
+		return moduleStateController;
+	}
+	
 	@Override
 	public int publishModule(int kind, int deltaKind, IModule[] module,
 			IProgressMonitor monitor) throws CoreException {
@@ -118,6 +145,7 @@ public class ManagementPublishController extends AbstractSubsystemController
 		if( module.length > 1 ) {
 			return IServer.PUBLISH_STATE_NONE;
 		}
+		((Server)getServer()).setModuleState(module, IServer.STATE_UNKNOWN);
 		
 		// first see if we need to delegate to another custom publisher, such as bpel / osgi
 		IPublishControllerDelegate delegate = PublishControllerUtility.findDelegatePublishController(getServer(), module, true);
@@ -267,5 +295,18 @@ public class ManagementPublishController extends AbstractSubsystemController
 		if( result.isOK())
 			return IServer.PUBLISH_STATE_NONE;
 		return IServer.PUBLISH_STATE_FULL;
+	}
+	
+
+	private int getUpdatedPublishState(IServer server) {
+        IModule[] modules = server.getModules();
+        boolean allpublished= true;
+        for (int i = 0; i < modules.length; i++) {
+        	if(server.getModulePublishState(new IModule[]{modules[i]})!=IServer.PUBLISH_STATE_NONE)
+                allpublished=false;
+        }
+        if(allpublished)
+        	return IServer.PUBLISH_STATE_NONE;
+        return IServer.PUBLISH_STATE_INCREMENTAL;
 	}
 }
