@@ -22,7 +22,7 @@ public class Wildfly80ExtendedProperties extends JBossAS710ExtendedProperties {
 	}
 	@Override
 	public String getRuntimeTypeVersionString() {
-		return "8.0"; //$NON-NLS-1$
+		return "8.x"; //$NON-NLS-1$
 	}
 	
 	@Override
