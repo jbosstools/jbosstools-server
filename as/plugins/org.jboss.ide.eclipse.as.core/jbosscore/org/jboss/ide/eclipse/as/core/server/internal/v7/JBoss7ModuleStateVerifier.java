@@ -82,25 +82,41 @@ public class JBoss7ModuleStateVerifier extends AbstractSubsystemController imple
 	}
 	
 	private int getRootModuleState(IServer server, IModule root, IProgressMonitor monitor) throws Exception {
-		JBoss7Server jbossServer = ServerConverter.checkedGetJBossServer(server, JBoss7Server.class);
 		IJBoss7ManagerService service = JBoss7ManagerUtil.getService(server);
-		// TODO does this need to change??
-		IPath deployPath = jbossServer.getDeploymentLocation(new IModule[]{root}, true); 
-		return getRootModuleState(server, root, service, deployPath, monitor);
+		return getRootModuleState(server, root, service, getDeploymentName(server, root), monitor);
+	}
+	
+	private String getDeploymentName(IServer server, IModule module) throws Exception {
+		return getDeploymentOutputName(server, module);
 	}
 
+	private String getDeploymentOutputName(IServer server, IModule module) {
+		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(server);
+		if( beh != null ) {
+			try {
+				IModule[] moduleToTest = new IModule[]{module};
+				IModuleDeployPathController controller = (IModuleDeployPathController)beh.getController(IModuleDeployPathController.SYSTEM_ID);
+				return controller.getOutputName(moduleToTest);
+			} catch(CoreException ce) {
+				// TODO log
+				return null;
+			}
+		} 
+		return null;
+	}
+	
 	private boolean isRootModuleStarted(IServer server, IModule root, 
-			IJBoss7ManagerService service, IPath deployPath, IProgressMonitor monitor) throws Exception {
-		return getRootModuleState(server, root, service, deployPath, monitor) == IServer.STATE_STARTED;
+			IJBoss7ManagerService service, String deploymentName, IProgressMonitor monitor) throws Exception {
+		return getRootModuleState(server, root, service, deploymentName, monitor) == IServer.STATE_STARTED;
 	}
 	
 	private int getRootModuleState(IServer server, IModule root, 
-			IJBoss7ManagerService service, IPath deployPath, IProgressMonitor monitor) throws Exception {
+			IJBoss7ManagerService service, String deploymentName, IProgressMonitor monitor) throws Exception {
 		AS7ManagementDetails details = new AS7ManagementDetails(server);
 		int ret = IServer.STATE_UNKNOWN;
 		if (service.isRunning(details)) { // to avoid asking while server is starting up.
 			JBoss7DeploymentState state = service.getDeploymentState(
-					details, deployPath.lastSegment());
+					details, deploymentName);
 			if( state == JBoss7DeploymentState.STARTED)
 				return IServer.STATE_STARTED;
 			if( state == JBoss7DeploymentState.STOPPED)
@@ -112,14 +128,12 @@ public class JBoss7ModuleStateVerifier extends AbstractSubsystemController imple
 	
 	public void waitModuleStarted(IServer server, IModule[] module, IProgressMonitor monitor) {
 		try {
-			JBoss7Server jbossServer = ServerConverter.checkedGetJBossServer(server, JBoss7Server.class);
 			IJBoss7ManagerService service = JBoss7ManagerUtil.getService(server);
-			// TODO DOES THIS NEED TO CHANGE?
-			IPath deployPath = jbossServer.getDeploymentLocation(new IModule[]{module[0]}, true);
+			String deploymentName = getDeploymentName(server, module[0]);
 			boolean waitedOnce = false;
 			
 			while (!monitor.isCanceled()) {
-				boolean done = isRootModuleStarted(server, module[0], service, deployPath, monitor);
+				boolean done = isRootModuleStarted(server, module[0], service, deploymentName, monitor);
 				if (done) {
 					return;
 				}

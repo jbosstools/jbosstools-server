@@ -10,6 +10,8 @@
  ******************************************************************************/ 
 package org.jboss.tools.as.core.server.controllable.subsystems.internal;
 
+import gnu.getopt.Getopt;
+
 import java.io.File;
 
 import org.eclipse.core.runtime.CoreException;
@@ -30,6 +32,7 @@ import org.jboss.ide.eclipse.as.core.server.IModulePathFilterProvider;
 import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
 import org.jboss.ide.eclipse.as.core.util.IEventCodes;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.util.ProgressMonitorUtil;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7DeploymentResult;
@@ -37,11 +40,13 @@ import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPrimaryPublishController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishControllerDelegate;
 import org.jboss.ide.eclipse.as.wtp.core.server.publish.LocalZippedModulePublishRunner;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
+import org.jboss.tools.as.core.server.controllable.systems.IModuleDeployPathController;
 import org.jboss.tools.as.core.server.controllable.util.PublishControllerUtility;
 
 public class ManagementPublishController extends AbstractSubsystemController
@@ -175,6 +180,21 @@ public class ManagementPublishController extends AbstractSubsystemController
 		return 0;
 	}
 
+	private String getDeploymentOutputName(IServer server, IModule module) {
+		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(server);
+		if( beh != null ) {
+			try {
+				IModule[] moduleToTest = new IModule[]{module};
+				IModuleDeployPathController controller = (IModuleDeployPathController)beh.getController(IModuleDeployPathController.SYSTEM_ID);
+				return controller.getOutputName(moduleToTest);
+			} catch(CoreException ce) {
+				// TODO log
+				return null;
+			}
+		} 
+		return null;
+	}
+	
 	@Override
 	public void publishServer(int kind, IProgressMonitor monitor)
 			throws CoreException {
@@ -185,7 +205,7 @@ public class ManagementPublishController extends AbstractSubsystemController
 	private File zipLocally(IModule module, int publishType, IProgressMonitor monitor) throws CoreException {
 		// Zip into a temporary folder, then transfer to the proper location
 		IPath localTempLocation = getMetadataTemporaryLocation(getServer());
-		String name = module.getName() + getDefaultSuffix(module); // TODO Pull from MODEL, DUH
+		String name = getDeploymentOutputName(getServer(), module);
 		IPath tmpArchive = localTempLocation.append(name);
 		
 		LocalZippedModulePublishRunner runner = createZippedRunner(module, tmpArchive); 
@@ -211,11 +231,6 @@ public class ManagementPublishController extends AbstractSubsystemController
 		return deployRoot;
 	}
 	
-	
-	private String getDefaultSuffix(IModule module) {
-		return ServerModelUtilities.getDefaultSuffixForModule(module);
-		
-	}
 
 	private IModulePathFilterProvider getModulePathFilterProvider() {
 		return new IModulePathFilterProvider() {
@@ -232,7 +247,7 @@ public class ManagementPublishController extends AbstractSubsystemController
 	@Override
 	public int transferBuiltModule(IModule[] module, IPath srcFile,
 			IProgressMonitor monitor) throws CoreException {
-		String name = module[0].getName() + getDefaultSuffix(module[0]);
+		String name = getDeploymentOutputName(getServer(), module[0]);
 		IJBoss7DeploymentResult removeResult = getService().undeploySync(managementDetails, name, true,  ProgressMonitorUtil.submon(monitor, 10));
 		IStatus status1 =(removeResult.getStatus());
 		
@@ -245,7 +260,7 @@ public class ManagementPublishController extends AbstractSubsystemController
 	@Override
 	public int removeModule(IModule[] module, IProgressMonitor monitor)
 			throws CoreException {
-		String name = module[0].getName() + getDefaultSuffix(module[0]);
+		String name = getDeploymentOutputName(getServer(), module[0]);
 		IJBoss7DeploymentResult removeResult = getService().undeploySync(managementDetails, name, true,  monitor);
 		IStatus result = removeResult.getStatus();
 		if( result.isOK())
