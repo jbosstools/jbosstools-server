@@ -10,8 +10,6 @@
  ******************************************************************************/ 
 package org.jboss.tools.as.core.server.controllable.subsystems.internal;
 
-import gnu.getopt.Getopt;
-
 import java.io.File;
 
 import org.eclipse.core.runtime.CoreException;
@@ -20,7 +18,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jst.javaee.ltk.core.participant.JavaEEServerRefRefactorParticipant.RemoveProjectFromServersChange;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResource;
@@ -37,6 +34,7 @@ import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.util.ProgressMonitorUtil;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
+import org.jboss.ide.eclipse.as.management.core.JBoss7DeploymentState;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
@@ -159,8 +157,11 @@ public class ManagementPublishController extends AbstractSubsystemController
 			transferMonitor.beginTask("Transfering " + module[0].getName(), 100*toTransfer.length); //$NON-NLS-1$
 			for( int i = 0; i < toTransfer.length; i++ ) {
 				// Maybe name will be customized in UI? 
-				IJBoss7DeploymentResult removeResult = getService().undeploySync(managementDetails, toTransfer[i].getName(), true,  ProgressMonitorUtil.submon(transferMonitor, 10));
-				ms.add(removeResult.getStatus());
+				JBoss7DeploymentState state = getService().getDeploymentState(managementDetails, toTransfer[i].getName());
+				if( state != JBoss7DeploymentState.NOT_FOUND) {
+					IJBoss7DeploymentResult removeResult = getService().undeploySync(managementDetails, toTransfer[i].getName(), true,  ProgressMonitorUtil.submon(transferMonitor, 10));
+					ms.add(removeResult.getStatus());
+				}
 				
 				IJBoss7DeploymentResult result = getService().deploySync(managementDetails, toTransfer[i].getName(), toTransfer[i], 
 						true, ProgressMonitorUtil.submon(transferMonitor, 100));
