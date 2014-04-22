@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.rse.ui;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,10 +21,12 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.rse.core.IRSESystemType;
 import org.eclipse.rse.core.RSECorePlugin;
 import org.eclipse.rse.core.events.ISystemModelChangeEvent;
 import org.eclipse.rse.core.events.ISystemModelChangeListener;
 import org.eclipse.rse.core.model.IHost;
+import org.eclipse.rse.internal.core.RSECoreRegistry;
 import org.eclipse.rse.ui.wizards.newconnection.RSEMainNewConnectionWizard;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -168,6 +171,25 @@ public abstract class RSEDeploymentPreferenceComposite extends Composite impleme
 		}
 	}
 
+	
+	private IRSESystemType[] getVerifiedSystemTypes() {
+		String[] ids = new String[]{
+				IRSESystemType.SYSTEMTYPE_LINUX_ID,
+				IRSESystemType.SYSTEMTYPE_LOCAL_ID,
+				IRSESystemType.SYSTEMTYPE_SSH_ONLY_ID,
+				IRSESystemType.SYSTEMTYPE_UNIX_ID
+		}; 
+		ArrayList<IRSESystemType> list = new ArrayList<IRSESystemType>();
+		IRSESystemType t = null;
+		for( int i = 0; i < ids.length; i++ ) {
+			t = RSECoreRegistry.getInstance().getSystemType(ids[i]);
+			if( t != null )
+				list.add(t);
+		}
+		IRSESystemType[] systemTypesArr = (IRSESystemType[]) list.toArray(new IRSESystemType[list.size()]);
+		return systemTypesArr;
+	}
+		
 	public class CustomSystemHostCombo extends Composite implements ModifyListener, ISystemModelChangeListener {
 		private String fileSubSystem;
 		private Combo combo;
@@ -255,6 +277,7 @@ public abstract class RSEDeploymentPreferenceComposite extends Composite impleme
 		
 		protected void newHostClicked() {
 			RSEMainNewConnectionWizard newConnWizard = new RSEMainNewConnectionWizard();
+			newConnWizard.restrictToSystemTypes(getVerifiedSystemTypes());
 			WizardDialog d = new WizardDialog(getShell(), newConnWizard);
 			d.open();
 		}
@@ -292,7 +315,19 @@ public abstract class RSEDeploymentPreferenceComposite extends Composite impleme
 		}
 		
 		public void refreshConnections() {
-			hosts = RSECorePlugin.getTheSystemRegistry().getHostsBySubSystemConfigurationCategory(fileSubSystem);
+			IHost[] tempHosts = RSECorePlugin.getTheSystemRegistry().getHostsBySubSystemConfigurationCategory(fileSubSystem);
+			IRSESystemType[] valid = getVerifiedSystemTypes();
+			ArrayList<IHost> hosts2 = new ArrayList<IHost>();
+			for( int i = 0; i < tempHosts.length; i++ ) {
+				for( int j = 0; j < valid.length; j++ ) {
+					if( tempHosts[i].getSystemType().equals(valid[j])) {
+						// this host is a valid host
+						hosts2.add(tempHosts[i]);
+					}
+				}
+			}
+			
+			hosts = (IHost[]) hosts2.toArray(new IHost[hosts2.size()]);
 			hostsAsStrings = new String[hosts.length];
 			int currentHostIndex = -1;
 			for( int i = 0; i < hosts.length; i++ ) {
