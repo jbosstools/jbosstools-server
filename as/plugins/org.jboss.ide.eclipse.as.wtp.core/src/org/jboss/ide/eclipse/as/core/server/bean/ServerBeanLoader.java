@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2012 Red Hat, Inc. 
+ * Copyright (c) 2012-2014 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -13,7 +13,6 @@ package org.jboss.ide.eclipse.as.core.server.bean;
 
 import java.io.File;
 
-import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType.AbstractCondition;
 
 /**
  * @author eskimo
@@ -21,24 +20,6 @@ import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType.AbstractConditi
  */
 public class ServerBeanLoader {
 	
-	// NEW_SERVER_ADAPTER
-	public static JBossServerType[] typesInOrder = {
-		JBossServerType.AS, 
-		JBossServerType.WILDFLY80, 
-		JBossServerType.EAP61,
-		JBossServerType.SOA6,
-		JBossServerType.JPP61, 
-		JBossServerType.UNKNOWN_AS72_PRODUCT,
-		JBossServerType.AS72, 
-		JBossServerType.JPP6, 
-		JBossServerType.EAP6, 
-		JBossServerType.AS7GateIn, 
-		JBossServerType.UNKNOWN_AS71_PRODUCT,
-		JBossServerType.AS7, JBossServerType.EAP_STD, 
-		JBossServerType.SOAP, JBossServerType.SOAP_STD, 
-		JBossServerType.EPP, JBossServerType.EAP, 
-		JBossServerType.EWP
-	};
 
 	private ServerBean bean = null;
 	private File rootLocation = null;
@@ -53,29 +34,30 @@ public class ServerBeanLoader {
 		return bean;
 	}
 
-	public JBossServerType getServerType() {
+	public ServerBeanType getServerBeanType() {
 		if( bean == null )
 			loadBeanInternal();
-		return bean == null ? JBossServerType.UNKNOWN : bean.getType();
+		return bean == null ? ServerBeanType.UNKNOWN : bean.getBeanType();
 	}
+
 	
 	private void loadBeanInternal() {
-		JBossServerType type = loadTypeInternal(rootLocation);
+		ServerBeanType type = loadTypeInternal(rootLocation);
 		String version = null;
-		if (!JBossServerType.UNKNOWN.equals(type)) {
-			String fullVersion = type.getFullVersion(rootLocation);
-			version = getMajorMinorVersion(fullVersion);
+		if (!ServerBeanType.UNKNOWN.equals(type)) {
+			version = type.getFullVersion(rootLocation);
 		} 
 		ServerBean server = new ServerBean(rootLocation.getPath(),getName(rootLocation),type,version);
 		this.bean = server;
 	}
 	
-	private JBossServerType loadTypeInternal(File location) {
-		for( int i = 0; i < typesInOrder.length; i++ ) {
-			if( typesInOrder[i].isServerRoot(location))
-				return typesInOrder[i];
+	private ServerBeanType loadTypeInternal(File location) {
+		ServerBeanType[] all = ServerBeanExtensionManager.getDefault().getAllTypes();
+		for( int i = 0; i < all.length; i++ ) {
+			if( all[i].isServerRoot(location))
+				return all[i];
 		}
-		return JBossServerType.UNKNOWN;
+		return ServerBeanType.UNKNOWN;
 		
 	}
 	
@@ -86,7 +68,7 @@ public class ServerBeanLoader {
 	public String getFullServerVersion() {
 		if( bean == null )
 			loadBeanInternal();
-		return bean.getType().getFullVersion(rootLocation);
+		return bean.getFullVersion();
 	}
 	
 	/**
@@ -101,7 +83,7 @@ public class ServerBeanLoader {
 	public String getUnderlyingTypeId() {
 		if( bean == null )
 			loadBeanInternal();
-		return bean.getType().getUnderlyingTypeId(rootLocation);
+		return bean.getUnderlyingTypeId();
 	}
 	
 	
@@ -114,7 +96,7 @@ public class ServerBeanLoader {
 	public String getServerAdapterId() {
 		if( bean == null )
 			loadBeanInternal();
-		return bean.getType().getServerAdapterTypeId(bean.getVersion());
+		return bean.getServerAdapterTypeId();
 	}
 	
 	/**
@@ -131,31 +113,7 @@ public class ServerBeanLoader {
 		return AbstractCondition.getFullServerVersionFromZipLegacy(systemJarFile);
 	}
 	
-	/**
-	 * Please use getMajorMinorVersion(version) instead. 
-	 * 
-	 * There are differences in implementation to be aware of. 
-	 * This method will first attempt to match either major.minor, 
-	 * or simply major, against all versions listed in 
-	 * JBossServerType.UNKNOWN's list of versions. 
-	 * 
-	 * getMajorMinorVersion(version) will do no such comparisons, 
-	 * will not involve JBossServerType.UNKNOWN at all,
-	 * and will simply attempt to return a major.minor from the string passed in. 
-	 * 
-	 * 
-	 * @param version
-	 * @return
-	 */
-	@Deprecated
-	public static String getServerVersion(String version) {
-		if(version==null) 
-			return "";//$NON-NLS-1$
-		String adapterVersion = getAdapterVersion(version);
-		boolean isEmpty = adapterVersion == null || "".equals(adapterVersion);
-		return isEmpty ? getMajorMinorVersion(version) : adapterVersion;
-	}
-	
+
 	/**
 	 * Turn a version string into a major.minor version string. 
 	 * Example:
@@ -179,6 +137,16 @@ public class ServerBeanLoader {
 			return version;
 		return "";
 	}
+	
+	
+	/*
+	 * Legacy code Lives Here... beware!
+	 */
+	
+
+	// NEW_SERVER_ADAPTER
+	@Deprecated
+	public static JBossServerType[] typesInOrder = JBossServerType.KNOWN_TYPES;
 	
 	/**
 	 * This method should NOT BE USED. The symantics are unclear,
@@ -211,4 +179,42 @@ public class ServerBeanLoader {
 		}
 		return "";
 	}
+	
+	/**
+	 * Please use getMajorMinorVersion(version) instead. 
+	 * 
+	 * There are differences in implementation to be aware of. 
+	 * This method will first attempt to match either major.minor, 
+	 * or simply major, against all versions listed in 
+	 * JBossServerType.UNKNOWN's list of versions. 
+	 * 
+	 * getMajorMinorVersion(version) will do no such comparisons, 
+	 * will not involve JBossServerType.UNKNOWN at all,
+	 * and will simply attempt to return a major.minor from the string passed in. 
+	 * 
+	 * 
+	 * @param version
+	 * @return
+	 */
+	@Deprecated
+	public static String getServerVersion(String version) {
+		if(version==null) 
+			return "";//$NON-NLS-1$
+		String adapterVersion = getAdapterVersion(version);
+		boolean isEmpty = adapterVersion == null || "".equals(adapterVersion);
+		return isEmpty ? getMajorMinorVersion(version) : adapterVersion;
+	}
+	
+	
+	/**
+	 * Deprecated, please use getServerBeanType();
+	 * @return
+	 */
+	@Deprecated
+	public JBossServerType getServerType() {
+		getServerBeanType();
+		return bean == null ? JBossServerType.UNKNOWN : bean.getType();
+	}
+	
+
 }

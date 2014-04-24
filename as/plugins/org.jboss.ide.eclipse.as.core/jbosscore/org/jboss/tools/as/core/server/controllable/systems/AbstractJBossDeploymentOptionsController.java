@@ -82,30 +82,25 @@ public abstract class AbstractJBossDeploymentOptionsController extends
 		return result;
 	}
 
-	@Override
 	public String getCurrentDeploymentLocationType() {
 		return getServerOrWC().getAttribute(DEPLOY_DIRECTORY_TYPE, DEPLOY_CUSTOM);
 	}
 
-	@Override
 	public void setCurrentDeploymentLocationType(String type)
 			throws IllegalStateException {
 		getWorkingCopy().setAttribute(DEPLOY_DIRECTORY_TYPE, type);
 	}
 
-	@Override
 	public void setDeploymentsRootFolder(String folder)
 			throws IllegalStateException {
 		getWorkingCopy().setAttribute(DEPLOY_DIRECTORY, folder);
 	}
 
-	@Override
 	public void setDeploymentsTemporaryFolder(String folder)
 			throws IllegalStateException {
 		getWorkingCopy().setAttribute(TEMP_DEPLOY_DIRECTORY, folder);
 	}
 
-	@Override
 	public void setPrefersZippedDeployments(boolean val) throws IllegalStateException {
 		getWorkingCopy().setAttribute(ZIP_DEPLOYMENTS_PREF, val);
 	}

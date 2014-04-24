@@ -41,6 +41,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
+import org.jboss.ide.eclipse.as.wtp.core.util.ServerSecureStorageUtil;
 
 public class ServerUtil {
 	public static IPath getServerStateLocation(IServer server) {
@@ -242,47 +243,22 @@ public class ServerUtil {
 		return new Path(checkedGetServerHome(jbs));
 	}
 	
+	private static final String SECURE_PREFERNCES_BASEKEY = JBossServerCorePlugin.PLUGIN_ID.replace('.', Path.SEPARATOR);
 	
     /**
 	 * @since 2.3
 	 */
     public static String getFromSecureStorage(IServerAttributes server, String key) {
-        try {
-        	ISecurePreferences node = getNode(server);
-            String val = node.get(key, null);
-            if (val == null) {
-            	return null;
-            }
-            return new String(EncodingUtils.decodeBase64(val));
-        } catch(IOException e) {
-        	return null;
-        } catch (StorageException e) {
-        	return null;
-		}
+    	return ServerSecureStorageUtil.getFromSecureStorage(SECURE_PREFERNCES_BASEKEY, server, key);
     }
     
-	private static final String PREFERNCES_BASEKEY = JBossServerCorePlugin.PLUGIN_ID.replace('.', Path.SEPARATOR);
-
     /**
 	 * @since 2.3
 	 */
     public static void storeInSecureStorage(IServerAttributes server, String key, String val ) throws StorageException, UnsupportedEncodingException {
-        ISecurePreferences node = getNode(server);
-        if( val == null )
-        	node.put(key, val, true);
-        else
-        	node.put(key, EncodingUtils.encodeBase64(val.getBytes()), true /* encrypt */); 
+    	ServerSecureStorageUtil.storeInSecureStorage(SECURE_PREFERNCES_BASEKEY, server, key, val);
     }
 
-    private static ISecurePreferences getNode(IServerAttributes server) throws UnsupportedEncodingException {
-		String secureKey = new StringBuilder(PREFERNCES_BASEKEY)
-			.append(server.getName())
-			.append(Path.SEPARATOR).toString();
-
-		ISecurePreferences root = SecurePreferencesFactory.getDefault();
-		String encoded = URLEncoder.encode(secureKey, "UTF-8"); //$NON-NLS-1$
-		return root.node(encoded);
-    }
     public static String formatPossibleIpv6Address(String address) {
             if (address == null) {
                 return address;

@@ -561,7 +561,7 @@
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
             category="JBoss"
-            delegate="org.jboss.ide.eclipse.as.core.server.internal.launch.ControllableServerLaunchConfiguration"
+            delegate="org.jboss.ide.eclipse.as.wtp.core.server.launch.ControllableServerLaunchConfiguration"
             id="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
             modes="run,debug,profile"
             name="JBoss Application Server Startup Configuration"

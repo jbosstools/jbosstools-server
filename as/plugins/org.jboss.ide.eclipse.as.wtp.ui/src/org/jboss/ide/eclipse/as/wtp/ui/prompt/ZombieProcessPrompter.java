@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.ui.dialogs;
+package org.jboss.ide.eclipse.as.wtp.ui.prompt;
 
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
@@ -18,29 +18,25 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.UserPrompter;
-import org.jboss.ide.eclipse.as.core.UserPrompter.IPromptHandler;
+import org.jboss.ide.eclipse.as.core.server.IPromptHandler;
+import org.jboss.ide.eclipse.as.core.server.UserPrompter;
 
 /**
  * A class for displaying small messages to the user
  * from the core. 
  */
-public class MessageBoxUtil {
-	public static IPromptHandler zombieProcessHandler() {
-		return new IPromptHandler() {
-			public Object promptUser(final int code, final Object... data) {
-				if( code == UserPrompter.EVENT_CODE_PROCESS_UNTERMINATED) {
-					final Object[] ret = new Object[1];
-					Display.getDefault().syncExec(new Runnable() {
-						public void run() {
-							ret[0] = promptUserZombieProcess(data);
-						}
-					});
-					return ret[0];
+public class ZombieProcessPrompter implements IPromptHandler {
+	public Object promptUser(final int code, final Object... data) {
+		if( code == UserPrompter.EVENT_CODE_PROCESS_UNTERMINATED) {
+			final Object[] ret = new Object[1];
+			Display.getDefault().syncExec(new Runnable() {
+				public void run() {
+					ret[0] = promptUserZombieProcess(data);
 				}
-				return null;
-			}
-		};
+			});
+			return ret[0];
+		}
+		return null;
 	}
 	private static Object promptUserZombieProcess(Object... data) {
 		IWorkbenchWindow active = PlatformUI.getWorkbench().getActiveWorkbenchWindow();

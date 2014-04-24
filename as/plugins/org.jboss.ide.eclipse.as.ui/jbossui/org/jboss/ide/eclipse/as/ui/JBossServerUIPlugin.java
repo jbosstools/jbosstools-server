@@ -23,14 +23,10 @@ import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.ui.internal.ServerUIPreferences;
-import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.UserPrompter;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.jboss.ide.eclipse.as.ui.console.ShowConsoleServerStateListener;
-import org.jboss.ide.eclipse.as.ui.dialogs.MessageBoxUtil;
 import org.jboss.ide.eclipse.as.ui.dialogs.ModifyDeploymentScannerIntervalDialog.DeploymentScannerUIServerStartedListener;
-import org.jboss.ide.eclipse.as.ui.dialogs.ServerAlreadyStartedDialog.ServerAlreadyStartedHandler;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.XPathRuntimeListener;
 import org.jboss.ide.eclipse.as.ui.wizards.JBInitialSelectionProvider;
 import org.jboss.tools.usage.event.UsageEventType;
@@ -93,9 +89,6 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 		ServerCore.addServerLifecycleListener(selectionProvider);
 		ServerCore.addRuntimeLifecycleListener(selectionProvider);
 		ServerCore.addRuntimeLifecycleListener(XPathRuntimeListener.getDefault()); 
-		
-		JBossServerCorePlugin.getDefault().getPrompter().addPromptHandler(UserPrompter.EVENT_CODE_SERVER_ALREADY_STARTED, new ServerAlreadyStartedHandler());
-		JBossServerCorePlugin.getDefault().getPrompter().addPromptHandler(UserPrompter.EVENT_CODE_PROCESS_UNTERMINATED, MessageBoxUtil.zombieProcessHandler());
 		
 		newServerEventType = new UsageEventType(USAGE_COMPONENT_NAME, UsageEventType.getVersion(this), null, UsageEventType.NEW_ACTION, Messages.UsageEventTypeNewLabelDescription, UsageEventType.SUCCESFULL_FAILED_VALUE_DESCRIPTION);
 		UsageReporter.getInstance().registerEvent(newServerEventType);

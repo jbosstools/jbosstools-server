@@ -11,24 +11,28 @@
 package org.jboss.ide.eclipse.as.core.server.internal.launch;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.debug.core.DebugException;
-import org.eclipse.debug.core.DebugPlugin;
-import org.eclipse.debug.core.ILaunch;
-import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jdt.launching.IVMInstall;
+import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.IServerListener;
-import org.eclipse.wst.server.core.ServerEvent;
-import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.UserPrompter;
+import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.core.Trace;
+import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
+import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
+import org.jboss.ide.eclipse.as.core.util.JavaUtils;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
+import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
+import org.jboss.ide.eclipse.as.wtp.core.server.launch.AbstractStartJavaServerLaunchDelegate;
 import org.jboss.tools.as.core.server.controllable.IDeployableServerBehaviorProperties;
 
 /**
@@ -39,97 +43,64 @@ import org.jboss.tools.as.core.server.controllable.IDeployableServerBehaviorProp
  * We also kick off the polling mechanism from here as part of the launch
  */
 public class StandardLocalJBossStartLaunchDelegate extends
-		AbstractJBossStartLaunchConfiguration {
+	AbstractStartJavaServerLaunchDelegate {
+	
 
-	public String[] getJavaLibraryPath(ILaunchConfiguration configuration) throws CoreException {
-		return new String[] {};
+	protected void logStatus(IServer server, IStatus stat) {
+		ServerLogger.getDefault().log(server, stat);
 	}
 	
-	protected void beforeVMRunner(ILaunchConfiguration configuration,
-			String mode, ILaunch launch, IProgressMonitor monitor)
-			throws CoreException {
-		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(configuration);
-		if( beh != null ) {
-			((ControllableServerBehavior)beh).setRunMode(mode);
-			((ControllableServerBehavior)beh).setServerStarting();
-		}
-	}
-	
-	protected void afterVMRunner(ILaunchConfiguration configuration, String mode,
-			ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		IProcess[] processes = launch.getProcesses();
-		IServer server = ServerUtil.getServer(configuration);
-		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(configuration);
-		if( processes != null && processes.length >= 1 && processes[0] != null ) {
-			ProcessTerminatedDebugListener debug = new ProcessTerminatedDebugListener(ServerUtil.getServer(configuration), processes[0]);
-			if( beh != null ) {
-				final IProcess launched = processes[0];
-				beh.putSharedData(IDeployableServerBehaviorProperties.PROCESS, launched);
-				beh.putSharedData(IDeployableServerBehaviorProperties.DEBUG_LISTENER, debug);
-				final IServer ser = beh.getServer();
-				
-				
-				// During some niche cases, a server may be set to stopped, 
-				// but the process may not be shutting down. For example if two 
-				// conflicting servers were launched using the same ports.
-				// This is a cleanup thread that waits a significant amount of time 
-				// that should be suitable for all genuine shutdowns, and then
-				// force terminates the process. 
-				IServerListener list = new IServerListener() {
-					public void serverChanged(ServerEvent event) {
-						final IServerListener list2 = this;
-						int eventKind = event.getKind();
-						if ((eventKind & ServerEvent.SERVER_CHANGE) != 0) {
-							// server change event
-							if ((eventKind & ServerEvent.STATE_CHANGE) != 0) {
-								if( ser.getServerState() == IServer.STATE_STOPPED ) {
-									new Thread() {
-										public void run() {
-											// wait 7 seconds
-											try {
-												Thread.sleep(getProcessTerminationDelay());
-											} catch(InterruptedException ie) {
-												// do nothing
-											}
-											if( !launched.isTerminated()) {
-												// Alert user
-												Object result = JBossServerCorePlugin.getDefault().getPrompter().promptUser(
-														UserPrompter.EVENT_CODE_PROCESS_UNTERMINATED, ser);
-												if( result == null || (result instanceof Boolean && ((Boolean)result).booleanValue())) {
-													// force terminate this process
-													try {
-														launched.terminate();
-													} catch(DebugException de) {
-														JBossServerCorePlugin.log(de);
-													}
-												}
-											}
-											ser.removeServerListener(list2);
-										}
-									}.start();
-								}
-							}
-						}
-					}
-				};
-				ser.addServerListener(list);
-			}
-			DebugPlugin.getDefault().addDebugEventListener(debug);
-		} 
-		
+	protected void initiatePolling(IServer server) {
 		// Initiate Polling!
 		PollThreadUtils.pollServer(server, IServerStatePoller.SERVER_UP);
 	}
-	
-	
-	
-	private static final String PROCESS_TERMINATION_DELAY_PREF_KEY = "org.jboss.ide.eclipse.as.core.server.launch.PROCESS_TERMINATION_DELAY_PREF_KEY"; //$NON-NLS-1$
-	/**
-	 * Get the fail-safe delay for ensuring process termination after a server shutdown
-	 * @return
+	/*
+	 * A solution needs to be found here. 
+	 * Should ideally use the poller that the server says is its poller,
+	 * but some pollers such as timeout poller 
 	 */
-	protected int getProcessTerminationDelay() {
-		return Platform.getPreferencesService().getInt(JBossServerCorePlugin.PLUGIN_ID, 
-				PROCESS_TERMINATION_DELAY_PREF_KEY, 10000, null);
+	protected IStatus isServerStarted(IServer server) {
+		return PollThreadUtils.isServerStarted(server);
 	}
+	
+	protected void validateServerStructure(IServer server) throws CoreException {
+		IControllableServerBehavior jbsBehavior = JBossServerBehaviorUtils.getControllableBehavior(server);
+
+		Trace.trace(Trace.STRING_FINEST, "Verifying server structure"); //$NON-NLS-1$
+		JBossExtendedProperties props = ExtendedServerPropertiesAdapterFactory.getJBossExtendedProperties(server);
+		IStatus status = props.verifyServerStructure();
+		if( !status.isOK() ) {
+			((ControllableServerBehavior)jbsBehavior).setServerStopped();
+			throw new CoreException(status);
+		}
+		
+		Trace.trace(Trace.STRING_FINEST, "Verifying jdk is available if server requires jdk"); //$NON-NLS-1$
+		boolean requiresJDK = props.requiresJDK();
+		if( requiresJDK) {
+			IRuntime rt = server.getRuntime();
+			IJBossServerRuntime rt2 = RuntimeUtils.getJBossServerRuntime(rt);
+			IVMInstall vm = rt2.getVM();
+			
+			if( !JavaUtils.isJDK(vm)) {
+				// JBIDE-14568 do not BLOCK launch, but log error
+				Trace.trace(Trace.STRING_FINEST, "The VM to launch server '" +  //$NON-NLS-1$
+						server.getName() + "' does not appear to be a JDK: " + vm.getInstallLocation().getAbsolutePath()); //$NON-NLS-1$
+				IStatus stat = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+						NLS.bind(Messages.launch_requiresJDK, 
+								server.getName(),
+								vm.getInstallLocation().getAbsolutePath()));
+				logStatus(server, stat);
+			}
+		}
+	}
+
+	@Override
+	protected void cancelPolling(IServer server) {
+		IControllableServerBehavior jbsBehavior = JBossServerBehaviorUtils.getControllableBehavior(server);
+		Object pt = ((ControllableServerBehavior)jbsBehavior).getSharedData(IDeployableServerBehaviorProperties.POLL_THREAD);
+		if( pt != null ) {
+			PollThreadUtils.cancelPolling(null, (PollThread)pt);
+		}
+	}
+
 }

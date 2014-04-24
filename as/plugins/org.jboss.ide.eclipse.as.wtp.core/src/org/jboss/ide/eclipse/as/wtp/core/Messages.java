@@ -129,6 +129,8 @@ public class Messages extends NLS {
 	public static String JBossRuntimeStartup_Runtime;
 	public static String JBossRuntimeStartup_The_JBoss_AS_Hypersonic_embedded_database;
 	public static String JBossRuntimeStartup_The_JBoss_AS_H2_embedded_database;
+	public static String launch_requiresJDK; 
+
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

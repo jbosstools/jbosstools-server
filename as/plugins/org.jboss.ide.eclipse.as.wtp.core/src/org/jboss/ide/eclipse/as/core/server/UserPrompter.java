@@ -8,35 +8,38 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.core;
+package org.jboss.ide.eclipse.as.core.server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+
+import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
 /**
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class UserPrompter {
-	/**
-	 * An event key expecting a return of one of the 3 following values
-	 */
-	public static final int EVENT_CODE_SERVER_ALREADY_STARTED = 101;
-	public static final int RETURN_CODE_SAS_CONTINUE_STARTUP = 1;
-	public static final int RETURN_CODE_SAS_ONLY_CONNECT = 2;
-	public static final int RETURN_CODE_SAS_CANCEL = 3;
-
-	/**
-	 * An event key expecting a boolean result, whether
-	 * to force-terminate a zombie process. 
-	 */
-	public static final int EVENT_CODE_PROCESS_UNTERMINATED = 102;
-
+public class UserPrompter implements IUserPrompter {
+	// A default / collectively used prompter
+	private static UserPrompter DEFAULT;
 	
-	public static interface IPromptHandler {
-		public Object promptUser(int code, Object... data);
+	// Get the default prompter
+	public static UserPrompter getDefaultPrompter() {
+		if( DEFAULT == null ) {
+			DEFAULT = new UserPrompter();
+		}
+		return DEFAULT;
 	}
 	
+	
 	private HashMap<Integer, ArrayList<IPromptHandler>> map = new HashMap<Integer, ArrayList<IPromptHandler>>();
+	
+	// Clients may instantiate their own prompter if they wish
+	// to keep their handlers separate from others. 
+	public UserPrompter() {
+		// Do nothing
+	}
+	
+	
 	public void addPromptHandler(int code, IPromptHandler prompt) {
 		ArrayList<IPromptHandler> l = map.get(code);
 		if( l == null ) {
@@ -63,7 +66,7 @@ public class UserPrompter {
 					return ret;
 			}
 		}
-		JBossServerCorePlugin.log("Unable to prompt user for event code " + code, null); //$NON-NLS-1$
+		ASWTPToolsPlugin.log("Unable to prompt user for event code " + code, null); //$NON-NLS-1$
 		return null;
 	}
 }

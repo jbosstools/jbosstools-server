@@ -8,12 +8,11 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.ui.dialogs;
+package org.jboss.ide.eclipse.as.wtp.ui.prompt;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
-import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -23,45 +22,17 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.UserPrompter;
-import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.ide.eclipse.as.ui.UIUtil;
+import org.jboss.ide.eclipse.as.wtp.ui.Messages;
+import org.jboss.ide.eclipse.as.wtp.ui.util.FormDataUtility;
 
 public class ServerAlreadyStartedDialog extends TitleAreaDialog  {
-	public static class ServerAlreadyStartedHandler implements UserPrompter.IPromptHandler {
-		public int promptForBehaviour(final IServer server, final IStatus status) {
-			final int[] result = new int[1]; 
-			Display.getDefault().syncExec(new Runnable() {
-				public void run() {
-					ServerAlreadyStartedDialog d = new ServerAlreadyStartedDialog(server, status,
-							Display.getDefault().getActiveShell()); 
-					int dResult = d.open();
-					if( dResult == Window.CANCEL ) {
-						result[0] = UserPrompter.RETURN_CODE_SAS_CANCEL;
-					} else {
-						result[0] = d.launch ? UserPrompter.RETURN_CODE_SAS_CONTINUE_STARTUP 
-								: UserPrompter.RETURN_CODE_SAS_ONLY_CONNECT;
-					}
-				}
-			});
-			return result[0];
-		}
-		@Override
-		public Object promptUser(int code, Object... data) {
-			if( code == UserPrompter.EVENT_CODE_SERVER_ALREADY_STARTED ) {
-				return promptForBehaviour((IServer)data[0], (IStatus)data[1]);
-			}
-			return null;
-		}
-	}
 	
-	private IServer server;
-	private IStatus status;
-	private boolean launch;
+	protected IServer server;
+	protected IStatus status;
+	protected boolean launch;
 	public ServerAlreadyStartedDialog(IServer server, IStatus status, Shell parentShell) {
 		super(parentShell);
 		this.server = server;
@@ -110,9 +81,9 @@ public class ServerAlreadyStartedDialog extends TitleAreaDialog  {
 		});
 
 		
-		desc.setLayoutData(UIUtil.createFormData2(0, 5, null, 0, 0, 5, 100, -5));
-		connectButton.setLayoutData(UIUtil.createFormData2(desc,         5, null, 0, 0, 5, 100, -5));
-		launchButton.setLayoutData(UIUtil.createFormData2(connectButton, 5, null, 0, 0, 5, 100, -5));
+		desc.setLayoutData(FormDataUtility.createFormData2(0, 5, null, 0, 0, 5, 100, -5));
+		connectButton.setLayoutData(FormDataUtility.createFormData2(desc,         5, null, 0, 0, 5, 100, -5));
+		launchButton.setLayoutData(FormDataUtility.createFormData2(connectButton, 5, null, 0, 0, 5, 100, -5));
 		
 		connectButton.setSelection(true);
 		return main;

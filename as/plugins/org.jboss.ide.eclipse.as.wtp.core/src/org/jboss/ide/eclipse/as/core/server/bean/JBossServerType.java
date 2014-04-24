@@ -11,25 +11,16 @@
 package org.jboss.ide.eclipse.as.core.server.bean;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.Properties;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
 
-public class JBossServerType implements IJBossToolingConstants {
+public class JBossServerType extends ServerBeanType implements IJBossToolingConstants {
 	
 	public static final String JBOSS_AS_PATH = "jboss-as"; //$NON-NLS-1$
 	public static final String BIN_PATH = "bin"; //$NON-NLS-1$
 	public static final String RUN_JAR_NAME = "run.jar"; //$NON-NLS-1$
 	public static final String IMPLEMENTATION_TITLE = "Implementation-Title"; //$NON-NLS-1$
 	private static final String JBEAP_RELEASE_VERSION = "JBossEAP-Release-Version"; //$NON-NLS-1$
-	
-	protected static final String UNKNOWN_STR = "UNKNOWN"; //$NON-NLS-1$
 	
 
 	// NEW_SERVER_ADAPTER
@@ -55,324 +46,68 @@ public class JBossServerType implements IJBossToolingConstants {
 	public static final JBossServerType EPP = new ServerBeanTypeEPP();
 	public static final JBossServerType AS7GateIn = new ServerBeanTypeAS7GateIn();
 	/* Any reason the unknown type needs so many versions? */
-	public static final JBossServerType UNKNOWN = new ServerBeanTypeUnknown();
+	public static final JBossServerType UNKNOWN = (JBossServerType)ServerBeanType.UNKNOWN;
 
 	
 	/**
 	 * This public variable duplicates the hidden one. 
 	 * We shouldn't have to update this in multiple places.
 	 */
-	public static final JBossServerType[] KNOWN_TYPES = ServerBeanLoader.typesInOrder;
+	public static final JBossServerType[] KNOWN_TYPES =
+		{
+		JBossServerType.AS, 
+		JBossServerType.WILDFLY80, 
+		JBossServerType.EAP61,
+		JBossServerType.SOA6,
+		JBossServerType.JPP61, 
+		JBossServerType.UNKNOWN_AS72_PRODUCT,
+		JBossServerType.AS72, 
+		JBossServerType.JPP6, 
+		JBossServerType.EAP6, 
+		JBossServerType.AS7GateIn, 
+		JBossServerType.UNKNOWN_AS71_PRODUCT,
+		JBossServerType.AS7, JBossServerType.EAP_STD, 
+		JBossServerType.SOAP, JBossServerType.SOAP_STD, 
+		JBossServerType.EPP, JBossServerType.EAP, 
+		JBossServerType.EWP
+	};
 
-	
-	protected String name;
-	protected String jbossSystemJarPath;
+	@Deprecated
 	protected String[] versions = new String[0];
-	protected JBossServerType.Condition condition = null;
-	protected String id=UNKNOWN_STR;
-	
 	protected JBossServerType(String id, String name, String jbossSystemJarPath, String[] versions, Condition condition) {
-		this.id = id;
-		this.name = name;
-		this.jbossSystemJarPath = jbossSystemJarPath;
+		super(id, name, jbossSystemJarPath, condition);
 		this.versions = versions;
-		this.condition = condition;
 	}
 	
-
-	public String getId() {
-		return id;
-	}
-	public String toString() {
-		return id;
-	}
-	
+	@Deprecated
 	public String[] getVersions() {
 		return versions;
 	}
 	
-	public String getName() {
-		return name;
+	
+	@Deprecated
+	static interface Condition extends ICondition {
 	}
 	
-	public String getSystemJarPath() {
-		return jbossSystemJarPath;
-	}
-	
-	public boolean isServerRoot(File location) {
-		return this.condition.isServerRoot(location);
-	}
-	
-	public String getFullVersion(File root) {
-		if( this.condition == null )
-			return null;
-		return this.condition.getFullVersion(root, new File(root, getSystemJarPath()));
-	}
-	
-	/**
-	 * This method is for conditions where the underlying server may be 
-	 * of a different id than the JBossServerType. For example, any 
-	 * JBossServerType which represents an entire class of similar but
-	 * not identical servers, the server type may have an id such as 
-	 * AS-Product, and this method may return something like "JPP"
-	 * 
-	 * Note that differs from the method of the same name in 
-	 * the AbstractCondition, which will return null if there is no 
-	 * underlying type. This method will default to returning the
-	 * value of 'id' in the case where there is no different underlying type.  
-	 * 
-	 * @param location
-	 * @param systemFile
-	 * @return an underlying type id, or the id of this JBossServerType
-	 * 		   if the condition does not provide an underlying type. 
-	 * @since 3.0 (actually 2.4.101)
-	 */
+	@Deprecated
+	public static abstract class AbstractCondition 
+		extends org.jboss.ide.eclipse.as.core.server.bean.AbstractCondition 
+		implements Condition {
 
-	public String getUnderlyingTypeId(File root) {
-		if( this.condition == null )
-			return null;
-		String ret = null;
-		if( this.condition instanceof AbstractCondition ) {
-			ret = ((AbstractCondition)condition).getUnderlyingTypeId(root, new File(root, getSystemJarPath()));
-		}
-		return ret == null ? id : ret;
-	}
-
-	
-	/**
-	 * This will return a version, if it can be discovered.
-	 * If this is an UNKNOWN server bean, the return 
-	 * value will be null
-	 * 
-	 * @param version
-	 * @return
-	 */
-	public String getServerAdapterTypeId(String version) {
-		return condition == null ? null :
-			this.condition.getServerTypeId(version);
-	}
-	
-	
-	/**
-	 * Get the relative path from what is the server bean's root
-	 * to what would be it's server adapter's root, or null if equal. 
-	 * 
-	 * @param version
-	 * @return
-	 */
-	public String getRootToAdapterRelativePath(String version) {
-		return null;
-	}
-	
-	
-	static interface Condition {
-		/**
-		 * Is this location the root of an installation?
-		 * @param location
-		 * @return
-		 */
-		public boolean isServerRoot(File location);
-		
-		/**
-		 * Get the full version of this server. Provide the system jar / reference file 
-		 * as a hint. 
-		 * 
-		 * @param serverRoot
-		 * @param systemFile
-		 * @return
-		 */
-		public String getFullVersion(File serverRoot, File systemFile);
-		
-		/**
-		 * Get the wtp server type which matches this ServerType with this installation
-		 * 
-		 * @param serverRoot
-		 * @param systemFile
-		 * @return
-		 */
-		public String getServerTypeId(String version);
-
-	}
-	
-	public static abstract class AbstractCondition implements Condition {
-		
-		/**
-		 * This method is for conditions where the underlying server may be 
-		 * of a different id than the JBossServerType. For example, any 
-		 * JBossServerType which represents an entire class of similar but
-		 * not identical servers, the server type may have an id such as 
-		 * AS-Product, and this method may return something like "JPP"
-		 * 
-		 * @param location
-		 * @param systemFile
-		 * @return an ID, or null if the JBossServerType does not represent a class of different types.
-		 * @since 3.0 (actually 2.4.101)
-		 */
-		public String getUnderlyingTypeId(File location, File systemFile) {
-			return null;
-		}
-		
 		public String getFullVersion(File location, File systemFile) {
-			return ServerBeanLoader.getFullServerVersionFromZip(systemFile);
+			return AbstractCondition.getFullServerVersionFromZipLegacy(systemFile, 
+					getJBossManifestAttributes());
 		}
 		
-		/**
-		 * This method is an older implementation on how to discover 
-		 * the version of your server type. 
-		 * 
-		 * Only legacy code should call this. All new clients 
-		 * should properly implement their own method. The method
-		 * is still public for legacy and backwards compatability reasons.
-		 * 
-		 * @param systemJarFile
-		 * @return
-		 */
-		public static String getFullServerVersionFromZipLegacy(File systemJarFile) {
-			if (systemJarFile.isDirectory()) {
-				File[] files = systemJarFile.listFiles(new FilenameFilter() {
-					
-					public boolean accept(File dir, String name) {
-						return name.endsWith(".jar"); //$NON-NLS-1$
-					}
-				});
-				if (files != null && files.length == 1) {
-					systemJarFile = files[0];
-				}
-			}
-			
-			String version = null;
-			ZipFile jar = null;
-			if(systemJarFile.canRead()) {
-				try {
-					jar = new ZipFile(systemJarFile);
-					ZipEntry manifest = jar.getEntry("META-INF/MANIFEST.MF");//$NON-NLS-1$
-					Properties props = new Properties();
-					props.load(jar.getInputStream(manifest));
-					version = props.getProperty("JBossEAP-Release-Version"); //$NON-NLS-1$
-					if (version != null) {
-						return version;
-					}
-					version = (String)props.get("Specification-Version");//$NON-NLS-1$
-					if (version == null || version.trim().length() == 0 || !(version.charAt(0) >= '0' && version.charAt(0) <= '9')) {
-						version = (String)props.get("Implementation-Version");//$NON-NLS-1$
-					}
-				} catch (IOException e) {
-					// It's already null, and would fall through to return null,
-					// but hudson doesn't like empty catch blocks.
-					return null;  
-				} finally {
-					if (jar != null) {
-						try {
-							jar.close();
-						} catch (IOException e) {
-							// ignore
-						}
-					}
-				}
-			}
-			return version;
+		private static String[] getJBossManifestAttributes() {
+			return new String[]{
+					"JBossEAP-Release-Version",
+					"Specification-Version",
+					"Implementation-Version"
+			};
 		}
 	}
 	
-	protected static Properties loadProperties(File f) {
-		Properties p = new Properties();
-		FileInputStream stream = null;
-		try {
-			stream = new FileInputStream(f); 
-			p.load(stream);
-			return p;
-		} catch(IOException ioe) {
-			return p;
-		} finally {
-			if( stream != null ) {
-				try {
-					stream.close();
-				} catch(IOException ioe) {
-					// Do nothing
-				}
-			}
-		}
-	}
-
-	protected static String asPath(String... vals) {
-		StringBuffer sb = new StringBuffer();
-		for ( String v : vals ) {
-			sb.append(v);
-			sb.append(File.separatorChar);
-		}
-		String s = sb.toString();
-		s = s.substring(0, s.length() - 1);
-		return s;
-	}
-	
-	/**
-	 * Scans the jars in the folder until a jar with a 
-	 * manifest and a matching property key is found.  
-	 * 
-	 * If the given prefix is a prefix of the property value, 
-	 * there is a match, and a 'true' is returned. 
-	 * 
-	 * Search 
-	 * @param location  a root folder
-	 * @param mainFolder a path leading to a subfolder of the location
-	 * @param property a property to search for in manifest.mf
-	 * @param propPrefix a prefix to check against for a match. 
-	 * @return true if there is a match, false otherwise. 
-	 */
-	protected static boolean scanFolderJarsForManifestProp(File location, String mainFolder, String property, String propPrefix) {
-	
-		File f = new File(location, mainFolder);
-		if( f.exists() ) {
-			File[] children = f.listFiles();
-			for( int i = 0; i < children.length; i++ ) {
-				if( children[i].getName().endsWith(IWTPConstants.EXT_JAR)) {
-					String value = getJarProperty(children[i], property);
-					if( value != null && value.trim().startsWith(propPrefix))
-							return true;
-				}
-			}
-		}
-		return false;
-	}
-
-
-	/**
-	 * This method will check a jar file for a manifest, and, if it has it, 
-	 * find the value for the given property. 
-	 * 
-	 * If either the jar, manifest or the property are not found, 
-	 * return null.
-	 * 
-	 * @param systemJarFile
-	 * @param propertyName
-	 * @return
-	 */
-	public static String getJarProperty(File systemJarFile, String propertyName) {
-		if (systemJarFile.canRead()) {
-			ZipFile jar = null;
-			try {
-				jar = new ZipFile(systemJarFile);
-				ZipEntry manifest = jar.getEntry("META-INF/MANIFEST.MF");//$NON-NLS-1$
-				Properties props = new Properties();
-				props.load(jar.getInputStream(manifest));
-				String value = (String) props.get(propertyName);
-				return value;
-			} catch (IOException e) {
-				// Intentionally empty
-				return null; 
-			} finally {
-				if (jar != null) {
-					try {
-						jar.close();
-					} catch (IOException e) {
-						// Intentionally empty
-						return null;
-					}
-				}
-			}
-		} 
-		return null;
-	}
 
 	
 	@Deprecated

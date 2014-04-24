@@ -31,6 +31,7 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllerEnvironment;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ISubsystemController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.SubsystemModel.SubsystemMapping;
+import org.jboss.tools.as.core.server.controllable.systems.AbstractJBossDeploymentOptionsController;
 import org.jboss.tools.as.core.server.controllable.systems.IDeploymentOptionsController;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
 import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
@@ -105,14 +106,14 @@ public class DeploymentSettingsControllerTest extends TestCase {
 		IDeploymentOptionsController controller = createController("rse", server, null);
 		assertFalse(controller.prefersZippedDeployments());
 		try {
-			controller.setPrefersZippedDeployments(true);
+			((AbstractJBossDeploymentOptionsController)controller).setPrefersZippedDeployments(true);
 			fail();
 		} catch(IllegalStateException ise) {}
 		
 		IServerWorkingCopy wc = server.createWorkingCopy();
 		controller = createController("rse", wc);
 		assertFalse(controller.prefersZippedDeployments());
-		controller.setPrefersZippedDeployments(true);
+		((AbstractJBossDeploymentOptionsController)controller).setPrefersZippedDeployments(true);
 		assertTrue(wc.getAttribute(IDeployableServer.ZIP_DEPLOYMENTS_PREF, false) == true);
 		assertTrue(server.getAttribute(IDeployableServer.ZIP_DEPLOYMENTS_PREF, false) == false);
 		server = wc.save(false, new NullProgressMonitor() );
@@ -122,14 +123,14 @@ public class DeploymentSettingsControllerTest extends TestCase {
 		controller = createController("local", server, null);
 		assertTrue(controller.prefersZippedDeployments());
 		try {
-			controller.setPrefersZippedDeployments(false);
+			((AbstractJBossDeploymentOptionsController)controller).setPrefersZippedDeployments(false);
 			fail();
 		} catch(IllegalStateException ise) {}
 		
 		wc = server.createWorkingCopy();
 		controller = createController("local", wc);
 		assertTrue(controller.prefersZippedDeployments());
-		controller.setPrefersZippedDeployments(false);
+		((AbstractJBossDeploymentOptionsController)controller).setPrefersZippedDeployments(false);
 		assertTrue(wc.getAttribute(IDeployableServer.ZIP_DEPLOYMENTS_PREF, false) == false);
 		assertTrue(server.getAttribute(IDeployableServer.ZIP_DEPLOYMENTS_PREF, false) == true);
 		server = wc.save(false, new NullProgressMonitor() );
@@ -158,14 +159,14 @@ public class DeploymentSettingsControllerTest extends TestCase {
 		// It will not accept any other deploy-location-types other than custom
 		
 		IDeploymentOptionsController c = createController(controllerFlag,server, sep);
-		assertEquals(c.getCurrentDeploymentLocationType(), IDeployableServer.DEPLOY_CUSTOM);
+		assertEquals(((AbstractJBossDeploymentOptionsController)c).getCurrentDeploymentLocationType(), IDeployableServer.DEPLOY_CUSTOM);
 		// verify the setter fails
 		try {
-			c.setCurrentDeploymentLocationType(IDeployableServer.DEPLOY_METADATA);
+			((AbstractJBossDeploymentOptionsController)c).setCurrentDeploymentLocationType(IDeployableServer.DEPLOY_METADATA);
 			fail();
 		} catch(IllegalStateException ise) {
 		}
-		assertEquals(c.getCurrentDeploymentLocationType(), IDeployableServer.DEPLOY_CUSTOM);
+		assertEquals(((AbstractJBossDeploymentOptionsController)c).getCurrentDeploymentLocationType(), IDeployableServer.DEPLOY_CUSTOM);
 		
 		String sAbsolute = c.getDeploymentsRootFolder(true);
 		String sRelative = c.getDeploymentsRootFolder(false);
@@ -189,15 +190,15 @@ public class DeploymentSettingsControllerTest extends TestCase {
 	private IDeploymentOptionsController verifyDepType(String controllerFlag, String type, String otherType ) throws Exception {
 
 		IDeploymentOptionsController c = createController(controllerFlag,null);
-		assertEquals(c.getCurrentDeploymentLocationType(), type);
+		assertEquals(((AbstractJBossDeploymentOptionsController)c).getCurrentDeploymentLocationType(), type);
 		
 		// verify the setter fails
 		try {
-			c.setCurrentDeploymentLocationType(otherType);
+			((AbstractJBossDeploymentOptionsController)c).setCurrentDeploymentLocationType(otherType);
 			fail();
 		} catch(IllegalStateException ise) {
 		}
-		assertEquals(c.getCurrentDeploymentLocationType(),type);
+		assertEquals(((AbstractJBossDeploymentOptionsController)c).getCurrentDeploymentLocationType(),type);
 		return c;
 	}
 	

@@ -76,43 +76,6 @@ public interface IDeploymentOptionsController extends ISubsystemController {
 	 */
 	public String getDeploymentsTemporaryFolder(boolean absolute);
 	
-
-	/**
-	 * Return the currently selected deployment location type, 
-	 * from the working copy if it exists, and if not, from the server itself.
-	 * @return
-	 */
-	public String getCurrentDeploymentLocationType();
-	
-	/**
-	 * Set on the working copy the new deployment location type 
-	 * @throws IllegalStateException
-	 */
-	public void setCurrentDeploymentLocationType(String type) throws IllegalStateException;
-	
-	/**
-	 * Set on the working copy the new deployment location root folder
-	 * @param folder
-	 * @throws IllegalStateException
-	 */
-	public void setDeploymentsRootFolder(String folder) throws IllegalStateException;
-	
-	/**
-	 * Set on the working copy the new deployment location's temporary folder
-	 * @param folder
-	 * @throws IllegalStateException
-	 */
-	public void setDeploymentsTemporaryFolder(String folder) throws IllegalStateException;
-	
-	/**
-	 * Set whether this server will prefer to zip deployments 
-	 * when possible. 
-	 * 
-	 * @param val
-	 */
-	public void setPrefersZippedDeployments(boolean val);
-	
-	
 	/**
 	 * Get whether or not this server prefers zipped deployments
 	 * @return

@@ -26,7 +26,7 @@ public class ServerBeanTypeWildfly80 extends JBossServerType {
 	}
 	public static class Wildfly80ServerTypeCondition extends AbstractCondition {
 		public boolean isServerRoot(File location) {
-			String mainFolder = JBossServerType.WILDFLY80.jbossSystemJarPath;
+			String mainFolder = JBossServerType.WILDFLY80.systemJarPath;
 			return scanFolderJarsForManifestProp(location, mainFolder, AS_RELEASE_MANIFEST_KEY, "8.");
 		}
 		public String getServerTypeId(String version) {	
@@ -34,5 +34,4 @@ public class ServerBeanTypeWildfly80 extends JBossServerType {
 			return IJBossToolingConstants.SERVER_WILDFLY_80;
 		}
 	}
-
 }

@@ -80,6 +80,29 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 	private IModuleStateController moduleStateController;
 	
 	/*
+	 * A flag so that we can ignore a failure to load and not
+	 * try continuously to load a missing optional controller
+	 */
+	private boolean moduleStateControllerLoadFailed = false;
+	
+	/*
+	 * An optional dependency.
+	 * The IModuleRestartBehaviorController helps us determine
+	 * when a module requires a restart.
+	 * 
+	 * The current impl in jbt is based on
+	 * whether any of the changed files match a restart regex
+	 */
+	private IModuleRestartBehaviorController restartController;
+	
+	/*
+	 * A flag so that we can ignore a failure to load and not
+	 * try continuously to load a missing optional controller
+	 */
+	private boolean restartControllerLoadFailed = false;
+
+	
+	/*
 	 * The deployment options gives us access to things like
 	 * where the deployment root dir for a server should be,
 	 * or whether the server prefers zipped settings
@@ -99,13 +122,6 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 	private IFilesystemController filesystemController;
 	
 	/*
-	 * The IModuleRestartBehaviorController helps us determine
-	 * when a module requires a restart based (currently) on
-	 * whether any of the changed files match a restart regex
-	 */
-	private IModuleRestartBehaviorController restartController;
-	
-	/*
 	 * publishType and requiresRestart are used to cache deployment state 
 	 * until publishFinish is called, at which point we can 
 	 * touch descripters or deploy markers appropriately
@@ -114,10 +130,21 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 	private HashMap<IModule[], Boolean> requiresRestart = new HashMap<IModule[], Boolean>();
 	
 	
-	
+	/**
+	 * Access the optional restart controller for 
+	 * deciding whether to force a restart after an incremental publish
+	 * 
+	 * @return
+	 * @throws CoreException
+	 */
 	protected IModuleRestartBehaviorController getModuleRestartBehaviorController() throws CoreException {
-		if( restartController == null ) {
-			restartController = (IModuleRestartBehaviorController)findDependencyFromBehavior(IModuleRestartBehaviorController.SYSTEM_ID);
+		if( restartController == null && !restartControllerLoadFailed) {
+			try {
+				restartController = (IModuleRestartBehaviorController)findDependencyFromBehavior(IModuleRestartBehaviorController.SYSTEM_ID);
+			} catch(CoreException ce) {
+				// Do not log; this is optional. But trace
+				restartControllerLoadFailed = true;
+			}
 		}
 		return restartController;
 	}
@@ -130,17 +157,18 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 	 * @throws CoreException 
 	 */
 	protected IModuleStateController getModuleStateController() throws CoreException {
-		if( moduleStateController == null ) {
+		if( moduleStateController == null && !moduleStateControllerLoadFailed) {
 			try {
 				moduleStateController = (IModuleStateController)findDependency(IModuleStateController.SYSTEM_ID);
 			} catch(CoreException ce) {
 				// Do not log; this is optional. But trace
+				moduleStateControllerLoadFailed = true;
 			}
 		}
 		return moduleStateController;
 	}
 	
-	/*
+	/**
 	 * Get the system for deployment options such as zipped or not
 	 * We must pass in a custom environment here. 
 	 */
@@ -151,7 +179,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		return deploymentOptions;
 	}
 	
-	/*
+	/**
 	 * get the system for deploy path for a given module
 	 */
 	protected IModuleDeployPathController getDeployPathController() throws CoreException {
@@ -163,7 +191,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		return deployPathController;
 	}
 
-	/*
+	/**
 	 * get the filesystem controller for transfering files
 	 */
 	protected IFilesystemController getFilesystemController() throws CoreException {
@@ -173,7 +201,9 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		return filesystemController;
 	}
 
-	
+	/**
+	 * Validate that all required dependencies load. 
+	 */
 	public IStatus validate() {
 		try {
 			IStatus sup = super.validate();
@@ -253,14 +283,9 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		}
 		
 		/*
-		 * A binary module is one in which the contents of the module should be published directly.
-		 * For example, given a SingleFileDeployable module with 1 resource (some-ds.xml) which is acting
-		 * as a child under an ear,  a normal situation would list the module's root as 
-		 * My.ear/folder/to/some-ds.xml, and therefore its actual contents would end up in the archive as
-		 * My.ear/folder/to/some-ds.xml/some-ds.xml.
+		 * Please see the following method signature for details on what is a 'binary module':
 		 * 
-		 * To avoid this, we remove the last segment of the module's supposed root. 
-		 * This is a quirk of binary modules. 
+		 * private int handleBinaryModule(IModule[] module, IPath archiveDestination) throws CoreException
 		 */
 		boolean isBinaryObject = ServerModelUtilities.isBinaryModule(module);
 		boolean prefersZipped = prefersZipped();
@@ -341,6 +366,25 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		return IServer.PUBLISH_STATE_NONE;
 	}
 	
+	/*
+	 * Binary modules are non-standard modules that WTP has created, and so must
+	 * be handled. Your typical module will follow servertools API, and, the
+	 * resources they return will be members "inside" the war. So if a standard
+	 * WAR module returns an item "index.html", that index.html lives inside the module,
+	 * most likely at the path MyWar.war/index.html 
+	 * 
+	 * Binary modules are non-standard, consist of a set of files that are to published
+	 * as separate items, not zipped or collected into a containing jar file. 
+	 * So, for example, if a binary module indicates it has 1 resource,
+	 * and that one resource is named "lib.jar",  this should be published
+	 * standalone, and should not be packaged in a zip.
+	 * 
+	 * When handled incorrectly, publishing a binary module with 
+	 * one resource named "lib.jar" will output a zip file
+	 * named "lib.jar" which has 1 resource inside, also a zip file, 
+	 * and also named "lib.jar". To avoid the unnecessary and incorrect
+	 * wrapping, binary modules must be handled separately.
+	 */
 	private int handleBinaryModule(IModule[] module, IPath archiveDestination) throws CoreException {
 		// Handle the publish here
 		// binary modules should only have 1 resource in them. 

@@ -28,7 +28,10 @@ import org.eclipse.wst.server.core.ServerEvent;
 public class UnitedServerListener implements 
 	IServerLifecycleListener, IServerListener, IRuntimeLifecycleListener {
 
-	public void init(IServer server) {}
+	public void init(IServer server) {
+		System.out.println("init listener: " + server.getName() + " - " + getClass().getName());
+	}
+	
 	public void serverAdded(IServer server) {}
 	public void serverRemoved(IServer server) {}
 	public void serverChanged(IServer server) {}

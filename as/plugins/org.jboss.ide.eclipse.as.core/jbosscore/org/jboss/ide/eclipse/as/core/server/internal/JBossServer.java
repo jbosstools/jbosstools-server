@@ -35,6 +35,7 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.ILaunchConfigConfigurator;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -52,7 +53,7 @@ import org.jboss.tools.as.core.server.controllable.systems.IPortsController;
 public class JBossServer extends DeployableServer 
 		implements IJBossServer, IURLProvider {
 	
-	public static final String AUTOMATICALLY_UPDATE_LAUNCH = "org.jboss.ide.eclipse.as.core.server.internal.AUTOMATICALLY_UPDATE_LAUNCH";  //$NON-NLS-1$
+	public static final String AUTOMATICALLY_UPDATE_LAUNCH = ILaunchConfigConfigurator.AUTOMATICALLY_UPDATE_LAUNCH;
 	
 	public void setDefaults(IProgressMonitor monitor) {
 		super.setDefaults(monitor);

@@ -21,6 +21,7 @@ import org.eclipse.wst.server.core.IServerLifecycleListener;
 import org.eclipse.wst.server.core.IServerListener;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerEvent;
+import org.eclipse.wst.server.core.internal.Server;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 /**
@@ -36,21 +37,24 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 public class UnitedServerListenerManager implements 
 	IServerLifecycleListener, IServerListener, IPublishListener, IRuntimeLifecycleListener {
 	protected static UnitedServerListenerManager instance;
-	public static UnitedServerListenerManager getDefault() {
+	public static synchronized UnitedServerListenerManager getDefault() {
 		if( instance == null )
 			instance = new UnitedServerListenerManager();
 		return instance;
 	}
 	
 	protected ArrayList<UnitedServerListener> list;
-	protected UnitedServerListenerManager() {
+	private UnitedServerListenerManager() {
 		list = new ArrayList<UnitedServerListener>();
 		ServerCore.addServerLifecycleListener(this);
 		ServerCore.addRuntimeLifecycleListener(this);
 		IServer[] allServers = ServerCore.getServers();
+		System.out.println("constructor___: " + allServers.length);
 		for( int i = 0; i < allServers.length; i++ ) {
 			allServers[i].addServerListener(this);
 			allServers[i].addPublishListener(this);
+			System.out.println("Added listeners to " + allServers[i].getName());
+			System.out.println();
 		}
 	}
 	
@@ -68,9 +72,7 @@ public class UnitedServerListenerManager implements
 			list.add(listener);
 			IServer[] allServers = ServerCore.getServers();
 			for( int i = 0; i < allServers.length; i++ ) {
-				if (isJBossServer(allServers[i])) {
-					listener.init(allServers[i]);
-				}
+				listener.init(allServers[i]);
 			}
 		}
 	}
@@ -78,9 +80,7 @@ public class UnitedServerListenerManager implements
 		list.remove(listener);
 		IServer[] allServers = ServerCore.getServers();
 		for( int i = 0; i < allServers.length; i++ ) {
-			if (isJBossServer(allServers[i])) {
-				listener.cleanUp(allServers[i]);
-			}
+			listener.cleanUp(allServers[i]);
 		}
 	}
 
@@ -94,6 +94,7 @@ public class UnitedServerListenerManager implements
 		}
 	}
 	public void serverChanged(IServer server) {
+		System.out.println("server changed-1");
 		UnitedServerListener[] listeners = getListeners();
 		for( int i = 0; i < listeners.length; i++) {
 			if( listeners[i].canHandleServer(server))
@@ -111,6 +112,7 @@ public class UnitedServerListenerManager implements
 	}
 	
 	public void serverChanged(ServerEvent event) {
+		System.out.println("server changed-2");
 		IServer server = event.getServer();
 		UnitedServerListener[] listeners = getListeners();
 		for( int i = 0; i < listeners.length; i++) {

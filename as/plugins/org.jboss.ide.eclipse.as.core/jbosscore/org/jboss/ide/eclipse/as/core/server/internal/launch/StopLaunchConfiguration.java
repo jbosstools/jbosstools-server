@@ -12,17 +12,19 @@ package org.jboss.ide.eclipse.as.core.server.internal.launch;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
+import org.jboss.ide.eclipse.as.wtp.core.server.launch.AbstractJavaServerLaunchDelegate;
 
 /**
  * This is a legacy class still in use for shutting down application servers 
  * less than AS-7
  */
-public class StopLaunchConfiguration extends AbstractJBossStartLaunchConfiguration {
+public class StopLaunchConfiguration extends AbstractJavaServerLaunchDelegate {
 	
 	public StopLaunchConfiguration() {
 		super();
@@ -38,5 +40,11 @@ public class StopLaunchConfiguration extends AbstractJBossStartLaunchConfigurati
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public void launch(ILaunchConfiguration configuration,
+			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
+		fireVMRunner(configuration, mode, launch, monitor);
 	}
 }

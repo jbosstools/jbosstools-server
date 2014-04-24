@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 
 public interface ILaunchConfigConfigurator {
+	public static final String AUTOMATICALLY_UPDATE_LAUNCH = "org.jboss.ide.eclipse.as.core.server.internal.AUTOMATICALLY_UPDATE_LAUNCH";  //$NON-NLS-1$
 
 	public abstract void configure(ILaunchConfigurationWorkingCopy launchConfig) throws CoreException;
 

@@ -70,7 +70,7 @@ public interface IPublishController extends ISubsystemController {
 	 * @param deltaKind The kind of delta, as a constant from ServerBehaviourDelegate
 	 * @param module  The module to be published
 	 * @param monitor The progress monitor
-	 * @return An IServer.STATE_XXX constant, or -1 if the behaviour should not change server state
+	 * @return An IServer.PUBLISH_STATE_XXX constant, or -1 if the behaviour should not change server state
 	 * @throws CoreException
 	 */
 	public int publishModule(int kind, int deltaKind, IModule[] module, IProgressMonitor monitor) throws CoreException;

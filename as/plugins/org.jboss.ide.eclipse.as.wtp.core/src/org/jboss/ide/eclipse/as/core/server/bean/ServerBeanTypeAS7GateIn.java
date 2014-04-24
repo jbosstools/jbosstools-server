@@ -35,7 +35,7 @@ public class ServerBeanTypeAS7GateIn extends JBossServerType {
 
 	public static class AS7GateInServerTypeCondition extends AbstractCondition {
 		public boolean isServerRoot(File location) {
-			String mainFolder = JBossServerType.AS7.jbossSystemJarPath;
+			String mainFolder = JBossServerType.AS7.systemJarPath;
 			boolean isAS7 = scanFolderJarsForManifestProp(location, mainFolder, JBAS7_RELEASE_VERSION, "7.");
 			if( isAS7 && getFullVersion(location, null) != null ) {
 				return true;

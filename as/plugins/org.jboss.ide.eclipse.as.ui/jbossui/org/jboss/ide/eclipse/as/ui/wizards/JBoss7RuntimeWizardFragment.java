@@ -11,15 +11,12 @@
 package org.jboss.ide.eclipse.as.ui.wizards;
 
 import java.io.File;
-import java.text.MessageFormat;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
@@ -37,13 +34,11 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.JavaUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
-import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 
@@ -52,20 +47,6 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	private Text baseDirText;
 	private Button baseDirBrowse;
 	private String baseDirTextVal;
-	
-	@Override
-	public boolean hasComposite() {
-		return true;
-	}
-
-	@Override
-	protected void createWidgets(Composite main) {
-		createExplanation(main);
-		createNameComposite(main);
-		createHomeComposite(main);
-		createJREComposite(main);
-		createConfigurationComposite(main);
-	}
 
 	protected void createConfigurationComposite(Composite main) {
 		UIUtil u = new UIUtil(); // top bottom left right
@@ -153,6 +134,7 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	
 	
 	private File getConfigBrowseInitialFolder() {
+		String homeDir = homeDirComposite.getHomeDirectory();
 		IPath f1 = null;
 		if(new Path(configDirTextVal).isAbsolute()) {
 			// If the configuration file (not dir, despite superclass var name) 
@@ -174,6 +156,7 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	}
 	
 	protected void configBrowsePressed() {
+		String homeDir = homeDirComposite.getHomeDirectory();
 		File file = getConfigBrowseInitialFolder();
 		File ffile = getFile(file, homeDirComposite.getShell());
 		if (ffile != null) {
@@ -197,6 +180,7 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	 * @since 3.0
 	 */
 	protected void baseDirBrowsePressed() {
+		String homeDir = homeDirComposite.getHomeDirectory();
 		File file = null;
 		if( new Path(baseDirTextVal).isAbsolute()) {
 			file = new Path(baseDirTextVal).toFile();
@@ -260,22 +244,6 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	}
 	
 	@Override
-	protected void fillWidgets() {
-		IRuntime rt = getRuntimeFromTaskModel();
-		if (rt != null) {
-			try {
-				fillNameWidgets(rt);
-				fillHomeDir(rt);
-				fillConfigWidgets(rt);
-				fillJREWidgets(rt);
-			} catch (Exception e) {
-				IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, MessageFormat.format(Messages.JBoss7ServerWizardFragment_could_not_create_ui, rt.getName()), e);
-				JBossServerUIPlugin.getDefault().getLog().log(status);
-			}
-		}
-	}
-
-	@Override
 	protected void fillConfigWidgets(IRuntime rt) {
 		LocalJBoss7ServerRuntime rt2 = (LocalJBoss7ServerRuntime)rt.loadAdapter(LocalJBoss7ServerRuntime.class, null);
 		baseDirTextVal = getPresentableBaseDir(rt);
@@ -317,12 +285,6 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	
 	@Override
 	protected void updatePage() {
-		jreComboIndex = jreCombo.getSelectionIndex();
-		int offset = -1;
-		if( jreComboIndex + offset >= 0 )
-			selectedVM = installedJREs.get(jreComboIndex + offset);
-		else // if sel < 0 or sel == 0 and offset == -1
-			selectedVM = null;
 		configDirTextVal = configDirText.getText();
 		updateErrorMessage();
 		saveDetailsInRuntime();
@@ -341,7 +303,7 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 			return Messages.rwf_nameTextBlank;
 		
 
-		if( getValidJREs().size() == 0 )
+		if( jreComposite != null && jreComposite.getValidJREs().size() == 0 )
 			return NLS.bind(Messages.rwf_noValidJRE, getRuntime().getExecutionEnvironment().getId());
 		
 		if( !homeDirectoryIsDirectory()) 
@@ -351,6 +313,7 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 			return NLS.bind(Messages.rwf_homeMissingFiles2, getJBossModulesJar());
 		
 		if( configDirTextVal != null) {
+			String homeDir = homeDirComposite.getHomeDirectory();
 			IPath p = new Path(configDirTextVal);
 			if( p.isAbsolute() ) {
 				return Messages.bind(Messages.rwf7_ConfigFileAbsoluteError, p.toString());
@@ -368,24 +331,18 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	
 	@Override
 	public String getWarningString() {
-		if (!systemJarExists())
-			return NLS.bind(Messages.rwf_homeMissingFiles2, getSystemJarPath());
-		
-		
 		JBossExtendedProperties props = (JBossExtendedProperties)getRuntime().getRuntime().getAdapter(JBossExtendedProperties.class);
 		if( props != null && props.requiresJDK() )  {
-			if( jreComboIndex != 0 && selectedVM != null) {
-				if( !JavaUtils.isJDK(selectedVM)) {
-					// The chosen vm has no jdk
-					return Messages.rwf_requiresJDK;
-				}
-			}
-			if( jreComboIndex == 0 || selectedVM == null) {
-				// Resolve this 'default' value to an actual IVMInstall
-				IVMInstall ivm = getRuntime().getVM();
-				if( !JavaUtils.isJDK(ivm)) {
+			IVMInstall selected = jreComposite.getSelectedVM();
+			if( selected == null ) {
+				// We have a null selected vm, so check effective vm
+				boolean isjdk = JavaUtils.isJDK(getRuntime().getVM());
+				if( !isjdk) {
 					return Messages.rwf_jdkWarning;
 				}
+			} else if( !JavaUtils.isJDK(selected)) {
+				// The chosen vm has no jdk
+				return Messages.rwf_requiresJDK;
 			}
 		}
 		
@@ -394,6 +351,7 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	}
 
 	protected boolean homeDirectoryIsDirectory() {
+		String homeDir = homeDirComposite.getHomeDirectory();
 		if (homeDir == null || homeDir.length() == 0 )
 			return false;
 		File home = new File(homeDir);
@@ -408,25 +366,14 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	}
 	
 	protected IPath getJBossModulesJar() {
+		String homeDir = homeDirComposite.getHomeDirectory();
 		return new Path(homeDir).append("jboss-modules.jar");
 	}
 	
-	
-	
-	protected boolean systemJarExists() {
-		String s = getSystemJarPath();
-		IPath p = new Path(homeDir).append(s);
-		return p.toFile().exists();
-	}
-	
-	@Override
-	protected String getSystemJarPath() {
-		return JBossServerType.AS7.getSystemJarPath();
-	}
-
 	@Override
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
 		exit();
+		String homeDir = homeDirComposite.getHomeDirectory();
 		IRuntime rt = getRuntimeFromTaskModel();
 		((IRuntimeWorkingCopy) rt).setLocation(new Path(homeDir));
 		saveRuntimeLocationInPreferences(rt);
