@@ -26,7 +26,7 @@ public class ServerBeanTypeAS7 extends JBossServerType {
 	}
 	public static class AS7ServerTypeCondition extends AbstractCondition {
 		public boolean isServerRoot(File location) {
-			String mainFolder = JBossServerType.AS7.jbossSystemJarPath;
+			String mainFolder = JBossServerType.AS7.systemJarPath;
 			return scanFolderJarsForManifestProp(location, mainFolder, JBAS7_RELEASE_VERSION, "7.");
 		}
 		public String getServerTypeId(String version) {

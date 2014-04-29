@@ -26,6 +26,15 @@ public class Messages extends NLS {
 	public static String Export_LabelProject;
 	public static String Export_LabelBrowse;
 	public static String Export_OverwriteCheckbox;
+	
+	
+	public static String ServerAlreadyStartedDialog_Message;
+	public static String ServerAlreadyStartedDialog_Title;
+	public static String ServerAlreadyStartedDialog_Desc;
+	public static String ServerAlreadyStartedDialog_Connect;
+	public static String ServerAlreadyStartedDialog_Launch;
+
+
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

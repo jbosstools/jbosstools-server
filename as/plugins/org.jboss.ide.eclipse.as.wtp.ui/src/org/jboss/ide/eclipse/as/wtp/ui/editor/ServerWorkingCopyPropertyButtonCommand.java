@@ -8,64 +8,69 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.ui.editor;
+package org.jboss.ide.eclipse.as.wtp.ui.editor;
 
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 /**
  * @since 2.3
  */
-public class ServerWorkingCopyPropertyComboCommand extends ServerCommand {
+public class ServerWorkingCopyPropertyButtonCommand extends ServerCommand {
 	public static int POST_EXECUTE = 1;
 	public static int POST_UNDO = 2;
 	public static int POST_REDO = 3;
-	protected String oldVal;
-	protected String newVal;
+	protected boolean oldVal;
+	protected boolean newVal;
 	protected String key;
-	protected Combo combo;
-	protected ModifyListener listener;
+	protected Button button;
+	protected SelectionListener listener;
 	protected IServerWorkingCopy wc;
 	
-	public ServerWorkingCopyPropertyComboCommand(IServerWorkingCopy wc, String commandName, 
-			Combo combo, String newVal, String attributeKey, ModifyListener listener) {
+	public ServerWorkingCopyPropertyButtonCommand(IServerWorkingCopy wc, String commandName, 
+			Button button, boolean newVal, String attributeKey, SelectionListener listener) {
 		super(wc, commandName);
 		this.wc = wc;
-		this.combo = combo;
+		this.button = button;
 		this.key = attributeKey;
 		this.newVal = newVal;
 		this.listener = listener;
 		if( key != null )
-			this.oldVal = wc.getAttribute(attributeKey, ""); //$NON-NLS-1$
+			this.oldVal = wc.getAttribute(attributeKey, false); 
 	}
 	
 	public void execute() {
-		wc.setAttribute(key, newVal);
+		if( key != null )
+			wc.setAttribute(key, newVal);
 		postOp(POST_EXECUTE);
 	}
 	
 	public void undo() {
 		if( listener != null )
-			combo.removeModifyListener(listener);
-		wc.setAttribute(key, oldVal);
-		if( combo != null && !combo.isDisposed())
-			combo.setText(oldVal);
+			button.removeSelectionListener(listener);
+		if( key != null )
+			wc.setAttribute(key, oldVal);
+		if( button != null && !button.isDisposed())
+			button.setSelection(oldVal);
 		if( listener != null )
-			combo.addModifyListener(listener);
+			button.addSelectionListener(listener);
 		postOp(POST_UNDO);
 	}
-
-	public IStatus redo() {
+	public IStatus redo(IProgressMonitor monitor, IAdaptable adapt) {
 		if( listener != null )
-			combo.removeModifyListener(listener);
-		wc.setAttribute(key, newVal);
-		if( combo != null && !combo.isDisposed())
-			combo.setText(newVal);
+			button.removeSelectionListener(listener);
+		if( key != null )
+			wc.setAttribute(key, newVal);
+		if( button != null && !button.isDisposed())
+			button.setSelection(newVal);
 		if( listener != null )
-			combo.addModifyListener(listener);
+			button.addSelectionListener(listener);
 		postOp(POST_REDO);
 		return Status.OK_STATUS;
 	}

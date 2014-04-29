@@ -44,21 +44,21 @@ public class LocalJBossStartLaunchConfigurator extends AbstractStartLaunchConfig
 	}
 
 	@Override
-	protected String getWorkingDirectory(JBossServer server, IJBossServerRuntime runtime) throws CoreException {
-		return ServerUtil.checkedGetServerHome(server) 
+	protected String getWorkingDirectory() throws CoreException {
+		return ServerUtil.checkedGetServerHome(getJBossServer()) 
 				+ Path.SEPARATOR 
 				+ IJBossRuntimeResourceConstants.BIN;
 	}
 	
 	@Override
-	protected List<String> getClasspath(JBossServer server,  IJBossServerRuntime runtime, List<String> currentClasspath) throws CoreException {
+	protected List<String> getClasspath(List<String> currentClasspath) throws CoreException {
 		try {
-			boolean replaced = replaceRunJarContainer(server, currentClasspath);
+			boolean replaced = replaceRunJarContainer(getJBossServer(), currentClasspath);
 			if (!replaced) {
-				String runJarEntry = LaunchConfigUtils.getRunJarRuntimeCPEntry(server.getServer()).getMemento();
+				String runJarEntry = LaunchConfigUtils.getRunJarRuntimeCPEntry(server).getMemento();
 				currentClasspath.add(runJarEntry);
 			}
-			IVMInstall vmInstall = runtime.getVM();
+			IVMInstall vmInstall = getJBossRuntime().getVM();
 			List<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
 			LaunchConfigUtils.addJREEntry(vmInstall, classpath);
 			List<String> runtimeClassPaths = LaunchConfigUtils.toStrings(classpath);
@@ -116,7 +116,7 @@ public class LocalJBossStartLaunchConfigurator extends AbstractStartLaunchConfig
 	}
 
 	@Override
-	protected String getDefaultProgramArguments(JBossServer server, IJBossServerRuntime runtime) {
+	protected String getDefaultProgramArguments() {
 		return getExtendedProperties().getDefaultLaunchArguments().getStartDefaultProgramArgs();
 	}
 

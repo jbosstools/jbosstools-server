@@ -10,9 +10,11 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.core.server.internal.launch.configuration;
 
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
@@ -22,11 +24,13 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.JavaUtils;
+import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
+import org.jboss.ide.eclipse.as.wtp.core.server.launch.LaunchConfiguratorWithOverrides;
 
 /**
  * @author André Dietisheim
  */
-public abstract class AbstractStartLaunchConfigurator extends AbstractLaunchConfigurator {
+public abstract class AbstractStartLaunchConfigurator extends LaunchConfiguratorWithOverrides {
 
 	private static final String DEFAULT_CP_PROVIDER_ID = "org.jboss.ide.eclipse.as.core.server.internal.launch.serverClasspathProvider"; ///$NON-NLS-1$
 
@@ -44,10 +48,19 @@ public abstract class AbstractStartLaunchConfigurator extends AbstractLaunchConf
 	protected JBossLaunchConfigProperties createProperties() {
 		return new JBossLaunchConfigProperties();
 	}
+
+	protected JBossServer getJBossServer() {
+		return (JBossServer)server.loadAdapter(JBossServer.class, new NullProgressMonitor());
+	}
+	protected IJBossServerRuntime getJBossRuntime() throws CoreException {
+		return RuntimeUtils.checkedGetJBossServerRuntime(runtime);
+	}
 	
 	@Override
-	protected void doConfigure(ILaunchConfigurationWorkingCopy launchConfig, JBossServer jbossServer, IJBossServerRuntime jbossRuntime) throws CoreException {
-		getProperties().setProgramArguments(getDefaultProgramArguments(jbossServer, jbossRuntime), launchConfig);
+	protected void doConfigure(ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
+		JBossServer jbossServer = getJBossServer();
+		IJBossServerRuntime jbossRuntime = getJBossRuntime();
+		getProperties().setProgramArguments(getDefaultProgramArguments(), launchConfig);
 		getProperties().setHost(getHost(jbossServer, jbossRuntime), launchConfig);
 		getProperties().setConfig(getServerConfig(jbossRuntime), launchConfig);
 		getProperties().setServerHome(getServerHome(jbossRuntime), jbossRuntime, launchConfig);
@@ -56,16 +69,19 @@ public abstract class AbstractStartLaunchConfigurator extends AbstractLaunchConf
 		getProperties().setJreContainer(getJreContainerPath(jbossRuntime), launchConfig);
 		getProperties().setEndorsedDir(getEndorsedDir(jbossRuntime), launchConfig);
 		getProperties().setMainType(getMainType(), launchConfig);
-		getProperties().setWorkingDirectory(getWorkingDirectory(jbossServer, jbossRuntime), launchConfig);
+		getProperties().setWorkingDirectory(getWorkingDirectory(), launchConfig);
 		getProperties().setEnvironmentVariables(getEnvironmentVariables(), launchConfig);
 		getProperties().setClasspathProvider(getClasspathProvider(), launchConfig);
-		getProperties().setClasspath(getClasspath(jbossServer, jbossRuntime, getProperties().getClasspath(launchConfig)), launchConfig);
+		getProperties().setClasspath(getClasspath(getProperties().getClasspath(launchConfig)), launchConfig);
 		getProperties().setUseDefaultClassPath(isUseDefaultClasspath(), launchConfig);
-		getProperties().setServerId(getServerId(jbossServer), launchConfig);
+		getProperties().setServerId(getServerId(server), launchConfig);
 	}
 
 	@Override
-	protected void doOverrides(ILaunchConfigurationWorkingCopy launchConfig, JBossServer jbossServer, IJBossServerRuntime jbossRuntime) throws CoreException {
+	protected void doOverrides(ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
+		JBossServer jbossServer = getJBossServer();
+		IJBossServerRuntime jbossRuntime = getJBossRuntime();
+		
 		getProperties().setHost(getHost(jbossServer, jbossRuntime), launchConfig);
 		getProperties().setConfig(getServerConfig(jbossRuntime), launchConfig);
 		getProperties().setServerHome(getServerHome(jbossRuntime), jbossRuntime, launchConfig);
@@ -73,11 +89,11 @@ public abstract class AbstractStartLaunchConfigurator extends AbstractLaunchConf
 		getProperties().setJreContainer(getJreContainerPath(jbossRuntime), launchConfig);
 		getProperties().setEndorsedDir(getEndorsedDir(jbossRuntime), launchConfig);
 		getProperties().setJavaLibPath(getJavaLibraryPath(jbossRuntime), launchConfig);
-		getProperties().setWorkingDirectory(getWorkingDirectory(jbossServer, jbossRuntime), launchConfig);
+		getProperties().setWorkingDirectory(getWorkingDirectory(), launchConfig);
 		getProperties().setClasspathProvider(getClasspathProvider(), launchConfig);
-		getProperties().setClasspath(getClasspath(jbossServer, jbossRuntime, getProperties().getClasspath(launchConfig)), launchConfig);
+		getProperties().setClasspath(getClasspath(getProperties().getClasspath(launchConfig)), launchConfig);
 		getProperties().setUseDefaultClassPath(isUseDefaultClasspath(), launchConfig);
-		getProperties().setServerId(getServerId(jbossServer), launchConfig);
+		getProperties().setServerId(getServerId(server), launchConfig);
 	}	
 
 	protected boolean getSupportsServerFlag(IJBossServerRuntime runtime) {
@@ -96,13 +112,25 @@ public abstract class AbstractStartLaunchConfigurator extends AbstractLaunchConf
 	protected boolean isCustomConfigLocation(IJBossServerRuntime runtime) {
 		return runtime.getConfigLocation().equals(IJBossRuntimeResourceConstants.SERVER);
 	}
+	
+	protected abstract String getDefaultProgramArguments() throws CoreException;
+
+	protected abstract String getMainType();
+
+	protected abstract String getWorkingDirectory()
+			throws CoreException;
+	protected abstract List<String> getClasspath(List<String> currentClasspath) throws CoreException;
+
+	protected boolean isUseDefaultClasspath() {
+		return false;
+	}
 
 	protected String getClasspathProvider() {
 		return DEFAULT_CP_PROVIDER_ID;
 	}
 	
 	protected JBossExtendedProperties getExtendedProperties() {
-		return (JBossExtendedProperties)getJbossServer().getServer().getAdapter(JBossExtendedProperties.class);
+		return (JBossExtendedProperties)getJBossServer().getServer().getAdapter(JBossExtendedProperties.class);
 	}
 
 	protected Map<String, String> getEnvironmentVariables() {

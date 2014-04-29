@@ -10,7 +10,10 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.ui.editor;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -32,6 +35,7 @@ import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.Messages;
+import org.jboss.ide.eclipse.as.wtp.ui.editor.ServerWorkingCopyPropertyCommand;
 
 /**
  * 
@@ -128,6 +132,10 @@ public class ServerPasswordSection extends ServerEditorSection {
 			text.addModifyListener(listener);
 			passwordChanged = !PASSWORD_NOT_LOADED.equals(passwordString);
 		}
+		public IStatus redo(IProgressMonitor monitor, IAdaptable adapt) {
+			execute();
+			return Status.OK_STATUS;
+		}
 	}
 
 	/**
@@ -139,6 +147,7 @@ public class ServerPasswordSection extends ServerEditorSection {
 			JBossServer jbs = (JBossServer)ServerConverter.getJBossServer(server.getOriginal());
 			jbs.setPassword(passwordString);
 			monitor.worked(100);
+			passwordChanged = false;
 		}
 	}
 

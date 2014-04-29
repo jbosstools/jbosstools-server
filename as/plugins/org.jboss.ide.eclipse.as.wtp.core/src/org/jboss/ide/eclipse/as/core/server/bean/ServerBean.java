@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2010 Red Hat, Inc. 
+ * Copyright (c) 2010-2014 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -11,32 +11,40 @@
 
 package org.jboss.ide.eclipse.as.core.server.bean;
 
+import java.io.File;
+
 
 public class ServerBean {
 	
 	public static final String EMPTY = ""; //$NON-NLS-1$
+
+	private String location=EMPTY;
+	private ServerBeanType type = ServerBeanType.UNKNOWN;
+	private String name = EMPTY;
+	private String version = EMPTY;
+	private String fullVersion = EMPTY;
 	
+	@Deprecated 
 	public ServerBean() {
-		
 	}
 	
-	public ServerBean(String location, String name, JBossServerType type,
-			String version) {
+	public ServerBean(String location, String name, ServerBeanType type,
+			String fullVersion) {
 		super();
 		this.location = location;
 		this.name = name;
 		this.type = type;
-		this.version = version;
+		this.fullVersion = fullVersion;
+		this.version = ServerBeanLoader.getMajorMinorVersion(fullVersion);
 	}
 	
 	public ServerBean(ServerBean bean) {
-		this(bean.getLocation(),bean.getName(), bean.getType(),bean.getVersion());
+		this(bean.getLocation(),bean.getName(), bean.getBeanType(),bean.getVersion());
 	}
 
-	private String location=EMPTY;
-	private JBossServerType type = JBossServerType.UNKNOWN;
-	private String name = EMPTY;
-	private String version = EMPTY;
+	public String getServerAdapterTypeId() {
+		return getBeanType().getServerAdapterTypeId(version);
+	}
 	
 	public String getLocation() {
 		return location;
@@ -46,11 +54,26 @@ public class ServerBean {
 		this.location = location;
 	}
 	
+	/**
+	 * This method has been deprecated as the 
+	 * superclass set has been expanded. We prefer
+	 * to return a higher class now. 
+	 * @return
+	 */
+	@Deprecated
 	public JBossServerType getType() {
-		return type;
+		return type instanceof JBossServerType ? (JBossServerType)type : JBossServerType.UNKNOWN;
 	}
 	
-	public void setType(JBossServerType type) {
+	public ServerBeanType getBeanType() {
+		return type;
+	}
+
+	public String getUnderlyingTypeId() {
+		return getBeanType().getUnderlyingTypeId(new File(location));
+	}
+	
+	public void setType(ServerBeanType type) {
 		this.type = type;
 	}
 	
@@ -66,8 +89,8 @@ public class ServerBean {
 		return version;
 	}
 	
-	public void setVersion(String version) {
-		this.version = version;
+	public String getFullVersion() {
+		return fullVersion;
 	}
 	
 	public String toString() {

@@ -287,14 +287,11 @@ public class JBossLaunchConfigProperties {
 		return null;
 	}
 	
-	/* The server framework sets this id. We shouldn't be setting this */
-	@Deprecated
 	public void setServerId(String serverId, ILaunchConfigurationWorkingCopy launchConfig) {
 		if (isSet(serverId)) {
 			launchConfig.setAttribute(SERVER_ID, serverId);
 		}
 	}
-	@Deprecated
 	public boolean isServerIdSet(ILaunchConfiguration launchConfig) throws CoreException {
 		return launchConfig.hasAttribute(SERVER_ID);
 	}

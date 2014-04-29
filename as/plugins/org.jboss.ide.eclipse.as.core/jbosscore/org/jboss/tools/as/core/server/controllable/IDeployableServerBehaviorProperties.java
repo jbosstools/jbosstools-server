@@ -11,6 +11,7 @@
 package org.jboss.tools.as.core.server.controllable;
 
 import org.eclipse.debug.core.model.IProcess;
+import org.jboss.ide.eclipse.as.wtp.core.server.launch.AbstractStartJavaServerLaunchDelegate;
 
 /**
  * This interface is a collection of shared keys that a given deployable server
@@ -20,7 +21,12 @@ public interface IDeployableServerBehaviorProperties {
 	/**
 	 * A key for shared data, the value should be an {@link IProcess}
 	 */
-	public static final String PROCESS = "DeployableServerBehavior.Process"; //$NON-NLS-1$
+	public static final String PROCESS = AbstractStartJavaServerLaunchDelegate.PROCESS;
+	/**
+	 * A key for shared data, the value should be a PollThread
+	 */
+	public static final String DEBUG_LISTENER = AbstractStartJavaServerLaunchDelegate.DEBUG_LISTENER;
+	
 
 	/**
 	 * A key for shared data, the value should be an integer for a process id
@@ -34,14 +40,9 @@ public interface IDeployableServerBehaviorProperties {
 	public static final String POLL_THREAD = "DeployableServerBehavior.PollThread"; //$NON-NLS-1$
 	
 	/**
-	 * A key for shared data, the value should be a PollThread
-	 */
-	public static final String DEBUG_LISTENER = "DeployableServerBehavior.DebugListener"; //$NON-NLS-1$\
-	
-	/**
 	 * A key for shared data, the value should be a Boolean
 	 */
-	public static final String NEXT_STOP_REQUIRES_FORCE = "DeployableServerBehavior.RequiresForceStop"; //$NON-NLS-1$\
+	public static final String NEXT_STOP_REQUIRES_FORCE = AbstractStartJavaServerLaunchDelegate.NEXT_STOP_REQUIRES_FORCE;
 	
 	
 }

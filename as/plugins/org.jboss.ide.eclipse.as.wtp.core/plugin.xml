@@ -3,6 +3,7 @@
 <plugin>
    <extension-point id="serverSubsystem" name="org.jboss.ide.eclipse.as.wtp.core.server.behavior.serverSubsystem" schema="schema/serverSubsystem.exsd"/>
    <extension-point id="serverProfile" name="org.jboss.ide.eclipse.as.wtp.core.server.behavior.serverProfile" schema="schema/serverProfile.exsd"/>
+   <extension-point id="serverBeanTypeProvider" name="serverBeanTypeProvider" schema="schema/serverBeanTypeProvider.exsd"/>
    <extension
          point="org.eclipse.wst.common.modulecore.referenceResolver">
       <resolver
@@ -26,6 +27,13 @@
       <heirarchyParticipant
             class="org.jboss.ide.eclipse.as.wtp.core.vcf.JBTHeirarchyParticipant">
       </heirarchyParticipant>
+   </extension>
+   <extension
+         point="org.jboss.ide.eclipse.as.wtp.core.serverBeanTypeProvider">
+      <serverBeanTypeProvider
+            class="org.jboss.ide.eclipse.as.core.server.bean.JBossServerBeanTypeProvider"
+            weight="10">
+      </serverBeanTypeProvider>
    </extension>
    
    

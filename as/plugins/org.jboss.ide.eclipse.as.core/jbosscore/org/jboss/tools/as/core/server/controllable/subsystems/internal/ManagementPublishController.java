@@ -53,7 +53,14 @@ import org.jboss.tools.as.core.server.controllable.util.PublishControllerUtility
 public class ManagementPublishController extends AbstractSubsystemController
 		implements IPublishController, IPrimaryPublishController {
 
+	/**
+	 * Access the manager service for running remote mgmt commands
+	 */
 	private IJBoss7ManagerService service;
+	
+	/**
+	 * The details to be passed to the management service. 
+	 */
 	private AS7ManagementDetails managementDetails;
 
 	/*
@@ -61,12 +68,35 @@ public class ManagementPublishController extends AbstractSubsystemController
 	 */
 	private IModuleStateController moduleStateController;
 	
+	/*
+	 * A boolean to track the failure to load the optional controller
+	 */
+	private boolean moduleStateControllerLoadFailed = false;
+	
+	/*
+	 * A required controller to determine the output name for 
+	 * a module. 
+	 */
+	private IModuleDeployPathController moduleDeployPathController;
+	
 	private IJBoss7ManagerService getService() {
 		if( service == null ) {
 			this.service = JBoss7ManagerUtil.getService(getServer());
 			this.managementDetails = new AS7ManagementDetails(getServer());
 		}
 		return service;
+	}
+	
+	public IStatus validate() {
+		try {
+			IStatus sup = super.validate();
+			if( !sup.isOK())
+				return sup;
+			getDeployPathController();
+		} catch(CoreException ce) {
+			return ce.getStatus();
+		}
+		return Status.OK_STATUS;
 	}
 	
 	private IStatus isRunning() {
@@ -89,7 +119,10 @@ public class ManagementPublishController extends AbstractSubsystemController
 	
 	@Override
 	public IStatus canPublish() {
-		return isRunning();
+		IStatus isRunningStatus = isRunning();
+		if( !isRunningStatus.isOK()) 
+			return isRunningStatus;
+		return validate();
 	}
 
 	@Override
@@ -119,14 +152,22 @@ public class ManagementPublishController extends AbstractSubsystemController
 	}
 
 	protected IModuleStateController getModuleStateController() throws CoreException {
-		if( moduleStateController == null ) {
+		if( moduleStateController == null && !moduleStateControllerLoadFailed) {
 			try {
 				moduleStateController = (IModuleStateController)findDependency(IModuleStateController.SYSTEM_ID);
 			} catch(CoreException ce) {
 				// Do not log; this is optional. But trace
+				moduleStateControllerLoadFailed = true;
 			}
 		}
 		return moduleStateController;
+	}
+
+	protected IModuleDeployPathController getDeployPathController() throws CoreException {
+		if( moduleDeployPathController == null) {
+			moduleDeployPathController = (IModuleDeployPathController)findDependencyFromBehavior(IModuleDeployPathController.SYSTEM_ID);
+		}
+		return moduleDeployPathController;
 	}
 	
 	@Override
@@ -209,17 +250,12 @@ public class ManagementPublishController extends AbstractSubsystemController
 		return 0;
 	}
 
-	private String getDeploymentOutputName(IServer server, IModule module) {
+	private String getDeploymentOutputName(IServer server, IModule module) throws CoreException {
 		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(server);
 		if( beh != null ) {
-			try {
-				IModule[] moduleToTest = new IModule[]{module};
-				IModuleDeployPathController controller = (IModuleDeployPathController)beh.getController(IModuleDeployPathController.SYSTEM_ID);
-				return controller.getOutputName(moduleToTest);
-			} catch(CoreException ce) {
-				// TODO log
-				return null;
-			}
+			IModule[] moduleToTest = new IModule[]{module};
+			IModuleDeployPathController controller = getDeployPathController();
+			return controller.getOutputName(moduleToTest);
 		} 
 		return null;
 	}

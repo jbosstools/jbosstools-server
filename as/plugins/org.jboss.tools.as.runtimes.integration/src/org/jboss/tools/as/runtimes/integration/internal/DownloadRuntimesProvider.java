@@ -12,115 +12,26 @@ package org.jboss.tools.as.runtimes.integration.internal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.SubProgressMonitor;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.jdf.stacks.model.Stacks;
-import org.jboss.tools.as.runtimes.integration.Messages;
+import org.jboss.tools.as.runtimes.integration.util.AbstractStacksDownloadRuntimesProvider;
 import org.jboss.tools.runtime.core.model.DownloadRuntime;
-import org.jboss.tools.runtime.core.model.IDownloadRuntimesProvider;
 import org.jboss.tools.stacks.core.model.StacksManager;
 
 /**
  * Pull runtimes from a stacks file and return them to runtimes framework
  */
-public class DownloadRuntimesProvider implements IDownloadRuntimesProvider {
-
-	/* The following constants are marked public but are in an internal package. */
-	public static final String LABEL_FILE_SIZE = "runtime-size";
-	public static final String LABEL_WTP_RUNTIME = "wtp-runtime-type";
-	public static final String LABEL_RUNTIME_CATEGORY = "runtime-category";
-	public static final String LABEL_RUNTIME_TYPE = "runtime-type";
-	public static final String PROP_WTP_RUNTIME = LABEL_WTP_RUNTIME;
-	
+public class DownloadRuntimesProvider extends AbstractStacksDownloadRuntimesProvider {
 	
 	public DownloadRuntimesProvider() {
+		super();
 	}
 
-	private Stacks[] getStacks(IProgressMonitor monitor) {
-		return new StacksManager().getStacks("Loading Downloadable Runtimes", monitor, StacksManager.StacksType.PRESTACKS_TYPE, StacksManager.StacksType.STACKS_TYPE);
-	}
-	
-	private ArrayList<DownloadRuntime> downloads = null;
-	
-	@Override
-	public DownloadRuntime[] getDownloadableRuntimes(String requestType, IProgressMonitor monitor) {
-		if( downloads == null ) {
-			ArrayList<DownloadRuntime> tmp = loadDownloadableRuntimes(monitor);
-			if( monitor.isCanceled()) {
-				// Return the incomplete list, but do not cache it
-				return (DownloadRuntime[]) tmp.toArray(new DownloadRuntime[tmp.size()]);
-			}
-			// Cache this, as its assumed to be complete
-			downloads = tmp;
-		}
-		return (DownloadRuntime[]) downloads.toArray(new DownloadRuntime[downloads.size()]);
-	}
-	
-	/*
-	 * Return an arraylist of downloadruntime objects
-	 */
-	private synchronized ArrayList<DownloadRuntime> loadDownloadableRuntimes(IProgressMonitor monitor) {
-		monitor.beginTask(Messages.LoadRemoteRuntimes, 200);
-		Stacks[] stacksArr = getStacks(new SubProgressMonitor(monitor, 100));
-		ArrayList<DownloadRuntime> all = new ArrayList<DownloadRuntime>();
-		monitor.beginTask(Messages.CreateDownloadRuntimes, stacksArr.length * 100);		
-		for( int i = 0; i < stacksArr.length && !monitor.isCanceled(); i++ ) {
-			IProgressMonitor inner = new SubProgressMonitor(monitor, 100);
-			if( stacksArr[i] != null ) {
-				traverseStacks(stacksArr[i], all, inner);
-			}
-		}
-		monitor.done();
-		return all;
-	}
-	
-	private void traverseStacks(Stacks stacks, ArrayList<DownloadRuntime> list, IProgressMonitor monitor) {
-		List<org.jboss.jdf.stacks.model.Runtime> runtimes = stacks.getAvailableRuntimes();
-		Iterator<org.jboss.jdf.stacks.model.Runtime> i = runtimes.iterator();
-		org.jboss.jdf.stacks.model.Runtime workingRT = null;
-		monitor.beginTask(Messages.CreateDownloadRuntimes, runtimes.size() * 100);
-		while(i.hasNext()) {
-			workingRT = i.next();
-			String wtpRT = workingRT.getLabels().getProperty(LABEL_WTP_RUNTIME);
-			if( wtpRT != null ) {
-				// We can make a DL out of this
-				String fileSize = workingRT.getLabels().getProperty(LABEL_FILE_SIZE);
-				String license = workingRT.getLicense();
-				String dlUrl = workingRT.getDownloadUrl();
-				String id = workingRT.getId();
-				String legacyId = getLegacyId(id);
-				String effectiveId = legacyId == null ? id : legacyId;
-				
-				String name = workingRT.getName();
-				String version = workingRT.getVersion();
-				DownloadRuntime dr = new DownloadRuntime(effectiveId, name, version, dlUrl);
-				dr.setDisclaimer(!wtpRT.startsWith(IJBossToolingConstants.EAP_RUNTIME_PREFIX));
-				dr.setHumanUrl(workingRT.getUrl());
-				dr.setLicenseURL(license);
-				dr.setSize(fileSize);
-				dr.setProperty(PROP_WTP_RUNTIME, wtpRT);
-				dr.setProperty(LABEL_RUNTIME_CATEGORY, workingRT.getLabels().getProperty(LABEL_RUNTIME_CATEGORY));
-				dr.setProperty(LABEL_RUNTIME_TYPE, workingRT.getLabels().getProperty(LABEL_RUNTIME_TYPE));
-				if(workingRT.getLabels().get(DownloadRuntime.PROPERTY_REQUIRES_CREDENTIALS) != null ) 
-					dr.setProperty(DownloadRuntime.PROPERTY_REQUIRES_CREDENTIALS, workingRT.getLabels().get(DownloadRuntime.PROPERTY_REQUIRES_CREDENTIALS));
-				if( legacyId != null )
-					dr.setProperty(DownloadRuntime.PROPERTY_ALTERNATE_ID, id);
-				list.add(dr);
-			}
-			monitor.worked(100);
-		}
-		monitor.done();
-	}
-	
-	
 	private HashMap<String, String> LEGACY_HASHMAP = null;
 	
 	// Given a stacks.yaml runtime id, get the legacy downloadRuntimes id that's required
-	private synchronized String getLegacyId(String id) {
+	protected synchronized String getLegacyId(String id) {
 		if( LEGACY_HASHMAP == null )
 			loadLegacy();
 		return LEGACY_HASHMAP.get(id);
@@ -138,5 +49,14 @@ public class DownloadRuntimesProvider implements IDownloadRuntimesProvider {
 		LEGACY_HASHMAP.put("jboss-as702runtime", "org.jboss.tools.runtime.core.as.702" );
 		LEGACY_HASHMAP.put("jboss-as710runtime", "org.jboss.tools.runtime.core.as.710" );
 		LEGACY_HASHMAP.put("jboss-as711runtime", "org.jboss.tools.runtime.core.as.711" );
+	}
+	
+	
+	protected Stacks[] getStacks(IProgressMonitor monitor) {
+		return new StacksManager().getStacks("Loading Downloadable Runtimes", monitor, StacksManager.StacksType.PRESTACKS_TYPE, StacksManager.StacksType.STACKS_TYPE);
+	}
+	
+	protected void traverseStacks(Stacks stacks, ArrayList<DownloadRuntime> list, IProgressMonitor monitor) {
+		traverseStacks(stacks, list, "SERVER", monitor);
 	}
 }

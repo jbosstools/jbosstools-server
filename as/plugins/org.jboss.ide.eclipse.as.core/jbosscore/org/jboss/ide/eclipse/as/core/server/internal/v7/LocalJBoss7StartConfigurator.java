@@ -48,10 +48,10 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 		return new JBoss7LaunchConfigProperties();
 	}
 
-
-	
 	@Override
-	protected void doOverrides(ILaunchConfigurationWorkingCopy launchConfig, JBossServer jbossServer, IJBossServerRuntime jbossRuntime) throws CoreException {
+	protected void doOverrides(ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
+		JBossServer jbossServer = getJBossServer();
+		IJBossServerRuntime jbossRuntime = getJBossRuntime();
 		getProperties().setHost(getHost(jbossServer, jbossRuntime), launchConfig);
 		getProperties().setServerHome(getServerHome(jbossRuntime), jbossRuntime, launchConfig);
 		getProperties().setServerFlag(getSupportsServerFlag(jbossRuntime), jbossRuntime, launchConfig);
@@ -59,11 +59,11 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 		getProperties().setEndorsedDir(getEndorsedDir(jbossRuntime), launchConfig);
 		getProperties().setJavaLibPath(getJavaLibraryPath(jbossRuntime), launchConfig);
 		getProperties().setExposedManagement(getExposedManagement(jbossServer), launchConfig);
-		getProperties().setWorkingDirectory(getWorkingDirectory(jbossServer, jbossRuntime), launchConfig);
+		getProperties().setWorkingDirectory(getWorkingDirectory(), launchConfig);
 		getProperties().setClasspathProvider(getClasspathProvider(), launchConfig);
-		getProperties().setClasspath(getClasspath(jbossServer, jbossRuntime, getProperties().getClasspath(launchConfig)), launchConfig);
+		getProperties().setClasspath(getClasspath(getProperties().getClasspath(launchConfig)), launchConfig);
 		getProperties().setUseDefaultClassPath(isUseDefaultClasspath(), launchConfig);
-		getProperties().setServerId(getServerId(jbossServer), launchConfig);
+		getProperties().setServerId(getServerId(server), launchConfig);
 		getProperties().setModulesFolder(getModulesFolder(jbossServer, jbossRuntime), launchConfig);
 		getProperties().setConfigurationFile(getServerConfigFile(jbossServer, jbossRuntime), launchConfig);
 		getProperties().setBaseDirectory(getBaseDir(jbossRuntime), launchConfig);
@@ -77,10 +77,8 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 	}
 
 	@Override
-	protected String getWorkingDirectory(JBossServer server, IJBossServerRuntime runtime)  throws CoreException {
-		return runtime.getRuntime().getLocation()
-				.append(IJBossRuntimeResourceConstants.BIN)
-				.toString();
+	protected String getWorkingDirectory()  throws CoreException {
+		return runtime.getLocation().append(IJBossRuntimeResourceConstants.BIN).toString();
 	}
 	
 	protected String getModulesFolder(JBossServer server, IJBossServerRuntime runtime)  throws CoreException {
@@ -102,8 +100,8 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 	
 
 	@Override
-	protected List<String> getClasspath(JBossServer server, IJBossServerRuntime runtime, List<String> currentClasspath) throws CoreException {
-		IVMInstall vmInstall = runtime.getVM();
+	protected List<String> getClasspath(List<String> currentClasspath) throws CoreException {
+		IVMInstall vmInstall = getJBossRuntime().getVM();
 		IRuntimeClasspathEntry modulesEntry = LaunchConfigUtils.getModulesClasspathEntry(server); 
 		IRuntimeClasspathEntry jreEntry = LaunchConfigUtils.getJREEntry(vmInstall);
 		String modulesMemento = modulesEntry == null ? null : modulesEntry.getMemento();
@@ -132,8 +130,8 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 	}
 
 	@Override
-	protected String getDefaultProgramArguments(JBossServer server, IJBossServerRuntime runtime) {
-		return server.getExtendedProperties().getDefaultLaunchArguments().getStartDefaultProgramArgs();
+	protected String getDefaultProgramArguments() {
+		return getJBossServer().getExtendedProperties().getDefaultLaunchArguments().getStartDefaultProgramArgs();
 	}
 
 	@Override

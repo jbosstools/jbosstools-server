@@ -154,9 +154,9 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 			if( isDtpPresent())
 				new DriverUtility().createDriver(asLocation.getAbsolutePath(), serverType);
 		} catch (CoreException e) {
-			ServerRuntimesIntegrationActivator.getDefault().logError(Messages.JBossRuntimeStartup_Cannot_create_new_JBoss_Server,e);
+			ServerRuntimesIntegrationActivator.pluginLog().logError(Messages.JBossRuntimeStartup_Cannot_create_new_JBoss_Server,e);
 		} catch (DriverUtilityException e) {
-			ServerRuntimesIntegrationActivator.getDefault().logError(Messages.JBossRuntimeStartup_Cannott_create_new_DTP_Connection_Profile,e);
+			ServerRuntimesIntegrationActivator.pluginLog().logError(Messages.JBossRuntimeStartup_Cannott_create_new_DTP_Connection_Profile,e);
 		}
 	}
 
@@ -297,7 +297,7 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 				try {
 					path = location.getCanonicalPath();
 				} catch (IOException e) {
-					ServerRuntimesIntegrationActivator.getDefault().logError(e);
+					ServerRuntimesIntegrationActivator.pluginLog().logError(e);
 					path = location.getAbsolutePath();
 				}
 			}
@@ -327,7 +327,7 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 					try {
 						loc = new File(loc).getCanonicalPath();
 					} catch (IOException e) {
-						ServerRuntimesIntegrationActivator.getDefault().logError(e);
+						ServerRuntimesIntegrationActivator.pluginLog().logError(e);
 					}
 					if(path.equals(loc)) {
 						return true;

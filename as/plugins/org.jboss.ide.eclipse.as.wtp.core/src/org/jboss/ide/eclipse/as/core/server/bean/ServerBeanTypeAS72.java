@@ -31,7 +31,7 @@ public class ServerBeanTypeAS72 extends JBossServerType {
 			return checkAS72Version(location, JBAS7_RELEASE_VERSION, V7_2); //$NON-NLS-1$
 		}
 		protected static boolean checkAS72Version(File location, String property, String propPrefix) {
-			String mainFolder = JBossServerType.AS72.jbossSystemJarPath;
+			String mainFolder = JBossServerType.AS72.systemJarPath;
 			return scanFolderJarsForManifestProp(location, mainFolder, property, propPrefix);
 		}
 

@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.wtp.core;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.jboss.tools.foundation.core.plugin.BaseCorePlugin;
 import org.jboss.tools.foundation.core.plugin.log.IPluginLog;
 import org.jboss.tools.foundation.core.plugin.log.StatusFactory;
@@ -43,6 +44,7 @@ public class ASWTPToolsPlugin extends BaseCorePlugin {
 		super.start(context);
 		plugin = this;
 		super.registerDebugOptionsListener(PLUGIN_ID, new Trace(this), context);
+		//UnitedServerListenerManager.getDefault(); // force the listener framework
 	}
 
 	/*

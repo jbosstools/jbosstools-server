@@ -8,11 +8,9 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.core.server.internal.launch;
+package org.jboss.ide.eclipse.as.wtp.core.server.launch;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.IDebugEventSetListener;
@@ -20,22 +18,15 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
-import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.Messages;
-import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
-import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
-import org.jboss.ide.eclipse.as.core.util.IEventCodes;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
-import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
-import org.jboss.tools.as.core.server.controllable.IDeployableServerBehaviorProperties;
 
 /**
  * A debug listener for use with servers who's behavior is of type {@link IControllableServerBehavior}
  * This listener will set the server adapter to 'stopped' if the process is suddenly terminated. 
  */
-public class ProcessTerminatedDebugListener implements IDebugEventSetListener {
+public abstract class ProcessTerminatedDebugListener implements IDebugEventSetListener {
 	private IProcess myProcess;
 	private IServer server;
 	
@@ -63,7 +54,7 @@ public class ProcessTerminatedDebugListener implements IDebugEventSetListener {
 	private void handleProcessTerminatedEvent(ProcessTerminatedDebugListener listener) {
 		// get the process in the server's 'shared data'
 		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(server);
-		IProcess sharedProcess = (IProcess)beh.getSharedData(IDeployableServerBehaviorProperties.PROCESS);
+		IProcess sharedProcess = (IProcess)beh.getSharedData(AbstractStartJavaServerLaunchDelegate.PROCESS);
 		
 		synchronized(this) {
 			// If there's a new process that's not equal to myProcess, 
@@ -73,12 +64,7 @@ public class ProcessTerminatedDebugListener implements IDebugEventSetListener {
 			}
 			
 			if( server.getServerState() != IServer.STATE_STOPPED) {
-				// server is still running, so we should terminate it
-				Object pt = ((ControllableServerBehavior)getServerBehavior(server)).getSharedData(IDeployableServerBehaviorProperties.POLL_THREAD);
-				if( pt != null ) {
-					PollThreadUtils.cancelPolling(null, (PollThread)pt);
-				}
-				addProcessTerminatedEvent();
+				handleEarlyTermination();
 			}
 			DebugPlugin.getDefault().removeDebugEventListener(listener);
 			// TODO handle next stop requires force stuff
@@ -89,13 +75,9 @@ public class ProcessTerminatedDebugListener implements IDebugEventSetListener {
 		}
 	}
 	
-	protected void addProcessTerminatedEvent() {
-		IStatus status = new Status(IStatus.INFO,
-				JBossServerCorePlugin.PLUGIN_ID, IEventCodes.BEHAVIOR_PROCESS_TERMINATED, 
-				Messages.TERMINATED, null);
-		ServerLogger.getDefault().log(server, status);
-	}
 	
+	
+	protected abstract void handleEarlyTermination();
 
 	protected static IControllableServerBehavior getServerBehavior(ILaunchConfiguration configuration) throws CoreException {
 		return getServerBehavior(ServerUtil.getServer(configuration));

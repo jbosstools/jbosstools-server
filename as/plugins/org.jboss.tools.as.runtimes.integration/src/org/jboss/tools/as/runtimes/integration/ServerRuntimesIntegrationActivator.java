@@ -10,10 +10,11 @@
  ************************************************************************************/
 package org.jboss.tools.as.runtimes.integration;
 
-import org.jboss.tools.common.log.BasePlugin;
+import org.jboss.tools.foundation.core.plugin.BaseCorePlugin;
+import org.jboss.tools.foundation.core.plugin.log.IPluginLog;
 import org.osgi.framework.BundleContext;
 
-public class ServerRuntimesIntegrationActivator extends BasePlugin {
+public class ServerRuntimesIntegrationActivator extends BaseCorePlugin {
 
 	public static final String PLUGIN_ID = "org.jboss.tools.as.runtimes.integration";
 	private static BundleContext context;
@@ -42,5 +43,9 @@ public class ServerRuntimesIntegrationActivator extends BasePlugin {
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
 		ServerRuntimesIntegrationActivator.context = null;
+	}
+	
+	public static IPluginLog pluginLog() {
+		return getDefault().pluginLogInternal();
 	}
 }

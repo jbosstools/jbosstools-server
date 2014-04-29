@@ -10,20 +10,14 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.wtp.ui;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.resource.ImageRegistry;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.osgi.framework.Bundle;
+import org.jboss.ide.eclipse.as.core.server.UserPrompter;
+import org.jboss.ide.eclipse.as.wtp.ui.prompt.ServerAlreadyStartedPrompter;
+import org.jboss.ide.eclipse.as.wtp.ui.prompt.ZombieProcessPrompter;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -50,6 +44,8 @@ public class WTPOveridePlugin extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		UserPrompter.getDefaultPrompter().addPromptHandler(UserPrompter.EVENT_CODE_SERVER_ALREADY_STARTED, new ServerAlreadyStartedPrompter());
+		UserPrompter.getDefaultPrompter().addPromptHandler(UserPrompter.EVENT_CODE_PROCESS_UNTERMINATED, new ZombieProcessPrompter());
 	}
 
 	/*

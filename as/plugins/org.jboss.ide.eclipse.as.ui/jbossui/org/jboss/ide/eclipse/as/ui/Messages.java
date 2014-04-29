@@ -294,12 +294,6 @@ public class Messages extends NLS {
 	public static String ChangeTimestampServerListDialog_Title;
 	public static String ChangeTimestampServerListDialog_Message;
 
-	public static String ServerAlreadyStartedDialog_Message;
-	public static String ServerAlreadyStartedDialog_Title;
-	public static String ServerAlreadyStartedDialog_Desc;
-	public static String ServerAlreadyStartedDialog_Connect;
-	public static String ServerAlreadyStartedDialog_Launch;
-
 	public static String ServerJavaArgsSyncText;
 	public static String ServerJavaArgsSyncDesc;
 	public static String LaunchConfigIgnoreLaunchButton;
