@@ -12,7 +12,10 @@ package org.jboss.ide.eclipse.as.core.server;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.server.core.IPublishListener;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeLifecycleListener;
@@ -46,15 +49,12 @@ public class UnitedServerListenerManager implements
 	protected ArrayList<UnitedServerListener> list;
 	private UnitedServerListenerManager() {
 		list = new ArrayList<UnitedServerListener>();
-		ServerCore.addServerLifecycleListener(this);
-		ServerCore.addRuntimeLifecycleListener(this);
+		ServerCore.addServerLifecycleListener(UnitedServerListenerManager.this);
+		ServerCore.addRuntimeLifecycleListener(UnitedServerListenerManager.this);
 		IServer[] allServers = ServerCore.getServers();
-		System.out.println("constructor___: " + allServers.length);
 		for( int i = 0; i < allServers.length; i++ ) {
-			allServers[i].addServerListener(this);
-			allServers[i].addPublishListener(this);
-			System.out.println("Added listeners to " + allServers[i].getName());
-			System.out.println();
+			allServers[i].addServerListener(UnitedServerListenerManager.this);
+			allServers[i].addPublishListener(UnitedServerListenerManager.this);
 		}
 	}
 	
@@ -94,7 +94,6 @@ public class UnitedServerListenerManager implements
 		}
 	}
 	public void serverChanged(IServer server) {
-		System.out.println("server changed-1");
 		UnitedServerListener[] listeners = getListeners();
 		for( int i = 0; i < listeners.length; i++) {
 			if( listeners[i].canHandleServer(server))
@@ -112,7 +111,6 @@ public class UnitedServerListenerManager implements
 	}
 	
 	public void serverChanged(ServerEvent event) {
-		System.out.println("server changed-2");
 		IServer server = event.getServer();
 		UnitedServerListener[] listeners = getListeners();
 		for( int i = 0; i < listeners.length; i++) {
