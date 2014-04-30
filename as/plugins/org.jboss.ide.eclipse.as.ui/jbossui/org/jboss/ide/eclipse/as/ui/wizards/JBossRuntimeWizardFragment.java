@@ -278,7 +278,7 @@ public class JBossRuntimeWizardFragment extends AbstractJBTRuntimeWizardFragment
 
 	// Launchable only from UI thread
 	protected void updateDependentWidgets() {
-		super.updatePage();
+		super.updateDependentWidgets();
 		String homeDir = homeDirComposite.getHomeDirectory();
 		String folder;
 		if (!homeDirComposite.isHomeValid()) {
