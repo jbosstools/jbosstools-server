@@ -17,6 +17,12 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.jboss.ide.eclipse.as.wtp.ui.util.FormDataUtility;
 
+/**
+ * This class has been deprecated and replaced by FormDataUtility.
+ * 
+ * There will be no replacement for bringViewToFront, so any clients who need that
+ * should find their own place to put it. This method was not intended to be publicly accessible.
+ */
 @Deprecated
 public class UIUtil extends FormDataUtility {
 	public static final IWorkbenchPart bringViewToFront(String viewId) throws PartInitException {

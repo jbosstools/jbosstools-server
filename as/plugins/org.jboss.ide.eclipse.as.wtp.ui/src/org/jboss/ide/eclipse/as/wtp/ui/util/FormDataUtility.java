@@ -40,6 +40,9 @@ public class FormDataUtility {
 		return setFormAttachments(data, topStart, topOffset, bottomStart, bottomOffset, leftStart, leftOffset, rightStart, rightOffset);
 	}
 	
+	/*
+	 * Poorly named method, but cannot change due to api
+	 */
 	public static FormData createFormData2(Object topStart, int topOffset, Object bottomStart, int bottomOffset, 
 			Object leftStart, int leftOffset, Object rightStart, int rightOffset) {
 		FormData data = new FormData();
