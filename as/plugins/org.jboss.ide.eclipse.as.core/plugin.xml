@@ -759,7 +759,7 @@
          	version="1.0"/>
        <facet id="wst.web"  version="1.0,1.2,1.3,1.4"/>
        <facet id="jst.web"  version="2.2,2.3,2.4,2.5"/>
-       <facet id="jst.java" version="1.3,1.4,5.0,6.0,1.7"/>
+       <facet id="jst.java" version="1.3,1.4,5.0,6.0,1.7,1.8"/>
        <facet id="jst.utility" version="1.0"/>
        <facet id="jst.ejb" version="2.0,2.1,3.0"/>
        <facet id="jst.ear" version="1.2,1.3,1.4,5.0"/>
@@ -788,7 +788,7 @@
          			version="4.3"/>
                 <facet id="wst.web"  version="1.0,1.2,1.3,1.4"/>
        			<facet id="jst.web"  version="2.2,2.3,2.4,2.5"/>
-       			<facet id="jst.java" version="1.3,1.4,5.0,6.0,1.7"/>
+       			<facet id="jst.java" version="1.3,1.4,5.0,6.0,1.7,1.8"/>
        			<facet id="jst.utility" version="1.0"/>
        			<facet id="jst.connector" version="1.0,1.5"/>
        			<facet id="jst.ejb" version="2.0,2.1,3.0"/>
@@ -801,7 +801,7 @@
          			version="5.0"/>
                 <facet id="wst.web"  version="1.0,1.2,1.3,1.4"/>
        			<facet id="jst.web"  version="2.2,2.3,2.4,2.5"/>
-       			<facet id="jst.java" version="1.3,1.4,5.0,6.0,1.7"/>
+       			<facet id="jst.java" version="1.3,1.4,5.0,6.0,1.7,1.8"/>
        			<facet id="jst.utility" version="1.0"/>
        			<facet id="jst.connector" version="1.0,1.5"/>
        			<facet id="jst.ejb" version="2.0,2.1,3.0"/>
@@ -815,7 +815,7 @@
          			version="6.0"/>
 		       <facet id="wst.web"  version="1.0,1.2,1.3,1.4"/>
 		       <facet id="jst.web"  version="2.2,2.3,2.4,2.5,3.0"/>
-		       <facet id="jst.java" version="5.0,6.0,1.7"/>
+		       <facet id="jst.java" version="5.0,6.0,1.7,1.8"/>
 		       <facet id="jst.utility" version="1.0"/>
 		       <facet id="jst.connector" version="1.0,1.5,1.6"/>
 		       <facet id="jst.ejb" version="2.0,2.1,3.0,3.1"/>
@@ -829,7 +829,7 @@
          			version="6.1"/>
 		       <facet id="wst.web"  version="1.0,1.2,1.3,1.4"/>
 		       <facet id="jst.web"  version="2.2,2.3,2.4,2.5,3.0"/>
-		       <facet id="jst.java" version="5.0,6.0,1.7"/>
+		       <facet id="jst.java" version="5.0,6.0,1.7,1.8"/>
 		       <facet id="jst.utility" version="1.0"/>
 		       <facet id="jst.connector" version="1.0,1.5,1.6"/>
 		       <facet id="jst.ejb" version="2.0,2.1,3.0,3.1"/>
@@ -874,7 +874,7 @@
          version="3.2"/>
        <facet id="wst.web"  version="1.0,1.2,1.3,1.4"/>
        <facet id="jst.web" version="2.2,2.3,2.4"/>
-       <facet id="jst.java" version="1.3,1.4,5.0,6.0,1.7"/>
+       <facet id="jst.java" version="1.3,1.4,5.0,6.0,1.7,1.8"/>
        <facet id="jst.utility" version="1.0"/>
        <facet id="jst.ejb" version="2.0,2.1"/>
        <facet id="jst.ear" version="1.2,1.3,1.4"/>
@@ -888,7 +888,7 @@
          version="4.0"/>
        <facet id="wst.web"  version="1.0,1.2,1.3,1.4"/>
        <facet id="jst.web"  version="2.2,2.3,2.4,2.5"/>
-       <facet id="jst.java" version="1.3,1.4,5.0,6.0,1.7"/>
+       <facet id="jst.java" version="1.3,1.4,5.0,6.0,1.7,1.8"/>
        <facet id="jst.utility" version="1.0"/>
        <facet id="jst.connector" version="1.0,1.5"/>
        <facet id="jst.ejb" version="2.0,2.1,3.0"/>
@@ -902,7 +902,7 @@
          	version="4.2"/>
        <facet id="wst.web"  version="1.0,1.2,1.3,1.4"/>
        <facet id="jst.web"  version="2.2,2.3,2.4,2.5"/>
-       <facet id="jst.java" version="1.3,1.4,5.0,6.0,1.7"/>
+       <facet id="jst.java" version="1.3,1.4,5.0,6.0,1.7,1.8"/>
        <facet id="jst.utility" version="1.0"/>
        <facet id="jst.connector" version="1.0,1.5"/>
        <facet id="jst.ejb" version="2.0,2.1,3.0"/>
@@ -916,7 +916,7 @@
          	version="5.0"/>
        <facet id="wst.web"  version="1.0,1.2,1.3,1.4"/>
        <facet id="jst.web"  version="2.2,2.3,2.4,2.5"/>
-       <facet id="jst.java" version="1.3,1.4,5.0,6.0,1.7"/>
+       <facet id="jst.java" version="1.3,1.4,5.0,6.0,1.7,1.8"/>
        <facet id="jst.utility" version="1.0"/>
        <facet id="jst.connector" version="1.0,1.5"/>
        <facet id="jst.ejb" version="2.0,2.1,3.0"/>
@@ -930,7 +930,7 @@
          	version="5.1"/>
        <facet id="wst.web"  version="1.0,1.2,1.3,1.4"/>
        <facet id="jst.web"  version="2.2,2.3,2.4,2.5"/>
-       <facet id="jst.java" version="1.3,1.4,5.0,6.0,1.7"/>
+       <facet id="jst.java" version="1.3,1.4,5.0,6.0,1.7,1.8"/>
        <facet id="jst.utility" version="1.0"/>
        <facet id="jst.connector" version="1.0,1.5"/>
        <facet id="jst.ejb" version="2.0,2.1,3.0"/>
@@ -944,7 +944,7 @@
          	version="6.0"/>
        <facet id="wst.web"  version="1.0,1.2,1.3,1.4"/>
        <facet id="jst.web"  version="2.2,2.3,2.4,2.5,3.0"/>
-       <facet id="jst.java" version="5.0,6.0,1.7"/>
+       <facet id="jst.java" version="5.0,6.0,1.7,1.8"/>
        <facet id="jst.utility" version="1.0"/>
        <facet id="jst.connector" version="1.0,1.5,1.6"/>
        <facet id="jst.ejb" version="2.0,2.1,3.0,3.1"/>
@@ -959,7 +959,7 @@
          	version="7.0"/>
        <facet id="wst.web"  version="1.0,1.2,1.3,1.4"/>
        <facet id="jst.web"  version="2.2,2.3,2.4,2.5,3.0"/>
-       <facet id="jst.java" version="5.0,6.0,1.7"/>
+       <facet id="jst.java" version="5.0,6.0,1.7,1.8"/>
        <facet id="jst.utility" version="1.0"/>
        <facet id="jst.connector" version="1.0,1.5,1.6"/>
        <facet id="jst.ejb" version="2.0,2.1,3.0,3.1"/>
@@ -974,7 +974,7 @@
          	version="7.1"/>
        <facet id="wst.web"  version="1.0,1.2,1.3,1.4"/>
        <facet id="jst.web"  version="2.2,2.3,2.4,2.5,3.0"/>
-       <facet id="jst.java" version="5.0,6.0,1.7"/>
+       <facet id="jst.java" version="5.0,6.0,1.7,1.8"/>
        <facet id="jst.utility" version="1.0"/>
        <facet id="jst.connector" version="1.0,1.5,1.6"/>
        <facet id="jst.ejb" version="2.0,2.1,3.0,3.1"/>
@@ -997,7 +997,7 @@
          	version="8.0"/>
        <facet id="wst.web"  version="1.0,1.2,1.3,1.4"/>
        <facet id="jst.web"  version="2.2,2.3,2.4,2.5,3.0,3.1"/>
-       <facet id="jst.java" version="5.0,6.0,1.7"/>
+       <facet id="jst.java" version="5.0,6.0,1.7,1.8"/>
        <facet id="jst.utility" version="1.0"/>
        <facet id="jst.connector" version="1.0,1.5,1.6,1.7"/>
        <facet id="jst.ejb" version="2.0,2.1,3.0,3.1,3.2"/>
