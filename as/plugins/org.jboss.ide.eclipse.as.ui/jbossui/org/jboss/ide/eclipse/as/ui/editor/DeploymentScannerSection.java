@@ -99,24 +99,24 @@ public class DeploymentScannerSection extends ServerEditorSection {
 		addScannersOnStartup = toolkit.createButton(composite, "Add missing deployment scanners after server startup.", SWT.CHECK);
 		addScannersOnStartup.setLayoutData(UIUtil.createFormData2(0, 5, null, 0, 0, 5, null, 0));
 		Control top = addScannersOnStartup;
-		if( showRemoveScannerButton() ) {
-			removeScannersOnShutdown = toolkit.createButton(composite, "Remove added deployment scanners before shutdown.", SWT.CHECK);
-			removeScannersOnShutdown.setLayoutData(UIUtil.createFormData2(addScannersOnStartup, 5, null, 0, 0, 5, null, 0));
-			top = removeScannersOnShutdown;
-		}
 		if( showIntervalText()) {
-			Label intLabel = toolkit.createLabel(composite, "Override Scanner Interval (ms)");
-			intLabel.setLayoutData(UIUtil.createFormData2(top, 5, null, 0, 0, 5, null, 0));
+			Label intLabel = toolkit.createLabel(composite, "Added Scanner Interval (ms)");
+			intLabel.setLayoutData(UIUtil.createFormData2(top, 5, null, 0, 10, 0, null, 0));
 			intervalText = toolkit.createText(composite, "", SWT.CHECK);
 			intervalText.setLayoutData(UIUtil.createFormData2(top, 5, null, 0, 50, 5, 80, 0));
 			top = intervalText;
 		}
 		if( showTimeoutText()) {
-			Label timeLabel = toolkit.createLabel(composite, "Override Scanner Timeout (sec)");
-			timeLabel.setLayoutData(UIUtil.createFormData2(top, 5, null, 0, 0, 5, null, 0));
+			Label timeLabel = toolkit.createLabel(composite, "Added Scanner Timeout (sec)");
+			timeLabel.setLayoutData(UIUtil.createFormData2(top, 5, null, 0, 10, 0, null, 0));
 			timeoutText = toolkit.createText(composite, "", SWT.CHECK);
 			timeoutText.setLayoutData(UIUtil.createFormData2(top, 5, null, 0, 50, 5, 80, 0));
 			top = timeoutText;
+		}
+		if( showRemoveScannerButton() ) {
+			removeScannersOnShutdown = toolkit.createButton(composite, "Remove added deployment scanners before shutdown.", SWT.CHECK);
+			removeScannersOnShutdown.setLayoutData(UIUtil.createFormData2(top, 5, null, 0, 0, 5, null, 0));
+			top = removeScannersOnShutdown;
 		}
 		
 		toolkit.paintBordersFor(composite);
@@ -196,7 +196,7 @@ public class DeploymentScannerSection extends ServerEditorSection {
 		public SetStartupPropertyCommand(IServerWorkingCopy server) {
 			super(server, "Modify deployment scanner startup preference",  
 					addScannersOnStartup, addScannersOnStartup.getSelection(), 
-					IJBossToolingConstants.PROPERTY_ADD_DEPLOYMENT_SCANNERS, startupListener);
+					IJBossToolingConstants.PROPERTY_ADD_DEPLOYMENT_SCANNERS, startupListener, true);
 		}
 	}
 
@@ -204,7 +204,7 @@ public class DeploymentScannerSection extends ServerEditorSection {
 		public SetShutdownPropertyCommand(IServerWorkingCopy server) {
 			super(server, "Modify deployment scanner shutdown preference",  
 					removeScannersOnShutdown, removeScannersOnShutdown.getSelection(), 
-					IJBossToolingConstants.PROPERTY_REMOVE_DEPLOYMENT_SCANNERS, shutdownListener);
+					IJBossToolingConstants.PROPERTY_REMOVE_DEPLOYMENT_SCANNERS, shutdownListener, true);
 		}
 	}
 

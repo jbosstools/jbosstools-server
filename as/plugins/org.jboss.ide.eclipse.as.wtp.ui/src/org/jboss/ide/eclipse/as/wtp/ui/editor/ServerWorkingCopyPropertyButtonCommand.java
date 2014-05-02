@@ -35,6 +35,10 @@ public class ServerWorkingCopyPropertyButtonCommand extends ServerCommand {
 	
 	public ServerWorkingCopyPropertyButtonCommand(IServerWorkingCopy wc, String commandName, 
 			Button button, boolean newVal, String attributeKey, SelectionListener listener) {
+		this(wc, commandName, button, newVal, attributeKey, listener, false);
+	}
+	public ServerWorkingCopyPropertyButtonCommand(IServerWorkingCopy wc, String commandName, 
+			Button button, boolean newVal, String attributeKey, SelectionListener listener, boolean defaultval) {
 		super(wc, commandName);
 		this.wc = wc;
 		this.button = button;
@@ -42,7 +46,7 @@ public class ServerWorkingCopyPropertyButtonCommand extends ServerCommand {
 		this.newVal = newVal;
 		this.listener = listener;
 		if( key != null )
-			this.oldVal = wc.getAttribute(attributeKey, false); 
+			this.oldVal = wc.getAttribute(attributeKey, defaultval); 
 	}
 	
 	public void execute() {
