@@ -29,7 +29,6 @@ public class UnitedServerListener implements
 	IServerLifecycleListener, IServerListener, IRuntimeLifecycleListener {
 
 	public void init(IServer server) {
-		System.out.println("init listener: " + server.getName() + " - " + getClass().getName());
 	}
 	
 	public void serverAdded(IServer server) {}

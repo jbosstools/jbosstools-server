@@ -22,10 +22,18 @@ public interface IWTPConstants {
 	public static final String FACET_UTILITY  = "jst.utility";//$NON-NLS-1$
 	public static final String FACET_CONNECTOR  = "jst.connector";//$NON-NLS-1$
 	public static final String FACET_APP_CLIENT = "jst.appclient";//$NON-NLS-1$
-	public static final String FACET_ESB = "jst.jboss.esb";//$NON-NLS-1$
-	
 	public static final String FACET_JSF = "jst.jsf"; //$NON-NLS-1$
 	public static final String FACET_JPA = "jpt.jpa"; //$NON-NLS-1$
+	public static final String FACET_ESB = "jst.jboss.esb";//$NON-NLS-1$
+	public static final String FACET_SAR = "jst.jboss.sar";//$NON-NLS-1$
+	
+	public static final String[] KNOWN_FACETS = {
+		FACET_WEB, FACET_STATIC_WEB, FACET_WEB_FRAGMENT, 
+		FACET_EJB, FACET_EAR, FACET_UTILITY, FACET_CONNECTOR,
+		FACET_APP_CLIENT, FACET_JSF, FACET_JPA, 
+		FACET_ESB, FACET_SAR
+	};
+	
 	
 	public static final String EXT_JAR = ".jar"; //$NON-NLS-1$
 	public static final String EXT_ESB = ".esb"; //$NON-NLS-1$

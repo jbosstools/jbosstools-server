@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.classpath.core.runtime.internal;
+package org.jboss.ide.eclipse.as.classpath.core.runtime.cache.internal;
 
 import java.util.HashMap;
 import java.util.Map;

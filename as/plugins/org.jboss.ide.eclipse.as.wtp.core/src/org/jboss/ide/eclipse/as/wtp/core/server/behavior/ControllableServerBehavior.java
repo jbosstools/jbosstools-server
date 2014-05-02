@@ -249,6 +249,20 @@ public class ControllableServerBehavior extends ServerBehaviourDelegate implemen
 	}
 	
 	@Override
+	public IStatus canStart(String launchMode) {
+		try {
+			ILaunchServerController con = getLaunchController();
+			if( con != null ) {
+				return con.canStart(launchMode);
+			} else {
+				return Status.CANCEL_STATUS;
+			}
+		} catch(CoreException ce) {
+			return ce.getStatus();
+		}
+	}
+	
+	@Override
 	public IStatus canStop() {
 		try {
 			IServerShutdownController con = getShutdownController();

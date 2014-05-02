@@ -25,6 +25,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
@@ -265,10 +266,18 @@ public abstract class ServerTypePreferencePage extends PreferencePage implements
 		protected void removeObject(Object o) {
 			if( o != null ) {
 				String id = getCurrentId();
+				int preSelIndex = cacheMap.get(id).indexOf(o);
+				int toSelect = (preSelIndex == 0 ? 0 : preSelIndex-1);
 				cacheMap.get(id).remove(o);
 				if( !changed.contains(id))
 					changed.add(id);
 				viewer.refresh();
+				if( cacheMap.get(id).size() > 0 ) {
+					Object nextSel = cacheMap.get(id).get(toSelect);
+					if( nextSel != null ) {
+						viewer.setSelection(new StructuredSelection(nextSel));
+					}
+				}
 			}
 		}
 		

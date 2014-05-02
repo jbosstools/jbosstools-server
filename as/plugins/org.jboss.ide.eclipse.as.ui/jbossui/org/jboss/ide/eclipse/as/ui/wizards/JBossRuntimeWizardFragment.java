@@ -292,9 +292,11 @@ public class JBossRuntimeWizardFragment extends AbstractJBTRuntimeWizardFragment
 				folder = new Path(homeDir).append(p).toString();
 		}
 		configurations.setFolder(folder);
-		File f = new File(folder);
-		configurations.getControl().setEnabled(f.exists() && f.isDirectory());
-		configDirTextVal = configDirText.getText();
+		if( folder != null ) {
+			File f = new File(folder);
+			configurations.getControl().setEnabled(f.exists() && f.isDirectory());
+			configDirTextVal = configDirText.getText();
+		}
 	}
 
 	protected String getErrorString() {

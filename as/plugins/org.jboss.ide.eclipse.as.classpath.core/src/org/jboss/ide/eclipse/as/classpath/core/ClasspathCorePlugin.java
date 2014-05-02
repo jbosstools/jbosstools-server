@@ -17,8 +17,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.ServerCore;
-import org.jboss.ide.eclipse.as.classpath.core.runtime.internal.RuntimeClasspathCache;
-import org.jboss.ide.eclipse.as.classpath.core.runtime.internal.RuntimeKey;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.cache.internal.RuntimeClasspathCache;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.cache.internal.RuntimeKey;
 import org.osgi.framework.BundleContext;
 
 /**
