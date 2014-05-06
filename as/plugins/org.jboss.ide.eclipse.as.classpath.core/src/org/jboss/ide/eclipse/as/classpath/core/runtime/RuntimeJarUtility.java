@@ -11,7 +11,6 @@
 package org.jboss.ide.eclipse.as.classpath.core.runtime;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,15 +21,13 @@ import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.ServerCore;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.internal.PathProviderResolutionUtil;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.internal.SourceJarsLocator;
 import org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver;
-import org.jboss.ide.eclipse.as.core.resolvers.RuntimeVariableResolver;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
-import org.jboss.tools.foundation.core.expressions.ExpressionResolver;
-import org.jboss.tools.foundation.core.expressions.IVariableResolver;
 
 /**
  * This class assists in fetching a set of jars based on a given
@@ -76,11 +73,11 @@ public class RuntimeJarUtility {
 	public IPath[] getJarsForRuntime(IRuntime rt, int type) {
 		if( type == CLASSPATH_JARS) {
 			IRuntimePathProvider[] sets = CustomRuntimeClasspathModel.getInstance().getEntries(rt.getRuntimeType());
-			IPath[] allPaths = getAllEntries(rt, sets);
+			IPath[] allPaths = PathProviderResolutionUtil.getAllPaths(rt, sets);
 			return allPaths;
 		} else if( type == ALL_JARS) {
 			IRuntimePathProvider[] sets = new SourceJarsLocator().getDefaultPathProviders(rt.getRuntimeType());
-			IPath[] allPaths = getAllEntries(rt, sets);
+			IPath[] allPaths = PathProviderResolutionUtil.getAllPaths(rt, sets);
 			return allPaths;
 		}
 		return null;
@@ -143,11 +140,11 @@ public class RuntimeJarUtility {
 		
 		if( type == CLASSPATH_JARS) {
 			IRuntimePathProvider[] sets = CustomRuntimeClasspathModel.getInstance().getEntries(rtType);
-			IPath[] allPaths = getAllEntries(replacements, sets);
+			IPath[] allPaths = PathProviderResolutionUtil.getAllPaths(replacements, sets);
 			return allPaths;
 		} else if( type == ALL_JARS) {
 			IRuntimePathProvider[] sets = new SourceJarsLocator().getDefaultPathProviders(rtType);
-			IPath[] allPaths = getAllEntries(replacements, sets);
+			IPath[] allPaths = PathProviderResolutionUtil.getAllPaths(replacements, sets);
 			return allPaths;
 		}
 		return null;
@@ -187,31 +184,4 @@ public class RuntimeJarUtility {
 			
 		}
 	}
-	
-	
-	/*
-	 * Resolution of the sets to get actual paths from them
-	 */
-
-	private static IPath[] getAllEntries(IRuntime runtime, IRuntimePathProvider[] sets) {
-		return getAllEntries(new RuntimeVariableResolver(runtime), sets);
-	}
-
-	private static IPath[] getAllEntries(Map<String, String> map, IRuntimePathProvider[] sets) {
-		return getAllEntries(new ExpressionResolver.MapVariableResolver(map), sets);
-	}
-	
-	private static IPath[] getAllEntries(IVariableResolver resolver, IRuntimePathProvider[] sets) {
-		ArrayList<IPath> retval = new ArrayList<IPath>();
-		for( int i = 0; i < sets.length; i++ ) {
-			sets[i].setVariableResolver(resolver);
-			IPath[] absolute = sets[i].getAbsolutePaths();
-			for( int j = 0; j < absolute.length; j++ ) {
-				if( !retval.contains(absolute[j]))
-					retval.add(absolute[j]);
-			}
-		}
-		return (IPath[]) retval.toArray(new IPath[retval.size()]);
-	}
-		
 }

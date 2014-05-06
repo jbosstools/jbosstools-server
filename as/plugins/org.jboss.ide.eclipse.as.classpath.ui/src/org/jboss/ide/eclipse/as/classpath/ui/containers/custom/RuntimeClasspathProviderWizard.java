@@ -99,7 +99,7 @@ public class RuntimeClasspathProviderWizard extends TaskWizard {
 			return props != null && props.getFileStructure() == props.FILE_STRUCTURE_CONFIG_DEPLOYMENTS;
 		}
 		public String getName() {
-			return "Layered Product Module Folder";
+			return "JBoss Module";
 		}
 	}
 	

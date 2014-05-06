@@ -13,11 +13,16 @@ package org.jboss.ide.eclipse.as.core.server;
 public interface IPollResultListener {
 
 	/**
-	 * Called if the poller did 
-	 * @param expectedState
-	 * @param currentState
+	 * Called if the poller did reach the expected state
+	 * @param expectedState the expected state
+	 * @param currentState  the actual state
 	 */
 	public void stateAsserted(boolean expectedState, boolean currentState);
 
+	/**
+	 * Called if the poller did NOT reach the expected state
+	 * @param expectedState the expected state
+	 * @param currentState  the actual state
+	 */
 	public void stateNotAsserted(boolean expectedState, boolean currentState);	
 }

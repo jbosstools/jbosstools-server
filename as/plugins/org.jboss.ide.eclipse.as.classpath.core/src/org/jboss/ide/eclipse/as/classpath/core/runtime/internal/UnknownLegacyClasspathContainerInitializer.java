@@ -81,7 +81,7 @@ public class UnknownLegacyClasspathContainerInitializer extends ClasspathContain
 		}
 
 		public IClasspathEntry[] getClasspathEntries() {
-			return new ClientAllRuntimeClasspathProvider().resolveClasspathContainer(null, rt);
+			return new ProjectRuntimeClasspathProvider().resolveClasspathContainer(null, rt);
 		}
 
 		public String getDescription() {

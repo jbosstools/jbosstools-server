@@ -55,6 +55,19 @@ public class LayeredProductPathProvider implements IRuntimePathProvider {
 		this.slot = (slot != null && slot.trim().isEmpty() ? null : slot);
 	}
 	
+	public LayeredProductPathProvider(ModuleSlot ms) {
+		this.moduleName = ms.getModule();
+		this.slot = (ms.getSlot() != null && ms.getSlot().trim().isEmpty() ? null : ms.getSlot());
+	}
+
+	public String getModule() {
+		return moduleName;
+	}
+	
+	public String getSlot() {
+		return slot;
+	}
+	
 	public IPath[] getAbsolutePaths() {
 		String runtimeHomePattern = "${" + ConfigNameResolver.JBOSS_SERVER_HOME + "}";
 		String runtimeHome = new ExpressionResolver(resolver).resolve(runtimeHomePattern);
