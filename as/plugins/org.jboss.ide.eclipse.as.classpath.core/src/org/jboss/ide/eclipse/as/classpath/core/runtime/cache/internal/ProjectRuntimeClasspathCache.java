@@ -14,66 +14,45 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.IRuntimeLifecycleListener;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.classpath.core.internal.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 
-public class RuntimeClasspathCache implements IRuntimeLifecycleListener {
-	private static RuntimeClasspathCache instance = null;
-	public static RuntimeClasspathCache getInstance() {
+public class ProjectRuntimeClasspathCache {
+	private static ProjectRuntimeClasspathCache instance = null;
+	public static ProjectRuntimeClasspathCache getInstance() {
 		if( instance == null )
-			instance = new RuntimeClasspathCache();
+			instance = new ProjectRuntimeClasspathCache();
 		return instance;
 	}
 	
 	
-	private Map<RuntimeKey, IClasspathEntry[]> runtimeClasspaths;
+	private Map<ProjectRuntimeKey, IClasspathEntry[]> runtimeClasspaths;
 	
-	RuntimeClasspathCache() {
-		runtimeClasspaths = new HashMap<RuntimeKey, IClasspathEntry[]>();
-	}
-	public void runtimeRemoved(IRuntime runtime) {
-		removeRuntimeClasspath(runtime);
+	ProjectRuntimeClasspathCache() {
+		runtimeClasspaths = new HashMap<ProjectRuntimeKey, IClasspathEntry[]>();
 	}
 	
-	public void runtimeChanged(IRuntime runtime) {
-		removeRuntimeClasspath(runtime);
-	}
-	
-	public void runtimeAdded(IRuntime runtime) {
-		
-	}
-	
-	private void removeRuntimeClasspath(IRuntime runtime) {
-		if (runtime == null) {
-			return;
-		}
-		RuntimeKey key = getRuntimeKey(runtime);
-		if (key != null) {
-			runtimeClasspaths.remove(key);
-		}
-	}
-	
-	private Map<RuntimeKey, IClasspathEntry[]> getRuntimeClasspaths() {
+	private Map<ProjectRuntimeKey, IClasspathEntry[]> getRuntimeClasspaths() {
 		return runtimeClasspaths;
 	}
 	
-	public IClasspathEntry[] getEntries(IRuntime rt) {
-		return getRuntimeClasspaths().get(getRuntimeKey(rt));
+	public IClasspathEntry[] getEntries(IProject p, IRuntime rt) {
+		return getRuntimeClasspaths().get(getProjectRuntimeKey(p, rt));
 	}
 	
-	public void cacheEntries(IRuntime rt, IClasspathEntry[] entries) {
-		getRuntimeClasspaths().put(getRuntimeKey(rt), entries);
+	public void cacheEntries(IProject p, IRuntime rt, IClasspathEntry[] entries) {
+		getRuntimeClasspaths().put(getProjectRuntimeKey(p, rt), entries);
 	}
 	
-	static RuntimeKey getRuntimeKey(IRuntime runtime) {
+	static ProjectRuntimeKey getProjectRuntimeKey(IProject project, IRuntime runtime) {
 		if( runtime == null ) {
 			logError(runtime);
 			return null;
@@ -87,7 +66,7 @@ public class RuntimeClasspathCache implements IRuntimeLifecycleListener {
 		IPath loc = runtime.getLocation();
 		String rtID  = runtime.getRuntimeType().getId();
 		IPath configPath = jbsrt == null ? null : jbsrt.getConfigurationFullPath();
-		return new RuntimeKey(loc, configPath, rtID);
+		return new ProjectRuntimeKey(project, loc, configPath, rtID);
 	}
 
 	private static void logError(IRuntime runtime) {

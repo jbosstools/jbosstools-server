@@ -20,12 +20,12 @@ import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
  * in turning a project / facet / runtime combination into classpath entries
  * that should be added to a project.  
  */
-public final class JBossRuntimeClasspathProviderAdapterFactory implements IAdapterFactory {
+public final class JBossClasspathProviderAdapterFactory implements IAdapterFactory {
 	private static final Class[] ADAPTER_TYPES = { IClasspathProvider.class };
 
 	public Object getAdapter(final Object adaptable, final Class adapterType) {
 		IRuntimeComponent rc = (IRuntimeComponent) adaptable;
-		return new ProjectRuntimeClasspathProvider(rc);
+		return new RuntimeFacetClasspathProvider(rc);
 	}
 
 	public Class[] getAdapterList() {

@@ -17,8 +17,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.ServerCore;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.cache.internal.ModuleSlotCache;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.cache.internal.RuntimeClasspathCache;
-import org.jboss.ide.eclipse.as.classpath.core.runtime.cache.internal.RuntimeKey;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -81,8 +81,8 @@ public class ClasspathCorePlugin extends Plugin {
 		IRuntime[] allRuntimes = ServerCore.getRuntimes();
 		for( int i = 0; i < allRuntimes.length; i++ ) {
 			if( allRuntimes[i].getRuntimeType().getId().equals(rt.getId())) {
-				RuntimeKey key = RuntimeClasspathCache.getRuntimeKey(allRuntimes[i]);
-				RuntimeClasspathCache.getInstance().getRuntimeClasspaths().put(key, null);
+				RuntimeClasspathCache.getInstance().cacheEntries(allRuntimes[i], null);
+				ModuleSlotCache.getInstance().clearRuntimeModuleSlots(allRuntimes[i]);
 			}
 		}
 	}

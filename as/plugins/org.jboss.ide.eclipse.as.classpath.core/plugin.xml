@@ -34,18 +34,6 @@
             id="org.jboss.ide.eclipse.jdt.core.classpath.j2ee-1.4">
       </classpathContainerInitializer>
    </extension>
-   
-   <!--
-   Cannot be enabled before resource change listening is implemented.(max)
-   <extension
-         point="org.eclipse.jdt.core.classpathContainerInitializer">
-      <classpathContainerInitializer
-            class="org.jboss.ide.eclipse.as.classpath.core.DirectoryLibraryContainerInitializer"
-            id="org.jboss.ide.eclipse.as.classpath.core.DirectoryLibraryContainer">
-      </classpathContainerInitializer>
-   </extension>
-   -->
-   
 
    <!-- 
         Items below here must be investigated when adding new server types
@@ -56,56 +44,56 @@
      <adapter>
       <runtime-component
             id="org.jboss.ide.eclipse.as.runtime.component" version="3.2"/>
-      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossRuntimeClasspathProviderAdapterFactory"/>
+      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossClasspathProviderAdapterFactory"/>
       <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
 	</adapter>
 	
      <adapter>
       <runtime-component
             id="org.jboss.ide.eclipse.as.runtime.component" version="4.0"/>
-      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossRuntimeClasspathProviderAdapterFactory"/>
+      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossClasspathProviderAdapterFactory"/>
       <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
 	</adapter>
 	
      <adapter>
       <runtime-component
             id="org.jboss.ide.eclipse.as.runtime.component" version="4.2"/>
-      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossRuntimeClasspathProviderAdapterFactory"/>
+      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossClasspathProviderAdapterFactory"/>
       <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
 	</adapter>
 
      <adapter>
       <runtime-component
             id="org.jboss.ide.eclipse.as.runtime.component" version="5.0"/>
-      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossRuntimeClasspathProviderAdapterFactory"/>
+      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossClasspathProviderAdapterFactory"/>
       <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
 	</adapter>
 	
 	 <adapter>
       <runtime-component
             id="org.jboss.ide.eclipse.as.runtime.component" version="5.1"/>
-      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossRuntimeClasspathProviderAdapterFactory"/>
+      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossClasspathProviderAdapterFactory"/>
       <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
 	</adapter>
 	
 	<adapter>
       <runtime-component
             id="org.jboss.ide.eclipse.as.runtime.component" version="6.0"/>
-      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossRuntimeClasspathProviderAdapterFactory"/>
+      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossClasspathProviderAdapterFactory"/>
       <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
 	</adapter>
 
      <adapter>
       <runtime-component
             id="org.jboss.ide.eclipse.eap.runtime.component" version="4.3"/>
-      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossRuntimeClasspathProviderAdapterFactory"/>
+      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossClasspathProviderAdapterFactory"/>
       <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
 	</adapter>
 
      <adapter>
       <runtime-component
             id="org.jboss.ide.eclipse.eap.runtime.component" version="5.0"/>
-      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossRuntimeClasspathProviderAdapterFactory"/>
+      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossClasspathProviderAdapterFactory"/>
       <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
 	</adapter>
 
@@ -117,34 +105,34 @@
 	<adapter>
       <runtime-component
             id="org.jboss.ide.eclipse.as.runtime.component" version="7.0"/>
-      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossRuntimeClasspathProviderAdapterFactory"/>
+      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossClasspathProviderAdapterFactory"/>
       <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
 	</adapter>
 
 	<adapter>
       <runtime-component
             id="org.jboss.ide.eclipse.as.runtime.component" version="7.1"/>
-      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossRuntimeClasspathProviderAdapterFactory"/>
+      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossClasspathProviderAdapterFactory"/>
       <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
 	</adapter>
 		<adapter>
       <runtime-component
             id="org.jboss.ide.eclipse.as.runtime.wildfly.component" version="8.0"/>
-      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossRuntimeClasspathProviderAdapterFactory"/>
+      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossClasspathProviderAdapterFactory"/>
       <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
 	</adapter>
 	
      <adapter>
       <runtime-component
             id="org.jboss.ide.eclipse.eap.runtime.component" version="6.0"/>
-      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossRuntimeClasspathProviderAdapterFactory"/>
+      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossClasspathProviderAdapterFactory"/>
       <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
 	</adapter>
 
      <adapter>
       <runtime-component
             id="org.jboss.ide.eclipse.eap.runtime.component" version="6.1"/>
-      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossRuntimeClasspathProviderAdapterFactory"/>
+      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossClasspathProviderAdapterFactory"/>
       <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
 	</adapter>
 
@@ -158,9 +146,17 @@
      <runtimeClasspathProvider
         id="org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget"
         runtimeTypeIds="org.jboss.ide.eclipse.as.runtime.32,org.jboss.ide.eclipse.as.runtime.40,org.jboss.ide.eclipse.as.runtime.42,org.jboss.ide.eclipse.as.runtime.50,org.jboss.ide.eclipse.as.runtime.51,org.jboss.ide.eclipse.as.runtime.60,org.jboss.ide.eclipse.as.runtime.70,org.jboss.ide.eclipse.as.runtime.71,org.jboss.ide.eclipse.as.runtime.eap.43,org.jboss.ide.eclipse.as.runtime.eap.50,org.jboss.ide.eclipse.as.runtime.eap.60,org.jboss.ide.eclipse.as.runtime.eap.61,org.jboss.ide.eclipse.as.runtime.wildfly.80"
-        class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.ClientAllRuntimeClasspathProvider"/>
+        class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.ProjectRuntimeClasspathProvider"/>
    </extension>
    
+   <!-- A classpath container that can read a manifest.mf and find jboss-module dependencies -->
+   <extension
+         point="org.eclipse.jdt.core.classpathContainerInitializer">
+      <classpathContainerInitializer
+            class="org.jboss.ide.eclipse.as.classpath.core.runtime.modules.manifest.ModulesManifestEntryContainerInitializer"
+            id="org.jboss.ide.eclipse.as.classpath.core.runtime.modules.manifest">
+      </classpathContainerInitializer>
+   </extension>
    
    
    <!-- 
