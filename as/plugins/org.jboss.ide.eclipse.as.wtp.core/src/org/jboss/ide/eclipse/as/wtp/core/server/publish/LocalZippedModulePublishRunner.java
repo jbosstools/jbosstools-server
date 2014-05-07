@@ -187,6 +187,11 @@ public class LocalZippedModulePublishRunner extends ModuleResourceUtil {
 		try {
 			if( parent == null ) {
 				// We're the root module (no parent) so just create the archive to start
+				moduleRoot = TrueZipUtil.getFile(moduleAbsoluteDestination, TrueZipUtil.getJarArchiveDetector());
+				// Clear out existing, in case some child modules were removed
+				if( moduleRoot.exists()) {
+					TrueZipUtil.deleteAll(moduleRoot);
+				}
 				boolean createWorked = TrueZipUtil.createArchive(moduleAbsoluteDestination);
 				moduleRoot = TrueZipUtil.getFile(moduleAbsoluteDestination, TrueZipUtil.getJarArchiveDetector());
 			} else {

@@ -397,6 +397,7 @@ public abstract class AbstractPublishingTest extends TestCase {
 		while(iterator.hasNext()) {
 			de.schlichtherle.io.File f = new de.schlichtherle.io.File(root.toFile(), detector);
 			IPath next = iterator.next();
+			assertTrue(next.toOSString() + " must be a folder beneath " + root.toOSString(), next.segmentCount() > root.segmentCount());
 			IPath nextTrimmed = next.removeFirstSegments(root.segmentCount());
 			de.schlichtherle.io.File toCheck = new de.schlichtherle.io.File(f, nextTrimmed.toString(), ArchiveDetector.DEFAULT);
 			assertEquals("File " + next.toOSString() + (exists ? " should " : " should not ") + "exist", toCheck.exists(), exists);

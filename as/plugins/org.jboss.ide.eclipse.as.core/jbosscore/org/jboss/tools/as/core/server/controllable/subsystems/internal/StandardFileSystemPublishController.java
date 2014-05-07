@@ -454,7 +454,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 			IPath localTempLocation = getMetadataTemporaryLocation(getServer());
 			IPath tmpArchive = localTempLocation.append(archiveDestination.lastSegment());
 			
-			LocalZippedModulePublishRunner runner = createZippedRunner(module[0], tmpArchive); 
+			LocalZippedModulePublishRunner runner = createZippedRunner(module[module.length-1], tmpArchive); 
 			monitor.beginTask("Packaging Module", 200); //$NON-NLS-1$
 			
 			IStatus result = null;

@@ -13,6 +13,8 @@ package org.jboss.tools.as.test.core.subsystems;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -86,7 +88,7 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 		String s = controller.getDeployPathController().getDeployDirectory(module).toOSString();
 		assertTrue(new Path(s).toFile().exists());
 		assertEquals(testIsZip(), new Path(s).toFile().isFile());
-		verifyList(new Path(s), Arrays.asList(getLeafPaths()), true);
+		verifyListRelativePath(new Path(s), Arrays.asList(getLeafPaths()), true);
 	}
 
 	@Test
@@ -148,18 +150,18 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 		String webDepDir = controller.getDeployPathController().getDeployDirectory(new IModule[]{module[0]}).toOSString();
 		assertTrue(new Path(webDepDir).toFile().exists());
 		assertEquals(testIsZip(), new Path(webDepDir).toFile().isFile());
-		verifyList(new Path(webDepDir), Arrays.asList(new IPath[]{new Path("index.html")}), true);
+		verifyListRelativePath(new Path(webDepDir), Arrays.asList(new IPath[]{new Path("index.html")}), true);
 		
 		String utilDepDir = controller.getDeployPathController().getDeployDirectory(module).toOSString();
 		if( !testIsZip()) {
 			// we're not testing in zip mode, so utilDepDir should exist and should be a forced zip file
 			assertTrue(new Path(utilDepDir).toFile().exists());
 			assertTrue(new Path(utilDepDir).toFile().isFile());
-			verifyList(new Path(utilDepDir), Arrays.asList(new IPath[]{new Path("Main.class")}), true);
+			verifyListRelativePath(new Path(utilDepDir), Arrays.asList(new IPath[]{new Path("Main.class")}), true);
 		} else {
 			// Our util is inside a zipped war. Verify that exists
 			IPath utilRelToWeb = new Path(utilDepDir).removeFirstSegments(new Path(webDepDir).segmentCount());
-			verifyList(new Path(webDepDir), Arrays.asList(new IPath[]{utilRelToWeb.append("Main.class")}), true);
+			verifyListRelativePath(new Path(webDepDir), Arrays.asList(new IPath[]{utilRelToWeb.append("Main.class")}), true);
 		}
 	}
 
@@ -186,7 +188,7 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 		String earDepDir = controller.getDeployPathController().getDeployDirectory(new IModule[]{module[0]}).toOSString();
 		assertTrue(new Path(earDepDir).toFile().exists());
 		assertEquals(testIsZip(), new Path(earDepDir).toFile().isFile());
-		verifyList(new Path(earDepDir), Arrays.asList(new IPath[]{new Path("META-INF/application.xml")}), true);
+		verifyListRelativePath(new Path(earDepDir), Arrays.asList(new IPath[]{new Path("META-INF/application.xml")}), true);
 
 		
 		String webDepDir = controller.getDeployPathController().getDeployDirectory(new IModule[]{module[0],module[1]}).toOSString();
@@ -219,7 +221,7 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 		String earDepDir = controller.getDeployPathController().getDeployDirectory(new IModule[]{module[0]}).toOSString();
 		assertTrue(new Path(earDepDir).toFile().exists());
 		assertEquals(testIsZip(), new Path(earDepDir).toFile().isFile());
-		verifyList(new Path(earDepDir), Arrays.asList(new IPath[]{new Path("META-INF/application.xml")}), true);
+		verifyListRelativePath(new Path(earDepDir), Arrays.asList(new IPath[]{new Path("META-INF/application.xml")}), true);
 		
 		IPath applicationXml = new Path(earDepDir).append("META-INF/application.xml");
 		IPath earDep = new Path(earDepDir);
@@ -263,11 +265,11 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 		if( !testIsZip()) {
 			assertTrue(new Path(webDepDir).toFile().exists());
 			assertEquals(false, new Path(webDepDir).toFile().isFile());
-			verifyList(new Path(webDepDir), Arrays.asList(new IPath[]{new Path("index.html")}), true);
+			verifyListRelativePath(new Path(webDepDir), Arrays.asList(new IPath[]{new Path("index.html")}), true);
 		} else {
 			// Our war is inside a zipped ear. Verify that exists
 			IPath webRelToEar = new Path(webDepDir).removeFirstSegments(new Path(earDepDir).segmentCount());
-			verifyList(new Path(earDepDir), Arrays.asList(new IPath[]{webRelToEar.append("Main.class")}), true);
+			verifyListRelativePath(new Path(earDepDir), Arrays.asList(new IPath[]{webRelToEar.append("index.html")}), true);
 		}
 	}
 	
@@ -276,11 +278,11 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 			// we're not testing in zip mode, so utilDepDir should exist and should be a forced zip file
 			assertEquals(shouldExist, new Path(utilDepDir).toFile().exists());
 			assertEquals(shouldExist, new Path(utilDepDir).toFile().isFile());
-			verifyList(new Path(utilDepDir), Arrays.asList(new IPath[]{new Path("Main.class")}), shouldExist);
+			verifyListRelativePath(new Path(utilDepDir), Arrays.asList(new IPath[]{new Path("Main.class")}), shouldExist);
 		} else {
 			// Our util is inside a zipped war inside a zipped ear. Verify that exists
 			IPath utilRelToEar = new Path(utilDepDir).removeFirstSegments(new Path(earDepDir).segmentCount());
-			verifyList(new Path(earDepDir), Arrays.asList(new IPath[]{utilRelToEar.append("Main.class")}), true);
+			verifyListRelativePath(new Path(earDepDir), Arrays.asList(new IPath[]{utilRelToEar.append("Main.class")}), shouldExist);
 		}
 	}
 	
@@ -303,7 +305,7 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 		String earDepDir = controller.getDeployPathController().getDeployDirectory(new IModule[]{module[0]}).toOSString();
 		assertTrue(new Path(earDepDir).toFile().exists());
 		assertEquals(testIsZip(), new Path(earDepDir).toFile().isFile());
-		verifyList(new Path(earDepDir), Arrays.asList(new IPath[]{new Path("META-INF/application.xml")}), true);
+		verifyListRelativePath(new Path(earDepDir), Arrays.asList(new IPath[]{new Path("META-INF/application.xml")}), true);
 
 		// verify web still published
 		String webDepDir = controller.getDeployPathController().getDeployDirectory(new IModule[]{module[0],module[1]}).toOSString();
@@ -323,7 +325,7 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 		// Verify ear still published
 		assertTrue(new Path(earDepDir).toFile().exists());
 		assertEquals(testIsZip(), new Path(earDepDir).toFile().isFile());
-		verifyList(new Path(earDepDir), Arrays.asList(new IPath[]{new Path("META-INF/application.xml")}), true);
+		verifyListRelativePath(new Path(earDepDir), Arrays.asList(new IPath[]{new Path("META-INF/application.xml")}), true);
 
 		// verify web NOT still published
 		utilInWebInEarRemovals_verifyWeb(webDepDir, earDepDir, false);
@@ -463,5 +465,12 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 		return utilInWebInEar;
 	}
 
+	protected void verifyListRelativePath(IPath root, List<IPath> list, boolean exists) {
+		ArrayList<IPath> list2 = new ArrayList<IPath>();
+		for(Iterator<IPath> i = list.iterator(); i.hasNext(); ) {
+			list2.add(root.append(i.next()));
+		}
+		super.verifyList(root, list2, exists);
+	}
 	
 }
