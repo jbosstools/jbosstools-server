@@ -8,6 +8,17 @@
  * Contributors:
  *    "Rob Stryker" <rob.stryker@redhat.com> - Initial implementation
  *******************************************************************************/
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
+
 package org.jboss.tools.jmx.ui.internal.wizards;
 
 import java.util.ArrayList;
@@ -16,7 +27,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -45,6 +55,7 @@ import org.jboss.tools.jmx.ui.Messages;
 import org.jboss.tools.jmx.ui.UIExtensionManager;
 import org.jboss.tools.jmx.ui.UIExtensionManager.ConnectionProviderUI;
 
+
 /**
  * The connection wizard
  */
@@ -57,11 +68,6 @@ public class NewConnectionWizard extends Wizard {
 	private HashMap<String, ConnectionWizardPage[]> pageMap;
 
 	private IWizardPage firstPage;
-	
-	public String getWindowTitle() {
-		return Messages.DefaultConnectionWizardPage_Title;
-	}
-	
     public void addPages() {
     	firstPage = createFirstPage();
     	addPage(firstPage);
@@ -86,7 +92,7 @@ public class NewConnectionWizard extends Wizard {
     	if( active != null ) {
     		if( active.length > 0 ) {
     			if( active[active.length-1] == getContainer().getCurrentPage())
-    				return super.canFinish();
+    				return true;
     			return false;
     		}
     	}
@@ -142,7 +148,7 @@ public class NewConnectionWizard extends Wizard {
 		TreeViewer viewer;
 		public FirstPage() {
 			super(Messages.NewConnectionWizard);
-			setTitle(Messages.NewConnectionWizard_CreateNewConnection);
+			setDescription("Create a new JMX Connection"); //$NON-NLS-1$
 		}
 		public void createControl(Composite parent) {
 			Composite main = new Composite(parent, SWT.NONE);

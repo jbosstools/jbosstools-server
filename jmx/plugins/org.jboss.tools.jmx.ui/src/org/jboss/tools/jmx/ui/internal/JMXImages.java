@@ -7,6 +7,17 @@
  *******************************************************************************/
 
 
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
+
 package org.jboss.tools.jmx.ui.internal;
 
 import java.net.URL;
@@ -23,6 +34,7 @@ import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.jboss.tools.jmx.ui.JMXUIActivator;
 import org.osgi.framework.Bundle;
+
 
 /**
  * Bundle of most images used by the Java plug-in.
@@ -60,7 +72,10 @@ public class JMXImages {
             + "library_obj.gif"; //$NON-NLS-1$
 
     public static final String IMG_OBJS_READ_WRITE = NAME_PREFIX
-            + "readwrite_obj.gif"; //$NON-NLS-1$
+    + "readwrite_obj.gif"; //$NON-NLS-1$
+
+    public static final String IMG_GEARS = NAME_PREFIX
+    + "releng_gears.gif"; //$NON-NLS-1$
 
     public static final String IMG_OBJS_READ = NAME_PREFIX + "read_obj.gif"; //$NON-NLS-1$
 

@@ -11,19 +11,23 @@ package org.jboss.tools.jmx.core.test;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
+import junit.framework.TestCase;
+
+import org.jboss.tools.jmx.commons.tree.Node;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.tree.DomainNode;
-import org.jboss.tools.jmx.core.tree.Node;
 import org.jboss.tools.jmx.core.tree.NodeBuilder;
 import org.jboss.tools.jmx.core.tree.ObjectNameNode;
 import org.jboss.tools.jmx.core.tree.PropertyNode;
+import org.jboss.tools.jmx.core.tree.Root;
 
-import junit.framework.TestCase;
 
 public class NodeBuilderTestCase extends TestCase {
 
     private IConnectionWrapper mockConn;
-
+    private MBeanServerConnection connection;
+	//private MBeanServerConnection mockConn;
+	
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -39,13 +43,16 @@ public class NodeBuilderTestCase extends TestCase {
     public void testOneObjectName() throws Exception {
         ObjectName on = new ObjectName("test:type=Test,name=Test1"); //$NON-NLS-1$
 
-        Node root = NodeBuilder.createRoot(mockConn);
-        NodeBuilder.addToTree(root, on);
-
+        Root root = NodeBuilder.createRoot(mockConn);
+        //NodeBuilder.addToTree(root, on, (MBeanServerConnection)mockConn);
+        NodeBuilder.addToTree(root, on, connection);
+        
         Node[] children = root.getChildren();
-        assertEquals(1, children.length);
-        assertTrue(children[0] instanceof DomainNode);
-        DomainNode domainNode = (DomainNode) children[0];
+        
+        // Root MBeans node is 1
+        assertEquals(2, children.length);
+        assertTrue(children[1] instanceof DomainNode);
+        DomainNode domainNode = (DomainNode) children[1];
         assertEquals("test", domainNode.getDomain()); //$NON-NLS-1$
 
         children = domainNode.getChildren();
@@ -67,13 +74,13 @@ public class NodeBuilderTestCase extends TestCase {
         ObjectName on2 = new ObjectName("test:type=Test,name=Test2"); //$NON-NLS-1$
 
         Node root = NodeBuilder.createRoot(mockConn);
-        NodeBuilder.addToTree(root, on);
-        NodeBuilder.addToTree(root, on2);
+        NodeBuilder.addToTree(root, on, connection);
+        NodeBuilder.addToTree(root, on2, connection);
 
         Node[] children = root.getChildren();
-        assertEquals(1, children.length);
-        assertTrue(children[0] instanceof DomainNode);
-        DomainNode domainNode = (DomainNode) children[0];
+        assertEquals(2, children.length);
+        assertTrue(children[1] instanceof DomainNode);
+        DomainNode domainNode = (DomainNode) children[1];
         assertEquals("test", domainNode.getDomain()); //$NON-NLS-1$
 
         children = domainNode.getChildren();
@@ -98,15 +105,15 @@ public class NodeBuilderTestCase extends TestCase {
         ObjectName other = new ObjectName("other:type=Test,name=Test2"); //$NON-NLS-1$
 
         Node root = NodeBuilder.createRoot(mockConn);
-        NodeBuilder.addToTree(root, on);
-        NodeBuilder.addToTree(root, other);
+        NodeBuilder.addToTree(root, on, connection);
+        NodeBuilder.addToTree(root, other, connection);
 
         Node[] children = root.getChildren();
-        assertEquals(2, children.length);
-        assertTrue(children[0] instanceof DomainNode);
+        assertEquals(3, children.length);
         assertTrue(children[1] instanceof DomainNode);
-        DomainNode domainNode1 = (DomainNode) children[0];
-        DomainNode domainNode2 = (DomainNode) children[1];
+        assertTrue(children[2] instanceof DomainNode);
+        DomainNode domainNode1 = (DomainNode) children[1];
+        DomainNode domainNode2 = (DomainNode) children[2];
         // domains are sorted by lexical order
         assertEquals("other", domainNode1.getDomain()); //$NON-NLS-1$
         assertEquals("test", domainNode2.getDomain()); //$NON-NLS-1$
@@ -120,10 +127,10 @@ public class NodeBuilderTestCase extends TestCase {
         ObjectName on5 = new ObjectName("other:type=Test,name=Test1"); //$NON-NLS-1$
 
         Node root = NodeBuilder.createRoot(mockConn);
-        NodeBuilder.addToTree(root, on);
-        NodeBuilder.addToTree(root, on2);
-        NodeBuilder.addToTree(root, on3);
-        NodeBuilder.addToTree(root, on4);
-        NodeBuilder.addToTree(root, on5);
+        NodeBuilder.addToTree(root, on, connection);
+        NodeBuilder.addToTree(root, on2, connection);
+        NodeBuilder.addToTree(root, on3, connection);
+        NodeBuilder.addToTree(root, on4, connection);
+        NodeBuilder.addToTree(root, on5, connection);
     }
 }
