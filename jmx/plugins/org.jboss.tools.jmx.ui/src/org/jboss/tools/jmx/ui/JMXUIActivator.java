@@ -5,7 +5,21 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
+
 package org.jboss.tools.jmx.ui;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.management.MBeanServerConnection;
 
@@ -15,17 +29,18 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.jboss.tools.jmx.core.MBeanAttributeInfoWrapper;
-import org.jboss.tools.jmx.core.MBeanInfoWrapper;
-import org.jboss.tools.jmx.core.MBeanOperationInfoWrapper;
+import org.jboss.tools.jmx.commons.ImagesActivatorSupport;
+import org.jboss.tools.jmx.commons.logging.RiderLogFacade;
+import org.jboss.tools.jmx.commons.tree.RefreshableUI;
 import org.jboss.tools.jmx.ui.internal.adapters.JMXAdapterFactory;
+import org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorerContentProvider;
 import org.osgi.framework.BundleContext;
+
 
 /**
  * The activator class controls the plug-in life cycle
  */
-public class JMXUIActivator extends AbstractUIPlugin {
+public class JMXUIActivator extends ImagesActivatorSupport {
 
     // The plug-in ID
     public static final String PLUGIN_ID = "org.jboss.tools.jmx.ui"; //$NON-NLS-1$
@@ -33,16 +48,12 @@ public class JMXUIActivator extends AbstractUIPlugin {
     // The shared instance
     private static JMXUIActivator plugin;
 
+	private static List<RootJmxNodeProvider> rootJmxNodeProviders = new ArrayList<RootJmxNodeProvider>();
+	private static List<MBeanExplorerContentProvider> contentProviders = new ArrayList<MBeanExplorerContentProvider>();
+
     private JMXAdapterFactory adapterFactory;
     private MBeanServerConnection connection;
 
-
-    /**
-     * The constructor
-     */
-    public JMXUIActivator() {
-    	super();
-    }
 
     @Override
     public void start(BundleContext context) throws Exception {
@@ -98,6 +109,10 @@ public class JMXUIActivator extends AbstractUIPlugin {
     	return this.connection;
     }
 
+	public static RiderLogFacade getLogger() {
+		return RiderLogFacade.getLog(getDefault().getLog());
+	}
+	
     public static void log(IStatus status) {
         getDefault().getLog().log(status);
     }
@@ -112,20 +127,41 @@ public class JMXUIActivator extends AbstractUIPlugin {
 
     private void registerAdapters() {
         adapterFactory = new JMXAdapterFactory();
-        Platform.getAdapterManager().registerAdapters(adapterFactory,
-                MBeanInfoWrapper.class);
-        Platform.getAdapterManager().registerAdapters(adapterFactory,
-                MBeanAttributeInfoWrapper.class);
-        Platform.getAdapterManager().registerAdapters(adapterFactory,
-                MBeanOperationInfoWrapper.class);
+        for (Class<?> aClass : adapterFactory.getAdapterClasses()) {
+        	Platform.getAdapterManager().registerAdapters(adapterFactory, aClass);
+		}
     }
 
     private void unregisterAdapters() {
-        Platform.getAdapterManager().unregisterAdapters(adapterFactory,
-                MBeanInfoWrapper.class);
-        Platform.getAdapterManager().unregisterAdapters(adapterFactory,
-                MBeanAttributeInfoWrapper.class);
-        Platform.getAdapterManager().unregisterAdapters(adapterFactory,
-                MBeanOperationInfoWrapper.class);
+        for (Class<?> aClass : adapterFactory.getAdapterClasses()) {
+        	Platform.getAdapterManager().unregisterAdapters(adapterFactory, aClass);
+		}
     }
+
+	public static void provideRootNodes(RefreshableUI explorerContentProvider, List list) {
+		for (RootJmxNodeProvider provider: rootJmxNodeProviders) {
+			provider.provideRootJmxNodes(explorerContentProvider, list);
+		}
+	}
+	
+	public static void addRootJmxNodeProvider(RootJmxNodeProvider provider) {
+		rootJmxNodeProviders.add(provider);
+		
+		// lets notify the content providers to update themselves...
+		for (RefreshableUI contentProvider : contentProviders) {
+			contentProvider.fireRefresh();
+		}
+	}
+	
+	public static void removeRootJmxNodeProvider(RootJmxNodeProvider provider) {
+		rootJmxNodeProviders.remove(provider);
+	}
+
+	public static void addExplorer(MBeanExplorerContentProvider contentProvider) {
+		contentProviders.add(contentProvider);
+	}
+
+	public static void removeExplorer(RefreshableUI contentProvider) {
+		contentProviders.remove(contentProvider);
+	}
 }

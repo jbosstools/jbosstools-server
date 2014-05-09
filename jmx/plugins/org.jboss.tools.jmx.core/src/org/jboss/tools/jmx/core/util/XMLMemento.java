@@ -5,6 +5,17 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
+
 package org.jboss.tools.jmx.core.util;
 
 import java.io.BufferedInputStream;
@@ -41,6 +52,7 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 import org.xml.sax.InputSource;
 
+
 /**
  * Stolen from webtools wst.server.core
  *
@@ -54,7 +66,7 @@ public final class XMLMemento implements IMemento {
 	 * you should use createReadRoot and createWriteRoot to create the initial
 	 * mementos on a document.
 	 */
-	public XMLMemento(Document doc, Element el) {
+	private XMLMemento(Document doc, Element el) {
 		factory = doc;
 		element = el;
 	}
@@ -68,15 +80,11 @@ public final class XMLMemento implements IMemento {
 		return new XMLMemento(factory, child);
 	}
 
-	public void removeChild(XMLMemento child) {
-		element.removeChild(child.element);
-	}
-	
 	/**
 	 * Create a Document from a Reader and answer a root memento for reading
 	 * a document.
 	 */
-	public static XMLMemento createReadRoot(InputStream in) {
+	protected static XMLMemento createReadRoot(InputStream in) {
 		Document document = null;
 		try {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -167,26 +175,6 @@ public final class XMLMemento implements IMemento {
 			results[x] = new XMLMemento(factory, list.get(x));
 		}
 		return results;
-	}
-	
-	public String[] getChildNames() {
-		// Get the nodes.
-		NodeList nodes = element.getChildNodes();
-		int size = nodes.getLength();
-		if (size == 0)
-			return new String[0];
-
-		// Extract each node with given type.
-		List<String> list = new ArrayList<String>();
-		for (int nX = 0; nX < size; nX ++) {
-			Node node = nodes.item(nX);
-			if (node instanceof Element) {
-				Element element2 = (Element)node;
-				if (!list.contains(element2.getNodeName()))
-					list.add(element2.getNodeName());
-			}
-		}
-		return (String[]) list.toArray(new String[list.size()]);
 	}
 
 	/**
@@ -392,7 +380,7 @@ public final class XMLMemento implements IMemento {
     * @return the Text node of the memento, or <code>null</code> if
     * the memento has no Text node.
     */
-   public Text getTextNode() {
+   private Text getTextNode() {
        // Get the nodes.
        NodeList nodes = element.getChildNodes();
        int size = nodes.getLength();
@@ -420,13 +408,5 @@ public final class XMLMemento implements IMemento {
        } else {
            textNode.setData(data);
        }
-   }
-   
-   public String getTextData() {
-       Text textNode = getTextNode();
-       if (textNode != null) {
-           return textNode.getData();
-       }
-       return ""; //$NON-NLS-1$
    }
 }

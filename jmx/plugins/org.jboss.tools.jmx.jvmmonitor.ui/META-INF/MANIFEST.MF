@@ -26,10 +26,16 @@ Export-Package: org.jboss.tools.jmx.jvmmonitor.internal.ui;x-friends:="org.jboss
  org.jboss.tools.jmx.jvmmonitor.internal.ui.properties.mbean;x-friends:="org.jboss.tools.jmx.jvmmonitor.ui.tests",
  org.jboss.tools.jmx.jvmmonitor.internal.ui.properties.memory;x-friends:="org.jboss.tools.jmx.jvmmonitor.ui.tests",
  org.jboss.tools.jmx.jvmmonitor.internal.ui.properties.overview;x-friends:="org.jboss.tools.jmx.jvmmonitor.ui.tests",
+ org.jboss.tools.jmx.jvmmonitor.internal.ui.properties.tablechart;x-internal:=true,
  org.jboss.tools.jmx.jvmmonitor.internal.ui.properties.thread;x-friends:="org.jboss.tools.jmx.jvmmonitor.ui.tests",
  org.jboss.tools.jmx.jvmmonitor.internal.ui.properties.timeline;x-friends:="org.jboss.tools.jmx.jvmmonitor.ui.tests",
  org.jboss.tools.jmx.jvmmonitor.internal.ui.views;x-friends:="org.jboss.tools.jmx.jvmmonitor.ui.tests",
- org.jboss.tools.jmx.jvmmonitor.ui
+ org.jboss.tools.jmx.jvmmonitor.ui,
+ org.swtchart,
+ org.swtchart.internal;x-internal:=true,
+ org.swtchart.internal.axis;x-internal:=true,
+ org.swtchart.internal.compress;x-internal:=true,
+ org.swtchart.internal.series;x-internal:=true
 Bundle-Vendor: %providerName
 Bundle-ClassPath: lib/org.swtchart_0.7.0.v20100930.jar,
  jvmmonitor-ui.jar

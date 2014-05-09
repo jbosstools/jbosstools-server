@@ -8,152 +8,211 @@
  * Contributors:
  *    "Rob Stryker" <rob.stryker@redhat.com> - Initial implementation
  *******************************************************************************/
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
+
 package org.jboss.tools.jmx.ui.internal.views.navigator;
 
 import java.util.HashMap;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IViewPart;
+import org.jboss.tools.jmx.commons.Viewers;
+import org.jboss.tools.jmx.commons.tree.HasChildrenArray;
+import org.jboss.tools.jmx.commons.tree.HasViewer;
+import org.jboss.tools.jmx.commons.tree.Node;
+import org.jboss.tools.jmx.commons.tree.RefreshableUI;
 import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.IConnectionProviderListener;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.MBeanFeatureInfoWrapper;
+import org.jboss.tools.jmx.core.tree.DomainNode;
 import org.jboss.tools.jmx.core.tree.ErrorRoot;
-import org.jboss.tools.jmx.core.tree.Node;
 import org.jboss.tools.jmx.core.tree.ObjectNameNode;
 import org.jboss.tools.jmx.core.tree.Root;
-import org.jboss.tools.jmx.ui.Messages;
+import org.jboss.tools.jmx.ui.JMXUIActivator;
+
 
 /**
  * Content provider for the view
  */
 public class MBeanExplorerContentProvider implements IConnectionProviderListener,
-        IStructuredContentProvider, ITreeContentProvider {
-	
+IStructuredContentProvider, ITreeContentProvider, RefreshableUI, HasViewer {
+
 	public static class DelayProxy {
 		public IConnectionWrapper wrapper;
 		public DelayProxy(IConnectionWrapper wrapper) {
 			this.wrapper = wrapper;
 		}
 	}
-	
+
 	private Viewer viewer;
 	private HashMap<IConnectionWrapper, DelayProxy> loading;
-    public MBeanExplorerContentProvider() {
-    	ExtensionManager.addConnectionProviderListener(this);
-    	loading = new HashMap<IConnectionWrapper, DelayProxy>();
-    }
 
-    public void inputChanged(Viewer v, Object oldInput, Object newInput) {
-    	this.viewer = v;
-    }
+	public MBeanExplorerContentProvider() {
+		ExtensionManager.addConnectionProviderListener(this);
+		loading = new HashMap<IConnectionWrapper, DelayProxy>();
+	}
 
-    public void dispose() {
-    	ExtensionManager.removeConnectionProviderListener(this);
-    }
+	public void inputChanged(Viewer v, Object oldInput, Object newInput) {
+		this.viewer = v;
+		JMXUIActivator.addExplorer(this);
+	}
 
-    public Object[] getElements(Object parent) {
-        return getChildren(parent);
-    }
+	public void dispose() {
+		JMXUIActivator.removeExplorer(this);
+	}
 
-    public Object getParent(Object child) {
-    	if( child instanceof Root )
+	public Object[] getElements(Object parent) {
+		return getChildren(parent);
+	}
+
+	public Object getParent(Object child) {
+	    if( child instanceof Root )
     		return ((Root)child).getConnection();
-        if (child instanceof Node) 
-            return ((Node) child).getParent();
-        if( child instanceof MBeanFeatureInfoWrapper ) 
+	    if (child instanceof Node) {
+		Node node = (Node) child;
+		return node.getParent();
+	    }
+	    if( child instanceof MBeanFeatureInfoWrapper ) 
         	return ((MBeanFeatureInfoWrapper)child).getMBeanInfoWrapper().getParent();
-        return null;
-    }
+	    return null;
+	}
 
-    public Object[] getChildren(Object parent) {
-    	if( parent == null ) return new Object[] {};
-		if( parent instanceof IViewPart ) {
-			return ExtensionManager.getAllConnections();
-		}
+	public Object[] getChildren(Object parent) {
+		if( parent == null ) return new Object[] {};
+
 		if( parent instanceof IConnectionWrapper && ((IConnectionWrapper)parent).isConnected()) {
 			return loadAndGetRootChildren(parent);
 		}
-        if (parent instanceof ObjectNameNode) {
-            ObjectNameNode node = (ObjectNameNode) parent;
-            return node.getMbeanInfoWrapper().getMBeanFeatureInfos();
-        }
-        if( parent instanceof ErrorRoot ) {
-        	return new Object[0];
-        }
-        if (parent instanceof Node) {
-            Node node = (Node) parent;
-            return node.getChildren();
-        }
-        return new Object[0];
-    }
+		if (parent instanceof HasChildrenArray) {
+			HasChildrenArray hasChildren = (HasChildrenArray) parent;
+			return hasChildren.getChildObjectArray();
+		}
+		if (parent instanceof Navigator) {
+			Navigator navigator = (Navigator) parent;
+			return navigator.getRootNodes();
+		}
+		/*
+		 * now uses hasChildren.getChildObjectArray();
+		if( parent instanceof LocalConnectionsNode) {
+			LocalConnectionsNode node = (LocalConnectionsNode) parent;
+			return node.getConnectionWrappers();
+		}
+		 */
 
-    protected synchronized Object[] loadAndGetRootChildren(final Object parent) {
+		if( parent instanceof IConnectionWrapper) {
+			IConnectionWrapper wrapper = (IConnectionWrapper)parent;
+			if (wrapper.isConnected()) {
+				return loadAndGetRootChildren(parent);
+			}
+		}
+		if (parent instanceof Root) {
+			Root root = (Root) parent;
+			return root.getChildren();
+		}
+		if (parent instanceof DomainNode) {
+			DomainNode node = (DomainNode) parent;
+			return node.getChildren();
+		}
+		if (parent instanceof ObjectNameNode) {
+			ObjectNameNode node = (ObjectNameNode) parent;
+			return node.getMbeanInfoWrapper().getMBeanFeatureInfos();
+		}
+		if (parent instanceof ErrorRoot) {
+		    return new Object[0];
+		}
+		if (parent instanceof Node) {
+			Node node = (Node) parent;
+			return node.getChildren();
+		}
+		return new Object[0];
+	}
+
+	protected synchronized Object[] loadAndGetRootChildren(final Object parent) {
 		final IConnectionWrapper w = (IConnectionWrapper)parent;
-		
-		if( w.getRoot() != null ) 
-			return getChildren(w.getRoot());
-		
+
+		Root root = w.getRoot();
+		if( root != null ) {
+			return getChildren(root);
+		}
+
 		// Must load the model
-		Job job = new Job(Messages.LoadingJMXNodes) {
-			protected IStatus run(IProgressMonitor monitor) {
+		Thread t = new Thread() {
+			@Override
+			public void run() {
 				try {
-					w.loadRoot(monitor);
-				} catch( CoreException ce ) {
-					return ce.getStatus();
-				} finally {
-					loading.remove(w);
+					w.loadRoot(new NullProgressMonitor());
+				} catch (Throwable re) {
+					JMXUIActivator.getLogger().error("Error while loading from connection...", re); //$NON-NLS-1$
 				}
-				Display.getDefault().asyncExec(new Runnable() { 
+				loading.remove(w);
+				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-						if( viewer instanceof StructuredViewer) 
+						if( viewer instanceof StructuredViewer)
 							((StructuredViewer)viewer).refresh(parent);
 						else
 							viewer.refresh();
 					}
 				});
-				return Status.OK_STATUS;
 			}
-
 		};
-		
-		if( loading.containsKey(((IConnectionWrapper)parent))) {
-			return new Object[] { loading.get((IConnectionWrapper)parent)};
+
+		if( loading.containsKey(parent)) {
+			DelayProxy delayProxy = loading.get(parent);
+			return new Object[] { delayProxy};
 		}
 		DelayProxy p = new DelayProxy(w);
 		loading.put(w, p);
-		job.schedule();
+		t.start();
 		return new Object[] { p };
-    }
+	}
 
-    public boolean hasChildren(Object parent) {
-        if (parent instanceof ObjectNameNode) {
-            ObjectNameNode node = (ObjectNameNode) parent;
-            return (node.getMbeanInfoWrapper().getMBeanFeatureInfos().length > 0);
-        }
-        if (parent instanceof Node) {
-            Node node = (Node) parent;
-            return (node.getChildren().length > 0);
-        }
-        if (parent instanceof MBeanFeatureInfoWrapper) {
-            return false;
-        }
-        if( parent instanceof IConnectionWrapper ) {
-        	return ((IConnectionWrapper)parent).isConnected();
-        }
-        if( parent instanceof DelayProxy)
-        	return false;
-        return true;
-    }
+	public boolean hasChildren(Object parent) {
+		if (parent instanceof HasChildrenArray) {
+			HasChildrenArray hasChildren = (HasChildrenArray) parent;
+			return true;
+			/*
+        	Object[] array = hasChildren.getChildObjectArray();
+        	return array != null && array.length > 0;
+			 */
+		}
+		if (parent instanceof ObjectNameNode) {
+			ObjectNameNode node = (ObjectNameNode) parent;
+			return (node.getMbeanInfoWrapper().getMBeanFeatureInfos().length > 0);
+		}
+		if (parent instanceof Node) {
+			Node node = (Node) parent;
+			return (node.getChildren().length > 0);
+		}
+		if (parent instanceof MBeanFeatureInfoWrapper) {
+			return false;
+		}
+		if( parent instanceof IConnectionWrapper ) {
+			return ((IConnectionWrapper)parent).isConnected();
+		}
+		if( parent instanceof DelayProxy)
+		    return false;
+
+		return true;
+	}
 
 	public void connectionAdded(IConnectionWrapper connection) {
 		fireRefresh(connection, true);
@@ -167,16 +226,74 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 		fireRefresh(connection, true);
 	}
 
-	private void fireRefresh(final IConnectionWrapper connection, final boolean full) {
+	/**
+	 * Refreshes a given node in the viewer
+	 */
+	public void fireRefresh(final Object node, final boolean full) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				if( viewer != null ) {
-					if(full || !(viewer instanceof StructuredViewer))
+				if( Viewers.isVisible(viewer)) {
+					ISelection sel = viewer.getSelection();
+					IStructuredSelection isel = (IStructuredSelection)sel;
+					Object o = isel.getFirstElement();
+
+					if (o instanceof Node) {
+						Node n = (Node)o;
+						while (n.getParent() != null) {
+							n = n.getParent();
+						}
+
+						if (n instanceof Root) {
+							Root r = (Root)n;
+
+							IConnectionWrapper iconwrap = r.getConnection();
+							viewer.setSelection(null);
+							if (iconwrap != null && iconwrap.isConnected()) {
+								viewer.setSelection(sel);
+							} else {
+								Tree tree = (Tree)viewer.getControl();
+								TreeItem[] items = tree.getItems();
+								if (items.length>0) {
+									tree.setSelection(items[0]);
+									tree.showSelection();
+								}
+							}
+						}
+					}
+
+					if(full || !(viewer instanceof StructuredViewer)) {
 						viewer.refresh();
-					else
-						((StructuredViewer)viewer).refresh(connection);
+					} else {
+						StructuredViewer structuredViewer = (StructuredViewer)viewer;
+						/*
+						// if we have refreshed a node we need to make sure we expand it first...
+						if (structuredViewer instanceof TreeViewer) {
+							TreeViewer treeViewer = (TreeViewer) structuredViewer;
+							treeViewer.expandToLevel(node,  1);
+						}
+						 */
+						structuredViewer.refresh(node);
+					}
 				}
 			}
 		});
 	}
+
+	public Viewer getViewer() {
+		return viewer;
+	}
+
+	/**
+	 * Performs a full refresh
+	 */
+	public void fireRefresh() {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				if( viewer != null ) {
+					viewer.refresh();
+				}
+			}
+		});
+	}
+
 }

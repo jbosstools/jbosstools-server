@@ -5,9 +5,27 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
+
 package org.jboss.tools.jmx.core.tree;
 
-public class PropertyNode extends Node {
+import org.eclipse.swt.graphics.Image;
+import org.jboss.tools.jmx.commons.tree.HasName;
+import org.jboss.tools.jmx.commons.tree.Node;
+import org.jboss.tools.jmx.commons.ImageProvider;
+import org.jboss.tools.jmx.core.JMXActivator;
+
+
+public class PropertyNode extends Node implements HasName, ImageProvider {
 	private String key;
 
 	private String value;
@@ -76,4 +94,11 @@ public class PropertyNode extends Node {
 		return true;
 	}
 
+	public String getName() {
+		return getValue();
+	}
+
+	public Image getImage() {
+		return JMXActivator.getDefault().getImage("mbean_folder.png"); //$NON-NLS-1$
+	}
 }

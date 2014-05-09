@@ -5,6 +5,17 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
+
 package org.jboss.tools.jmx.core.providers;
 
 import java.io.Serializable;
@@ -20,7 +31,7 @@ public class MBeanServerConnectionDescriptor implements Serializable {
     private String id;
     private String url;
     private String userName;
-	private String password;
+    private String password;
 
     public MBeanServerConnectionDescriptor(
     		String id, String url,
@@ -30,7 +41,7 @@ public class MBeanServerConnectionDescriptor implements Serializable {
         this.userName = userName;
         this.password = password;
     }
-
+    
 	public void setId(String id) {
 		this.id = id;
 	}
@@ -46,7 +57,6 @@ public class MBeanServerConnectionDescriptor implements Serializable {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
     public String getID() {
         return id;
     }

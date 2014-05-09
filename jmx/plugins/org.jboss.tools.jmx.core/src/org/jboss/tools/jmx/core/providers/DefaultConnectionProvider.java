@@ -8,6 +8,17 @@
  * Contributors:
  *    "Rob Stryker" <rob.stryker@redhat.com> - Initial implementation
  *******************************************************************************/
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
+
 package org.jboss.tools.jmx.core.providers;
 
 import java.io.File;
@@ -31,6 +42,7 @@ import org.jboss.tools.jmx.core.IMemento;
 import org.jboss.tools.jmx.core.JMXActivator;
 import org.jboss.tools.jmx.core.JMXCoreMessages;
 import org.jboss.tools.jmx.core.util.XMLMemento;
+
 
 /**
  * The default connection type that comes bundled
@@ -73,7 +85,8 @@ public class DefaultConnectionProvider implements IConnectionProvider, IConnecti
 	public void fireChanged(IConnectionWrapper wrapper) {
 		for(Iterator<IConnectionProviderListener> i = listeners.iterator(); i.hasNext();)
 			try {
-				i.next().connectionChanged(wrapper);
+				IConnectionProviderListener next = i.next();
+				next.connectionChanged(wrapper);
 			} catch(RuntimeException re) {}
 	}
 
@@ -91,12 +104,12 @@ public class DefaultConnectionProvider implements IConnectionProvider, IConnecti
 	public boolean canDelete(IConnectionWrapper wrapper) {
 		return wrapper instanceof DefaultConnectionWrapper;
 	}
-	
+
 	public boolean canEdit(IConnectionWrapper wrapper) {
 		return wrapper instanceof DefaultConnectionWrapper;
 	}
 
-	public DefaultConnectionWrapper createConnection(Map map) throws CoreException {
+	public IConnectionWrapper createConnection(Map map) throws CoreException {
 		String id = (String)map.get(ID);
 		String url = (String)map.get(URL);
 		String username = (String)map.get(USERNAME);
@@ -116,15 +129,6 @@ public class DefaultConnectionProvider implements IConnectionProvider, IConnecti
 			loadConnections();
 		return connections.values().toArray(new IConnectionWrapper[connections.values().size()]);
 	}
-	
-	public DefaultConnectionWrapper getConnection(String id) {
-		IConnectionWrapper[] wraps = getConnections();
-		for( int i = 0; i < wraps.length; i++ ) {
-			if( ((DefaultConnectionWrapper)wraps[i]).getDescriptor().getID().equals(id))
-				return (DefaultConnectionWrapper)wraps[i];
-		}
-		return null;
-	}
 
 	public void addConnection(IConnectionWrapper connection) {
 		if( connection instanceof DefaultConnectionWrapper ) {
@@ -142,10 +146,20 @@ public class DefaultConnectionProvider implements IConnectionProvider, IConnecti
 	}
 
 	public void removeConnection(IConnectionWrapper connection) {
+		if (connection != null && connection.isConnected()) {
+			try {
+				connection.disconnect();
+			} catch (Exception ioex) {
+				IStatus s = new Status(IStatus.ERROR, JMXActivator.PLUGIN_ID, JMXCoreMessages.DefaultConnection_ErrorRemoving, ioex);
+				JMXActivator.log(s);
+			}
+		}
 		if( connection instanceof DefaultConnectionWrapper ) {
 			MBeanServerConnectionDescriptor descriptor =
 				((DefaultConnectionWrapper)connection).getDescriptor();
-			connections.remove(descriptor.getID());
+			if (descriptor != null) {
+				connections.remove(descriptor.getID());
+			}
 			try {
 				save();
 				fireRemoved(connection);
@@ -155,6 +169,7 @@ public class DefaultConnectionProvider implements IConnectionProvider, IConnecti
 			}
 		}
 	}
+	
 	public void connectionChanged(IConnectionWrapper connection) {
 		if( connection instanceof DefaultConnectionWrapper ) {
 			try {

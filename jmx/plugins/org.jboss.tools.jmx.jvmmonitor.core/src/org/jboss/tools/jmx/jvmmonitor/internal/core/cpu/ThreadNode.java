@@ -124,7 +124,10 @@ public class ThreadNode<E extends IMethodNode> implements IThreadNode {
      */
     @Override
     public String toString() {
-        return "Thread: " + getName(); //$NON-NLS-1$
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("Thread: ").append(getName()).append('\t'); //$NON-NLS-1$
+        buffer.append(getTotalTime());
+        return buffer.toString();
     }
 
     /**

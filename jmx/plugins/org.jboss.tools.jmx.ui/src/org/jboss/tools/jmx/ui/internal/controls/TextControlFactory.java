@@ -9,6 +9,17 @@
  *      Benjamin Walstrum (issue #24)
  *******************************************************************************/
 
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
+
 package org.jboss.tools.jmx.ui.internal.controls;
 
 
@@ -25,12 +36,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.jboss.tools.jmx.core.MBeanUtils;
+import org.jboss.tools.jmx.core.util.StringUtils;
 import org.jboss.tools.jmx.ui.JMXUIActivator;
 import org.jboss.tools.jmx.ui.Messages;
 import org.jboss.tools.jmx.ui.extensions.IAttributeControlFactory;
 import org.jboss.tools.jmx.ui.extensions.IWritableAttributeHandler;
-import org.jboss.tools.jmx.ui.internal.MBeanUtils;
-import org.jboss.tools.jmx.ui.internal.StringUtils;
+
 
 public class TextControlFactory implements IAttributeControlFactory {
 
@@ -51,7 +63,7 @@ public class TextControlFactory implements IAttributeControlFactory {
         if (value instanceof Number || value instanceof Character) {
             style |= SWT.SINGLE;
         } else {
-            style |= SWT.MULTI | SWT.WRAP | SWT.V_SCROLL | SWT.H_SCROLL;
+            style |= SWT.MULTI | SWT.WRAP;
         }
 
         if (!writable) {
@@ -116,7 +128,7 @@ public class TextControlFactory implements IAttributeControlFactory {
         if (toolkit != null) {
             text = toolkit.createText(parent, "", style); //$NON-NLS-1$
         } else {
-            text = new Text(parent, style);  
+            text = new Text(parent, style);   
         }
         return text;
     }

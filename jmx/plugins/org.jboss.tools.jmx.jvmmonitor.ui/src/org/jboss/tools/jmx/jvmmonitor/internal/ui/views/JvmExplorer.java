@@ -18,7 +18,6 @@ import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributo
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.jboss.tools.jmx.jvmmonitor.internal.ui.IHelpContextIds;
 import org.jboss.tools.jmx.jvmmonitor.internal.ui.actions.PreferencesAction;
-
 /**
  * The JVM explorer view.
  */

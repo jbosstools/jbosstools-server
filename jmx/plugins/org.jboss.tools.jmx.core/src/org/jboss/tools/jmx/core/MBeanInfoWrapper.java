@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.Assert;
 import org.jboss.tools.jmx.core.tree.ObjectNameNode;
 import org.jboss.tools.jmx.core.util.EqualsUtil;
 
+@SuppressWarnings("rawtypes")
 public class MBeanInfoWrapper implements Comparable {
     private final ObjectName on;
     private final MBeanInfo info;

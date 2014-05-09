@@ -152,6 +152,9 @@ public final class Messages extends NLS {
     public static String invalidJdkLocationMsg;
 
     /** */
+    public static String cannnotDetectJvmMsg;
+
+    /** */
     public static String connectedMsg;
 
     /** */

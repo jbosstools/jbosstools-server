@@ -95,6 +95,19 @@ public class MethodNode extends AbstractMethodNode {
         return false;
     }
 
+    /*
+     * @see Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append(getName()).append('\t');
+        buffer.append(getSelfTime()).append('\t');
+        buffer.append(getSelfTimeInPercentage()).append('\t');
+        buffer.append(getInvocationCount());
+        return buffer.toString();
+    }
+
     /**
      * Increments the sum of method invocation time.
      * 
