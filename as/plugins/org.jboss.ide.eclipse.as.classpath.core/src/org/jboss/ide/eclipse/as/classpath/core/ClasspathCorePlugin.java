@@ -78,11 +78,15 @@ public class ClasspathCorePlugin extends Plugin {
 	 * @since 3.0
 	 */
 	public static void clearCachedClasspathEntries(IRuntimeType rt) {
-		IRuntime[] allRuntimes = ServerCore.getRuntimes();
-		for( int i = 0; i < allRuntimes.length; i++ ) {
-			if( allRuntimes[i].getRuntimeType().getId().equals(rt.getId())) {
-				RuntimeClasspathCache.getInstance().cacheEntries(allRuntimes[i], null);
-				ModuleSlotCache.getInstance().clearRuntimeModuleSlots(allRuntimes[i]);
+		if( rt != null ) {
+			IRuntime[] allRuntimes = ServerCore.getRuntimes();
+			IRuntimeType rtt = null;
+			for( int i = 0; i < allRuntimes.length; i++ ) {
+				rtt = allRuntimes[i].getRuntimeType();
+				if( rtt != null && rtt.getId().equals(rt.getId())) {
+					RuntimeClasspathCache.getInstance().cacheEntries(allRuntimes[i], null);
+					ModuleSlotCache.getInstance().clearRuntimeModuleSlots(allRuntimes[i]);
+				}
 			}
 		}
 	}

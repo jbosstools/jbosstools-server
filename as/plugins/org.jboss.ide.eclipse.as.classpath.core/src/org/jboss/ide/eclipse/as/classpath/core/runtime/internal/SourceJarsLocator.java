@@ -29,6 +29,10 @@ public class SourceJarsLocator implements IJBossToolingConstants, IJBossRuntimeR
 	private static final String CONFIG_DIR = RuntimeJarUtility.CONFIG_DIR_VAR_PATTERN;
 
 	public IRuntimePathProvider[] getDefaultPathProviders(IRuntimeType rt) {
+		if( rt == null ) {
+			return new IRuntimePathProvider[0];
+		}
+		
 		ServerExtendedProperties props = (ServerExtendedProperties) Platform.getAdapterManager().getAdapter(
 				rt, ServerExtendedProperties.class);
 		IRuntimePathProvider[] providers = new IRuntimePathProvider[]{};

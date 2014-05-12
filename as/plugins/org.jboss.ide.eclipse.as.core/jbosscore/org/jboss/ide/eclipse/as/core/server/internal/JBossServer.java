@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.equinox.security.storage.StorageException;
+import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IURLProvider;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
@@ -74,7 +75,8 @@ public class JBossServer extends DeployableServer
 	}
 
 	private boolean isAS50() {
-		return getServer().getServerType().getRuntimeType().getId().equals(SERVER_AS_50);
+		IRuntimeType rtt = getServer().getServerType().getRuntimeType();
+		return rtt == null ? false : rtt.getId().equals(SERVER_AS_50);
 	}
 	
 	public String getHost() {

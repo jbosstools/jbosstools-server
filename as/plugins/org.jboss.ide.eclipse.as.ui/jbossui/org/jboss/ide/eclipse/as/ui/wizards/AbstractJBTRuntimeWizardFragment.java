@@ -34,11 +34,13 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
+import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
+import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.ui.IPreferenceKeys;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -274,8 +276,8 @@ public abstract class AbstractJBTRuntimeWizardFragment extends WizardFragment {
 		String homeDir = homeDirComposite.getHomeDirectory();
 		File loc = new File(homeDir);
 		String serverId = new ServerBeanLoader(loc).getServerAdapterId();
-		String rtId = serverId == null ? null : 
-				ServerCore.findServerType(serverId).getRuntimeType().getId();
+		IServerType st = serverId == null ? null : ServerCore.findServerType(serverId);
+		String rtId = RuntimeUtils.getRuntimeTypeId(st);
 		IRuntime adapterRt = getRuntimeFromTaskModel();
 		String adapterRuntimeId = adapterRt.getRuntimeType().getId();
 		if( !adapterRuntimeId.equals(rtId)) {

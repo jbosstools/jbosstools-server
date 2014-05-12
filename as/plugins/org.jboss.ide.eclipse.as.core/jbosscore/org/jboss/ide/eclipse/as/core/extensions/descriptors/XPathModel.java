@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
@@ -323,17 +324,18 @@ public class XPathModel extends UnitedServerListener {
 	 */
 	public static ArrayList<XPathCategory> loadDefaultPortQueries(IServer server, String baseDir) {
 		ArrayList<XPathCategory> retVal = new ArrayList<XPathCategory>();
-		URL url = rtToPortsFile.get(server.getRuntime().getRuntimeType().getId());
-		if( url == null ) return retVal;
-
-		try {
-			XPathCategory ports = new XPathCategory(PORTS_CATEGORY_NAME, server);
-			addQueriesToCategoryFromDefaultFile(server, ports, baseDir, url);
-			retVal.add(ports);
-		} catch (IOException e) {
-			JBossServerCorePlugin.getDefault().getLog().log(
-					new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
-							Messages.XPathLoadFailure, e));
+		IRuntimeType rtt = server.getRuntime().getRuntimeType();
+		URL url = rtt == null ? null : rtToPortsFile.get(rtt.getId());
+		if( url != null ) {
+			try {
+				XPathCategory ports = new XPathCategory(PORTS_CATEGORY_NAME, server);
+				addQueriesToCategoryFromDefaultFile(server, ports, baseDir, url);
+				retVal.add(ports);
+			} catch (IOException e) {
+				JBossServerCorePlugin.getDefault().getLog().log(
+						new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+								Messages.XPathLoadFailure, e));
+			}
 		}
 		return retVal;
 	}

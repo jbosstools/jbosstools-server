@@ -281,4 +281,22 @@ public class ControllableServerBehavior extends ServerBehaviourDelegate implemen
 		setMode(mode);
 	}
 
+	
+	public IStatus canPublish() {
+		try {
+			return getPublishController().canPublish();
+		} catch(CoreException ce) {
+			ASWTPToolsPlugin.log(ce.getStatus());
+			return ce.getStatus();
+		}
+	}
+	
+	public boolean canPublishModule(IModule[] module){
+		try {
+			return getPublishController().canPublishModule(module);
+		} catch(CoreException ce) {
+			ASWTPToolsPlugin.log(ce.getStatus());
+			return false;
+		}
+	}
 }

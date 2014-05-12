@@ -10,6 +10,9 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core;
 
+import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.AS_42;
+import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.EAP_43;
+
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jst.jee.project.facet.EarCreateDeploymentFilesDataModelProvider;
@@ -24,11 +27,9 @@ import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.events.IProjectFacetActionEvent;
 import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
-
-import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.AS_42;
-import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.EAP_43;
 
 /**
  * This class is here to deal with the case when a new Ear project is
@@ -58,8 +59,9 @@ public class JBoss4xEarFacetInstallListener implements IFacetedProjectListener {
 				String rtName = e.getProject().getPrimaryRuntime().getName();
 				IRuntime rt = ServerCore.findRuntime(rtName);
 				if( rt != null ) {
-					String type = rt.getRuntimeType().getId();
-					if( type.equals(AS_42) || type.equals(EAP_43)) {
+					IRuntimeType rtt = rt.getRuntimeType();
+					String type = rtt == null ? null : rt.getRuntimeType().getId();
+					if( AS_42.equals(type) || EAP_43.equals(type)) {
 						// Launch the op to create the ear application.xml file
 						IVirtualComponent vc = ComponentCore.createComponent(e.getProject().getProject());
 						IDataModel model = DataModelFactory.createDataModel(new EarCreateDeploymentFilesDataModelProvider());

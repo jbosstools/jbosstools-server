@@ -140,6 +140,9 @@ public class CustomClasspathPreferencePage extends ServerTypePreferencePage {
 	}
 	
 	private IProject[] findProjectsTargeting(IRuntimeType rt) {
+		if( rt == null )
+			return new IProject[0];
+		
 		ArrayList<IProject> matching = new ArrayList<IProject>();
 		IProject[] allProjs = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 		for( int i = 0; i < allProjs.length; i++ ) {
@@ -151,7 +154,7 @@ public class CustomClasspathPreferencePage extends ServerTypePreferencePage {
 					org.eclipse.wst.common.project.facet.core.runtime.IRuntime primary = fp.getPrimaryRuntime();
 					if( primary != null ) {
 						IRuntime wstRuntime = ServerCore.findRuntime(primary.getName());
-						if( wstRuntime.getRuntimeType().getId().equals(rt.getId()))
+						if( wstRuntime.getRuntimeType() != null && wstRuntime.getRuntimeType().getId().equals(rt.getId()))
 							matching.add(allProjs[i]);
 					}
 				}

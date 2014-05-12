@@ -11,7 +11,6 @@
 package org.jboss.ide.eclipse.as.ui.editor;
 
 import java.beans.PropertyChangeEvent;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +57,7 @@ import org.eclipse.wst.server.ui.internal.editor.OverviewEditorPart;
 import org.eclipse.wst.server.ui.internal.wizard.TaskWizard;
 import org.eclipse.wst.server.ui.internal.wizard.WizardTaskUtil;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
-import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
+import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 
 /**
  * The large majority of this class has been copied and modified from the 
@@ -112,13 +111,13 @@ public class AddRuntimeComboOverviewPageModifier extends
 			link.addHyperlinkListener(new HyperlinkAdapter() {
 				public void linkActivated(HyperlinkEvent e) {
 					IRuntime runtime = server2.getRuntime();
-					if (runtime != null && ServerUIPlugin.hasWizardFragment(server2.getServerType().getRuntimeType().getId()))
+					if (runtime != null && ServerUIPlugin.hasWizardFragment(RuntimeUtils.getRuntimeTypeId(server2.getServerType())))
 						editRuntime(runtime);
 				}
 			});
 			
 			final IRuntime runtime = serverWc.getRuntime();
-			if (runtime == null || !ServerUIPlugin.hasWizardFragment(serverWc.getServerType().getRuntimeType().getId()))
+			if (runtime == null || !ServerUIPlugin.hasWizardFragment(RuntimeUtils.getRuntimeTypeId(serverWc.getServerType())))
 				link.setEnabled(false);
 			
 			IRuntimeType runtimeType = serverWc.getServerType().getRuntimeType();
@@ -218,7 +217,7 @@ public class AddRuntimeComboOverviewPageModifier extends
 					updating = true;
 					IRuntime newRuntime = runtimes[runtimeCombo.getSelectionIndex()];
 					execute(new SetServerRuntimeCommand(serverWc, newRuntime));
-					link.setEnabled(newRuntime != null && ServerUIPlugin.hasWizardFragment(newRuntime.getRuntimeType().getId()));
+					link.setEnabled(newRuntime != null && ServerUIPlugin.hasWizardFragment(RuntimeUtils.getRuntimeTypeId(newRuntime)));
 					updating = false;
 				} catch (Exception ex) {
 					// ignore

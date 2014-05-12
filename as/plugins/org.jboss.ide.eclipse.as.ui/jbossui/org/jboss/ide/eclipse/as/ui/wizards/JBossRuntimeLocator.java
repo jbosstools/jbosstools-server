@@ -44,6 +44,7 @@ import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 
 public class JBossRuntimeLocator extends RuntimeLocatorDelegate {
 
@@ -96,9 +97,9 @@ public class JBossRuntimeLocator extends RuntimeLocatorDelegate {
 
 	public static IRuntimeWorkingCopy createRuntime(IPath path, ServerBeanLoader loader) {
 		String serverId = loader.getServerAdapterId();
+		
 		IServerType st = serverId == null ? null : ServerCore.findServerType(serverId);
-		IRuntimeType rt = st == null ? null : st.getRuntimeType();
-		String rtId = rt == null ? null : rt.getId();
+		String rtId = RuntimeUtils.getRuntimeTypeId(st);
 		String append = getServerHomePathAppend(rtId);
 		
 		if( rtId != null ) {

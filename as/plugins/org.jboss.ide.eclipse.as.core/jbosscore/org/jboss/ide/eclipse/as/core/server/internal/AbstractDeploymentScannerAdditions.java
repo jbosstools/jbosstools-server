@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
@@ -156,7 +157,8 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 			}
 		}
 		
-		IModule[] modules2 = org.eclipse.wst.server.core.ServerUtil.getModules(server.getServerType().getRuntimeType().getModuleTypes());
+		IRuntimeType rtt = server.getServerType().getRuntimeType();
+		IModule[] modules2 = rtt == null ? null : org.eclipse.wst.server.core.ServerUtil.getModules(rtt.getModuleTypes());
 		if (modules2 != null) {
 			int size = modules2.length;
 			for (int i = 0; i < size; i++) {

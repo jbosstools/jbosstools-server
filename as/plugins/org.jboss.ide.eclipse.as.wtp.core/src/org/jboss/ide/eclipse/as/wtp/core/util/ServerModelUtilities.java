@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jst.server.core.IJ2EEModule;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.ServerCore;
@@ -27,6 +28,7 @@ import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
 import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.util.RemotePath;
+import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
 
 /**
@@ -58,9 +60,9 @@ public class ServerModelUtilities {
 	
 	public static IModule[] getParentModules(IServer server, IModule module) {
 		// get all supported modules
-		IModule[] supported = 
-			org.eclipse.wst.server.core.ServerUtil.getModules(
-					server.getServerType().getRuntimeType().getModuleTypes());
+		IRuntimeType rtt = RuntimeUtils.getRuntimeType(server);
+		IModule[] supported = rtt == null ? new IModule[0] : 
+			org.eclipse.wst.server.core.ServerUtil.getModules(rtt.getModuleTypes());
 		ArrayList<IModule> list = new ArrayList<IModule>();
 		
 		for( int i = 0; i < supported.length; i++ ) {

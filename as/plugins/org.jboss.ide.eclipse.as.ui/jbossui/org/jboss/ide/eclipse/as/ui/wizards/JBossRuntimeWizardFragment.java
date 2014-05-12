@@ -40,10 +40,10 @@ import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
+import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
@@ -312,8 +312,7 @@ public class JBossRuntimeWizardFragment extends AbstractJBTRuntimeWizardFragment
 		String homeDir = homeDirComposite.getHomeDirectory();
 		File loc = new File(homeDir);
 		String serverId = new ServerBeanLoader(loc).getServerAdapterId();
-		String rtId = serverId == null ? null : 
-				ServerCore.findServerType(serverId).getRuntimeType().getId();
+		String rtId = serverId == null ? null : RuntimeUtils.getRuntimeTypeId(ServerCore.findServerType(serverId));
 		IRuntime adapterRt = getRuntimeFromTaskModel();
 		String adapterRuntimeId = adapterRt.getRuntimeType().getId();
 		if( !adapterRuntimeId.equals(rtId)) {
