@@ -97,9 +97,11 @@ public class TomcatRuntimeDetectorDelegate extends AbstractRuntimeDetectorDelega
 	}
 	
 	private IServerType findServerType(IRuntimeType runtimeType) {
-		for (IServerType serverType : ServerCore.getServerTypes()) {
-			if (runtimeType.equals(serverType.getRuntimeType())) {
-				return serverType;
+		if( runtimeType != null ) {
+			for (IServerType serverType : ServerCore.getServerTypes()) {
+				if (runtimeType.equals(serverType.getRuntimeType())) {
+					return serverType;
+				}
 			}
 		}
 		return null;

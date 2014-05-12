@@ -21,7 +21,9 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
+import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
+import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
@@ -102,6 +104,33 @@ public class RuntimeUtils {
 	public static IRuntime createRuntime(String runtimeId, String homeDir,
 			String config) throws CoreException {
 		return createRuntime(runtimeId, homeDir, config, JavaRuntime.getDefaultVMInstall());
+	}
+	
+	
+	public static String getRuntimeTypeId(IServer server) {
+		return getRuntimeTypeId(getRuntimeType(server));
+	}
+
+	public static String getRuntimeTypeId(IRuntime rt) {
+		return getRuntimeTypeId(getRuntimeType(rt));
+	}
+	
+	public static String getRuntimeTypeId(IServerType serverType) {
+		return getRuntimeTypeId(getRuntimeType(serverType));
+	}
+	
+	public static String getRuntimeTypeId(IRuntimeType type) {
+		return type == null ? null : type.getId();
+	}
+
+	public static IRuntimeType getRuntimeType(IServer server) {
+		return server == null ? null : getRuntimeType(server.getServerType());
+	}
+	public static IRuntimeType getRuntimeType(IServerType server) {
+		return server == null ? null : server.getRuntimeType();
+	}
+	public static IRuntimeType getRuntimeType(IRuntime runtime) {
+		return runtime == null ? null : runtime.getRuntimeType();
 	}
 	
 	

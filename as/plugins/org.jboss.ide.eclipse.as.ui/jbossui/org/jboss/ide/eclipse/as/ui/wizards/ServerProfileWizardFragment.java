@@ -44,6 +44,7 @@ import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
+import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -147,7 +148,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		selectedProfile = null;
 		IServerAttributes server = (IServerAttributes)getTaskModel().getObject(TaskModel.TASK_SERVER);
 		IRuntimeType rtType = server.getServerType().getRuntimeType(); 
-		String runtimeType = rtType == null ? null : rtType.getId();
+		String runtimeType = RuntimeUtils.getRuntimeTypeId(server.getServerType());
 		try {
 			newRuntimeWorkingCopy = rtType.createRuntime(null, null);
 		} catch(CoreException ce) {
@@ -453,9 +454,9 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 	protected WizardFragment getRuntimeWizardFragment() {
 		if( runtimeFragment == null && getTaskModel() != null) {
 			IServerAttributes server = (IServerAttributes)getTaskModel().getObject(TaskModel.TASK_SERVER);
-			IRuntimeType rtType = server.getServerType().getRuntimeType();
+			String rtType = RuntimeUtils.getRuntimeTypeId(server.getServerType());
 			if( rtType != null ) {
-				runtimeFragment = ServerUIPlugin.getWizardFragment(rtType.getId());
+				runtimeFragment = ServerUIPlugin.getWizardFragment(rtType);
 			}
 		}
 		return runtimeFragment;

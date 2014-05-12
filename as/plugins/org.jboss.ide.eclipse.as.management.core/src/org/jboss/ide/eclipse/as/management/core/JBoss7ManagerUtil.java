@@ -31,7 +31,12 @@ public class JBoss7ManagerUtil {
 	 * @throws JBoss7ManangerException
 	 */
 	public static IJBoss7ManagerService getService(IServer server) throws JBoss7ManangerException  {
-		return getService(server.getServerType().getRuntimeType().getId());
+		String rtTypeId = null;
+		if( server != null && server.getServerType() != null  ) {
+			IRuntimeType rtt = server.getServerType().getRuntimeType();
+			rtTypeId = rtt == null ? null : rtt.getId();
+		}
+		return getService(rtTypeId);
 	}
 	
 	/**

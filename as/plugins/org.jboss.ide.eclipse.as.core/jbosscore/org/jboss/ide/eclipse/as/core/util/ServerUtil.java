@@ -11,9 +11,7 @@
 package org.jboss.ide.eclipse.as.core.util;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,12 +21,10 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.equinox.security.storage.EncodingUtils;
-import org.eclipse.equinox.security.storage.ISecurePreferences;
-import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
 import org.eclipse.equinox.security.storage.StorageException;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.IServerType;
@@ -215,9 +211,10 @@ public class ServerUtil {
 	public static String getDefaultServerName(IRuntime rt) {
 		String runtimeName = rt.getName();
 		String base = null;
-		if( runtimeName == null || runtimeName.equals("")) //$NON-NLS-1$
-			base = NLS.bind(Messages.serverVersionName, rt.getRuntimeType().getVersion());
-		else 
+		if( runtimeName == null || runtimeName.equals("")) { //$NON-NLS-1$
+			IRuntimeType rtt = rt.getRuntimeType();
+			base = NLS.bind(Messages.serverVersionName, rtt == null ? null : rtt.getVersion());
+		} else 
 			base = NLS.bind(Messages.serverName, runtimeName);
 		
 		return getDefaultServerName( base);

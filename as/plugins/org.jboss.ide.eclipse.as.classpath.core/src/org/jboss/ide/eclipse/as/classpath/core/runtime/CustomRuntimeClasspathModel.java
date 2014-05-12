@@ -48,6 +48,9 @@ public class CustomRuntimeClasspathModel {
 	 * @since 3.0
 	 */
 	public IRuntimePathProvider[] getEntries(IRuntimeType type) {
+		if( type == null ) {
+			return new IRuntimePathProvider[0];
+		}
 		String id = type.getId();
 		if( modelMap.get(id) == null ) {
 			// Has not been read yet

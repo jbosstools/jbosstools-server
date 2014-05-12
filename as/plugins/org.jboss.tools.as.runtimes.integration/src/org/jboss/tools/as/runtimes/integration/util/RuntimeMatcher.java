@@ -16,8 +16,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.ServerCore;
-import org.jboss.ide.eclipse.as.core.server.bean.ServerBean;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
+import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.tools.as.runtimes.integration.internal.DownloadRuntimesProvider;
 import org.jboss.tools.runtime.core.RuntimeCoreActivator;
 import org.jboss.tools.runtime.core.model.DownloadRuntime;
@@ -157,8 +157,8 @@ public class RuntimeMatcher {
 		for( int i = 0; i < all.length; i++ ) {
 			if( all[i] == null || all[i].getRuntimeType() == null )
 				continue;
-			String rtType =all[i].getRuntimeType().getId();
-			if( rtType.equals(rep.wtpId)) {
+			String rtType = RuntimeUtils.getRuntimeTypeId(all[i]);
+			if( rtType != null && rtType.equals(rep.wtpId)) {
 				if( rep.stacksRuntimeType == null )
 					list.add(all[i]);
 				else {
