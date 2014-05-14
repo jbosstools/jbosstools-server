@@ -5,6 +5,17 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
+
 package org.jboss.tools.jmx.core.tree;
 
 import java.util.ArrayList;
@@ -13,48 +24,59 @@ import java.util.List;
 
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 
-@SuppressWarnings("unchecked")
-public abstract class Node implements Comparable {
+public abstract class Node implements Comparable, HasRoot {
 
-	Node parent;
+	protected Node parent;
+	private List<Node> children = new ArrayList<Node>();
 
-	@SuppressWarnings("unchecked")
-    List children = new ArrayList();
-
-	Node(Node parent) {
+	public Node(Node parent) {
 		this.parent = parent;
 	}
 
 	@SuppressWarnings("unchecked")
-	Node addChildren(Node node) {
+	public Node addChild(Node node) {
 		if (!children.contains(node)) {
 			children.add(node);
 			Collections.sort(children);
 			return node;
 		} else {
-			return (Node) children.get(children.indexOf(node));
+			return children.get(children.indexOf(node));
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	public boolean removeChild(Node child) {
+		return children.remove(child);
+	}
+
 	public Node[] getChildren() {
-		return (Node[]) children.toArray(new Node[children.size()]);
+		return children.toArray(new Node[children.size()]);
+	}
+
+	public List<Node> getChildrenList() {
+		return children;
 	}
 
 	public Node getParent() {
 		return parent;
 	}
 
-	Root getRoot(Node parent) {
-        if (parent.getParent() == null) {
-            return (Root) parent;
-        }
-	    return getRoot(parent.getParent());
-    }
+	public void clearChildren() {
+		children.clear();
+	}
+
+	public static Root getRoot(Node n) {
+		return n.getRoot();
+	}
+	
+	public Root getRoot() {
+		if( parent == null ){
+			return this instanceof Root ? (Root)this : null;
+		}
+		return parent.getRoot();
+	}
 	
 	public IConnectionWrapper getConnection() {
 		Root r = getRoot(this);
 		return r.getConnection();
 	}
-
 }

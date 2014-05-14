@@ -86,11 +86,13 @@ public class DefaultConnectionWrapper implements IConnectionWrapper {
 		root = null;
 		isConnected = false;
 		try {
-			connector.close();
+			if (connector != null) {
+				connector.close();
+			}
 		} finally {
 			((IConnectionProviderEventEmitter)getProvider()).fireChanged(this);
 		}
-        connector = null;
+	    connector = null;
         connection = null;
 	}
 	

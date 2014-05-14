@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.Status;
 
 public class DisconnectJob extends ChainedJob {
 	private IConnectionWrapper[] connection;
+
 	public DisconnectJob(IConnectionWrapper[] connection) {
 		super(JMXCoreMessages.DisconnectJob, JMXActivator.PLUGIN_ID);
 		this.connection = connection;
@@ -25,11 +26,10 @@ public class DisconnectJob extends ChainedJob {
 
 	protected IStatus run(IProgressMonitor monitor) {
 		try {
-			for( int i = 0; i < connection.length; i++ )
-				if( connection[i].isConnected() )
-					connection[i].disconnect();
+			for (int i = 0; i < connection.length; i++)
+				connection[i].disconnect();
 			return Status.OK_STATUS;
-		} catch( IOException ioe ) {
+		} catch (IOException ioe) {
 			return new Status(IStatus.ERROR, JMXActivator.PLUGIN_ID, JMXCoreMessages.DisconnectJobFailed, ioe);
 		}
 	}

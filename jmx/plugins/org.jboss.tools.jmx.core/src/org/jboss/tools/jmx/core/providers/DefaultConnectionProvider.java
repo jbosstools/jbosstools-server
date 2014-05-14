@@ -8,6 +8,17 @@
  * Contributors:
  *    "Rob Stryker" <rob.stryker@redhat.com> - Initial implementation
  *******************************************************************************/
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
+
 package org.jboss.tools.jmx.core.providers;
 
 import java.io.File;
@@ -23,19 +34,20 @@ import java.util.Map;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.jboss.tools.jmx.core.AbstractConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionProviderEventEmitter;
-import org.jboss.tools.jmx.core.IConnectionProviderListener;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.IMemento;
 import org.jboss.tools.jmx.core.JMXActivator;
 import org.jboss.tools.jmx.core.JMXCoreMessages;
 import org.jboss.tools.jmx.core.util.XMLMemento;
 
+
 /**
  * The default connection type that comes bundled
  */
-public class DefaultConnectionProvider implements IConnectionProvider, IConnectionProviderEventEmitter {
+public class DefaultConnectionProvider extends AbstractConnectionProvider implements IConnectionProvider, IConnectionProviderEventEmitter {
 	public static final String PROVIDER_ID = "org.jboss.tools.jmx.core.providers.DefaultConnectionProvider"; //$NON-NLS-1$
 	public static final String ID = "id"; //$NON-NLS-1$
 	public static final String URL = "url"; //$NON-NLS-1$
@@ -44,8 +56,6 @@ public class DefaultConnectionProvider implements IConnectionProvider, IConnecti
 	public static final String CONNECTION = "connection";  //$NON-NLS-1$
 	public static final String CONNECTIONS = "connections";  //$NON-NLS-1$
 	public static final String STORE_FILE = "defaultConnections.xml"; //$NON-NLS-1$
-	private ArrayList<IConnectionProviderListener> listeners =
-		new ArrayList<IConnectionProviderListener>();
 
 	public DefaultConnectionProvider() {
 		addListener(new AutomaticStarter());
@@ -53,35 +63,6 @@ public class DefaultConnectionProvider implements IConnectionProvider, IConnecti
 
 	public String getId() {
 		return PROVIDER_ID;
-	}
-	public void addListener(IConnectionProviderListener listener) {
-		if( !listeners.contains(listener))
-			listeners.add(listener);
-	}
-
-	public void removeListener(IConnectionProviderListener listener) {
-		listeners.remove(listener);
-	}
-
-	public void fireAdded(IConnectionWrapper wrapper) {
-		for(Iterator<IConnectionProviderListener> i = listeners.iterator(); i.hasNext();)
-			try {
-				i.next().connectionAdded(wrapper);
-			} catch(RuntimeException re) {}
-		}
-
-	public void fireChanged(IConnectionWrapper wrapper) {
-		for(Iterator<IConnectionProviderListener> i = listeners.iterator(); i.hasNext();)
-			try {
-				i.next().connectionChanged(wrapper);
-			} catch(RuntimeException re) {}
-	}
-
-	public void fireRemoved(IConnectionWrapper wrapper) {
-		for(Iterator<IConnectionProviderListener> i = listeners.iterator(); i.hasNext();)
-			try {
-				i.next().connectionRemoved(wrapper);
-			} catch(RuntimeException re) {}
 	}
 
 	public boolean canCreate() {
@@ -91,7 +72,7 @@ public class DefaultConnectionProvider implements IConnectionProvider, IConnecti
 	public boolean canDelete(IConnectionWrapper wrapper) {
 		return wrapper instanceof DefaultConnectionWrapper;
 	}
-	
+
 	public boolean canEdit(IConnectionWrapper wrapper) {
 		return wrapper instanceof DefaultConnectionWrapper;
 	}
@@ -116,15 +97,6 @@ public class DefaultConnectionProvider implements IConnectionProvider, IConnecti
 			loadConnections();
 		return connections.values().toArray(new IConnectionWrapper[connections.values().size()]);
 	}
-	
-	public DefaultConnectionWrapper getConnection(String id) {
-		IConnectionWrapper[] wraps = getConnections();
-		for( int i = 0; i < wraps.length; i++ ) {
-			if( ((DefaultConnectionWrapper)wraps[i]).getDescriptor().getID().equals(id))
-				return (DefaultConnectionWrapper)wraps[i];
-		}
-		return null;
-	}
 
 	public void addConnection(IConnectionWrapper connection) {
 		if( connection instanceof DefaultConnectionWrapper ) {
@@ -140,12 +112,23 @@ public class DefaultConnectionProvider implements IConnectionProvider, IConnecti
 			}
 		}
 	}
-
+	
+	public DefaultConnectionWrapper getConnection(String id) {
+		IConnectionWrapper[] wraps = getConnections();
+		for( int i = 0; i < wraps.length; i++ ) {
+			if( ((DefaultConnectionWrapper)wraps[i]).getDescriptor().getID().equals(id))
+				return (DefaultConnectionWrapper)wraps[i];
+		}
+		return null;
+	}
+	
 	public void removeConnection(IConnectionWrapper connection) {
 		if( connection instanceof DefaultConnectionWrapper ) {
 			MBeanServerConnectionDescriptor descriptor =
 				((DefaultConnectionWrapper)connection).getDescriptor();
-			connections.remove(descriptor.getID());
+			if (descriptor != null) {
+				connections.remove(descriptor.getID());
+			}
 			try {
 				save();
 				fireRemoved(connection);
@@ -155,6 +138,7 @@ public class DefaultConnectionProvider implements IConnectionProvider, IConnecti
 			}
 		}
 	}
+
 	public void connectionChanged(IConnectionWrapper connection) {
 		if( connection instanceof DefaultConnectionWrapper ) {
 			try {

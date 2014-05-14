@@ -6,12 +6,24 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
 
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
+
 package org.jboss.tools.jmx.core;
 
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanServerConnection;
 
-public class MBeanAttributeInfoWrapper extends MBeanFeatureInfoWrapper {
+
+public class MBeanAttributeInfoWrapper extends MBeanFeatureInfoWrapper implements HasName {
 
     private MBeanAttributeInfo info;
 
@@ -38,9 +50,12 @@ public class MBeanAttributeInfoWrapper extends MBeanFeatureInfoWrapper {
     }
 
     public boolean equals(Object obj) {
-        if( !super.equals(obj))
-        	return false;
-        
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
         final MBeanAttributeInfoWrapper other = (MBeanAttributeInfoWrapper) obj;
         if (info == null) {
             if (other.info != null)
@@ -49,4 +64,8 @@ public class MBeanAttributeInfoWrapper extends MBeanFeatureInfoWrapper {
             return false;
         return true;
     }
+
+	public String getName() {
+		return getMBeanAttributeInfo().getName();
+	}
 }

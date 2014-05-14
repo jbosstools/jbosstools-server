@@ -7,7 +7,10 @@
  *******************************************************************************/
 package org.jboss.tools.jmx.core.tree;
 
-public class PropertyNode extends Node {
+import org.jboss.tools.jmx.core.HasName;
+
+
+public class PropertyNode extends Node implements HasName {
 	private String key;
 
 	private String value;
@@ -76,4 +79,7 @@ public class PropertyNode extends Node {
 		return true;
 	}
 
+	public String getName() {
+		return getValue();
+	}
 }
