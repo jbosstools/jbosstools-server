@@ -5,48 +5,74 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
+
 package org.jboss.tools.jmx.core.tree;
 
+import java.io.IOException;
+
+import javax.management.InstanceNotFoundException;
+import javax.management.IntrospectionException;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
+import javax.management.ReflectionException;
 
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.IJMXRunnable;
+import org.jboss.tools.jmx.core.JMXException;
 import org.jboss.tools.jmx.core.MBeanInfoWrapper;
+
 
 public class ObjectNameNode extends PropertyNode {
 
     private ObjectName on;
-
     private MBeanInfoWrapper wrapper;
 
-    public ObjectNameNode(Node parent, String key, String value, ObjectName on) {
-    	this(parent, key, value, on, null);
-    }
-    
     public ObjectNameNode(Node parent, String key, String value, ObjectName on, MBeanServerConnection mbsc) {
         super(parent, key, value);
-        Root root = getRoot(parent);
+        Root root = Root.getRoot(parent);
         IConnectionWrapper connectionWrapper = root.getConnection();
         this.on = on;
-    	final MBeanInfoWrapper[] array = new MBeanInfoWrapper[1];
-    	final ObjectName on2 = on;
-    	try {
-        	if( mbsc != null ) 
-        		array[0] = new MBeanInfoWrapper(on2, mbsc.getMBeanInfo(on2), mbsc, ObjectNameNode.this);
-        	else {
-		    	connectionWrapper.run(new IJMXRunnable() {
-		    		public void run(MBeanServerConnection mbsc) throws Exception {
-						array[0] = new MBeanInfoWrapper(on2, mbsc.getMBeanInfo(on2), mbsc, ObjectNameNode.this);
-		    		}
-		    	});
-        	}
-    	} catch( Exception e ) {
-    		// TODO FIX THIS
-    	}
-    	wrapper = array[0];
+	final MBeanInfoWrapper[] array = new MBeanInfoWrapper[1];
+	final ObjectName on2 = on;
+	try {
+		if( mbsc != null )
+			array[0] = new MBeanInfoWrapper(on2, mbsc.getMBeanInfo(on2), mbsc, ObjectNameNode.this);
+		else {
+			connectionWrapper.run(new IJMXRunnable() {
+				public void run(MBeanServerConnection mbsc) throws JMXException {
+						try {
+							array[0] = new MBeanInfoWrapper(on2, mbsc.getMBeanInfo(on2), mbsc, ObjectNameNode.this);
+						} catch (InstanceNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IntrospectionException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (ReflectionException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+				}
+			});
+		}
+	} catch( Exception e ) {
+		// TODO FIX THIS
+	}
+	wrapper = array[0];
     }
-
 
     public ObjectName getObjectName() {
         return on;
@@ -85,5 +111,4 @@ public class ObjectNameNode extends PropertyNode {
             return false;
         return true;
     }
-
 }

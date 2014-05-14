@@ -5,6 +5,17 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
+
 package org.jboss.tools.jmx.ui;
 
 import org.eclipse.osgi.util.NLS;
@@ -30,6 +41,8 @@ public class Messages extends NLS {
 	public static String DefaultConnectionWizardPage_Invalid_Connection;
 	public static String DefaultConnectionWizardPage_Name_In_Use;
 	public static String DeleteConnection;
+
+
 
     public static String AttributeControlFactory_updateButtonTitle;
     public static String AttributeDetails_title;
@@ -67,6 +80,9 @@ public class Messages extends NLS {
     public static String OpenMBeanAction_dialogTitle;
     public static String OpenMBeanAction_text;
     public static String OpenMBeanAction_tooltip;
+    public static String RefreshAction_description;
+    public static String RefreshAction_text;
+    public static String RefreshAction_tooltip;
     public static String OperationDetails_invocationError;
     public static String OperationDetails_invocationResult;
     public static String OperationDetails_invocationSuccess;
@@ -90,12 +106,12 @@ public class Messages extends NLS {
 	public static String Loading;
 	public static String ErrorLoading;
 	public static String UpdatingSelectionJob;
-	
+
 	public static String StateConnected;
 	public static String StateDisconnected;
 
 	public static String JMXUIImageDescriptorNotFound;
-	
+
 	static {
 	    NLS.initializeMessages("org.jboss.tools.jmx.ui.Messages", //$NON-NLS-1$
 	                    Messages.class);

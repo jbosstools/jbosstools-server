@@ -12,9 +12,9 @@
             id="org.jboss.tools.jmx.ui.views">
       </category>
       <view
-            category="org.jboss.tools.jmx.ui.views"
+            category="org.jboss.tools"
             class="org.jboss.tools.jmx.ui.internal.views.navigator.JMXNavigator"
-            icon="icons/full/obj16/jmeth_obj.gif"
+            icon="icons/releng_gears.gif"
             id="org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorer"
             name="%MBeanExplorer.name"
             restorable="true">
@@ -48,6 +48,10 @@
             </actionExtension>
          </includes>
       </viewerActionBinding>
+      <dragAssistant
+            class="org.jboss.tools.jmx.ui.internal.views.navigator.NavigatorDragAdapterAssistant"
+            viewerId="org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorer">
+      </dragAssistant>
    </extension>
    <extension
          point="org.eclipse.ui.navigator.linkHelper">
@@ -60,7 +64,7 @@
                      value="org.jboss.tools.jmx.core.IConnectionWrapper">
                </instanceof>
                <instanceof
-                     value="org.jboss.tools.jmx.core.tree.Node">
+                     value="org.jboss.tools.jmx.commons.tree.Node">
                </instanceof>
                <instanceof
                      value="org.jboss.tools.jmx.core.MBeanFeatureInfoWrapper">
@@ -81,10 +85,10 @@
       <navigatorContent
             activeByDefault="true"
             contentProvider="org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorerContentProvider"
-            icon="icons/full/obj16/jmeth_obj.gif"
+            icon="icons/sample.gif"
             id="org.jboss.tools.jmx.ui.internal.views.navigator.root"
             labelProvider="org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorerLabelProvider"
-            name="%NavigatorContent_MBeans"
+            name="MBeans"
             priority="normal">
          <triggerPoints>
             <or>
@@ -111,7 +115,7 @@
          <possibleChildren>
             <or>
                <instanceof
-                     value="org.jboss.tools.jmx.core.tree.Node">
+                     value="org.jboss.tools.jmx.commons.tree.Node">
                </instanceof>
                <instanceof
                      value="org.jboss.tools.jmx.core.IConnectionProvider">
@@ -127,10 +131,28 @@
                </instanceof>
             </or>
          </possibleChildren>
+         <dropAssistant
+               class="org.jboss.tools.jmx.ui.internal.views.navigator.NavigatorDropAdapterAssistant"
+               id="org.jboss.tools.jmx.ui.dropAssistant">
+            <possibleDropTargets>
+                           <or>
+               <adapt
+                     type="java.util.Collection">
+                  <count
+                        value="0">
+                  </count>
+               </adapt>
+               <instanceof
+                     value="org.jboss.tools.jmx.commons.tree.Node">
+               </instanceof>
+            </or>
+			</possibleDropTargets>
+         </dropAssistant>
       </navigatorContent>
       <actionProvider
             class="org.jboss.tools.jmx.ui.internal.views.navigator.ActionProvider"
             id="org.jboss.tools.jmx.ui.internal.views.navigator.actionProvider">
+
          <enablement>
             <or>
                <adapt
@@ -143,7 +165,7 @@
                      value="org.jboss.tools.jmx.core.IConnectionWrapper">
                </instanceof>
                <instanceof
-                     value="org.jboss.tools.jmx.core.tree.Node">
+                     value="org.jboss.tools.jmx.commons.tree.Node">
                </instanceof>
                <instanceof
                      value="org.jboss.tools.jmx.core.MBeanFeatureInfoWrapper">
@@ -184,6 +206,14 @@
                menubarPath="navigate/open.ext2"
                tooltip="%OpenMBeanAction.tooltip">
          </action>
+           <action
+                 class="org.jboss.tools.jmx.ui.internal.actions.RefreshAction"
+                 definitionId="org.jboss.tools.jmx.ui.navigate.refresh"
+                 id="refresh"
+                 label="%RefreshAction.label"
+                 menubarPath="navigate/open.ext2"
+                 tooltip="%RefreshAction.tooltip">
+           </action>
       </actionSet>
    </extension>
    <extension
@@ -192,7 +222,7 @@
             class="org.jboss.tools.jmx.ui.internal.perspectives.JMXPerspective"
             icon="icons/releng_gears.gif"
             id="org.jboss.tools.jmx.ui.perspectives.JMXPerspective"
-            name="%perspective.name">
+            name="JMX">
       </perspective>
    </extension>
    <extension
@@ -210,14 +240,32 @@
             description="%ActionDefinition.openMBean.description"
             categoryId="org.eclipse.ui.category.navigate"
             id="org.jboss.tools.jmx.ui.navigate.open.mbean">
-      </command>    
+      </command>
+      <command
+            categoryId="org.eclipse.ui.category.navigate"
+            description="%ActionDefinition.refresh.description"
+            id="org.jboss.tools.jmx.ui.navigate.refresh"
+            name="%ActionDefinition.refresh.name">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+           sequence="M1+M2+M"
+           commandId="org.jboss.tools.jmx.ui.navigate.open.mbean"
+           schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            commandId="org.jboss.tools.jmx.ui.navigate.refresh"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+R">
+      </key>
    </extension>
    <extension
          point="org.jboss.tools.jmx.ui.attribute.controls">
       <control
             id="org.jboss.tools.jmx.ui.attribute.displays.Text"
             class="org.jboss.tools.jmx.ui.internal.controls.TextControlFactory"
-	      	type="java.lang.String">
+		type="java.lang.String">
       </control>
       <control
             id="org.jboss.tools.jmx.ui.attribute.displays.Array"
@@ -253,7 +301,6 @@
    <extension
          point="org.jboss.tools.jmx.ui.providerUI">
       <providerUI
-            editable="true"
             icon="icons/full/obj16/write_obj.gif"
             id="org.jboss.tools.jmx.core.providers.DefaultConnectionProvider"
             name="%DefaultJMXConnectionProvider.name">
@@ -262,10 +309,59 @@
          </wizardPage>
       </providerUI>
    </extension>
-   
-   
-   	<!-- Decorator for connected / disconnected -->
-	<extension point="org.eclipse.ui.decorators">
+
+
+
+     <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
+
+      <propertyContributor contributorId="org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorer">
+         <propertyCategory category="org.jboss.tools.jmx.ui.views"/>
+      </propertyContributor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
+      <propertyTabs contributorId="org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorer">
+         <propertyTab
+               category="org.jboss.tools.jmx.ui.views"
+               id="org.jboss.tools.jmx.ui.views.PropertiesTab"
+               label="Properties"/>
+         <propertyTab
+               afterTab="org.jboss.tools.jmx.ui.views.PropertiesTab"
+               category="org.jboss.tools.jmx.ui.views"
+               id="org.jboss.tools.jmx.ui.views.ContentsTab"
+               label="Contents"/>
+      </propertyTabs>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertySections">
+      <propertySections contributorId="org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorer">
+         <propertySection
+               class="org.eclipse.ui.views.properties.tabbed.AdvancedPropertySection"
+               filter="org.jboss.tools.jmx.ui.internal.propertysheet.PropertiesSectionFilter"
+               id="PropertiesSection"
+               tab="org.jboss.tools.jmx.ui.views.PropertiesTab">
+         </propertySection>
+
+         <propertySection
+               class="org.jboss.tools.jmx.ui.internal.propertysheet.ContentsTabSection"
+               filter="org.jboss.tools.jmx.ui.internal.propertysheet.ContentsSectionFilter"
+               id="ContentsSection"
+               tab="org.jboss.tools.jmx.ui.views.ContentsTab">
+         </propertySection>
+      </propertySections>
+   </extension>
+   <!--
+   <extension
+         point="org.eclipse.ui.dropActions">
+      <action
+            class="org.jboss.tools.jmx.ui.internal.views.navigator.DropActionDelegate"
+            id="org.jboss.tools.jmx.ui.internal.views.navigator.dropAction">
+      </action>
+   </extension>
+   -->
+   <!-- Decorator for connected / disconnected -->
+   <extension point="org.eclipse.ui.decorators">
       <decorator
             class="org.jboss.tools.jmx.ui.internal.views.navigator.JMXConnectionDecorator"
             id="org.jboss.tools.jmx.ui.internal.views.navigator.JMXConnectionDecorator"
@@ -280,6 +376,5 @@
          </enablement>
       </decorator>
    </extension>
-   
-   
+
 </plugin>

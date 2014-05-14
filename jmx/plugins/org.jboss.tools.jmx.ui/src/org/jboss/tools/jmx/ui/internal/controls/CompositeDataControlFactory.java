@@ -4,10 +4,21 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *      Benjamin Walstrum (issue #24)
  *******************************************************************************/
+
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 
 package org.jboss.tools.jmx.ui.internal.controls;
 
@@ -18,8 +29,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.jboss.tools.jmx.core.util.StringUtils;
 import org.jboss.tools.jmx.ui.Messages;
-import org.jboss.tools.jmx.ui.internal.StringUtils;
+
 
 public class CompositeDataControlFactory extends AbstractTabularControlFactory {
 
@@ -31,7 +43,7 @@ public class CompositeDataControlFactory extends AbstractTabularControlFactory {
         TableColumn valueColumn = new TableColumn(table, SWT.NONE);
         valueColumn.setText(Messages.value);
         valueColumn.setWidth(250);
-        
+
         CompositeData data = (CompositeData) value;
         for (Object o : data.getCompositeType().keySet()) {
             String key = (String) o;

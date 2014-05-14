@@ -9,22 +9,35 @@
  *    "Rob Stryker" <rob.stryker@redhat.com> - Initial implementation
  *******************************************************************************/
 
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
+
 package org.jboss.tools.jmx.ui.internal.views.navigator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
+import org.jboss.tools.jmx.commons.ImageProvider;
+import org.jboss.tools.jmx.commons.tree.HasName;
 import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.MBeanAttributeInfoWrapper;
 import org.jboss.tools.jmx.core.MBeanInfoWrapper;
 import org.jboss.tools.jmx.core.MBeanOperationInfoWrapper;
+import org.jboss.tools.jmx.core.MBeanUtils;
 import org.jboss.tools.jmx.core.tree.DomainNode;
 import org.jboss.tools.jmx.core.tree.ErrorRoot;
 import org.jboss.tools.jmx.core.tree.ObjectNameNode;
@@ -33,8 +46,8 @@ import org.jboss.tools.jmx.ui.Messages;
 import org.jboss.tools.jmx.ui.UIExtensionManager;
 import org.jboss.tools.jmx.ui.UIExtensionManager.ConnectionProviderUI;
 import org.jboss.tools.jmx.ui.internal.JMXImages;
-import org.jboss.tools.jmx.ui.internal.MBeanUtils;
 import org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorerContentProvider.DelayProxy;
+
 
 /**
  * Label Provider for the view
@@ -53,39 +66,39 @@ public class MBeanExplorerLabelProvider extends LabelProvider {
     public void dispose() {
 		instances.remove(this);
 		if( instances.isEmpty()) {
-			Iterator<Image> i = images.values().iterator();
-	    	while(i.hasNext()) {
-	    		Image o = i.next();
-	    		if( o != null )
-	    			o.dispose();
-	    	}
+		for( Iterator<Image> i = images.values().iterator(); i.hasNext(); )
+			i.next().dispose();
 		}
-    	super.dispose();
+	super.dispose();
     }
 
 	public String getText(Object obj) {
 		return MBeanExplorerLabelProvider.getText2(obj);
 	}
-	
+
 	public static String getText2(Object obj) {
+		if (obj instanceof HasName) {
+			HasName hasName = (HasName) obj;
+			return hasName.getName();
+		}
 		if( obj instanceof IConnectionWrapper ) {
 			IConnectionProvider provider = ((IConnectionWrapper)obj).getProvider();
 			return provider.getName((IConnectionWrapper)obj);
 		}
 
 		if( obj instanceof DelayProxy ) {
-			return Messages.Loading;
+			return "Loading..."; //$NON-NLS-1$
 		}
-        if( obj instanceof ErrorRoot ) {
-        	return Messages.ErrorLoading;
-        }
-		
+
+		if( obj instanceof ErrorRoot ) {
+		    return Messages.ErrorLoading;
+		}
 		if (obj instanceof DomainNode) {
 			DomainNode node = (DomainNode) obj;
 			return node.getDomain();
 		}
 		if (obj instanceof ObjectNameNode) {
-			ObjectNameNode node = (ObjectNameNode) obj;
+			PropertyNode node = (PropertyNode) obj;
 			return node.getValue();
 		}
 		if (obj instanceof PropertyNode) {
@@ -109,27 +122,31 @@ public class MBeanExplorerLabelProvider extends LabelProvider {
 
 	@Override
 	public Image getImage(Object obj) {
+		if (obj instanceof ImageProvider) {
+			ImageProvider provider = (ImageProvider) obj;
+			Image answer = provider.getImage();
+			if (answer != null) {
+				return answer;
+			} else {
+			}
+		}
 		if( obj instanceof IConnectionWrapper ) {
 			IConnectionProvider provider = ((IConnectionWrapper)obj).getProvider();
 			ConnectionProviderUI ui = UIExtensionManager.getConnectionProviderUI(provider.getId());
-			if( ui != null && ui.getId() != null ) {
-				if(images.get(ui.getId()) == null || images.get(ui.getId()).isDisposed()) {
-					Image i = null;
-					if( ui.getImageDescriptor() != null ) {
-						i = ui.getImageDescriptor().createImage();
-					}
-					images.put(ui.getId(), i);
-				}
+			if( ui != null ) {
+				if(!images.containsKey(ui.getId()) || images.get(ui.getId()).isDisposed())
+					images.put(ui.getId(),
+							ui.getImageDescriptor().createImage());
 				return images.get(ui.getId());
 			}
 		}
 		if( obj instanceof DelayProxy ) {
 			return null;
 		}
-        if( obj instanceof ErrorRoot ) {
-        	return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
-        }
 
+		if( obj instanceof ErrorRoot ) {
+		    return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
+		}
 		if (obj instanceof DomainNode) {
 			return JMXImages.get(JMXImages.IMG_OBJS_LIBRARY);
 		}

@@ -4,10 +4,21 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *      Benjamin Walstrum (issue #24)
  *******************************************************************************/
+
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 
 package org.jboss.tools.jmx.ui.internal.editors;
 
@@ -18,9 +29,12 @@ import javax.management.Attribute;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanServerConnection;
 
+
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -28,7 +42,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.AbstractFormPart;
@@ -38,15 +51,14 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
-import org.jboss.tools.jmx.core.IConnectionWrapper;
-import org.jboss.tools.jmx.core.IJMXRunnable;
-import org.jboss.tools.jmx.core.JMXException;
 import org.jboss.tools.jmx.core.MBeanAttributeInfoWrapper;
+import org.jboss.tools.jmx.core.util.StringUtils;
+import org.jboss.tools.jmx.ui.JMXUIActivator;
 import org.jboss.tools.jmx.ui.Messages;
 import org.jboss.tools.jmx.ui.extensions.IWritableAttributeHandler;
 import org.jboss.tools.jmx.ui.internal.JMXImages;
-import org.jboss.tools.jmx.ui.internal.StringUtils;
 import org.jboss.tools.jmx.ui.internal.controls.AttributeControlFactory;
+
 
 public class AttributeDetails extends AbstractFormPart implements IDetailsPage {
 
@@ -67,41 +79,22 @@ public class AttributeDetails extends AbstractFormPart implements IDetailsPage {
     private MBeanAttributeInfoWrapper wrapper;
 
     private final IWritableAttributeHandler updateAttributeHandler = new IWritableAttributeHandler() {
-        public void write(final Object newValue) {
-        	new Thread() {
-        		public void run() {
-                	IConnectionWrapper connection = wrapper.getMBeanInfoWrapper().getParent().getConnection();
-                	try {
-	                	connection.run(new IJMXRunnable() {
-							public void run(MBeanServerConnection connection)
-									throws Exception {
-			        			execAttributeUpdate(connection, newValue);
-							} });
-                	} catch(JMXException jmxe) {
-                	}
-        		}
-	        }.start();
-        }
-    };
-
-    protected void execAttributeUpdate(MBeanServerConnection connection, Object newValue) {
-        try {
-            String attrName = wrapper.getMBeanAttributeInfo().getName();
-            Attribute attr = new Attribute(attrName, newValue);
-            connection.setAttribute(wrapper.getObjectName(), attr);
-        	Display.getDefault().asyncExec(new Runnable() { public void run() { 
-        		masterSection.refresh();
-        	}});
-        } catch (final Exception e) {
-        	Display.getDefault().asyncExec(new Runnable() { public void run() { 
+        public void write(Object newValue) {
+            try {
+                MBeanServerConnection mbsc = wrapper.getMBeanServerConnection();
+                String attrName = wrapper.getMBeanAttributeInfo().getName();
+                Attribute attr = new Attribute(attrName, newValue);
+                mbsc.setAttribute(wrapper.getObjectName(), attr);
+                masterSection.refresh();
+            } catch (Exception e) {
                 MessageDialog.openError(getManagedForm().getForm().getDisplay()
                         .getActiveShell(),
                         Messages.AttributeDetailsSection_errorTitle, e
                                 .getLocalizedMessage());
-        	}});
+            }
         }
-    }
-    
+    };
+
     public AttributeDetails(IFormPart masterSection) {
         this.masterSection = masterSection;
     }
@@ -158,11 +151,13 @@ public class AttributeDetails extends AbstractFormPart implements IDetailsPage {
         GridData layoutData = new GridData(GridData.FILL_BOTH);
         layoutData.horizontalSpan = 2;
         valueComposite.setLayoutData(layoutData);
-        
+
         GridLayout valueLayout = new GridLayout();
         valueLayout.marginWidth = 0;
         valueLayout.marginHeight = 0;
         valueComposite.setLayout(valueLayout);
+
+        bold.dispose();
     }
 
     private GridData newLayoutData() {
@@ -180,8 +175,7 @@ public class AttributeDetails extends AbstractFormPart implements IDetailsPage {
         String type = attrInfo.getType();
         nameLabel.setText(attrInfo.getName());
         typeLabel.setText(StringUtils.toString(type));
-        if( attrInfo.getDescription() != null)
-        	descriptionText.setText(attrInfo.getDescription());
+        descriptionText.setText(attrInfo.getDescription());
 
         boolean writable = attrInfo.isWritable();
         boolean readable = attrInfo.isReadable();
@@ -204,13 +198,16 @@ public class AttributeDetails extends AbstractFormPart implements IDetailsPage {
 
         try {
             Control attrControl = AttributeControlFactory.createControl(
-                    valueComposite, wrapper.getValue(), type, 
+                    valueComposite, wrapper.getValue(), type,
                     wrapper.getObjectName().getCanonicalName(), attrInfo.getName(),
                     writable, updateAttributeHandler, toolkit);
             GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
             attrControl.setLayoutData(gd);
             attrControl.pack(true);
         } catch (Throwable t) {
+            JMXUIActivator.log(IStatus.ERROR, NLS.bind(
+                    Messages.MBeanAttributeValue_Warning, attrInfo.getName()),
+                    t);
             Label errorLabel = toolkit.createLabel(valueComposite,
                     Messages.unavailable);
             errorLabel.setForeground(valueComposite.getDisplay()

@@ -8,20 +8,33 @@
  * Contributors:
  *    "Rob Stryker" <rob.stryker@redhat.com> - Initial implementation
  *******************************************************************************/
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
+
 package org.jboss.tools.jmx.ui.internal.views.navigator;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.navigator.CommonActionProvider;
 import org.eclipse.ui.navigator.ICommonActionConstants;
 import org.eclipse.ui.navigator.ICommonActionExtensionSite;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
+import org.jboss.tools.jmx.core.tree.Root;
+import org.jboss.tools.jmx.ui.JMXUIActivator;
 import org.jboss.tools.jmx.ui.UIExtensionManager;
 import org.jboss.tools.jmx.ui.UIExtensionManager.ConnectionProviderUI;
 import org.jboss.tools.jmx.ui.internal.actions.DeleteConnectionAction;
@@ -30,100 +43,132 @@ import org.jboss.tools.jmx.ui.internal.actions.EditConnectionAction;
 import org.jboss.tools.jmx.ui.internal.actions.MBeanServerConnectAction;
 import org.jboss.tools.jmx.ui.internal.actions.MBeanServerDisconnectAction;
 import org.jboss.tools.jmx.ui.internal.actions.NewConnectionAction;
+import org.jboss.tools.jmx.ui.internal.actions.RefreshAction;
+
 
 /**
- * The action provider as declared in plugin.xml
- * as relates to Common Navigator
+ * The action provider as declared in plugin.xml as relates to Common Navigator
  */
 public class ActionProvider extends CommonActionProvider {
 	private DoubleClickAction doubleClickAction;
 	private NewConnectionAction newConnectionAction;
-	public ActionProvider() {
-		super();
+	private RefreshAction refreshAction;
+	private ICommonActionExtensionSite site;
+
+	@Override
+	public void init(ICommonActionExtensionSite site) {
+		super.init(site);
+		this.site = site;
+		doubleClickAction = new DoubleClickAction();
+		newConnectionAction = new NewConnectionAction();
+		String viewId = site.getViewSite().getId();
+		JMXUIActivator.getLogger().debug("============================= View ID: " + viewId); //$NON-NLS-1$
+		refreshAction = new RefreshAction(viewId);
+		StructuredViewer viewer = site.getStructuredViewer();
+		refreshAction.setViewer(viewer);
+		viewer.addSelectionChangedListener(doubleClickAction);
 	}
 
-    public void init(ICommonActionExtensionSite aSite) {
-        super.init(aSite);
-        doubleClickAction = new DoubleClickAction();
-        newConnectionAction = new NewConnectionAction();
-        aSite.getStructuredViewer().addSelectionChangedListener(doubleClickAction);
-    }
+	public StructuredViewer getStructuredViewer() {
+		return site.getStructuredViewer();
+	}
 
-    public void fillActionBars(IActionBars actionBars) {
-        super.fillActionBars(actionBars);
-        actionBars.setGlobalActionHandler(ICommonActionConstants.OPEN,
-              doubleClickAction);
-    }
+	@Override
+	public void fillActionBars(IActionBars actionBars) {
+		super.fillActionBars(actionBars);
+		actionBars.setGlobalActionHandler(ICommonActionConstants.OPEN, doubleClickAction);
+	}
 
-    public void fillContextMenu(IMenuManager menu) {
-    	IConnectionWrapper[] connections = getWrappersFromSelection();
-    	if( connections != null && connections.length > 0) {
-    		boolean allControllable = allControlable(connections);
-	    	if( !anyConnected(connections)) {
-	    		MBeanServerConnectAction c = new MBeanServerConnectAction(connections);
-	    		menu.add(c);
-	    		c.setEnabled(allControllable);
-	    	} else {
-	    		MBeanServerDisconnectAction d = new MBeanServerDisconnectAction(connections);
-	    		menu.add(d);
-	    		d.setEnabled(allControllable);
-	    	}
-	    	if( connections.length == 1 ) {
-	    		String id = connections[0].getProvider().getId();
+	@Override
+	public void fillContextMenu(IMenuManager menu) {
+		menu.appendToGroup("additions", refreshAction); //$NON-NLS-1$
+
+		Object firstSelection = getFirstSelection();
+		if (firstSelection instanceof ContextMenuProvider) {
+			ContextMenuProvider provider = (ContextMenuProvider) firstSelection;
+			provider.provideContextMenu(menu);
+		}
+
+		IConnectionWrapper[] connections = getWrappersFromSelection();
+		if (connections != null && connections.length > 0) {
+			if (!anyConnected(connections) && allControlable(connections))
+				menu.add(new MBeanServerConnectAction(getStructuredViewer(), connections));
+			else if (allControlable(connections))
+				menu.add(new MBeanServerDisconnectAction(connections));
+		}
+		if( connections.length == 1 ) {
+			String id = connections[0].getProvider().getId();
 	    		ConnectionProviderUI ui = UIExtensionManager.getConnectionProviderUI(id);
-	    		if( ui != null && ui.isEditable() && !connections[0].isConnected()) 
-	    			menu.add(new EditConnectionAction(connections[0]));
-	    	}
-	    	menu.add(new DeleteConnectionAction(connections));
-    	}
+			if( ui != null && ui.isEditable() && !connections[0].isConnected())
+				menu.add(new EditConnectionAction(connections[0]));
 
-    	// Finish up
-    	int size = getSelectionSize();
-    	Object input = getActionSite().getStructuredViewer().getInput();
-    	if( input instanceof JMXNavigator && (size == 0 || (size == 1 && getWrappersFromSelection().length == 1))) {
-	    	menu.add(new Separator());
-	    	menu.add(newConnectionAction);
-    	}
-    }
+			menu.add(new DeleteConnectionAction(connections));
+			//menu.add(new Separator());
+		}
 
-    protected boolean anyConnected(IConnectionWrapper[] connections) {
-    	for( int i = 0; i < connections.length; i++ ) 
-    		if( connections[i].isConnected())
-    			return true;
-    	return false;
-    }
-    protected boolean allControlable(IConnectionWrapper[] connections) {
-    	for( int i = 0; i < connections.length; i++ ) 
-    		if( !connections[i].canControl() )
-    			return false;
-    	return true;
-    }
-    
+		if (firstSelection == null || firstSelection instanceof Root || firstSelection instanceof IConnectionWrapper) {
+			menu.add(newConnectionAction);
+			//menu.add(new Separator());
+		}
+		//menu.add(refreshAction);
+	}
+
+	protected boolean anyConnected(IConnectionWrapper[] connections) {
+		for (int i = 0; i < connections.length; i++)
+			if (connections[i].isConnected())
+				return true;
+		return false;
+	}
+
+	protected boolean allControlable(IConnectionWrapper[] connections) {
+		for (int i = 0; i < connections.length; i++)
+			if (!connections[i].canControl())
+				return false;
+		return true;
+	}
+
     protected int getSelectionSize() {
-    	if( getContext() != null && getContext().getSelection() != null ) {
+	if( getContext() != null && getContext().getSelection() != null ) {
     		ISelection sel = getContext().getSelection();
     		if( sel instanceof IStructuredSelection ) {
     			return ((IStructuredSelection)sel).size();
     		}
     	}
-    	return -1;
+	return -1;
     }
-    
-    protected IConnectionWrapper[] getWrappersFromSelection() {
-    	ArrayList<IConnectionWrapper> list = new ArrayList<IConnectionWrapper>();
-    	if( getContext() != null && getContext().getSelection() != null ) {
-    		ISelection sel = getContext().getSelection();
-    		if( sel instanceof IStructuredSelection ) {
-    			Iterator i = ((IStructuredSelection)sel).iterator();
-    			Object o;
-    			while(i.hasNext()) {
-	    			o = i.next();
-    				if( o instanceof IConnectionWrapper ) {
-    					list.add((IConnectionWrapper)o);
-	    			}
-    			}
-    		}
-    	}
-    	return list.toArray(new IConnectionWrapper[list.size()]);
-    }
+
+	protected IConnectionWrapper[] getWrappersFromSelection() {
+		ArrayList<IConnectionWrapper> list = new ArrayList<IConnectionWrapper>();
+		IStructuredSelection selection = getContextSelection();
+		if (selection != null) {
+			Iterator i = selection.iterator();
+			Object o;
+			while (i.hasNext()) {
+				o = i.next();
+				if (o instanceof IConnectionWrapper) {
+					list.add((IConnectionWrapper) o);
+				}
+			}
+		}
+		return list.toArray(new IConnectionWrapper[list.size()]);
+	}
+
+	protected Object getFirstSelection() {
+		IStructuredSelection selection = getContextSelection();
+		if (selection != null) {
+			return selection.getFirstElement();
+		}
+		return null;
+	}
+
+	protected IStructuredSelection getContextSelection() {
+		IStructuredSelection answer = null;
+		if (getContext() != null && getContext().getSelection() != null) {
+			ISelection sel = getContext().getSelection();
+			if (sel instanceof IStructuredSelection) {
+				answer = (IStructuredSelection) sel;
+			}
+		}
+		return answer;
+	}
 }

@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Bundle-SymbolicName: org.jboss.tools.jmx.jvmmonitor.tools;singleton:=true
+Bundle-Version: 1.6.0.qualifier
+Bundle-Activator: org.jboss.tools.jmx.jvmmonitor.tools.Activator
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.jdt.launching,
+ org.jboss.tools.jmx.jvmmonitor.core
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Eclipse-BuddyPolicy: app
+Bundle-Vendor: %providerName
+Export-Package: org.jboss.tools.jmx.jvmmonitor.internal.tools;x-friends:="org.jboss.tools.jmx.jvmmonitor.tools.tests",
+ org.jboss.tools.jmx.jvmmonitor.tools;x-friends:="org.jboss.tools.jmx.jvmmonitor.tools.tests"

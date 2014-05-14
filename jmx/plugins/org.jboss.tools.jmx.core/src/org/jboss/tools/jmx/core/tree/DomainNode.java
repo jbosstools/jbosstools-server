@@ -5,9 +5,23 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
+
 package org.jboss.tools.jmx.core.tree;
 
-public class DomainNode extends Node {
+import org.jboss.tools.jmx.core.HasName;
+
+
+public class DomainNode extends Node implements HasName {
 
     private String domain;
 
@@ -25,7 +39,11 @@ public class DomainNode extends Node {
         return "DomainNode[domain=" + domain + "]"; //$NON-NLS-1$ //$NON-NLS-2$
     }
 
-    @Override
+	public String getName() {
+		return getDomain();
+	}
+
+	@Override
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
@@ -43,15 +61,22 @@ public class DomainNode extends Node {
             return false;
         final DomainNode other = (DomainNode) obj;
         if (domain == null) {
-        	return other.domain == null;
+            if (other.domain != null)
+                return false;
         } else if (!domain.equals(other.domain))
             return false;
         return true;
     }
 
     public int compareTo(Object o) {
-        DomainNode other = (DomainNode) o;
-        return domain.compareTo(other.domain);
+	String otherText = null;
+	if (o instanceof DomainNode) {
+            DomainNode other = (DomainNode) o;
+            otherText = other.domain;
+	} else {
+		otherText = o.toString();
+	}
+        return domain.compareTo(otherText);
     }
 
 }

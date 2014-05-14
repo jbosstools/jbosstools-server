@@ -6,6 +6,17 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
 
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
+
 package org.jboss.tools.jmx.ui.internal.editors;
 
 
@@ -21,11 +32,12 @@ import org.eclipse.ui.forms.MasterDetailsBlock;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.jboss.tools.jmx.commons.ui.UIConstants;
 import org.jboss.tools.jmx.core.MBeanAttributeInfoWrapper;
 import org.jboss.tools.jmx.core.MBeanInfoWrapper;
 import org.jboss.tools.jmx.ui.Messages;
-import org.jboss.tools.jmx.ui.internal.views.navigator.JMXNavigator;
 import org.jboss.tools.jmx.ui.internal.views.navigator.UpdateSelectionJob;
+
 
 public class AttributesPage extends FormPage {
 
@@ -89,13 +101,13 @@ public class AttributesPage extends FormPage {
         block.createContent(managedForm);
         block.masterSection.getTableViewer().addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
-				UpdateSelectionJob.launchJob(JMXNavigator.VIEW_ID);
-			} 
+				UpdateSelectionJob.launchJob(UIConstants.JMX_EXPLORER_VIEW_ID);
+			}
         });
     }
-    
+
     public IStructuredSelection getSelection() {
-    	return (IStructuredSelection)block.masterSection.getTableViewer().getSelection();
+	return (IStructuredSelection)block.masterSection.getTableViewer().getSelection();
     }
 
     @Override
