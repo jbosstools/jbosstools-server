@@ -13,7 +13,8 @@ Export-Package: org.jboss.tools.jmx.jvmmonitor.core,
  org.jboss.tools.jmx.jvmmonitor.core.cpu,
  org.jboss.tools.jmx.jvmmonitor.core.dump,
  org.jboss.tools.jmx.jvmmonitor.core.mbean,
- org.jboss.tools.jmx.jvmmonitor.internal.core;x-friends:="org.jboss.tools.jmx.jvmmonitor.core.tests"
+ org.jboss.tools.jmx.jvmmonitor.internal.core;x-friends:="org.jboss.tools.jmx.jvmmonitor.core.tests",
+ org.jboss.tools.jmx.jvmmonitor.internal.core.cpu;x-internal:=true
 Bundle-Vendor: %providerName
 Bundle-Name: %pluginName
 Bundle-ClassPath: jvmmonitor-core.jar

@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Copyright (c) 2010 JVM Monitor project. All rights reserved. 
- * 
+ * Copyright (c) 2010 JVM Monitor project. All rights reserved.
+ *
  * This code is distributed under the terms of the Eclipse Public License v1.0
  * which is available at http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
@@ -31,7 +31,7 @@ import org.jboss.tools.jmx.jvmmonitor.core.cpu.CpuModelEvent.CpuModelState;
 public class CpuModel implements ICpuModel {
 
     /** The agent version. */
-    static final String AGENT_VERSION = "3.7.0"; //$NON-NLS-1$
+    static final String AGENT_VERSION = "3.8.1"; //$NON-NLS-1$
 
     /** The call tree threads. */
     private List<ThreadNode<CallTreeNode>> callTreeThreads;
@@ -257,7 +257,7 @@ public class CpuModel implements ICpuModel {
 
     /**
      * Gets the thread on call tree corresponding to the given thread name.
-     * 
+     *
      * @param threadName
      *            The thread name
      * @return The thread on call tree, or <tt>null</tt> if not found
@@ -273,7 +273,7 @@ public class CpuModel implements ICpuModel {
 
     /**
      * Adds the call tree thread node.
-     * 
+     *
      * @param thread
      *            The thread
      */
@@ -285,7 +285,7 @@ public class CpuModel implements ICpuModel {
 
     /**
      * Gets the thread on hot spot corresponding to the given thread name.
-     * 
+     *
      * @param threadName
      *            The thread name
      * @return The thread on hot spot, or <tt>null</tt> if not found
@@ -301,7 +301,7 @@ public class CpuModel implements ICpuModel {
 
     /**
      * Adds the hot spot thread node.
-     * 
+     *
      * @param thread
      *            The thread
      */
@@ -336,7 +336,7 @@ public class CpuModel implements ICpuModel {
 
     /**
      * Notifies that the CPU model has been changed.
-     * 
+     *
      * @param event
      *            The CPU model change event
      */
@@ -348,7 +348,7 @@ public class CpuModel implements ICpuModel {
 
     /**
      * Gets the CPU dump string.
-     * 
+     *
      * @param runtime
      *            The runtime
      * @param mainClass
@@ -391,7 +391,7 @@ public class CpuModel implements ICpuModel {
 
     /**
      * Refreshes the callers and callees.
-     * 
+     *
      * @param callerNames
      *            The caller names
      * @param calleeNames
@@ -420,7 +420,7 @@ public class CpuModel implements ICpuModel {
 
     /**
      * Adds the focused hot spot nodes.
-     * 
+     *
      * @param frame
      *            The frame node
      */
@@ -449,7 +449,7 @@ public class CpuModel implements ICpuModel {
 
     /**
      * Gets the frame root nodes.
-     * 
+     *
      * @param thread
      *            The target thread for callers/callees
      * @return The frame root nodes
@@ -491,7 +491,7 @@ public class CpuModel implements ICpuModel {
 
     /**
      * Gets the method nodes.
-     * 
+     *
      * @param thread
      *            The target thread for callers/callees
      * @return The method nodes
@@ -522,7 +522,7 @@ public class CpuModel implements ICpuModel {
 
     /**
      * Gets the thread corresponding to the given node.
-     * 
+     *
      * @param callersCalleesMethod
      *            The tree node
      * @return The thread

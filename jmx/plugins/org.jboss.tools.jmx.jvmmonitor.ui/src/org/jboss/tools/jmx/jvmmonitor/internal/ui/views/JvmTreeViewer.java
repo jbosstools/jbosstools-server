@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Copyright (c) 2010 JVM Monitor project. All rights reserved. 
- * 
+ * Copyright (c) 2010 JVM Monitor project. All rights reserved.
+ *
  * This code is distributed under the terms of the Eclipse Public License v1.0
  * which is available at http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
@@ -29,6 +29,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
@@ -42,7 +43,6 @@ import org.jboss.tools.jmx.jvmmonitor.core.JvmModelEvent.State;
 import org.jboss.tools.jmx.jvmmonitor.core.cpu.ICpuProfiler.ProfilerState;
 import org.jboss.tools.jmx.jvmmonitor.internal.ui.RefreshJob;
 import org.jboss.tools.jmx.jvmmonitor.internal.ui.actions.CopyAction;
-
 
 /**
  * The tree viewer on JVM Monitor view.
@@ -80,7 +80,7 @@ public class JvmTreeViewer extends TreeViewer implements
 
     /**
      * The constructor.
-     * 
+     *
      * @param parent
      *            the parent composite
      * @param style
@@ -116,6 +116,12 @@ public class JvmTreeViewer extends TreeViewer implements
                         setInput(new Object[0]);
                         JvmModel.getInstance().addJvmModelChangeListener(
                                 JvmTreeViewer.this);
+
+                        TreeItem topItem = getTree().getTopItem();
+                        if (topItem != null) {
+                            topItem.setExpanded(true);
+                            refresh();
+                        }
                     }
                 });
                 return Status.OK_STATUS;
@@ -224,7 +230,7 @@ public class JvmTreeViewer extends TreeViewer implements
 
     /**
      * Creates the context menu.
-     * 
+     *
      * @param actionBars
      *            The action bars
      */
@@ -251,7 +257,7 @@ public class JvmTreeViewer extends TreeViewer implements
 
     /**
      * Configures the menus.
-     * 
+     *
      * @param manager
      *            The menu manager
      */
@@ -274,7 +280,7 @@ public class JvmTreeViewer extends TreeViewer implements
 
     /**
      * Updates the status line.
-     * 
+     *
      * @param selection
      *            the selection
      */
@@ -320,10 +326,14 @@ public class JvmTreeViewer extends TreeViewer implements
                     }
                 } else if (element instanceof IHost) {
                     IHost host = (IHost) element;
-                    if (host.getName().equals(IHost.LOCALHOST)
-                            && !JvmModel.getInstance().hasValidJdk()) {
-                        errorText.append(Messages.invalidJdkLocationMsg);
-                        errorImage = getErrorImage();
+                    if (host.getName().equals(IHost.LOCALHOST)) {
+                        if (!JvmModel.getInstance().hasValidJdk()) {
+                            errorText.append(Messages.invalidJdkLocationMsg);
+                            errorImage = getErrorImage();
+                        } else if (host.getActiveJvms().isEmpty()) {
+                            errorText.append(Messages.cannnotDetectJvmMsg);
+                            errorImage = getErrorImage();
+                        }
                     }
                 }
 
@@ -339,7 +349,7 @@ public class JvmTreeViewer extends TreeViewer implements
 
     /**
      * Gets the error image.
-     * 
+     *
      * @return The error image
      */
     Image getErrorImage() {

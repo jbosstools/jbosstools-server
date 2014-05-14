@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Copyright (c) 2010 JVM Monitor project. All rights reserved. 
- * 
+ * Copyright (c) 2010 JVM Monitor project. All rights reserved.
+ *
  * This code is distributed under the terms of the Eclipse Public License v1.0
  * which is available at http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
@@ -30,7 +30,7 @@ public class CallTreeNode extends AbstractMethodNode implements ICallTreeNode {
 
     /**
      * The constructor.
-     * 
+     *
      * @param cpuModel
      *            the cpuModel
      * @param name
@@ -52,7 +52,7 @@ public class CallTreeNode extends AbstractMethodNode implements ICallTreeNode {
 
     /**
      * The constructor for root frame node.
-     * 
+     *
      * @param cpuModel
      *            the cpuModel
      * @param name
@@ -165,16 +165,33 @@ public class CallTreeNode extends AbstractMethodNode implements ICallTreeNode {
         if (frameNode.getName().equals(qualifiedMethodName)
                 && frameNode.getSelfTime() == selfTime
                 && frameNode.getTotalTime() == totalTime
-                && frameNode.getInvocationCount() == invocationCount) {
+                && frameNode.getInvocationCount() == invocationCount
+                && frameNode.getIndentation().length() == getIndentation()
+                        .length()) {
             return true;
         }
 
         return false;
     }
 
+    /*
+     * @see Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append(getIndentation()).append(getName()).append('\t');
+        buffer.append(getTotalTime()).append('\t');
+        buffer.append(getTotalTimeInPercentage()).append('\t');
+        buffer.append(getSelfTime()).append('\t');
+        buffer.append(getSelfTimeInPercentage()).append('\t');
+        buffer.append(getInvocationCount());
+        return buffer.toString();
+    }
+
     /**
      * Adds the child node.
-     * 
+     *
      * @param node
      *            The child node
      */
@@ -184,7 +201,7 @@ public class CallTreeNode extends AbstractMethodNode implements ICallTreeNode {
 
     /**
      * Sets the total invocation time.
-     * 
+     *
      * @param time
      *            the total invocation time
      */
@@ -194,7 +211,7 @@ public class CallTreeNode extends AbstractMethodNode implements ICallTreeNode {
 
     /**
      * Sets the self invocation time.
-     * 
+     *
      * @param time
      *            the self invocation time
      */
@@ -204,7 +221,7 @@ public class CallTreeNode extends AbstractMethodNode implements ICallTreeNode {
 
     /**
      * Sets the invocation count.
-     * 
+     *
      * @param count
      *            The invocation count
      */
@@ -214,7 +231,7 @@ public class CallTreeNode extends AbstractMethodNode implements ICallTreeNode {
 
     /**
      * Dumps the profile data.
-     * 
+     *
      * @param buffer
      *            The string buffer
      * @param nest
@@ -242,5 +259,22 @@ public class CallTreeNode extends AbstractMethodNode implements ICallTreeNode {
         } else {
             buffer.append("/>\n"); //$NON-NLS-1$
         }
+    }
+
+    /**
+     * Gets the indentation that indicates the depth of tree.
+     *
+     * @return The indentation
+     */
+    private String getIndentation() {
+        StringBuffer buffer = new StringBuffer();
+
+        ITreeNode parent = getParent();
+        if (parent instanceof CallTreeNode) {
+            CallTreeNode callTreeNode = (CallTreeNode) parent;
+            buffer.append(callTreeNode.getIndentation()).append(' ');
+        }
+
+        return buffer.toString();
     }
 }

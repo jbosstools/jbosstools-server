@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Copyright (c) 2010 JVM Monitor project. All rights reserved. 
- * 
+ * Copyright (c) 2010 JVM Monitor project. All rights reserved.
+ *
  * This code is distributed under the terms of the Eclipse Public License v1.0
  * which is available at http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
@@ -139,7 +139,7 @@ public class StartMonitoringAction extends Action implements
 
     /**
      * Shows the properties view.
-     * 
+     *
      * @param jvm
      *            The active JVM
      */
@@ -177,7 +177,7 @@ public class StartMonitoringAction extends Action implements
 
     /**
      * Gets the state indicating if this action is visible.
-     * 
+     *
      * @return <tt>true</tt> if this action is visible
      */
     protected boolean getVisible() {
@@ -186,7 +186,7 @@ public class StartMonitoringAction extends Action implements
 
     /**
      * Gets the currently opened properties view.
-     * 
+     *
      * @return The properties views
      */
     private List<PropertySheet> getProperriesView() {
@@ -205,7 +205,7 @@ public class StartMonitoringAction extends Action implements
     /**
      * Gets the properties view showing the given JVM from the given properties
      * views.
-     * 
+     *
      * @param jvm
      *            The JVM
      * @param views
@@ -228,7 +228,7 @@ public class StartMonitoringAction extends Action implements
 
     /**
      * Gets the non-pinned properties view.
-     * 
+     *
      * @param views
      *            The properties view
      * @return The non-pinned properties view
@@ -244,7 +244,7 @@ public class StartMonitoringAction extends Action implements
 
     /**
      * Opens the properties view.
-     * 
+     *
      * @param jvm
      *            The JVM
      * @throws PartInitException
@@ -269,7 +269,7 @@ public class StartMonitoringAction extends Action implements
 
     /**
      * Brings the properties view to front.
-     * 
+     *
      * @param view
      *            The properties view
      * @throws PartInitException
@@ -278,5 +278,6 @@ public class StartMonitoringAction extends Action implements
             throws PartInitException {
         PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
                 .bringToTop(view);
+        view.setPinned(true);
     }
 }

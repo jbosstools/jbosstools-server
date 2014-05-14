@@ -192,7 +192,7 @@
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">
-      <page>
+      <page
             class="org.jboss.tools.jmx.jvmmonitor.internal.ui.JavaMonitorPreferencePage"
             id="org.jboss.tools.jmx.jvmmonitor.ui.JavaMonitorPreferencePage"
             name="%monitorPreferencePageName">

@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Copyright (c) 2010 JVM Monitor project. All rights reserved. 
- * 
+ * Copyright (c) 2010 JVM Monitor project. All rights reserved.
+ *
  * This code is distributed under the terms of the Eclipse Public License v1.0
  * which is available at http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
@@ -19,7 +19,7 @@ public class MethodNode extends AbstractMethodNode {
 
     /**
      * The constructor.
-     * 
+     *
      * @param cpuModel
      *            The cpuModel
      * @param name
@@ -95,9 +95,22 @@ public class MethodNode extends AbstractMethodNode {
         return false;
     }
 
+    /*
+     * @see Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append(getName()).append('\t');
+        buffer.append(getSelfTime()).append('\t');
+        buffer.append(getSelfTimeInPercentage()).append('\t');
+        buffer.append(getInvocationCount());
+        return buffer.toString();
+    }
+
     /**
      * Increments the sum of method invocation time.
-     * 
+     *
      * @param time
      *            The method self invocation time
      */
@@ -107,7 +120,7 @@ public class MethodNode extends AbstractMethodNode {
 
     /**
      * Increments the sum of method invocation count.
-     * 
+     *
      * @param count
      *            The method invocation count
      */

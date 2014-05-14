@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Copyright (c) 2010 JVM Monitor project. All rights reserved. 
- * 
+ * Copyright (c) 2010 JVM Monitor project. All rights reserved.
+ *
  * This code is distributed under the terms of the Eclipse Public License v1.0
  * which is available at http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
@@ -16,7 +16,7 @@ import org.jboss.tools.jmx.jvmmonitor.core.cpu.ITreeNode;
 
 /**
  * The thread node.
- * 
+ *
  * @param <E>
  *            The method note type
  */
@@ -33,7 +33,7 @@ public class ThreadNode<E extends IMethodNode> implements IThreadNode {
 
     /**
      * The constructor.
-     * 
+     *
      * @param name
      *            The thread name
      */
@@ -124,12 +124,15 @@ public class ThreadNode<E extends IMethodNode> implements IThreadNode {
      */
     @Override
     public String toString() {
-        return "Thread: " + getName(); //$NON-NLS-1$
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("Thread: ").append(getName()).append('\t'); //$NON-NLS-1$
+        buffer.append(getTotalTime());
+        return buffer.toString();
     }
 
     /**
      * Adds the child node.
-     * 
+     *
      * @param node
      *            The child node
      */
@@ -149,7 +152,7 @@ public class ThreadNode<E extends IMethodNode> implements IThreadNode {
 
     /**
      * Sets the total invocation time.
-     * 
+     *
      * @param time
      *            The total invocation time
      */
