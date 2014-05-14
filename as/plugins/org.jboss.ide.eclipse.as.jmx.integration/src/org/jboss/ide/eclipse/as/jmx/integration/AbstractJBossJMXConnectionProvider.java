@@ -12,7 +12,6 @@ package org.jboss.ide.eclipse.as.jmx.integration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
@@ -23,17 +22,14 @@ import org.eclipse.wst.server.core.IServerLifecycleListener;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.tools.jmx.core.AbstractConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionProviderEventEmitter;
-import org.jboss.tools.jmx.core.IConnectionProviderListener;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 
-public abstract class AbstractJBossJMXConnectionProvider implements 
+public abstract class AbstractJBossJMXConnectionProvider extends AbstractConnectionProvider implements
 	IConnectionProvider, IConnectionProviderEventEmitter, IServerLifecycleListener  {
 
-	private ArrayList<IConnectionProviderListener> listeners = 
-		new ArrayList<IConnectionProviderListener>();
-	
 	private HashMap<String, IConnectionWrapper> idToConnection;
 	public AbstractJBossJMXConnectionProvider() {
 		ServerCore.addServerLifecycleListener(this);
@@ -117,43 +113,6 @@ public abstract class AbstractJBossJMXConnectionProvider implements
 		return list.toArray(new IConnectionWrapper[list.size()]);
 	}
 	
-	public void addListener(IConnectionProviderListener listener) {
-		if( !listeners.contains(listener))
-			listeners.add(listener);
-	}
-
-	public void removeListener(IConnectionProviderListener listener) {
-		listeners.remove(listener);
-	}
-	
-	public void fireAdded(IConnectionWrapper wrapper) {
-		for(Iterator<IConnectionProviderListener> i = listeners.iterator(); i.hasNext();)
-			try {
-				i.next().connectionAdded(wrapper);
-			} catch(RuntimeException re) {
-				// Intentionally ignore. This is just to protect against a bad implementer blowing away the stack
-			}
-	}
-
-	public void fireChanged(IConnectionWrapper wrapper) {
-		for(Iterator<IConnectionProviderListener> i = listeners.iterator(); i.hasNext();)
-			try {
-				i.next().connectionChanged(wrapper);
-			} catch(RuntimeException re) {
-				// Intentionally ignore. This is just to protect against a bad implementer blowing away the stack
-			}
-	}
-
-	public void fireRemoved(IConnectionWrapper wrapper) {
-		Iterator<IConnectionProviderListener> i = listeners.iterator();
-		while( i.hasNext())
-			try {
-				i.next().connectionRemoved(wrapper);
-			} catch(RuntimeException re) {
-				// Intentionally ignore. This is just to protect against a bad implementer blowing away the stack
-			}
-	}
-
 	public boolean canCreate() {
 		return false;
 	}

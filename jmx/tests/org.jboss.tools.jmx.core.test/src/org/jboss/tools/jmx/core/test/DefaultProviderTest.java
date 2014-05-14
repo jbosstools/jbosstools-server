@@ -42,7 +42,6 @@ import org.jboss.tools.jmx.core.test.util.TestProjectProvider;
 import org.jboss.tools.jmx.core.tree.DomainNode;
 import org.jboss.tools.jmx.core.tree.Node;
 import org.jboss.tools.jmx.core.tree.Root;
-import org.jboss.tools.test.util.JobUtils;
 
 public class DefaultProviderTest extends TestCase {
 	protected void setUp() throws Exception {
@@ -92,7 +91,7 @@ public class DefaultProviderTest extends TestCase {
 				null, true);
 		project = projectProvider.getProject();
 		project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-		JobUtils.waitForIdle();
+		//pleacuJobUtils.waitForIdle();
 		
 		ILaunchConfigurationWorkingCopy wc = createLaunch();
 		ILaunch launch = wc.launch("run", new NullProgressMonitor());
