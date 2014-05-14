@@ -8,6 +8,17 @@
  * Contributors:
  *    "Rob Stryker" <rob.stryker@redhat.com> - Initial implementation
  *******************************************************************************/
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
+
 package org.jboss.tools.jmx.ui.internal.wizards;
 
 import java.util.ArrayList;
@@ -16,7 +27,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -45,6 +55,7 @@ import org.jboss.tools.jmx.ui.Messages;
 import org.jboss.tools.jmx.ui.UIExtensionManager;
 import org.jboss.tools.jmx.ui.UIExtensionManager.ConnectionProviderUI;
 
+
 /**
  * The connection wizard
  */
@@ -57,92 +68,87 @@ public class NewConnectionWizard extends Wizard {
 	private HashMap<String, ConnectionWizardPage[]> pageMap;
 
 	private IWizardPage firstPage;
-	
-	public String getWindowTitle() {
-		return Messages.DefaultConnectionWizardPage_Title;
-	}
-	
     public void addPages() {
-    	firstPage = createFirstPage();
-    	addPage(firstPage);
-    	providerMap = UIExtensionManager.getConnectionUIElements();
-    	pageMap = new HashMap<String, ConnectionWizardPage[]>();
-    	List<String> l = new ArrayList<String>();
-    	l.addAll(providerMap.keySet());
-    	Collections.sort(l);
-    	for( Iterator<ConnectionProviderUI> i = providerMap.values().iterator(); i.hasNext();) {
-    		ConnectionProviderUI ui = i.next();
-    		ConnectionWizardPage[] pages = ui.createPages();
-    		pageMap.put(ui.getId(), pages);
-    		for( int j = 0; j < pages.length; j++ )
-    			addPage(pages[j]);
-    	}
+	firstPage = createFirstPage();
+	addPage(firstPage);
+	providerMap = UIExtensionManager.getConnectionUIElements();
+	pageMap = new HashMap<String, ConnectionWizardPage[]>();
+	List<String> l = new ArrayList<String>();
+	l.addAll(providerMap.keySet());
+	Collections.sort(l);
+	for( Iterator<ConnectionProviderUI> i = providerMap.values().iterator(); i.hasNext();) {
+		ConnectionProviderUI ui = i.next();
+		ConnectionWizardPage[] pages = ui.createPages();
+		pageMap.put(ui.getId(), pages);
+		for( int j = 0; j < pages.length; j++ )
+			addPage(pages[j]);
+	}
     }
 
     public boolean canFinish() {
-    	if( selected == null )
-    		return false;
-    	IWizardPage[] active = getActivePages();
-    	if( active != null ) {
-    		if( active.length > 0 ) {
-    			if( active[active.length-1] == getContainer().getCurrentPage())
-    				return super.canFinish();
-    			return false;
-    		}
-    	}
+	if( selected == null )
+		return false;
+	IWizardPage[] active = getActivePages();
+	if( active != null ) {
+		if( active.length > 0 ) {
+			if( active[active.length-1] == getContainer().getCurrentPage())
+				return true;
+			return false;
+		}
+	}
         return true;
     }
 
 
     private IWizardPage createFirstPage() {
-    	return new FirstPage();
+	return new FirstPage();
     }
 	public boolean performFinish() {
 		ConnectionWizardPage[] active = getActivePages();
-    	if( active != null ) {
-    		IConnectionWrapper wrap = null;
-	    	for( int i = active.length-1; i >= 0 && wrap == null; i--) {
-	    		try {
-	    			wrap = active[i].getConnection();
-	    		} catch( CoreException ce ) {
-	    			JMXUIActivator.getDefault().getLog().log(ce.getStatus());
-	    		}
-	    	}
+	if( active != null ) {
+		IConnectionWrapper wrap = null;
+		for( int i = active.length-1; i >= 0 && wrap == null; i--) {
+			try {
+				wrap = active[i].getConnection();
+			} catch( CoreException ce ) {
+				JMXUIActivator.getDefault().getLog().log(ce.getStatus());
+			}
+		}
 
-	    	if( wrap != null ) {
-	    		wrap.getProvider().addConnection(wrap);
-	    		return true;
-	    	}
-    	}
+		if( wrap != null ) {
+			wrap.getProvider().addConnection(wrap);
+			return true;
+		}
+	}
 
 		return true;
 	}
 
     public IWizardPage getNextPage(IWizardPage page) {
-    	IWizardPage[] active = getActivePages();
-    	if( active != null && active.length > 0 && page == firstPage)
-    			return active[0];
+	IWizardPage[] active = getActivePages();
+	if( active != null && active.length > 0 && page == firstPage)
+			return active[0];
 
-    	if( active != null ) {
-    		for( int i = 0; i < active.length; i++ ) {
-    			if( active[i] == page && i+1 < active.length )
-    				return active[i+1];
-    		}
-    	}
-    	return null;
+	if( active != null ) {
+		for( int i = 0; i < active.length; i++ ) {
+			if( active[i] == page && i+1 < active.length )
+				return active[i+1];
+		}
+	}
+	return null;
     }
 
     public ConnectionWizardPage[] getActivePages() {
-    	if( selected != null )
-    		return pageMap.get(selected.getId());
-    	return null;
+	if( selected != null )
+		return pageMap.get(selected.getId());
+	return null;
     }
 
 	private class FirstPage extends WizardPage {
 		TreeViewer viewer;
 		public FirstPage() {
 			super(Messages.NewConnectionWizard);
-			setTitle(Messages.NewConnectionWizard_CreateNewConnection);
+			setDescription("Create a new JMX Connection"); //$NON-NLS-1$
 		}
 		public void createControl(Composite parent) {
 			Composite main = new Composite(parent, SWT.NONE);
@@ -212,9 +218,9 @@ public class NewConnectionWizard extends Wizard {
 	private class FirstPageLabelProvider extends LabelProvider {
 		private HashMap<String, Image> images = new HashMap<String, Image>();
 	    public void dispose() {
-	    	for( Iterator<Image> i = images.values().iterator(); i.hasNext(); )
-	    		i.next().dispose();
-	    	super.dispose();
+		for( Iterator<Image> i = images.values().iterator(); i.hasNext(); )
+			i.next().dispose();
+		super.dispose();
 	    }
 
 		public Image getImage(Object element) {

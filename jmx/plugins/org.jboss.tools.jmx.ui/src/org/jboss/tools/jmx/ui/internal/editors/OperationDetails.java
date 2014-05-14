@@ -6,12 +6,24 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
 
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
+
 package org.jboss.tools.jmx.ui.internal.editors;
 
 import javax.management.MBeanOperationInfo;
 import javax.management.MBeanParameterInfo;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
+
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -25,7 +37,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.AbstractFormPart;
@@ -35,15 +46,13 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
-import org.jboss.tools.jmx.core.IConnectionWrapper;
-import org.jboss.tools.jmx.core.IJMXRunnable;
-import org.jboss.tools.jmx.core.JMXException;
 import org.jboss.tools.jmx.core.MBeanOperationInfoWrapper;
+import org.jboss.tools.jmx.core.MBeanUtils;
+import org.jboss.tools.jmx.core.util.StringUtils;
 import org.jboss.tools.jmx.ui.JMXUIActivator;
 import org.jboss.tools.jmx.ui.Messages;
-import org.jboss.tools.jmx.ui.internal.MBeanUtils;
-import org.jboss.tools.jmx.ui.internal.StringUtils;
 import org.jboss.tools.jmx.ui.internal.dialogs.OperationInvocationResultDialog;
+
 
 public class OperationDetails extends AbstractFormPart implements IDetailsPage {
 
@@ -188,36 +197,20 @@ public class OperationDetails extends AbstractFormPart implements IDetailsPage {
         }
 
         @Override
-        public void widgetSelected(final SelectionEvent event) {
-            final String[] strs = textParams == null ? null : new String[textParams.length];
-        	if (textParams != null) {
-                for (int i = 0; i < strs.length; i++) {
-                    strs[i] = textParams[i].getText();
-                }
-        	}
-        	new Thread() {
-        		public void run() {
-        			IConnectionWrapper connection = opInfoWrapper.getMBeanInfoWrapper().getParent().getConnection();
-        			try {
-	        			connection.run(new IJMXRunnable() {
-							public void run(MBeanServerConnection connection)
-									throws Exception {
-			        			widgetSelected2(connection, strs);
-							} });
-        			} catch( JMXException jmxe) {
-        			}
-        		}
-        	}.start();
-        }
-        
-        protected void widgetSelected2(MBeanServerConnection connection, String[] strs) {
+        public void widgetSelected(SelectionEvent event) {
             try {
                 MBeanParameterInfo[] paramInfos = opInfoWrapper
                         .getMBeanOperationInfo().getSignature();
                 Object[] paramList = null;
                 if (textParams != null) {
+                    String[] strs = new String[textParams.length];
+                    for (int i = 0; i < strs.length; i++) {
+                        strs[i] = textParams[i].getText();
+                    }
                     paramList = MBeanUtils.getParameters(strs, paramInfos);
                 }
+                MBeanServerConnection mbsc = opInfoWrapper
+                        .getMBeanServerConnection();
                 ObjectName objectName = opInfoWrapper.getObjectName();
                 String methodName = opInfoWrapper.getMBeanOperationInfo()
                         .getName();
@@ -227,28 +220,26 @@ public class OperationDetails extends AbstractFormPart implements IDetailsPage {
                     for (int i = 0; i < paramSig.length; i++) {
                         paramSig[i] = paramInfos[i].getType();
                     }
-                    result = connection.invoke(objectName, methodName, paramList,
+                    result = mbsc.invoke(objectName, methodName, paramList,
                             paramSig);
                 } else {
-                    result = connection.invoke(objectName, methodName, new Object[0],
+                    result = mbsc.invoke(objectName, methodName, new Object[0],
                             new String[0]);
                 }
                 if ("void".equals(opInfoWrapper.getMBeanOperationInfo() //$NON-NLS-1$
                         .getReturnType())) {
-                	Display.getDefault().asyncExec(new Runnable() { public void run() { 
-	                    MessageDialog.openInformation(container.getShell(),
-	                            Messages.OperationDetails_invocationResult,
-	                            Messages.OperationDetails_invocationSuccess);
-                	}});
+                    MessageDialog.openInformation(container.getShell(),
+                            Messages.OperationDetails_invocationResult,
+                            Messages.OperationDetails_invocationSuccess);
                     return;
                 } else {
-                	final Object result2 = result;
-                	Display.getDefault().asyncExec(new Runnable() { public void run() { 
-                		OperationInvocationResultDialog.open(container.getShell(), result2);
-                	}});
+                    OperationInvocationResultDialog.open(container.getShell(), result);
                 }
             } catch (Exception e) {
-                String message = e.getClass().getName() + ": " + e.getLocalizedMessage(); //$NON-NLS-1$
+                String message = e.getLocalizedMessage();
+                if (message == null) {
+                    message = e.getClass().getName();
+                }
                 JMXUIActivator.log(IStatus.ERROR, e.getClass().getName(), e);
                 // if the exception has a cause, it is likely more interesting
                 // since it may be the exception thrown by the mbean
@@ -256,13 +247,10 @@ public class OperationDetails extends AbstractFormPart implements IDetailsPage {
                 // rather than the exception thrown by the mbean server
                 // connection
                 if (e.getCause() != null) {
-                    message = e.getCause().getClass().getName() + ": " + e.getCause().getLocalizedMessage(); //$NON-NLS-1$
+                    message = e.getCause().getLocalizedMessage();
                 }
-                final String message2 = message;
-            	Display.getDefault().asyncExec(new Runnable() { public void run() { 
-	                MessageDialog.openError(container.getShell(),
-	                        Messages.OperationDetails_invocationError, message2);
-            	}});
+                MessageDialog.openError(container.getShell(),
+                        Messages.OperationDetails_invocationError, message);
             }
         }
     }

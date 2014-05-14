@@ -4,10 +4,21 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *      Benjamin Walstrum (issue #24)
  *******************************************************************************/
+
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 
 package org.jboss.tools.jmx.ui.internal.controls;
 
@@ -18,18 +29,18 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.jboss.tools.jmx.core.util.StringUtils;
 import org.jboss.tools.jmx.ui.Messages;
-import org.jboss.tools.jmx.ui.internal.StringUtils;
+
 
 public class CollectionControlFactory extends AbstractTabularControlFactory {
 
 	@Override
-	@SuppressWarnings("unchecked")
 	protected void fillTable(final Table table, final Object value) {
         TableColumn columnName = new TableColumn(table, SWT.NONE);
         columnName.setText(Messages.name);
         columnName.setWidth(400);
-        
+
         for (Object element : (Collection) value) {
             TableItem item = new TableItem(table, SWT.NONE);
             item.setText(StringUtils.toString(element, false));
