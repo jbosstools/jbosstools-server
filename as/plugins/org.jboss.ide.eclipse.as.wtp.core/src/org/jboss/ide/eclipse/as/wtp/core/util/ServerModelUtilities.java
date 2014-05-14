@@ -67,9 +67,11 @@ public class ServerModelUtilities {
 		
 		for( int i = 0; i < supported.length; i++ ) {
 			IModule[] childs = ServerModelUtilities.getChildModules(supported[i]);
-			for (int j = 0; j < childs.length; j++) {
-				if(childs[j].equals(module))
-					list.add(supported[i]);
+			if( childs != null ) {
+				for (int j = 0; j < childs.length; j++) {
+					if(childs[j].equals(module))
+						list.add(supported[i]);
+				}
 			}
 		}
 		return list.toArray(new IModule[list.size()]);
@@ -109,8 +111,14 @@ public class ServerModelUtilities {
 	}
 	
 	public static IModule[] getChildModules(IModule module) {
-		IModule[] children = ((ModuleDelegate)module.loadAdapter(ModuleDelegate.class, new NullProgressMonitor())).getChildModules();
-		return children == null ? new IModule[0] : children;
+		try {
+			ModuleDelegate md = ((ModuleDelegate)module.loadAdapter(ModuleDelegate.class, new NullProgressMonitor()));
+			IModule[] children = md == null ? null : md.getChildModules();
+			return children == null ? new IModule[0] : children;
+		} catch(Exception e) {
+			// Need to protect against broken module types, like libra. No need to log. 
+			return null;
+		}
 	}
 	
 	
