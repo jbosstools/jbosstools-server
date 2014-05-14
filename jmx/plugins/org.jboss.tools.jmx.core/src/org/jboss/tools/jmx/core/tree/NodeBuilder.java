@@ -5,12 +5,24 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
+
 package org.jboss.tools.jmx.core.tree;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
 import org.jboss.tools.jmx.core.IConnectionWrapper;
+
 
 
 public class NodeBuilder {
@@ -20,10 +32,6 @@ public class NodeBuilder {
         node = buildObjectNameNode(node, "on", on.getKeyPropertyListString(), on); //$NON-NLS-1$
     }
 
-    public static void addToTree(Node root, ObjectName on) {
-    	addToTree(root, on, null);
-    }
-    
     public static void addToTree(Node root, ObjectName on, MBeanServerConnection mbsc) {
         Node node = buildDomainNode(root, on.getDomain());
         String keyPropertyListString = on.getKeyPropertyListString();
@@ -48,7 +56,7 @@ public class NodeBuilder {
     static Node buildDomainNode(Node parent, String domain) {
         Node n = new DomainNode(parent, domain);
         if (parent != null) {
-            return parent.addChildren(n);
+            return parent.addChild(n);
         }
         return n;
     }
@@ -56,21 +64,21 @@ public class NodeBuilder {
     static Node buildPropertyNode(Node parent, String key, String value) {
         Node n = new PropertyNode(parent, key, value);
         if (parent != null) {
-            return parent.addChildren(n);
+            return parent.addChild(n);
         }
         return n;
     }
 
     static Node buildObjectNameNode(Node parent, String key, String value,
             ObjectName on) {
-    	return buildObjectNameNode(parent, key, value, on, null);
+	return buildObjectNameNode(parent, key, value, on, null);
     }
-    
+
     static Node buildObjectNameNode(Node parent, String key, String value,
             ObjectName on, MBeanServerConnection mbsc) {
         Node n = new ObjectNameNode(parent, key, value, on, mbsc);
         if (parent != null) {
-            return parent.addChildren(n);
+            return parent.addChild(n);
         }
         return n;
     }

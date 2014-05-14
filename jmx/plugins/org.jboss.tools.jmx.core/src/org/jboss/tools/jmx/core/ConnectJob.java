@@ -8,9 +8,18 @@
  * Contributors:
  *    "Rob Stryker" <rob.stryker@redhat.com> - Initial implementation
  *******************************************************************************/
-package org.jboss.tools.jmx.core;
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 
-import java.io.IOException;
+package org.jboss.tools.jmx.core;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -18,6 +27,7 @@ import org.eclipse.core.runtime.Status;
 
 public class ConnectJob extends ChainedJob {
 	private IConnectionWrapper[] connection;
+
 	public ConnectJob(IConnectionWrapper[] connection) {
 		super(JMXCoreMessages.ConnectJob, JMXActivator.PLUGIN_ID);
 		this.connection = connection;
@@ -25,10 +35,12 @@ public class ConnectJob extends ChainedJob {
 
 	protected IStatus run(IProgressMonitor monitor) {
 		try {
-			for( int i = 0; i < connection.length; i++)
-				connection[i].connect();
+			for (int i = 0; i < connection.length; i++) {
+				IConnectionWrapper wrapper = connection[i];
+				wrapper.connect();
+			}
 			return Status.OK_STATUS;
-		} catch( IOException ioe ) {
+		} catch (Exception ioe) {
 			return new Status(IStatus.ERROR, JMXActivator.PLUGIN_ID, JMXCoreMessages.ConnectJobFailed, ioe);
 		}
 	}

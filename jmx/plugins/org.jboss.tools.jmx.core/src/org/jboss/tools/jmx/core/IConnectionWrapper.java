@@ -45,7 +45,7 @@ public interface IConnectionWrapper {
 	 * @param runnable
 	 * @throws JMXException
 	 */
-	public void run(IJMXRunnable runnable) throws JMXException;
+	public void run(IJMXRunnable runnable) throws Exception;
 	
 	/**
 	 * Run this runnable, but pass in a map full of preferences 

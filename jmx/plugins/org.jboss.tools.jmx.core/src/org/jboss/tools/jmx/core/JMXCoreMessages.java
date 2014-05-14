@@ -24,7 +24,9 @@ public class JMXCoreMessages extends NLS {
 	public static String ProblemWritingToFile;
 	public static String LoadMBeans;
 	public static String InspectMBeans;
-	
+	public static String RefreshJob;
+	public static String RefreshJobFailed;
+
 	static {
 	    NLS.initializeMessages("org.jboss.tools.jmx.core.JMXCoreMessages", //$NON-NLS-1$
 	                    JMXCoreMessages.class);
