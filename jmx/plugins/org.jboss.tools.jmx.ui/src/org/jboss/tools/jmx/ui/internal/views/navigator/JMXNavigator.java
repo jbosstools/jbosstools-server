@@ -20,16 +20,18 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.internal.navigator.NavigatorContentService;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.LinkHelperService;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
+import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.jboss.tools.jmx.ui.Messages;
 import org.jboss.tools.jmx.ui.internal.actions.NewConnectionAction;
 
 /**
  * The view itself
  */
-public class JMXNavigator extends CommonNavigator {
+public class JMXNavigator extends CommonNavigator implements ITabbedPropertySheetPageContributor {
 	public static final String VIEW_ID = "org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorer"; //$NON-NLS-1$
 	private Text filterText;
 	private QueryContribution query;
@@ -87,4 +89,14 @@ public class JMXNavigator extends CommonNavigator {
 	    getViewSite().getActionBars().getToolBarManager().add(new Separator());
 	    getViewSite().getActionBars().updateActionBars();
 	}
+	
+    public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
+        if (adapter == IPropertySheetPage.class) {
+                return new TabbedPropertySheetPage(this);
+        }
+        return super.getAdapter(adapter);
+    }
+    public String getContributorId() {
+        return VIEW_ID;
+    }
 }

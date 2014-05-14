@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *      Benjamin Walstrum (issue #24)
  *******************************************************************************/
@@ -25,17 +25,18 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.jboss.tools.jmx.core.MBeanUtils;
+import org.jboss.tools.jmx.core.util.StringUtils;
 import org.jboss.tools.jmx.ui.JMXUIActivator;
 import org.jboss.tools.jmx.ui.Messages;
 import org.jboss.tools.jmx.ui.extensions.IAttributeControlFactory;
 import org.jboss.tools.jmx.ui.extensions.IWritableAttributeHandler;
-import org.jboss.tools.jmx.ui.internal.MBeanUtils;
-import org.jboss.tools.jmx.ui.internal.StringUtils;
+
 
 public class TextControlFactory implements IAttributeControlFactory {
 
 	public Control createControl(final Composite parent, final FormToolkit toolkit,
-			final boolean writable, final String type, final Object value, 
+			final boolean writable, final String type, final Object value,
 			final IWritableAttributeHandler handler) {
         String attrValue = ""; //$NON-NLS-1$
         try {
@@ -116,7 +117,7 @@ public class TextControlFactory implements IAttributeControlFactory {
         if (toolkit != null) {
             text = toolkit.createText(parent, "", style); //$NON-NLS-1$
         } else {
-            text = new Text(parent, style);  
+            text = new Text(parent, style);
         }
         return text;
     }

@@ -11,16 +11,23 @@ package org.jboss.tools.jmx.ui.internal.adapters;
 
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.ui.views.properties.IPropertySource;
+import org.jboss.tools.jmx.core.DomainWrapper;
 import org.jboss.tools.jmx.core.MBeanAttributeInfoWrapper;
 import org.jboss.tools.jmx.core.MBeanInfoWrapper;
 import org.jboss.tools.jmx.core.MBeanOperationInfoWrapper;
+import org.jboss.tools.jmx.core.tree.ObjectNameNode;
+
 
 public class JMXAdapterFactory implements IAdapterFactory {
 
-    /**
-     * @see org.eclipse.core.runtime.IAdapterFactory#getAdapterList()
-     */
-    @SuppressWarnings("unchecked")
+    private Class<?>[] adapterClasses = { 
+    		DomainWrapper.class, 
+    		MBeanInfoWrapper.class, 
+    		MBeanAttributeInfoWrapper.class, 
+    		MBeanOperationInfoWrapper.class, 
+    		ObjectNameNode.class
+    	};
+
     public Class[] getAdapterList() {
         return new Class[] { IPropertySource.class };
     }
@@ -29,8 +36,7 @@ public class JMXAdapterFactory implements IAdapterFactory {
      * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object,
      *      java.lang.Class)
      */
-    @SuppressWarnings("unchecked")
-    public Object getAdapter(Object adaptableObject, Class adapterType) {
+    public Object getAdapter(Object adaptableObject, @SuppressWarnings("rawtypes") Class adapterType) {
         if (adapterType == IPropertySource.class) {
             return adaptToPropertySource(adaptableObject);
         }
@@ -38,6 +44,10 @@ public class JMXAdapterFactory implements IAdapterFactory {
     }
 
     private IPropertySource adaptToPropertySource(Object adaptableObject) {
+        if (adaptableObject instanceof DomainWrapper) {
+            DomainWrapper domain = (DomainWrapper) adaptableObject;
+            return new DomainPropertySourceAdapter(domain.getName());
+        }
         if (adaptableObject instanceof MBeanInfoWrapper) {
             MBeanInfoWrapper wrapper = (MBeanInfoWrapper) adaptableObject;
             return new MBeanInfoPropertySourceAdapter(wrapper.getObjectName(),
@@ -54,6 +64,14 @@ public class JMXAdapterFactory implements IAdapterFactory {
             return new MBeanOperationInfoPropertySourceAdapter(wrapper
                     .getMBeanOperationInfo());
         }
+        if (adaptableObject instanceof ObjectNameNode) {
+		ObjectNameNode objectName = (ObjectNameNode) adaptableObject;
+		return new ObjectNameNodePropertySourceAdapter(objectName);
+        }
         return null;
     }
+
+	public Class<?>[] getAdapterClasses() {
+		return adapterClasses;
+	}
 }

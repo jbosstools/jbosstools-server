@@ -131,6 +131,7 @@
       <actionProvider
             class="org.jboss.tools.jmx.ui.internal.views.navigator.ActionProvider"
             id="org.jboss.tools.jmx.ui.internal.views.navigator.actionProvider">
+
          <enablement>
             <or>
                <adapt
@@ -184,6 +185,14 @@
                menubarPath="navigate/open.ext2"
                tooltip="%OpenMBeanAction.tooltip">
          </action>
+           <action
+                 class="org.jboss.tools.jmx.ui.internal.actions.RefreshAction"
+                 definitionId="org.jboss.tools.jmx.ui.navigate.refresh"
+                 id="refresh"
+                 label="%RefreshAction.label"
+                 menubarPath="navigate/open.ext2"
+                 tooltip="%RefreshAction.tooltip">
+           </action>
       </actionSet>
    </extension>
    <extension
@@ -210,14 +219,32 @@
             description="%ActionDefinition.openMBean.description"
             categoryId="org.eclipse.ui.category.navigate"
             id="org.jboss.tools.jmx.ui.navigate.open.mbean">
-      </command>    
+      </command>
+      <command
+            categoryId="org.eclipse.ui.category.navigate"
+            description="%ActionDefinition.refresh.description"
+            id="org.jboss.tools.jmx.ui.navigate.refresh"
+            name="%ActionDefinition.refresh.name">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+           sequence="M1+M2+M"
+           commandId="org.jboss.tools.jmx.ui.navigate.open.mbean"
+           schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            commandId="org.jboss.tools.jmx.ui.navigate.refresh"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+R">
+      </key>
    </extension>
    <extension
          point="org.jboss.tools.jmx.ui.attribute.controls">
       <control
             id="org.jboss.tools.jmx.ui.attribute.displays.Text"
             class="org.jboss.tools.jmx.ui.internal.controls.TextControlFactory"
-	      	type="java.lang.String">
+		type="java.lang.String">
       </control>
       <control
             id="org.jboss.tools.jmx.ui.attribute.displays.Array"
@@ -262,10 +289,39 @@
          </wizardPage>
       </providerUI>
    </extension>
-   
-   
-   	<!-- Decorator for connected / disconnected -->
-	<extension point="org.eclipse.ui.decorators">
+
+
+
+     <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
+
+      <propertyContributor contributorId="org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorer">
+         <propertyCategory category="org.jboss.tools.jmx.ui.views"/>
+      </propertyContributor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
+      <propertyTabs contributorId="org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorer">
+         <propertyTab
+               category="org.jboss.tools.jmx.ui.views"
+               id="org.jboss.tools.jmx.ui.views.PropertiesTab"
+               label="Properties"/>
+      </propertyTabs>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertySections">
+      <propertySections contributorId="org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorer">
+         <propertySection
+               class="org.eclipse.ui.views.properties.tabbed.AdvancedPropertySection"
+               filter="org.jboss.tools.jmx.ui.internal.propertysheet.PropertiesSectionFilter"
+               id="PropertiesSection"
+               tab="org.jboss.tools.jmx.ui.views.PropertiesTab">
+         </propertySection>
+      </propertySections>
+   </extension> 
+
+   <!-- Decorator for connected / disconnected -->
+   <extension point="org.eclipse.ui.decorators">
       <decorator
             class="org.jboss.tools.jmx.ui.internal.views.navigator.JMXConnectionDecorator"
             id="org.jboss.tools.jmx.ui.internal.views.navigator.JMXConnectionDecorator"
@@ -280,6 +336,5 @@
          </enablement>
       </decorator>
    </extension>
-   
-   
+
 </plugin>

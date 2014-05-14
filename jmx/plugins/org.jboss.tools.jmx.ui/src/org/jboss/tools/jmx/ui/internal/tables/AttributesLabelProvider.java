@@ -17,9 +17,10 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.graphics.Image;
 import org.jboss.tools.jmx.core.MBeanAttributeInfoWrapper;
+import org.jboss.tools.jmx.core.util.StringUtils;
 import org.jboss.tools.jmx.ui.JMXUIActivator;
 import org.jboss.tools.jmx.ui.Messages;
-import org.jboss.tools.jmx.ui.internal.StringUtils;
+
 
 class AttributesLabelProvider extends LabelProvider implements
         ITableLabelProvider {
@@ -36,6 +37,9 @@ class AttributesLabelProvider extends LabelProvider implements
             try {
                 return StringUtils.toString(wrapper.getValue(), false);
             } catch (Throwable t) {
+                JMXUIActivator.log(IStatus.ERROR, NLS.bind(
+			Messages.MBeanAttributeValue_Warning,
+			attrInfo.getName()), t);
                 return Messages.unavailable;
             }
         }

@@ -8,9 +8,9 @@
 
 package org.jboss.tools.jmx.ui.internal.test;
 
-import org.jboss.tools.jmx.ui.internal.MBeanUtils;
-
 import junit.framework.TestCase;
+
+import org.jboss.tools.jmx.ui.internal.MBeanUtils;
 
 public class MBeanUtilsTestCase extends TestCase {
 

@@ -143,6 +143,7 @@ public class NewConnectionWizard extends Wizard {
 		public FirstPage() {
 			super(Messages.NewConnectionWizard);
 			setTitle(Messages.NewConnectionWizard_CreateNewConnection);
+			setDescription(Messages.NewConnectionWizard_CreateNewConnection);
 		}
 		public void createControl(Composite parent) {
 			Composite main = new Composite(parent, SWT.NONE);

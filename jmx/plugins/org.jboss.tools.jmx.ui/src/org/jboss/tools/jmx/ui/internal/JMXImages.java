@@ -48,6 +48,9 @@ public class JMXImages {
     public static final String IMG_FIELD_PUBLIC = NAME_PREFIX
             + "field_public_obj.gif"; //$NON-NLS-1$
 
+    public static final String IMG_MBEANS = NAME_PREFIX + "mbeans.png"; //$NON-NLS-1$
+
+    
     public static final String IMG_OBJS_INTERFACE = NAME_PREFIX + "int_obj.gif"; //$NON-NLS-1$
 
     public static final String IMG_OBJS_METHOD = NAME_PREFIX
@@ -69,6 +72,10 @@ public class JMXImages {
     public static final ImageDescriptor DESC_MISC_PUBLIC = createManagedFromKey(
             T_OBJ, IMG_MISC_PUBLIC);
 
+    public static final ImageDescriptor DESC_MBEANS = createManagedFromKey(
+            T_OBJ, IMG_MBEANS);
+
+    
     public static final ImageDescriptor DESC_FIELD_PUBLIC = createManagedFromKey(
             T_OBJ, IMG_FIELD_PUBLIC);
 

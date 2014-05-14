@@ -30,11 +30,12 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.navigator.NavigatorPlugin;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.LinkHelperService;
+import org.eclipse.ui.part.ShowInContext;
 import org.eclipse.ui.progress.UIJob;
 import org.jboss.tools.jmx.ui.Messages;
 
 public class UpdateSelectionJob extends UIJob {
-	
+
 	public static void launchJob(String viewId) {
         IWorkbench work = PlatformUI.getWorkbench();
         IWorkbenchWindow window = work.getActiveWorkbenchWindow();
@@ -43,13 +44,13 @@ public class UpdateSelectionJob extends UIJob {
         if( ref != null ) {
             IWorkbenchPart part = ref.getPart(false);
             if ( part != null && page.isPartVisible(part)) {
-            	if( part instanceof CommonNavigator)
-            		new UpdateSelectionJob((CommonNavigator)part).schedule();
+		if( part instanceof CommonNavigator)
+			new UpdateSelectionJob((CommonNavigator)part).schedule();
             }
         }
 	}
-	
-	
+
+
 	private CommonNavigator commonNavigator;
 	private LinkHelperService linkService;
 	public UpdateSelectionJob(CommonNavigator commonNavigator) {
@@ -72,13 +73,16 @@ public class UpdateSelectionJob extends UIJob {
 						IEditorPart editor = page.getActiveEditor();
 						if (editor != null) {
 							IEditorInput input = editor.getEditorInput();
-							IStructuredSelection newSelection = linkService
-									.getSelectionFor(input);
-							if (!newSelection.isEmpty() && 
-									!allShown((IStructuredSelection)commonNavigator.getCommonViewer().getSelection(), 
+							// TODO is this equivalent to the now removed org.eclipse.ui.internal.navigator.LinkHelperService code?
+							commonNavigator.show(new ShowInContext(input, commonNavigator.getCommonViewer().getSelection()));
+							/*
+							IStructuredSelection newSelection = linkService.getSelectionFor(input);
+							if (!newSelection.isEmpty() &&
+									!allShown((IStructuredSelection)commonNavigator.getCommonViewer().getSelection(),
 											newSelection)) {
 								commonNavigator.selectReveal(newSelection);
 							}
+							*/
 						}
 					}
 				}

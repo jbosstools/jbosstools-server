@@ -31,6 +31,8 @@ public class Messages extends NLS {
 	public static String DefaultConnectionWizardPage_Name_In_Use;
 	public static String DeleteConnection;
 
+
+
     public static String AttributeControlFactory_updateButtonTitle;
     public static String AttributeDetails_title;
     public static String AttributeDetailsSection_errorTitle;
@@ -67,6 +69,9 @@ public class Messages extends NLS {
     public static String OpenMBeanAction_dialogTitle;
     public static String OpenMBeanAction_text;
     public static String OpenMBeanAction_tooltip;
+    public static String RefreshAction_description;
+    public static String RefreshAction_text;
+    public static String RefreshAction_tooltip;
     public static String OperationDetails_invocationError;
     public static String OperationDetails_invocationResult;
     public static String OperationDetails_invocationSuccess;
@@ -90,12 +95,12 @@ public class Messages extends NLS {
 	public static String Loading;
 	public static String ErrorLoading;
 	public static String UpdatingSelectionJob;
-	
+
 	public static String StateConnected;
 	public static String StateDisconnected;
 
 	public static String JMXUIImageDescriptorNotFound;
-	
+
 	static {
 	    NLS.initializeMessages("org.jboss.tools.jmx.ui.Messages", //$NON-NLS-1$
 	                    Messages.class);

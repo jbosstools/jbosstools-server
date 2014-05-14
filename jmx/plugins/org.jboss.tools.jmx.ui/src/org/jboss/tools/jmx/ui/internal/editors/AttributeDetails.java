@@ -18,9 +18,11 @@ import javax.management.Attribute;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanServerConnection;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -42,6 +44,7 @@ import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.IJMXRunnable;
 import org.jboss.tools.jmx.core.JMXException;
 import org.jboss.tools.jmx.core.MBeanAttributeInfoWrapper;
+import org.jboss.tools.jmx.ui.JMXUIActivator;
 import org.jboss.tools.jmx.ui.Messages;
 import org.jboss.tools.jmx.ui.extensions.IWritableAttributeHandler;
 import org.jboss.tools.jmx.ui.internal.JMXImages;
@@ -49,7 +52,7 @@ import org.jboss.tools.jmx.ui.internal.StringUtils;
 import org.jboss.tools.jmx.ui.internal.controls.AttributeControlFactory;
 
 public class AttributeDetails extends AbstractFormPart implements IDetailsPage {
-
+	private Font bold;
     private IFormPart masterSection;
 
     private FormToolkit toolkit;
@@ -117,7 +120,7 @@ public class AttributeDetails extends AbstractFormPart implements IDetailsPage {
         toolkit = getManagedForm().getToolkit();
 
         FontData fd[] = parent.getFont().getFontData();
-        Font bold = new Font(parent.getDisplay(), fd[0].getName(), fd[0]
+        bold = new Font(parent.getDisplay(), fd[0].getName(), fd[0]
                 .getHeight(), SWT.BOLD);
 
         Section section = toolkit.createSection(parent, Section.TITLE_BAR);
@@ -165,6 +168,11 @@ public class AttributeDetails extends AbstractFormPart implements IDetailsPage {
         valueComposite.setLayout(valueLayout);
     }
 
+    @Override
+    public void dispose() {
+    	bold.dispose();
+    }
+    
     private GridData newLayoutData() {
         return new GridData(SWT.FILL, SWT.FILL, false, false);
     }
@@ -211,6 +219,9 @@ public class AttributeDetails extends AbstractFormPart implements IDetailsPage {
             attrControl.setLayoutData(gd);
             attrControl.pack(true);
         } catch (Throwable t) {
+        	JMXUIActivator.log(IStatus.ERROR, NLS.bind(
+        	Messages.MBeanAttributeValue_Warning, attrInfo.getName()),t);
+
             Label errorLabel = toolkit.createLabel(valueComposite,
                     Messages.unavailable);
             errorLabel.setForeground(valueComposite.getDisplay()

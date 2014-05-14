@@ -105,6 +105,12 @@ public class JBoss71ServerConnection extends JBossServerConnection {
 	
 	protected void cleanupConnection(IServer server, MBeanServerConnection connection) {
 		super.cleanupConnection(server, connection);
+		if( connectionToConnector != null ) {
+			JMXConnector jmxc = connectionToConnector.get(connection);
+			if( jmxc != null ) {
+				closeClientJoin(jmxc);
+			}
+		}
 	}
 	protected void connectViaJmxIfRequired(IServer server) {
 		super.connectViaJmxIfRequired(server);

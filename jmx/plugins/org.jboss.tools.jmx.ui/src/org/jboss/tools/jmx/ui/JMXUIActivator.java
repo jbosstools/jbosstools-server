@@ -5,6 +5,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
+
 package org.jboss.tools.jmx.ui;
 
 import javax.management.MBeanServerConnection;
@@ -16,11 +17,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.jboss.tools.jmx.core.MBeanAttributeInfoWrapper;
-import org.jboss.tools.jmx.core.MBeanInfoWrapper;
-import org.jboss.tools.jmx.core.MBeanOperationInfoWrapper;
 import org.jboss.tools.jmx.ui.internal.adapters.JMXAdapterFactory;
 import org.osgi.framework.BundleContext;
+
 
 /**
  * The activator class controls the plug-in life cycle
@@ -91,11 +90,11 @@ public class JMXUIActivator extends AbstractUIPlugin {
     }
 
     public void setCurrentConnection(MBeanServerConnection connection) {
-    	this.connection  =  connection;
+	this.connection  =  connection;
     }
 
     public MBeanServerConnection getCurrentConnection() {
-    	return this.connection;
+	return this.connection;
     }
 
     public static void log(IStatus status) {
@@ -112,20 +111,14 @@ public class JMXUIActivator extends AbstractUIPlugin {
 
     private void registerAdapters() {
         adapterFactory = new JMXAdapterFactory();
-        Platform.getAdapterManager().registerAdapters(adapterFactory,
-                MBeanInfoWrapper.class);
-        Platform.getAdapterManager().registerAdapters(adapterFactory,
-                MBeanAttributeInfoWrapper.class);
-        Platform.getAdapterManager().registerAdapters(adapterFactory,
-                MBeanOperationInfoWrapper.class);
+        for (Class<?> aClass : adapterFactory.getAdapterClasses()) {
+        	Platform.getAdapterManager().registerAdapters(adapterFactory, aClass);
+		}
     }
 
     private void unregisterAdapters() {
-        Platform.getAdapterManager().unregisterAdapters(adapterFactory,
-                MBeanInfoWrapper.class);
-        Platform.getAdapterManager().unregisterAdapters(adapterFactory,
-                MBeanAttributeInfoWrapper.class);
-        Platform.getAdapterManager().unregisterAdapters(adapterFactory,
-                MBeanOperationInfoWrapper.class);
+    	for (Class<?> aClass : adapterFactory.getAdapterClasses()) {
+    		Platform.getAdapterManager().unregisterAdapters(adapterFactory, aClass);
+    	}
     }
 }
