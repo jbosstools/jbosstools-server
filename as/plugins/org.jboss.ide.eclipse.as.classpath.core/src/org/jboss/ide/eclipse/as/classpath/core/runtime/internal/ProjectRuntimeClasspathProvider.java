@@ -114,8 +114,8 @@ public class ProjectRuntimeClasspathProvider
 			
 			// store Cache in the various locales
 			IPath[] fromRuntimeDefaultsPaths = PathProviderResolutionUtil.getAllPaths(runtime, fromRuntimeDefaults);
-			runtimeClasspath = PathProviderResolutionUtil.getClasspathEntriesForResolvedPaths(fromRuntimeDefaultsPaths);
-			RuntimeClasspathCache.getInstance().cacheEntries(runtime, runtimeClasspath);
+			IClasspathEntry[] fromRuntimeDefaultsEntries = PathProviderResolutionUtil.getClasspathEntriesForResolvedPaths(fromRuntimeDefaultsPaths);
+			RuntimeClasspathCache.getInstance().cacheEntries(runtime, fromRuntimeDefaultsEntries);
 			ProjectRuntimeClasspathCache.getInstance().cacheEntries(project, runtime, runtimeClasspath);
 			return runtimeClasspath;
 		} else {

@@ -80,9 +80,11 @@ public class CustomRuntimeClasspathModel {
 		return model.getStandardProviders();
 	}
 	
-	public static void savePathProviders(IRuntimeType runtime, IRuntimePathProvider[] sets) {
+	public void savePathProviders(IRuntimeType runtime, IRuntimePathProvider[] sets) {
 		InternalRuntimeClasspathModel m = new InternalRuntimeClasspathModel();
 		m.addProviders(sets);
+		String id = runtime.getId();
+		modelMap.put(id, m); 
 		new RuntimeClasspathModelIO().saveModel(runtime, m);
 	}
 }
