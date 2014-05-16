@@ -8,6 +8,17 @@
  * Contributors:
  *     IBM Corporation - Initial API and implementation
  *******************************************************************************/
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
+
 package org.jboss.tools.jmx.core;
 
 import org.eclipse.core.runtime.IStatus;
@@ -39,7 +50,7 @@ public abstract class ChainedJob extends Job {
 	 * @see Job#belongsTo(java.lang.Object)
 	 */
 	public boolean belongsTo(Object family) {
-		return this.family.equals(family);
+		return family.equals(family);
 	}
 
 

@@ -8,6 +8,17 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
+
 package org.jboss.tools.jmx.ui.internal.views.navigator;
 
 import java.util.Iterator;
@@ -30,8 +41,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.navigator.NavigatorPlugin;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.LinkHelperService;
+import org.eclipse.ui.part.ShowInContext;
 import org.eclipse.ui.progress.UIJob;
-import org.jboss.tools.jmx.ui.Messages;
 
 public class UpdateSelectionJob extends UIJob {
 	
@@ -53,16 +64,14 @@ public class UpdateSelectionJob extends UIJob {
 	private CommonNavigator commonNavigator;
 	private LinkHelperService linkService;
 	public UpdateSelectionJob(CommonNavigator commonNavigator) {
-		super(Messages.UpdatingSelectionJob); // TODO 
+		super("Updating Selection Job"); // TODO  //$NON-NLS-1$
 		this.commonNavigator = commonNavigator;
-		if( commonNavigator instanceof JMXNavigator ) {
-			linkService = ((JMXNavigator)commonNavigator).getLinkHelperService();
-		}
+		//linkService = new LinkHelperService((NavigatorContentService)commonNavigator.getCommonViewer().getNavigatorContentService());
 	}
 
 	public IStatus runInUIThread(IProgressMonitor monitor) {
 
-		if (linkService!= null && !commonNavigator.getCommonViewer().getControl().isDisposed()) {
+		if (!commonNavigator.getCommonViewer().getControl().isDisposed()) {
 			SafeRunner.run(new ISafeRunnable() {
 
 				public void run() throws Exception {
@@ -72,13 +81,16 @@ public class UpdateSelectionJob extends UIJob {
 						IEditorPart editor = page.getActiveEditor();
 						if (editor != null) {
 							IEditorInput input = editor.getEditorInput();
-							IStructuredSelection newSelection = linkService
-									.getSelectionFor(input);
+							// TODO is this equivalent to the now removed org.eclipse.ui.internal.navigator.LinkHelperService code?
+							commonNavigator.show(new ShowInContext(input, commonNavigator.getCommonViewer().getSelection()));
+							/*
+							IStructuredSelection newSelection = linkService.getSelectionFor(input);
 							if (!newSelection.isEmpty() && 
 									!allShown((IStructuredSelection)commonNavigator.getCommonViewer().getSelection(), 
 											newSelection)) {
 								commonNavigator.selectReveal(newSelection);
 							}
+							*/
 						}
 					}
 				}

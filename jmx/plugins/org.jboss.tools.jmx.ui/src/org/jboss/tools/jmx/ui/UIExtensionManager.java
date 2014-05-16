@@ -8,6 +8,17 @@
  * Contributors:
  *    "Rob Stryker" <rob.stryker@redhat.com> - Initial implementation
  *******************************************************************************/
+/*******************************************************************************
+ * Copyright (c) 2013 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
+
 package org.jboss.tools.jmx.ui;
 
 import java.util.ArrayList;
@@ -38,6 +49,7 @@ public class UIExtensionManager {
 	private static final String ICON = "icon"; //$NON-NLS-1$
 	private static final String CLASS = "class";  //$NON-NLS-1$
 	private static final String EDITABLE = "editable";  //$NON-NLS-1$
+
 	public static class ConnectionProviderUI {
 		String id, name, icon;
 		boolean editable;
@@ -69,7 +81,6 @@ public class UIExtensionManager {
 		public boolean isEditable() {
 			return editable;
 		}
-		
 		public ImageDescriptor getImageDescriptor() {
 			return imageDescriptor;
 		}
