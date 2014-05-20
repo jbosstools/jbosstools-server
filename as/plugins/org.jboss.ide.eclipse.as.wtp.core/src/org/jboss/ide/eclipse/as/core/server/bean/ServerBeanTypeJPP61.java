@@ -29,7 +29,7 @@ public class ServerBeanTypeJPP61 extends ServerBeanTypeUnknownAS71Product {
 		public boolean isServerRoot(File location) {
 			if( "JPP".equalsIgnoreCase(getSlot(location))) {
 				String v = getFullVersion(location, null);
-				return v != null && v.startsWith(V6_1);
+				return v != null && v.startsWith("6.");
 			}
 			return false;
 		}
