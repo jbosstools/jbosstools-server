@@ -18,7 +18,6 @@ import org.jboss.ide.eclipse.as.core.server.IManagementPortProvider;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
 public class JBossAS710ExtendedProperties extends JBossAS7ExtendedProperties implements IJMXURLProvider {
 
@@ -38,12 +37,14 @@ public class JBossAS710ExtendedProperties extends JBossAS7ExtendedProperties imp
 	}
 	public IDefaultLaunchArguments getDefaultLaunchArguments() {
 		if( server != null) {
-			ServerBeanLoader l = new ServerBeanLoader(server.getRuntime().getLocation().toFile());
-			if( l.getServerType().getName().equals(JBossServerType.AS7GateIn.getName())) {
-				String version = l.getServerBean().getVersion();
-				if( JBossServerType.V3_3.equals(version) 
-						|| JBossServerType.V3_4.equals(version) ) {
-					return new GateIn33AS71DefaultLaunchArguments(server);
+			if( server.getRuntime() != null ) {
+				ServerBeanLoader l = new ServerBeanLoader(server.getRuntime().getLocation().toFile());
+				if( l.getServerBeanType().getName().equals(JBossServerType.AS7GateIn.getName())) {
+					String version = l.getServerBean().getVersion();
+					if( JBossServerType.V3_3.equals(version) 
+							|| JBossServerType.V3_4.equals(version) ) {
+						return new GateIn33AS71DefaultLaunchArguments(server);
+					}
 				}
 			}
 			return new JBoss71DefaultLaunchArguments(server);

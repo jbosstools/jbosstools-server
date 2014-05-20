@@ -12,19 +12,24 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.rse.core;
 
-import org.eclipse.core.runtime.ILog;
-import org.osgi.framework.BundleActivator;
+import org.jboss.tools.foundation.core.plugin.BaseCorePlugin;
+import org.jboss.tools.foundation.core.plugin.log.IPluginLog;
 import org.osgi.framework.BundleContext;
 
-public class RSECorePlugin implements BundleActivator {
+public class RSECorePlugin extends BaseCorePlugin {
+	public static final String PLUGIN_ID = "org.jboss.ide.eclipse.as.rse.core";
 
 	private static BundleContext context;
-	public static final String PLUGIN_ID = "org.jboss.ide.eclipse.as.rse.core";
 	public static RSECorePlugin plugin;
 	static BundleContext getContext() {
 		return context;
 	}
 
+
+	public static RSECorePlugin getDefault() {
+	    return plugin;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
@@ -42,8 +47,13 @@ public class RSECorePlugin implements BundleActivator {
 		RSECorePlugin.context = null;
 	}
 	
-	public static ILog getLog() {
-		return RSECorePlugin.getLog();
+	/**
+	 * Get the IPluginLog for this plugin. This method 
+	 * helps to make logging easier
+	 *  
+	 * @return IPluginLog object
+	 */
+	public static IPluginLog pluginLog() {
+		return getDefault().pluginLogInternal();
 	}
-
 }

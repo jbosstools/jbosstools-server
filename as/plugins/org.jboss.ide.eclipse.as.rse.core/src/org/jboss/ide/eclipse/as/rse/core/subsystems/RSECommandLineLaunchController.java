@@ -19,6 +19,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate2;
 import org.jboss.ide.eclipse.as.core.server.ILaunchConfigConfigurator;
+import org.jboss.ide.eclipse.as.rse.core.RSECorePlugin;
 import org.jboss.ide.eclipse.as.rse.core.StandardRSEStartLaunchDelegate;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ILaunchServerController;
@@ -50,7 +51,11 @@ public class RSECommandLineLaunchController extends AbstractSubsystemController 
 			IProgressMonitor monitor) throws CoreException {
 		ILaunchConfigConfigurator configurator = getConfigurator();
 		if( configurator != null ) {
-			configurator.configure(workingCopy);
+			try {
+				configurator.configure(workingCopy);
+			} catch(Exception e) {
+				RSECorePlugin.pluginLog().logError("Unable to configure launch configuration", e);
+			}
 		}
 	}
 

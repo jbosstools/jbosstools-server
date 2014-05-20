@@ -57,7 +57,7 @@ public class RSECommandLineShutdownController extends CommandLineShutdownControl
 				String cmd = "kill -9 " + localPid;
 				model.executeRemoteCommand("/", cmd, new String[]{}, new NullProgressMonitor(), 2000, true);
 			} catch(CoreException ce ) {
-				RSECorePlugin.getLog().log(new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, "Unable to terminate remote process " + localPid, ce));
+				RSECorePlugin.pluginLog().logStatus(new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, "Unable to terminate remote process " + localPid, ce));
 			}
 		}
 		clearProcessId();
