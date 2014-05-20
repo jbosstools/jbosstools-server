@@ -74,6 +74,11 @@ public class SharedImages {
 		instance = null;
 	}
 	
+	public static void cleanupInstance() {
+		if( instance != null ) {
+			instance.cleanup();
+		}
+	}
 	protected void finalize() throws Throwable {
 		cleanup();
 		super.finalize();
