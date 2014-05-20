@@ -58,6 +58,11 @@ import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerEx
 public class ProjectRuntimeClasspathProvider 
 		extends RuntimeClasspathProviderDelegate {
 	
+	static {
+		ManifestChangeListener.register();
+	}
+	
+	
 	// The path this container can be found under
 	static final IPath CONTAINER_PATH = 
 			new Path("org.eclipse.jst.server.core.container") //$NON-NLS-1$
