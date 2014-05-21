@@ -12,8 +12,9 @@ package org.jboss.ide.eclipse.as.jmx.integration;
 
 import java.util.HashMap;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.IJMXRunnable;
@@ -74,9 +75,14 @@ public class JBossJMXConnectionProviderModel {
 	// If the connection doesn't exist, make a new one
 	public void run(IServer s, IJMXRunnable r) throws JMXException {
 		IConnectionWrapper c = getConnection(s);
-		if( c != null )
-			// JMX is not installed here
-			c.run(r);
+		try {
+			if( c != null ) {
+				// JMX is not installed here
+				c.run(r);
+			}
+		} catch(Exception e) {
+			throw new JMXException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e));
+		}
 	}
 
 }
