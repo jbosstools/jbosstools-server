@@ -34,7 +34,9 @@ import org.jboss.ide.eclipse.as.core.util.FileUtil;
  * for classpath addition
  */
 public class ModuleSlotManifestUtil {
-	
+	public ModuleSlotManifestUtil() {
+		
+	}
 	public boolean isCacheOutdated(IProject p) {
 		IFile[] all = getManifests(p);
 		if( all != null ) {
@@ -43,17 +45,37 @@ public class ModuleSlotManifestUtil {
 		return true;
 	}
 	
-	public IFile[] getManifests(IProject p) {
-		IFile[] manifests = null;
-		try {
-			manifests = getManifestFiles(p);
-			return manifests;
-		} catch(CoreException ce) {
-			return new IFile[0];
+	public void esureInCache(IFile f) {
+		IProject p = f.getProject();
+		boolean initialized = ModuleSlotCache.getInstance().hasInitializedManifests(p);
+		if( !initialized ) {
+			try {
+				ModuleSlotCache.getInstance().setManifests(p, locateManifestFiles(p));
+			} catch(CoreException ce) {
+			}
 		}
+		IFile[] all = ModuleSlotCache.getInstance().getManifests(p);
+		ArrayList<IFile> tmp = new ArrayList<IFile>(Arrays.asList(all));
+		if( !tmp.contains(f)) {
+			tmp.add(f);
+			ModuleSlotCache.getInstance().setManifests(p, (IFile[]) tmp.toArray(new IFile[tmp.size()]));
+		}
+		
 	}
 	
-	public boolean isCacheOutdated(IFile[] all) {
+	private IFile[] getManifests(IProject p) {
+		boolean initialized = ModuleSlotCache.getInstance().hasInitializedManifests(p);
+		if( !initialized ) {
+			try {
+				ModuleSlotCache.getInstance().setManifests(p, locateManifestFiles(p));
+			} catch(CoreException ce) {
+				return new IFile[0];
+			}
+		}
+		return ModuleSlotCache.getInstance().getManifests(p);
+	}
+	
+	private boolean isCacheOutdated(IFile[] all) {
 		for(int i = 0; i < all.length; i++ ) {
 			if( ModuleSlotCache.getInstance().isOutdated(all[i])) {
 				return true;
@@ -132,7 +154,7 @@ public class ModuleSlotManifestUtil {
 	}
 	
 	
-	private IFile[] getManifestFiles(IProject p) throws CoreException {
+	private IFile[] locateManifestFiles(IProject p) throws CoreException {
 		final ArrayList<IFile> ret = new ArrayList<IFile>();
 		p.accept(new IResourceVisitor(){
 			public boolean visit(IResource resource) throws CoreException {

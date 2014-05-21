@@ -81,7 +81,6 @@ public class CustomClasspathPreferencePage extends ServerTypePreferencePage {
 			list = rootComp.getDataForComboSelection(changed2[i]);
 			arr = (IRuntimePathProvider[]) list.toArray(new IRuntimePathProvider[list.size()]);
 			CustomRuntimeClasspathModel.getInstance().savePathProviders(rt, arr);
-			clearRuntimeTypeCachedClasspathEntries(rt);
 			IProject[] projectsTargeting = findProjectsTargeting(rt);
 			projectsNeedRefresh.addAll(Arrays.asList(projectsTargeting));
 		}
@@ -129,11 +128,6 @@ public class CustomClasspathPreferencePage extends ServerTypePreferencePage {
 		rootComp.clearChanged();
 	    return true;
 	} 
-	
-	/* Clear the cached entries for this runtime */
-	private void clearRuntimeTypeCachedClasspathEntries(IRuntimeType rt) {
-		ClasspathCorePlugin.clearCachedClasspathEntries(rt);
-	}
 	
 	private IProject[] findProjectsTargeting(IRuntimeType rt) {
 		if( rt == null )

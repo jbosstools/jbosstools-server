@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.jboss.tools.as.test.core.classpath;
 
+import org.jboss.tools.as.test.core.classpath.modules.JBossModulesClasspathTest;
+import org.jboss.tools.as.test.core.classpath.modules.LayeredModulePathFactoryTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -17,7 +19,9 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
 	JEEClasspathContainerTest.class,
-	EJB3SupportVerifierTest.class
+	EJB3SupportVerifierTest.class,
+	LayeredModulePathFactoryTest.class,
+	JBossModulesClasspathTest.class
 })
 public class ClasspathSuite {
 }

@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.classpath.core.runtime.cache.internal;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,11 +39,31 @@ public class ModuleSlotCache {
 	// Cache the default module/slots for a given runtime type
 	private Map<RuntimeKey, ModuleSlot[]> defaultModuleSlots;
 	
+	// Keep a list of manifest files for each project
+	private Map<IProject, ArrayList<IFile>> manifests;
+	
 	
 	ModuleSlotCache() {
 		moduleSlotEntries = new HashMap<IFile, ModuleSlot[]>();
 		lastUpdated = new HashMap<IFile, Long>();
 		defaultModuleSlots = new HashMap<RuntimeKey, ModuleSlot[]>();
+		manifests = new HashMap<IProject, ArrayList<IFile>>();
+	}
+	
+	public boolean hasInitializedManifests(IProject p) {
+		return manifests.containsKey(p);
+	}
+	
+	public void setManifests(IProject p, IFile[] manFiles) {
+		manifests.put(p, new ArrayList<IFile>(Arrays.asList(manFiles)));
+	}
+	
+	public IFile[] getManifests(IProject p) {
+		ArrayList<IFile> ret = manifests.get(p);
+		if( ret != null ) {
+			return (IFile[]) ret.toArray(new IFile[ret.size()]);
+		}
+		return null;
 	}
 	
 	public void cache(IFile file, ModuleSlot[] ms) {

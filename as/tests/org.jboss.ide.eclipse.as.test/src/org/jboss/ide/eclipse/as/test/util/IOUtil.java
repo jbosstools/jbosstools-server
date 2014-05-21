@@ -29,7 +29,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.jboss.tools.test.util.JobUtils;
 
 public class IOUtil {
-	
+
 	public static void setContents(File file, String contents) throws IOException, CoreException {
 		byte[] buffer = new byte[65536];
 		InputStream in = new ByteArrayInputStream(contents.getBytes());
@@ -47,7 +47,7 @@ public class IOUtil {
 			}
 		}
 	}
-	
+
 	public static String getContents(IFile file) throws IOException, CoreException  {
 		return getContents(file.getLocation().toFile());
 	}
@@ -57,22 +57,22 @@ public class IOUtil {
 	}
 
 	public static byte[] getBytesFromFile(File file) throws IOException {
-        InputStream is = new FileInputStream(file);
-        byte[] bytes = new byte[(int)file.length()];
-        int offset = 0;
-        int numRead = 0;
-        while (offset < bytes.length
-               && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
-            offset += numRead;
-        }
-        is.close();
-        return bytes;
-    }
-	
+		InputStream is = new FileInputStream(file);
+		byte[] bytes = new byte[(int)file.length()];
+		int offset = 0;
+		int numRead = 0;
+		while (offset < bytes.length
+				&& (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
+			offset += numRead;
+		}
+		is.close();
+		return bytes;
+	}
+
 	public static void setContents(IFile file, int val) throws IOException , CoreException{
 		setContents(file, "" + val);
 	}
-	
+
 	public static void setContents(IFile file, String val) throws IOException , CoreException{
 		if( !file.exists()) 
 			file.create(new ByteArrayInputStream((val).getBytes()), false, null);
@@ -83,7 +83,7 @@ public class IOUtil {
 		} catch( InterruptedException ie) {}
 		JobUtils.waitForIdle(); 
 	}
-	
+
 	public static int countFiles(File root) {
 		int count = 0;
 		if( !root.isDirectory() )
@@ -93,7 +93,7 @@ public class IOUtil {
 			count += countFiles(children[i]);
 		return count;
 	}
-	
+
 	public static int countAllResources(File root) {
 		int count = 0;
 		if( !root.isDirectory() )
@@ -108,35 +108,34 @@ public class IOUtil {
 		toLoc.toFile().mkdirs();
 		final int BUFFER = 2048;
 		try {
-			  BufferedOutputStream dest = null;
-		      FileInputStream fis = new 
-		 	  FileInputStream(zipped.toFile());
-			  ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis));
-	          ZipEntry entry;
-	          while((entry = zis.getNextEntry()) != null) {
-	             int count;
-	             byte data[] = new byte[BUFFER];
-	             // write the files to the disk
-	             if( entry.isDirectory() ) {
-	            	 toLoc.append(entry.getName()).toFile().mkdirs();
-	             } else {
-		             toLoc.append(entry.getName()).toFile().getParentFile().mkdirs();
-		             if( !toLoc.append(entry.getName()).toFile().exists()) {
-		            	 String out = toLoc.append(entry.getName()).toOSString();
-			             FileOutputStream fos = new FileOutputStream(out);
-			             dest = new BufferedOutputStream(fos, BUFFER);
-			             while ((count = zis.read(data, 0, BUFFER)) != -1) {
-			                dest.write(data, 0, count);
-			             }
-			             dest.flush();
-			             dest.close();
-		             }
-	             }
-	          }
-	          zis.close();
-	       } catch(Exception e) {
-	          e.printStackTrace();
-	       }
+			BufferedOutputStream dest = null;
+			FileInputStream fis = new 
+					FileInputStream(zipped.toFile());
+			ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis));
+			ZipEntry entry;
+			while((entry = zis.getNextEntry()) != null) {
+				int count;
+				byte data[] = new byte[BUFFER];
+				// write the files to the disk
+				if( entry.isDirectory() ) {
+					toLoc.append(entry.getName()).toFile().mkdirs();
+				} else {
+					toLoc.append(entry.getName()).toFile().getParentFile().mkdirs();
+					if( !toLoc.append(entry.getName()).toFile().exists()) {
+						String out = toLoc.append(entry.getName()).toOSString();
+						FileOutputStream fos = new FileOutputStream(out);
+						dest = new BufferedOutputStream(fos, BUFFER);
+						while ((count = zis.read(data, 0, BUFFER)) != -1) {
+							dest.write(data, 0, count);
+						}
+						dest.flush();
+						dest.close();
+					}
+				}
+			}
+			zis.close();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
-
 }

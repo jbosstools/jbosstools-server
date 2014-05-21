@@ -259,8 +259,6 @@ public class ServerCreationTestUtils extends Assert {
 		propFile.toFile().getParentFile().mkdirs();
 		try {
 			IOUtil.setContents(propFile.toFile(), "version=3.5.0");
-		} catch( CoreException ce) {
-			FileUtil.completeDelete(loc.toFile());
 		} catch(IOException ioe) {
 			FileUtil.completeDelete(loc.toFile());
 		}
@@ -274,8 +272,6 @@ public class ServerCreationTestUtils extends Assert {
 		propFile.toFile().getParentFile().mkdirs();
 		try {
 			IOUtil.setContents(propFile.toFile(), "version=3.6.0");
-		} catch( CoreException ce) {
-			FileUtil.completeDelete(loc.toFile());
 		} catch(IOException ioe) {
 			FileUtil.completeDelete(loc.toFile());
 		}

@@ -14,6 +14,7 @@ import java.util.HashMap;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.wst.server.core.IRuntimeType;
+import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.cache.internal.InternalRuntimeClasspathModel;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.cache.internal.RuntimeClasspathModelIO;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.internal.DefaultClasspathModelLoader;
@@ -86,5 +87,6 @@ public class CustomRuntimeClasspathModel {
 		String id = runtime.getId();
 		modelMap.put(id, m); 
 		new RuntimeClasspathModelIO().saveModel(runtime, m);
+		ClasspathCorePlugin.clearCachedClasspathEntries(runtime);
 	}
 }

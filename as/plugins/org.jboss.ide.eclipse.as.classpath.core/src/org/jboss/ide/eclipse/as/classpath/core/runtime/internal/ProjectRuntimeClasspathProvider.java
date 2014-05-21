@@ -58,6 +58,9 @@ import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerEx
 public class ProjectRuntimeClasspathProvider 
 		extends RuntimeClasspathProviderDelegate {
 	
+	// This initialization is here instead of in activator, because loading it in
+	// the activator may be premature and cause overhead when no users are using this
+	// classpath container.
 	static {
 		ManifestChangeListener.register();
 	}

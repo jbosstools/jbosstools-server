@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.classpath.core.runtime.internal;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -25,48 +26,61 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jst.server.core.internal.RuntimeClasspathContainerInitializer;
+import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.modules.manifest.ModuleSlotManifestUtil;
 
 public class ManifestChangeListener implements IResourceChangeListener {
 	public static void register() {
-		final ManifestChangeListener listener = new ManifestChangeListener();
-		final IWorkspace ws = ResourcesPlugin.getWorkspace();
-		ws.addResourceChangeListener(listener, IResourceChangeEvent.POST_CHANGE | IResourceChangeEvent.PRE_BUILD);
+		try {
+			final ManifestChangeListener listener = new ManifestChangeListener();
+			final IWorkspace ws = ResourcesPlugin.getWorkspace();
+			ws.addResourceChangeListener(listener, IResourceChangeEvent.POST_CHANGE | IResourceChangeEvent.PRE_BUILD);
+		} catch(Exception e) {
+			ClasspathCorePlugin.log("Unable to add manifest change listener", e);
+		}
 	}
 
 	@Override
 	public void resourceChanged(IResourceChangeEvent event) {
 		IResourceDelta delta = event.getDelta();
-		final ArrayList<IProject> projectsWithChangedManifest = new ArrayList<IProject>();
+		final ArrayList<IFile> changedManifests = new ArrayList<IFile>();
+		final ArrayList<IProject> changedProjects = new ArrayList<IProject>();
 		try {
 			delta.accept(new IResourceDeltaVisitor() {
 				public boolean visit(IResourceDelta delta) throws CoreException {
-					IProject p = delta.getResource().getProject();
-					if( !projectsWithChangedManifest.contains(p)) {
-						String name = delta.getResource().getName();
-						if (name.toLowerCase().equals("manifest.mf")) {
-							projectsWithChangedManifest.add(p);
+					String name = delta.getResource().getName();
+					if (name.toLowerCase().equals("manifest.mf")) {
+						if( delta.getResource() instanceof IFile) {
+							changedManifests.add((IFile)delta.getResource());
 						}
-						return true;
-					} else {
-						return false;
+						if( !changedProjects.contains(delta.getResource().getProject())) {
+							changedProjects.add(delta.getResource().getProject());
+						}
 					}
+					return true;
 				}
 			});
 		} catch (CoreException ce) {
 
 		}
-		
-		IProject[] asArr = projectsWithChangedManifest.toArray(new IProject[projectsWithChangedManifest.size()]);
+		// ensure in project cache
+		IFile[] asArr = changedManifests.toArray(new IFile[changedManifests.size()]);
 		for( int i = 0; i < asArr.length; i++ ) {
-			resetProject(asArr[i]);
+			new ModuleSlotManifestUtil().esureInCache(asArr[i]);
+		}
+		
+		// reset classpath containers for affected projects
+		IProject[] asArr2 = changedProjects.toArray(new IProject[changedProjects.size()]);
+		for( int i = 0; i < asArr2.length; i++ ) {
+			resetContainer(asArr2[i]);
 		}
 	}
 
 	
-	private void resetProject(IProject p) {
-		if (isJavaProject(p)) {
+	private void resetContainer(IProject p) {
+		if (isJavaProject(p.getProject())) {
 			// Update p's classpath
-			IJavaProject jp = JavaCore.create(p);
+			IJavaProject jp = JavaCore.create(p.getProject());
 			try {
 				IClasspathEntry[] raw = jp.getRawClasspath();
 				for( int i = 0; i < raw.length; i++ ) {
@@ -75,13 +89,12 @@ public class ManifestChangeListener implements IResourceChangeListener {
 							// Delegate to wtp to re-initialize this container
 							new RuntimeClasspathContainerInitializer().initialize(raw[i].getPath(), jp);
 						} catch(CoreException ce) {
-							ce.printStackTrace();
+							// Ignore, not critical
 						}
 					}
 				}
 			} catch (JavaModelException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//Not a java project, we don't care
 			}
 		}
 	}
