@@ -56,8 +56,7 @@ public class JMXAdapterFactory implements IAdapterFactory {
         if (adaptableObject instanceof MBeanAttributeInfoWrapper) {
             MBeanAttributeInfoWrapper wrapper = (MBeanAttributeInfoWrapper) adaptableObject;
             return new MBeanAttributeInfoPropertySourceAdapter(wrapper
-                    .getMBeanAttributeInfo(), wrapper.getObjectName(), wrapper
-                    .getMBeanServerConnection());
+                    .getMBeanAttributeInfo(), wrapper.getObjectName(), wrapper.getConnection());
         }
         if (adaptableObject instanceof MBeanOperationInfoWrapper) {
             MBeanOperationInfoWrapper wrapper = (MBeanOperationInfoWrapper) adaptableObject;

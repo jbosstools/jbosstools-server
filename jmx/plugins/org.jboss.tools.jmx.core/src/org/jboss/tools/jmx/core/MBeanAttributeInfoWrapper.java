@@ -37,9 +37,19 @@ public class MBeanAttributeInfoWrapper extends MBeanFeatureInfoWrapper implement
         return info;
     }
 
+    public IConnectionWrapper getConnection() {
+    	return getParent().getConnectionWrapper();
+    }
+    
     public Object getValue() throws Exception {
-        MBeanServerConnection mbsc = getMBeanServerConnection();
-        return mbsc.getAttribute(getObjectName(), info.getName());
+    	IConnectionWrapper con = getConnection();
+    	final Object[] ret = new Object[1];
+    	con.run(new IJMXRunnable(){
+			@Override
+			public void run(MBeanServerConnection connection) throws Exception {
+				ret[0] = connection.getAttribute(getObjectName(), info.getName());
+			}});
+    	return ret[0];
     }
 
     public int hashCode() {

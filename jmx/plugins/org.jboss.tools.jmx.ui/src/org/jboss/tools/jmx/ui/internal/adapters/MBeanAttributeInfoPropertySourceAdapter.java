@@ -16,13 +16,14 @@ import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
+import org.jboss.tools.jmx.core.IConnectionWrapper;
+import org.jboss.tools.jmx.core.IJMXRunnable;
 import org.jboss.tools.jmx.ui.JMXUIActivator;
 import org.jboss.tools.jmx.ui.Messages;
 
@@ -33,6 +34,8 @@ public class MBeanAttributeInfoPropertySourceAdapter implements IPropertySource 
     private final ObjectName on;
 
     private final MBeanServerConnection mbsc;
+    
+    private final IConnectionWrapper conn;
 
     public MBeanAttributeInfoPropertySourceAdapter(MBeanAttributeInfo attrInfo,
             ObjectName on, MBeanServerConnection mbsc) {
@@ -42,8 +45,21 @@ public class MBeanAttributeInfoPropertySourceAdapter implements IPropertySource 
         this.attrInfo = attrInfo;
         this.on = on;
         this.mbsc = mbsc;
+        this.conn = null;
     }
 
+    public MBeanAttributeInfoPropertySourceAdapter(MBeanAttributeInfo attrInfo,
+            ObjectName on, IConnectionWrapper conn) {
+        Assert.isNotNull(attrInfo);
+        Assert.isNotNull(on);
+        Assert.isNotNull(conn);
+        this.attrInfo = attrInfo;
+        this.on = on;
+        this.conn = conn;
+        this.mbsc = null;
+    }
+
+    
     public Object getEditableValue() {
         return null;
     }
@@ -92,11 +108,25 @@ public class MBeanAttributeInfoPropertySourceAdapter implements IPropertySource 
         }
         if ("value".equals(id)) { //$NON-NLS-1$
             try {
-                Object obj = mbsc.getAttribute(on, attrInfo.getName());
-                if (obj instanceof Object[]) {
-                    return Arrays.asList((Object[]) obj).toString();
-                }
-                return obj;
+            	if( mbsc != null ) {
+	                Object obj = mbsc.getAttribute(on, attrInfo.getName());
+	                if (obj instanceof Object[]) {
+	                    return Arrays.asList((Object[]) obj).toString();
+	                }
+	                return obj;
+            	} else {
+            		conn.run(new IJMXRunnable(){
+            			final Object[] ret = new Object[1];
+						@Override
+						public void run(MBeanServerConnection connection)
+								throws Exception {
+			                Object obj = connection.getAttribute(on, attrInfo.getName());
+			                if (obj instanceof Object[]) {
+			                    ret[0] = Arrays.asList((Object[]) obj).toString();
+			                }
+			                ret[0] = obj;
+						}});
+            	}
             } catch (Exception e) {
         	JMXUIActivator.log(IStatus.WARNING, NLS.bind(
 			Messages.MBeanAttributeValue_Warning,

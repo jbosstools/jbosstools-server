@@ -18,6 +18,7 @@ import javax.management.ObjectName;
 
 import org.eclipse.core.runtime.Assert;
 import org.jboss.tools.jmx.core.tree.ObjectNameNode;
+import org.jboss.tools.jmx.core.tree.Root;
 import org.jboss.tools.jmx.core.util.EqualsUtil;
 
 public class MBeanInfoWrapper implements Comparable {
@@ -37,6 +38,14 @@ public class MBeanInfoWrapper implements Comparable {
         this.parent = parent;
     }
 
+    public IConnectionWrapper getConnectionWrapper() {
+    	return getRoot().getConnection();
+    }
+    
+    public Root getRoot() {
+    	return parent.getRoot();
+    }
+    
     public ObjectNameNode getParent() {
     	return parent;
     }

@@ -22,6 +22,10 @@ public class MBeanFeatureInfoWrapper {
         this.parent = parent;
     }
 
+    protected MBeanInfoWrapper getParent() {
+    	return parent;
+    }
+    
     public ObjectName getObjectName() {
         return parent.getObjectName();
     }
@@ -30,10 +34,16 @@ public class MBeanFeatureInfoWrapper {
         return parent;
     }
 
+    // Should call directly on the connection
+    @Deprecated
     public MBeanServerConnection getMBeanServerConnection() {
         return parent.getMBeanServerConnection();
     }
 
+    public IConnectionWrapper getConnectionWrapper() {
+    	return parent.getConnectionWrapper();
+    }
+    
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
