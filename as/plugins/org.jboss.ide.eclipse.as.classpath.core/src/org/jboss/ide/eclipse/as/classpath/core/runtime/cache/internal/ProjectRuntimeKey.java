@@ -40,7 +40,7 @@ public class ProjectRuntimeKey {
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result
 				+ ((location == null) ? 0 : location.hashCode());
-		result = prime * result + (project.getName().hashCode());
+		result = prime * result + (project == null ? 0 : project.getName().hashCode());
 		return result;
 	}
 
