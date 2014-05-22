@@ -46,8 +46,6 @@ public class JvmAttachHandler implements IJvmAttachHandler,
 
         Activator.getDefault().getPreferenceStore()
                 .addPropertyChangeListener(this);
-
-        startMonitoring();
     }
 
     /*
@@ -163,10 +161,12 @@ public class JvmAttachHandler implements IJvmAttachHandler,
         }
 
         String mainClass = null;
+        String launchCommand = null;
         String localConnectorAddress = null;
         String stateMessage = null;
         if (monitoredVm != null) {
             mainClass = getMainClass(monitoredVm, pid);
+            launchCommand = getJavaCommand(monitoredVm, pid);
             try {
                 localConnectorAddress = getLocalConnectorAddress(monitoredVm,
                         pid);
@@ -179,8 +179,8 @@ public class JvmAttachHandler implements IJvmAttachHandler,
         }
 
         try {
-            localhost.addLocalActiveJvm(pid, mainClass, localConnectorAddress,
-                    stateMessage);
+        	localhost.addLocalActiveJvm(pid, mainClass, launchCommand, 
+        			localConnectorAddress, stateMessage);
         } catch (JvmCoreException e) {
             String message = NLS.bind(Messages.connectTargetJvmFailedMsg, pid);
             Activator.log(IStatus.WARNING, message, e);
@@ -197,7 +197,28 @@ public class JvmAttachHandler implements IJvmAttachHandler,
      * @return The main class name.
      */
     private static String getMainClass(Object monitoredVm, int pid) {
-        String javaCommand;
+        String javaCommand = getJavaCommand(monitoredVm, pid);
+        if( !"".equals(javaCommand)) {
+            /*
+             * javaCommand contains Java executable options that are sorted so that
+             * the main class or jar comes first.
+             */
+            String[] elements = javaCommand
+                    .split(IConstants.JAVA_OPTIONS_DELIMITER);
+            String mainClass;
+            if (elements.length > 0) {
+                mainClass = elements[0];
+            } else {
+                mainClass = javaCommand;
+            }
+            return mainClass;
+        }
+        return "";
+    }
+    
+
+    private static String getJavaCommand(Object monitoredVm, int pid) {
+        String javaCommand = null;
         try {
             Tools tools = Tools.getInstance();
             Object monitor = tools.invokeFindByName(monitoredVm,
@@ -207,28 +228,12 @@ public class JvmAttachHandler implements IJvmAttachHandler,
             }
 
             javaCommand = tools.invokeGetValue(monitor).toString();
-            if (javaCommand == null) {
-                return ""; //$NON-NLS-1$
-            }
+            return javaCommand == null ? "" : javaCommand;
         } catch (JvmCoreException e) {
             String message = NLS.bind(Messages.getMainClassNameFailed, pid);
             Activator.log(IStatus.ERROR, message, e);
             return ""; //$NON-NLS-1$
         }
-
-        /*
-         * javaCommand contains Java executable options that are sorted so that
-         * the main class or jar comes first.
-         */
-        String[] elements = javaCommand
-                .split(IConstants.JAVA_OPTIONS_DELIMITER);
-        String mainClass;
-        if (elements.length > 0) {
-            mainClass = elements[0];
-        } else {
-            mainClass = javaCommand;
-        }
-        return mainClass;
     }
 
     /**
@@ -280,4 +285,27 @@ public class JvmAttachHandler implements IJvmAttachHandler,
         }
         return url;
     }
+
+	@Override
+	public synchronized void beginPolling() {
+        startMonitoring();
+	}
+
+	@Override
+	public synchronized void suspendPolling() {
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+	}
+
+	@Override
+	public void refreshJVMs() throws JvmCoreException {
+		updatesActiveJvms();
+	}
+
+	@Override
+	public synchronized boolean isPolling() {
+		return timer != null;
+	}
 }

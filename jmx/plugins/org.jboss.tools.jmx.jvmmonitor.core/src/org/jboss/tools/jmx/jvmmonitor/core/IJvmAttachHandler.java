@@ -27,4 +27,30 @@ public interface IJvmAttachHandler {
      * @return <tt>true</tt> if valid JDK is available
      */
     boolean hasValidJdk();
+    
+    
+    /**
+     * Alerts the attach handler to begin polling for VMs
+     */
+    void beginPolling();
+    
+    
+    /**
+     * Alerts the attach handler to suspend polling for VMs
+     */
+    void suspendPolling();
+    
+    
+    /**
+     * Get the current polling state
+     * @return true if currently polling, false otherwise
+     */
+    boolean isPolling();
+    
+    /**
+     * Update the list of active JVMs. 
+     * @throws JvmCoreException
+     */
+    void refreshJVMs() throws JvmCoreException;
+
 }

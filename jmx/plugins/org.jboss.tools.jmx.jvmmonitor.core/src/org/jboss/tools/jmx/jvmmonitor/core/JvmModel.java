@@ -213,8 +213,11 @@ public class JvmModel {
      * @param listener
      *            The JVM model change listener
      */
-    public void addJvmModelChangeListener(IJvmModelChangeListener listener) {
+    public synchronized void addJvmModelChangeListener(IJvmModelChangeListener listener) {
         listeners.add(listener);
+        if( listeners.size() > 0 && !jvmAttachHandler.isPolling()) {
+        	jvmAttachHandler.beginPolling();
+        }
     }
 
     /**
@@ -223,8 +226,11 @@ public class JvmModel {
      * @param listener
      *            The JVM model change listener
      */
-    public void removeJvmModelChangeListener(IJvmModelChangeListener listener) {
+    public synchronized void removeJvmModelChangeListener(IJvmModelChangeListener listener) {
         listeners.remove(listener);
+        if( listeners.size() == 0 && jvmAttachHandler.isPolling()) {
+        	jvmAttachHandler.beginPolling();
+        }
     }
 
     /**
@@ -269,6 +275,7 @@ public class JvmModel {
         IHost localhost = addHost(IHost.LOCALHOST);
         if (jvmAttachHandler != null) {
             jvmAttachHandler.setHost(localhost);
+            jvmAttachHandler.beginPolling();
         }
 
         IPath baseDir = Activator.getDefault().getStateLocation();

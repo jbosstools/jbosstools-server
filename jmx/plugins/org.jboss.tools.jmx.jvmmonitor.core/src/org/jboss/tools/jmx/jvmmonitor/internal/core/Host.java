@@ -122,9 +122,19 @@ public class Host implements IHost {
     /*
      * @see IHost#addLocalActiveJvm(int, String, String, String)
      */
+    // Candidate for removal from interface? No callers. 
     @Override
     public IActiveJvm addLocalActiveJvm(int pid, String mainClass, String url,
             String errorStateMessage) throws JvmCoreException {
+    	return addLocalActiveJvm(pid, mainClass, null, url, errorStateMessage);
+    }
+
+    /*
+     * @see IHost#addLocalActiveJvm(int, String, String, String)
+     */
+    @Override
+    public IActiveJvm addLocalActiveJvm(int pid, String mainClass, String launchCommand,
+    		String url, String errorStateMessage) throws JvmCoreException {
         for (IActiveJvm jvm : getActiveJvms()) {
             if (jvm.getPid() == pid) {
                 return jvm;
@@ -133,10 +143,11 @@ public class Host implements IHost {
 
         ActiveJvm jvm = new ActiveJvm(pid, url, this);
         jvm.setMainClass(mainClass);
+        jvm.setLaunchCommand(launchCommand);
         jvm.setErrorStateMessage(errorStateMessage);
         return addActiveJvm(jvm);
     }
-
+    
     /*
      * @see IHost#removeJvm(int)
      */

@@ -151,6 +151,7 @@ public class JvmConnectionWrapper implements IConnectionWrapper, HasName, ImageP
 	}
 
 	public synchronized void connect() throws IOException {
+		System.out.println(activeJvm.getLaunchCommand());
 		if (!activeJvm.isConnected() && activeJvm.isConnectionSupported()) {
 			int updatePeriod = JvmMonitorPreferences.getJvmUpdatePeriod();
 

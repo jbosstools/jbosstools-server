@@ -21,7 +21,8 @@ import org.osgi.framework.BundleContext;
 
 
 public class Activator extends BaseUIPlugin {
-
+	public static String PLUGIN_ID = "org.jboss.tools.jmx.local";
+	
 	private static Activator plugin;
 
 	@Override

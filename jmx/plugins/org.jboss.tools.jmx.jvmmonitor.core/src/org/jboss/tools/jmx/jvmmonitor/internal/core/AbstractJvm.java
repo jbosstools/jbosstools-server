@@ -44,6 +44,9 @@ abstract public class AbstractJvm implements IJvm {
     /** The main class. */
     private String mainClass;
 
+    /** The full launch command */
+    private String launchCommand;
+    
     /** The host. */
     private IHost host;
 
@@ -145,6 +148,17 @@ abstract public class AbstractJvm implements IJvm {
     }
 
     /*
+     * @see IJvm#getMainClass()
+     */
+    @Override
+    public String getLaunchCommand() {
+        if (launchCommand == null) {
+            return ""; //$NON-NLS-1$
+        }
+        return launchCommand;
+    }
+    
+    /*
      * @see IJvm#getHost()
      */
     @Override
@@ -240,6 +254,18 @@ abstract public class AbstractJvm implements IJvm {
      */
     protected void setMainClass(String mainClass) {
         this.mainClass = mainClass;
+    }
+
+    
+
+    /**
+     * Sets the launch command
+     * 
+     * @param mainClass
+     *            The main class
+     */
+    protected void setLaunchCommand(String command) {
+        this.launchCommand = command;
     }
 
     /**

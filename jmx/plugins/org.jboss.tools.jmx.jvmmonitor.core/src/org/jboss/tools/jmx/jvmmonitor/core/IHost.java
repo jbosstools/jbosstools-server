@@ -80,6 +80,29 @@ public interface IHost {
     IActiveJvm addLocalActiveJvm(int pid, String mainClass, String url,
             String errorStateMessage) throws JvmCoreException;
 
+
+    /**
+     * Adds the local active JVM.
+     * 
+     * @param pid
+     *            The process id of JVM.
+     * @param mainClass
+     *            The main class
+     * @param launchCommand
+     *            The full launch command
+     * @param url
+     *            The JMX URL, or <tt>null</tt> if target JVM doesn't support
+     *            attach
+     * @param errorStateMessage
+     *            The error state message
+     * @return The active JVM
+     * @throws JvmCoreException
+     */
+    IActiveJvm addLocalActiveJvm(int pid, String mainClass, 
+    		String launchCommand, String url,
+            String errorStateMessage) throws JvmCoreException;
+
+    
     /**
      * Removes the JVM.
      * 

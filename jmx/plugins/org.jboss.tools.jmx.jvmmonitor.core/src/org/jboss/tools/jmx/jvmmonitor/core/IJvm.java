@@ -53,6 +53,13 @@ public interface IJvm {
     String getMainClass();
 
     /**
+     * Gets the launch command
+     * 
+     * @return The full launch command
+     */
+    String getLaunchCommand();
+    
+    /**
      * Gets the host.
      * 
      * @return the host.
