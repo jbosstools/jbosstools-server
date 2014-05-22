@@ -79,10 +79,6 @@ public class AddRuntimeComboOverviewPageModifier extends
 
 	}
 	
-	private boolean isJBTServerType() {
-		return true;
-	}
-	
 	@Override
 	public void createControl(UI_LOCATION location, Composite parent) {
 		addControl(parent, null);
@@ -155,7 +151,7 @@ public class AddRuntimeComboOverviewPageModifier extends
 								if (updating)
 									return;
 								updating = true;
-								execute(new SetServerRuntimeCommand(serverWc, runtime2));
+								executeCommand(new SetServerRuntimeCommand(serverWc, runtime2));
 								updating = false;
 							} catch (Exception ex) {
 								// ignore
@@ -216,7 +212,7 @@ public class AddRuntimeComboOverviewPageModifier extends
 						return;
 					updating = true;
 					IRuntime newRuntime = runtimes[runtimeCombo.getSelectionIndex()];
-					execute(new SetServerRuntimeCommand(serverWc, newRuntime));
+					executeCommand(new SetServerRuntimeCommand(serverWc, newRuntime));
 					link.setEnabled(newRuntime != null && ServerUIPlugin.hasWizardFragment(RuntimeUtils.getRuntimeTypeId(newRuntime)));
 					updating = false;
 				} catch (Exception ex) {
@@ -288,28 +284,4 @@ public class AddRuntimeComboOverviewPageModifier extends
 		return dialog.open();
 	}
 	
-	public void execute(IUndoableOperation operation) {
-		// We do not have access to a command manager. This is a bug
-		// Please file upstream bug
-		//commandManager.execute(operation);
-		
-
-		try {
-			IAdaptable adaptable = new IAdaptable() {
-				public Object getAdapter(Class adapter) {
-					if (Shell.class.equals(adapter))
-						return runtimeCombo.getShell();
-					return null;
-				}
-			};
-			IStatus status = operation.execute(new NullProgressMonitor(), adaptable);
-			if (status != null && !status.isOK())
-				MessageDialog.openError(runtimeCombo.getShell(), Messages.editorServerEditor, status.getMessage());
-		} catch (ExecutionException ce) {
-			if (Trace.SEVERE) {
-				Trace.trace(Trace.STRING_SEVERE, "Error executing command", ce);
-			}
-			return;
-		}
-	}
 }
