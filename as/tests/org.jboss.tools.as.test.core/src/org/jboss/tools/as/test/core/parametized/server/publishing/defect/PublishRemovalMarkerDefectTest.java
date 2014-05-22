@@ -10,8 +10,11 @@
  ******************************************************************************/ 
 package org.jboss.tools.as.test.core.parametized.server.publishing.defect;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -99,7 +102,7 @@ public class PublishRemovalMarkerDefectTest extends AbstractPublishingTest {
 		String s = depPath.toOSString();
 		assertTrue(new Path(s).toFile().exists());
 		assertEquals(testIsZip(), new Path(s).toFile().isFile());
-		verifyList(new Path(s), Arrays.asList(getLeafPaths()), true);
+		verifyListRelativePath(new Path(s), Arrays.asList(getLeafPaths()), true);
 		assertTrue(depFolder.append(nameDoDeployMarker).toFile().exists());
 		
 		// Pretend the server picked it up
@@ -168,4 +171,14 @@ public class PublishRemovalMarkerDefectTest extends AbstractPublishingTest {
 		m.setExists(true);
 		return new MockModule[]{m};
 	}
+	
+
+	protected void verifyListRelativePath(IPath root, List<IPath> list, boolean exists) {
+		ArrayList<IPath> list2 = new ArrayList<IPath>();
+		for(Iterator<IPath> i = list.iterator(); i.hasNext(); ) {
+			list2.add(root.append(i.next()));
+		}
+		super.verifyList(root, list2, exists);
+	}
+	
 }

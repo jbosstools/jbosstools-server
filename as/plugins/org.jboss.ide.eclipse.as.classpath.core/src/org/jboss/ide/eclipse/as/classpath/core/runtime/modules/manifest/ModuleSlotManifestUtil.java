@@ -156,15 +156,17 @@ public class ModuleSlotManifestUtil {
 	
 	private IFile[] locateManifestFiles(IProject p) throws CoreException {
 		final ArrayList<IFile> ret = new ArrayList<IFile>();
-		p.accept(new IResourceVisitor(){
-			public boolean visit(IResource resource) throws CoreException {
-				if( resource.getName().toLowerCase().equals("manifest.mf")) {
-					if( resource instanceof IFile) {
-						ret.add((IFile)resource);
+		if( p != null ) {
+			p.accept(new IResourceVisitor(){
+				public boolean visit(IResource resource) throws CoreException {
+					if( resource.getName().toLowerCase().equals("manifest.mf")) {
+						if( resource instanceof IFile) {
+							ret.add((IFile)resource);
+						}
 					}
-				}
-				return true;
-			}});
+					return true;
+				}});
+		}
 		return (IFile[]) ret.toArray(new IFile[ret.size()]);
 	}
 

@@ -12,6 +12,8 @@ package org.jboss.tools.as.test.core.parametized.server.publishing.defect;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -176,5 +178,14 @@ public class RepublishDefectTest extends AbstractPublishingTest {
 		
 		verifyList(earPath, mustBePresent, true);
 		verifyList(earPath, mustBeMissing, false);
+	}
+	
+
+	protected void verifyListRelativePath(IPath root, List<IPath> list, boolean exists) {
+		ArrayList<IPath> list2 = new ArrayList<IPath>();
+		for(Iterator<IPath> i = list.iterator(); i.hasNext(); ) {
+			list2.add(root.append(i.next()));
+		}
+		super.verifyList(root, list2, exists);
 	}
 }
