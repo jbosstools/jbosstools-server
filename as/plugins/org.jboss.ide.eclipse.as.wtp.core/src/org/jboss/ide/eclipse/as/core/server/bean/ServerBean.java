@@ -24,10 +24,6 @@ public class ServerBean {
 	private String version = EMPTY;
 	private String fullVersion = EMPTY;
 	
-	@Deprecated 
-	public ServerBean() {
-	}
-	
 	public ServerBean(String location, String name, ServerBeanType type,
 			String fullVersion) {
 		super();

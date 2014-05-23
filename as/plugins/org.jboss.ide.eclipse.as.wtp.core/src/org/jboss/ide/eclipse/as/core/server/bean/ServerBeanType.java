@@ -10,17 +10,25 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.bean;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Properties;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
+import org.jboss.ide.eclipse.as.core.server.jbossmodules.LayeredModulePathFactory;
+import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
 
-public class ServerBeanType implements IJBossToolingConstants {
+public class ServerBeanType {
 	
 	protected static final String UNKNOWN_STR = "UNKNOWN"; //$NON-NLS-1$
 	public static final ServerBeanType UNKNOWN = new ServerBeanTypeUnknown();
@@ -180,6 +188,99 @@ public class ServerBeanType implements IJBossToolingConstants {
 		return false;
 	}
 
+	
+
+	protected static boolean scanManifestPropFromJBossModulesFolder(File[] moduleRoots, String moduleId, String slot, String property, String propPrefix) {
+		String value = getManifestPropFromJBossModulesFolder(moduleRoots, moduleId, slot, property);
+		if( value != null && value.trim().startsWith(propPrefix))
+			return true;
+		return false;
+	}
+	
+	protected static String getManifestPropFromJBossModulesFolder(File[] moduleRoots, String moduleId, String slot, String property) {
+		File[] layeredRoots = LayeredModulePathFactory.resolveLayeredModulePath(moduleRoots);
+		for( int i = 0; i < layeredRoots.length; i++ ) {
+			IPath[] manifests = getFilesForModule(layeredRoots[i], moduleId, slot, manifestFilter());
+			if( manifests.length > 0 ) {
+				String value = getManifestProperty(manifests[0].toFile(), property);
+				if( value != null )
+					return value;
+				return null;
+			}
+		}
+		return null;
+	}
+	
+	protected static boolean scanManifestPropFromJBossModules(File[] moduleRoots, String moduleId, String slot, String property, String propPrefix) {
+		String value = getManifestPropFromJBossModules(moduleRoots, moduleId, slot, property);
+		if( value != null && value.trim().startsWith(propPrefix))
+			return true;
+		return false;
+	}
+	
+	protected static String getManifestPropFromJBossModules(File[] moduleRoots, String moduleId, String slot, String property) {
+		File[] layeredRoots = LayeredModulePathFactory.resolveLayeredModulePath(moduleRoots);
+		for( int i = 0; i < layeredRoots.length; i++ ) {
+			IPath[] jars = getFilesForModule(layeredRoots[i], moduleId, slot, jarFilter());
+			if( jars.length > 0 ) {
+				String value = getJarProperty(jars[0].toFile(), property);
+				return value;
+			}
+		}
+		return null;
+	}
+
+	
+	private static FileFilter jarFilter() {
+		return new FileFilter() {
+			public boolean accept(File pathname) {
+				if( pathname.isFile() && pathname.getName().endsWith(".jar")) {
+					return true;
+				}
+				return false;
+			} 
+		};
+	}
+	private static FileFilter manifestFilter() {
+		return new FileFilter() {
+			public boolean accept(File pathname) {
+				if( pathname.isFile() && pathname.getName().toLowerCase().equals("manifest.mf")) {
+					return true;
+				}
+				return false;
+			} 
+		};
+	}
+	
+	private static IPath[] getFilesForModule(File modulesFolder, String moduleName, String slot, FileFilter filter) {
+		String slashed = moduleName.replaceAll("\\.", "/");
+		slot = (slot == null ? "main" : slot);
+		return getFiles(modulesFolder, new Path(slashed).append(slot), filter);
+	}
+	private static IPath[] getFiles(File modulesFolder, IPath moduleRelativePath, FileFilter filter) {
+		File[] layeredPaths = LayeredModulePathFactory.resolveLayeredModulePath(modulesFolder);
+		for( int i = 0; i < layeredPaths.length; i++ ) {
+			IPath lay = new Path(layeredPaths[i].getAbsolutePath());
+			File layeredPath = new File(lay.append(moduleRelativePath).toOSString());
+			if( layeredPath.exists()) {
+				return getFilesFrom(layeredPath, filter);
+			}
+		}
+		return new IPath[0];
+	}
+
+	
+	private static IPath[] getFilesFrom(File layeredPath, FileFilter filter) {
+		ArrayList<IPath> list = new ArrayList<IPath>();
+		File[] children = layeredPath.listFiles();
+		for( int i = 0; i < children.length; i++ ) {
+			if( filter.accept(children[i])) {
+				list.add(new Path(children[i].getAbsolutePath()));
+			}
+		}
+		return (IPath[]) list.toArray(new IPath[list.size()]);
+	}
+	
 
 	/**
 	 * This method will check a jar file for a manifest, and, if it has it, 
@@ -216,6 +317,22 @@ public class ServerBeanType implements IJBossToolingConstants {
 				}
 			}
 		} 
+		return null;
+	}
+	
+
+	private static String getManifestProperty(File manifestFile, String propertyName) {
+		try {
+			String contents = FileUtil.getContents(manifestFile);
+			if( contents != null ) {
+				Manifest mf = new Manifest(new ByteArrayInputStream(contents.getBytes()));
+				Attributes a = mf.getMainAttributes();
+				String val = a.getValue(propertyName);
+				return val;
+			}
+		} catch(IOException ioe) {
+			// 
+		}
 		return null;
 	}
 }

@@ -23,11 +23,11 @@ public class ServerBeanTypeUnknownAS71Product extends JBossServerType {
 				new UnknownAS71ProductServerTypeCondition());
 	}
 	
-	public ServerBeanTypeUnknownAS71Product(String path, Condition condition) {
+	public ServerBeanTypeUnknownAS71Product(String path, ICondition condition) {
 		this("AS-Product", "Application Server",path, condition);
 	}
 	
-	protected ServerBeanTypeUnknownAS71Product(String id, String desc, String path, Condition condition) {
+	protected ServerBeanTypeUnknownAS71Product(String id, String desc, String path, ICondition condition) {
 		this( id, desc, path, new String[]{}, condition);
 	}
 	
@@ -35,7 +35,7 @@ public class ServerBeanTypeUnknownAS71Product extends JBossServerType {
 	 * @since 3.0 (actually 2.4.101)
 	 */
 	protected ServerBeanTypeUnknownAS71Product(String id, String desc, String path, 
-			String[] version, Condition condition) {
+			String[] version, ICondition condition) {
 		super( id, desc, path, version, condition);
 	}
 	
@@ -51,15 +51,14 @@ public class ServerBeanTypeUnknownAS71Product extends JBossServerType {
 		@Override
 		public String getFullVersion(File location, File systemJarFile) {
 			String productSlot = getSlot(location);
-			String[] layers = getLayers(location);
-			String[] manifestFolders = getManifestFoldersToFindVersion(productSlot, layers == null ? new String[0] : layers);
-			for( int i = 0; i < manifestFolders.length; i++ ) {
-				String versionInManifest = getEAP6xVersionNoSlotCheck(location, 
-						manifestFolders[i], null, null);
-				if( versionInManifest != null )
-					return versionInManifest;
+			String product = "org.jboss.as.product";
+			if( productSlot != null ) {
+				product += "." + productSlot;
 			}
-			return null;
+			product += ".dir";
+			File[] modules = new File[]{new File(location, "modules")};
+			String vers = ServerBeanType.getManifestPropFromJBossModulesFolder(modules, product, "META-INF", "JBoss-Product-Release-Version");
+			return vers;
 		}
 		
 		/**

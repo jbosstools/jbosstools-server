@@ -10,6 +10,8 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.bean;
 
+import java.io.File;
+
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanTypeUnknownAS72Product.UnknownAS72ProductServerTypeCondition;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
@@ -24,10 +26,8 @@ public class ServerBeanTypeSOA6 extends ServerBeanTypeUnknownAS71Product {
 			return IJBossToolingConstants.SERVER_EAP_61;
 		}
 		@Override
-		protected String[] getManifestFoldersToFindVersion(String productSlot, String[] layers) {
-			if( !"soa".equals(productSlot))
-				return new String[0];
-			return super.getManifestFoldersToFindVersion(productSlot, layers);
+		public boolean isServerRoot(File location) {
+			return "soa".equals(getSlot(location)) && super.isServerRoot(location);
 		}
 	}
 }

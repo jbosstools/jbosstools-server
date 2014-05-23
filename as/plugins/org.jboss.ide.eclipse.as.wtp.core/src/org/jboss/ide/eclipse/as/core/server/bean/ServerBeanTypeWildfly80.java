@@ -26,8 +26,7 @@ public class ServerBeanTypeWildfly80 extends JBossServerType {
 	}
 	public static class Wildfly80ServerTypeCondition extends AbstractCondition {
 		public boolean isServerRoot(File location) {
-			String mainFolder = JBossServerType.WILDFLY80.systemJarPath;
-			return scanFolderJarsForManifestProp(location, mainFolder, AS_RELEASE_MANIFEST_KEY, "8.");
+			return scanManifestPropFromJBossModules(new File[]{new File(location, "modules")}, "org.jboss.as.server", null, AS_RELEASE_MANIFEST_KEY, "8.");
 		}
 		public String getServerTypeId(String version) {	
 			// Just return adapter type wf8 until we discover incompatibility. 
