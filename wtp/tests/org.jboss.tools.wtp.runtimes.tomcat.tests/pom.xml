@@ -53,9 +53,9 @@
 							<goal>wget</goal>
 						</goals>
 						<configuration>
-							<url>http://apache.mirrors.multidist.eu/tomcat/tomcat-6/v6.0.37/bin/apache-tomcat-6.0.37.zip</url>
+							<url>http://apache.mirrors.multidist.eu/tomcat/tomcat-6/v6.0.39/bin/apache-tomcat-6.0.39.zip</url>
 							<unpack>true</unpack>
-							<md5>2cdccdb521196932fcf2bc26b60c388b</md5>
+							<md5>a3d585de50bfe7998a2034ec6ead0b09</md5>
 						</configuration>
 					</execution>
 				</executions>
