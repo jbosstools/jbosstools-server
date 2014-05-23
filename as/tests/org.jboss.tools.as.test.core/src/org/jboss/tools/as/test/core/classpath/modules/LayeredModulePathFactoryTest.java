@@ -18,7 +18,7 @@ import junit.framework.TestCase;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.classpath.core.runtime.jbossmodules.internal.LayeredModulePathFactory;
+import org.jboss.ide.eclipse.as.core.server.jbossmodules.LayeredModulePathFactory;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
 import org.junit.After;

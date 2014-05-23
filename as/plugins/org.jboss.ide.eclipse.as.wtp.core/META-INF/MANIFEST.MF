@@ -31,6 +31,7 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.jboss.ide.eclipse.as.core.server,
  org.jboss.ide.eclipse.as.core.server.bean,
+ org.jboss.ide.eclipse.as.core.server.jbossmodules;x-internal:=true,
  org.jboss.ide.eclipse.as.core.util,
  org.jboss.ide.eclipse.as.wtp.core.modules,
  org.jboss.ide.eclipse.as.wtp.core.server.behavior,

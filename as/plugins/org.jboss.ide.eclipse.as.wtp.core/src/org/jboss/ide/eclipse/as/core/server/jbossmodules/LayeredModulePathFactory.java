@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.classpath.core.runtime.jbossmodules.internal;
+package org.jboss.ide.eclipse.as.core.server.jbossmodules;
 
 
 import java.io.Closeable;

@@ -74,7 +74,7 @@ public class JBossServerType extends ServerBeanType implements IJBossToolingCons
 
 	@Deprecated
 	protected String[] versions = new String[0];
-	protected JBossServerType(String id, String name, String jbossSystemJarPath, String[] versions, Condition condition) {
+	protected JBossServerType(String id, String name, String jbossSystemJarPath, String[] versions, ICondition condition) {
 		super(id, name, jbossSystemJarPath, condition);
 		this.versions = versions;
 	}
@@ -83,109 +83,4 @@ public class JBossServerType extends ServerBeanType implements IJBossToolingCons
 	public String[] getVersions() {
 		return versions;
 	}
-	
-	
-	@Deprecated
-	static interface Condition extends ICondition {
-	}
-	
-	@Deprecated
-	public static abstract class AbstractCondition 
-		extends org.jboss.ide.eclipse.as.core.server.bean.AbstractCondition 
-		implements Condition {
-
-		public String getFullVersion(File location, File systemFile) {
-			return AbstractCondition.getFullServerVersionFromZipLegacy(systemFile, 
-					getJBossManifestAttributes());
-		}
-		
-		private static String[] getJBossManifestAttributes() {
-			return new String[]{
-					"JBossEAP-Release-Version",
-					"Specification-Version",
-					"Implementation-Version"
-			};
-		}
-	}
-	
-
-	
-	@Deprecated
-	public static class EAPStandaloneServerTypeCondition extends ServerBeanTypeEAPStandalone.EAPStandaloneServerTypeCondition {}
-	@Deprecated
-	public static class ASServerTypeCondition extends ServerBeanTypeAS.ASServerTypeCondition {}
-	@Deprecated
-	public static class AS7ServerTypeCondition extends ServerBeanTypeAS7.AS7ServerTypeCondition {}
-	@Deprecated
-	public static class AS72ServerTypeCondition extends ServerBeanTypeAS72.AS72ServerTypeCondition {}
-	@Deprecated
-	public static class SOAPServerTypeCondition extends ServerBeanTypeSOAP.SOAPServerTypeCondition{}
-	@Deprecated
-	public static class SOAPStandaloneServerTypeCondition extends ServerBeanTypeSOAPStandalone.SOAPStandaloneServerTypeCondition {}
-	@Deprecated
-	public static class EWPTypeCondition extends ServerBeanTypeEWP.EWPTypeCondition {}
-	@Deprecated
-	public static class EPPTypeCondition extends ServerBeanTypeEPP.EPPTypeCondition {}
-	@Deprecated
-	public static class EAPServerTypeCondition extends ServerBeanTypeEAP.EAPServerTypeCondition {}
-	@Deprecated
-	public static class EAP6ServerTypeCondition extends ServerBeanTypeEAP6.EAP6ServerTypeCondition{}
-	@Deprecated
-	public static class EAP61ServerTypeCondition extends ServerBeanTypeEAP61.EAP61ServerTypeCondition {};
-	@Deprecated
-	public static class JPP6ServerTypeCondition extends ServerBeanTypeJPP6.JPP6ServerTypeCondition{};
-	@Deprecated
-	public static class AS7GateInServerTypeCondition extends ServerBeanTypeAS7GateIn.AS7GateInServerTypeCondition {}
-	
-	
-	/* Deprecated methods which are poorly defined  */
-	@Deprecated
-	public static boolean isEAP(File systemJarFile) {
-		String title = getJarProperty(systemJarFile, IMPLEMENTATION_TITLE);
-		return title != null && title.contains("EAP"); //$NON-NLS-1$
-	}
-	
-	@Deprecated
-	public static boolean isEAP6(File systemJarFile) {
-		String value = getJarProperty(systemJarFile, JBEAP_RELEASE_VERSION);
-		if( value != null && value.trim().startsWith("6.")) //$NON-NLS-1$
-				return true;
-		return false;
-	}
-
-	@Deprecated
-	protected static boolean checkAS7StyleVersion(File location, String mainFolder, String property, String propPrefix) {
-		return scanFolderJarsForManifestProp(location, mainFolder, property, propPrefix);
-	}
-		
-	/**
-	 * This method is almost impossible to return accurately.
-	 * AS7 and AS-5 both have the same JBossServerType.name value, "AS", 
-	 * so if a user wishes to get the JBossServerType which corresponds
-	 * to AS7, it is impossible for him to do so. 
-	 * 
-	 * This method really should be deprecated or fixed. 
-	 * 
-	 * @param name
-	 * @return
-	 */
-	@Deprecated
-	public static JBossServerType getType(String name) {
-		if(AS.name.equals(name)) {
-			return AS;
-		} else if(EAP.name.equals(name)) {
-			return EAP;
-		} else if(SOAP.name.equals(name)) {
-			return SOAP;
-		} else if(SOAP_STD.name.equals(name)) {
-			return SOAP_STD;
-		} else if(EWP.name.equals(name)) {
-			return EWP;
-		} else if(EPP.name.equals(name)) {
-			return EPP;
-		}
-		// TODO externalize
-		throw new IllegalArgumentException("Name '" + name + "' cannot be converted to ServerType"); //$NON-NLS-1$ //$NON-NLS-2$
-	}
-
 }

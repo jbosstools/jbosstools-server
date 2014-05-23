@@ -10,7 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.bean;
 
-import java.util.ArrayList;
+import java.io.File;
 
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
@@ -21,35 +21,29 @@ public class ServerBeanTypeUnknownAS72Product extends ServerBeanTypeUnknownAS71P
 				new UnknownAS72ProductServerTypeCondition());
 	}
 	public static class UnknownAS72ProductServerTypeCondition extends UnknownAS71ProductServerTypeCondition {
+
+		@Override
+		public boolean isServerRoot(File location) {
+			return server72OrHigher(location) && getFullVersion(location, null) != null;
+		}
+		
+		protected boolean server72OrHigher(File loc) {
+			File[] mods = new File[]{new File(loc, "modules")};
+			String serverVersion = getManifestPropFromJBossModules(mods, "org.jboss.as.server", "main", "JBoss-Product-Release-Version");
+			if( serverVersion == null ) {
+				serverVersion = getManifestPropFromJBossModules(mods, "org.jboss.as.server", "main", "Implementation-Version");
+			}
+			if( serverVersion != null && serverVersion.length() > 3) {
+				if( serverVersion.startsWith("7.") && "2".compareTo(""+serverVersion.charAt(2)) <= 0) {
+					return true;
+				}
+			}
+			return false;
+		}
+		
 		@Override
 		public String getServerTypeId(String version) {
 			return IJBossToolingConstants.SERVER_EAP_61;
 		}
-		@Override
-		protected String[] getManifestFoldersToFindVersion(String productSlot, String[] layers) {
-			ArrayList<String> l = new ArrayList<String>(layers.length);
-			for( int i = 0; i < layers.length; i++ ) {
-				l.add(getMetaInfFolderForLayer(layers[i], productSlot));
-			}
-			l.add(getMetaInfFolderForSlot(productSlot));
-			return (String[]) l.toArray(new String[l.size()]);
-		}
-		@Override
-		protected String getMetaInfFolderForSlot(String slot) {
-			return "modules/system/layers/base/org/jboss/as/product/" + slot + "/dir/META-INF"; //$NON-NLS-1$
-		}
-		
-		/* Incorrect implementation, but cannot remove it because it's officially api */
-		@Deprecated
-		protected String getMetaInfFolderForLayer(String layer) {
-			return getMetaInfFolderForLayer(layer, layer);
-		}
-		/**
-		 * @since 2.5
-		 */
-		protected String getMetaInfFolderForLayer(String layer, String slot) {
-			return "modules/system/layers/" + layer + "/org/jboss/as/product/" + slot + "/dir/META-INF"; //$NON-NLS-1$
-		}
-		
 	}
 }

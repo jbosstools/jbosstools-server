@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IRuntime;
-import org.jboss.ide.eclipse.as.classpath.core.runtime.jbossmodules.internal.LayeredModulePathFactory;
+import org.jboss.ide.eclipse.as.core.server.jbossmodules.LayeredModulePathFactory;
 
 /**
  * This class represents a module + slot combination
