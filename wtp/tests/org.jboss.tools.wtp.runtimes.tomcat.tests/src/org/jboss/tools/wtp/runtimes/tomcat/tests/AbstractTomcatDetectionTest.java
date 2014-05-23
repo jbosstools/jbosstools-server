@@ -27,7 +27,7 @@ public class AbstractTomcatDetectionTest {
 
 	protected static final String REQUIREMENTS_DIR = "target/requirements/";
 
-	protected static final String TOMCAT_6 = "apache-tomcat-6.0.37";
+	protected static final String TOMCAT_6 = "apache-tomcat-6.0.39";
 
 	protected static final String TOMCAT_6_PATH = REQUIREMENTS_DIR + TOMCAT_6;
 
