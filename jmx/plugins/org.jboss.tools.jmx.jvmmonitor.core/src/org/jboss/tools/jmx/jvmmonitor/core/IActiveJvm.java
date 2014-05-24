@@ -20,6 +20,8 @@ public interface IActiveJvm extends IJvm {
      * with {@link #isConnectionSupported()} whether the target JVM supports
      * connection.
      * 
+     * This is functionally equivilent to connect(updatePeriod, true);
+     * 
      * @param updatePeriod
      *            The update period
      * @throws JvmCoreException
@@ -27,6 +29,28 @@ public interface IActiveJvm extends IJvm {
      */
     void connect(int updatePeriod) throws JvmCoreException;
 
+    /**
+     * Connects the target JVM with JVM Monitor via JMX and, conditionally,
+     * will attach the agent to the process. The client can check
+     * with {@link #isConnectionSupported()} whether the target JVM supports
+     * connection.
+     * 
+     * @param updatePeriod
+     *            The update period
+     * @param attach 
+     * 			  Whether to attach the agent
+     * @throws JvmCoreException
+     *             if connecting JVM fails
+     */
+    void connect(int updatePeriod, boolean attach) throws JvmCoreException;
+
+    /**
+     * Attaches the agent to the jvm
+     * 
+     * @throws JvmCoreException
+     */
+    void attach() throws JvmCoreException;
+    
     /**
      * Disconnects the target JVM from JVM Monitor.
      */
@@ -40,6 +64,12 @@ public interface IActiveJvm extends IJvm {
      */
     boolean isConnected();
 
+    /**
+     * Gets the state indicating if the agent has been attached to the target VM
+     * @return true if attached, false otherwise
+     */
+    boolean isAttached();
+    
     /**
      * Gets the state indicating if the target JVM supports the connection.
      * 

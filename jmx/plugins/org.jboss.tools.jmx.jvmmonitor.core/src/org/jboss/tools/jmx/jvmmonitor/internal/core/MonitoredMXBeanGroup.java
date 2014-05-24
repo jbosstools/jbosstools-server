@@ -12,6 +12,7 @@ import java.util.List;
 import javax.management.ObjectName;
 
 import org.jboss.tools.jmx.jvmmonitor.core.JvmCoreException;
+import org.jboss.tools.jmx.jvmmonitor.core.mbean.IMBeanServer;
 import org.jboss.tools.jmx.jvmmonitor.core.mbean.IMonitoredMXBeanAttribute;
 import org.jboss.tools.jmx.jvmmonitor.core.mbean.IMonitoredMXBeanGroup;
 import org.jboss.tools.jmx.jvmmonitor.core.mbean.MBeanServerEvent;
@@ -24,7 +25,7 @@ import org.jboss.tools.jmx.jvmmonitor.core.mbean.MBeanServerEvent.MBeanServerSta
 public class MonitoredMXBeanGroup implements IMonitoredMXBeanGroup {
 
     /** The MBean server. */
-    private MBeanServer mBeanServer;
+    private IMBeanServer mBeanServer;
 
     /** The group name. */
     private String name;
@@ -45,7 +46,7 @@ public class MonitoredMXBeanGroup implements IMonitoredMXBeanGroup {
      * @param axisUnit
      *            The axis unit
      */
-    public MonitoredMXBeanGroup(MBeanServer mBeanServer, String name,
+    public MonitoredMXBeanGroup(IMBeanServer mBeanServer, String name,
             AxisUnit axisUnit) {
         this.mBeanServer = mBeanServer;
         this.name = name;
@@ -141,7 +142,7 @@ public class MonitoredMXBeanGroup implements IMonitoredMXBeanGroup {
 
         if (targetAttribute != null) {
             attributes.remove(targetAttribute);
-            mBeanServer
+            ((AbstractMBeanServer)mBeanServer)
                     .fireMBeanServerChangeEvent(new MBeanServerEvent(
                             MBeanServerState.MonitoredAttributeRemoved,
                             targetAttribute));
@@ -179,7 +180,7 @@ public class MonitoredMXBeanGroup implements IMonitoredMXBeanGroup {
         attributes.add(attribute);
 
         if (fireEvent) {
-            mBeanServer.fireMBeanServerChangeEvent(new MBeanServerEvent(
+        	((AbstractMBeanServer)mBeanServer).fireMBeanServerChangeEvent(new MBeanServerEvent(
                     MBeanServerState.MonitoredAttributeAdded, attribute));
         }
     }

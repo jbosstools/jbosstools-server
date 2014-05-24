@@ -45,10 +45,16 @@ import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerEx
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
+import org.jboss.tools.jmx.core.tree.MBeansNode;
 import org.jboss.tools.jmx.ui.internal.views.navigator.JMXNavigator;
 import org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorerContentProvider;
 import org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorerLabelProvider;
 
+
+/**
+ * This class is in charge of adding content and actions to the servers view
+ * that relate to JMX
+ */
 public class JMXProvider {
 
 	public static class ActionProvider extends CommonActionProvider {
@@ -205,6 +211,16 @@ public class JMXProvider {
 				if( sel != null )
 					return new Object[] { sel };
 			}
+			if( parentElement instanceof IConnectionWrapper ) {
+				Object[] result = delegate.getChildren(parentElement);
+				result = result == null ? new Object[0] : result; // nullsafe
+				// Find the mbean node, and get those children instead
+				for( int i = 0; i < result.length; i++ ) {
+					if( result[i] instanceof MBeansNode ) {
+						return delegate.getChildren(result[i]);
+					}
+				}
+			}
 			return delegate.getChildren(parentElement);
 		}
 		public Object getParent(Object element) {
@@ -236,7 +252,7 @@ public class JMXProvider {
 		
 		public String getText(Object element) {
 			if( element instanceof IConnectionWrapper ) {
-				return "JMX";  //$NON-NLS-1$
+				return "MBeans";  //$NON-NLS-1$
 			}
 			return delegate.getText(element);
 		}

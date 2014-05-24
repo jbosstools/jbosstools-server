@@ -26,8 +26,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.management.MBeanServerConnection;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXServiceURL;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
@@ -51,8 +49,8 @@ import org.jboss.tools.jmx.core.providers.DefaultConnectionProvider;
 import org.jboss.tools.jmx.core.tree.NodeUtils;
 import org.jboss.tools.jmx.core.tree.Root;
 import org.jboss.tools.jmx.jvmmonitor.core.IActiveJvm;
+import org.jboss.tools.jmx.jvmmonitor.core.IJvmFacade;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmCoreException;
-import org.jboss.tools.jmx.jvmmonitor.internal.ui.IJvmFacade;
 import org.jboss.tools.jmx.jvmmonitor.ui.JvmMonitorPreferences;
 import org.jboss.tools.jmx.ui.ImageProvider;
 
@@ -91,7 +89,7 @@ public class JvmConnectionWrapper implements IConnectionWrapper, HasName, ImageP
 		karafSubTypeMap.put("servicemix-version.jar", "Apache ServiceMix");
 	}
 
-	public JvmConnectionWrapper(JMXServiceURL url, IActiveJvm vm) {
+	public JvmConnectionWrapper(IActiveJvm vm) {
 		this.activeJvm = vm;
 		this.progressMonitor = null;
 	}
@@ -120,20 +118,15 @@ public class JvmConnectionWrapper implements IConnectionWrapper, HasName, ImageP
 	}
 
 	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
+		ITabbedPropertySheetPageContributor contributor = new ITabbedPropertySheetPageContributor() {
+			public String getContributorId() {
+				return "org.jboss.tools.jmx.jvmmonitor.ui.JvmExplorer";
+			}
+		};
 		if (adapter == IPropertySheetPage.class) {
-			ITabbedPropertySheetPageContributor contributor = new ITabbedPropertySheetPageContributor() {
-				public String getContributorId() {
-					return "org.jboss.tools.jmx.jvmmonitor.ui.JvmExplorer";
-				}
-			};
-			TabbedPropertySheetPage page = new TabbedPropertySheetPage(contributor);
-			return page;
+			return new TabbedPropertySheetPage(contributor);
 		} else if (adapter == ITabbedPropertySheetPageContributor.class) {
-		    return new ITabbedPropertySheetPageContributor() {
-                public String getContributorId() {
-                    return "org.jboss.tools.jmx.jvmmonitor.ui.JvmExplorer";
-                }
-            };
+			return contributor;
 		}
 		return null;
 	}
@@ -142,16 +135,11 @@ public class JvmConnectionWrapper implements IConnectionWrapper, HasName, ImageP
 		afterLoadRunnables.add(runnable);
 	}
 
-	public JMXConnector getConnector() {
-		return activeJvm.getMBeanServer().getConnector();
-	}
-
 	public MBeanServerConnection getConnection() {
 		return activeJvm.getMBeanServer().getConnection();
 	}
 
 	public synchronized void connect() throws IOException {
-		System.out.println(activeJvm.getLaunchCommand());
 		if (!activeJvm.isConnected() && activeJvm.isConnectionSupported()) {
 			int updatePeriod = JvmMonitorPreferences.getJvmUpdatePeriod();
 

@@ -25,20 +25,22 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.osgi.util.NLS;
+import org.jboss.tools.jmx.jvmmonitor.core.AbstractJvm;
 import org.jboss.tools.jmx.jvmmonitor.core.Activator;
+import org.jboss.tools.jmx.jvmmonitor.core.IActiveJvm;
+import org.jboss.tools.jmx.jvmmonitor.core.IProfilingMBeanServer;
+import org.jboss.tools.jmx.jvmmonitor.core.ISnapshot.SnapshotType;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmCoreException;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmModel;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmModelEvent;
-import org.jboss.tools.jmx.jvmmonitor.core.ISnapshot.SnapshotType;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmModelEvent.State;
 import org.jboss.tools.jmx.jvmmonitor.core.cpu.CpuModelEvent;
-import org.jboss.tools.jmx.jvmmonitor.core.cpu.ICpuProfiler;
 import org.jboss.tools.jmx.jvmmonitor.core.cpu.CpuModelEvent.CpuModelState;
+import org.jboss.tools.jmx.jvmmonitor.core.cpu.ICpuProfiler;
 import org.jboss.tools.jmx.jvmmonitor.core.dump.CpuDumpParser;
-import org.jboss.tools.jmx.jvmmonitor.internal.core.AbstractJvm;
-import org.jboss.tools.jmx.jvmmonitor.internal.core.ActiveJvm;
+import org.jboss.tools.jmx.jvmmonitor.core.mbean.IMBeanServer;
+import org.jboss.tools.jmx.jvmmonitor.internal.core.AbstractMBeanServer;
 import org.jboss.tools.jmx.jvmmonitor.internal.core.Host;
-import org.jboss.tools.jmx.jvmmonitor.internal.core.MBeanServer;
 import org.jboss.tools.jmx.jvmmonitor.internal.core.Messages;
 import org.jboss.tools.jmx.jvmmonitor.internal.core.Snapshot;
 import org.jboss.tools.jmx.jvmmonitor.internal.core.Util;
@@ -92,7 +94,7 @@ public class CpuProfiler implements ICpuProfiler {
     private CpuModel cpuModel;
 
     /** The active JVM. */
-    private ActiveJvm jvm;
+    private IActiveJvm jvm;
 
     /** The agent jar version. */
     private String agentJarVersion;
@@ -109,7 +111,7 @@ public class CpuProfiler implements ICpuProfiler {
      * @param jvm
      *            The active JVM
      */
-    public CpuProfiler(ActiveJvm jvm) {
+    public CpuProfiler(IActiveJvm jvm) {
         cpuModel = new CpuModel();
         this.jvm = jvm;
         type = ProfilerType.SAMPLING;
@@ -185,7 +187,8 @@ public class CpuProfiler implements ICpuProfiler {
                         new Attribute(RUNNING, true));
             }
         } else {
-            jvm.getMBeanServer().resumeSampling();
+        	if( jvm.getMBeanServer() instanceof IProfilingMBeanServer) 
+        		((IProfilingMBeanServer)jvm.getMBeanServer()).resumeSampling();
         }
     }
 
@@ -203,7 +206,8 @@ public class CpuProfiler implements ICpuProfiler {
                         new Attribute(RUNNING, false));
             }
         } else {
-            jvm.getMBeanServer().suspendSampling();
+        	if( jvm.getMBeanServer() instanceof IProfilingMBeanServer) 
+        		((IProfilingMBeanServer)jvm.getMBeanServer()).suspendSampling();
         }
     }
 
@@ -227,20 +231,21 @@ public class CpuProfiler implements ICpuProfiler {
      */
     @Override
     public IFileStore dump() throws JvmCoreException {
+    	AbstractMBeanServer ams = ((AbstractMBeanServer)jvm.getMBeanServer());
         String dump = cpuModel.getCpuDumpString(jvm.getPid() + "@" //$NON-NLS-1$
-                + jvm.getHost().getName(), jvm.getMainClass(), jvm
-                .getMBeanServer().getJvmArguments());
+                + jvm.getHost().getName(), jvm.getMainClass(),
+                ams.getJvmArguments());
 
         StringBuffer fileName = new StringBuffer();
         fileName.append(new Date().getTime()).append('.')
                 .append(SnapshotType.Cpu.getExtension());
         IFileStore fileStore = Util.getFileStore(fileName.toString(),
-                jvm.getBaseDirectory());
+                ((AbstractJvm)jvm).getPersistenceDirectory());
 
         // restore the terminated JVM if already removed
-        AbstractJvm abstractJvm = jvm;
+        AbstractJvm abstractJvm = (AbstractJvm)jvm;
         if (!((Host) jvm.getHost()).getJvms().contains(jvm)) {
-            jvm.saveJvmProperties();
+        	abstractJvm.saveJvmProperties();
             abstractJvm = (AbstractJvm) ((Host) jvm.getHost())
                     .addTerminatedJvm(jvm.getPid(), jvm.getPort(),
                             jvm.getMainClass());
@@ -416,11 +421,11 @@ public class CpuProfiler implements ICpuProfiler {
     @Override
     public ProfilerState getState(ProfilerType typeToQuery) {
         if (typeToQuery == ProfilerType.SAMPLING) {
-            MBeanServer server = jvm.getMBeanServer();
-            if (server == null) {
+            IMBeanServer server = jvm.getMBeanServer();
+            if (server == null || !(server instanceof IProfilingMBeanServer)) {
                 return ProfilerState.UNKNOWN;
             }
-            return server.getProfilerState();
+            return ((IProfilingMBeanServer)server).getProfilerState();
         }
 
         if (!jvm.isRemote()
@@ -449,7 +454,10 @@ public class CpuProfiler implements ICpuProfiler {
      */
     @Override
     public Integer getSamplingPeriod() {
-        return jvm.getMBeanServer().getSamplingPeriod();
+    	IMBeanServer s = jvm.getMBeanServer();
+    	if( s != null && s instanceof IProfilingMBeanServer)
+    		return ((IProfilingMBeanServer)jvm).getSamplingPeriod();
+    	return -1;
     }
 
     /*
@@ -457,7 +465,9 @@ public class CpuProfiler implements ICpuProfiler {
      */
     @Override
     public void setSamplingPeriod(Integer samplingPeriod) {
-        jvm.getMBeanServer().setSamplingPeriod(samplingPeriod);
+    	IMBeanServer s = jvm.getMBeanServer();
+    	if( s != null && s instanceof IProfilingMBeanServer)
+    		((IProfilingMBeanServer)s).setSamplingPeriod(samplingPeriod);
     }
 
     /**

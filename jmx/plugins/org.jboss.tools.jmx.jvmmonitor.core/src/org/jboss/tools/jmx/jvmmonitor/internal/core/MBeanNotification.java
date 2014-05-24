@@ -22,6 +22,7 @@ import javax.management.NotificationListener;
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 
+import org.jboss.tools.jmx.jvmmonitor.core.IActiveJvm;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmCoreException;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmModel;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmModelEvent;
@@ -35,7 +36,7 @@ import org.jboss.tools.jmx.jvmmonitor.core.mbean.IMBeanNotification;
 public class MBeanNotification implements IMBeanNotification {
 
     /** The active JVM. */
-    private ActiveJvm activeJvm;
+    private IActiveJvm activeJvm;
 
     /** The notification listeners. */
     private Map<ObjectName, NotificationListener> listeners;
@@ -49,7 +50,7 @@ public class MBeanNotification implements IMBeanNotification {
      * @param activeJvm
      *            The active JVM
      */
-    public MBeanNotification(ActiveJvm activeJvm) {
+    public MBeanNotification(IActiveJvm activeJvm) {
         this.activeJvm = activeJvm;
         listeners = new HashMap<ObjectName, NotificationListener>();
         notifications = new LinkedHashMap<ObjectName, List<Notification>>();

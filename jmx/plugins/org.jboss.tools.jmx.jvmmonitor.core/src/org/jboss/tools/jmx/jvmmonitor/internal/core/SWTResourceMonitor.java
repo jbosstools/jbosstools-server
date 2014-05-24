@@ -17,6 +17,7 @@ import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 
 import org.eclipse.core.runtime.IStatus;
+import org.jboss.tools.jmx.jvmmonitor.core.IActiveJvm;
 import org.jboss.tools.jmx.jvmmonitor.core.ISWTResourceElement;
 import org.jboss.tools.jmx.jvmmonitor.core.ISWTResourceMonitor;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmCoreException;
@@ -61,7 +62,7 @@ public class SWTResourceMonitor implements ISWTResourceMonitor {
     private static final String NATIVE_METHOD = "nativeMethod"; //$NON-NLS-1$
 
     /** The JVM. */
-    private ActiveJvm jvm;
+    private IActiveJvm jvm;
 
     /** The SWT resource elements. */
     private Map<String, ISWTResourceElement> resourceElements;
@@ -75,7 +76,7 @@ public class SWTResourceMonitor implements ISWTResourceMonitor {
      * @param jvm
      *            The JVM
      */
-    public SWTResourceMonitor(ActiveJvm jvm) {
+    public SWTResourceMonitor(IActiveJvm jvm) {
         this.jvm = jvm;
         resourceElements = new HashMap<String, ISWTResourceElement>();
         resources = new ArrayList<ISWTResourceElement>();

@@ -20,6 +20,7 @@ import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.osgi.util.NLS;
+import org.jboss.tools.jmx.jvmmonitor.core.AbstractJvm;
 import org.jboss.tools.jmx.jvmmonitor.core.Activator;
 import org.jboss.tools.jmx.jvmmonitor.core.IJvm;
 import org.jboss.tools.jmx.jvmmonitor.core.ISnapshot;

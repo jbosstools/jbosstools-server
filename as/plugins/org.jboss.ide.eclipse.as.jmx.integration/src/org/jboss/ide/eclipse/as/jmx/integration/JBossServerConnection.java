@@ -19,10 +19,14 @@ import javax.management.MBeanServerConnection;
 import javax.naming.InitialContext;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
+import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerListener;
 import org.eclipse.wst.server.core.ServerEvent;
@@ -34,6 +38,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.jmx.integration.JMXUtil.CredentialException;
+import org.jboss.ide.eclipse.as.jmx.integration.jvmmonitor.JBossActiveJvm;
 import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionProviderListener;
@@ -43,17 +48,25 @@ import org.jboss.tools.jmx.core.JMXException;
 import org.jboss.tools.jmx.core.tree.ErrorRoot;
 import org.jboss.tools.jmx.core.tree.NodeUtils;
 import org.jboss.tools.jmx.core.tree.Root;
+import org.jboss.tools.jmx.jvmmonitor.core.IActiveJvm;
+import org.jboss.tools.jmx.jvmmonitor.core.IJvmFacade;
+import org.jboss.tools.jmx.jvmmonitor.core.JvmCoreException;
 
-public class JBossServerConnection implements IConnectionWrapper, IServerListener, IConnectionProviderListener {
+public class JBossServerConnection implements IConnectionWrapper, IServerListener, 
+			IConnectionProviderListener, IJvmFacade, IAdaptable {
 	private IServer server;
 	private Root root;
 	private boolean isConnected;
 	private boolean isLoading;
+	
+	private MBeanServerConnection activeConnection;
+	private JBossActiveJvm customJvm;
+	
 	public JBossServerConnection(IServer server) {
 		this.server = server;
 		this.isConnected = false;
 		this.isLoading = false;
-		checkState(server); // prime the state
+		connectViaJmxIfRequired(server); // prime the state
 		((AbstractJBossJMXConnectionProvider)getProvider()).addListener(this);
 		server.addServerListener(this);
 	}
@@ -65,6 +78,14 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 
 	public void disconnect() throws IOException {
 		// close
+		if( activeConnection != null ) {
+			cleanupConnection(server, activeConnection);
+		}
+		if( customJvm != null ) {
+			customJvm.disconnect();
+			customJvm = null;
+		}
+		activeConnection = null;
 		root = null;
 		isConnected = false;
 		((AbstractJBossJMXConnectionProvider)getProvider()).fireChanged(JBossServerConnection.this);
@@ -111,14 +132,12 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 		run(runnable, new HashMap<String, String>());
 	}
 	
-	protected void run(IJMXRunnable runnable, boolean force) throws JMXException {
-		HashMap<String, String> map = new HashMap<String,String>();
-		map.put("force", "true");
-		run(runnable, map);
-	}
-	
 	// Potential api upstream in jmx ?
 	public void run(IJMXRunnable runnable, HashMap<String, String> prefs) throws JMXException {
+		run(runnable, prefs, false);
+	}
+	
+	public void run(IJMXRunnable runnable, HashMap<String, String> prefs, boolean saveActiveConnection) throws JMXException {
 		boolean force = prefs.get("force") == null ? false : Boolean.parseBoolean(prefs.get("force"));
 		if( force || server.getServerState() == IServer.STATE_STARTED) {
 			IJBossServer jbs = ServerConverter.getJBossServer(server);
@@ -140,7 +159,7 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 				user = (user == null ? storedOrDefaultUser : user);
 				pass = (pass == null ? storedOrDefaultPass : pass);
 			}
-			run(server, runnable, user, pass);
+			run(server, runnable, user, pass, saveActiveConnection);
 		}
 	}
 	
@@ -159,7 +178,12 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 		return true;
 	}
 	
-	public void run(IServer s, IJMXRunnable r, String user, String pass) throws JMXException {
+	protected void run(IServer s, IJMXRunnable r, String user, String pass) throws JMXException {
+		run(s,r,user,pass,false);
+	}
+	
+	protected void run(IServer s, IJMXRunnable r, String user, String pass, boolean saveActiveConnection) throws JMXException {
+
 		// Mark the event
 		getProvider2().getClassloaderRepository().addConcerned(s, r);
 		
@@ -170,10 +194,19 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 		Thread.currentThread().setContextClassLoader(newLoader);
 		MBeanServerConnection connection = null;
 		try {
-			initializeEnvironment(s, user, pass);
-			connection = createConnection(s);
+			// IF we have a primary active connection, use it instead of a new one 
+			if( activeConnection != null ) {
+				connection = activeConnection;
+			} else {
+				initializeEnvironment(s, user, pass);
+				connection = createConnection(s);
+			}
 			if( connection != null ) {
 				r.run(connection);
+			}
+			// save this for the next use
+			if( saveActiveConnection && activeConnection == null && connection != null ) {
+				activeConnection = connection;
 			}
 		} catch(JMXException jmxe) {
 			// rethrow
@@ -187,7 +220,9 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 			throw new JMXException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
 					"Error connecting to remote JMX. Please ensure your server is properly configured for JMX access.", e));
 		} finally {
-			cleanupConnection(s, connection);
+			// Only close it if it's not our primary active connection
+			if( connection != activeConnection ) 
+				cleanupConnection(s, connection);
 			getProvider2().getClassloaderRepository().removeConcerned(s, r);
 			Thread.currentThread().setContextClassLoader(currentLoader);
 		}
@@ -233,31 +268,20 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 			// server change event
 			if ((eventKind & ServerEvent.STATE_CHANGE) != 0) {
 				// server state has changed. If it's changed to started, let's connect to jmx
-				checkState(event.getServer());
+				connectViaJmxIfRequired(event.getServer());
 			}
 		}
-	}
-	
-	/**
-	 * This is a poorly named method which will basically launch a jmx connection
-	 * if the server has just been started. 
-	 * 
-	 * @param server
-	 * @deprecated
-	 */
-	protected void checkState(IServer server) {
-		connectViaJmxIfRequired(server);
 	}
 	
 	protected void connectViaJmxIfRequired(IServer server) {
 		if( shouldConnect(server)) {
 			launchConnectionJob(server);
 		} else {
-			root = null;
-			if( isConnected ) {
-				// server is not in STATE_STARTED, but thinks its connected
-				isConnected = false;
-				((AbstractJBossJMXConnectionProvider)getProvider()).fireChanged(JBossServerConnection.this);
+			try {
+				disconnect();
+			} catch(IOException ioe) {
+				Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 
+						"Unable to cleanly disconnect jmx connection", ioe));
 			}
 		}
 	}
@@ -295,12 +319,18 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 
 	protected void connectToStartedServer() {
 		try {
-			run(new IJMXRunnable() {
+			IJMXRunnable run = new IJMXRunnable() {
 				public void run(MBeanServerConnection connection)
 						throws Exception {
 					// Do nothing, just see if the connection worked
 				} 
-			}, true);
+			};
+			
+			HashMap<String, String> map = new HashMap<String,String>();
+			map.put("force", new Boolean(true).toString());
+			run(run, map, true); // save this nw connection as the active one
+
+			
 			if( !isConnected ) {
 				isConnected = true;
 				((AbstractJBossJMXConnectionProvider)getProvider()).fireChanged(JBossServerConnection.this);
@@ -338,4 +368,42 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 	public boolean canControl() {
 		return server.getServerState() == IServer.STATE_STARTED && server.getRuntime() != null;
 	}
+
+	@Override
+	public IActiveJvm getActiveJvm() {
+		if( server.getServerState() == IServer.STATE_STARTED && isConnected ) {
+			if( customJvm == null ) {
+				IActiveJvm active = JBossJVMFacadeUtility.findJvmForServer(server);
+				// TODO cache this activejvm until disconnected
+				try {
+					customJvm = new JBossActiveJvm(this, active);
+				} catch(JvmCoreException jvmce) {
+					Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, jvmce.getMessage(), jvmce));
+				}
+			}
+			return customJvm;
+		}
+		return null;
+	}
+	
+
+	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
+		ITabbedPropertySheetPageContributor contributor = new ITabbedPropertySheetPageContributor() {
+			public String getContributorId() {
+				return "org.jboss.tools.jmx.jvmmonitor.ui.JvmExplorer";
+			}
+		};
+		if (adapter == IPropertySheetPage.class) {
+			return new TabbedPropertySheetPage(contributor);
+		} else if (adapter == ITabbedPropertySheetPageContributor.class) {
+			return contributor;
+		}
+		return null;
+	}
+	
+	public MBeanServerConnection getActiveConnection() {
+		// get an active connection if it exists
+		return activeConnection;
+	}
+	
 }

@@ -18,8 +18,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.management.remote.JMXServiceURL;
-
 import org.eclipse.core.runtime.CoreException;
 import org.jboss.tools.jmx.core.AbstractConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionProvider;
@@ -29,7 +27,6 @@ import org.jboss.tools.jmx.jvmmonitor.core.IHost;
 import org.jboss.tools.jmx.jvmmonitor.core.IJvmModelChangeListener;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmModel;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmModelEvent;
-import org.jboss.tools.jmx.jvmmonitor.core.mbean.IMBeanServer;
 import org.jboss.tools.jmx.local.internal.JvmConnectionWrapper;
 import org.jboss.tools.jmx.local.internal.JvmKey;
 
@@ -180,12 +177,8 @@ public class JVMConnectionProvider extends AbstractConnectionProvider implements
 			for (IActiveJvm jvm : jvms) {
 				int pid = jvm.getPid();
 				JvmKey key = new JvmKey(hostName, pid, jvm);
-				IMBeanServer mbeanServer = jvm.getMBeanServer();
-				JMXServiceURL jmxUrl = mbeanServer.getJmxUrl();
-				if (jmxUrl != null) {
-					working = new JvmConnectionWrapper(jmxUrl, jvm);
-					ret.put(key, working);
-				}
+				working = new JvmConnectionWrapper(jvm);
+				ret.put(key, working);
 			}
 		}
 		return ret;

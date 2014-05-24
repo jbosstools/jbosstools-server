@@ -54,6 +54,9 @@ public final class Messages extends NLS {
     public static String attachNotSupportedMsg;
 
     /** */
+    public static String connectNotSupportedMsg;
+
+    /** */
     public static String getPidFailedMsg;
 
     /** */

@@ -4,48 +4,41 @@
  * This code is distributed under the terms of the Eclipse Public License v1.0
  * which is available at http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
-package org.jboss.tools.jmx.jvmmonitor.internal.core;
+package org.jboss.ide.eclipse.as.jmx.integration.jvmmonitor;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.util.Properties;
 
-import javax.management.remote.JMXServiceURL;
+import javax.management.MBeanServerConnection;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.osgi.util.NLS;
+import org.jboss.ide.eclipse.as.jmx.integration.JBossServerConnection;
 import org.jboss.tools.jmx.jvmmonitor.core.AbstractJvm;
 import org.jboss.tools.jmx.jvmmonitor.core.Activator;
 import org.jboss.tools.jmx.jvmmonitor.core.IActiveJvm;
-import org.jboss.tools.jmx.jvmmonitor.core.IHost;
 import org.jboss.tools.jmx.jvmmonitor.core.IJvm;
 import org.jboss.tools.jmx.jvmmonitor.core.ISWTResourceMonitor;
-import org.jboss.tools.jmx.jvmmonitor.core.IThreadElement;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmCoreException;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmModel;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmModelEvent;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmModelEvent.State;
 import org.jboss.tools.jmx.jvmmonitor.core.cpu.ICpuProfiler;
 import org.jboss.tools.jmx.jvmmonitor.core.mbean.IMBeanServer;
+import org.jboss.tools.jmx.jvmmonitor.internal.core.AbstractMBeanServer;
+import org.jboss.tools.jmx.jvmmonitor.internal.core.Messages;
+import org.jboss.tools.jmx.jvmmonitor.internal.core.SWTResourceMonitor;
+import org.jboss.tools.jmx.jvmmonitor.internal.core.Util;
 import org.jboss.tools.jmx.jvmmonitor.internal.core.cpu.CpuProfiler;
 
 /**
  * The active JVM.
  */
-public class ActiveJvm extends AbstractJvm implements IActiveJvm {
-
-    /** The URL path. */
-    private static final String URL_PATH = "/jndi/rmi://%s:%d/jmxrmi"; //$NON-NLS-1$
-
-    /** The RMI protocol. */
-    private static final String RMI_PROTOCOL = "rmi"; //$NON-NLS-1$
-
-    /** The main thread. */
-    private static final String MAIN_THREAD = "main"; //$NON-NLS-1$
+public class JBossActiveJvm extends AbstractJvm implements IActiveJvm {
 
     /** The state indicating if attach mechanism is supported. */
     private boolean isAttachSupported;
@@ -53,20 +46,14 @@ public class ActiveJvm extends AbstractJvm implements IActiveJvm {
     /** The state indicating if simply connecting is supported. */
     private boolean isConnectSupported;
 
-    /** The error state message. */
-    private String errorStateMessage;
-
     /** The state indicating if JVM is running on remote host. */
     private boolean isRemote;
-
-    /** The state indicating if JVM is connected with JMX. */
-    private boolean isConnected;
 
     /** The state indicating if JVM has agent attached. */
     private boolean isAttached;
 
     /** The MXBean server. */
-    private MBeanServer mBeanServer;
+    private JBossMBeanServer mBeanServer;
 
     /** The CPU profiler. */
     private ICpuProfiler cpuProfiler;
@@ -74,130 +61,33 @@ public class ActiveJvm extends AbstractJvm implements IActiveJvm {
     /** The SWT resource monitor. */
     private ISWTResourceMonitor swtResourceMonitor;
 
-    /**
-     * The constructor for local JVM.
-     * 
-     * @param pid
-     *            The process ID
-     * @param url
-     *            The JMX service URL
-     * @param host
-     *            The host
-     * @throws JvmCoreException
-     */
-    public ActiveJvm(int pid, String url, IHost host) throws JvmCoreException {
-        super(pid, host);
-
+    
+    private JBossServerConnection jmxConnection;
+    private IActiveJvm delegateJvm;
+    
+    public JBossActiveJvm(JBossServerConnection connection, IActiveJvm delegate) throws JvmCoreException {
+        super(delegate.getPid(), delegate.getHost());
+        
         isRemote = false;
-
-        JMXServiceURL jmxUrl = null;
-        try {
-            if (url != null) {
-                jmxUrl = new JMXServiceURL(url);
-                isConnectSupported = true;
-                isAttachSupported = true;
-            }
-        } catch (MalformedURLException e) {
-            throw new JvmCoreException(IStatus.ERROR, NLS.bind(
-                    Messages.getJmxServiceUrlForPidFailedMsg, pid), e);
-        }
-
-        initialize(jmxUrl);
+        isConnectSupported = true;
+        isAttachSupported = true;
+        this.jmxConnection = connection;
+        this.delegateJvm = delegate;
+        initialize();
+        connect();
         saveJvmProperties();
     }
 
-    /**
-     * The constructor for JVM communicating with RMI protocol.
-     * 
-     * @param port
-     *            The port
-     * @param userName
-     *            The user name
-     * @param password
-     *            The password
-     * @param host
-     *            The host
-     * @param updatePeriod
-     *            The update period
-     * @throws JvmCoreException
-     */
-    public ActiveJvm(int port, String userName, String password, IHost host,
-            int updatePeriod) throws JvmCoreException {
-        super(port, userName, password, host);
-
-        isRemote = true;
-
-        String urlPath = String.format(URL_PATH, host.getName(), port);
-        JMXServiceURL url = null;
-        try {
-            url = new JMXServiceURL(RMI_PROTOCOL, "", 0, urlPath); //$NON-NLS-1$
-            isConnectSupported = true;
-            isAttachSupported = true;
-        } catch (IOException e) {
-            throw new JvmCoreException(IStatus.ERROR, NLS.bind(
-                    Messages.getJmxServiceUrlForPortFailedMsg, port), e);
-        }
-        initialize(url);
-
-        // refresh
-        connect(updatePeriod);
-        refreshPid();
-        refreshMainClass();
-        refreshSnapshots();
-        disconnect();
-
-        saveJvmProperties();
+    public void connect() throws JvmCoreException {
+    	connect(500); // TODO doesn't follow preferences
     }
-
-    /**
-     * The constructor for JVM communicating with RMI protocol.
-     * 
-     * @param url
-     *            The JMX URL
-     * @param userName
-     *            The user name
-     * @param password
-     *            The password
-     * @param updatePeriod
-     *            The update period
-     * @throws JvmCoreException
-     */
-    public ActiveJvm(String url, String userName, String password,
-            int updatePeriod) throws JvmCoreException {
-        super(userName, password);
-
-        isRemote = true;
-
-        JMXServiceURL jmxUrl = null;
-        try {
-            jmxUrl = new JMXServiceURL(url);
-            isConnectSupported = true;
-            isAttachSupported = true;
-        } catch (MalformedURLException e) {
-            throw new JvmCoreException(IStatus.ERROR, NLS.bind(
-                    Messages.getJmxServiceUrlForUrlFailedMsg, url), e);
-        }
-
-        initialize(jmxUrl);
-
-        // refresh
-        connect(updatePeriod);
-        refreshPid();
-        refreshMainClass();
-        boolean jvmAddedToHost = refreshHost();
-        disconnect();
-
-        if (jvmAddedToHost) {
-            refreshSnapshots();
-        }
-    }
-
+    
     /*
      * @see IActiveJvm#connect(int)
      */
     @Override
     public void connect(int updatePeriod) throws JvmCoreException {
-    	connect(updatePeriod, true);
+    	connect(updatePeriod, false);
     }
 
 
@@ -211,22 +101,19 @@ public class ActiveJvm extends AbstractJvm implements IActiveJvm {
       		 throw new IllegalStateException(Messages.connectNotSupportedMsg);
       	}
         mBeanServer.connect(updatePeriod);
-        isConnected = true;
         
         if( attach ) 
-        	attach();
+        	attach(false);
         
         JvmModel.getInstance().fireJvmModelChangeEvent(
                 new JvmModelEvent(State.JvmConnected, this));
 	}
     
-	
-	/*
-	 * (non-Javadoc)
-	 * @see org.jboss.tools.jmx.jvmmonitor.core.IActiveJvm#attach()
-	 */
     public void attach() throws JvmCoreException {
-
+    	attach(true);
+    }
+    
+    private void attach(boolean fireEvent) throws JvmCoreException {
         if (!isAttachSupported) {
             throw new IllegalStateException(Messages.attachNotSupportedMsg);
         }
@@ -240,6 +127,10 @@ public class ActiveJvm extends AbstractJvm implements IActiveJvm {
 	            swtResourceMonitor.setTracking(true);
 	        }
         }
+        if( fireEvent ) {
+	        JvmModel.getInstance().fireJvmModelChangeEvent(
+	                new JvmModelEvent(State.JvmModified, this));
+        }
     }
     
     /*
@@ -247,8 +138,6 @@ public class ActiveJvm extends AbstractJvm implements IActiveJvm {
      */
     @Override
     public void disconnect() {
-        isConnected = false;
-
         mBeanServer.dispose();
         try {
             if (swtResourceMonitor.isSupported()) {
@@ -275,7 +164,7 @@ public class ActiveJvm extends AbstractJvm implements IActiveJvm {
      */
     @Override
     public boolean isConnected() {
-        return isConnected;
+        return jmxConnection.isConnected();
     }
 
     /*
@@ -291,7 +180,7 @@ public class ActiveJvm extends AbstractJvm implements IActiveJvm {
      */
     @Override
     public String getErrorStateMessage() {
-        return errorStateMessage;
+        return null;
     }
 
     /*
@@ -391,93 +280,45 @@ public class ActiveJvm extends AbstractJvm implements IActiveJvm {
             }
         }
     }
-
-    /**
-     * Sets the error state message.
-     * 
-     * @param errorStateMessage
-     *            The error state message
-     */
-    protected void setErrorStateMessage(String errorStateMessage) {
-        this.errorStateMessage = errorStateMessage;
-    }
-
+    
     /**
      * Initializes the active JVM.
      * 
-     * @param url
-     *            The JMX service URL
      */
-    private void initialize(JMXServiceURL url) {
-        isConnected = false;
+    private void initialize() {
+        mBeanServer = createMBeanServer();
         cpuProfiler = new CpuProfiler(this);
-        mBeanServer = new MBeanServer(url, this);
         swtResourceMonitor = new SWTResourceMonitor(this);
     }
+    
+    
+    private static class JBossMBeanServer extends AbstractMBeanServer {
+    	private JBossServerConnection jmxConn;
+		protected JBossMBeanServer(JBossServerConnection connection, IActiveJvm jvm) {
+			super(jvm);
+			setJvmReachable(true);
+			this.jmxConn = connection;
+		}
 
-    /**
-     * Refreshes the PID.
-     * 
-     * @throws JvmCoreException
-     */
-    private void refreshPid() throws JvmCoreException {
-        String[] elements = mBeanServer.getRuntimeName().split("@"); //$NON-NLS-1$
-        if (elements == null || elements.length != 2) {
-            throw new JvmCoreException(IStatus.ERROR, Messages.getPidFailedMsg,
-                    new Exception());
-        }
+		@Override
+		public MBeanServerConnection getConnection() {
+			return jmxConn.getActiveConnection();
+		}
 
-        setPid(Integer.valueOf(elements[0]));
+		@Override
+		protected MBeanServerConnection createMBeanServerConnection()
+				throws JvmCoreException {
+			return getConnection();
+		}
+	    public void connect(int updatePeriod) throws JvmCoreException {
+	    	super.connect(updatePeriod);
+	    }		
+	    public void dispose() {
+	    	super.dispose();
+	    }
     }
-
-    /**
-     * Refreshes the host.
-     * 
-     * @return True if JVM has been added to host
-     * @throws JvmCoreException
-     */
-    private boolean refreshHost() throws JvmCoreException {
-        String[] elements = mBeanServer.getRuntimeName().split("@"); //$NON-NLS-1$
-        if (elements == null || elements.length != 2) {
-            throw new JvmCoreException(IStatus.ERROR,
-                    Messages.getHostNameFailedMsg, new Exception());
-        }
-
-        String hostName = elements[1];
-        Host host = (Host) JvmModel.getInstance().getHost(hostName);
-        if (host == null) {
-            host = new Host(hostName);
-        } else {
-            for (IJvm jvm : host.getActiveJvms()) {
-                if (jvm.getPid() == getPid()) {
-                    return false;
-                }
-            }
-        }
-        host.addActiveJvm(this);
-        setHost(host);
-        return true;
-    }
-
-    /**
-     * Refreshes the main class.
-     * 
-     * @throws JvmCoreException
-     */
-    private void refreshMainClass() throws JvmCoreException {
-        mBeanServer.refreshThreadCache();
-
-        for (IThreadElement element : mBeanServer.getThreadCache()) {
-            if (element.getThreadName().equals(MAIN_THREAD)) {
-                StackTraceElement[] elements = element.getStackTraceElements();
-                if (elements == null || elements.length == 0) {
-                    return;
-                }
-
-                StackTraceElement lastElement = elements[elements.length - 1];
-                setMainClass(lastElement.getClassName());
-                break;
-            }
-        }
+    
+    private JBossMBeanServer createMBeanServer() {
+    	return new JBossMBeanServer(jmxConnection, this);
     }
 }

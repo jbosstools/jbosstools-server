@@ -12,9 +12,8 @@ import java.util.Set;
 import javax.management.Attribute;
 import javax.management.MBeanInfo;
 import javax.management.MBeanServerConnection;
+import javax.management.NotificationListener;
 import javax.management.ObjectName;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXServiceURL;
 
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -100,6 +99,16 @@ public interface IMBeanServer {
      */
     MBeanInfo getMBeanInfo(ObjectName objectName) throws JvmCoreException;
 
+    /**
+     * Get the ObjectName for the given name id
+     * 
+     * @param name
+     * @return
+     * @throws JvmCoreException
+     */
+    ObjectName getObjectName(String name) throws JvmCoreException;
+    
+    
     /**
      * Gets the MBean notification.
      * 
@@ -231,9 +240,28 @@ public interface IMBeanServer {
      */
     void removeServerChangeListener(IMBeanServerChangeListener listener);
 
-    JMXServiceURL getJmxUrl();
+    
+    /**
+     * Add a notification listener
+     * 
+     * @param objectName
+     * @param listener
+     * @throws JvmCoreException
+     */
+    void addNotificationListener(ObjectName objectName,
+            NotificationListener listener) throws JvmCoreException;
 
+    
+    /**
+     * Remove a notification listener
+     * 
+     * @param objectName
+     * @param listener
+     * @throws JvmCoreException
+     */
+    void removeNotificationListener(ObjectName objectName,
+            NotificationListener listener) throws JvmCoreException;
+
+    
     MBeanServerConnection getConnection();
-
-	JMXConnector getConnector();
 }

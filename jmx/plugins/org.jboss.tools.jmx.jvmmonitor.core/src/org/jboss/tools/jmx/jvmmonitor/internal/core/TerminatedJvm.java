@@ -6,6 +6,7 @@
  *******************************************************************************/
 package org.jboss.tools.jmx.jvmmonitor.internal.core;
 
+import org.jboss.tools.jmx.jvmmonitor.core.AbstractJvm;
 import org.jboss.tools.jmx.jvmmonitor.core.IHost;
 import org.jboss.tools.jmx.jvmmonitor.core.ITerminatedJvm;
 

@@ -9,4 +9,41 @@
       </connectionProvider>
    </extension>
 
+
+   <extension
+         point="org.eclipse.ui.navigator.viewer">
+      <viewer
+            viewerId="org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorer">
+      </viewer>
+      <viewerActionBinding
+            viewerId="org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorer">
+         <includes>
+            <actionExtension
+                  pattern="org.jboss.tools.jmx.local.internal.actions.AttachActionProvider">
+            </actionExtension>
+         </includes>
+      </viewerActionBinding>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.navigator.navigatorContent">
+      <actionProvider
+            class="org.jboss.tools.jmx.local.internal.actions.AttachActionProvider"
+            id="org.jboss.tools.jmx.local.internal.actions.AttachActionProvider">
+         <enablement>
+            <or>
+               <adapt
+                     type="java.util.Collection">
+                  <count
+                        value="0">
+                  </count>
+               </adapt>
+               <instanceof
+                     value="org.jboss.tools.jmx.core.IConnectionWrapper">
+               </instanceof>
+            </or>
+         </enablement>
+      </actionProvider>
+   </extension>
+
 </plugin>

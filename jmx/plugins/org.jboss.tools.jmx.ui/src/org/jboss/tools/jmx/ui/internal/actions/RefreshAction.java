@@ -94,7 +94,7 @@ public class RefreshAction extends Action implements IWorkbenchWindowActionDeleg
 				wrapper = (r == null ? null : r.getConnection());
 			}
 
-			if (wrapper != null) {
+			if (wrapper != null && wrapper.isConnected()) {
 				try {
 					wrapper.disconnect();
 					wrapper.connect();

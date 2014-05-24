@@ -43,11 +43,11 @@ import org.eclipse.ui.views.properties.PropertySheet;
 import org.eclipse.ui.views.properties.tabbed.AbstractPropertySection;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.jboss.tools.jmx.jvmmonitor.core.IActiveJvm;
+import org.jboss.tools.jmx.jvmmonitor.core.IJvmFacade;
 import org.jboss.tools.jmx.jvmmonitor.core.IJvmModelChangeListener;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmModel;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmModelEvent;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmModelEvent.State;
-import org.jboss.tools.jmx.jvmmonitor.internal.ui.IJvmFacade;
 import org.jboss.tools.jmx.jvmmonitor.internal.ui.actions.PreferencesAction;
 import org.jboss.tools.jmx.jvmmonitor.ui.Activator;
 

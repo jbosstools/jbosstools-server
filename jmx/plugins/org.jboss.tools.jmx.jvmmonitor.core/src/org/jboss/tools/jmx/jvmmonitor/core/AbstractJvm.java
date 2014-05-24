@@ -4,7 +4,7 @@
  * This code is distributed under the terms of the Eclipse Public License v1.0
  * which is available at http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
-package org.jboss.tools.jmx.jvmmonitor.internal.core;
+package org.jboss.tools.jmx.jvmmonitor.core;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -15,14 +15,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.osgi.util.NLS;
-import org.jboss.tools.jmx.jvmmonitor.core.Activator;
-import org.jboss.tools.jmx.jvmmonitor.core.IHost;
-import org.jboss.tools.jmx.jvmmonitor.core.IJvm;
-import org.jboss.tools.jmx.jvmmonitor.core.ISnapshot;
-import org.jboss.tools.jmx.jvmmonitor.core.JvmCoreException;
-import org.jboss.tools.jmx.jvmmonitor.core.JvmModel;
-import org.jboss.tools.jmx.jvmmonitor.core.JvmModelEvent;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmModelEvent.State;
+import org.jboss.tools.jmx.jvmmonitor.internal.core.Host;
+import org.jboss.tools.jmx.jvmmonitor.internal.core.Messages;
+import org.jboss.tools.jmx.jvmmonitor.internal.core.Snapshot;
+import org.jboss.tools.jmx.jvmmonitor.internal.core.Util;
 
 /**
  * The JVM.
@@ -206,7 +203,7 @@ abstract public class AbstractJvm implements IJvm {
      * @return The base directory
      * @throws JvmCoreException
      */
-    public IPath getBaseDirectory() throws JvmCoreException {
+    public IPath getPersistenceDirectory() throws JvmCoreException {
         IPath stateLocation = Activator.getDefault().getStateLocation();
         IPath dirPath = stateLocation.append(File.separator + host.getName()
                 + Host.DIR_SUFFIX + File.separator + pid + IJvm.DIR_SUFFIX);
@@ -223,7 +220,7 @@ abstract public class AbstractJvm implements IJvm {
      * 
      * @return The user name
      */
-    protected String getUserName() {
+    public String getUserName() {
         return userName;
     }
 
@@ -232,7 +229,7 @@ abstract public class AbstractJvm implements IJvm {
      * 
      * @return The password
      */
-    protected String getPassword() {
+    public String getPassword() {
         return password;
     }
 
@@ -242,7 +239,7 @@ abstract public class AbstractJvm implements IJvm {
      * @param pid
      *            The process ID
      */
-    protected void setPid(int pid) {
+    public void setPid(int pid) {
         this.pid = pid;
     }
 
@@ -252,7 +249,7 @@ abstract public class AbstractJvm implements IJvm {
      * @param mainClass
      *            The main class
      */
-    protected void setMainClass(String mainClass) {
+    public void setMainClass(String mainClass) {
         this.mainClass = mainClass;
     }
 
@@ -264,7 +261,7 @@ abstract public class AbstractJvm implements IJvm {
      * @param mainClass
      *            The main class
      */
-    protected void setLaunchCommand(String command) {
+    public void setLaunchCommand(String command) {
         this.launchCommand = command;
     }
 
@@ -274,19 +271,19 @@ abstract public class AbstractJvm implements IJvm {
      * @param host
      *            The host
      */
-    protected void setHost(IHost host) {
+    public void setHost(IHost host) {
         this.host = host;
     }
 
     /**
      * Refreshes the snapshots.
      */
-    protected void refreshSnapshots() {
+    public void refreshSnapshots() {
         snapshots = new ArrayList<ISnapshot>();
 
         IPath baseDirectory;
         try {
-            baseDirectory = getBaseDirectory();
+            baseDirectory = getPersistenceDirectory();
         } catch (JvmCoreException e) {
             // do nothing
             return;
@@ -305,5 +302,9 @@ abstract public class AbstractJvm implements IJvm {
                 snapshots.add(snapshot);
             }
         }
+    }
+    
+    public void saveJvmProperties() {
+    	
     }
 }

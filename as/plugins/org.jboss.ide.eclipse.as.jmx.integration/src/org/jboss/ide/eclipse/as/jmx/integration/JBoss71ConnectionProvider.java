@@ -16,7 +16,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExt
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 
-public class JBoss71ConnectionProvider extends AbstractJBossJMXConnectionProvider{
+public class JBoss71ConnectionProvider extends AbstractJBossJMXConnectionProvider {
 	public static final String PROVIDER_ID = "org.jboss.ide.eclipse.as.core.extensions.jmx.JBoss71ServerConnectionProvider"; //$NON-NLS-1$
 	
 	private JMXClassLoaderRepository repository;
