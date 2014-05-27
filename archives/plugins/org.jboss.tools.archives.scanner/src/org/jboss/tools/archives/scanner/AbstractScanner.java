@@ -144,7 +144,7 @@ public abstract class AbstractScanner<T> implements Scanner <T> {
      */
     public void setIncludes( String[] includes )
     {
-        if ( includes == null )
+        if ( includes == null || includes.length == 0)
         {
             this.includes = null;
         }
