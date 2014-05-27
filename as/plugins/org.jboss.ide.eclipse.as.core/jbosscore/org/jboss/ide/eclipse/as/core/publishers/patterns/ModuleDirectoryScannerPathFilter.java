@@ -14,9 +14,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
+import org.jboss.ide.eclipse.as.core.publishers.patterns.internal.ModuleResourceTreeNode;
 import org.jboss.ide.eclipse.as.core.publishers.patterns.internal.PublishFilterDirectoryScanner;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
+import org.jboss.tools.archives.scanner.VirtualDirectoryScanner;
 
 /**
  * @since 2.3
@@ -69,6 +71,19 @@ public class ModuleDirectoryScannerPathFilter implements IModulePathFilter {
 		scanner = new PublishFilterDirectoryScanner(raw);
 		scanner.setIncludes(includes);
 		scanner.setExcludes(excludes);
+	}
+	
+	/**
+	 * For testing purposes. Exposes non-api constructor.
+	 * 
+	 * @param module
+	 * @param scanner
+	 * @throws CoreException
+	 */
+	public ModuleDirectoryScannerPathFilter(IModule module, 
+			PublishFilterDirectoryScanner scanner) throws CoreException {
+		this.raw = ModuleResourceUtil.getMembers(module);
+		this.scanner = scanner;
 	}
 	
 	private synchronized void ensureScanned() {
