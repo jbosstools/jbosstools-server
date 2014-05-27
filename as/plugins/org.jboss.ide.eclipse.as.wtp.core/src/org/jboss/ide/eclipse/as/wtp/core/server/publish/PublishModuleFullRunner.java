@@ -105,6 +105,8 @@ public final class PublishModuleFullRunner {
 		monitor.beginTask("Publishing " + count + " resources", //$NON-NLS-1$ //$NON-NLS-2$ 
 				(100 * (count)) + 200);
 		
+		fsController.deleteResource(rootDirectory, ProgressMonitorUtil.getSubMon(monitor, 100));
+		
 		// Create the remote folder where we'll be copying files to
 		IStatus s = fsController.makeDirectoryIfRequired(rootDirectory,
 				ProgressMonitorUtil.getSubMon(monitor, 100)); 
