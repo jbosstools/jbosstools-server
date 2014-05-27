@@ -173,19 +173,23 @@ public class ServerBeanType {
 	 * @return true if there is a match, false otherwise. 
 	 */
 	protected static boolean scanFolderJarsForManifestProp(File location, String mainFolder, String property, String propPrefix) {
-	
+		String value = getManifestPropFromFolderJars(location, mainFolder, property);
+		if( value != null && value.trim().startsWith(propPrefix))
+			return true;
+		return false;
+	}
+
+	protected static String getManifestPropFromFolderJars(File location, String mainFolder, String property) {
 		File f = new File(location, mainFolder);
 		if( f.exists() ) {
 			File[] children = f.listFiles();
 			for( int i = 0; i < children.length; i++ ) {
 				if( children[i].getName().endsWith(IWTPConstants.EXT_JAR)) {
-					String value = getJarProperty(children[i], property);
-					if( value != null && value.trim().startsWith(propPrefix))
-							return true;
+					return getJarProperty(children[i], property);
 				}
 			}
 		}
-		return false;
+		return null;
 	}
 
 	

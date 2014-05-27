@@ -29,6 +29,12 @@ public class ServerBeanTypeAS7 extends JBossServerType {
 			String mainFolder = JBossServerType.AS7.systemJarPath;
 			return scanFolderJarsForManifestProp(location, mainFolder, JBAS7_RELEASE_VERSION, "7.");
 		}
+		
+		public String getFullVersion(File location, File systemFile) {
+			String mainFolder = JBossServerType.AS7.systemJarPath;
+			return getManifestPropFromFolderJars(location, mainFolder, JBAS7_RELEASE_VERSION);
+		}
+		
 		public String getServerTypeId(String version) {
 			if( version.equals(V7_0)) return IJBossToolingConstants.SERVER_AS_70;
 			if( version.equals(V7_1)) return IJBossToolingConstants.SERVER_AS_71;
