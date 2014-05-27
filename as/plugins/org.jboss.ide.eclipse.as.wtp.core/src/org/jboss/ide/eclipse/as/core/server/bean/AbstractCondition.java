@@ -51,7 +51,8 @@ public abstract class AbstractCondition implements ICondition {
 	 * @return
 	 */
 	public static String getFullServerVersionFromZipLegacy(File systemJarFile) {
-		return getFullServerVersionFromZipLegacy(systemJarFile, new String[]{"Bundle-Version"});
+		return getFullServerVersionFromZipLegacy(systemJarFile, new String[]{
+				"Bundle-Version", "Specification-Version", "Implementation-Version"});
 	}
 	
 	
