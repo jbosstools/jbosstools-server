@@ -1,5 +1,5 @@
 /*************************************************************************************
- * Copyright (c) 2013 Red Hat, Inc. and others.
+ * Copyright (c) 2013-2014 Red Hat, Inc. and others.
  * All rights reserved. This program and the accompanying materials 
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,13 +38,15 @@ public class TomcatDetectionTest extends AbstractTomcatDetectionTest {
 
 	private IRuntimeDetector tomcatDetector;
 
-	@Before
+	@Override
+  @Before
 	public void setUp() throws CoreException {
 		super.setUp();
 		tomcatDetector = RuntimeCoreActivator.getDefault().findRuntimeDetector("org.jboss.tools.wtp.runtimes.tomcat.TomcatRuntimeDetector");
 		assertNotNull("Tomcat detected not found", tomcatDetector);
 	}
-	@After
+	@Override
+  @After
 	public void tearDown() throws CoreException {
 		super.tearDown();
 		tomcatDetector = null;
@@ -61,7 +63,9 @@ public class TomcatDetectionTest extends AbstractTomcatDetectionTest {
 			runtimeMap.put(iRuntime.getName(),iRuntime);
 		}
 		
-		assertEquals(3, runtimes.length);
+    assertEquals(UNEXPECTED_RUNTIME_COUNT_ERROR + " : " + toString(runtimes),
+        3,
+        runtimes.length);
 		assertNotNull(runtimeMap.get(TOMCAT_6 +" Runtime"));
 		assertNotNull(runtimeMap.get(TOMCAT_7 +" Runtime"));
 		assertNotNull(runtimeMap.get(TOMCAT_8 +" Runtime"));

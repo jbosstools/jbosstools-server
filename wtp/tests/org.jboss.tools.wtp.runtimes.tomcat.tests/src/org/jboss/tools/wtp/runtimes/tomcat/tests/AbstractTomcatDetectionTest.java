@@ -39,6 +39,8 @@ public class AbstractTomcatDetectionTest {
 
 	protected static final String TOMCAT_8_PATH = REQUIREMENTS_DIR + TOMCAT_8;
 
+  protected static final String UNEXPECTED_RUNTIME_COUNT_ERROR = "Incorrect number of runtimes detected in requirements folder";
+
 	@BeforeClass
 	public static void beforeClass() {
 		File tomcat6 = new File(TOMCAT_6_PATH); 
@@ -76,4 +78,28 @@ public class AbstractTomcatDetectionTest {
 			r[i].delete();
 		}
 	}
+
+  protected String toString(Object[] runtimes) {
+    if (runtimes == null) {
+      return null;
+    }
+
+    StringBuilder sb = new StringBuilder();
+    boolean prependComma = false;
+    for (Object o : runtimes) {
+      if (prependComma) {
+        sb.append(", ");
+      }
+      if (o instanceof IRuntime) {
+        sb.append(((IRuntime) o).getName());
+      } else if (o instanceof IServer) {
+        sb.append(((IServer) o).getName());
+      } else {
+        sb.append(o);
+      }
+      prependComma = true;
+    }
+
+    return sb.toString();
+  }
 }

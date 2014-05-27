@@ -23,7 +23,7 @@
           <version>${tychoVersion}</version>
           <configuration>
             <useUIThread>false</useUIThread>
-            <useUIHarness>true</useUIHarness>
+            <useUIHarness>false</useUIHarness>
             <includes><include>**/*Test.java</include></includes>
           </configuration>
         </plugin>
