@@ -11,6 +11,14 @@
 	<artifactId>org.jboss.tools.wtp.runtimes.tomcat.tests</artifactId>
 	<packaging>eclipse-test-plugin</packaging>
 
+<properties>
+<!-- some variables for tomcat testing so we don't have to hard code here AND in AbstractTomcatDetectionTest -->
+<jbosstools.test.tomcat.version.6>6.0.41</jbosstools.test.tomcat.version.6>
+<jbosstools.test.tomcat.version.7>7.0.54</jbosstools.test.tomcat.version.7>
+<jbosstools.test.tomcat.version.8>8.0.8</jbosstools.test.tomcat.version.8>
+
+<systemProperties> -Dbasedir=${project.basedir} -Djbosstools.test.tomcat.version.6=${jbosstools.test.tomcat.version.6} -Djbosstools.test.tomcat.version.7=${jbosstools.test.tomcat.version.7} -Djbosstools.test.tomcat.version.8=${jbosstools.test.tomcat.version.8} </systemProperties>
+</properties>
 	<build>
 		<plugins>
 			<plugin>
@@ -28,13 +36,13 @@
 								<artifactItem>
 									<groupId>org.apache.tomcat</groupId>
 									<artifactId>tomcat</artifactId>
-									<version>7.0.52</version>
+									<version>${jbosstools.test.tomcat.version.7}</version>
 									<type>zip</type>
 								</artifactItem>
 								<artifactItem>
 									<groupId>org.apache.tomcat</groupId>
 									<artifactId>tomcat</artifactId>
-									<version>8.0.3</version>
+									<version>${jbosstools.test.tomcat.version.8}</version>
 									<type>zip</type>
 								</artifactItem>
 							</artifactItems>
@@ -53,14 +61,15 @@
 							<goal>wget</goal>
 						</goals>
 						<configuration>
-							<url>http://apache.mirrors.multidist.eu/tomcat/tomcat-6/v6.0.39/bin/apache-tomcat-6.0.39.zip</url>
+							<url>http://psg.mtu.edu/pub/apache/tomcat/tomcat-6/v${jbosstools.test.tomcat.version.6}/bin/apache-tomcat-${jbosstools.test.tomcat.version.6}.zip</url>
 							<unpack>true</unpack>
-							<md5>a3d585de50bfe7998a2034ec6ead0b09</md5>
+							<md5>25c9223978a12a2b604f24eaccee858c</md5>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
 		</plugins>
+
 		<pluginManagement>
 			<plugins>
 				<!--This plugin's configuration is used to store Eclipse m2e settings 

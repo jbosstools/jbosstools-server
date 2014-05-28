@@ -32,7 +32,7 @@ import org.junit.Test;
 /**
  * Integration Test of Tomcat Detection
  * 
- * @author Fred Bricon
+ * @author Fred Bricon, Nick Boldt
  */
 public class TomcatDetectionTest extends AbstractTomcatDetectionTest {
 
@@ -43,7 +43,7 @@ public class TomcatDetectionTest extends AbstractTomcatDetectionTest {
 	public void setUp() throws CoreException {
 		super.setUp();
 		tomcatDetector = RuntimeCoreActivator.getDefault().findRuntimeDetector("org.jboss.tools.wtp.runtimes.tomcat.TomcatRuntimeDetector");
-		assertNotNull("Tomcat detected not found", tomcatDetector);
+		assertNotNull("Tomcat detector org.jboss.tools.wtp.runtimes.tomcat.TomcatRuntimeDetector not found", tomcatDetector);
 	}
 	@Override
   @After
@@ -63,12 +63,10 @@ public class TomcatDetectionTest extends AbstractTomcatDetectionTest {
 			runtimeMap.put(iRuntime.getName(),iRuntime);
 		}
 		
-    assertEquals(UNEXPECTED_RUNTIME_COUNT_ERROR + " : " + toString(runtimes),
-        3,
-        runtimes.length);
 		assertNotNull(runtimeMap.get(TOMCAT_6 +" Runtime"));
 		assertNotNull(runtimeMap.get(TOMCAT_7 +" Runtime"));
 		assertNotNull(runtimeMap.get(TOMCAT_8 +" Runtime"));
+		assertEquals(UNEXPECTED_RUNTIME_COUNT_ERROR + ": " + toString(runtimes), 3, runtimes.length);
 
 		IServer[] servers = ServerCore.getServers();
 		Map<String, IServer> serverMap = new HashMap<String, IServer>();
@@ -77,9 +75,9 @@ public class TomcatDetectionTest extends AbstractTomcatDetectionTest {
 			serverMap.put(iServer.getName(), iServer);
 		}
 		
-		assertEquals(3, servers.length);
 		assertNotNull(serverMap.get(TOMCAT_6));
 		assertNotNull(serverMap.get(TOMCAT_7));
 		assertNotNull(serverMap.get(TOMCAT_8));
+		assertEquals(3, servers.length);
 	}
 }
