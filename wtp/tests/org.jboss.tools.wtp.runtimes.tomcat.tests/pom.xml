@@ -31,12 +31,14 @@
 									<version>7.0.52</version>
 									<type>zip</type>
 								</artifactItem>
+								<!-- Disabling tomcat 8 detection as it requires tests to run w/ Java 7
 								<artifactItem>
 									<groupId>org.apache.tomcat</groupId>
 									<artifactId>tomcat</artifactId>
 									<version>8.0.3</version>
 									<type>zip</type>
 								</artifactItem>
+								 -->
 							</artifactItems>
 						</configuration>
 					</execution>

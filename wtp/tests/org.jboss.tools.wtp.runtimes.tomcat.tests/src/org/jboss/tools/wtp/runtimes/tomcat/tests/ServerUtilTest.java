@@ -26,7 +26,7 @@ public class ServerUtilTest extends AbstractTomcatDetectionTest {
 	@Test
 	public void testUniqueServerName() {
 		RuntimeInitializerUtil.initializeRuntimesFromFolder(new File(REQUIREMENTS_DIR), new NullProgressMonitor());
-		assertEquals("Incorrect number of servers detected in requirements folder", 3, ServerCore.getServers().length);
+		assertEquals("Incorrect number of servers detected in requirements folder", 2, ServerCore.getServers().length);
 		assertEquals("foo", ServerUtils.getUniqueServerName("foo"));
 		assertEquals(TOMCAT_7+ " (2)", ServerUtils.getUniqueServerName(TOMCAT_7));
 	}

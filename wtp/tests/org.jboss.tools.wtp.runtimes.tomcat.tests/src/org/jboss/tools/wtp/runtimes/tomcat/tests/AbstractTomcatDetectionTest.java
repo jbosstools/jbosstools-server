@@ -35,18 +35,21 @@ public class AbstractTomcatDetectionTest {
 
 	protected static final String TOMCAT_7_PATH = REQUIREMENTS_DIR + TOMCAT_7;
 
+	/*
 	protected static final String TOMCAT_8 = "apache-tomcat-8.0.3";
 
 	protected static final String TOMCAT_8_PATH = REQUIREMENTS_DIR + TOMCAT_8;
-
+    */
 	@BeforeClass
 	public static void beforeClass() {
 		File tomcat6 = new File(TOMCAT_6_PATH); 
 		assertTrue(TOMCAT_6_PATH + " is missing, please run 'mvn clean pre-integration-test'", tomcat6.exists());
 		File tomcat7 = new File(TOMCAT_7_PATH);
 		assertTrue(TOMCAT_7_PATH + " is missing, please run 'mvn clean pre-integration-test'", tomcat7.exists());
+		/*
 		File tomcat8 = new File(TOMCAT_8_PATH);
 		assertTrue(TOMCAT_8_PATH + " is missing, please run 'mvn clean pre-integration-test'", tomcat8.exists());
+		*/
 	}
 
 	@AfterClass
