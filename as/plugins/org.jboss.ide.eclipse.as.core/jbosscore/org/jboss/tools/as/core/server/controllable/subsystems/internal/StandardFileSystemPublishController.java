@@ -465,7 +465,8 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 			}
 			if( result == null || result.isOK()) {
 				if( tmpArchive.toFile().exists()) {
-					result = getFilesystemController().copyFile(tmpArchive.toFile(), archiveDestination, ProgressMonitorUtil.submon(monitor, 100));
+					getFilesystemController().deleteResource(archiveDestination, ProgressMonitorUtil.submon(monitor, 10));
+					result = getFilesystemController().copyFile(tmpArchive.toFile(), archiveDestination, ProgressMonitorUtil.submon(monitor, 90));
 				} else {
 					result = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Zipped archive not found"); //$NON-NLS-1$
 				}

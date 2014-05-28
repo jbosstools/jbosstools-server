@@ -134,7 +134,7 @@ public class SingleDeployableFolderTest extends AbstractPublishingTest {
 	private void fullPublishAndVerify1(String file1Contents, String file2Contents) throws CoreException, IOException  {
 		publishAndCheckError(server,IServer.PUBLISH_FULL);
 		// initial full publish should be 3 changes, 1 remove, , and 2 temp files (or 1,0,1 for zip)
-		int[] vals = isZipped() ? new int[] { 1,0} : new int[] {3,0};
+		int[] vals = isZipped() ? new int[] { 1,1} : new int[] {3,1};
 		vals[0] += getFullPublishChangedResourceCountModifier();
 		vals[1] += getFullPublishRemovedResourceCountModifier();
 		verifyPublishMethodFilesystemResults(vals[0], vals[1]);
@@ -142,7 +142,7 @@ public class SingleDeployableFolderTest extends AbstractPublishingTest {
 
 	private void incrementalFilesChangedPublishAndVerify1(IPath[] filePath, String[] fileContents) throws CoreException, IOException  {
 		publishAndCheckError(server, IServer.PUBLISH_INCREMENTAL);
-		int[] vals = isZipped() ? new int[] { 1,0} : new int[] {filePath.length,0};
+		int[] vals = isZipped() ? new int[] { 1,1} : new int[] {filePath.length,0};
 		vals[0] += isZipped() ? getFullPublishChangedResourceCountModifier() : 1;
 		vals[1] += isZipped() ? getFullPublishRemovedResourceCountModifier() : 0;
 		verifyPublishMethodFilesystemResults(vals[0], vals[1]);
