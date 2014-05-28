@@ -11,14 +11,18 @@
 	<artifactId>org.jboss.tools.wtp.runtimes.tomcat.tests</artifactId>
 	<packaging>eclipse-test-plugin</packaging>
 
-<properties>
-<!-- some variables for tomcat testing so we don't have to hard code here AND in AbstractTomcatDetectionTest -->
-<jbosstools.test.tomcat.version.6>6.0.41</jbosstools.test.tomcat.version.6>
-<jbosstools.test.tomcat.version.7>7.0.54</jbosstools.test.tomcat.version.7>
-<jbosstools.test.tomcat.version.8>8.0.8</jbosstools.test.tomcat.version.8>
+	<properties>
+		<!-- can set a different path with -Djbosstools.test.jre.7= -->
+		<jbosstools.test.jre.7>/qa/tools/opt/jdk1.7.0_last</jbosstools.test.jre.7>
+		<jbosstools.test.jre.8>/qa/tools/opt/jdk1.8.0_last</jbosstools.test.jre.8>
 
-<systemProperties> -Dbasedir=${project.basedir} -Djbosstools.test.tomcat.version.6=${jbosstools.test.tomcat.version.6} -Djbosstools.test.tomcat.version.7=${jbosstools.test.tomcat.version.7} -Djbosstools.test.tomcat.version.8=${jbosstools.test.tomcat.version.8} </systemProperties>
-</properties>
+		<!-- some variables for tomcat testing so we don't have to hard code here AND in AbstractTomcatDetectionTest -->
+		<jbosstools.test.tomcat.version.6>6.0.41</jbosstools.test.tomcat.version.6>
+		<jbosstools.test.tomcat.version.7>7.0.54</jbosstools.test.tomcat.version.7>
+		<jbosstools.test.tomcat.version.8>8.0.8</jbosstools.test.tomcat.version.8>
+
+		<systemProperties> -Djbosstools.test.jre.7=${jbosstools.test.jre.7} -Djbosstools.test.jre.8=${jbosstools.test.jre.8} -Dbasedir=${project.basedir} -Djbosstools.test.tomcat.version.6=${jbosstools.test.tomcat.version.6} -Djbosstools.test.tomcat.version.7=${jbosstools.test.tomcat.version.7} -Djbosstools.test.tomcat.version.8=${jbosstools.test.tomcat.version.8} </systemProperties>
+	</properties>
 	<build>
 		<plugins>
 			<plugin>

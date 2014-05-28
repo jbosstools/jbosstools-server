@@ -15,7 +15,6 @@
 		<module>org.jboss.tools.wtp.runtimes.tomcat.tests</module>
 	</modules>
   <build>
-
       <plugins>
         <plugin>
           <groupId>org.eclipse.tycho</groupId>
