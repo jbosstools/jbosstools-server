@@ -12,14 +12,22 @@ package org.jboss.tools.wtp.runtimes.tomcat.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.jst.server.tomcat.core.internal.ITomcatRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IRuntimeType;
+import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.tools.runtime.core.RuntimeCoreActivator;
@@ -63,7 +71,7 @@ public class TomcatDetectionTest extends AbstractTomcatDetectionTest {
 			runtimeMap.put(iRuntime.getName(),iRuntime);
 		}
 		
-    assertEquals(UNEXPECTED_RUNTIME_COUNT_ERROR + " : " + toString(runtimes),
+		assertEquals(UNEXPECTED_RUNTIME_COUNT_ERROR + " : " + toString(runtimes),
         3,
         runtimes.length);
 		assertNotNull(runtimeMap.get(TOMCAT_6 +" Runtime"));
@@ -81,5 +89,23 @@ public class TomcatDetectionTest extends AbstractTomcatDetectionTest {
 		assertNotNull(serverMap.get(TOMCAT_6));
 		assertNotNull(serverMap.get(TOMCAT_7));
 		assertNotNull(serverMap.get(TOMCAT_8));
+	}
+	
+	@Test
+	public void testTomcat8() throws Exception {
+		String tomcat8Id = "org.eclipse.jst.server.tomcat.runtime.80";
+		IRuntimeType runtimeType = ServerCore.findRuntimeType(tomcat8Id );
+		assertNotNull(tomcat8Id + " isn't a runtime type", runtimeType);
+		String absolutePath = new File(TOMCAT_8_PATH).getAbsolutePath();
+		IRuntimeWorkingCopy runtimeWc = null; 
+		IProgressMonitor monitor = new NullProgressMonitor();
+		String id = absolutePath.replace(File.separatorChar,'_').replace(':','-');
+		runtimeWc = runtimeType.createRuntime(id, monitor );
+		runtimeWc.setName("Special Tomcat 8");
+		runtimeWc.setLocation(new Path(absolutePath));
+		ITomcatRuntimeWorkingCopy wc = (ITomcatRuntimeWorkingCopy) runtimeWc.loadAdapter(ITomcatRuntimeWorkingCopy.class, null);
+		wc.setVMInstall(JavaRuntime.getDefaultVMInstall());
+		IStatus status = runtimeWc.validate(monitor);
+		assertTrue(status.getMessage(), status.getSeverity() != IStatus.ERROR);
 	}
 }
