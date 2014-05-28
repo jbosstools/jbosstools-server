@@ -238,7 +238,6 @@ public class TomcatRuntimeDetectorDelegate extends AbstractRuntimeDetectorDelega
 			} else {
 				runtimeWc = runtime.createWorkingCopy();
 			}
-			ITomcatRuntimeWorkingCopy wc = (ITomcatRuntimeWorkingCopy) runtimeWc.loadAdapter(ITomcatRuntimeWorkingCopy.class, null);
 			
 			IStatus status = runtimeWc.validate(monitor);
 			if (status == null || status.getSeverity() != IStatus.ERROR) {
@@ -259,7 +258,6 @@ public class TomcatRuntimeDetectorDelegate extends AbstractRuntimeDetectorDelega
 			}
 			IVMInstall[] arr = env.getCompatibleVMs();
 			if( arr != null && arr.length > 0 ) {
-				System.out.println("*** Returning vminstall " + arr[0] + " of path " + arr[0].getInstallLocation().getAbsolutePath());
 				return arr[0];
 			}
 		}

@@ -12,12 +12,13 @@
 	<packaging>eclipse-test-plugin</packaging>
 
 	<properties>
-		<!-- can set a different path with -Djbosstools.test.jre.7= -->
-		<jbosstools.test.jre.7>/qa/tools/opt/jdk1.7.0_last</jbosstools.test.jre.7>
-		<jbosstools.test.jre.8>/qa/tools/opt/jdk1.8.0_last</jbosstools.test.jre.8>
+		<!-- can set a different path with -Djbosstools.test.jre.7= , see ci profile-->
+		<jbosstools.test.jre.7></jbosstools.test.jre.7>
+		<jbosstools.test.jre.8></jbosstools.test.jre.8>
 
 		<!-- some variables for tomcat testing so we don't have to hard code here AND in AbstractTomcatDetectionTest -->
-		<jbosstools.test.tomcat.version.6>6.0.41</jbosstools.test.tomcat.version.6>
+		<!-- Tomcat 6 version is not necessarily the latest as we need to use a *stable* url (from http://archive.apache.org/dist/)-->
+		<jbosstools.test.tomcat.version.6>6.0.39</jbosstools.test.tomcat.version.6>
 		<jbosstools.test.tomcat.version.7>7.0.54</jbosstools.test.tomcat.version.7>
 		<jbosstools.test.tomcat.version.8>8.0.8</jbosstools.test.tomcat.version.8>
 
@@ -65,9 +66,9 @@
 							<goal>wget</goal>
 						</goals>
 						<configuration>
-							<url>http://psg.mtu.edu/pub/apache/tomcat/tomcat-6/v${jbosstools.test.tomcat.version.6}/bin/apache-tomcat-${jbosstools.test.tomcat.version.6}.zip</url>
+							<url>http://archive.apache.org/dist/tomcat/tomcat-6/v${jbosstools.test.tomcat.version.6}/bin/apache-tomcat-${jbosstools.test.tomcat.version.6}.zip</url>
 							<unpack>true</unpack>
-							<md5>25c9223978a12a2b604f24eaccee858c</md5>
+							<md5>a3d585de50bfe7998a2034ec6ead0b09</md5>
 						</configuration>
 					</execution>
 				</executions>
@@ -124,4 +125,17 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+  <profiles>
+  <profile>
+      <id>ci</id>
+      <activation>
+      <property><name>BUILD_NUMBER</name></property>
+      </activation>
+      <properties>
+		<!-- can set a different path with -Djbosstools.test.jre.7= -->
+		<jbosstools.test.jre.7>/qa/tools/opt/jdk1.7.0_last</jbosstools.test.jre.7>
+		<jbosstools.test.jre.8>/qa/tools/opt/jdk1.8.0_last</jbosstools.test.jre.8>
+      </properties>
+    </profile>
+  </profiles>
 </project>

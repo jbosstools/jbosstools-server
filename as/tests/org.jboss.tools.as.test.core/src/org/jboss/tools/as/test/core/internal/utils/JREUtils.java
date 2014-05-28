@@ -88,7 +88,6 @@ public class JREUtils {
 	public static IVMInstall createJRE(IPath jreBaseDir) {
 		IVMInstallType[] types = JavaRuntime.getVMInstallTypes();
 		IVMInstallType t = null;
-		System.out.println(types.length);
 		for( int i = 0; i < types.length && t == null; i++ ) {
 			if( types[i].getId().equals("org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType")) {
 				t = types[i];

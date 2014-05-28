@@ -12,7 +12,6 @@ package org.jboss.tools.wtp.runtimes.tomcat.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.HashMap;
@@ -20,12 +19,9 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
-import org.jboss.tools.as.test.core.internal.utils.JREUtils;
 import org.jboss.tools.runtime.core.RuntimeCoreActivator;
 import org.jboss.tools.runtime.core.model.IRuntimeDetector;
 import org.jboss.tools.runtime.core.util.RuntimeInitializerUtil;
@@ -41,18 +37,12 @@ import org.junit.Test;
 public class TomcatDetectionTest extends AbstractTomcatDetectionTest {
 
 	private IRuntimeDetector tomcatDetector;
-	public static final String JRE_7_HOME = System.getProperty("jbosstools.test.jre.7", "C:\\apps\\java\\jre7.0\\");
-	
 	@Override
-  @Before
+	@Before
 	public void setUp() throws CoreException {
 		super.setUp();
 		tomcatDetector = RuntimeCoreActivator.getDefault().findRuntimeDetector("org.jboss.tools.wtp.runtimes.tomcat.TomcatRuntimeDetector");
 		assertNotNull("Tomcat detector org.jboss.tools.wtp.runtimes.tomcat.TomcatRuntimeDetector not found", tomcatDetector);
-		assertNotNull(JRE_7_HOME);
-		assertTrue("JRE7 home " + JRE_7_HOME + " does not exist", new File(JRE_7_HOME).exists());
-		IVMInstall foundOrCreated = JREUtils.findOrCreateJRE(new Path(JRE_7_HOME));
-		assertNotNull(foundOrCreated);
 	}
 	
 	@Override
