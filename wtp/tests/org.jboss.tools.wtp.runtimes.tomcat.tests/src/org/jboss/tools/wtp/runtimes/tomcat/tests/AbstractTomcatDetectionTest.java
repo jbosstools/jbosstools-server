@@ -1,5 +1,5 @@
 /*************************************************************************************
- * Copyright (c) 2013 Red Hat, Inc. and others.
+ * Copyright (c) 2013-2014 Red Hat, Inc. and others.
  * All rights reserved. This program and the accompanying materials 
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,30 +25,28 @@ import org.junit.BeforeClass;
 
 public class AbstractTomcatDetectionTest {
 
-	protected static final String REQUIREMENTS_DIR = "target/requirements/";
+	// use absolute path, not relative, because Jenkins paths don't always work as relative paths
+	protected static final String REQUIREMENTS_DIR = System.getProperty("basedir",".") + "/target/requirements/"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
-	protected static final String TOMCAT_6 = "apache-tomcat-6.0.39";
-
+	protected static final String TOMCAT_6 = "apache-tomcat-" + System.getProperty("jbosstools.test.tomcat.version.6"); //$NON-NLS-1$ //$NON-NLS-2$
 	protected static final String TOMCAT_6_PATH = REQUIREMENTS_DIR + TOMCAT_6;
 
-	protected static final String TOMCAT_7 = "apache-tomcat-7.0.52";
-
+	protected static final String TOMCAT_7 = "apache-tomcat-" + System.getProperty("jbosstools.test.tomcat.version.7"); //$NON-NLS-1$ //$NON-NLS-2$
 	protected static final String TOMCAT_7_PATH = REQUIREMENTS_DIR + TOMCAT_7;
 
-	protected static final String TOMCAT_8 = "apache-tomcat-8.0.3";
-
+	protected static final String TOMCAT_8 = "apache-tomcat-" + System.getProperty("jbosstools.test.tomcat.version.8"); //$NON-NLS-1$ //$NON-NLS-2$
 	protected static final String TOMCAT_8_PATH = REQUIREMENTS_DIR + TOMCAT_8;
 
-  protected static final String UNEXPECTED_RUNTIME_COUNT_ERROR = "Incorrect number of runtimes detected in requirements folder";
+  protected static final String UNEXPECTED_RUNTIME_COUNT_ERROR = Messages.incorrect_number_of_runtimes + " [ " + REQUIREMENTS_DIR + " ]"; //$NON-NLS-2$ //$NON-NLS-3$
 
 	@BeforeClass
 	public static void beforeClass() {
 		File tomcat6 = new File(TOMCAT_6_PATH); 
-		assertTrue(TOMCAT_6_PATH + " is missing, please run 'mvn clean pre-integration-test'", tomcat6.exists());
+		assertTrue(TOMCAT_6_PATH + Messages.is_missing + "'mvn clean pre-integration-test'", tomcat6.exists()); //$NON-NLS-2$
 		File tomcat7 = new File(TOMCAT_7_PATH);
-		assertTrue(TOMCAT_7_PATH + " is missing, please run 'mvn clean pre-integration-test'", tomcat7.exists());
+		assertTrue(TOMCAT_7_PATH + Messages.is_missing + "'mvn clean pre-integration-test'", tomcat7.exists()); //$NON-NLS-2$
 		File tomcat8 = new File(TOMCAT_8_PATH);
-		assertTrue(TOMCAT_8_PATH + " is missing, please run 'mvn clean pre-integration-test'", tomcat8.exists());
+		assertTrue(TOMCAT_8_PATH + Messages.is_missing + "'mvn clean pre-integration-test'", tomcat8.exists()); //$NON-NLS-2$
 	}
 
 	@AfterClass
@@ -88,7 +86,7 @@ public class AbstractTomcatDetectionTest {
     boolean prependComma = false;
     for (Object o : runtimes) {
       if (prependComma) {
-        sb.append(", ");
+        sb.append(", "); //$NON-NLS-1$
       }
       if (o instanceof IRuntime) {
         sb.append(((IRuntime) o).getName());
