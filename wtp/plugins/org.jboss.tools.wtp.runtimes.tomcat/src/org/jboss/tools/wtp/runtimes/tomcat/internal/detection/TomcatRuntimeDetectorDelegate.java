@@ -12,6 +12,7 @@ package org.jboss.tools.wtp.runtimes.tomcat.internal.detection;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -19,9 +20,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jdt.internal.launching.environments.EnvironmentsManager;
+import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.jst.server.tomcat.core.internal.ITomcatRuntimeWorkingCopy;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
@@ -29,6 +32,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
+import org.jboss.ide.eclipse.as.wtp.core.launching.IExecutionEnvironmentConstants;
 import org.jboss.tools.runtime.core.model.AbstractRuntimeDetectorDelegate;
 import org.jboss.tools.runtime.core.model.RuntimeDefinition;
 
@@ -55,10 +59,24 @@ public class TomcatRuntimeDetectorDelegate extends AbstractRuntimeDetectorDelega
 		"org.eclipse.jst.server.tomcat.runtime.32",
     };
 
+	protected static final HashMap<String, IExecutionEnvironment> environmentMap = new HashMap<String, IExecutionEnvironment>();
+	static {
+		environmentMap.put("org.eclipse.jst.server.tomcat.runtime.32", EnvironmentsManager.getDefault().getEnvironment(IExecutionEnvironmentConstants.EXEC_ENV_J2SE13)); //$NON-NLS-1$
+		environmentMap.put("org.eclipse.jst.server.tomcat.runtime.40", EnvironmentsManager.getDefault().getEnvironment(IExecutionEnvironmentConstants.EXEC_ENV_J2SE13));//$NON-NLS-1$
+		environmentMap.put("org.eclipse.jst.server.tomcat.runtime.41", EnvironmentsManager.getDefault().getEnvironment(IExecutionEnvironmentConstants.EXEC_ENV_J2SE13));//$NON-NLS-1$
+		environmentMap.put("org.eclipse.jst.server.tomcat.runtime.50", EnvironmentsManager.getDefault().getEnvironment(IExecutionEnvironmentConstants.EXEC_ENV_J2SE14));//$NON-NLS-1$
+		environmentMap.put("org.eclipse.jst.server.tomcat.runtime.55", EnvironmentsManager.getDefault().getEnvironment(IExecutionEnvironmentConstants.EXEC_ENV_J2SE14));//$NON-NLS-1$
+		environmentMap.put("org.eclipse.jst.server.tomcat.runtime.60", EnvironmentsManager.getDefault().getEnvironment(IExecutionEnvironmentConstants.EXEC_ENV_J2SE15));//$NON-NLS-1$
+		environmentMap.put("org.eclipse.jst.server.tomcat.runtime.70", EnvironmentsManager.getDefault().getEnvironment(IExecutionEnvironmentConstants.EXEC_ENV_JavaSE16));//$NON-NLS-1$
+		environmentMap.put("org.eclipse.jst.server.tomcat.runtime.80", EnvironmentsManager.getDefault().getEnvironment(IExecutionEnvironmentConstants.EXEC_ENV_JavaSE17));//$NON-NLS-1$
+	}
+	
+	
 	public static final String TOMCAT_TYPE = "TOMCAT";  //$NON-NLS-1$
 		
 	@Override
 	public void initializeRuntimes(List<RuntimeDefinition> runtimeDefinitions) {
+		
 		for (RuntimeDefinition runtimeDef : runtimeDefinitions) {
 			if (runtimeDef instanceof TomcatRuntimeDefinition) {
 				TomcatRuntimeDefinition trd = (TomcatRuntimeDefinition) runtimeDef;
@@ -197,6 +215,7 @@ public class TomcatRuntimeDetectorDelegate extends AbstractRuntimeDetectorDelega
 		for (String runtimeTypeId : runtimeTypes) {
 			IRuntimeWorkingCopy rwc = getTomcatRuntimeWorkingCopy(dir, runtimeTypeId, monitor);
 			if (rwc != null) {
+				ITomcatRuntimeWorkingCopy wc = (ITomcatRuntimeWorkingCopy) rwc.loadAdapter(ITomcatRuntimeWorkingCopy.class, null);
 				return rwc;
 			}
 		}
@@ -215,10 +234,12 @@ public class TomcatRuntimeDetectorDelegate extends AbstractRuntimeDetectorDelega
 				runtimeWc.setName(dir.getName());
 				runtimeWc.setLocation(new Path(absolutePath));
 				ITomcatRuntimeWorkingCopy wc = (ITomcatRuntimeWorkingCopy) runtimeWc.loadAdapter(ITomcatRuntimeWorkingCopy.class, null);
-				wc.setVMInstall(JavaRuntime.getDefaultVMInstall());
+				wc.setVMInstall(findVMForRuntimeType(runtimeTypeId));
 			} else {
 				runtimeWc = runtime.createWorkingCopy();
 			}
+			ITomcatRuntimeWorkingCopy wc = (ITomcatRuntimeWorkingCopy) runtimeWc.loadAdapter(ITomcatRuntimeWorkingCopy.class, null);
+			
 			IStatus status = runtimeWc.validate(monitor);
 			if (status == null || status.getSeverity() != IStatus.ERROR) {
 				return runtimeWc;
@@ -228,6 +249,24 @@ public class TomcatRuntimeDetectorDelegate extends AbstractRuntimeDetectorDelega
 		}
 		return null;
 	}
+	
+	private IVMInstall findVMForRuntimeType(String runtimeTypeId) {
+		IExecutionEnvironment env = environmentMap.get(runtimeTypeId);
+		if( env != null ) {
+			IVMInstall install = env.getDefaultVM();
+			if( install != null ) {
+				return install;
+			}
+			IVMInstall[] arr = env.getCompatibleVMs();
+			if( arr != null && arr.length > 0 ) {
+				System.out.println("*** Returning vminstall " + arr[0] + " of path " + arr[0].getInstallLocation().getAbsolutePath());
+				return arr[0];
+			}
+		}
+		// Could maybe return null here?  Until we know for sure, lets just return workspace default
+		return JavaRuntime.getDefaultVMInstall();
+	}
+	
 	
 	private IRuntime getRuntimeAt(String runtimeTypeId, String absolutePath) {
 		for (IRuntime runtime : ServerCore.getRuntimes()) {

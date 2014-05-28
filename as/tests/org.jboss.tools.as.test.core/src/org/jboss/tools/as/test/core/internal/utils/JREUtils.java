@@ -8,39 +8,38 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.jboss.ide.eclipse.as.test.util.jdt;
+package org.jboss.tools.as.test.core.internal.utils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.internal.launching.VMDefinitionsContainer;
+import org.eclipse.jdt.internal.launching.environments.EnvironmentsManager;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMInstallType;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.LibraryLocation;
 import org.eclipse.jdt.launching.VMStandin;
-import org.jboss.ide.eclipse.as.test.ASTest;
+import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 
 /**
  * Processes add/removed/changed VMs.
- * This class is in a deprecated plugin. 
  */
-@Deprecated
 public class JREUtils {
-		
+	
 	/**
 	 * Contstructs a new VM updater to update VM install settings.
 	 */
 	public JREUtils() {
 	}
-	
-	public static IVMInstall createJRE() {
-		return createJRE(new Path(ASTest.JRE_5_HOME));
-	}
 
+	public static IExecutionEnvironment getExecEnv(String id) {
+		return EnvironmentsManager.getDefault().getEnvironment(id);
+	}
+	
 	/*
 	 * This method does *NOT* work and I can't figure out why ;) 
 	 */
@@ -64,12 +63,33 @@ public class JREUtils {
 		}
 		return count;
 	}
+	
+	public static IVMInstall findOrCreateJRE(IPath jreBaseDir) {
+		IVMInstall found = findJRE(jreBaseDir);
+		if( found == null ) {
+			found = createJRE(jreBaseDir);
+		}
+		return found;
+	}
+	
+	public static IVMInstall findJRE(IPath jreBaseDir) {
+		IVMInstallType[] types = JavaRuntime.getVMInstallTypes();
+		for( int i = 0; i < types.length; i++ ) {
+			IVMInstall[] all = types[i].getVMInstalls();
+			for( int j = 0; j < all.length; j++ ) {
+				File loc = all[j].getInstallLocation();
+				if( loc.equals(jreBaseDir.toFile()))
+					return all[j];
+			}
+		}
+		return null;
+	}
 
 	public static IVMInstall createJRE(IPath jreBaseDir) {
 		IVMInstallType[] types = JavaRuntime.getVMInstallTypes();
 		IVMInstallType t = null;
 		System.out.println(types.length);
-		for( int i = 0; i < types.length; i++ ) {
+		for( int i = 0; i < types.length && t == null; i++ ) {
 			if( types[i].getId().equals("org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType")) {
 				t = types[i];
 			}
