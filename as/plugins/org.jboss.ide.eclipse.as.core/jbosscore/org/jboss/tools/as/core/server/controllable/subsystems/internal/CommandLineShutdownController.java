@@ -82,7 +82,11 @@ public class CommandLineShutdownController extends AbstractSubsystemController i
 
 	protected IStatus gracefullStop() {
 		try {
-			return executeShutdownCommand(getShutdownCommand(getServer()));
+			String command = getShutdownCommand(getServer());
+			if( command.trim().length() == 0 ) {
+				throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Unable to stop server: command to run is empty", null)); //$NON-NLS-1$
+			}
+			return executeShutdownCommand(command);
 		} catch(CoreException ce) {
 			Status error = new Status(
 					IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,

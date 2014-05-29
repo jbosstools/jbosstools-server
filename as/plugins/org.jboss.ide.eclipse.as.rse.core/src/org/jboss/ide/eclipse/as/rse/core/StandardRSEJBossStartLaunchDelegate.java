@@ -12,12 +12,17 @@ package org.jboss.ide.eclipse.as.rse.core;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 
 /**
  * This is a launch configuration delegate for use with rse jboss servers. 
@@ -34,8 +39,15 @@ public class StandardRSEJBossStartLaunchDelegate extends
 	protected void actualLaunch(ILaunchConfiguration configuration,
 			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		// Pull the already-generated command from the launch config and run it
+		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(configuration);
 		IServer server = ServerUtil.getServer(configuration);
 		String command = new RSELaunchConfigProperties().getStartupCommand(configuration);
+		if( command.trim().length() == 0 ) {
+			if( beh != null ) {
+				((ControllableServerBehavior)beh).setServerStopped();
+			}
+			throw new CoreException(new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, "Unable to start server: command to run is empty", null));
+		}
 		executeRemoteCommand(command, server);
 	}
 	

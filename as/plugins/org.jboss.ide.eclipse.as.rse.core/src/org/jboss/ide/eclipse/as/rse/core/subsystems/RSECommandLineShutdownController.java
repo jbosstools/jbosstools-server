@@ -61,6 +61,7 @@ public class RSECommandLineShutdownController extends CommandLineShutdownControl
 			}
 		}
 		clearProcessId();
+		((ControllableServerBehavior)getControllableBehavior()).putSharedData(IDeployableServerBehaviorProperties.NEXT_STOP_REQUIRES_FORCE, false);
 	}
 
 

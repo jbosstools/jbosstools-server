@@ -94,8 +94,15 @@ public class StandardRSEStartLaunchDelegate extends
 	protected void actualLaunch(ILaunchConfiguration configuration,
 			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		// Pull the already-generated command from the launch config and run it
+		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(configuration);
 		IServer server = ServerUtil.getServer(configuration);
 		String command = new CommandLineLaunchConfigProperties().getStartupCommand(configuration);
+		if( command.trim().length() == 0 ) {
+			if( beh != null ) {
+				((ControllableServerBehavior)beh).setServerStopped();
+			}
+			throw new CoreException(new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, "Unable to start server: command to run is empty", null));
+		}
 		executeRemoteCommand(command, server);
 	}
 	

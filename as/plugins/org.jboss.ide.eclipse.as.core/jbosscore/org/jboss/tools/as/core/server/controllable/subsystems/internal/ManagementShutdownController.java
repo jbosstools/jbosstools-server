@@ -68,6 +68,7 @@ public class ManagementShutdownController extends LocalLegacyShutdownController 
 					Messages.FORCE_TERMINATE_FAILED, ce);
 			ServerLogger.getDefault().log(getServer(), status);
 		}
+		getControllableBehavior().putSharedData(IDeployableServerBehaviorProperties.NEXT_STOP_REQUIRES_FORCE, new Boolean(false));
 		// Management shutdown has no clear way to force terminate
 		((ControllableServerBehavior)getControllableBehavior()).setServerStopped();
 	}
