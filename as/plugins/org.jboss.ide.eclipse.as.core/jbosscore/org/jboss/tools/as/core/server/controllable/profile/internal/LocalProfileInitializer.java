@@ -12,20 +12,20 @@ package org.jboss.tools.as.core.server.controllable.profile.internal;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IServerProfileInitializer;
 
-public class LocalManagementProfileInitializer implements
-		IServerProfileInitializer {
+public class LocalProfileInitializer implements IServerProfileInitializer {
 
-	public LocalManagementProfileInitializer() {
+	public LocalProfileInitializer() {
+		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void initialize(IServerWorkingCopy wc) throws CoreException {
-		wc.setAttribute(IJBossToolingConstants.PROPERTY_ADD_DEPLOYMENT_SCANNERS, false);
-		wc.setAttribute(IJBossToolingConstants.PROPERTY_REMOVE_DEPLOYMENT_SCANNERS, false);
-		wc.setAttribute(IJBossToolingConstants.LISTEN_ALL_HOSTS, true);
+		wc.setAttribute(IJBossToolingConstants.STARTUP_POLLER_KEY, WebPortPoller.WEB_POLLER_ID);
+		wc.setAttribute(IJBossToolingConstants.SHUTDOWN_POLLER_KEY, WebPortPoller.WEB_POLLER_ID);
 		wc.setAttribute(IJBossToolingConstants.EXPOSE_MANAGEMENT_SERVICE, true);
 	}
 

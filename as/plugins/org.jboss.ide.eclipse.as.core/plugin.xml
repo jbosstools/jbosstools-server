@@ -1565,6 +1565,7 @@
           <subsystem system="filesystem" subsystem="filesystem.local"/>
        </serverProfile>
        <serverProfile id="local" serverTypes="%AllJBossServerTypes">
+          <initializer class="org.jboss.tools.as.core.server.controllable.profile.internal.LocalProfileInitializer"/>
           <subsystem system="launch" subsystem="launch.standard.local"/>
           <subsystem system="shutdown" subsystem="shutdown.default"/>
           <subsystem system="publish" subsystem="publish.filesystem.default"/>
