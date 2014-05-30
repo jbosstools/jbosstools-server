@@ -49,10 +49,9 @@ public class TomcatDetectionTest extends AbstractTomcatDetectionTest {
 		super.setUp();
 		tomcatDetector = RuntimeCoreActivator.getDefault().findRuntimeDetector("org.jboss.tools.wtp.runtimes.tomcat.TomcatRuntimeDetector");
 		assertNotNull("Tomcat detector org.jboss.tools.wtp.runtimes.tomcat.TomcatRuntimeDetector not found", tomcatDetector);
-		String jre7Home = JRE_7_HOME;
-		assertNotNull(jre7Home);
-		assertTrue("JRE7 home " + jre7Home + " does not exist", new File(jre7Home).exists());
-		IVMInstall foundOrCreated = JREUtils.findOrCreateJRE(new Path(jre7Home));
+		assertNotNull(JRE_7_HOME);
+		assertTrue("JRE7 home " + JRE_7_HOME + " does not exist", new File(JRE_7_HOME).exists());
+		IVMInstall foundOrCreated = JREUtils.findOrCreateJRE(new Path(JRE_7_HOME));
 		assertNotNull(foundOrCreated);
 	}
 	
