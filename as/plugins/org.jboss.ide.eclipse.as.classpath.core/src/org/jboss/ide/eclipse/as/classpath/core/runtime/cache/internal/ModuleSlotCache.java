@@ -51,7 +51,7 @@ public class ModuleSlotCache {
 	}
 	
 	public boolean hasInitializedManifests(IProject p) {
-		return manifests.containsKey(p);
+		return manifests.containsKey(p) && manifests.get(p) != null;
 	}
 	
 	public void setManifests(IProject p, IFile[] manFiles) {

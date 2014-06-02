@@ -22,6 +22,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
+import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.IRuntimePathProvider;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.cache.internal.ModuleSlot;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.cache.internal.ModuleSlotCache;
@@ -52,10 +53,11 @@ public class ModuleSlotManifestUtil {
 			try {
 				ModuleSlotCache.getInstance().setManifests(p, locateManifestFiles(p));
 			} catch(CoreException ce) {
+				ClasspathCorePlugin.getDefault().getLog().log(ce.getStatus());
 			}
 		}
 		IFile[] all = ModuleSlotCache.getInstance().getManifests(p);
-		ArrayList<IFile> tmp = new ArrayList<IFile>(Arrays.asList(all));
+		ArrayList<IFile> tmp = all == null ? new ArrayList<IFile>() : new ArrayList<IFile>(Arrays.asList(all));
 		if( !tmp.contains(f)) {
 			tmp.add(f);
 			ModuleSlotCache.getInstance().setManifests(p, (IFile[]) tmp.toArray(new IFile[tmp.size()]));
