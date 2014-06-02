@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.ui.wizards;
+package org.jboss.tools.as.runtimes.integration.ui.wizard;
 
 import java.util.Arrays;
 

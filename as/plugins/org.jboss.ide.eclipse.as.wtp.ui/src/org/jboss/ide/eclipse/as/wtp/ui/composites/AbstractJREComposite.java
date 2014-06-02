@@ -8,9 +8,8 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.ui.wizards.composite;
+package org.jboss.ide.eclipse.as.wtp.ui.composites;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.internal.debug.ui.jres.JREsPreferencePage;
@@ -36,11 +35,9 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.TaskModel;
-import org.jboss.ide.eclipse.as.core.server.internal.AbstractLocalJBossServerRuntime;
-import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.ide.eclipse.as.ui.wizards.ServerProfileWizardFragment;
+import org.jboss.ide.eclipse.as.wtp.ui.Messages;
 
-public class JREComposite extends Composite {
+public abstract class AbstractJREComposite extends Composite {
 
 	private TaskModel taskModel;
 	private Label installedJRELabel;
@@ -53,18 +50,18 @@ public class JREComposite extends Composite {
 	private int jreComboIndex;
 	protected IVMInstall selectedVM;
 	
-	public static interface IJRECompositeListener {
-		public void vmChanged(JREComposite comp);
-	}
-	
 	private IJRECompositeListener listener;
 	
-	public JREComposite(Composite parent, int style, TaskModel tm) {
+	public AbstractJREComposite(Composite parent, int style, TaskModel tm) {
 		super(parent, style);
 		this.taskModel = tm;
 		updateJREs();
 		createJREComposite(this);
-		fillJREWidgets(getRuntimeFromTaskModel());
+		fillJREWidgets();
+	}
+	
+	protected TaskModel getTaskModel() {
+		return taskModel;
 	}
 	
 	public IVMInstall getSelectedVM() {
@@ -160,7 +157,7 @@ public class JREComposite extends Composite {
 		defaultVMIndex = 0;
 
 		// get all valid JVMs
-		IVMInstall runtimesInstall = getStoredJRE(getRuntimeFromTaskModel());
+		IVMInstall runtimesInstall = getStoredJRE();
 		
 		installedJREs = getValidJREs();
 		// get names
@@ -179,11 +176,11 @@ public class JREComposite extends Composite {
 		}
 	}
 	
-	protected void fillJREWidgets(IRuntime rt) {
-		if (isUsingDefaultJRE(rt)) {
+	protected void fillJREWidgets() {
+		if (isUsingDefaultJRE()) {
 			jreCombo.select(0);
 		} else {
-			IVMInstall install = getStoredJRE(rt);
+			IVMInstall install = getStoredJRE();
 			if( install != null ) {
 				selectedVM = install;
 				String vmName = install.getName();
@@ -198,19 +195,11 @@ public class JREComposite extends Composite {
 		if( jreCombo.getSelectionIndex() < 0 && jreCombo.getItemCount() > 0)
 			jreCombo.select(0);
 		
-		boolean isWC = rt instanceof IRuntimeWorkingCopy;
+		boolean isWC = getRuntimeFromTaskModel() instanceof IRuntimeWorkingCopy;
 		jreCombo.setEnabled(isWC);
 		jreButton.setEnabled(isWC);
 	}
 	
-	
-	protected IRuntime getRuntimeFromTaskModel() {
-		IRuntime r = (IRuntime) taskModel.getObject(TaskModel.TASK_RUNTIME);
-		if( r == null ) {
-			r = (IRuntime) taskModel.getObject(ServerProfileWizardFragment.TASK_CUSTOM_RUNTIME);
-		}
-		return r;
-	}
 	
 	private void vmChanged() {
 		jreComboIndex = jreCombo.getSelectionIndex();
@@ -230,33 +219,12 @@ public class JREComposite extends Composite {
 	 * their own way of getting access to a list of vm's etc. 
 	 */
 	
-	public IExecutionEnvironment getExecutionEnvironment() {
-		IRuntime r = getRuntimeFromTaskModel();
-		AbstractLocalJBossServerRuntime jbsrt = (AbstractLocalJBossServerRuntime)r.loadAdapter(AbstractLocalJBossServerRuntime.class, null);
-		return jbsrt.getExecutionEnvironment();
-	}
-	
-	protected String getExecutionEnvironmentId() {
-		IExecutionEnvironment env = getExecutionEnvironment();
-		return env == null ? null : env.getId();
-	}
 
-	protected boolean isUsingDefaultJRE(IRuntime rt) {
-		IRuntime r = getRuntimeFromTaskModel();
-		AbstractLocalJBossServerRuntime jbsrt = (AbstractLocalJBossServerRuntime)r.loadAdapter(AbstractLocalJBossServerRuntime.class, null);
-		return jbsrt.isUsingDefaultJRE();
-	}
+	protected abstract IRuntime getRuntimeFromTaskModel();
+	public abstract IExecutionEnvironment getExecutionEnvironment();
+	protected abstract String getExecutionEnvironmentId();
+	protected abstract boolean isUsingDefaultJRE();
 	
-	protected IVMInstall getStoredJRE(IRuntime rt) {
-		IRuntime r = getRuntimeFromTaskModel();
-		AbstractLocalJBossServerRuntime jbsrt = (AbstractLocalJBossServerRuntime)r.loadAdapter(AbstractLocalJBossServerRuntime.class, null);
-		return jbsrt.getHardVM();
-	}
-
-	public List<IVMInstall> getValidJREs() {
-		IRuntime r = getRuntimeFromTaskModel();
-		AbstractLocalJBossServerRuntime jbsrt = (AbstractLocalJBossServerRuntime)r.loadAdapter(AbstractLocalJBossServerRuntime.class, null);
-		return Arrays.asList(jbsrt.getValidJREs(getRuntimeFromTaskModel().getRuntimeType()));
-	}
-	
+	protected abstract IVMInstall getStoredJRE();
+	public abstract List<IVMInstall> getValidJREs();
 }

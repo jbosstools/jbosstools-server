@@ -26,10 +26,14 @@ Require-Bundle: org.eclipse.ui;bundle-version="3.7.0",
  org.eclipse.wst.server.ui;bundle-version="1.1.305",
  org.eclipse.wst.server.core;bundle-version="1.1.302",
  org.eclipse.wst.common.emfworkbench.integration;bundle-version="1.2.100",
- org.jboss.ide.eclipse.as.wtp.core;bundle-version="[3.0,4.0.0)"
+ org.jboss.ide.eclipse.as.wtp.core;bundle-version="[3.0,4.0.0)",
+ org.eclipse.jdt.debug.ui;bundle-version="3.6.300",
+ org.eclipse.jdt.launching;bundle-version="3.7.100"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: JBoss by Red Hat
-Export-Package: org.jboss.ide.eclipse.as.wtp.ui.editor,
+Export-Package: org.jboss.ide.eclipse.as.wtp.ui.composites,
+ org.jboss.ide.eclipse.as.wtp.ui.editor,
  org.jboss.ide.eclipse.as.wtp.ui.profile,
- org.jboss.ide.eclipse.as.wtp.ui.util
+ org.jboss.ide.eclipse.as.wtp.ui.util,
+ org.jboss.ide.eclipse.as.wtp.ui.wizard

@@ -15,6 +15,8 @@ import java.io.File;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -38,20 +40,28 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
+import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
+import org.jboss.ide.eclipse.as.ui.IPreferenceKeys;
+import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.ide.eclipse.as.ui.UIUtil;
+import org.jboss.ide.eclipse.as.ui.wizards.composite.JBossRuntimeHomeComposite;
+import org.jboss.ide.eclipse.as.ui.wizards.composite.JBossJREComposite;
+import org.jboss.ide.eclipse.as.wtp.ui.composites.AbstractJREComposite;
+import org.jboss.ide.eclipse.as.wtp.ui.util.FormDataUtility;
+import org.jboss.ide.eclipse.as.wtp.ui.wizard.RuntimeWizardFragment;
+import org.osgi.service.prefs.BackingStoreException;
 
 /**
  * @author Stryker
  */
-public class JBossRuntimeWizardFragment extends AbstractJBTRuntimeWizardFragment {
+public class JBossRuntimeWizardFragment extends RuntimeWizardFragment {
 
 	// Configuration stuff
 	protected Composite configComposite;
@@ -65,7 +75,36 @@ public class JBossRuntimeWizardFragment extends AbstractJBTRuntimeWizardFragment
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
 		return super.createComposite(parent, handle);
 	}
+
+	protected IRuntime getRuntimeFromTaskModel() {
+		IRuntime r = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		if( r == null ) {
+			r = (IRuntime) getTaskModel().getObject(ServerProfileWizardFragment.TASK_CUSTOM_RUNTIME);
+		}
+		return r;
+	}
 	
+	protected JBossRuntimeHomeComposite createHomeCompositeWidget(Composite main) {
+		// Create our composite
+		return new JBossRuntimeHomeComposite(main, SWT.NONE, handle, getTaskModel());
+	}
+	
+	protected AbstractJREComposite createJRECompositeWidget(Composite main) {
+		// Create our composite
+		return new JBossJREComposite(main, SWT.NONE, getTaskModel());
+	}
+	
+	protected void saveRuntimeLocationInPreferences(IRuntime runtime) {
+		String homeDir = homeDirComposite.getHomeDirectory();
+		IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(JBossServerUIPlugin.PLUGIN_ID);
+		prefs.put(IPreferenceKeys.RUNTIME_HOME_PREF_KEY_PREFIX + runtime.getRuntimeType().getId(), homeDir);
+		try {
+			prefs.flush();
+		} catch(BackingStoreException e) {
+			// TODO when adding tracing. This is not important enough for an error log entry
+		}
+	}
+
 	protected void updateWizardHandle(Composite parent) {
 		// make modifications to parent
 		IRuntime r = getRuntimeFromTaskModel();
@@ -133,7 +172,7 @@ public class JBossRuntimeWizardFragment extends AbstractJBTRuntimeWizardFragment
 	}
 	
 	protected void createConfigurationComposite(Composite main) {
-		UIUtil u = new UIUtil(); // top bottom left right
+		FormDataUtility u = new FormDataUtility(); // top bottom left right
 		configComposite = new Composite(main, SWT.NONE);
 		configComposite.setLayoutData(u.createFormData(
 				jreComposite, 10, 100, -5, 0, 5, 100, -5));

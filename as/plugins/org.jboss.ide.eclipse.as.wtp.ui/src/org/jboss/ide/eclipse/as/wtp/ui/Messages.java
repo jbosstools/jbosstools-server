@@ -34,6 +34,17 @@ public class Messages extends NLS {
 	public static String ServerAlreadyStartedDialog_Connect;
 	public static String ServerAlreadyStartedDialog_Launch;
 
+	
+	public static String rwf_DefaultJREForExecEnv;
+	public static String wf_JRELabel;
+	public static String wf_HomeDirLabel;
+	public static String browse;
+	public static String wf_NameLabel;
+	public static String rwf_NameInUse;
+	public static String rwf_noValidJRE;
+	public static String rwf_nameTextBlank;
+	public static String rwf_jboss7homeNotValid;
+	public static String rwf_homeIncorrectVersionError; 
 
 	static {
 		// initialize resource bundle

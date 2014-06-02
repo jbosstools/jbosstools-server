@@ -20,6 +20,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -96,7 +97,7 @@ public class CopyConfigurationDialog extends TitleAreaDialog {
 					file = null;
 				}
 
-				File directory = JBossRuntimeWizardFragment.getDirectory(file, getShell());
+				File directory = getDirectory(file, getShell());
 				if (directory != null) {
 					IPath newP = new Path(directory.getAbsolutePath());
 					IPath result;
@@ -118,7 +119,21 @@ public class CopyConfigurationDialog extends TitleAreaDialog {
 		nameText.setText(findNewest(origConfig + "_copy")); // TODO increment //$NON-NLS-1$
 		return c;
 	}
-	
+	protected static File getDirectory(File startingDirectory, Shell shell) {
+		DirectoryDialog fileDialog = new DirectoryDialog(shell, SWT.OPEN);
+		if (startingDirectory != null) {
+			fileDialog.setFilterPath(startingDirectory.getPath());
+		}
+
+		String dir = fileDialog.open();
+		if (dir != null) {
+			dir = dir.trim();
+			if (dir.length() > 0) {
+				return new File(dir);
+			}
+		}
+		return null;
+	}
 	public void validate() {
 		boolean valid = false;
 		IPath p = null;

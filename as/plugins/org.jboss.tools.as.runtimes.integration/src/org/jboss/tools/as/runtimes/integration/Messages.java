@@ -24,6 +24,10 @@ public class Messages {
 	public static String LoadRemoteRuntimes;
 	public static String CreateDownloadRuntimes;
 	
+	public static String rwf_downloadWarning;
+	public static String rwf_DownloadRuntime;
+	public static String rwf_downloadTooltipLoading;
+	public static String rwf_downloadTooltipEmpty;
 	
 	static {
 		// initialize resource bundle
