@@ -38,6 +38,7 @@ import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
+import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanType;
 import org.jboss.ide.eclipse.as.ui.IPreferenceKeys;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -46,10 +47,10 @@ import org.jboss.ide.eclipse.as.ui.wizards.JBossASDownloadRuntimeFilter;
 import org.jboss.ide.eclipse.as.ui.wizards.ServerProfileWizardFragment;
 import org.jboss.tools.as.runtimes.integration.util.DownloadRuntimeServerUtil;
 import org.jboss.tools.foundation.core.jobs.DelegatingProgressMonitor;
+import org.jboss.tools.foundation.ui.xpl.taskwizard.TaskWizardDialog;
 import org.jboss.tools.runtime.core.model.DownloadRuntime;
 import org.jboss.tools.runtime.ui.internal.wizard.DownloadRuntimesWizard;
 import org.jboss.tools.runtime.ui.wizard.DownloadRuntimesTaskWizard;
-import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanType;
 
 public class RuntimeHomeComposite extends Composite {
 	
@@ -140,7 +141,7 @@ public class RuntimeHomeComposite extends Composite {
 			final DownloadRuntimesTaskWizard wizard = new DownloadRuntimesWizard(downloadAndInstallButton.getShell(), 
 					new JBossASDownloadRuntimeFilter(type));
 			wizard.getTaskModel().putObject(DownloadRuntimesTaskWizard.SUPPRESS_RUNTIME_CREATION, new Boolean(true));
-			WizardDialog dialog = new WizardDialog(downloadAndInstallButton.getShell(), wizard);
+			WizardDialog dialog = new TaskWizardDialog(downloadAndInstallButton.getShell(), wizard);
 			dialog.open();
 			final Job j = (Job)wizard.getTaskModel().getObject(DownloadRuntimesWizard.DOWNLOAD_JOB);
 			if( j != null ) {
