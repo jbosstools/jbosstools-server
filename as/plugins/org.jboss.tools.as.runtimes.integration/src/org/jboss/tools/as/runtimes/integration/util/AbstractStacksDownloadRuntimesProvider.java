@@ -18,6 +18,8 @@ import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.wst.server.core.IRuntimeType;
+import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.jdf.stacks.model.Stacks;
 import org.jboss.tools.as.runtimes.integration.Messages;
@@ -89,34 +91,42 @@ public abstract class AbstractStacksDownloadRuntimesProvider implements IDownloa
 			if( category.equals(categoryFromStacks)) {
 				String wtpRT = workingRT.getLabels().getProperty(LABEL_WTP_RUNTIME);
 				if( wtpRT != null ) {
-					// We can make a DL out of this
-					String fileSize = workingRT.getLabels().getProperty(LABEL_FILE_SIZE);
-					String license = workingRT.getLicense();
-					String dlUrl = getDownloadURL(workingRT);
-					String id = workingRT.getId();
-					String legacyId = getLegacyId(id);
-					String effectiveId = legacyId == null ? id : legacyId;
-					
-					String name = workingRT.getName();
-					String version = workingRT.getVersion();
-					DownloadRuntime dr = new DownloadRuntime(effectiveId, name, version, dlUrl);
-					dr.setDisclaimer(!wtpRT.startsWith(IJBossToolingConstants.EAP_RUNTIME_PREFIX));
-					dr.setHumanUrl(workingRT.getUrl());
-					dr.setLicenseURL(license);
-					dr.setSize(fileSize);
-					dr.setProperty(PROP_WTP_RUNTIME, wtpRT);
-					dr.setProperty(LABEL_RUNTIME_CATEGORY, category);
-					dr.setProperty(LABEL_RUNTIME_TYPE, workingRT.getLabels().getProperty(LABEL_RUNTIME_TYPE));
-					if(workingRT.getLabels().get(DownloadRuntime.PROPERTY_REQUIRES_CREDENTIALS) != null ) 
-						dr.setProperty(DownloadRuntime.PROPERTY_REQUIRES_CREDENTIALS, workingRT.getLabels().get(DownloadRuntime.PROPERTY_REQUIRES_CREDENTIALS));
-					if( legacyId != null )
-						dr.setProperty(DownloadRuntime.PROPERTY_ALTERNATE_ID, id);
-					list.add(dr);
+					IRuntimeType rtType = ServerCore.findRuntimeType(wtpRT);
+					if( rtType != null ) {
+						DownloadRuntime dr = createDownloadRuntime(workingRT, wtpRT, category);
+						list.add(dr);
+					}
 				}
 			}
 			monitor.worked(100);
 		}
 		monitor.done();
+	}
+	
+	private DownloadRuntime createDownloadRuntime(org.jboss.jdf.stacks.model.Runtime workingRT, String wtpRT, String category) {
+		// We can make a DL out of this
+		String fileSize = workingRT.getLabels().getProperty(LABEL_FILE_SIZE);
+		String license = workingRT.getLicense();
+		String dlUrl = getDownloadURL(workingRT);
+		String id = workingRT.getId();
+		String legacyId = getLegacyId(id);
+		String effectiveId = legacyId == null ? id : legacyId;
+		
+		String name = workingRT.getName();
+		String version = workingRT.getVersion();
+		DownloadRuntime dr = new DownloadRuntime(effectiveId, name, version, dlUrl);
+		dr.setDisclaimer(!wtpRT.startsWith(IJBossToolingConstants.EAP_RUNTIME_PREFIX));
+		dr.setHumanUrl(workingRT.getUrl());
+		dr.setLicenseURL(license);
+		dr.setSize(fileSize);
+		dr.setProperty(PROP_WTP_RUNTIME, wtpRT);
+		dr.setProperty(LABEL_RUNTIME_CATEGORY, category);
+		dr.setProperty(LABEL_RUNTIME_TYPE, workingRT.getLabels().getProperty(LABEL_RUNTIME_TYPE));
+		if(workingRT.getLabels().get(DownloadRuntime.PROPERTY_REQUIRES_CREDENTIALS) != null ) 
+			dr.setProperty(DownloadRuntime.PROPERTY_REQUIRES_CREDENTIALS, workingRT.getLabels().get(DownloadRuntime.PROPERTY_REQUIRES_CREDENTIALS));
+		if( legacyId != null )
+			dr.setProperty(DownloadRuntime.PROPERTY_ALTERNATE_ID, id);
+		return dr;
 	}
 	
 	
