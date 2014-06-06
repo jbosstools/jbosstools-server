@@ -28,6 +28,7 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerListener;
 import org.eclipse.wst.server.core.ServerEvent;
+import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.ClientDelegate;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossLaunchAdapter.JBTCustomHttpLaunchable;
@@ -77,6 +78,14 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 		// Wait for the server to be started. No remote polling necessary. 
 		// Framework poller is handling that. Here just wait in the state event framework
 		waitServerStarted(server);
+		
+		// Get the module state. It should at least be synchronized. 
+		// If it's not synchronized, then its not deployed
+		int state = ((Server)server).getModulePublishState(module);
+		if( state != IServer.PUBLISH_STATE_NONE) {
+			// THe module isn't synchronized, so lets publish the server generally
+			server.publish(IServer.PUBLISH_INCREMENTAL, null);
+		}
 		
 		// Now check if we are able to poll the server on module state or not
 		ServerExtendedProperties props = (ServerExtendedProperties)server
