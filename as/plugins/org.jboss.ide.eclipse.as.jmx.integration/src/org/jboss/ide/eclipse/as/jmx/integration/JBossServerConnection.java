@@ -275,7 +275,8 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 	
 	protected void connectViaJmxIfRequired(IServer server) {
 		if( shouldConnect(server)) {
-			launchConnectionJob(server);
+			// DO NOT automatically connect. Let the user do it themselves. 
+			//launchConnectionJob(server);
 		} else {
 			try {
 				disconnect();

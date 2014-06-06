@@ -314,8 +314,8 @@ public class CpuSection extends AbstractJvmPropertySection implements
      *            <tt>true</tt> to initialize configuration.
      */
     private void refresh(final boolean initConfig) {
-        new RefreshJob(NLS.bind(Messages.refeshCpuSectionJobLabel, getJvm()
-                .getPid()), toString()) {
+    	int pid = getJvm() == null ? -1 : getJvm().getPid();
+        new RefreshJob(NLS.bind(Messages.refeshCpuSectionJobLabel, pid), toString()) {
 
             private boolean isCpuProfilerReady;
             private boolean isPackageSpecified;
