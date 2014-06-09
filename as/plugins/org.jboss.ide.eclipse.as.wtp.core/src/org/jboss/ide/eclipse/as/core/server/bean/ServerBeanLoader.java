@@ -47,7 +47,7 @@ public class ServerBeanLoader {
 		if (!ServerBeanType.UNKNOWN.equals(type)) {
 			version = type.getFullVersion(rootLocation);
 		} 
-		ServerBean server = new ServerBean(rootLocation.getPath(),getName(rootLocation),type,version);
+		ServerBean server = new ServerBean(rootLocation.getPath(),type.getServerBeanName(rootLocation),type,version);
 		this.bean = server;
 	}
 	
@@ -61,6 +61,13 @@ public class ServerBeanLoader {
 		
 	}
 	
+	/**
+	 * This method just gets the name of the file or folder provided. 
+	 * 
+	 * @param location
+	 * @return
+	 */
+	@Deprecated
 	public String getName(File location) {
 		return location.getName();
 	}

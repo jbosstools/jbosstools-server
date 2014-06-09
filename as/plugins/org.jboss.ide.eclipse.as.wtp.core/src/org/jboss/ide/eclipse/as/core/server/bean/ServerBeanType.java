@@ -339,4 +339,17 @@ public class ServerBeanType {
 		}
 		return null;
 	}
+	
+	/**
+	 * Get a name for this server bean. The default implementation 
+	 * returns only the name of the folder, though
+	 * subclasses may override this in cases where the default
+	 * value does not seem to make sense.
+	 * @param root
+	 * @Since 3.0
+	 * @return
+	 */
+	public String getServerBeanName(File root) {
+		return root.getName();
+	}
 }
