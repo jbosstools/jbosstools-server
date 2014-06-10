@@ -88,14 +88,16 @@ public class DownloadRuntimeHomeComposite extends RuntimeHomeComposite {
 								InterruptedException {
 							// We get the delegating wrapper from the wizard
 							DelegatingProgressMonitor delMon = (DelegatingProgressMonitor)wizard.getTaskModel().getObject(DownloadRuntimesTaskWizard.DOWNLOAD_JOB_DELEGATING_PROGRESS_MONITOR);
-							delMon.add(new ProgressMonitorWrapper(monitor) {
-								// We override isCanceled here, so that if the user
-								// cancels the action in the new server wizard,
-								// it will not also cancel the download
-								public boolean isCanceled() {
-									return false;
-								}
-							});
+							ProgressMonitorWrapper wrapped =
+								new ProgressMonitorWrapper(monitor) {
+									// We override isCanceled here, so that if the user
+									// cancels the action in the new server wizard,
+									// it will not also cancel the download
+									public boolean isCanceled() {
+										return false;
+									}
+								};
+							delMon.add(wrapped);
 							
 							// We now wait for the real download job to complete, or for us to be canceled. 
 							final Boolean[] barrier = new Boolean[1];
@@ -117,13 +119,14 @@ public class DownloadRuntimeHomeComposite extends RuntimeHomeComposite {
 							
 							if( monitor.isCanceled()) {
 								j.removeJobChangeListener(jobChange);
+								delMon.remove(wrapped);
 								return;
 							}
 							
 							// So the download job finished. Now we have to update the 
 							// server home with the newly unzipped path. 
 							final String newHomeDir = (String)wizard.getTaskModel().getObject(DownloadRuntimesTaskWizard.UNZIPPED_SERVER_HOME_DIRECTORY);
-							if( newHomeDir != null ) {
+							if( newHomeDir != null && !homeDirText.isDisposed()) {
 								Display.getDefault().asyncExec(new Runnable() {
 									public void run() {
 										homeDirText.setText(newHomeDir);
