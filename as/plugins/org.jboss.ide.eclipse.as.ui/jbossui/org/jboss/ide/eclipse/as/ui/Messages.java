@@ -327,7 +327,6 @@ public class Messages extends NLS {
     public static String DeploymentScannerDialogWarningExplained;
     public static String DontAskThisAgain;
 
-    public static String UsageEventTypeNewLabelDescription;
 	static {
 		NLS.initializeMessages(BUNDLE_NAME,
 				Messages.class);
