@@ -3,7 +3,7 @@
   xml:base="schema/">
   
     <!--  DTD -->
-    			<public publicId="-//JBoss//DTD Web Application 4.2//EN"
+			<public publicId="-//JBoss//DTD Web Application 4.2//EN"
 				uri="dtd/jboss-web_4_2.dtd"/>
 			<system systemId="http://www.jboss.org/j2ee/dtd/jboss-web_4_2.dtd"
 				uri="dtd/jboss-web_4_2.dtd"/>
@@ -82,7 +82,7 @@
 				uri="dtd/jboss-ds_5_0.dtd"/>
 			<system systemId="http://www.jboss.org/j2ee/dtd/jboss-ds_5_0.dtd"
 				uri="dtd/jboss-ds_5_0.dtd"/>
-    
+
     <!--  XSD -->
   
 		<public publicId="http://java.sun.com/xml/ns/javaee" uri="xsd/jboss-ejb3-spec-2_0.xsd"/>
@@ -123,6 +123,7 @@
 		<public publicId="urn:jboss:domain:1.4" uri="xsd/jboss-as-config_1_4.xsd"/>
 		<public publicId="urn:jboss:domain:1.5" uri="xsd/jboss-as-config_1_5.xsd"/>
 		<public publicId="urn:jboss:domain:2.0" uri="xsd/jboss-as-config_2_0.xsd"/>
+		<public publicId="urn:jboss:domain:2.1" uri="xsd/jboss-as-config_2_1.xsd"/>
 		<public publicId="urn:jboss:domain:batch:1.0" uri="xsd/wildfly-batch_1_0.xsd"/>
 		<public publicId="urn:jboss:domain:cmp:1.0" uri="xsd/jboss-as-cmp_1_0.xsd"/>
 		<public publicId="urn:jboss:domain:cmp:1.1" uri="xsd/jboss-as-cmp_1_1.xsd"/>
@@ -149,6 +150,7 @@
 		<public publicId="urn:jboss:domain:infinispan:1.4" uri="xsd/jboss-as-infinispan_1_4.xsd"/>
 		<public publicId="urn:jboss:domain:infinispan:2.0" uri="xsd/jboss-as-infinispan_2_0.xsd"/>
 		<public publicId="urn:jboss:domain:io:1.0" uri="xsd/wildfly-io_1_0.xsd"/>
+		<public publicId="urn:jboss:domain:io:1.1" uri="xsd/wildfly-io_1_1.xsd"/>
 		<public publicId="urn:jboss:domain:jacorb:1.0" uri="xsd/jboss-as-jacorb_1_0.xsd"/>
 		<public publicId="urn:jboss:domain:jacorb:1.1" uri="xsd/jboss-as-jacorb_1_1.xsd"/>
 		<public publicId="urn:jboss:domain:jacorb:1.2" uri="xsd/jboss-as-jacorb_1_2.xsd"/>
@@ -219,6 +221,7 @@
 		<public publicId="urn:jboss:domain:transactions:1.4" uri="xsd/jboss-as-txn_1_4.xsd"/>
 		<public publicId="urn:jboss:domain:transactions:2.0" uri="xsd/jboss-as-txn_2_0.xsd"/>
 		<public publicId="urn:jboss:domain:undertow:1.0" uri="xsd/wildfly-undertow_1_0.xsd"/>
+		<public publicId="urn:jboss:domain:undertow:1.1" uri="xsd/wildfly-undertow_1_1.xsd"/>
 		<public publicId="urn:jboss:domain:web:1.0" uri="xsd/jboss-as-web_1_0.xsd"/>
 		<public publicId="urn:jboss:domain:web:1.1" uri="xsd/jboss-as-web_1_1.xsd"/>
 		<public publicId="urn:jboss:domain:web:1.2" uri="xsd/jboss-as-web_1_2.xsd"/>

@@ -13,10 +13,10 @@ package org.jboss.tools.as.test.core.catalog;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Iterator;
 
 import junit.framework.TestCase;
 
-import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -43,12 +43,17 @@ public class CatalogMissingEntriesTest extends TestCase {
 		// First get a list of all files in our schema folder
 		String[] insidePlugin = findAllSchema();
 		String[] insidePluginXML = getAllUris();
+		ArrayList<String> missing = new ArrayList<String>();
 		for( int i = 0; i < insidePlugin.length; i++ ) {
 			if( !fileInPluginXml(insidePlugin[i], insidePluginXML)) {
-				fail(insidePlugin[i] + " is not found in plugin.xml");
+				missing.add(insidePlugin[i]);
 			}
 		}
-		
+		Iterator<String> i = missing.iterator();
+		while(i.hasNext()) {
+			System.out.println(i.next() + " is not found in plugin.xml");
+		}
+		assertEquals(missing.size(), 0);
 	}
 	
 	public void testMissingFile() {
@@ -88,7 +93,8 @@ public class CatalogMissingEntriesTest extends TestCase {
 			one = all.nextElement();
 			IPath p = new Path(one.getPath());
 			if( p.segmentCount() == 3 ) {
-				list.add(one.getPath());
+				if( !p.lastSegment().equalsIgnoreCase(".gitignore"))
+					list.add(one.getPath());
 			}
 		}
 		return (String[]) list.toArray(new String[list.size()]);

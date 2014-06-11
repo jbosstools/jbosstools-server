@@ -32,9 +32,15 @@ public class GenerationMain {
 			if( duplicateUriMap.containsKey(o.getName())) {
 				String f1Name = duplicateUriMap.get(o.getName()).file.getName();
 				String f2Name = o.file.getName();
-				System.err.println( f1Name + " is a duplicate with " + f2Name + " and has name " + o.getName());
+				if( !f1Name.equals(f2Name))
+					System.err.println( f1Name + " is a duplicate with " + f2Name + " and has name " + o.getName());
 			}
 			duplicateUriMap.put(o.getName(), o);
+		}
+		
+		Iterator<String> errIt = errors.iterator();
+		while(errIt.hasNext()) {
+			System.err.println(errIt.next());
 		}
 	}
 	
@@ -45,9 +51,13 @@ public class GenerationMain {
 		File[] all = xsd.listFiles();
 		
 		for( int i = 0; i < all.length; i++ ) {
-			XSDObject o = new XSDObject(all[i]);
-			if( o.valid ) {
-				xsdObjs.add(o);
+			if( !all[i].getName().equalsIgnoreCase(".gitignore")) {
+				XSDObject o = new XSDObject(all[i]);
+				if( o.valid ) {
+					xsdObjs.add(o);
+				} else {
+					errors.add(all[i] + " is invalid: " + (o.validException == null ? "null" : o.validException.getMessage()));
+				}
 			}
 		}
 		
@@ -71,6 +81,7 @@ public class GenerationMain {
 		String contents = null;
 		File file = null;
 		boolean valid = true;
+		Exception validException = null;
 		String uri = null;
 		public XSDObject(File f) {
 			try {
@@ -79,6 +90,7 @@ public class GenerationMain {
 				toString();
 			} catch(IOException ioe) {
 				valid = false;
+				validException = ioe;
 			}
 		}
 		
