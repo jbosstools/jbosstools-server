@@ -18,11 +18,13 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.wst.server.ui;bundle-version="1.5.0",
  org.jboss.ide.eclipse.as.wtp.ui;bundle-version="3.0.0",
  org.jboss.tools.runtime.ui;bundle-version="3.0.0",
- org.jboss.tools.foundation.ui;bundle-version="1.1.0"
+ org.jboss.tools.foundation.ui;bundle-version="1.1.0",
+ org.jboss.tools.usage;bundle-version="2.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
-Export-Package: org.jboss.tools.as.runtimes.integration.ui.composites,
+Export-Package: org.jboss.tools.as.runtimes.integration,
+ org.jboss.tools.as.runtimes.integration.ui.composites,
  org.jboss.tools.as.runtimes.integration.ui.wizard,
  org.jboss.tools.as.runtimes.integration.util
 Bundle-Localization: plugin

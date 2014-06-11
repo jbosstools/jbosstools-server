@@ -28,6 +28,7 @@ public class Messages {
 	public static String rwf_DownloadRuntime;
 	public static String rwf_downloadTooltipLoading;
 	public static String rwf_downloadTooltipEmpty;
+	public static String UsageEventTypeServerIDLabelDescription;
 	
 	static {
 		// initialize resource bundle

@@ -227,6 +227,7 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 			if( name != null )
 				serverWC.setName(name);
 			serverWC.save(true, new NullProgressMonitor());
+			ServerRuntimesIntegrationActivator.getDefault().trackNewDetectedServerEvent(serverType.getId());
 		}
 	}
 	
