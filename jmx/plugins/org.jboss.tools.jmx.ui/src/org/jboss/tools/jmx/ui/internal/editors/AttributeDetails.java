@@ -170,7 +170,8 @@ public class AttributeDetails extends AbstractFormPart implements IDetailsPage {
 
     @Override
     public void dispose() {
-    	bold.dispose();
+    	if( bold != null )
+    		bold.dispose();
     }
     
     private GridData newLayoutData() {
