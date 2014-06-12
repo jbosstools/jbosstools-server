@@ -55,7 +55,11 @@ import org.jboss.tools.jmx.jvmmonitor.ui.JvmMonitorPreferences;
 import org.jboss.tools.jmx.ui.ImageProvider;
 
 
-
+/**
+ * This class needs to be abstracted out with extension points so that
+ * custom launches can determine how their jvm appears. 
+ * 
+ */
 public class JvmConnectionWrapper implements IConnectionWrapper, HasName, ImageProvider, IAdaptable, IJvmFacade {
 	private static final String MAVEN_PREFIX = "org.codehaus.plexus.classworlds.launcher.Launcher";
 	private static final String ECLIPSE_MAVEN_PROCESS_PREFIX  = "-DECLIPSE_PROCESS_NAME='";
@@ -84,7 +88,7 @@ public class JvmConnectionWrapper implements IConnectionWrapper, HasName, ImageP
 
 		karafSubTypeMap.put("default", "Apache Karaf");
 		karafSubTypeMap.put("esb-version.jar", "JBoss Fuse");
-		karafSubTypeMap.put("fabric-version.jar", "Fuse Fabric");
+		karafSubTypeMap.put("fabric-version.jar", "Fabric8");
 		karafSubTypeMap.put("mq-version.jar", "JBoss A-MQ");
 		karafSubTypeMap.put("servicemix-version.jar", "Apache ServiceMix");
 	}
@@ -251,7 +255,9 @@ public class JvmConnectionWrapper implements IConnectionWrapper, HasName, ImageP
 		public String getDisplayString(IActiveJvm jvm) {
 			if( isBlank(jvm.getMainClass())) 
 				return "Java Process";
-			return "Java Process: " + jvm.getMainClass(); 
+			String main = jvm.getMainClass();
+			String alias = vmAliasMap.get(main);
+			return alias == null ? main : alias;
 		}
 	}
 
