@@ -12,27 +12,96 @@ package org.jboss.ide.eclipse.as.jmx.integration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.IServerLifecycleListener;
 import org.eclipse.wst.server.core.ServerCore;
+import org.eclipse.wst.server.core.ServerEvent;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
+import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.jboss.tools.jmx.core.AbstractConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionProviderEventEmitter;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 
 public abstract class AbstractJBossJMXConnectionProvider extends AbstractConnectionProvider implements
-	IConnectionProvider, IConnectionProviderEventEmitter, IServerLifecycleListener  {
+	IConnectionProvider, IConnectionProviderEventEmitter {
 
 	private HashMap<String, IConnectionWrapper> idToConnection;
 	public AbstractJBossJMXConnectionProvider() {
-		ServerCore.addServerLifecycleListener(this);
+		UnitedServerListener listener = createUnitedListener();
+		UnitedServerListenerManager.getDefault().addListener(listener);
+	}
+	
+	private UnitedServerListener createUnitedListener() {
+		UnitedServerListener listener = new UnitedServerListener() {
+			public void serverChanged(ServerEvent event) {
+				IConnectionWrapper con = idToConnection.get(event.getServer().getId());
+				if( con != null ) {
+					if( serverSwitchesToState(event, IServer.STATE_STARTED)) {
+						fireAdded(con);
+					} else if( serverSwitchesToState(event, IServer.STATE_STOPPED)) {
+						fireRemoved(con);
+					}
+				}
+			}
+
+			public void serverAdded(IServer server) {
+				if( belongsHere(server)) {
+					getConnections();
+					if( !idToConnection.containsKey(server.getId())) {
+						IConnectionWrapper connection = createConnection(server);
+						idToConnection.put(server.getId(), connection);
+						if( connection != null && server.getServerState() == IServer.STATE_STARTED )
+							fireAdded(idToConnection.get(server.getId()));
+					}
+				}
+			}
+
+			public void serverChanged(IServer server) {
+				if( belongsHere(server)) {
+					getConnections();
+					Object o = idToConnection.get(server.getId());
+					if( o == null ) {
+						IConnectionWrapper connection = createConnection(server);
+						idToConnection.put(server.getId(), connection);
+						if( connection != null && server.getServerState() == IServer.STATE_STARTED )
+							fireAdded(idToConnection.get(server.getId()));
+					}
+				}
+			}
+
+			public void serverRemoved(IServer server) {
+				if( belongsHere(server)) {
+					IConnectionWrapper connection;
+					if( idToConnection != null ) {
+						connection = idToConnection.get(server.getId());
+						if( connection != null ) {
+							idToConnection.remove(server.getId());
+							fireRemoved(connection);
+						}
+					} else {
+						// hasn't been initialized yet
+						getConnections();
+						
+						// but now its missing from the collection, so make one up
+						IConnectionWrapper dummy = createConnection(server);
+						
+						// Make sure we don't fire a removal for a connection that doesn't exist
+						if( dummy != null )
+							fireRemoved(dummy);
+					}
+				}
+			}
+		};
+		return listener;
 	}
 	
 	protected abstract boolean belongsHere(IServer server);
@@ -40,53 +109,6 @@ public abstract class AbstractJBossJMXConnectionProvider extends AbstractConnect
 	protected abstract IConnectionWrapper createConnection(IServer server);
 	public abstract String getName(IConnectionWrapper wrapper);
 
-	public void serverAdded(IServer server) {
-		if( belongsHere(server)) {
-			getConnections();
-			if( !idToConnection.containsKey(server.getId())) {
-				IConnectionWrapper connection = createConnection(server);
-				idToConnection.put(server.getId(), connection);
-				if( connection != null )
-					fireAdded(idToConnection.get(server.getId()));
-			}
-		}
-	}
-
-	public void serverChanged(IServer server) {
-		if( belongsHere(server)) {
-			getConnections();
-			Object o = idToConnection.get(server.getId());
-			if( o == null ) {
-				IConnectionWrapper connection = createConnection(server);
-				idToConnection.put(server.getId(), connection);
-				if( connection != null )
-					fireAdded(idToConnection.get(server.getId()));
-			}
-		}
-	}
-
-	public void serverRemoved(IServer server) {
-		if( belongsHere(server)) {
-			IConnectionWrapper connection;
-			if( idToConnection != null ) {
-				connection = idToConnection.get(server.getId());
-				if( connection != null ) {
-					idToConnection.remove(server.getId());
-					fireRemoved(connection);
-				}
-			} else {
-				// hasn't been initialized yet
-				getConnections();
-				
-				// but now its missing from the collection, so make one up
-				IConnectionWrapper dummy = createConnection(server);
-				
-				// Make sure we don't fire a removal for a connection that doesn't exist
-				if( dummy != null )
-					fireRemoved(dummy);
-			}
-		}
-	}
 
 	public IConnectionWrapper findConnection(IServer s) {
 		getConnections();
@@ -109,8 +131,23 @@ public abstract class AbstractJBossJMXConnectionProvider extends AbstractConnect
 			}
 		} 
 		ArrayList<IConnectionWrapper> list = new ArrayList<IConnectionWrapper>();
-		list.addAll(idToConnection.values());
+		Set<String> serverIds = idToConnection.keySet();
+		Iterator<String> it = serverIds.iterator();
+		while(it.hasNext()) {
+			String id = it.next();
+			if( isServerStarted(id)) {
+				list.add(idToConnection.get(id));
+			}
+		}
 		return list.toArray(new IConnectionWrapper[list.size()]);
+	}
+	
+	private boolean isServerStarted(String id) {
+		IServer s = ServerCore.findServer(id);
+		if( s != null ) {
+			return s.getServerState() == IServer.STATE_STARTED;
+		}
+		return false;
 	}
 	
 	public boolean canCreate() {

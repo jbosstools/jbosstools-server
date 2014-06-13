@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.as.core.server;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.wst.server.core.IPublishListener;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeLifecycleListener;
 import org.eclipse.wst.server.core.IServer;
@@ -26,7 +27,7 @@ import org.eclipse.wst.server.core.ServerEvent;
  *
  */
 public class UnitedServerListener implements 
-	IServerLifecycleListener, IServerListener, IRuntimeLifecycleListener {
+	IServerLifecycleListener, IServerListener, IRuntimeLifecycleListener, IPublishListener {
 
 	public void init(IServer server) {
 	}

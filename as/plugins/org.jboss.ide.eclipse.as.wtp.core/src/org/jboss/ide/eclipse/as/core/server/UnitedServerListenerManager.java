@@ -11,11 +11,9 @@
 package org.jboss.ide.eclipse.as.core.server;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.server.core.IPublishListener;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeLifecycleListener;
@@ -24,7 +22,6 @@ import org.eclipse.wst.server.core.IServerLifecycleListener;
 import org.eclipse.wst.server.core.IServerListener;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerEvent;
-import org.eclipse.wst.server.core.internal.Server;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 /**
@@ -40,6 +37,8 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 public class UnitedServerListenerManager implements 
 	IServerLifecycleListener, IServerListener, IPublishListener, IRuntimeLifecycleListener {
 	protected static UnitedServerListenerManager instance;
+	private boolean isInitialized = false;
+	
 	public static synchronized UnitedServerListenerManager getDefault() {
 		if( instance == null )
 			instance = new UnitedServerListenerManager();
@@ -53,6 +52,11 @@ public class UnitedServerListenerManager implements
 		ServerCore.addRuntimeLifecycleListener(UnitedServerListenerManager.this);
 		IServer[] allServers = ServerCore.getServers();
 		for( int i = 0; i < allServers.length; i++ ) {
+			// Workaround line for eclipse bug 437351
+			allServers[i].removeServerListener(new UnitedServerListener());
+			// Workaround line for eclipse bug 437351
+			allServers[i].removePublishListener(new UnitedServerListener());
+			
 			allServers[i].addServerListener(UnitedServerListenerManager.this);
 			allServers[i].addPublishListener(UnitedServerListenerManager.this);
 		}
@@ -70,10 +74,25 @@ public class UnitedServerListenerManager implements
 	public synchronized void addListener(UnitedServerListener listener) {
 		if( !list.contains(listener)) {
 			list.add(listener);
-			IServer[] allServers = ServerCore.getServers();
-			for( int i = 0; i < allServers.length; i++ ) {
-				listener.init(allServers[i]);
-			}
+			// united listener manager is already initialized, so init this new listener individually
+			if( isInitialized )
+				initializeListener(listener);
+		}
+	}
+
+	private synchronized void initializeCurrentListeners() {
+		Iterator<UnitedServerListener> it = list.iterator();
+		while(it.hasNext()) {
+			initializeListener(it.next());
+		}
+		isInitialized = true;
+	}
+
+	
+	private synchronized void initializeListener(UnitedServerListener listener) {
+		IServer[] allServers = ServerCore.getServers();
+		for( int i = 0; i < allServers.length; i++ ) {
+			listener.init(allServers[i]);
 		}
 	}
 	public synchronized void removeListener(UnitedServerListener listener) {
