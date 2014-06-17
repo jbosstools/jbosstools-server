@@ -18,4 +18,3 @@ Export-Package: org.jboss.tools.jmx.jvmmonitor.core,
 Bundle-Vendor: %providerName
 Bundle-Name: %pluginName
 Bundle-ClassPath: jvmmonitor-core.jar
-Eclipse-BundleShape: dir

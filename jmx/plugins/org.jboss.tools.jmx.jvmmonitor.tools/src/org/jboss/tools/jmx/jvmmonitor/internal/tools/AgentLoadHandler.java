@@ -6,15 +6,14 @@
  *******************************************************************************/
 package org.jboss.tools.jmx.jvmmonitor.internal.tools;
 
-import static org.jboss.tools.jmx.jvmmonitor.internal.tools.IConstants.BUNDLE_ROOT_PATH;
-
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
 import org.jboss.tools.jmx.jvmmonitor.core.IActiveJvm;
 import org.jboss.tools.jmx.jvmmonitor.core.IAgentLoadHandler;
@@ -84,31 +83,23 @@ public class AgentLoadHandler implements IAgentLoadHandler {
      * Searches the agent jar file.
      */
     private void searchAgentJar() {
-        URL entry = org.jboss.tools.jmx.jvmmonitor.core.Activator.getDefault().getBundle()
-                .getEntry(BUNDLE_ROOT_PATH);
-        String corePluginPath;
+        File agentJar = null;
         try {
-            corePluginPath = FileLocator.resolve(entry).getPath();
+            URL entry = org.jboss.tools.jmx.jvmmonitor.core.Activator.getDefault().getBundle()
+                    .getEntry(IConstants.JVMMONITOR_AGENT_JAR);
+        	URL entryFileUrl = FileLocator.toFileURL(entry);
+        	URI entryFileURI = entryFileUrl.toURI();
+        	agentJar = new File(entryFileURI);
         } catch (IOException e) {
             Activator.log(IStatus.ERROR, Messages.corePluginNoFoundMsg,
                     new Exception());
             return;
-        }
+        } catch (URISyntaxException e) {
+            Activator.log(IStatus.ERROR, Messages.corePluginNoFoundMsg,
+                    new Exception());
+            return;
+		} 
 
-        File corePlugin = new File(corePluginPath);
-
-        if (!corePlugin.exists()) {
-            // the bundle location is a relative path on linux
-            String installationLication = Platform.getInstallLocation()
-                    .getURL().getPath();
-            corePlugin = new File(installationLication + corePluginPath);
-            if (!corePlugin.exists()) {
-                Activator.log(IStatus.ERROR, Messages.corePluginNoFoundMsg,
-                        new Exception());
-            }
-        }
-
-        File agentJar = new File(corePlugin + IConstants.JVMMONITOR_AGENT_JAR);
         if (!agentJar.exists()) {
             Activator.log(
                     IStatus.ERROR,
