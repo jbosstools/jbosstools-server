@@ -57,7 +57,7 @@ public class LayeredProductServerWizardFragment extends ServerProfileWizardFragm
 	}
 
 	@Override
-	protected Composite createProfileSection(Composite main) {
+	protected IProfileComposite createProfileSection(Composite main) {
 		LayeredProfileComposite pc =  new LayeredProfileComposite(main, SWT.NONE, this);
 		GridData gd = new GridData();
 		gd.widthHint = 500;
@@ -129,7 +129,7 @@ public class LayeredProductServerWizardFragment extends ServerProfileWizardFragm
 	}
 	
 	
-	private static class LayeredProfileComposite extends Composite {
+	private static class LayeredProfileComposite extends Composite implements IProfileComposite {
 		private ServerProfile[] profiles;
 		private ServerProfileWizardFragment profileFragment;
 		private Button localButton, remoteButton, fsButton, mgmtButton;
@@ -164,23 +164,39 @@ public class LayeredProductServerWizardFragment extends ServerProfileWizardFragm
 			fsButton.setText("Filesystem and shell operations");
 			mgmtButton.setText("Management Operations");
 			
-			localButton.setSelection(true);
-			fsButton.setSelection(true);
+			
+			
+			// Find out the value
+			IServerAttributes server = (IServerAttributes)profileFragment.getTaskModel().getObject(TaskModel.TASK_SERVER);
+			String currentProfile = ServerProfileModel.getProfile(server, ServerProfileModel.DEFAULT_SERVER_PROFILE);
+			setSelectionsForProfile(currentProfile);
 			
 			SelectionListener sl = new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
-					profileFragment.setProfile(getProfileForSelections());
+					profileFragment.setProfile(getSelectedProfile());
 				}
 			};
 			localButton.addSelectionListener(sl);
 			remoteButton.addSelectionListener(sl);
 			fsButton.addSelectionListener(sl);
 			mgmtButton.addSelectionListener(sl);
-			
-			profileFragment.setProfile(getProfileForSelections());
 		}
 		
-		private ServerProfile getProfileForSelections() {
+		private void setSelectionsForProfile(String currentProfile) {
+			if( currentProfile == null ) {
+				localButton.setSelection(true);
+				fsButton.setSelection(true);
+			} else {
+				boolean rse = currentProfile.equals("rse") || currentProfile.startsWith("rse.");
+				boolean mgmt = currentProfile.endsWith(".mgmt");
+				localButton.setSelection(!rse);
+				remoteButton.setSelection(rse);
+				fsButton.setSelection(!mgmt);
+				mgmtButton.setSelection(mgmt);
+			}
+		}
+		
+		public ServerProfile getSelectedProfile() {
 			boolean local = localButton.getSelection();
 			boolean mgmt = mgmtButton.getSelection();
 			

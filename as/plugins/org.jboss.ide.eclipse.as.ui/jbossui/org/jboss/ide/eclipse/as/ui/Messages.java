@@ -82,9 +82,11 @@ public class Messages extends NLS {
 	public static String rwf_downloadTooltipLoading;
 	public static String rwf_downloadTooltipEmpty;
 	public static String swf_Title;
+	public static String swf_Title_edit;
 	public static String swf_RuntimeInformation;
 	public static String swf_AuthorizationDescription;
 	public static String swf_Explanation;
+	public static String swf_Explanation_edit;
 	public static String swf_Explanation2;
 	public static String swf_ConfigurationLocation;
 	public static String swf_AuthenticationGroup;

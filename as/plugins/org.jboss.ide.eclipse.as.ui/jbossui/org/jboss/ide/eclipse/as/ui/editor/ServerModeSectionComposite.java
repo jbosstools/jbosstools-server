@@ -13,6 +13,8 @@ package org.jboss.ide.eclipse.as.ui.editor;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jface.window.Window;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -22,25 +24,38 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledPageBook;
+import org.eclipse.ui.part.MultiPageEditorPart;
+import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.eclipse.wst.server.core.TaskModel;
+import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
+import org.eclipse.wst.server.ui.internal.wizard.TaskWizard;
+import org.eclipse.wst.server.ui.wizard.WizardFragment;
+import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.ui.FormUtils;
 import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.ide.eclipse.as.ui.UIUtil;
-import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI.IServerModeUICallback;
+import org.jboss.ide.eclipse.as.ui.editor.DeploymentTypeUIUtil.ServerEditorUICallback;
+import org.jboss.ide.eclipse.as.ui.wizards.LayeredProductServerWizardFragment;
+import org.jboss.ide.eclipse.as.ui.wizards.ServerProfileWizardFragment;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
+import org.jboss.ide.eclipse.as.wtp.ui.util.FormDataUtility;
 
 /**
  * A composite to choose a server mode (or profile) from a dropdown, and 
@@ -50,20 +65,20 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
  */
 public class ServerModeSectionComposite extends Composite {
 	private ArrayList<DeployUIAdditions> deployAdditions;
-	private Combo deployTypeCombo;
+	private Label profileLabel;
 	private ScrolledPageBook preferencePageBook;
-	private IServerModeUICallback callback;
-	private Button executeShellScripts; // may be null;
+	private ServerEditorUICallback callback;
 	private Button listenOnAllHosts; // may be null
 	private Button exposeManagement; // may be null
-
+	protected Link configureProfileLink;
+	
 	private DeployUIAdditions currentUIAddition;
 	private IManagedForm form;
-	public ServerModeSectionComposite(Composite parent, int style, IServerModeUICallback callback) {
+	public ServerModeSectionComposite(Composite parent, int style, ServerEditorUICallback callback) {
 		this(parent, style, callback, null);
 	}
 	
-	public ServerModeSectionComposite(Composite parent, int style, IServerModeUICallback callback, IManagedForm form) {
+	public ServerModeSectionComposite(Composite parent, int style, ServerEditorUICallback callback, IManagedForm form) {
 		super(parent, style);
 		this.callback = callback;
 		this.form = form;
@@ -73,11 +88,26 @@ public class ServerModeSectionComposite extends Composite {
 		setLayout(new FormLayout());
 		
 		Control top = null;
+		configureProfileLink = new Link( this, SWT.NONE);
+		FormData fd = FormDataUtility.createFormData2(top, 5, null, 0, 0, 5, null, 0);
+		configureProfileLink.setLayoutData(fd);
+		
+		
+		profileLabel = new Label(this, SWT.READ_ONLY);
+		fd = FormDataUtility.createFormData2(top, 5, null, 0, configureProfileLink, 5, null, 0);
+		profileLabel.setLayoutData(fd);
 
+	    String profName = getCurrentProfileName();
+	    configureProfileLink.setText("<a href=\"\">Behavior Profile:</a>   "); //$NON-NLS-1$ 
+	    configureProfileLink.addListener(SWT.Selection, createConfigureListener());
+		
+		profileLabel.setText(( profName == null ? "Not Found" : profName));
+		top = configureProfileLink;
+		
 		if( showListenOnAllHostsCheckbox()) {
 			listenOnAllHosts = new Button(this, SWT.CHECK);
 			listenOnAllHosts.setText(Messages.EditorListenOnAllHosts);
-			FormData fd = UIUtil.createFormData2(top == null ? 0 : top, 5, null, 0, 0, 5, null, 0);
+			fd = FormDataUtility.createFormData2(top == null ? 0 : top, 5, null, 0, 0, 5, null, 0);
 			listenOnAllHosts.setLayoutData(fd);
 			top = listenOnAllHosts;
 			listenOnAllHosts.setSelection(LaunchCommandPreferences.listensOnAllHosts(callback.getServer()));
@@ -93,7 +123,7 @@ public class ServerModeSectionComposite extends Composite {
 		if( showExposeManagementCheckbox()) {
 			exposeManagement = new Button(this, SWT.CHECK);
 			exposeManagement.setText(Messages.EditorExposeManagement);
-			FormData fd = UIUtil.createFormData2(top == null ? 0 : top, 5, null, 0, 0, 5, null, 0);
+			fd = FormDataUtility.createFormData2(top == null ? 0 : top, 5, null, 0, 0, 5, null, 0);
 			exposeManagement.setLayoutData(fd);
 			top = exposeManagement;
 			exposeManagement.setSelection(LaunchCommandPreferences.exposesManagement(callback.getServer()));
@@ -106,38 +136,75 @@ public class ServerModeSectionComposite extends Composite {
 			);
 		}
 
-		deployTypeCombo = new Combo(this, SWT.READ_ONLY);
-		FormData fd = UIUtil.createFormData2(top, 5, null, 0, 0, 5, 50, -5);
-		deployTypeCombo.setLayoutData(fd);
-		
+
 
 	    preferencePageBook = toolkit.createPageBook(this, SWT.FLAT|SWT.TOP);
+	    preferencePageBook.setLayoutData(FormDataUtility.createFormData2(
+	    		top, 5, 0, 300, 0, 5, 100, -5));
 	    
-	    preferencePageBook.setLayoutData(UIUtil.createFormData2(
-	    		deployTypeCombo, 5, 0, 300, 0, 5, 100, -5));
 
-	    // fill widgets
-	    String[] nameList = new String[deployAdditions.size()];
-	    for( int i = 0; i < nameList.length; i++ ) {
-	    	nameList[i] = deployAdditions.get(i).behaviourName;
-	    }
-	    deployTypeCombo.setItems(nameList);
-	    
+		updateProfilePagebook();
+	}
+	
+
+	protected String getCurrentProfileId() {
 		IServer original = callback.getServer().getOriginal();
 		IControllableServerBehavior ds = original == null ? null : JBossServerBehaviorUtils.getControllableBehavior(callback.getServer().getOriginal());
 		String currentProfileId = null;
 		if( ds != null ) {
 			currentProfileId = ServerProfileModel.getProfile(callback.getServer());
 		}
-		if( currentProfileId != null ) {
-			ServerProfileModel.ServerProfile sp = ServerProfileModel.getDefault().getProfile(callback.getServer().getServerType().getId(), currentProfileId);
-			String currentProfileName = sp == null ? currentProfileId : sp.getVisibleName();
-			int index = deployTypeCombo.indexOf(currentProfileName);
-			if( index != -1 ) 
-				deployTypeCombo.select(index);
+		return currentProfileId;
+	}
+	
+	protected String getCurrentProfileName() {
+		String id = getCurrentProfileId();
+		String currentProfileName = id;
+		if( id != null ) {
+			ServerProfileModel.ServerProfile sp = ServerProfileModel.getDefault().getProfile(callback.getServer().getServerType().getId(), id);
+			currentProfileName = sp == null ? id : sp.getVisibleName();
 		}
-		updateProfilePagebook();
-	    deployTypeCombo.setEnabled(false);
+		return currentProfileName;
+	}
+	
+	protected Listener createConfigureListener() {
+		return new Listener() {
+			public void handleEvent(Event event) {
+				configurePressed();
+			}
+		};
+	}
+	
+	protected WizardFragment createRootConfigureFragment() {
+		return new LayeredProductServerWizardFragment();
+	}
+	
+	private void configurePressed() {
+		TaskModel tm = new TaskModel();
+		tm.putObject(TaskModel.TASK_SERVER, callback.getServer());
+		tm.putObject(ServerProfileWizardFragment.EDITING_SERVER, Boolean.TRUE); // indicating we're editing the server
+		
+		
+		TaskWizard tw = new TaskWizard("Configure Server Profile", createRootConfigureFragment(), tm);
+		WizardDialog wd = new WizardDialog(profileLabel.getShell(), tw);
+		if( wd.open() == Window.OK) {
+			// close and re-open editor
+			IServerWorkingCopy s = callback.getServer();
+			IServer s2 = s.getOriginal();
+			IEditorSite site = callback.getPart().getEditorSite();
+			if( site instanceof MultiPageEditorSite) {
+				MultiPageEditorPart mpep = ((MultiPageEditorSite)site).getMultiPageEditor();
+				if( site.getPage().closeEditor(mpep, false) ) {
+					try {
+						ServerUIPlugin.editServer(s2);
+					} catch (Exception e) {
+						if (Trace.SEVERE) {
+							Trace.trace(Trace.STRING_SEVERE, "Error editing element", e);
+						}
+					}
+				}
+			}
+		}
 	}
 	
 	/* Return the currently selected behavior mode's ui object */
@@ -230,8 +297,9 @@ public class ServerModeSectionComposite extends Composite {
 	// Load the deploy type ui elements (local / rse / other)
 	// TODO this needs rewrite
 	private void loadDeployTypeData() {
+		String currentProfileId = getCurrentProfileId();
 		deployAdditions = new ArrayList<DeployUIAdditions>();
-		String[] supported = new String[]{"local","rse", "local.mgmt", "rse.mgmt"};
+		String[] supported = currentProfileId == null ? new String[0] : new String[]{currentProfileId};
 		String serverType = callback.getServer().getServerType().getId();
 		for( int i = 0; i < supported.length; i++) {
 			IDeploymentTypeUI ui = EditorExtensionManager.getDefault().getPublishPreferenceUI(supported[i]);
@@ -241,6 +309,7 @@ public class ServerModeSectionComposite extends Composite {
 					name, 
 					supported[i], ui));
 		}
+		currentUIAddition = deployAdditions.size() > 0 ? deployAdditions.get(0) : null;
 	}
 
 	/* 
@@ -248,15 +317,12 @@ public class ServerModeSectionComposite extends Composite {
 	 * the deploy type widget to show the new mode's composite 
 	 */
 	private void updateProfilePagebook() {
-		int index = deployTypeCombo.getSelectionIndex();
-		if( index != -1 ) {
-			DeployUIAdditions ui = deployAdditions.get(index);
-			currentUIAddition = ui;
-			if( !ui.isRegistered()) {
-				Composite newRoot = preferencePageBook.createPage(ui);
-				ui.createComposite(newRoot);
+		if( currentUIAddition != null ) {
+			if( !currentUIAddition.isRegistered()) {
+				Composite newRoot = preferencePageBook.createPage(currentUIAddition);
+				currentUIAddition.createComposite(newRoot);
 			}
-			preferencePageBook.showPage(ui);
+			preferencePageBook.showPage(currentUIAddition);
 			Control page = preferencePageBook.getCurrentPage();
 			
 			if (form != null) {
@@ -270,8 +336,6 @@ public class ServerModeSectionComposite extends Composite {
 				form.getForm().layout(true, true);
 				form.getForm().reflow(true);
 			}
-		} else {
-			// null selection
 		}
 	}
 

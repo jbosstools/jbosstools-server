@@ -43,7 +43,7 @@ public class DeploymentTypeUIUtil {
 		return new NewServerWizardBehaviourCallback(tm, handle, completable);
 	}
 
-	public static IServerModeUICallback getCallback(final IServerWorkingCopy server, IEditorInput input, ServerEditorPart part, ServerEditorSection section) {
+	public static ServerEditorUICallback getCallback(final IServerWorkingCopy server, IEditorInput input, ServerEditorPart part, ServerEditorSection section) {
 		return new ServerEditorUICallback(input, part, section);
 	}
 	
@@ -110,12 +110,15 @@ public class DeploymentTypeUIUtil {
 	 * For use inside a server editor
 	 */
 	public static class ServerEditorUICallback implements IServerModeUICallback {
+
 		private ServerResourceCommandManager commandManager;
 		private ServerEditorPart part;
 		private ServerEditorSection section;
+		private IEditorInput input;
 		public ServerEditorUICallback(IEditorInput input, ServerEditorPart part, ServerEditorSection section ) {
 			this.part = part;
 			this.section = section;
+			this.input = input;
 			commandManager = ((ServerEditorPartInput) input).getServerCommandManager();
 		}
 		public IServerWorkingCopy getServer() {
@@ -145,6 +148,18 @@ public class DeploymentTypeUIUtil {
 		@Override
 		public void setComplete(boolean complete) {
 			// Do nothing
+		}
+		public ServerResourceCommandManager getCommandManager() {
+			return commandManager;
+		}
+		public ServerEditorPart getPart() {
+			return part;
+		}
+		public ServerEditorSection getSection() {
+			return section;
+		}
+		public IEditorInput getInput() {
+			return input;
 		}
 	}
 	

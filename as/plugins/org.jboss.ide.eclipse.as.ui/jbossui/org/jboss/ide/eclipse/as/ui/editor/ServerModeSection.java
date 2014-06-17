@@ -23,10 +23,11 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.ui.editor.ServerEditorPart;
 import org.eclipse.wst.server.ui.editor.ServerEditorSection;
 import org.jboss.ide.eclipse.as.ui.Messages;
+import org.jboss.ide.eclipse.as.ui.editor.DeploymentTypeUIUtil.ServerEditorUICallback;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI.IServerModeUICallback;
 
 public class ServerModeSection extends ServerEditorSection {
-	private IServerModeUICallback callback = null;
+	private ServerEditorUICallback callback = null;
 	private IEditorInput input;
 	private ServerEditorPart editor;
 	public void init(IEditorSite site, IEditorInput input) {
@@ -38,7 +39,7 @@ public class ServerModeSection extends ServerEditorSection {
 		return server;
 	}
 		
-	private IServerModeUICallback getUICallback() {
+	private ServerEditorUICallback getUICallback() {
 		if( callback == null ) {
 			callback = DeploymentTypeUIUtil.getCallback(server, input, editor, this);
 		}
