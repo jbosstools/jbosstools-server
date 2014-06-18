@@ -32,23 +32,23 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
  */
 public class UIExtensionManager {
 	/* Wizard Pages */
-	private static final String CONNECTION_PAGES = "org.jboss.tools.jmx.ui.providerUI"; //$NON-NLS-1$
+	private static final String CONNECTION_UI_EXT_PT = "org.jboss.tools.jmx.ui.providerUI"; //$NON-NLS-1$
 	private static final String ID = "id"; //$NON-NLS-1$
 	private static final String NAME = "name"; //$NON-NLS-1$
 	private static final String ICON = "icon"; //$NON-NLS-1$
 	private static final String CLASS = "class";  //$NON-NLS-1$
 	private static final String EDITABLE = "editable";  //$NON-NLS-1$
-	public static class ConnectionProviderUI {
+	
+	/**
+	 * The UI for specific connection providers
+	 */
+	public static class ConnectionCategoryUI {
 		String id, name, icon;
-		boolean editable;
-		IConfigurationElement[] wizardPages;
 		ImageDescriptor imageDescriptor;
-		public ConnectionProviderUI(IConfigurationElement element) {
+		public ConnectionCategoryUI(IConfigurationElement element) {
 			id = element.getAttribute(ID);
 			name = element.getAttribute(NAME);
 			icon = element.getAttribute(ICON);
-			editable = Boolean.parseBoolean(element.getAttribute(EDITABLE));
-			wizardPages = element.getChildren();
 			String pluginName = element.getDeclaringExtension().getContributor().getName();
 			imageDescriptor = AbstractUIPlugin.imageDescriptorFromPlugin(pluginName, icon);
 			if( imageDescriptor == null ) {
@@ -66,12 +66,26 @@ public class UIExtensionManager {
 		public String getIcon() {
 			return icon;
 		}
-		public boolean isEditable() {
-			return editable;
-		}
-		
 		public ImageDescriptor getImageDescriptor() {
 			return imageDescriptor;
+		}
+	}
+
+	/**
+	 * The UI for specific connection providers
+	 */
+	public static class ConnectionProviderUI extends ConnectionCategoryUI {
+		String id, name, icon;
+		boolean editable;
+		IConfigurationElement[] wizardPages;
+		ImageDescriptor imageDescriptor;
+		public ConnectionProviderUI(IConfigurationElement element) {
+			super(element);
+			editable = Boolean.parseBoolean(element.getAttribute(EDITABLE));
+			wizardPages = element.getChildren();
+		}
+		public boolean isEditable() {
+			return editable;
 		}
 		public ConnectionWizardPage[] createPages() {
 			ArrayList<ConnectionWizardPage> list = new ArrayList<ConnectionWizardPage>();
@@ -89,34 +103,72 @@ public class UIExtensionManager {
 	}
 
 	private static HashMap<String, ConnectionProviderUI> connectionUIElements;
-	public static HashMap<String, ConnectionProviderUI> getConnectionUIElements() {
-		if( connectionUIElements == null )
+	private static HashMap<String, ConnectionCategoryUI> connectionCategoryUIElements;
+	
+	private static void ensureLoaded() {
+		connectionUIElements = null;
+		if( connectionUIElements == null ) {
 			loadConnectionUI();
+			loadConnectionCategoryUI();
+		}
+	}
+	
+	public static HashMap<String, ConnectionProviderUI> getConnectionUIElements() {
+		ensureLoaded();
 		return connectionUIElements;
 	}
 
 	public static ConnectionProviderUI getConnectionProviderUI(String id) {
-		if( connectionUIElements == null )
-			loadConnectionUI();
+		ensureLoaded();
 		return connectionUIElements.get(id);
 	}
 
+	public static ConnectionCategoryUI getConnectionCategoryUI(String id) {
+		ensureLoaded();
+		return connectionCategoryUIElements.get(id);
+	}
+	
 	private static void loadConnectionUI() {
 		HashMap<String, ConnectionProviderUI> map = new HashMap<String, ConnectionProviderUI>();
-		IExtension[] extensions = findExtension(CONNECTION_PAGES);
+		IExtension[] extensions = findExtension(CONNECTION_UI_EXT_PT);
 		ConnectionProviderUI pUI;
+		System.out.println(extensions.length);
 		for (int i = 0; i < extensions.length; i++) {
 			IConfigurationElement elements[] = extensions[i].getConfigurationElements();
 			for (int j = 0; j < elements.length; j++) {
-				try {
-					pUI = new ConnectionProviderUI(elements[j]);
-					map.put(pUI.getId(), pUI);
-				} catch (InvalidRegistryObjectException e) {
-					// TODO document
+				if( elements[j].getName().equals("providerUI")) { //$NON-NLS-1$
+					try {
+						pUI = new ConnectionProviderUI(elements[j]);
+						map.put(pUI.getId(), pUI);
+					} catch (InvalidRegistryObjectException e) {
+						// TODO document
+					}
 				}
 			}
 		}
 		connectionUIElements = map;
+	}
+	
+	private static void loadConnectionCategoryUI() {
+		HashMap<String, ConnectionCategoryUI> map = new HashMap<String, ConnectionCategoryUI>();
+		IExtension[] extensions = findExtension(CONNECTION_UI_EXT_PT);
+		ConnectionCategoryUI pUI;
+		for (int i = 0; i < extensions.length; i++) {
+			IConfigurationElement elements[] = extensions[i].getConfigurationElements();
+			for (int j = 0; j < elements.length; j++) {
+				System.out.println(elements[i].toString());
+				System.out.println(elements[i].getName());
+				if( elements[i].getName().equals("providerCategoryUI")) { //$NON-NLS-1$
+					try {
+						pUI = new ConnectionCategoryUI(elements[j]);
+						map.put(pUI.getId(), pUI);
+					} catch (InvalidRegistryObjectException e) {
+						// TODO document
+					}
+				}
+			}
+		}
+		connectionCategoryUIElements = map;
 	}
 
 	public static IWizardPage[] getNewConnectionWizardPages(String typeName) {

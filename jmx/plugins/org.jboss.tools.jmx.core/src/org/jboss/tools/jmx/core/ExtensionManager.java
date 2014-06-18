@@ -12,6 +12,8 @@ package org.jboss.tools.jmx.core;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -39,7 +41,15 @@ public class ExtensionManager {
 	public static IConnectionProvider[] getProviders() {
 		if (providers == null)
 			loadExtensions();
-		return providers.values().toArray(new IConnectionProvider[providers.values().size()]);
+		// Sort
+		ArrayList<IConnectionProvider> ret = new ArrayList<IConnectionProvider>();
+		ret.addAll(providers.values());
+		Collections.sort(ret, new Comparator<IConnectionProvider>() {
+			public int compare(IConnectionProvider arg0,
+					IConnectionProvider arg1) {
+				return arg0.getId().compareTo(arg1.getId());
+			} });
+		return ret.toArray(new IConnectionProvider[ret.size()]);
 	}
 
 	public static IConnectionProvider getProvider(String id) {

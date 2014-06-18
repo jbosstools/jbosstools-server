@@ -20,6 +20,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.jboss.tools.jmx.core.HasName;
+import org.jboss.tools.jmx.core.IConnectionCategory;
 import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.MBeanAttributeInfoWrapper;
@@ -34,9 +35,11 @@ import org.jboss.tools.jmx.core.tree.PropertyNode;
 import org.jboss.tools.jmx.ui.ImageProvider;
 import org.jboss.tools.jmx.ui.Messages;
 import org.jboss.tools.jmx.ui.UIExtensionManager;
+import org.jboss.tools.jmx.ui.UIExtensionManager.ConnectionCategoryUI;
 import org.jboss.tools.jmx.ui.UIExtensionManager.ConnectionProviderUI;
 import org.jboss.tools.jmx.ui.internal.JMXImages;
 import org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorerContentProvider.DelayProxy;
+import org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorerContentProvider.ProviderCategory;
 
 
 /**
@@ -74,6 +77,17 @@ public class MBeanExplorerLabelProvider extends LabelProvider {
 		if (obj instanceof HasName) {
 			HasName hasName = (HasName) obj;
 			return hasName.getName();
+		}
+
+		if( obj instanceof ProviderCategory ) {
+			ConnectionCategoryUI ui = UIExtensionManager.getConnectionCategoryUI(((ProviderCategory)obj).getId());
+			if( ui != null ) {
+				return ui.getName();
+			}
+		}
+		
+		if( obj instanceof IConnectionCategory ) {
+			return ((IConnectionCategory)obj).getCategoryId();
 		}
 		if( obj instanceof IConnectionWrapper ) {
 			IConnectionProvider provider = ((IConnectionWrapper)obj).getProvider();
@@ -114,6 +128,30 @@ public class MBeanExplorerLabelProvider extends LabelProvider {
 		return obj.toString();
 	}
 
+
+	private Image getImageForProvider(IConnectionProvider provider) {
+		ConnectionProviderUI ui = UIExtensionManager.getConnectionProviderUI(provider.getId());
+		if( ui != null ) {
+			if(!images.containsKey(ui.getId()) || images.get(ui.getId()).isDisposed())
+				images.put(ui.getId(),
+						ui.getImageDescriptor().createImage());
+			return images.get(ui.getId());
+		}
+		return null;
+	}
+	
+
+	private Image getImageForCategory(ProviderCategory provider) {
+		ConnectionCategoryUI ui = UIExtensionManager.getConnectionCategoryUI(provider.getId());
+		if( ui != null ) {
+			if(!images.containsKey(ui.getId()) || images.get(ui.getId()).isDisposed())
+				images.put(ui.getId(),
+						ui.getImageDescriptor().createImage());
+			return images.get(ui.getId());
+		}
+		return null;
+	}
+	
 	@Override
 	public Image getImage(Object obj) {
 		if (obj instanceof ImageProvider) {
@@ -124,15 +162,18 @@ public class MBeanExplorerLabelProvider extends LabelProvider {
 			} else {
 			}
 		}
+		
+		if( obj instanceof ProviderCategory ) {
+			return getImageForCategory((ProviderCategory)obj);
+		}
+		
+		if( obj instanceof IConnectionProvider ) {
+			return getImageForProvider((IConnectionProvider)obj);
+		}
+		
 		if( obj instanceof IConnectionWrapper ) {
 			IConnectionProvider provider = ((IConnectionWrapper)obj).getProvider();
-			ConnectionProviderUI ui = UIExtensionManager.getConnectionProviderUI(provider.getId());
-			if( ui != null ) {
-				if(!images.containsKey(ui.getId()) || images.get(ui.getId()).isDisposed())
-					images.put(ui.getId(),
-							ui.getImageDescriptor().createImage());
-				return images.get(ui.getId());
-			}
+			return getImageForProvider(provider);
 		}
 		if( obj instanceof DelayProxy ) {
 			return null;

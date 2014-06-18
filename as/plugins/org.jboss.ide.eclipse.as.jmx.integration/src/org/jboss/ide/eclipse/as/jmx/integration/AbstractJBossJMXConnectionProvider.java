@@ -27,12 +27,13 @@ import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.jboss.tools.jmx.core.AbstractConnectionProvider;
+import org.jboss.tools.jmx.core.IConnectionCategory;
 import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionProviderEventEmitter;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 
-public abstract class AbstractJBossJMXConnectionProvider extends AbstractConnectionProvider implements
-	IConnectionProvider, IConnectionProviderEventEmitter {
+public abstract class AbstractJBossJMXConnectionProvider extends AbstractConnectionProvider 
+	implements IConnectionProvider, IConnectionProviderEventEmitter, IConnectionCategory {
 
 	private HashMap<String, IConnectionWrapper> idToConnection;
 	public AbstractJBossJMXConnectionProvider() {
@@ -178,5 +179,11 @@ public abstract class AbstractJBossJMXConnectionProvider extends AbstractConnect
 	
 	public JMXClassLoaderRepository getClassloaderRepository() {
 		return null;
+	}
+	
+
+	@Override
+	public String getCategoryId() {
+		return IConnectionCategory.SERVER_CATEGORY;
 	}
 }

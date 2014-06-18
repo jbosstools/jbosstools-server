@@ -35,6 +35,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.jboss.tools.jmx.core.AbstractConnectionProvider;
+import org.jboss.tools.jmx.core.IConnectionCategory;
 import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionProviderEventEmitter;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
@@ -47,7 +48,9 @@ import org.jboss.tools.jmx.core.util.XMLMemento;
 /**
  * The default connection type that comes bundled
  */
-public class DefaultConnectionProvider extends AbstractConnectionProvider implements IConnectionProvider, IConnectionProviderEventEmitter {
+public class DefaultConnectionProvider extends AbstractConnectionProvider 
+	implements IConnectionProvider, IConnectionProviderEventEmitter, IConnectionCategory {
+	
 	public static final String PROVIDER_ID = "org.jboss.tools.jmx.core.providers.DefaultConnectionProvider"; //$NON-NLS-1$
 	public static final String ID = "id"; //$NON-NLS-1$
 	public static final String URL = "url"; //$NON-NLS-1$
@@ -58,7 +61,10 @@ public class DefaultConnectionProvider extends AbstractConnectionProvider implem
 	public static final String STORE_FILE = "defaultConnections.xml"; //$NON-NLS-1$
 
 	public DefaultConnectionProvider() {
-		addListener(new AutomaticStarter());
+		// I think it's inappropriate to automatically start
+		// Users creating the connection in advance of starting 
+		// the server will experience errors for no good reason. 
+		//addListener(new AutomaticStarter());    
 	}
 
 	public String getId() {
@@ -214,5 +220,10 @@ public class DefaultConnectionProvider extends AbstractConnectionProvider implem
 				return desc.getID();
 		}
 		return null;
+	}
+
+	@Override
+	public String getCategoryId() {
+		return IConnectionCategory.DEFINED_CATEGORY;
 	}
 }

@@ -10,7 +10,11 @@
  *******************************************************************************/
 package org.jboss.tools.jmx.ui.internal.views.navigator;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -24,6 +28,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
 import org.jboss.tools.jmx.core.ExtensionManager;
+import org.jboss.tools.jmx.core.IConnectionCategory;
+import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionProviderListener;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.MBeanFeatureInfoWrapper;
@@ -75,10 +81,72 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
         return null;
     }
 
+    
+    static class ProviderCategory {
+    	private String id;
+    	public ProviderCategory(String id) {
+    		this.id = id;
+    	}
+    	public String getId() {
+    		return id;
+    	}
+    }
+    
+    /**
+     * This will return top level items as either categories (if they have them)
+     * or any providers that have no categories
+     * 
+     * @return
+     */
+    private Object[] getTopLevelElements() {
+		// Return the providers
+    	IConnectionProvider[] providers = ExtensionManager.getProviders();
+    	Set<String> categoryIds = new TreeSet<String>();
+    	ArrayList<ProviderCategory> categories = new ArrayList<ProviderCategory>();
+    	ArrayList<IConnectionProvider> unaffiliated = new ArrayList<IConnectionProvider>();
+    	for( int i = 0; i < providers.length; i++ ) {
+    		if( providers[i] instanceof IConnectionCategory ) {
+    			String id = ((IConnectionCategory)providers[i]).getCategoryId();
+    			if( !categoryIds.contains(id)) {
+    				categoryIds.add(id);
+    				categories.add(new ProviderCategory(id));
+    			}
+    		} else {
+    			unaffiliated.add(providers[i]);
+    		}
+    	}
+    	ArrayList<Object> toReturn = new ArrayList<Object>();
+    	toReturn.addAll(categories);
+    	toReturn.addAll(unaffiliated);
+    	return (Object[]) toReturn.toArray(new Object[toReturn.size()]);
+    }
+    
+    private IConnectionWrapper[] findAllConnectionsWithCategory(String id) {
+    	ArrayList<IConnectionWrapper> ret = new ArrayList<IConnectionWrapper>();
+    	IConnectionProvider[] providers = ExtensionManager.getProviders();
+    	for( int i = 0; i < providers.length; i++ ) {
+    		if( providers[i] instanceof IConnectionCategory ) {
+    			String id2 = ((IConnectionCategory)providers[i]).getCategoryId();
+    			if( id.equals(id2)) {
+    				ret.addAll(Arrays.asList(providers[i].getConnections()));
+    			}
+    		}
+    	}
+    	return (IConnectionWrapper[]) ret.toArray(new IConnectionWrapper[ret.size()]);
+    }
+    
     public Object[] getChildren(Object parent) {
     	if( parent == null ) return new Object[] {};
 		if( parent instanceof IViewPart ) {
-			return ExtensionManager.getAllConnections();
+			return getTopLevelElements();
+		}
+		if( parent instanceof ProviderCategory) {
+			String id = ((ProviderCategory)parent).getId();
+			return findAllConnectionsWithCategory(id);
+		}
+		if( parent instanceof IConnectionProvider ) {
+			// Return the providers
+			return ((IConnectionProvider)parent).getConnections();
 		}
 		if( parent instanceof IConnectionWrapper && ((IConnectionWrapper)parent).isConnected()) {
 			return loadAndGetRootChildren(parent);
@@ -136,6 +204,10 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
     }
 
     public boolean hasChildren(Object parent) {
+    	if( parent instanceof ProviderCategory || parent instanceof IConnectionProvider ) {
+    		return getChildren(parent).length > 0;
+    	}
+    	
         if (parent instanceof ObjectNameNode) {
             ObjectNameNode node = (ObjectNameNode) parent;
             return (node.getMbeanInfoWrapper().getMBeanFeatureInfos().length > 0);

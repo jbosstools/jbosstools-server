@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.jboss.tools.jmx.core.AbstractConnectionProvider;
+import org.jboss.tools.jmx.core.IConnectionCategory;
 import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.jvmmonitor.core.IActiveJvm;
@@ -30,7 +31,8 @@ import org.jboss.tools.jmx.jvmmonitor.core.JvmModelEvent;
 import org.jboss.tools.jmx.local.internal.JvmConnectionWrapper;
 import org.jboss.tools.jmx.local.internal.JvmKey;
 
-public class JVMConnectionProvider extends AbstractConnectionProvider implements IConnectionProvider {
+public class JVMConnectionProvider extends AbstractConnectionProvider 
+	implements IConnectionProvider, IConnectionCategory {
 	public static final String PROVIDER_ID = "org.jboss.tools.jmx.local.JVMConnectionProvider"; //$NON-NLS-1$
 
 
@@ -222,4 +224,8 @@ public class JVMConnectionProvider extends AbstractConnectionProvider implements
 		// This provider does not allow external contributions
 	}
 
+	@Override
+	public String getCategoryId() {
+		return IConnectionCategory.PROCESS_CATEGORY;
+	}
 }
