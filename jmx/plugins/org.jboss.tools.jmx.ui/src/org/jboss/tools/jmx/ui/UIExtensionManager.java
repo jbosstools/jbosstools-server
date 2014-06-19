@@ -106,7 +106,6 @@ public class UIExtensionManager {
 	private static HashMap<String, ConnectionCategoryUI> connectionCategoryUIElements;
 	
 	private static void ensureLoaded() {
-		connectionUIElements = null;
 		if( connectionUIElements == null ) {
 			loadConnectionUI();
 			loadConnectionCategoryUI();
@@ -132,7 +131,6 @@ public class UIExtensionManager {
 		HashMap<String, ConnectionProviderUI> map = new HashMap<String, ConnectionProviderUI>();
 		IExtension[] extensions = findExtension(CONNECTION_UI_EXT_PT);
 		ConnectionProviderUI pUI;
-		System.out.println(extensions.length);
 		for (int i = 0; i < extensions.length; i++) {
 			IConfigurationElement elements[] = extensions[i].getConfigurationElements();
 			for (int j = 0; j < elements.length; j++) {
@@ -156,8 +154,6 @@ public class UIExtensionManager {
 		for (int i = 0; i < extensions.length; i++) {
 			IConfigurationElement elements[] = extensions[i].getConfigurationElements();
 			for (int j = 0; j < elements.length; j++) {
-				System.out.println(elements[i].toString());
-				System.out.println(elements[i].getName());
 				if( elements[i].getName().equals("providerCategoryUI")) { //$NON-NLS-1$
 					try {
 						pUI = new ConnectionCategoryUI(elements[j]);

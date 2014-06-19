@@ -18,6 +18,8 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.jboss.ide.eclipse.as.core.server.UserPrompter;
 import org.jboss.ide.eclipse.as.wtp.ui.prompt.ServerAlreadyStartedPrompter;
 import org.jboss.ide.eclipse.as.wtp.ui.prompt.ZombieProcessPrompter;
+import org.jboss.tools.foundation.ui.plugin.BaseUISharedImages;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -30,6 +32,7 @@ public class WTPOveridePlugin extends AbstractUIPlugin {
 	
 	// The shared instance
 	private static WTPOveridePlugin plugin;
+	private BaseUISharedImages sharedImages = null;
 
 	/**
 	 * The constructor
@@ -111,4 +114,23 @@ public class WTPOveridePlugin extends AbstractUIPlugin {
 		Platform.getLog(Platform.getBundle(PLUGIN_ID)).log( exception.getStatus() );
 	}
 
+	public BaseUISharedImages getSharedImages() {
+		if( sharedImages == null ) {
+			sharedImages = createSharedImages();
+			
+		}
+		return sharedImages;
+	}
+
+	public static final String JMX_IMG = "icons/jmeth_obj.gif";
+	protected BaseUISharedImages createSharedImages() {
+		return new ASWTPSharedImages(getBundle());
+	}
+	
+	private static class ASWTPSharedImages extends BaseUISharedImages {
+		public ASWTPSharedImages(Bundle pluginBundle) {
+			super(pluginBundle);
+			addImage(JMX_IMG, JMX_IMG);
+		}
+	}
 }

@@ -54,4 +54,74 @@
              sequence="M3+M2+Y G">
        </key>
     </extension>
+    
+    
+    
+    
+   	<extension
+      point="org.eclipse.ui.navigator.navigatorContent">
+    <actionProvider
+          class="org.jboss.ide.eclipse.as.wtp.ui.view.server.jmx.JMXProvider$ActionProvider"
+          id="org.jboss.ide.eclipse.as.ui.extensions.showInJMXView">
+       <enablement>
+          <instanceof
+                value="org.eclipse.wst.server.core.IServer">
+          </instanceof>
+       </enablement>
+    </actionProvider>
+    <navigatorContent
+          name="JMX"
+          id="org.jboss.ide.eclipse.as.ui.extensions.jmx"
+          icon="$nl$/icons/jmeth_obj.gif"
+          activeByDefault="false"
+          priority="low"
+          contentProvider="org.jboss.ide.eclipse.as.wtp.ui.view.server.jmx.JMXProvider$ContentProvider"
+          labelProvider="org.jboss.ide.eclipse.as.wtp.ui.view.server.jmx.JMXProvider$LabelProvider">
+       <triggerPoints>
+          <instanceof
+                value="org.eclipse.wst.server.core.IServer">
+          </instanceof>
+       </triggerPoints>
+       <possibleChildren>
+          <or>
+             <instanceof
+                   value="org.jboss.tools.jmx.core.tree.Node">
+             </instanceof>
+             <instanceof
+                   value="org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorerContentProvider$DelayProxy">
+             </instanceof>
+             <instanceof
+                   value="org.jboss.tools.jmx.core.MBeanFeatureInfoWrapper">
+             </instanceof>
+          </or>
+       </possibleChildren>
+    </navigatorContent>    
+    </extension>
+    	<extension
+	      point="org.eclipse.ui.navigator.viewer">
+	   <viewerContentBinding
+	         viewerId="org.eclipse.wst.server.ui.ServersView">
+	      <includes>
+             <contentExtension
+                   isRoot="false"
+                   pattern="org.jboss.ide.eclipse.as.ui.extensions.jmx">
+             </contentExtension>
+             <contentExtension
+                   isRoot="false"
+                   pattern="org.jboss.tools.jmx.ui.internal.views.navigator.JMXLinkHelper">
+             </contentExtension>
+	      </includes>
+	   </viewerContentBinding>
+    <viewerActionBinding
+          viewerId="org.eclipse.wst.server.ui.ServersView">
+       <includes>
+          <actionExtension
+                pattern="org.jboss.ide.eclipse.as.ui.extensions.showInJMXView"/>
+          <actionExtension
+                pattern="org.jboss.tools.jmx.ui.internal.views.navigator.actionProvider">
+          </actionExtension>
+       </includes>
+    </viewerActionBinding>
+	</extension>
+    
 </plugin>

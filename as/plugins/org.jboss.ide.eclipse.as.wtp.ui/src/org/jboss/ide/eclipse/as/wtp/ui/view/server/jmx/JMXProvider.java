@@ -8,8 +8,9 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.jmx.integration;
+package org.jboss.ide.eclipse.as.wtp.ui.view.server.jmx;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
@@ -25,7 +26,9 @@ import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonActionProvider;
@@ -38,14 +41,12 @@ import org.eclipse.ui.views.IViewRegistry;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerListener;
 import org.eclipse.wst.server.core.ServerEvent;
+import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.eclipse.wst.server.ui.internal.view.servers.AbstractServerAction;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
-import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
-import org.jboss.ide.eclipse.as.ui.UIUtil;
+import org.jboss.ide.eclipse.as.wtp.ui.WTPOveridePlugin;
+import org.jboss.tools.jmx.core.IConnectionFacade;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
-import org.jboss.tools.jmx.core.tree.MBeansNode;
 import org.jboss.tools.jmx.ui.internal.views.navigator.JMXNavigator;
 import org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorerContentProvider;
 import org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorerLabelProvider;
@@ -95,14 +96,9 @@ public class JMXProvider {
 			if( quick != null && selection != null && selection.toArray().length == 1 ) {
 				if( selection.getFirstElement() instanceof IServer ) {
 					IServer server = (IServer)selection.getFirstElement();
-						
-					ServerExtendedProperties properties = (ServerExtendedProperties) server.loadAdapter(ServerExtendedProperties.class, null);
-					if( properties != null ) {
-						int i = properties.getJMXProviderType();
-						if( i != ServerExtendedProperties.JMX_NULL_PROVIDER ) {
-							if( menu instanceof MenuManager ) {
-								((MenuManager)quick).add(showInJMXViewAction);
-							}
+					if( adaptServerToConnection(server) != null ) {
+						if( menu instanceof MenuManager ) {
+							((MenuManager)quick).add(showInJMXViewAction);
 						}
 					}
 				}
@@ -142,10 +138,9 @@ public class JMXProvider {
 
 			public boolean accept(IServer server) {
 				boolean preconditions = (server.getServerType() != null && 
-						server.loadAdapter(JBossServer.class, new NullProgressMonitor()) != null
+						adaptServerToConnection(server) != null
 						&& server.getServerState() == IServer.STATE_STARTED);
-				IConnectionWrapper connection = JBossJMXConnectionProviderModel.getDefault().getConnection(server);
-				return preconditions && connection != null;
+				return preconditions;
 			}
 			
 			public synchronized void selectionChanged(IStructuredSelection sel) {
@@ -175,9 +170,9 @@ public class JMXProvider {
 			public void perform(final IServer server) {
 				IWorkbenchPart part = null;
 				try {
-					part = UIUtil.bringViewToFront(JMXNavigator.VIEW_ID);
+					part = bringViewToFront(JMXNavigator.VIEW_ID);
 				} catch(PartInitException pie) {
-					Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error loading MBean Explorer", pie));
+					WTPOveridePlugin.getInstance().getLog().log(new Status(IStatus.ERROR, WTPOveridePlugin.PLUGIN_ID, "Error loading MBean Explorer", pie));
 				}
 				
 				if( part != null ) {
@@ -185,12 +180,12 @@ public class JMXProvider {
 					if (view != null) {
 						Display.getDefault().asyncExec(new Runnable() { 
 							public void run() {
-								IConnectionWrapper connection = JBossJMXConnectionProviderModel.getDefault().getConnection(server);
+								IConnectionWrapper connection = adaptServerToConnection(server);
 								if( connection != null ) {
 									view.getCommonViewer().collapseAll();
+									view.getCommonViewer().expandToLevel(2);
 									ISelection sel = new StructuredSelection(new Object[] { connection });
 									view.getCommonViewer().setSelection(sel, true);
-									view.getCommonViewer().expandToLevel(connection, 2);
 								}
 							}
 						});
@@ -199,7 +194,26 @@ public class JMXProvider {
 			}
 		}
 	}
-	
+
+	private static final IWorkbenchPart bringViewToFront(String viewId) throws PartInitException {
+		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow() ;
+		IWorkbenchPart part = null;
+		if (window != null) {
+			IWorkbenchPage page = window.getActivePage();
+			if (page != null) {
+				part = page.findView(viewId);
+				if (part == null) {
+					part = page.showView(viewId);
+				} else /* if( part != null ) */ {
+					if (part != null) {
+						page.activate(part);
+						part.setFocus();
+					}
+				}
+			}
+		}
+		return part;
+	}
 	public static class ContentProvider implements ITreeContentProvider {
 		private MBeanExplorerContentProvider delegate;
 		public ContentProvider() {
@@ -207,19 +221,9 @@ public class JMXProvider {
 		}
 		public Object[] getChildren(Object parentElement) {
 			if( parentElement instanceof IServer ) {
-				Object sel = JBossJMXConnectionProviderModel.getDefault().getConnection((IServer)parentElement);
+				IConnectionWrapper sel = adaptServerToConnection((IServer)parentElement);
 				if( sel != null )
 					return new Object[] { sel };
-			}
-			if( parentElement instanceof IConnectionWrapper ) {
-				Object[] result = delegate.getChildren(parentElement);
-				result = result == null ? new Object[0] : result; // nullsafe
-				// Find the mbean node, and get those children instead
-				for( int i = 0; i < result.length; i++ ) {
-					if( result[i] instanceof MBeansNode ) {
-						return delegate.getChildren(result[i]);
-					}
-				}
 			}
 			return delegate.getChildren(parentElement);
 		}
@@ -240,6 +244,32 @@ public class JMXProvider {
 		}
 	}
 	
+	private static IConnectionWrapper adaptServerToConnection(IServer server) {
+		IConnectionWrapper wrapper = (IConnectionWrapper)server.loadAdapter(IConnectionWrapper.class, new NullProgressMonitor());
+		if( wrapper == null ) {
+			IConnectionFacade facade = (IConnectionFacade)server.loadAdapter(IConnectionFacade.class, new NullProgressMonitor());
+			if( facade != null ) {
+				wrapper = facade.getJMXConnection();
+			}
+		}
+		if( wrapper == null ) {
+			ServerDelegate sd = (ServerDelegate)server.loadAdapter(ServerDelegate.class, new NullProgressMonitor());
+			if( sd != null && sd instanceof IConnectionFacade) {
+				wrapper = ((IConnectionFacade)sd).getJMXConnection();
+			} else if( sd instanceof IAdaptable ) {
+				IAdaptable ada = ((IAdaptable)sd);
+				wrapper = (IConnectionWrapper) ada.getAdapter(IConnectionWrapper.class);
+				if( wrapper == null ) {
+					IConnectionFacade facade = (IConnectionFacade) ada.getAdapter(IConnectionFacade.class);
+					if( facade != null ) {
+						wrapper = facade.getJMXConnection();
+					}
+				}
+			}
+		}
+		return wrapper;
+	}
+	
 	public static  class LabelProvider extends org.eclipse.jface.viewers.LabelProvider {
 		private MBeanExplorerLabelProvider delegate;
 		public LabelProvider() {
@@ -252,17 +282,16 @@ public class JMXProvider {
 		
 		public String getText(Object element) {
 			if( element instanceof IConnectionWrapper ) {
-				return "MBeans";  //$NON-NLS-1$
+				return "JMX";  //$NON-NLS-1$
 			}
 			return delegate.getText(element);
 		}
 		
 		public Image getImage(Object element) {
 			if( element instanceof IConnectionWrapper ) {
-				return JBossServerUISharedImages.getImage(JBossServerUISharedImages.JMX_IMAGE); 
+				return WTPOveridePlugin.getInstance().getSharedImages().image(WTPOveridePlugin.JMX_IMG); 
 			}
 			return delegate.getImage(element);
 		}
 	}
-	
 }

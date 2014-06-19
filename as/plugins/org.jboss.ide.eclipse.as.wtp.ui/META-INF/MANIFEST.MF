@@ -28,7 +28,12 @@ Require-Bundle: org.eclipse.ui;bundle-version="3.7.0",
  org.eclipse.wst.common.emfworkbench.integration;bundle-version="1.2.100",
  org.jboss.ide.eclipse.as.wtp.core;bundle-version="[3.0,4.0.0)",
  org.eclipse.jdt.debug.ui;bundle-version="3.6.300",
- org.eclipse.jdt.launching;bundle-version="3.7.100"
+ org.eclipse.jdt.launching;bundle-version="3.7.100",
+ org.jboss.tools.jmx.core;bundle-version="1.6.0",
+ org.jboss.tools.jmx.ui;bundle-version="1.6.0",
+ org.eclipse.ui.navigator;bundle-version="3.5.400",
+ org.jboss.tools.foundation.ui;bundle-version="1.1.0",
+ org.jboss.tools.foundation.core;bundle-version="1.1.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: JBoss by Red Hat

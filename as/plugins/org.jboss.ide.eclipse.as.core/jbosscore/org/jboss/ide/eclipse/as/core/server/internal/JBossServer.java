@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.equinox.security.storage.StorageException;
 import org.eclipse.wst.server.core.IRuntimeType;
@@ -45,6 +46,8 @@ import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.tools.as.core.server.controllable.systems.IPortsController;
+import org.jboss.tools.jmx.core.IConnectionFacade;
+import org.jboss.tools.jmx.core.IConnectionWrapper;
 
 /**
  * 
@@ -52,7 +55,7 @@ import org.jboss.tools.as.core.server.controllable.systems.IPortsController;
  *
  */
 public class JBossServer extends DeployableServer 
-		implements IJBossServer, IURLProvider {
+		implements IJBossServer, IURLProvider, IConnectionFacade {
 	
 	public static final String AUTOMATICALLY_UPDATE_LAUNCH = ILaunchConfigConfigurator.AUTOMATICALLY_UPDATE_LAUNCH;
 	
@@ -271,6 +274,11 @@ public class JBossServer extends DeployableServer
 		if( beh == null )
 			return false;
 		return true;
+	}
+
+	@Override
+	public IConnectionWrapper getJMXConnection() {
+		return (IConnectionWrapper) Platform.getAdapterManager().loadAdapter((JBossServer)this, IConnectionWrapper.class.getName());
 	}
 
 }
