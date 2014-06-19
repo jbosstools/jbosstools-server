@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -106,6 +107,17 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 		IRuntimeClasspathEntry jreEntry = LaunchConfigUtils.getJREEntry(vmInstall);
 		String modulesMemento = modulesEntry == null ? null : modulesEntry.getMemento();
 		String jreMemento = jreEntry == null ? null : jreEntry.getMemento();
+		
+		// Remove all entries that represent JREs here. There should only be one jre entry and we'll add that. 
+		Iterator<String> i = currentClasspath.iterator();
+		String t = null;
+		while(i.hasNext()) {
+			t = i.next();
+			if( t.contains("org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType"))  { //$NON-NLS-1$
+				i.remove();
+			}
+		}
+		
 		
 		List<String> classpath = new ArrayList<String>();
 		classpath.addAll(currentClasspath);
