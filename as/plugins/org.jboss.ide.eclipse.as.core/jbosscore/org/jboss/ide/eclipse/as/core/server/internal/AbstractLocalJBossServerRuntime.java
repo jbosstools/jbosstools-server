@@ -146,6 +146,13 @@ public abstract class AbstractLocalJBossServerRuntime extends RuntimeDelegate im
 			EnvironmentsManager.getDefault().getEnvironment(id);
 	}
 	
+	/**
+	 * This is being used to indicate the MINIMUM execution environment, 
+	 * not just the default!
+	 * 
+	 * @param rtType
+	 * @return
+	 */
 	public IExecutionEnvironment getDefaultExecutionEnvironment(IRuntimeType rtType) {
 		ServerExtendedProperties sep = new ExtendedServerPropertiesAdapterFactory().getExtendedProperties(rtType);
 		if( sep instanceof JBossExtendedProperties) {
@@ -155,7 +162,7 @@ public abstract class AbstractLocalJBossServerRuntime extends RuntimeDelegate im
 	}
 
 	public void setExecutionEnvironment(IExecutionEnvironment environment) {
-		setAttribute(PROPERTY_EXECUTION_ENVIRONMENT, environment.getId());
+		setAttribute(PROPERTY_EXECUTION_ENVIRONMENT, environment == null ? null : environment.getId());
 	}
 
 

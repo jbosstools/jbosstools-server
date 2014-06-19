@@ -17,6 +17,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jdt.launching.IVMInstall;
+import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -51,8 +53,8 @@ import org.jboss.ide.eclipse.as.ui.IPreferenceKeys;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.ide.eclipse.as.ui.wizards.composite.JBossRuntimeHomeComposite;
 import org.jboss.ide.eclipse.as.ui.wizards.composite.JBossJREComposite;
+import org.jboss.ide.eclipse.as.ui.wizards.composite.JBossRuntimeHomeComposite;
 import org.jboss.ide.eclipse.as.wtp.ui.composites.AbstractJREComposite;
 import org.jboss.ide.eclipse.as.wtp.ui.util.FormDataUtility;
 import org.jboss.ide.eclipse.as.wtp.ui.wizard.RuntimeWizardFragment;
@@ -148,10 +150,10 @@ public class JBossRuntimeWizardFragment extends RuntimeWizardFragment {
 		IJBossServerRuntime srt = (IJBossServerRuntime) wc.loadAdapter(
 				IJBossServerRuntime.class, new NullProgressMonitor());
 		if( srt != null ) {
-			if( jreComposite.getSelectedVM() != null )
-				srt.setVM(jreComposite.getSelectedVM());
-			else
-				srt.setVM(null);
+			IExecutionEnvironment selectedEnv = jreComposite.getSelectedExecutionEnvironment();
+			IVMInstall selectedVM = jreComposite.getSelectedVM();
+			srt.setVM(selectedVM);
+			srt.setExecutionEnvironment(selectedEnv);
 		}
 	}
 	

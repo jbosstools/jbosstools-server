@@ -241,17 +241,13 @@ public abstract class RuntimeWizardFragment extends WizardFragment {
 		}
 
 		if( jreComposite != null && jreComposite.getValidJREs().size() == 0 ) {
-			String error = NLS.bind(Messages.rwf_noValidJRE, jreComposite.getExecutionEnvironment().getId());
+			String error = NLS.bind(Messages.rwf_noValidJRE, jreComposite.getMinimumExecutionEnvironment().getId());
 			return error;
 		}
 			
 		if (name == null || name.equals("")) //$NON-NLS-1$
 			return Messages.rwf_nameTextBlank;
 
-
-		if( jreComposite != null && jreComposite.getValidJREs().size() == 0 )
-			return NLS.bind(Messages.rwf_noValidJRE, jreComposite.getExecutionEnvironment().getId());
-		
 		if( !homeDirComposite.isHomeValid() ) {
 			return Messages.rwf_jboss7homeNotValid;
 		}

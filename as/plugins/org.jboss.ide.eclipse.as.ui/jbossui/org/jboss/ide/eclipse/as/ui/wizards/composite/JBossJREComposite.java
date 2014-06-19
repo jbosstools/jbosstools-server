@@ -40,17 +40,6 @@ public class JBossJREComposite extends AbstractJREComposite {
 		}
 		return r;
 	}
-	
-	public IExecutionEnvironment getExecutionEnvironment() {
-		IRuntime r = getRuntimeFromTaskModel();
-		AbstractLocalJBossServerRuntime jbsrt = (AbstractLocalJBossServerRuntime)r.loadAdapter(AbstractLocalJBossServerRuntime.class, null);
-		return jbsrt.getExecutionEnvironment();
-	}
-	
-	protected String getExecutionEnvironmentId() {
-		IExecutionEnvironment env = getExecutionEnvironment();
-		return env == null ? null : env.getId();
-	}
 
 	protected boolean isUsingDefaultJRE() {
 		IRuntime r = getRuntimeFromTaskModel();
@@ -67,7 +56,20 @@ public class JBossJREComposite extends AbstractJREComposite {
 	public List<IVMInstall> getValidJREs() {
 		IRuntime r = getRuntimeFromTaskModel();
 		AbstractLocalJBossServerRuntime jbsrt = (AbstractLocalJBossServerRuntime)r.loadAdapter(AbstractLocalJBossServerRuntime.class, null);
-		return Arrays.asList(jbsrt.getValidJREs(getRuntimeFromTaskModel().getRuntimeType()));
+		return Arrays.asList(jbsrt.getValidJREs(r.getRuntimeType()));
 	}
-	
+
+	@Override
+	public IExecutionEnvironment getMinimumExecutionEnvironment() {
+		IRuntime r = getRuntimeFromTaskModel();
+		AbstractLocalJBossServerRuntime jbsrt = (AbstractLocalJBossServerRuntime)r.loadAdapter(AbstractLocalJBossServerRuntime.class, null);
+		return jbsrt.getDefaultExecutionEnvironment(r.getRuntimeType());
+	}
+
+	@Override
+	public IExecutionEnvironment getStoredExecutionEnvironment() {
+		IRuntime r = getRuntimeFromTaskModel();
+		AbstractLocalJBossServerRuntime jbsrt = (AbstractLocalJBossServerRuntime)r.loadAdapter(AbstractLocalJBossServerRuntime.class, null);
+		return jbsrt.getExecutionEnvironment();
+	}
 }

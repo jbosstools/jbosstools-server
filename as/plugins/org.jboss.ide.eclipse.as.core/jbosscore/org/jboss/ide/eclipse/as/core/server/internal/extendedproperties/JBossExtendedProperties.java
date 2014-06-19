@@ -182,6 +182,14 @@ public class JBossExtendedProperties extends ServerExtendedProperties {
 	public int getFileStructure() {
 		return FILE_STRUCTURE_SERVER_CONFIG_DEPLOY;
 	}
+	
+	/**
+	 * This is being used to indicate the MINIMUM execution environment, 
+	 * not just the default!
+	 * 
+	 * @param rtType
+	 * @return
+	 */
 	public IExecutionEnvironment getDefaultExecutionEnvironment() {
 		// NEW_SERVER_ADAPTER  Subclasses override this
 		return EnvironmentsManager.getDefault().getEnvironment("J2SE-1.4"); //$NON-NLS-1$
