@@ -25,6 +25,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
+import org.jboss.ide.eclipse.as.wtp.core.util.VMInstallUtil;
 
 public abstract class AbstractLocalJBossServerRuntime extends RuntimeDelegate implements IJBossServerRuntime {
 	
@@ -64,14 +65,7 @@ public abstract class AbstractLocalJBossServerRuntime extends RuntimeDelegate im
 		if (getVMInstallTypeId() != null) {
 			String id = getAttribute(PROPERTY_VM_ID, (String)null);
 			String type = getAttribute(PROPERTY_VM_TYPE_ID, (String)null);
-
-			IVMInstallType vmInstallType = JavaRuntime.getVMInstallType(type);
-			IVMInstall[] vmInstalls = vmInstallType.getVMInstalls();
-
-			for (int i = 0; i < vmInstalls.length; i++) {
-				if (id.equals(vmInstalls[i].getId()))
-					return vmInstalls[i];
-			}
+			return VMInstallUtil.findVMInstall(type, id);
 		}
 		return null;
 	}
@@ -82,30 +76,7 @@ public abstract class AbstractLocalJBossServerRuntime extends RuntimeDelegate im
 			return hard;
 		
 		if( getExecutionEnvironment() != null ) {
-			IVMInstall[] installs = getExecutionEnvironment().getCompatibleVMs();
-			if( getExecutionEnvironment().getDefaultVM() != null )
-				return getExecutionEnvironment().getDefaultVM();
-
-			// Find an install that is strictly compatible first
-			for (int i = 0; i < installs.length; i++) {
-				IVMInstall install = installs[i];
-				if (getExecutionEnvironment().isStrictlyCompatible(install)) {
-					return install;
-				}
-			}
-			
-			// If there aren't any, check if the workspace default vm is in the list of compatible vms
-			IVMInstall workspaceDefault = JavaRuntime.getDefaultVMInstall();
-			if( installs != null && workspaceDefault != null ) {
-				for( int i = 0; i < installs.length; i++) {
-					if( workspaceDefault.equals(installs[i]))
-						return workspaceDefault;
-				}
-			}
-
-			// Otherwise, return the first vm of any compatability 
-			if( installs != null && installs.length > 0 && installs[0] != null )
-				return installs[0];
+			return VMInstallUtil.findVMInstall(getExecutionEnvironment());
 		}
 		// not found, return default vm
 		return getDefaultVMInstall();
@@ -164,6 +135,4 @@ public abstract class AbstractLocalJBossServerRuntime extends RuntimeDelegate im
 	public void setExecutionEnvironment(IExecutionEnvironment environment) {
 		setAttribute(PROPERTY_EXECUTION_ENVIRONMENT, environment == null ? null : environment.getId());
 	}
-
-
 }

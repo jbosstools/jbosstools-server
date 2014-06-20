@@ -57,7 +57,7 @@ public class VMInstallUtil {
 				return installs[0];
 		}
 		// not found, return default vm
-		IVMInstall i = environment.getDefaultVM();
+		IVMInstall i = environment == null ? null : environment.getDefaultVM();
 		return i == null ? JavaRuntime.getDefaultVMInstall() : i;
 	}
 }

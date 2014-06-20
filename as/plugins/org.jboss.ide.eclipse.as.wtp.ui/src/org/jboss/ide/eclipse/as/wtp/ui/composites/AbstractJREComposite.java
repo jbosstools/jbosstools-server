@@ -313,6 +313,10 @@ public abstract class AbstractJREComposite extends Composite {
 	protected abstract IVMInstall getStoredJRE();
 	
 
+	/**
+	 * Get the VM selected in this composite, or null if the user opts to use an execution environment
+	 * @return
+	 */
 	public IVMInstall getSelectedVM() {
 		return selectedVM;
 	}

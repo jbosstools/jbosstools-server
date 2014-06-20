@@ -242,7 +242,7 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 	private void fireRefresh(final IConnectionWrapper connection, final boolean full) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				if( viewer != null ) {
+				if( viewer != null && !viewer.getControl().isDisposed()) {
 					if(full || !(viewer instanceof StructuredViewer))
 						viewer.refresh();
 					else
