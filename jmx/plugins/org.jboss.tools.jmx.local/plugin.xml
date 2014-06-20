@@ -5,7 +5,7 @@
    <extension
          point="org.jboss.tools.jmx.core.MBeanServerConnectionProvider">
       <connectionProvider
-            class="org.jboss.tools.jmx.local.JVMConnectionProvider">
+            class="org.jboss.tools.jmx.local.internal.JVMConnectionProvider">
       </connectionProvider>
    </extension>
 

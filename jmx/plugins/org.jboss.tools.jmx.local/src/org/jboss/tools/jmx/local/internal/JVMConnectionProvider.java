@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.jmx.local;
+package org.jboss.tools.jmx.local.internal;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,8 +28,6 @@ import org.jboss.tools.jmx.jvmmonitor.core.IHost;
 import org.jboss.tools.jmx.jvmmonitor.core.IJvmModelChangeListener;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmModel;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmModelEvent;
-import org.jboss.tools.jmx.local.internal.JvmConnectionWrapper;
-import org.jboss.tools.jmx.local.internal.JvmKey;
 
 public class JVMConnectionProvider extends AbstractConnectionProvider 
 	implements IConnectionProvider, IConnectionCategory {
@@ -53,6 +51,12 @@ public class JVMConnectionProvider extends AbstractConnectionProvider
 		return ((JvmConnectionWrapper)wrapper).getName();
 	}
 
+	public IConnectionWrapper findConnection(IActiveJvm jvm) {
+		getConnections(); // ensure loaded
+		JvmKey key = getJvmKey(jvm);
+		return connections.get(key);
+	}
+	
 	@Override
 	public IConnectionWrapper[] getConnections() {
 		if( connections == null ) {
@@ -174,11 +178,9 @@ public class JVMConnectionProvider extends AbstractConnectionProvider
 		JvmConnectionWrapper working;
 		List<IHost> hosts = model.getHosts();
 		for (IHost host : hosts) {
-			String hostName = host.getName();
 			List<IActiveJvm> jvms = host.getActiveJvms();
 			for (IActiveJvm jvm : jvms) {
-				int pid = jvm.getPid();
-				JvmKey key = new JvmKey(hostName, pid, jvm);
+				JvmKey key = getJvmKey(jvm);
 				working = new JvmConnectionWrapper(jvm);
 				ret.put(key, working);
 			}
@@ -186,6 +188,11 @@ public class JVMConnectionProvider extends AbstractConnectionProvider
 		return ret;
 	}
 
+	public JvmKey getJvmKey(IActiveJvm jvm) {
+		int pid = jvm.getPid();
+		String hostName = jvm.getHost().getName();
+		return new JvmKey(hostName, pid, jvm);
+	}
 
 	@Override
 	public IConnectionWrapper createConnection(Map map) throws CoreException {
