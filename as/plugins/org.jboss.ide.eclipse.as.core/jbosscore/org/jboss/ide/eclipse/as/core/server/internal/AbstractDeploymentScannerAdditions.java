@@ -107,41 +107,7 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 		return ServerProfileModel.getProfile(server);
 	}
 	
-	/**
-	 * The implementation here is suitable ONLY for local servers.
-	 * 
-	 * @param server
-	 * @return
-	 */
-	public String[] getDeployLocationFolders(IServer server) {
-		JBossServer ds = (JBossServer)ServerConverter.getJBossServer(server);
-		ArrayList<String> folders = new ArrayList<String>();
-		String type = ds.getDeployLocationType();
-	
-		// inside server first, always there
-		String insideServer = getInsideServerDeployFolder(server);
-		folders.add(insideServer);
-		
-		// metadata
-		if( type.equals(JBossServer.DEPLOY_METADATA)) {
-			String metadata = JBossServer.getDeployFolder(ds, JBossServer.DEPLOY_METADATA);
-			if( !folders.contains(metadata))
-				folders.add(metadata);
-		}
-		
-		// custom
-		if( type.equals(JBossServer.DEPLOY_CUSTOM)) {
-			IServerModeDetails det = (IServerModeDetails)Platform.getAdapterManager().getAdapter(server, IServerModeDetails.class);
-			String serverHome = det.getProperty(IServerModeDetails.PROP_SERVER_HOME);
-			
-			String custom1 = server.getAttribute(IDeployableServer.DEPLOY_DIRECTORY, (String)null);
-			if( !new Path(custom1).isAbsolute()) {
-				custom1 = new Path(serverHome).append(custom1).toString();
-			}
-			
-			if( custom1 != null && !folders.contains(custom1) && !serverHome.equals(custom1))
-				folders.add(custom1);
-		}
+	protected char getSeparatorCharacter(IServer server) {
 
 		// Discover the proper separator character for the paths being used
 		char sep = File.separatorChar;
@@ -156,6 +122,50 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 				// Ignore
 			}
 		}
+		return sep;
+	}
+	
+	/**
+	 * The implementation here is suitable ONLY for local servers.
+	 * 
+	 * @param server
+	 * @return
+	 */
+	public String[] getDeployLocationFolders(IServer server) {
+		JBossServer ds = (JBossServer)ServerConverter.getJBossServer(server);
+		char sep = getSeparatorCharacter(server);
+
+		
+		ArrayList<String> folders = new ArrayList<String>();
+		String type = ds.getDeployLocationType();
+	
+		// inside server first, always there
+		String insideServer = getInsideServerDeployFolder(server);
+		insideServer = new RemotePath(insideServer, sep).removeTrailingSeparator().toOSString(); 
+		folders.add(insideServer);
+		
+		// metadata
+		if( type.equals(JBossServer.DEPLOY_METADATA)) {
+			String metadata = JBossServer.getDeployFolder(ds, JBossServer.DEPLOY_METADATA);
+			metadata = new RemotePath(metadata, sep).removeTrailingSeparator().toOSString();
+			if( !folders.contains(metadata))
+				folders.add(metadata);
+		}
+		
+		// custom
+		if( type.equals(JBossServer.DEPLOY_CUSTOM)) {
+			IServerModeDetails det = (IServerModeDetails)Platform.getAdapterManager().getAdapter(server, IServerModeDetails.class);
+			String serverHome = det.getProperty(IServerModeDetails.PROP_SERVER_HOME);
+			
+			String custom1 = server.getAttribute(IDeployableServer.DEPLOY_DIRECTORY, (String)null);
+			if( custom1 != null && !new RemotePath(custom1, sep).isAbsolute()) {
+				custom1 = new RemotePath(serverHome, sep).append(custom1).removeTrailingSeparator().toOSString();
+			}
+			
+			if( custom1 != null && !folders.contains(custom1) && !serverHome.equals(custom1))
+				folders.add(custom1);
+		}
+
 		
 		IRuntimeType rtt = server.getServerType().getRuntimeType();
 		IModule[] modules2 = rtt == null ? null : org.eclipse.wst.server.core.ServerUtil.getModules(rtt.getModuleTypes());
@@ -169,7 +179,7 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 					if( moduleDeployPath != null ) {
 						String moduleDeploy = moduleDeployPath.toString();
 						// we don't want the location. we want its parent. 
-						moduleDeploy = new RemotePath(moduleDeploy, sep).removeLastSegments(1).toOSString();
+						moduleDeploy = new RemotePath(moduleDeploy, sep).removeLastSegments(1).removeTrailingSeparator().toOSString();
 						if( !folders.contains(moduleDeploy))
 							folders.add(moduleDeploy);
 					}

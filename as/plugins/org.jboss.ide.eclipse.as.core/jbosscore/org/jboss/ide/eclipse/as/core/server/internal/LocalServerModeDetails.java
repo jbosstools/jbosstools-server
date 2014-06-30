@@ -75,7 +75,7 @@ public class LocalServerModeDetails extends AbstractSubsystemController implemen
 		if( PROP_SERVER_DEPLOYMENTS_FOLDER_ABS.equals(prop)) {
 			ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(getServerOrWC());
 			String s = ((JBossExtendedProperties)sep).getServerDeployLocation();
-			return ServerUtil.makeGlobal(getServerOrWC().getRuntime(), new Path(s)).toString();
+			return ServerUtil.makeGlobal(getServerOrWC().getRuntime(), new Path(s)).toOSString();
 		}
 		if( PROP_SERVER_TMP_DEPLOYMENTS_FOLDER_REL.equals(prop) || PROP_SERVER_TMP_DEPLOYMENTS_FOLDER_ABS.equals(prop)) {
 			boolean relative = PROP_SERVER_TMP_DEPLOYMENTS_FOLDER_REL.equals(prop);
@@ -92,7 +92,7 @@ public class LocalServerModeDetails extends AbstractSubsystemController implemen
 			}
 			if( relative )
 				return ServerUtil.makeRelative(getServerOrWC().getRuntime(), p).toString();
-			return ServerUtil.makeGlobal(getServerOrWC().getRuntime(), p).toString();
+			return ServerUtil.makeGlobal(getServerOrWC().getRuntime(), p).toOSString();
 		}
 		return null;
 	}
