@@ -39,9 +39,10 @@ public class ServerBeanTypeFSW6 extends ServerBeanTypeUnknownAS71Product {
 	public static class FSW6Condition extends UnknownAS72ProductServerTypeCondition {
 		public String getFullVersion(File location, File systemJarFile) {
 			String productSlot = getSlot(location);
-			if( "soa".equalsIgnoreCase(productSlot)) {
+			boolean hasSoa = "soa".equalsIgnoreCase(productSlot);
+			if( hasSoa || "sramp".equals(productSlot)) {
 				List<String> layers = Arrays.asList(getLayers(location));
-				if( layers.contains("soa") && layers.contains("sramp")) {
+				if( (hasSoa ? layers.contains("soa") : true ) && layers.contains("sramp")) {
 					String srampProductDir = "org.jboss.as.product.sramp.dir";
 					File[] modules = new File[]{new File(location, "modules")};
 					String vers = ServerBeanType.getManifestPropFromJBossModulesFolder(modules, srampProductDir, 
