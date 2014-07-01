@@ -127,12 +127,17 @@ public class DownloadRuntimeHomeComposite extends RuntimeHomeComposite {
 							// server home with the newly unzipped path. 
 							final String newHomeDir = (String)wizard.getTaskModel().getObject(DownloadRuntimesTaskWizard.UNZIPPED_SERVER_HOME_DIRECTORY);
 							if( newHomeDir != null && !homeDirText.isDisposed()) {
-								Display.getDefault().asyncExec(new Runnable() {
-									public void run() {
-										homeDirText.setText(newHomeDir);
-										getWizardHandle().update();
+								new Job("Update wizard buttons") {
+									protected IStatus run( IProgressMonitor monitor) {
+										Display.getDefault().asyncExec(new Runnable() {
+											public void run() {
+												homeDirText.setText(newHomeDir);
+												getWizardHandle().update();
+											}
+										});
+										return Status.OK_STATUS;
 									}
-								});
+								}.schedule(800);
 							}
 						}
 					});
