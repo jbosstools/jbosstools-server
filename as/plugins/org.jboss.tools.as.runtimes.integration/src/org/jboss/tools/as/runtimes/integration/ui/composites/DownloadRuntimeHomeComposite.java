@@ -130,6 +130,7 @@ public class DownloadRuntimeHomeComposite extends RuntimeHomeComposite {
 								Display.getDefault().asyncExec(new Runnable() {
 									public void run() {
 										homeDirText.setText(newHomeDir);
+										getWizardHandle().update();
 									}
 								});
 							}
