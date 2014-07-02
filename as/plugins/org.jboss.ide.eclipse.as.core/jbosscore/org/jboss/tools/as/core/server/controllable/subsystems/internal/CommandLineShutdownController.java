@@ -41,10 +41,18 @@ public class CommandLineShutdownController extends AbstractSubsystemController i
 
 	@Override
 	public void stop(boolean force) {
-		if( LaunchCommandPreferences.isIgnoreLaunchCommand(getServer())) {
-			((ControllableServerBehavior)getControllableBehavior()).setServerStopping();
-			((ControllableServerBehavior)getControllableBehavior()).setServerStopped();
-			return;
+		
+		try {
+			ILaunchConfiguration config = getServer().getLaunchConfiguration(true, new NullProgressMonitor());
+			boolean ignoreLaunch = LaunchCommandPreferences.isIgnoreLaunchCommand(config);
+	
+			if( ignoreLaunch ) {
+				((ControllableServerBehavior)getControllableBehavior()).setServerStopping();
+				((ControllableServerBehavior)getControllableBehavior()).setServerStopped();
+				return;
+			}
+		} catch(CoreException ce) {
+			// Ignore, will attempt to stop
 		}
 		stopImpl(force);
 	}
