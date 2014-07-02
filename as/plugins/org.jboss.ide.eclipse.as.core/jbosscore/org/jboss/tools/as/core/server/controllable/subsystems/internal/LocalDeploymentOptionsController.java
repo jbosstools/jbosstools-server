@@ -35,19 +35,19 @@ import org.jboss.tools.as.core.server.controllable.systems.IDeploymentOptionsCon
 public class LocalDeploymentOptionsController extends
 		AbstractJBossDeploymentOptionsController implements IDeploymentOptionsController {
 	
-	protected String makeGlobal(IServerAttributes server, String original) {
-		IPath p = ServerUtil.makeGlobal(server.getRuntime(), new Path(original));
+	public String makeGlobal(String original) {
+		IPath p = ServerUtil.makeGlobal(getServerOrWC().getRuntime(), new Path(original));
 		return p.toOSString();
 	}
 
-	protected String makeRelative(IServerAttributes server, String original) {
-		IPath p = ServerUtil.makeRelative(server.getRuntime(), new Path(original));
+	public String makeRelative(String original) {
+		IPath p = ServerUtil.makeRelative(getServerOrWC().getRuntime(), new Path(original));
 		return p.toOSString();
 	}
 
 	@Override
 	public String getCurrentDeploymentLocationType() {
-		boolean isDepOnly = getServer().getServerType().getId().equals(IJBossToolingConstants.DEPLOY_ONLY_SERVER);
+		boolean isDepOnly = getServerOrWC().getServerType().getId().equals(IJBossToolingConstants.DEPLOY_ONLY_SERVER);
 		if( isDepOnly )
 			return DEPLOY_CUSTOM;
 		return getServerOrWC().getAttribute(DEPLOY_DIRECTORY_TYPE, DEPLOY_SERVER);
@@ -65,7 +65,7 @@ public class LocalDeploymentOptionsController extends
 			}
 		}
 		if( type.equals(DEPLOY_SERVER)) {
-			return makeRelative(getServerOrWC(), getExtendedProperties().getServerDeployLocation());
+			return makeRelative(getExtendedProperties().getServerDeployLocation());
 		}
 		if( ret == null || type.equals(DEPLOY_METADATA)) {
 			ret = getMetadataDeployLocation(getServer());
@@ -76,8 +76,8 @@ public class LocalDeploymentOptionsController extends
 
 	protected String getTempDeployFolder(String type) {
 		if( type.equals(DEPLOY_CUSTOM)) {
-			String ret = getServer().getAttribute(TEMP_DEPLOY_DIRECTORY, ""); //$NON-NLS-1$
-			boolean isDepOnly = getServer().getServerType().getId().equals(IJBossToolingConstants.DEPLOY_ONLY_SERVER);
+			String ret = getServerOrWC().getAttribute(TEMP_DEPLOY_DIRECTORY, ""); //$NON-NLS-1$
+			boolean isDepOnly = getServerOrWC().getServerType().getId().equals(IJBossToolingConstants.DEPLOY_ONLY_SERVER);
 			if( isDepOnly ){
 				return new Path(ret).makeAbsolute().toOSString();
 			}
@@ -93,7 +93,7 @@ public class LocalDeploymentOptionsController extends
 			} else {
 				ret =getASLessThan7StyleServerTempFolder();
 			}
-			return makeRelative(getServerOrWC(), ret);
+			return makeRelative(ret);
 		}
 		return null;
 	}

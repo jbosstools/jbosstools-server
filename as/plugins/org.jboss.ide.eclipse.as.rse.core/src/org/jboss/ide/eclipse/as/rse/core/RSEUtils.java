@@ -187,6 +187,20 @@ public class RSEUtils {
 		return p;
 	}
 
+	public static String makeRelativeString(IServerAttributes server, IPath p, char sep) {
+		RemotePath p1 = new RemotePath(p.toString(), sep);
+		String p1String = p1.toOSString();
+		if (p1.isAbsolute()) {
+			RemotePath rseHome = new RemotePath(getRSEHomeDir(server), sep);
+			String rseHomeString = rseHome.toOSString();
+			if (p1String.startsWith(rseHomeString)) { 
+				return p1String.substring(rseHomeString.length());
+			}
+		}
+		return p1String;
+	}
+
+	
 	// This method may be error prone if running on linux against a remote windows
 	public static IPath makeGlobal(IServerAttributes server, IPath p) {
 		return makeGlobal(server, p, getRemoteSystemSeparatorCharacter(server));

@@ -58,17 +58,26 @@ public abstract class AbstractJBossDeploymentOptionsController extends
 	/**
 	 * Convert the given server-relative path to an absolute filesystem path 
 	 * 
-	 * @param server
 	 * @param original
 	 * @return
 	 */
-	protected abstract String makeGlobal(IServerAttributes server, String original);
+	public abstract String makeGlobal(String original);
+	
+	/**
+	 * Convert the path to a path relative to the server home.
+	 * If the given path does not have the server home as a prefix, 
+	 * return the full absolute path instead. 
+	 * 
+	 * @param original
+	 * @return
+	 */
+	public abstract String makeRelative(String original);
 	
 	@Override
 	public String getDeploymentsRootFolder(boolean absolute) {
 		String result = getDeployFolder(getCurrentDeploymentLocationType());
 		if( absolute ) {
-			result = makeGlobal(getServer(), result);
+			result = makeGlobal(result);
 		}
 		return result;
 	}
@@ -77,7 +86,7 @@ public abstract class AbstractJBossDeploymentOptionsController extends
 	public String getDeploymentsTemporaryFolder(boolean absolute) {
 		String result = getTempDeployFolder(getCurrentDeploymentLocationType());
 		if( absolute ) {
-			return makeGlobal(getServer(), result);
+			return makeGlobal(result);
 		}
 		return result;
 	}

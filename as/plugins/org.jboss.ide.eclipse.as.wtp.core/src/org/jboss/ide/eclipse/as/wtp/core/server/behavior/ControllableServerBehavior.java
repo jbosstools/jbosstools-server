@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
 
@@ -62,6 +63,14 @@ public class ControllableServerBehavior extends ServerBehaviourDelegate implemen
 			return getLaunchController();
 		return getController(system, null);
 	}
+	
+	public ISubsystemController getWorkingCopyController(String system, IServerWorkingCopy wc) throws CoreException {
+		ISubsystemController controller = getController(system);
+		// Re-initialize with the working copy. 
+		controller.initialize(wc, null, null);
+		return controller;
+	}
+
 	
 	/**
 	 * Find the default subsystem controller for the given system with 

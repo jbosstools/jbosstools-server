@@ -434,9 +434,9 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 		if(showTempAndDeployTexts()) {
 			try {
 				IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(getPage().getServer());
-				IDeploymentOptionsController deployOpts = (IDeploymentOptionsController)beh.getController(IDeploymentOptionsController.SYSTEM_ID);
-				String newDir = deployOpts.getDeploymentsRootFolder(true);
-				String newTemp = deployOpts.getDeploymentsTemporaryFolder(true);
+				IDeploymentOptionsController deployOpts = (IDeploymentOptionsController)beh.getWorkingCopyController(IDeploymentOptionsController.SYSTEM_ID, getHelper().getWorkingCopy());
+				String newDir = deployOpts.getDeploymentsRootFolder(false);
+				String newTemp = deployOpts.getDeploymentsTemporaryFolder(false);
 				
 				
 				deployText.removeModifyListener(deployListener);

@@ -125,8 +125,10 @@ public abstract class AbstractSubsystemController implements ISubsystemControlle
 	
 	public void initialize(IServerAttributes server, Subsystem type, Map<String, Object> environment) {
 		this.server = server;
-		this.subsystem = type;
-		this.environment = (environment == null ? new HashMap<String, Object>() : environment);
+		if( type != null ) 
+			this.subsystem = type;
+		if( environment != null ) 
+			this.environment = (environment == null ? new HashMap<String, Object>() : environment);
 	}
 	
 	public String getSubsystemMappedId() {

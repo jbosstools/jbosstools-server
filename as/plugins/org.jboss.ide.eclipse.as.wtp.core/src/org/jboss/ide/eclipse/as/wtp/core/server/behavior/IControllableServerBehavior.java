@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.wtp.core.server.behavior;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
 
 public interface IControllableServerBehavior {
 	
@@ -60,4 +61,13 @@ public interface IControllableServerBehavior {
 	 */
 	public ISubsystemController getController(String system, ControllerEnvironment env) throws CoreException;
 	
+	
+	/**
+	 * Get a controller for a given working copy
+	 * @param system
+	 * @param wc
+	 * @return
+	 * @throws CoreException
+	 */
+	public ISubsystemController getWorkingCopyController(String system, IServerWorkingCopy wc) throws CoreException;
 }

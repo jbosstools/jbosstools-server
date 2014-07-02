@@ -45,10 +45,16 @@ public class RSEDeploymentOptionsController extends
 	}
 
 	
-	protected String makeGlobal(IServerAttributes server, String original) { 
+	public String makeGlobal(String original) { 
 		char sep = getTargetSystemSeparator();
-		IPath ret = RSEUtils.makeGlobal(server, new RemotePath(original, sep), sep);
+		IPath ret = RSEUtils.makeGlobal(getServerOrWC(), new RemotePath(original, sep), sep);
 		return new RemotePath(ret.toString(), sep).toOSString();
+	}
+
+	public String makeRelative(String original) { 
+		char sep = getTargetSystemSeparator();
+		String ret = RSEUtils.makeRelativeString(getServerOrWC(), new RemotePath(original, sep), sep);
+		return ret;
 	}
 
 	@Override
