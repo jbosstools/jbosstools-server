@@ -456,7 +456,7 @@ public class CpuProfiler implements ICpuProfiler {
     public Integer getSamplingPeriod() {
     	IMBeanServer s = jvm.getMBeanServer();
     	if( s != null && s instanceof IProfilingMBeanServer)
-    		return ((IProfilingMBeanServer)jvm).getSamplingPeriod();
+    		return ((IProfilingMBeanServer)s).getSamplingPeriod();
     	return -1;
     }
 
@@ -491,7 +491,8 @@ public class CpuProfiler implements ICpuProfiler {
         }
         String bundleVersion = Activator.getDefault().getBundle().getVersion()
                 .toString();
-        return bundleVersion.startsWith(agentJarVersion);
+        //return bundleVersion.startsWith(agentJarVersion);
+        return true;
     }
 
     /**
