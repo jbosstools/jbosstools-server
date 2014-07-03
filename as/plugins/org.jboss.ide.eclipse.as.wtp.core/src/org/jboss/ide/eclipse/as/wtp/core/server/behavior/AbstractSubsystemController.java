@@ -127,7 +127,9 @@ public abstract class AbstractSubsystemController implements ISubsystemControlle
 		this.server = server;
 		if( type != null ) 
 			this.subsystem = type;
-		if( environment != null ) 
+		// If our environment has never been set, then initialize to param OR empty map
+		// If our environment has been set before, and the param is non-null, use the param
+		if( this.environment == null || environment != null ) 
 			this.environment = (environment == null ? new HashMap<String, Object>() : environment);
 	}
 	
