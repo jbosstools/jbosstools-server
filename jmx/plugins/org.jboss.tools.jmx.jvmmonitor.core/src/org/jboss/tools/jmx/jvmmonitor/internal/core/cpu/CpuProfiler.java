@@ -455,14 +455,8 @@ public class CpuProfiler implements ICpuProfiler {
     @Override
     public Integer getSamplingPeriod() {
     	IMBeanServer s = jvm.getMBeanServer();
-<<<<<<< HEAD
     	if( s != null && s instanceof IProfilingMBeanServer)
     		return ((IProfilingMBeanServer)s).getSamplingPeriod();
-=======
-    	if( s != null && s instanceof IProfilingMBeanServer) {
-    		return ((IProfilingMBeanServer)s).getSamplingPeriod();
-    	}
->>>>>>> JBIDE-17311 - moving the jvmmonitor agent code into our plugins folder.
     	return -1;
     }
 
