@@ -14,11 +14,13 @@ import java.net.URL;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
 import org.jboss.tools.jmx.jvmmonitor.core.IActiveJvm;
 import org.jboss.tools.jmx.jvmmonitor.core.IAgentLoadHandler;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmCoreException;
 import org.jboss.tools.jmx.jvmmonitor.tools.Activator;
+import org.osgi.framework.Bundle;
 
 
 /**

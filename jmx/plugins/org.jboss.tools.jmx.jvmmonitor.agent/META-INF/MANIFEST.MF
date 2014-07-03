@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JMX JVM Monitor Agent
+Bundle-Vendor: JBoss.org
+Bundle-SymbolicName: org.jboss.tools.jmx.jvmmonitor.agent
+Bundle-Version: 1.6.0.qualifier
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Premain-Class: org.jboss.tools.jmx.jvmmonitor.internal.agent.Agent
+Agent-Class: org.jboss.tools.jmx.jvmmonitor.internal.agent.Agent
+Can-Retransform-Classes: true

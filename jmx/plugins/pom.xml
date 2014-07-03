@@ -16,6 +16,7 @@
 		<module>org.jboss.tools.jmx.core</module>
 		<module>org.jboss.tools.jmx.local</module>
 		<module>org.jboss.tools.jmx.ui</module>
+                <!-- <module>org.jboss.tools.jmx.jvmmonitor.agent</module> -->
 		<module>org.jboss.tools.jmx.jvmmonitor.core</module>
 		<module>org.jboss.tools.jmx.jvmmonitor.tools</module>
 		<module>org.jboss.tools.jmx.jvmmonitor.ui</module>
