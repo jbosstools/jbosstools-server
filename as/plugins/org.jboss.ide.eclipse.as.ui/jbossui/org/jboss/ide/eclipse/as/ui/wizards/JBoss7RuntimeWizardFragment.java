@@ -80,11 +80,11 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 				0, 5, null, 0, null, 0, 100, -5));
 		
 		configDirLabel.setLayoutData(u.createFormData(
-				baseDirLabel, 10, null, 0, 0, 5, null, 0));
+				baseDirText, 7, null, 0, 0, 5, null, 0));
 		configDirText.setLayoutData(u.createFormData(
 				baseDirText, 5, null, 0, configDirLabel, 5, configBrowse, -5));
 		configBrowse.setLayoutData(u.createFormData(
-				baseDirBrowse, 5, null, 0, null, 0, 100, -5));
+				baseDirText, 5, null, 0, null, 0, 100, -5));
 		
 		
 		configDirText.addModifyListener(new ModifyListener() {
