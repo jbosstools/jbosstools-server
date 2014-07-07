@@ -176,7 +176,7 @@ public class ServerModeSectionComposite extends Composite {
 	}
 	
 	protected WizardFragment createRootConfigureFragment() {
-		return new LayeredProductServerWizardFragment();
+		return ServerUIPlugin.getWizardFragment( callback.getServer().getServerType().getId());
 	}
 	
 	private void configurePressed() {

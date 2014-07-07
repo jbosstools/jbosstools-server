@@ -73,11 +73,12 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 	public static void createJBossServerFromDefinitions(List<RuntimeDefinition> runtimeDefinitions) {
 		for (RuntimeDefinition runtimeDefinition:runtimeDefinitions) {
 			if (runtimeDefinition.isEnabled()) {
-				File asLocation = getServerAdapterRuntimeLocation(runtimeDefinition);
+				ServerBean sb = new ServerBeanLoader(runtimeDefinition.getLocation()).getServerBean();
+				File asLocation = getServerAdapterRuntimeLocation(sb, runtimeDefinition.getLocation());
 				if (asLocation != null && asLocation.isDirectory()) {
 					String type = runtimeDefinition.getType();
 					if (serverBeanTypeExists(type)) {
-						String typeId = new ServerBeanLoader(asLocation).getServerAdapterId();
+						String typeId = sb.getServerAdapterTypeId();
 						String name = runtimeDefinition.getName();
 						String runtimeName = name + " " + RUNTIME; //$NON-NLS-1$
 						createJBossServer(asLocation, typeId, name, runtimeName);
@@ -308,11 +309,14 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 	
 	private static File getServerAdapterRuntimeLocation(RuntimeDefinition runtimeDefinitions) {
 		ServerBeanLoader loader = new ServerBeanLoader( runtimeDefinitions.getLocation() );
-		String version = runtimeDefinitions.getVersion();
-		String relative = loader.getServerBean().getType().getRootToAdapterRelativePath(version);
+		return getServerAdapterRuntimeLocation(loader.getServerBean(), runtimeDefinitions.getLocation());
+	}
+	private static File getServerAdapterRuntimeLocation(ServerBean sb, File root) {
+		String version = sb.getVersion();
+		String relative = sb.getBeanType().getRootToAdapterRelativePath(version);
 		if( relative == null )
-			return runtimeDefinitions.getLocation();
-		return new File(runtimeDefinitions.getLocation(), relative);
+			return root;
+		return new File(root, relative);
 	}
 	
 	@Override
