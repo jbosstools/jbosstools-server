@@ -126,6 +126,6 @@ public class RSELaunchConfigurator implements ILaunchConfigConfigurator {
 	}
 		
 	private boolean isSet(String value) {
-		return value != null  && value.length() > 0;
+		return value != null;//  && value.length() > 0;
 	}
 }

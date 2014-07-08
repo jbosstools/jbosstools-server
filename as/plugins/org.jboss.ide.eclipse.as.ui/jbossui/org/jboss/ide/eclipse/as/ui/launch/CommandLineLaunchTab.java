@@ -53,6 +53,7 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 	protected Button ignoreLaunch;
 	protected ILaunchConfiguration initialConfig;
 	protected CommandLineLaunchConfigProperties propertyUtil;
+	private boolean supportsCommandLineShutdown = supportsCommandLineShutdown();
 	
 	public void createControl(Composite parent) {
 		createUI(parent);
@@ -65,6 +66,7 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 
 		setControl(main);
 		createGroups(main);
+		validate();
 	}
 	
 	protected void createGroups(Composite main) {
@@ -165,7 +167,6 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 						JBossServerUIPlugin.getDefault().getLog().log(new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, "Error loading details from launch configuration", ce));
 					}
 				}
-				persistInWorkingCopy(((ILaunchConfigurationWorkingCopy)initialConfig), true);
 			}
 		};
 	}
@@ -191,7 +192,6 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 		};
 	}
 	
-	private boolean supportsCommandLineShutdown = supportsCommandLineShutdown();
 	protected boolean supportsCommandLineShutdown() {
 		IServerShutdownController c = getShutdownController();
 		if( c == null || !(c instanceof ICommandLineShutdownController))
@@ -223,7 +223,7 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 		
 		ModifyListener textListener = new ModifyListener(){
 			public void modifyText(ModifyEvent e) {
-				persistInWorkingCopy(((ILaunchConfigurationWorkingCopy)initialConfig), true);
+				validate();
 			}};
 		startText.addModifyListener(textListener);
 		if( supportsCommandLineShutdown )
@@ -233,10 +233,26 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
 	}
 	
+	
+	protected void validate() {
+		boolean empty = (startText.getText().trim().length() == 0);
+		setErrorMessage(empty ? "Start Command must not be empty." : null);
+		if( !empty && supportsCommandLineShutdown ) {
+			empty = (stopText.getText().trim().length() == 0);
+			setErrorMessage(empty ? "Stop Command must not be empty." : null);
+		}
+		getLaunchConfigurationDialog().updateButtons();
+	}
+	
+	public boolean isValid() {
+		return true;
+	}
+	
 	public void initializeFrom(ILaunchConfiguration configuration) {
 		this.initialConfig = configuration;
 		boolean detectStartCommand, detectStopCommand;
 		detectStartCommand = detectStopCommand = false;
+		setErrorMessage(null);
 		
 		try {
 			ignoreLaunch.setSelection(LaunchCommandPreferences.isIgnoreLaunchCommand(configuration));
@@ -277,6 +293,7 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 		} catch(CoreException ce) {
 			JBossServerUIPlugin.getDefault().getLog().log(ce.getStatus());
 		}
+		validate();
 	}
 	
 	protected void disableTab() {
@@ -284,19 +301,19 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 	}
 	
 	protected void setTabEnablement(boolean val) {
-		startText.setEnabled(val);
+		startText.setEnabled(val && !autoStartArgs.getSelection());
 		if( canAutoDetectCommand() ) {
 			autoStartArgs.setEnabled(val);
 		}
 		
 		if( supportsCommandLineShutdown ) {
-			stopText.setEnabled(val);
+			stopText.setEnabled(val && !autoStopArgs.getSelection());
 			if( canAutoDetectCommand() ) {
 				autoStopArgs.setEnabled(val);
 			}
 		}
 		String msg = "Your server is currently configured to ignore startup and shutdown actions.";
-		setErrorMessage(val ? null : msg);
+		setWarningMessage(val ? null : msg);
 		updateLaunchConfigurationDialog();
 	}
 	
