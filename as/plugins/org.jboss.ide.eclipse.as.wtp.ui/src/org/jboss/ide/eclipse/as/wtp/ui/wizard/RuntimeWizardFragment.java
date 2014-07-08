@@ -16,6 +16,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jdt.launching.IVMInstall;
+import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
@@ -79,6 +81,7 @@ public abstract class RuntimeWizardFragment extends WizardFragment {
 			fillWidgets(rt);
 		}
 		updateWizardHandle(parent);
+		updatePage();
 		return main;
 	}
 	
@@ -208,8 +211,8 @@ public abstract class RuntimeWizardFragment extends WizardFragment {
 	// Launchable only from UI thread
 	protected void updatePage() {
 		updateDependentWidgets();
-		updateErrorMessage();
 		saveDetailsInRuntime();
+		updateErrorMessage();
 	}
 
 	protected void updateDependentWidgets() {
@@ -240,9 +243,17 @@ public abstract class RuntimeWizardFragment extends WizardFragment {
 			return Messages.rwf_NameInUse;
 		}
 
-		if( jreComposite != null && jreComposite.getValidJREs().size() == 0 ) {
-			String error = NLS.bind(Messages.rwf_noValidJRE, jreComposite.getMinimumExecutionEnvironment().getId());
-			return error;
+		if( jreComposite != null ) {
+			IExecutionEnvironment selectedEnv = jreComposite.getSelectedExecutionEnvironment();
+			IVMInstall install = jreComposite.getSelectedVM();
+			if( install == null ) {
+				// user has selected an exec-env, not a vm
+				if( selectedEnv != null ) {
+					if( selectedEnv.getCompatibleVMs().length == 0 ) {
+						return NLS.bind(Messages.rwf_noValidJRE, selectedEnv.getId());
+					}
+				}
+			}
 		}
 			
 		if (name == null || name.equals("")) //$NON-NLS-1$

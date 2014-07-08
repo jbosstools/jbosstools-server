@@ -162,16 +162,6 @@ public class JBossRuntimeWizardFragment extends RuntimeWizardFragment {
 		return Messages.rwf_Explanation;
 	}
 
-	protected IJBossServerRuntime getRuntime() {
-		IRuntime r = getRuntimeFromTaskModel();
-		IJBossServerRuntime ajbsrt = null;
-		if (r != null) {
-			ajbsrt = (IJBossServerRuntime) r
-					.loadAdapter(IJBossServerRuntime.class,
-							new NullProgressMonitor());
-		}
-		return ajbsrt;
-	}
 	
 	protected void createConfigurationComposite(Composite main) {
 		FormDataUtility u = new FormDataUtility(); // top bottom left right
@@ -376,5 +366,17 @@ public class JBossRuntimeWizardFragment extends RuntimeWizardFragment {
 			srt.setJBossConfiguration(configurations.getSelectedConfiguration());
 		if( configDirText != null )
 			srt.setConfigLocation(configDirTextVal);
+	}
+	
+
+	protected IJBossServerRuntime getRuntime() {
+		IRuntime r = getRuntimeFromTaskModel();
+		IJBossServerRuntime ajbsrt = null;
+		if (r != null) {
+			ajbsrt = (IJBossServerRuntime) r
+					.loadAdapter(IJBossServerRuntime.class,
+							new NullProgressMonitor());
+		}
+		return ajbsrt;
 	}
 }
