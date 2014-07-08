@@ -13,7 +13,11 @@ package org.jboss.ide.eclipse.archives.core;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Plugin;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.wiring.BundleWiring;
+
+import de.schlichtherle.key.KeyManager;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -45,6 +49,18 @@ public class ArchivesCorePlugin extends Plugin {
 		// Load the workspace version of ArchivesCore
 		new WorkspaceArchivesCore();
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(new WorkspaceChangeListener());
+		
+		// JBIDE-17700  workaround
+		Bundle bundle = context.getBundle();
+		BundleWiring bundleWiring = bundle.adapt(BundleWiring.class);
+		ClassLoader bundleLoader = bundleWiring.getClassLoader();
+		ClassLoader originalTCCL = Thread.currentThread().getContextClassLoader();
+		try {
+			Thread.currentThread().setContextClassLoader(bundleLoader);
+			KeyManager.getInstance();
+		} finally {
+			Thread.currentThread().setContextClassLoader(originalTCCL);
+		}
 	}
 
 	/*
