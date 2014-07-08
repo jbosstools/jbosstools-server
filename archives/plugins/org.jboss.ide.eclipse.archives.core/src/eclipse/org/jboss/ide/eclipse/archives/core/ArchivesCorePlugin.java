@@ -15,6 +15,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
 
+import de.schlichtherle.key.KeyManager;
+
 /**
  * The activator class controls the plug-in life cycle
  * @author rstryker
@@ -45,6 +47,7 @@ public class ArchivesCorePlugin extends Plugin {
 		// Load the workspace version of ArchivesCore
 		new WorkspaceArchivesCore();
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(new WorkspaceChangeListener());
+		KeyManager.getInstance();
 	}
 
 	/*
