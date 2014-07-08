@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.launching.IVMInstall;
+import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -286,8 +287,8 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	@Override
 	protected void updatePage() {
 		configDirTextVal = configDirText.getText();
-		updateErrorMessage();
 		saveDetailsInRuntime();
+		updateErrorMessage();
 	}
 	
 	@Override
@@ -303,6 +304,19 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 			return Messages.rwf_nameTextBlank;
 		
 
+		if( jreComposite != null ) {
+			IExecutionEnvironment selectedEnv = jreComposite.getSelectedExecutionEnvironment();
+			IVMInstall install = jreComposite.getSelectedVM();
+			if( install == null ) {
+				// user has selected an exec-env, not a vm
+				if( selectedEnv != null ) {
+					if( selectedEnv.getCompatibleVMs().length == 0 ) {
+						return NLS.bind(Messages.rwf_noValidJRE, selectedEnv.getId());
+					}
+				}
+			}
+		}
+		
 		if( jreComposite != null && jreComposite.getValidJREs().size() == 0 )
 			return NLS.bind(Messages.rwf_noValidJRE, getRuntime().getExecutionEnvironment().getId());
 		

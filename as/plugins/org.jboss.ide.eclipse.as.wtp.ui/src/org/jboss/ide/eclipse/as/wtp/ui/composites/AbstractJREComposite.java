@@ -135,7 +135,10 @@ public abstract class AbstractJREComposite extends Composite {
 	
 	protected void refreshWidgets() {
 		// Refresh with new model
-		execEnvironmentCombo.setItems(validExecutionEnvironmentNames);
+		if( execEnvironmentCombo.getItems().length == 0 ) {
+			// new exec-envs aren't going to suddenly appear, so only set this on opening
+			execEnvironmentCombo.setItems(validExecutionEnvironmentNames);
+		}
 		alternateJRECombo.setItems(jreNames);
 		
 		// Refresh selection of vm
