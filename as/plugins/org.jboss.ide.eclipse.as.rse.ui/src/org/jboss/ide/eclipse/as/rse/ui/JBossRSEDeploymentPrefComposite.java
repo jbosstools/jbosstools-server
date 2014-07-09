@@ -100,12 +100,11 @@ public class JBossRSEDeploymentPrefComposite extends
 		Label serverConfigLabel = new Label(this, SWT.NONE);
 		serverConfigLabel.setText(RSEUIMessages.REMOTE_SERVER_CONFIG);
 		rseServerConfig = new Text(this, SWT.SINGLE | SWT.BORDER);
-		serverConfigLabel.setLayoutData(UIUtil.createFormData2(
-				rseServerHome, 7, null, 0, 0, 10, null, 0));
+		serverConfigLabel.setLayoutData(UIUtil.createFormData2(rseServerHome, 7, null, 0, 0, 10, null, 0));
+		String defaultConfig = getRuntime() == null ? "default" : getRuntime().getJBossConfiguration(); 
 		rseServerConfig.setText(callback.getServer().getAttribute(
 				RSEUtils.RSE_SERVER_CONFIG,
-				getRuntime() == null ? "" : getRuntime()
-						.getJBossConfiguration()));
+				defaultConfig));
 		rseServerConfig.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				serverConfigChanged();
