@@ -143,14 +143,16 @@ public class JMXProvider {
 				return preconditions;
 			}
 			
-			public synchronized void selectionChanged(IStructuredSelection sel) {
+			public void selectionChanged(IStructuredSelection sel) {
 				if( sel.size() == 0 || sel.size() > 1 ) {
 					setEnabled(false);
 					return;
 				}
 				setEnabled(true);
-				switchListener(previousSelection, sel);
-				previousSelection = sel;
+				synchronized(this) {
+					switchListener(previousSelection, sel);
+					previousSelection = sel;
+				}
 				super.selectionChanged(sel);
 			}
 

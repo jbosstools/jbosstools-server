@@ -29,8 +29,8 @@ public class Activator extends BaseUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		// prefill the process info storage to save time
-		JvmConnectionWrapper.refreshProcessInformationStore();
+		// prefill the process info storage to save time, fire as a job
+		ProcessInformationStore.getDefault().refreshProcessInformationStoreAsync();
 	}
 
 	public static void registerNodeProviders() {
