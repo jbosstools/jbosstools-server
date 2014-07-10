@@ -11,11 +11,9 @@
 
 package org.jboss.tools.jmx.local.internal;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +21,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import javax.management.MBeanServerConnection;
 
@@ -69,8 +66,7 @@ public class JvmConnectionWrapper implements IConnectionWrapper, HasName, ImageP
 
 	protected static final Map<String,String> vmAliasMap = new HashMap<String, String>();
 	protected static final Map<String,String> karafSubTypeMap = new HashMap<String, String>();
-	protected static final Map<Integer, String> processInformationStore = new HashMap<Integer, String>();
-
+	
 	private IActiveJvm activeJvm;
 	private String name;
 	private Root root;
@@ -283,7 +279,7 @@ public class JvmConnectionWrapper implements IConnectionWrapper, HasName, ImageP
 		public String getDisplayString(IActiveJvm jvm) {
 			String displayName = "maven" + jvm.getMainClass().substring(MAVEN_PREFIX.length());
 			if (!jvm.isRemote()) {
-				String pInfo = queryProcessInformation(jvm.getPid());
+				String pInfo = ProcessInformationStore.getDefault().queryProcessInformation(jvm.getPid());
 				if (pInfo != null) {
 					int start = pInfo.indexOf(ECLIPSE_MAVEN_PROCESS_PREFIX);
 					if (start != -1) {
@@ -366,7 +362,7 @@ public class JvmConnectionWrapper implements IConnectionWrapper, HasName, ImageP
 	private static String getKarafHomeFolder(IActiveJvm jvm) {
 		String karafHomeFolder = null;
 		if (!jvm.isRemote()) {
-			String pInfo = queryProcessInformation(jvm.getPid());
+			String pInfo = ProcessInformationStore.getDefault().queryProcessInformation(jvm.getPid());
 			if (pInfo != null) {
 				int start = pInfo.indexOf(KARAF_HOME_PREFIX);
 				if (start != -1) {
@@ -448,68 +444,6 @@ public class JvmConnectionWrapper implements IConnectionWrapper, HasName, ImageP
 		return System.getenv();
 	}
 
-	/**
-	 *
-	 * @param pid
-	 * @return
-	 */
-	private static String queryProcessInformation(int pid) {
-		String retVal = null;
-
-		if (!processInformationStore.containsKey(pid)) {
-			refreshProcessInformationStore();
-		}
-
-		retVal = processInformationStore.get(pid);
-
-		return retVal;
-	}
-
-	/**
-	 * rebuilds the local process information store
-	 */
-	public static void refreshProcessInformationStore() {
-		processInformationStore.clear();
-
-		String path = String.format("%s%sbin%s", System.getProperty("java.home"), File.separator, File.separator);
-		List<String> cmds = new ArrayList<String>();
-		cmds.add("jps");
-		cmds.add("-v");
-		ProcessBuilder pb = new ProcessBuilder(cmds);
-		pb.directory(new File(path));
-		BufferedReader br = null;
-		try {
-			Process p = pb.start();
-			br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			String line = "";
-			while ((line = br.readLine()) != null) {
-				StringTokenizer st = new StringTokenizer(line, " ");
-				int pid = -1;
-				if (st.hasMoreElements()) {
-					String sVal = st.nextToken();
-					try {
-						pid = Integer.parseInt(sVal);
-					} catch (NumberFormatException e) {
-						pid = -1;
-					}
-				}
-
-				if (pid != -1) {
-					processInformationStore.put(pid, line);
-				}
-			}
-		} catch (Exception ex) {
-			// we don't want to scare the user with this
-		} finally {
-			if (br != null) {
-				try {
-					br.close();
-				} catch (Exception e) {
-					// we don't want to scare the user with this
-				}
-			}
-		}
-	}
 
 	@Override
 	public void loadRoot(IProgressMonitor monitor) throws CoreException {
