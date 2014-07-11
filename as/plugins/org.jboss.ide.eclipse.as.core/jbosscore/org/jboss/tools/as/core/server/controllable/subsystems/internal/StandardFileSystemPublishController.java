@@ -434,7 +434,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 	}
 	
 	private int handleZippedPublish(IModule[] module, int publishType, IPath archiveDestination, boolean force, IProgressMonitor monitor) throws CoreException{
-		if( !force && module.length > 1 ) {
+		if(PublishControllerUtility.NO_PUBLISH == publishType || (!force && module.length > 1 )) {
 			// We can assume the parent was already published.
 			// In the future, we may wish to check the parent's publish state and simply use that one as well
 			return IServer.PUBLISH_STATE_NONE;
