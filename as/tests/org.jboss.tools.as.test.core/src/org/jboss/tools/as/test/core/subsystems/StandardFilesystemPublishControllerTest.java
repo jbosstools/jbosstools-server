@@ -135,8 +135,10 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 	public void testUtilInWebMockModule() throws Exception {  
 		module = createUtilInWebMockModule();
 		((MockModule)module[0]).setExists(true);
+		((MockModule)module[0]).setExternal(true);
 		((MockModule)module[0]).setBinary(false);
 		((MockModule)module[1]).setExists(true);
+		((MockModule)module[1]).setExternal(true);
 		((MockModule)module[1]).setBinary(false);
 		
 		CustomPublishController controller = new CustomPublishController();
@@ -169,10 +171,13 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 	public void testUtilInWebInEarMockModule() throws Exception { 
 		module = createUtilInWebInEarMockModule();
 		((MockModule)module[0]).setExists(true);
+		((MockModule)module[0]).setExternal(true);
 		((MockModule)module[0]).setBinary(false);
 		((MockModule)module[1]).setExists(true);
+		((MockModule)module[1]).setExternal(true);
 		((MockModule)module[1]).setBinary(false);
 		((MockModule)module[2]).setExists(true);
+		((MockModule)module[2]).setExternal(true);
 		((MockModule)module[2]).setBinary(false);
 		
 		CustomPublishController controller = new CustomPublishController();

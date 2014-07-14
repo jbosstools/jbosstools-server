@@ -330,7 +330,8 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		IModulePathFilter filter = ResourceModuleResourceUtil.findDefaultModuleFilter(module[module.length-1]);
 
 		if( isBinaryObject ) {
-			return handleBinaryModule(module, archiveDestination);
+			// Remove situation has been handled
+			return handlePublishBinaryModule(module, archiveDestination, publishType);
  		}
 		
 		
@@ -346,6 +347,9 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 			requiresRestart.put(module, getModuleRestartBehaviorController().moduleRequiresRestart(module, cleanDelta));
 			ret = runner.publish(cleanDelta, monitor);
 			msgForFailure = Messages.IncrementalPublishFail;
+		} else {
+			// No publish done
+			requiresRestart.put(module, false);
 		}
 		monitor.done();
 		markModulePublished(module, publishType);
@@ -385,7 +389,13 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 	 * and also named "lib.jar". To avoid the unnecessary and incorrect
 	 * wrapping, binary modules must be handled separately.
 	 */
-	private int handleBinaryModule(IModule[] module, IPath archiveDestination) throws CoreException {
+	private int handlePublishBinaryModule(IModule[] module, IPath archiveDestination, int publishType) throws CoreException {
+		if( PublishControllerUtility.NO_PUBLISH == publishType ) {
+			markModulePublished(module, PublishControllerUtility.NO_PUBLISH);
+			return IServer.PUBLISH_STATE_NONE;
+		}
+		
+		
 		// Handle the publish here
 		// binary modules should only have 1 resource in them. 
 		IModuleResource[] all = ModuleResourceUtil.getMembers(module[module.length-1]);
@@ -454,16 +464,28 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 			IPath localTempLocation = getMetadataTemporaryLocation(getServer());
 			IPath tmpArchive = localTempLocation.append(archiveDestination.lastSegment());
 			
-			LocalZippedModulePublishRunner runner = createZippedRunner(module[module.length-1], tmpArchive); 
+			LocalZippedModulePublishRunner runner = createZippedRunner(module, tmpArchive); 
 			monitor.beginTask("Packaging Module", 200); //$NON-NLS-1$
 			
 			IStatus result = null;
+			boolean rebuilt = false;
 			if( publishType == PublishControllerUtility.FULL_PUBLISH) {
+				rebuilt = true;
 				result = runner.fullPublishModule(ProgressMonitorUtil.submon(monitor, 100));
-			} else if( publishType == PublishControllerUtility.INCREMENTAL_PUBLISH) {
-				result = runner.incrementalPublishModule(ProgressMonitorUtil.submon(monitor, 100));
+			} else {
+				// If a child module nested inside this utility requires a full publish, so do we
+				// If a child module has been added or removed, or any other structural change, we also require
+				// a full publish
+				int childPublishType = runner.childPublishTypeRequired();
+				if( childPublishType == PublishControllerUtility.FULL_PUBLISH ) {
+					rebuilt = true;
+					result = runner.fullPublishModule(ProgressMonitorUtil.submon(monitor, 100));
+				} else if( publishType == PublishControllerUtility.INCREMENTAL_PUBLISH || childPublishType == PublishControllerUtility.INCREMENTAL_PUBLISH) {
+					rebuilt = true;
+					result = runner.incrementalPublishModule(ProgressMonitorUtil.submon(monitor, 100));
+				}
 			}
-			if( result == null || result.isOK()) {
+			if( rebuilt && (result == null || result.isOK())) {
 				if( tmpArchive.toFile().exists()) {
 					getFilesystemController().deleteResource(archiveDestination, ProgressMonitorUtil.submon(monitor, 10));
 					result = getFilesystemController().copyFile(tmpArchive.toFile(), archiveDestination, ProgressMonitorUtil.submon(monitor, 90));
@@ -471,8 +493,12 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 					result = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Zipped archive not found"); //$NON-NLS-1$
 				}
 			}
-			// If a zipped module has changed, then it requires restart no matter what
-			markModulePublished(module, PublishControllerUtility.FULL_PUBLISH);
+			if( rebuilt ) {
+				// If a zipped module has changed, then it requires restart no matter what
+				markModulePublished(module, PublishControllerUtility.FULL_PUBLISH);
+			} else {
+				markModulePublished(module, PublishControllerUtility.NO_PUBLISH);
+			}
 			if( result != null && !result.isOK()) // log error
 		        ServerLogger.getDefault().log(getServer(), result);
 			return result == null || result.isOK() ? IServer.PUBLISH_STATE_NONE : IServer.PUBLISH_STATE_UNKNOWN;
@@ -653,6 +679,10 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 	
 	// Exposed only for unit tests to override
 	protected LocalZippedModulePublishRunner createZippedRunner(IModule m, IPath p) {
+		return createZippedRunner(new IModule[]{m}, p);
+	}
+	
+	protected LocalZippedModulePublishRunner createZippedRunner(IModule[] m, IPath p) {
 		return new LocalZippedModulePublishRunner(getServer(), m,p, 
 				getModulePathFilterProvider());
 	}

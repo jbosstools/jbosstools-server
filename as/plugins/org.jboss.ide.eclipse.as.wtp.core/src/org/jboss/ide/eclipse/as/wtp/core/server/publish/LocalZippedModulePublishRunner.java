@@ -42,6 +42,7 @@ import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.util.ProgressMonitorUtil;
 import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
 import org.jboss.ide.eclipse.as.wtp.core.Messages;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.util.PublishControllerUtil;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
 import de.schlichtherle.io.ArchiveDetector;
@@ -78,10 +79,14 @@ import de.schlichtherle.io.ArchiveDetector;
 public class LocalZippedModulePublishRunner extends ModuleResourceUtil {
 	
 	private IServer server;
-	private IModule module;
+	private IModule[] module;
 	private IPath destinationArchive;
 	private IModulePathFilterProvider filterProvider;
 	public LocalZippedModulePublishRunner(IServer server, IModule module, IPath destinationArchive, IModulePathFilterProvider filterProvider) {
+		this(server, new IModule[]{module}, destinationArchive, filterProvider);
+	}
+	
+	public LocalZippedModulePublishRunner(IServer server, IModule[] module, IPath destinationArchive, IModulePathFilterProvider filterProvider) {
 		this.server = server;
 		this.module = module;
 		this.destinationArchive = destinationArchive;
@@ -92,7 +97,7 @@ public class LocalZippedModulePublishRunner extends ModuleResourceUtil {
 	public IStatus fullPublishModule(IProgressMonitor monitor) throws CoreException {
 		IStatus[] status = fullPublish(monitor);
 		TrueZipUtil.umount();
-		IStatus finalStatus = createModuleStatus(new IModule[]{module}, status);
+		IStatus finalStatus = createModuleStatus(module, status);
 		return finalStatus;
 	}
 	
@@ -106,17 +111,17 @@ public class LocalZippedModulePublishRunner extends ModuleResourceUtil {
 		}
 		
 		
-		String name = "Compressing " + module.getName(); //$NON-NLS-1$
+		String name = "Compressing " + lastModule().getName(); //$NON-NLS-1$
 		monitor.beginTask(name, 1000);
 		monitor.setTaskName(name);
-		IModule[] moduleAsArray = new IModule[]{module};
+		IModule[] moduleAsArray = module;
 		IStatus[] operationStatus;
 		
 		
 		// incremental publish here, or auto publish
 		// Am I changed? If yes, handle my changes
 		ArrayList<IStatus> results = new ArrayList<IStatus>(); 
-		int changeCount = countChanges(getDeltaForModule(new IModule[]{module}));
+		int changeCount = countChanges(getDeltaForModule(module));
 		if( changeCount > 0) {
 			IProgressMonitor changeMonitor = ProgressMonitorUtil.submon(monitor, 300);
 			changeMonitor.beginTask("Copying changed resources", changeCount * 100);
@@ -171,7 +176,7 @@ public class LocalZippedModulePublishRunner extends ModuleResourceUtil {
 		// Get rid of the old file during a full publish
 		FileUtil.safeDelete(destinationArchive.toFile(), null);
 		TrueZipUtil.umount();
-		return fullPublish(new IModule[]{module}, null,ProgressMonitorUtil.getMonitorFor(monitor));
+		return fullPublish(module, null,ProgressMonitorUtil.getMonitorFor(monitor));
 	}
 	
 	// Full publish called on either a root module or any valid module tree (children etc)
@@ -298,8 +303,9 @@ public class LocalZippedModulePublishRunner extends ModuleResourceUtil {
 		// Handle the removed children that are not returned by getChildModules
 		Iterator<IModule[]> i = working.iterator();
 		while(i.hasNext()) {
-			IModule[] removedArray = i.next();	IModule[] moduleAsArray = new IModule[]{module};
-			if( removedArray.length == 1 || !removedArray[0].getId().equals(module.getId())) {
+			IModule[] removedArray = i.next();	
+			IModule[] moduleAsArray = module;
+			if( removedArray.length == 1 || !removedArray[0].getId().equals(lastModule().getId())) {
 				i.remove();
 			}
 		}
@@ -371,7 +377,13 @@ public class LocalZippedModulePublishRunner extends ModuleResourceUtil {
 	 * @return
 	 */
 	private IPath getRootModuleRelativePath(IModule[] module) {
-		return ServerModelUtilities.getRootModuleRelativePath(server, module);
+		int start = this.module.length - 1;
+		IModule[] toCheck = new IModule[module.length - start];
+		for(int i = 0; i < module.length - start; i++ ) {
+			toCheck[i] = module[start+i];
+		}
+		IPath ret = ServerModelUtilities.getRootModuleRelativePath(server, toCheck);
+		return ret;
 	}
 	
 	
@@ -473,4 +485,50 @@ public class LocalZippedModulePublishRunner extends ModuleResourceUtil {
 		return ((Server)server).getServerPublishInfo().hasModulePublishInfo(mod);
 	}
 
+	public int childPublishTypeRequired() {
+		return childPublishTypeRequired(module);
+	}
+	
+	private IModule lastModule() {
+		return module == null ? null : module.length == 0 ? null : module[module.length-1];
+	}
+	
+	protected int childPublishTypeRequired(IModule[] mod) {
+		IModule[] children = getChildModules(mod);
+		boolean atLeastIncremental = false;
+		for( int i = 0; i < children.length; i++ ) {
+			IModule[] combinedChild = combine(mod, children[i]);
+			// if it's new, full publish it
+			if( !hasBeenPublished(combinedChild)) {
+				// structural change, new module
+				return PublishControllerUtil.FULL_PUBLISH;
+			}
+			// else if it's removed, full remove it
+			else if( isRemoved(combinedChild)) {
+				// structural change, removed module
+				return PublishControllerUtil.FULL_PUBLISH;
+			}
+			// else 
+			else {
+				// Check children
+				int childrenRequire = childPublishTypeRequired(combinedChild);
+				if( childrenRequire == PublishControllerUtil.FULL_PUBLISH ) {
+					return childrenRequire;
+				}
+				if( childrenRequire == PublishControllerUtil.INCREMENTAL_PUBLISH) {
+					atLeastIncremental = true;
+				}
+				// Otherwise, check if this module has any changes
+				IModuleResourceDelta[] delta = getDeltaForModule(combinedChild);
+				if( delta.length > 0 )
+					atLeastIncremental = true;
+			}
+		}
+		
+		if( atLeastIncremental ) 
+			return PublishControllerUtil.INCREMENTAL_PUBLISH;
+		
+		return PublishControllerUtil.NO_PUBLISH;
+	}
+	
 }

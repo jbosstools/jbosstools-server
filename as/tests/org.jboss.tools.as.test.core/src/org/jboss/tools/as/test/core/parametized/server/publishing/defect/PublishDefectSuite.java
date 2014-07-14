@@ -19,7 +19,10 @@ import org.junit.runners.Suite.SuiteClasses;
 	PublishWeb2DeletesWeb1LibsTest.class, 
 	RepublishDefectTest.class,
 	ClosedProjectPublishTest.class,
-	PublishRemovalMarkerDefectTest.class
+	PublishRemovalMarkerDefectTest.class,
+	UnchangedUtilRestartedDefectTest.class,
+	UnchangedJarRestartedDefectTest.class,
+	UtilInWebPathDefectTest.class
 })
 public class PublishDefectSuite {
 }
