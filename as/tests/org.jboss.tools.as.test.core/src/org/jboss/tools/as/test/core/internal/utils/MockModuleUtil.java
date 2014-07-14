@@ -41,7 +41,7 @@ public class MockModuleUtil {
 		return createMockEarModule("jst.ear", "EarProj");
 	}
 	public static MockModule createMockEarModule(final String id, final String name ) {
-		return createMockModule(id, name, "jst.ear", "jst.ear", "1.0");
+		return createMockModule(id, name, "jst.ear", "jst.ear", "1.2");
 	}
 	
 	public static MockModule createMockModule(final String id, final String name, 

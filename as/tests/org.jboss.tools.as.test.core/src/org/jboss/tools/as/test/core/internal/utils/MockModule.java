@@ -34,6 +34,7 @@ public class MockModule extends ModuleDelegate implements IModule, IEnterpriseAp
 	private IProject project;
 	private boolean exists = false;
 	private boolean binary = false;
+	private boolean external = false;
 	
 	public MockModule(final String id, final String name, 
 			final String typeId, final String typeName, final String typeVersion) {
@@ -56,7 +57,7 @@ public class MockModule extends ModuleDelegate implements IModule, IEnterpriseAp
 		return project;
 	}
 	public boolean isExternal() {
-		return false;
+		return external;
 	}
 	public boolean exists() {
 		return exists;
@@ -66,6 +67,9 @@ public class MockModule extends ModuleDelegate implements IModule, IEnterpriseAp
 	}
 	public void setBinary(boolean b) {
 		binary = b;
+	}
+	public void setExternal(boolean b) {
+		external = b;
 	}
 	@Override
 	public boolean isBinary() {
