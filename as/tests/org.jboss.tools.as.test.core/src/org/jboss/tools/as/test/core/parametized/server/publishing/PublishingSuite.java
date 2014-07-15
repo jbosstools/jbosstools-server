@@ -29,7 +29,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	DeploymentAssemblyFilesetReferenceTest.class,
 	SingleDeployableFileTest.class,
 	SingleDeployableFolderTest.class,
-	PublishDefectSuite.class
+	PublishDefectSuite.class,
+	PublishFilterDirectoryScannerTest.class
 })
 public class PublishingSuite {
 }
