@@ -113,7 +113,7 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 		String t = null;
 		while(i.hasNext()) {
 			t = i.next();
-			if( t.contains("org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType"))  { //$NON-NLS-1$
+			if( t.contains("org.eclipse.jdt.launching.JRE_CONTAINER/"))  { //$NON-NLS-1$
 				i.remove();
 			}
 		}
