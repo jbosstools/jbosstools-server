@@ -235,6 +235,12 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 	
 	
 	protected void validate() {
+		if( ignoreLaunch.getSelection()) {
+			setErrorMessage(null);			
+			getLaunchConfigurationDialog().updateButtons();
+			return;
+		}
+		
 		boolean empty = (startText.getText().trim().length() == 0);
 		setErrorMessage(empty ? "Start Command must not be empty." : null);
 		if( !empty && supportsCommandLineShutdown ) {
@@ -301,19 +307,26 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 	}
 	
 	protected void setTabEnablement(boolean val) {
-		startText.setEnabled(val && !autoStartArgs.getSelection());
+		boolean autoStartEnablement = (canAutoDetectCommand() ? !autoStartArgs.getSelection() : true);
+		startText.setEnabled(val && autoStartEnablement);
 		if( canAutoDetectCommand() ) {
 			autoStartArgs.setEnabled(val);
 		}
 		
 		if( supportsCommandLineShutdown ) {
-			stopText.setEnabled(val && !autoStopArgs.getSelection());
+			boolean autoStopEnablement = (canAutoDetectCommand() ? !autoStopArgs.getSelection() : true);
+			stopText.setEnabled(val && autoStopEnablement);
 			if( canAutoDetectCommand() ) {
 				autoStopArgs.setEnabled(val);
 			}
 		}
-		String msg = "Your server is currently configured to ignore startup and shutdown actions.";
-		setWarningMessage(val ? null : msg);
+		if( val ) {
+			validate();
+		} else {
+			setErrorMessage(null);
+			String msg = "Your server is currently configured to ignore startup and shutdown actions.";
+			setWarningMessage(msg);
+		}
 		updateLaunchConfigurationDialog();
 	}
 	
