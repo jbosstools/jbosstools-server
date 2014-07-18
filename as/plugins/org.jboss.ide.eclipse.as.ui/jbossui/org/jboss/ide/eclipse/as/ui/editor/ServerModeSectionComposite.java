@@ -13,7 +13,7 @@ package org.jboss.ide.eclipse.as.ui.editor;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.jface.window.Window;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -51,7 +51,6 @@ import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.ui.FormUtils;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.editor.DeploymentTypeUIUtil.ServerEditorUICallback;
-import org.jboss.ide.eclipse.as.ui.wizards.LayeredProductServerWizardFragment;
 import org.jboss.ide.eclipse.as.ui.wizards.ServerProfileWizardFragment;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
@@ -183,25 +182,42 @@ public class ServerModeSectionComposite extends Composite {
 		TaskModel tm = new TaskModel();
 		tm.putObject(TaskModel.TASK_SERVER, callback.getServer());
 		tm.putObject(ServerProfileWizardFragment.EDITING_SERVER, Boolean.TRUE); // indicating we're editing the server
+
+		final boolean[] closed = new boolean[1];
+		closed[0] = false;
+		IServerWorkingCopy s = callback.getServer();
+		IServer s2 = s.getOriginal();
+		final IEditorSite site = callback.getPart().getEditorSite();
 		
-		
-		TaskWizard tw = new TaskWizard("Configure Server Profile", createRootConfigureFragment(), tm);
-		WizardDialog wd = new WizardDialog(profileLabel.getShell(), tw);
-		if( wd.open() == Window.OK) {
-			// close and re-open editor
-			IServerWorkingCopy s = callback.getServer();
-			IServer s2 = s.getOriginal();
-			IEditorSite site = callback.getPart().getEditorSite();
-			if( site instanceof MultiPageEditorSite) {
-				MultiPageEditorPart mpep = ((MultiPageEditorSite)site).getMultiPageEditor();
-				if( site.getPage().closeEditor(mpep, false) ) {
-					try {
-						ServerUIPlugin.editServer(s2);
-					} catch (Exception e) {
-						if (Trace.SEVERE) {
-							Trace.trace(Trace.STRING_SEVERE, "Error editing element", e);
-						}
-					}
+		TaskWizard tw = new TaskWizard("Configure Server Profile", createRootConfigureFragment(), tm) {
+
+			@Override
+			public boolean performFinish() {
+				if( site instanceof MultiPageEditorSite) {
+					MultiPageEditorPart mpep = ((MultiPageEditorSite)site).getMultiPageEditor();
+					closed[0] = site.getPage().closeEditor(mpep, false);
+				}
+				return super.performFinish();
+			}
+			
+		};
+		WizardDialog wd = new WizardDialog(profileLabel.getShell(), tw) {
+			protected Control createContents(Composite parent) {
+				// Since this makes direct changes to the working copy, we can't allow a cancel
+				Control ret = super.createContents(parent);
+				Button cancel = getButton(IDialogConstants.CANCEL_ID);
+				cancel.setEnabled(false);
+				return ret;
+			}
+		};
+		// re-open editor
+		wd.open();
+		if (closed[0] && site instanceof MultiPageEditorSite) {
+			try {
+				ServerUIPlugin.editServer(s2);
+			} catch (Exception e) {
+				if (Trace.SEVERE) {
+					Trace.trace(Trace.STRING_SEVERE, "Error editing element", e);
 				}
 			}
 		}
