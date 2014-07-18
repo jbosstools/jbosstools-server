@@ -183,25 +183,34 @@ public class ServerModeSectionComposite extends Composite {
 		TaskModel tm = new TaskModel();
 		tm.putObject(TaskModel.TASK_SERVER, callback.getServer());
 		tm.putObject(ServerProfileWizardFragment.EDITING_SERVER, Boolean.TRUE); // indicating we're editing the server
+
+		final boolean[] closed = new boolean[1];
+		closed[0] = false;
+		IServerWorkingCopy s = callback.getServer();
+		IServer s2 = s.getOriginal();
+		final IEditorSite site = callback.getPart().getEditorSite();
 		
-		
-		TaskWizard tw = new TaskWizard("Configure Server Profile", createRootConfigureFragment(), tm);
+		TaskWizard tw = new TaskWizard("Configure Server Profile", createRootConfigureFragment(), tm) {
+
+			@Override
+			public boolean performFinish() {
+				if( site instanceof MultiPageEditorSite) {
+					MultiPageEditorPart mpep = ((MultiPageEditorSite)site).getMultiPageEditor();
+					closed[0] = site.getPage().closeEditor(mpep, false);
+				}
+				return super.performFinish();
+			}
+			
+		};
 		WizardDialog wd = new WizardDialog(profileLabel.getShell(), tw);
-		if( wd.open() == Window.OK) {
-			// close and re-open editor
-			IServerWorkingCopy s = callback.getServer();
-			IServer s2 = s.getOriginal();
-			IEditorSite site = callback.getPart().getEditorSite();
-			if( site instanceof MultiPageEditorSite) {
-				MultiPageEditorPart mpep = ((MultiPageEditorSite)site).getMultiPageEditor();
-				if( site.getPage().closeEditor(mpep, false) ) {
-					try {
-						ServerUIPlugin.editServer(s2);
-					} catch (Exception e) {
-						if (Trace.SEVERE) {
-							Trace.trace(Trace.STRING_SEVERE, "Error editing element", e);
-						}
-					}
+		// re-open editor
+		wd.open();
+		if (closed[0] && site instanceof MultiPageEditorSite) {
+			try {
+				ServerUIPlugin.editServer(s2);
+			} catch (Exception e) {
+				if (Trace.SEVERE) {
+					Trace.trace(Trace.STRING_SEVERE, "Error editing element", e);
 				}
 			}
 		}
