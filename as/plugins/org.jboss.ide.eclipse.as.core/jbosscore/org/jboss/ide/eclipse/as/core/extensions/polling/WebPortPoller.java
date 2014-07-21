@@ -59,14 +59,18 @@ public class WebPortPoller implements IServerStatePoller2 {
 		t.start();
 	}
 	
+	private synchronized void setStateInternal(boolean done, boolean state) {
+		this.done = done;
+		this.state = state;
+	}
+	
 	private void pollerRun() {
-		done = false;
+		setStateInternal(false, state);
 		String url = getURL(getServer());
 		while(!canceled && !done) {
 			boolean up = onePing(url);
 			if( up == expectedState ) {
-				done = true;
-				state = expectedState;
+				setStateInternal(true, expectedState);
 			}
 			try {
 				Thread.sleep(100);
@@ -125,11 +129,11 @@ public class WebPortPoller implements IServerStatePoller2 {
 		return server;
 	}
 
-	public boolean isComplete() throws PollingException, RequiresInfoException {
+	public synchronized boolean isComplete() throws PollingException, RequiresInfoException {
 		return done;
 	}
 
-	public boolean getState() throws PollingException, RequiresInfoException {
+	public synchronized boolean getState() throws PollingException, RequiresInfoException {
 		return state;
 	}
 
@@ -143,7 +147,7 @@ public class WebPortPoller implements IServerStatePoller2 {
 	public void provideCredentials(Properties properties) {
 	}
 
-	public void cancel(int type) {
+	public synchronized void cancel(int type) {
 		canceled = true;
 	}
 
