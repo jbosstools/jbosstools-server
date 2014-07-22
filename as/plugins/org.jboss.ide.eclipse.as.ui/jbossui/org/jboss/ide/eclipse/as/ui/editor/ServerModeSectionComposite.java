@@ -92,8 +92,8 @@ public class ServerModeSectionComposite extends Composite {
 		configureProfileLink.setLayoutData(fd);
 		
 		
-		profileLabel = new Label(this, SWT.READ_ONLY);
-		fd = FormDataUtility.createFormData2(top, 5, null, 0, configureProfileLink, 5, null, 0);
+		profileLabel = new Label(this, SWT.READ_ONLY | SWT.BORDER);
+		fd = FormDataUtility.createFormData2(top, 5, null, 0, configureProfileLink, 5, 0, 400);
 		profileLabel.setLayoutData(fd);
 
 	    String profName = getCurrentProfileName();
