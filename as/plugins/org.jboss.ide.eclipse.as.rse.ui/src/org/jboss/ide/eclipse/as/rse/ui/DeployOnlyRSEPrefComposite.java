@@ -34,9 +34,9 @@ public class DeployOnlyRSEPrefComposite extends
 		handleDeployOnlyServer(child);
 	}
 
-	private Text deployText, tempDeployText;
-	private Button deployButton, tempDeployButton;
-	private ModifyListener deployListener, tempDeployListener;
+	private Text deployText;
+	private Button deployButton;
+	private ModifyListener deployListener;
 
 
 	private void handleDeployOnlyServer(Composite composite) {
@@ -68,36 +68,6 @@ public class DeployOnlyRSEPrefComposite extends
 				}
 			}
 		});
-
-		Label tempDeployLabel = new Label(this, SWT.NONE);
-		tempDeployLabel.setText(Messages.swf_TempDeployDirectory);
-		tempDeployText = new Text(this, SWT.BORDER);
-		tempDeployText.setText(getServer().getTempDeployFolder());
-		tempDeployListener = new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				callback.execute(new SetTempDeployDirCommand());
-			}
-		};
-		tempDeployText.addModifyListener(tempDeployListener);
-
-		tempDeployButton = new Button(this, SWT.PUSH);
-		tempDeployButton.setText(Messages.browse);
-		
-		tempDeployLabel.setLayoutData(UIUtil.createFormData2(deployText, 7, null, 0, 0, 10, null, 0));
-		tempDeployButton.setLayoutData(UIUtil.createFormData2(deployText, 5, null, 0, null, 0, 100, -5));
-		tempDeployText.setLayoutData(UIUtil.createFormData2(deployText, 5, null, 0, tempDeployLabel, 5, deployButton, -5));
-
-		tempDeployButton.addSelectionListener(new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-
-			public void widgetSelected(SelectionEvent e) {
-				String browseVal = browseClicked3(tempDeployText.getShell());
-				if (browseVal != null) {
-					tempDeployText.setText(browseVal);
-				}
-			}
-		});
 	}
 	
 	private void updateDeployOnlyWidgets() {
@@ -106,9 +76,6 @@ public class DeployOnlyRSEPrefComposite extends
 		deployText.removeModifyListener(deployListener);
 		deployText.setText(newDir);
 		deployText.addModifyListener(deployListener);
-		tempDeployText.removeModifyListener(tempDeployListener);
-		tempDeployText.setText(newTemp);
-		tempDeployText.addModifyListener(tempDeployListener);
 	}
 	public class SetDeployDirCommand extends ServerCommand {
 		private String oldDir;
@@ -133,33 +100,6 @@ public class DeployOnlyRSEPrefComposite extends
 		public void undo() {
 			callback.getServer().setAttribute(
 					IDeployableServer.DEPLOY_DIRECTORY, oldDir);
-			updateDeployOnlyWidgets();
-		}
-	}
-
-	public class SetTempDeployDirCommand extends ServerCommand {
-		private String oldDir;
-		private String newDir;
-		private Text text;
-		private ModifyListener listener;
-
-		public SetTempDeployDirCommand() {
-			super(callback.getServer(), Messages.EditorSetTempDeployLabel);
-			text = tempDeployText;
-			newDir = tempDeployText.getText();
-			listener = tempDeployListener;
-			oldDir = callback.getServer().getAttribute(
-					IDeployableServer.TEMP_DEPLOY_DIRECTORY, ""); //$NON-NLS-1$
-		}
-
-		public void execute() {
-			callback.getServer().setAttribute(
-					IDeployableServer.TEMP_DEPLOY_DIRECTORY, newDir);
-		}
-
-		public void undo() {
-			callback.getServer().setAttribute(
-					IDeployableServer.TEMP_DEPLOY_DIRECTORY, oldDir);
 			updateDeployOnlyWidgets();
 		}
 	}

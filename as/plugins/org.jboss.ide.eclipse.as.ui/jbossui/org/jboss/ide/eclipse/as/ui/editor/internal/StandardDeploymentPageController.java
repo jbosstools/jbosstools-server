@@ -163,13 +163,12 @@ public class StandardDeploymentPageController extends
 		fd.right = new FormAttachment(100, -5);
 		l1.setLayoutData(fd);
 		
-		
 		// First section is deployment mode (server / custom / metadata) etc. 
-		standardOptions = new JBossDeploymentOptionsComposite(parent, this);
+		standardOptions = createServerDeploymentOptions(parent);
 		standardOptions.setLayoutData(UIUtil.createFormData2(l1, 5, null,0,0,5,100,-5));
 		
 		// Simply create a composite to show the per-module customizations
-		perModuleOptions = new ModuleDeploymentOptionsComposite(parent, getPage(), getFormToolkit(parent), getPage().getPreferences());
+		perModuleOptions = createModuleDeploymentOptions(parent);
 		fd = new FormData();
 		fd.left = new FormAttachment(0, 5);
 		fd.top = new FormAttachment(standardOptions, 5);
@@ -177,7 +176,16 @@ public class StandardDeploymentPageController extends
 		fd.bottom = new FormAttachment(100, -5);
 		perModuleOptions.setLayoutData(fd);
 	}
+	
+	protected JBossDeploymentOptionsComposite createServerDeploymentOptions(Composite parent) {
+		return new JBossDeploymentOptionsComposite(parent, this);
+	}
+	
+	protected ModuleDeploymentOptionsComposite createModuleDeploymentOptions(Composite parent) {
+		return new ModuleDeploymentOptionsComposite(parent, getPage(), getFormToolkit(parent), getPage().getPreferences());
+	}
 
+	
 	public FormToolkit getFormToolkit(Composite parent) {
 		return page.getFormToolkit(parent);
 	}

@@ -173,28 +173,42 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 		viewer.setContentProvider(createViewerContentProvider());
 		viewer.setLabelProvider(createViewerLabelProvider());
 		
+		boolean showTemp = showTemporaryColumn();
 		TreeColumn moduleColumn = new TreeColumn(viewer.getTree(), SWT.NONE);
 		TreeColumn publishLocColumn = new TreeColumn(viewer.getTree(), SWT.NONE);
-		TreeColumn publishTempLocColumn = new TreeColumn(viewer.getTree(),
-				SWT.NONE);
+		TreeColumn publishTempLocColumn = null;
 		moduleColumn.setText(Messages.EditorModule);
 		publishLocColumn.setText(Messages.EditorSetDeployLabel);
-		publishTempLocColumn.setText(Messages.EditorSetTempDeployLabel);
-
 		moduleColumn.setWidth(200);
 		publishLocColumn.setWidth(200);
-		publishTempLocColumn.setWidth(200);
+		
+		String[] colNames = null;
+		CellEditor[] editors = null;
+		if( !showTemp ) {
+			colNames = new String[] { COLUMN_NAME, COLUMN_LOC, COLUMN_TEMP_LOC };
+			editors = new CellEditor[] {
+					new TextCellEditor(viewer.getTree()),
+					new TextCellEditor(viewer.getTree()),
+					new TextCellEditor(viewer.getTree())};
+		} else {
+			publishTempLocColumn = new TreeColumn(viewer.getTree(),SWT.NONE);
+			publishTempLocColumn.setText(Messages.EditorSetTempDeployLabel);
+			publishTempLocColumn.setWidth(200);
+			colNames = new String[] { COLUMN_NAME, COLUMN_LOC};
+			editors = new CellEditor[] {
+					new TextCellEditor(viewer.getTree()),
+					new TextCellEditor(viewer.getTree())};
+		}
 
-		viewer.setColumnProperties(new String[] { 
-				COLUMN_NAME, COLUMN_LOC, COLUMN_TEMP_LOC });
+		viewer.setColumnProperties(colNames);
 		viewer.setInput("");  //$NON-NLS-1$
-		CellEditor[] editors = new CellEditor[] {
-				new TextCellEditor(viewer.getTree()),
-				new TextCellEditor(viewer.getTree()),
-				new TextCellEditor(viewer.getTree()) };
 		viewer.setCellEditors(editors);
 		viewer.setCellModifier(createViewerCellModifier());
 		return viewer;
+	}
+	
+	protected boolean showTemporaryColumn() {
+		return true;
 	}
 	
 	protected ITableLabelProvider createViewerLabelProvider() {

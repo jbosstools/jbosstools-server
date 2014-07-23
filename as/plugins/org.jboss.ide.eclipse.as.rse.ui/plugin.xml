@@ -48,8 +48,7 @@
             mappedId="launchTabProvider.rse"
             serverTypes="%AllJBossServerTypes">
       </subsystemMapping>
-   </extension>      
-   
+    </extension>
    
     <extension
           point="org.jboss.ide.eclipse.as.wtp.core.serverProfile">
@@ -62,7 +61,7 @@
        <serverProfile id="rse" serverTypes="%AllJBTServerTypes">
           <subsystem system="exploreBehavior" subsystem="exploreBehavior.rse"/>
           <subsystem system="browseBehavior" subsystem="browseBehavior.rse"/>
-          <subsystem system="deploymentPage" subsystem="deploymentPage.standard"/>
+          <subsystem system="deploymentPage" subsystem="deploymentPage.noTemporaryFolder"/>
        </serverProfile>
     </extension>
     

@@ -747,6 +747,19 @@
             serverTypes="%AllJBTServerTypes">
       </subsystemMapping>
       
+      
+       <subsystem
+            system="deploymentPage"
+            id="deploymentPage.noTemporaryFolder"
+            name="Deployment Page"
+            class="org.jboss.ide.eclipse.as.ui.editor.internal.NoTempDeploymentPageController">
+      </subsystem>
+      <subsystemMapping
+            id="deploymentPage.noTemporaryFolder"
+            mappedId="deploymentPage.noTemporaryFolder"
+            serverTypes="%AllJBTServerTypes">
+      </subsystemMapping>
+      
       <subsystem
             system="deploymentPage"
             id="deploymentPage.management"

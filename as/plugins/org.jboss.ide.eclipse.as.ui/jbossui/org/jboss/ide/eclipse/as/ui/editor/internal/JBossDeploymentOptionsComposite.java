@@ -161,10 +161,13 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 		return props.getMultipleDeployFolderSupport() != ServerExtendedProperties.DEPLOYMENT_SCANNER_NO_SUPPORT;
 	}
 	
-	protected boolean showTempAndDeployTexts() {
+	protected boolean showTempDeployText() {
 		return true;
 	}
-
+	protected boolean showDeployText() {
+		return true;
+	}
+	
 	/*
 	 * Subclasses may override to change text strings
 	 */
@@ -232,8 +235,11 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 			top = inner;
 		}
 		
-		if( showTempAndDeployTexts() ) {
-			top = addTempAndDeployTexts(toolkit, composite, top);
+		if( showDeployText()) {
+			top = addDeployText(toolkit, composite, top);
+		}
+		if( showTempDeployText()) {
+			top = addTempDeployText(toolkit, composite, top);
 		}
 		
 		if( showZipWidgets()) {
@@ -308,35 +314,14 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 		return inner;
 	}
 	
+	@Deprecated
 	protected Control addTempAndDeployTexts(FormToolkit toolkit, Composite parent, Control top) {
-		Label label = toolkit.createLabel(parent,
-				Messages.swf_DeployDirectory);
-		label.setForeground(toolkit.getColors().getColor(IFormColors.TITLE));
+		Control top2 = addDeployText(toolkit, parent, top);
+		return addTempDeployText(toolkit, parent, top2);
+	}
+	
+	protected Control addTempDeployText(FormToolkit toolkit, Composite parent, Control top) {
 		
-		deployText = toolkit.createText(parent, getDeployDir(), SWT.BORDER);
-		enableDisableWidgets.add(deployText);
-		deployListener = new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				getPage().execute(new SetDeployDirCommand());
-			}
-		};
-		deployText.addModifyListener(deployListener);
-
-		deployButton = toolkit.createButton(parent, Messages.browse, SWT.PUSH);
-		enableDisableWidgets.add(deployButton);
-
-		deployButton.addSelectionListener(new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-
-			public void widgetSelected(SelectionEvent e) {
-				String x = openBrowseDialog(deployText.getText());
-				if (x != null) {
-					deployText.setText(makeRelative(x));
-				}
-			}
-		});
-
 		Label tempDeployLabel = toolkit.createLabel(parent,
 				Messages.swf_TempDeployDirectory);
 		tempDeployLabel.setForeground(toolkit.getColors().getColor(
@@ -366,6 +351,56 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 			}
 		});
 
+		// second row
+		FormData tempLabelData = new FormData();
+		tempLabelData.left = new FormAttachment(0, 5);
+		tempLabelData.right = new FormAttachment(top, -5);
+		tempLabelData.top = new FormAttachment(top, 5);
+		tempDeployLabel.setLayoutData(tempLabelData);
+
+		FormData tempTextData = new FormData();
+		tempTextData.left = new FormAttachment(tempDeployButton, -305);
+		tempTextData.top = new FormAttachment(top, 5);
+		tempTextData.right = new FormAttachment(tempDeployButton, -5);
+		tempDeployText.setLayoutData(tempTextData);
+
+		FormData tempButtonData = new FormData();
+		tempButtonData.right = new FormAttachment(100, -5);
+		tempButtonData.left = new FormAttachment(100, -100);
+		tempButtonData.top = new FormAttachment(top, 5);
+		tempDeployButton.setLayoutData(tempButtonData);
+		return tempDeployText;		
+	}
+	protected Control addDeployText(FormToolkit toolkit, Composite parent, Control top) {
+	
+		Label label = toolkit.createLabel(parent,
+				Messages.swf_DeployDirectory);
+		label.setForeground(toolkit.getColors().getColor(IFormColors.TITLE));
+		
+		deployText = toolkit.createText(parent, getDeployDir(), SWT.BORDER);
+		enableDisableWidgets.add(deployText);
+		deployListener = new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				getPage().execute(new SetDeployDirCommand());
+			}
+		};
+		deployText.addModifyListener(deployListener);
+
+		deployButton = toolkit.createButton(parent, Messages.browse, SWT.PUSH);
+		enableDisableWidgets.add(deployButton);
+
+		deployButton.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+
+			public void widgetSelected(SelectionEvent e) {
+				String x = openBrowseDialog(deployText.getText());
+				if (x != null) {
+					deployText.setText(makeRelative(x));
+				}
+			}
+		});
+
 		// first row
 		FormData labelData = new FormData();
 		labelData.left = new FormAttachment(0, 5);
@@ -385,28 +420,11 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 		buttonData.top = new FormAttachment(top, 2);
 		deployButton.setLayoutData(buttonData);
 
-		// second row
-		FormData tempLabelData = new FormData();
-		tempLabelData.left = new FormAttachment(0, 5);
-		tempLabelData.right = new FormAttachment(deployText, -5);
-		tempLabelData.top = new FormAttachment(deployText, 5);
-		tempDeployLabel.setLayoutData(tempLabelData);
-
-		FormData tempTextData = new FormData();
-		tempTextData.left = new FormAttachment(tempDeployButton, -305);
-		tempTextData.top = new FormAttachment(deployText, 5);
-		tempTextData.right = new FormAttachment(tempDeployButton, -5);
-		tempDeployText.setLayoutData(tempTextData);
-
-		FormData tempButtonData = new FormData();
-		tempButtonData.right = new FormAttachment(100, -5);
-		tempButtonData.left = new FormAttachment(100, -100);
-		tempButtonData.top = new FormAttachment(deployText, 5);
-		tempDeployButton.setLayoutData(tempButtonData);
-		return tempDeployText;
+		return deployText;
 	}
 	
 	protected boolean getShowRadios() {
+		// Do not show radios for deploy-only server
 		IRuntime rt = getServer().getServer().getRuntime();
 		boolean showRadios = true;
 		if( rt == null || rt.loadAdapter(IJBossServerRuntime.class, null) == null)
@@ -431,27 +449,31 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 		}
 		
 		
-		if(showTempAndDeployTexts()) {
+		if(showDeployText() || showTempDeployText()) {
 			try {
 				IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(getPage().getServer());
 				IDeploymentOptionsController deployOpts = (IDeploymentOptionsController)beh.getWorkingCopyController(IDeploymentOptionsController.SYSTEM_ID, getHelper().getWorkingCopy());
-				String newDir = deployOpts.getDeploymentsRootFolder(false);
-				String newTemp = deployOpts.getDeploymentsTemporaryFolder(false);
 				
+				if( showDeployText()) {
+					String newDir = deployOpts.getDeploymentsRootFolder(false);
+					deployText.removeModifyListener(deployListener);
+					if( !deployText.getText().equals(newDir))
+						deployText.setText(newDir);
+					deployText.addModifyListener(deployListener);
+					deployText.setEnabled(shouldEnableControl(deployText));
+					deployButton.setEnabled(shouldEnableControl(deployButton));
+				}
 				
-				deployText.removeModifyListener(deployListener);
-				if( !deployText.getText().equals(newDir))
-					deployText.setText(newDir);
-				deployText.addModifyListener(deployListener);
-				tempDeployText.removeModifyListener(tempDeployListener);
-				if( !tempDeployText.getText().equals(newTemp))
-					tempDeployText.setText(newTemp);
-				tempDeployText.addModifyListener(tempDeployListener);
-				
-				deployText.setEnabled(shouldEnableControl(deployText));
-				tempDeployText.setEnabled(shouldEnableControl(tempDeployText));
-				deployButton.setEnabled(shouldEnableControl(deployButton));
-				tempDeployButton.setEnabled(shouldEnableControl(tempDeployButton));
+				if( showTempDeployText()) {
+					String newTemp = deployOpts.getDeploymentsTemporaryFolder(false);
+					tempDeployText.removeModifyListener(tempDeployListener);
+					if( !tempDeployText.getText().equals(newTemp))
+						tempDeployText.setText(newTemp);
+					tempDeployText.addModifyListener(tempDeployListener);
+					
+					tempDeployText.setEnabled(shouldEnableControl(tempDeployText));
+					tempDeployButton.setEnabled(shouldEnableControl(tempDeployButton));
+				}
 			} catch(CoreException ce) {
 				JBossServerUIPlugin.log(ce.getStatus());
 			}
