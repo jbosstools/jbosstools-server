@@ -21,9 +21,6 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.IMessageProvider;
-import org.eclipse.jface.fieldassist.ControlDecoration;
-import org.eclipse.jface.fieldassist.FieldDecoration;
-import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -47,6 +44,7 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
+import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
@@ -54,7 +52,10 @@ import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
+import org.jboss.ide.eclipse.as.ui.editor.DeploymentTypeUIUtil;
+import org.jboss.ide.eclipse.as.ui.editor.DeploymentTypeUIUtil.EditServerWizardBehaviourCallback;
 import org.jboss.ide.eclipse.as.ui.editor.DeploymentTypeUIUtil.ICompletable;
+import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI.IServerModeUICallback;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IServerProfileInitializer;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel.ServerProfile;
@@ -83,6 +84,10 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 	public static final String EDITING_SERVER = "editing_server"; //$NON-NLS-1$
 
 	
+	/**
+	 * Task model id for the callback handler
+	 */
+	public static final String WORKING_COPY_CALLBACK = "wc_callback_handler"; //$NON-NLS-1$
 	
 	
 	/**
@@ -131,9 +136,36 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		return serverExplanationLabel.isDisposed();
 	}
 	
+	
+	private IServerModeUICallback createCallback(final IWizardHandle handle) {
+		ICompletable c =  new ICompletable() {
+			public void setComplete(boolean complete) {
+				// set currently visible fragment to false
+				System.out.println("set complete: " + complete);
+				//RSEWizardFragment.this.setComplete(complete);
+			}
+		};
+		
+		if( !isEditingServer()) {
+			// persist immediately
+			return DeploymentTypeUIUtil.getCallback(getTaskModel(), handle,c);
+		} else {
+			// persist on finish
+			return DeploymentTypeUIUtil.getCallback(getTaskModel(), handle, c, false);
+		}
+	}
+	
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
 		this.handle = handle;
 		IRuntime initialRuntime = getRuntimeFromTaskModel();
+		
+		// Ensure we have a callback detailing how to set info into the wc
+		Object cb = getTaskModel().getObject(WORKING_COPY_CALLBACK);
+		if( cb == null ) {
+			cb = createCallback(handle);
+			getTaskModel().putObject(WORKING_COPY_CALLBACK, cb);
+		}
+		
 		// make modifications to parent
 		setPageDetails(handle);
 		initializeModel();
@@ -446,8 +478,15 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 	
 	protected void setProfile(ServerProfile sp) {
 		selectedProfile = sp;
-		IServerWorkingCopy serverWC = (IServerWorkingCopy) getTaskModel().getObject(TaskModel.TASK_SERVER);
-		ServerProfileModel.setProfile(serverWC, sp.getId());
+		final IServerWorkingCopy serverWC = (IServerWorkingCopy) getTaskModel().getObject(TaskModel.TASK_SERVER);
+		final String spId = sp.getId();
+		IServerModeUICallback o = (IServerModeUICallback)getTaskModel().getObject(WORKING_COPY_CALLBACK);
+		o.execute(new ServerCommand(serverWC, "Modify Profile"){
+			public void execute() {
+				ServerProfileModel.setProfile(serverWC, spId);
+			}
+			public void undo() {
+			}});
 		boolean requires = ServerProfileModel.getDefault().profileRequiresRuntime(serverWC.getServerType().getId(), sp.getId());
 		requiresRuntime = requires;
 		if( !runtimeForbidden() && requiresRuntimeLabel != null && !requiresRuntimeLabel.isDisposed()) {
@@ -506,7 +545,13 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 	@Override
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
 		super.performFinish(monitor);
-		trackNewServerEvent(1);
+		Object cb = getTaskModel().getObject(WORKING_COPY_CALLBACK);
+		if( cb != null && cb instanceof EditServerWizardBehaviourCallback) {
+			((EditServerWizardBehaviourCallback)cb).performFinish();
+		}
+		if( !isEditingServer()) {
+			trackNewServerEvent(1);
+		}
 	}
 
 	private void trackNewServerEvent(int succesful) {

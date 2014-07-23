@@ -60,7 +60,6 @@ public class StrippedServerWizardFragment extends WizardFragment {
 	private String deployLoc, tmpDeployLoc;
 
 	public StrippedServerWizardFragment() {
-		System.out.println("Constructor");
 	}
 
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
@@ -196,8 +195,16 @@ public class StrippedServerWizardFragment extends WizardFragment {
 		return new Status(IStatus.OK, JBossServerUIPlugin.PLUGIN_ID, IStatus.OK, "", null); //$NON-NLS-1$
 	}
 
+	private boolean isEditingServer() {
+		Object o = getTaskModel().getObject(ServerProfileWizardFragment.EDITING_SERVER);
+		return o != null && Boolean.TRUE.equals(o);
+	}
 	public void enter() {
-		handle.setTitle(Messages.sswf_Title);
+		if( isEditingServer() ) {
+			handle.setTitle(Messages.sswf_Title_Edit);
+		} else {
+			handle.setTitle(Messages.sswf_Title);
+		}
 		IServer s = (IServer) getTaskModel().getObject(TaskModel.TASK_SERVER);
 		IServerWorkingCopy swc;
 		if (s instanceof IServerWorkingCopy)
@@ -212,18 +219,6 @@ public class StrippedServerWizardFragment extends WizardFragment {
 
 	public void exit() {
 		textChanged();
-		IServer s = (IServer) getTaskModel().getObject(TaskModel.TASK_SERVER);
-		IServerWorkingCopy swc;
-		if (s instanceof IServerWorkingCopy)
-			swc = (IServerWorkingCopy) s;
-		else
-			swc = s.createWorkingCopy();
-
-		swc.setAttribute(DeployableServer.DEPLOY_DIRECTORY, deployLoc);
-		String tempFolder = JBossServerCorePlugin.getServerStateLocation(s)
-					.append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute().toString();
-		swc.setAttribute(DeployableServer.TEMP_DEPLOY_DIRECTORY, tempFolder);
-		getTaskModel().putObject(TaskModel.TASK_SERVER, swc);
 	}
 
 	public void performFinish(IProgressMonitor monitor) throws CoreException {

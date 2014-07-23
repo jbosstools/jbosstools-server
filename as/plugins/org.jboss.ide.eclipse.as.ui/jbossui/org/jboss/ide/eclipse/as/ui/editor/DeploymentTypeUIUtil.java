@@ -10,9 +10,14 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.ui.editor;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.ui.IEditorInput;
@@ -24,6 +29,7 @@ import org.eclipse.wst.server.ui.editor.ServerEditorSection;
 import org.eclipse.wst.server.ui.internal.editor.ServerEditorPartInput;
 import org.eclipse.wst.server.ui.internal.editor.ServerResourceCommandManager;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
+import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI.IServerModeUICallback;
 
 /**
@@ -40,11 +46,41 @@ public class DeploymentTypeUIUtil {
 	}
 	
 	public static IServerModeUICallback getCallback(TaskModel tm, IWizardHandle handle, ICompletable completable) {
-		return new NewServerWizardBehaviourCallback(tm, handle, completable);
+		return getCallback(tm, handle, completable, true);
+	}
+	public static IServerModeUICallback getCallback(TaskModel tm, IWizardHandle handle, ICompletable completable, boolean persistImmediately) {
+		if( persistImmediately )
+			return new NewServerWizardBehaviourCallback(tm, handle, completable);
+		return new EditServerWizardBehaviourCallback(tm, handle, completable); 
 	}
 
 	public static ServerEditorUICallback getCallback(final IServerWorkingCopy server, IEditorInput input, ServerEditorPart part, ServerEditorSection section) {
 		return new ServerEditorUICallback(input, part, section);
+	}
+	
+	
+	public static class EditServerWizardBehaviourCallback extends NewServerWizardBehaviourCallback implements IServerModeUICallback {
+		private ArrayList<IUndoableOperation> list;
+		public EditServerWizardBehaviourCallback(TaskModel tm,
+				IWizardHandle handle, ICompletable completable) {
+			super(tm, handle, completable);
+			list = new ArrayList<IUndoableOperation>();
+		}
+		
+		public void execute(IUndoableOperation operation) {
+			list.add(operation);
+		}
+		
+		public void performFinish() {
+			Iterator<IUndoableOperation> undoable = list.iterator();
+			while(undoable.hasNext()) {
+				try {
+					undoable.next().execute(new NullProgressMonitor(), null);
+				} catch(ExecutionException  ee) {
+					JBossServerUIPlugin.getDefault().getLog().log(new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, 0, ee.getMessage(), ee));
+				}
+			}
+		}
 	}
 	
 	/**

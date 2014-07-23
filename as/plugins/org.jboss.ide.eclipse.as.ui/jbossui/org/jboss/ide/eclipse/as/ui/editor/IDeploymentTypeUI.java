@@ -47,15 +47,4 @@ public interface IDeploymentTypeUI {
 	 * @param modeSection
 	 */
 	public void fillComposite(Composite parent, IServerModeUICallback callback);
-	
-	/**
-	 * Allow the mode composite to take some action on finish
-	 * 
-	 * This is only called from the WIZARD, NOT the editor!
-	 * This means only NEW servers set to some mode will have this API called.
-	 * This also means only NEW severs created via UI will benefit. 
-	 * 
-	 * @since 2.3
-	 */
-	public void performFinish(IServerModeUICallback callback, IProgressMonitor monitor) throws CoreException;
 }

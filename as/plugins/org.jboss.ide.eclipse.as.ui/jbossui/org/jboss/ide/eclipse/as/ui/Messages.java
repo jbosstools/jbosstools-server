@@ -101,6 +101,7 @@ public class Messages extends NLS {
 	public static String swf_TempDeployDirectory;
 	public static String swf_CloneConfiguration;
 	public static String sswf_Title;
+	public static String sswf_Title_Edit;
 	public static String sswf_BaseName;
 
 	public static String ServerActionProvider_CouldNotOpenServerError;

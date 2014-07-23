@@ -27,6 +27,7 @@ import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.editor.DeploymentTypeUIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.DeploymentTypeUIUtil.ICompletable;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI.IServerModeUICallback;
+import org.jboss.ide.eclipse.as.ui.wizards.ServerProfileWizardFragment;
 
 public class RSEWizardFragment extends WizardFragment {
 	private IWizardHandle handle;
@@ -52,16 +53,19 @@ public class RSEWizardFragment extends WizardFragment {
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
 		this.handle = handle;
 		initWizardHandle();
+		
+		IServerModeUICallback callback = (IServerModeUICallback)getTaskModel().getObject(ServerProfileWizardFragment.WORKING_COPY_CALLBACK);
+		
 		Composite main = new Composite(parent, SWT.NONE);
 		main.setLayout(new FillLayout());
 		RSEDeploymentPreferenceComposite composite = null;
-		
+
 		IServerWorkingCopy cServer = (IServerWorkingCopy)getTaskModel().getObject(TaskModel.TASK_SERVER);
 		IJBossServer jbs = cServer.getOriginal() == null ? 
 				ServerConverter.getJBossServer(cServer) :
 					ServerConverter.getJBossServer(cServer.getOriginal());
 		ServerExtendedProperties sep = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(cServer);
-		IServerModeUICallback callback = createLegacyCallback(handle);
+		
 		if( jbs == null || sep == null)
 			composite = new DeployOnlyRSEPrefComposite(main, SWT.NONE, callback);
 		else if( sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_SERVER_CONFIG_DEPLOY){
@@ -73,18 +77,6 @@ public class RSEWizardFragment extends WizardFragment {
 		return main;
 	}
 	
-	/*
-	 * TODO clean this out
-	 * This code is here for legacy composites that are meant to work 
-	 * in both the editor and the new server wizard.
-	 * Unfortunately it is not very clean and lacks much functionality :( 
-	 */
-	private IServerModeUICallback createLegacyCallback(final IWizardHandle handle) {
-		return DeploymentTypeUIUtil.getCallback(getTaskModel(), handle, new ICompletable() {
-			public void setComplete(boolean complete) {
-				RSEWizardFragment.this.setComplete(complete);
-			}
-		});
-	}
+
 	
 }

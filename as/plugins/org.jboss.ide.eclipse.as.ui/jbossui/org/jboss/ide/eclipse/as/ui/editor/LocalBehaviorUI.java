@@ -13,8 +13,6 @@ package org.jboss.ide.eclipse.as.ui.editor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
@@ -52,9 +50,4 @@ public class LocalBehaviorUI implements IDeploymentTypeUI {
 			}
 		}
 	}
-	
-	public void performFinish(IServerModeUICallback callback, IProgressMonitor monitor) throws CoreException {
-		// Do Nothing
-	}
-
 }

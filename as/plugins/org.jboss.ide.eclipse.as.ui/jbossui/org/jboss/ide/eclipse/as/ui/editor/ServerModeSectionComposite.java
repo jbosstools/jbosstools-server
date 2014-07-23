@@ -92,7 +92,7 @@ public class ServerModeSectionComposite extends Composite {
 		configureProfileLink.setLayoutData(fd);
 		
 		
-		profileLabel = new Label(this, SWT.READ_ONLY | SWT.BORDER);
+		profileLabel = new Label(this, SWT.READ_ONLY);
 		fd = FormDataUtility.createFormData2(top, 5, null, 0, configureProfileLink, 5, 0, 400);
 		profileLabel.setLayoutData(fd);
 
@@ -182,7 +182,7 @@ public class ServerModeSectionComposite extends Composite {
 		TaskModel tm = new TaskModel();
 		tm.putObject(TaskModel.TASK_SERVER, callback.getServer());
 		tm.putObject(ServerProfileWizardFragment.EDITING_SERVER, Boolean.TRUE); // indicating we're editing the server
-
+		
 		final boolean[] closed = new boolean[1];
 		closed[0] = false;
 		IServerWorkingCopy s = callback.getServer();
@@ -201,16 +201,7 @@ public class ServerModeSectionComposite extends Composite {
 			}
 			
 		};
-		WizardDialog wd = new WizardDialog(profileLabel.getShell(), tw) {
-			protected Control createContents(Composite parent) {
-				// Since this makes direct changes to the working copy, we can't allow a cancel
-				Control ret = super.createContents(parent);
-				Button cancel = getButton(IDialogConstants.CANCEL_ID);
-				cancel.setEnabled(false);
-				return ret;
-			}
-		};
-		// re-open editor
+		WizardDialog wd = new WizardDialog(profileLabel.getShell(), tw);
 		wd.open();
 		if (closed[0] && site instanceof MultiPageEditorSite) {
 			try {
