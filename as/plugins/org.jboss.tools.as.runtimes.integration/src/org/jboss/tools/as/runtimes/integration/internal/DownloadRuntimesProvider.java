@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.jboss.jdf.stacks.model.Stacks;
+import org.jboss.developer.stacks.model.Stacks;
 import org.jboss.tools.as.runtimes.integration.util.AbstractStacksDownloadRuntimesProvider;
 import org.jboss.tools.runtime.core.model.DownloadRuntime;
 import org.jboss.tools.stacks.core.model.StacksManager;

@@ -20,8 +20,8 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.ServerCore;
+import org.jboss.developer.stacks.model.Stacks;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-import org.jboss.jdf.stacks.model.Stacks;
 import org.jboss.tools.as.runtimes.integration.Messages;
 import org.jboss.tools.runtime.core.model.DownloadRuntime;
 import org.jboss.tools.runtime.core.model.IDownloadRuntimesProvider;
@@ -81,9 +81,9 @@ public abstract class AbstractStacksDownloadRuntimesProvider implements IDownloa
 	protected abstract void traverseStacks(Stacks stacks, ArrayList<DownloadRuntime> list, IProgressMonitor monitor);
 	
 	protected void traverseStacks(Stacks stacks, ArrayList<DownloadRuntime> list, String category, IProgressMonitor monitor) {
-		List<org.jboss.jdf.stacks.model.Runtime> runtimes = stacks.getAvailableRuntimes();
-		Iterator<org.jboss.jdf.stacks.model.Runtime> i = runtimes.iterator();
-		org.jboss.jdf.stacks.model.Runtime workingRT = null;
+		List<org.jboss.developer.stacks.model.Runtime> runtimes = stacks.getAvailableRuntimes();
+		Iterator<org.jboss.developer.stacks.model.Runtime> i = runtimes.iterator();
+		org.jboss.developer.stacks.model.Runtime workingRT = null;
 		monitor.beginTask(Messages.CreateDownloadRuntimes, runtimes.size() * 100);
 		while(i.hasNext()) {
 			workingRT = i.next();
@@ -103,7 +103,7 @@ public abstract class AbstractStacksDownloadRuntimesProvider implements IDownloa
 		monitor.done();
 	}
 	
-	private DownloadRuntime createDownloadRuntime(org.jboss.jdf.stacks.model.Runtime workingRT, String wtpRT, String category) {
+	private DownloadRuntime createDownloadRuntime(org.jboss.developer.stacks.model.Runtime workingRT, String wtpRT, String category) {
 		// We can make a DL out of this
 		String fileSize = workingRT.getLabels().getProperty(LABEL_FILE_SIZE);
 		String license = workingRT.getLicense();
@@ -151,7 +151,7 @@ public abstract class AbstractStacksDownloadRuntimesProvider implements IDownloa
 	 * The map will have the key of one of the above constants,
 	 * and a value of a url. 
 	 */
-	protected String getDownloadURL(org.jboss.jdf.stacks.model.Runtime workingRT) {
+	protected String getDownloadURL(org.jboss.developer.stacks.model.Runtime workingRT) {
 		// First look for an override for this specific OS
 		String os = Platform.getOS();
 		Object o = workingRT.getLabels().get("additionalDownloadURLs");
