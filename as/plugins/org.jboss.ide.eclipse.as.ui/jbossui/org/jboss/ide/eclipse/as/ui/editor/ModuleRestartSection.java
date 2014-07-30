@@ -31,11 +31,9 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.ui.editor.ServerEditorSection;
-import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
-import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.wtp.ui.editor.ServerWorkingCopyPropertyButtonCommand;
 import org.jboss.ide.eclipse.as.wtp.ui.editor.ServerWorkingCopyPropertyCommand;
 import org.jboss.ide.eclipse.as.wtp.ui.util.FormDataUtility;
@@ -45,7 +43,7 @@ public class ModuleRestartSection extends ServerEditorSection {
 
 	public ModuleRestartSection() {
 	}
-	private Button customizePattern;
+	private Button useDefaultPattern;
 	private Text restartPatternText;
 	private SelectionListener checkboxListener;
 	private ModifyListener textListener;
@@ -63,9 +61,10 @@ public class ModuleRestartSection extends ServerEditorSection {
 		String defaultPattern = ds.getDefaultModuleRestartPattern();
 		String pattern = server.getAttribute(StandardModuleRestartBehaviorController.PROPERTY_RESTART_FILE_PATTERN, defaultPattern);
 		String useDef = server.getAttribute(StandardModuleRestartBehaviorController.PROPERTY_USE_DEFAULT_RESTART_PATTERN, Boolean.TRUE.toString());
-		customizePattern.setSelection(new Boolean(useDef).booleanValue());
-		restartPatternText.setEnabled(!new Boolean(useDef).booleanValue());
-		restartPatternText.setText(pattern == null ? defaultPattern : pattern);
+		boolean useDefB = new Boolean(useDef).booleanValue();
+		useDefaultPattern.setSelection(useDefB);
+		restartPatternText.setEnabled(!useDefB);
+		restartPatternText.setText((pattern == null || useDefB) ? defaultPattern : pattern);
 		addListeners();
 	}
 	
@@ -81,10 +80,10 @@ public class ModuleRestartSection extends ServerEditorSection {
 		Label desc = toolkit.createLabel(composite, "Customize application restart behavior on changes to project resources");
 		desc.setLayoutData(FormDataUtility.createFormData2(0, 5, null, 0, 0, 5, null, 0));
 		
-		customizePattern = toolkit.createButton(composite, "Use default pattern", SWT.CHECK);
-		customizePattern.setLayoutData(FormDataUtility.createFormData2(desc, 5, null, 0, 0, 5, null, 0));
+		useDefaultPattern = toolkit.createButton(composite, "Use default pattern", SWT.CHECK);
+		useDefaultPattern.setLayoutData(FormDataUtility.createFormData2(desc, 5, null, 0, 0, 5, null, 0));
 		Label l = toolkit.createLabel(composite, "Force module restart on following regex pattern: ");
-		l.setLayoutData(FormDataUtility.createFormData2(customizePattern, 5, null, 0, 0, 5, null, 0));
+		l.setLayoutData(FormDataUtility.createFormData2(useDefaultPattern, 5, null, 0, 0, 5, null, 0));
 		restartPatternText = toolkit.createText(composite, "");
 		restartPatternText.setLayoutData(FormDataUtility.createFormData2(l, 5, null, 0, 0, 5, 100, -5));
 		
@@ -106,22 +105,30 @@ public class ModuleRestartSection extends ServerEditorSection {
 			}
 		};
 
-		this.customizePattern.addSelectionListener(checkboxListener);
+		this.useDefaultPattern.addSelectionListener(checkboxListener);
 		this.restartPatternText.addModifyListener(textListener);
 	}
 
 	public class SetCustomizePatternCommand extends ServerWorkingCopyPropertyButtonCommand {
 		public SetCustomizePatternCommand(IServerWorkingCopy server) {
 			super(server, "Use default regular expression",  
-					customizePattern, customizePattern.getSelection(), StandardModuleRestartBehaviorController.PROPERTY_USE_DEFAULT_RESTART_PATTERN, checkboxListener, true);
+					useDefaultPattern, useDefaultPattern.getSelection(), StandardModuleRestartBehaviorController.PROPERTY_USE_DEFAULT_RESTART_PATTERN, checkboxListener, true);
 		}
 		public void execute() {
 			super.execute();
-			restartPatternText.setEnabled(!customizePattern.getSelection());
+			updatePatternText();
 		}
 		public void undo() {
 			super.undo();
-			restartPatternText.setEnabled(!customizePattern.getSelection());
+			updatePatternText();
+		}
+		private void updatePatternText() {
+			restartPatternText.setEnabled(!useDefaultPattern.getSelection());
+			restartPatternText.removeModifyListener(textListener);
+			String newPattern = useDefaultPattern.getSelection() ? StandardModuleRestartBehaviorController.RESTART_DEFAULT_FILE_PATTERN : 
+				server.getAttribute(StandardModuleRestartBehaviorController.PROPERTY_RESTART_FILE_PATTERN,StandardModuleRestartBehaviorController.RESTART_DEFAULT_FILE_PATTERN);
+			restartPatternText.setText(newPattern);
+			restartPatternText.addModifyListener(textListener);
 		}
 	}
 	
@@ -129,7 +136,7 @@ public class ModuleRestartSection extends ServerEditorSection {
 		public SetCustomPatternCommand(IServerWorkingCopy server) {
 			super(server, "Modify Module Restart Pattern",  
 					restartPatternText, restartPatternText.getText(), 
-					IDeployableServer.ORG_JBOSS_TOOLS_AS_RESTART_FILE_PATTERN, 
+					StandardModuleRestartBehaviorController.PROPERTY_RESTART_FILE_PATTERN, 
 					textListener);
 		}
 		public void undo() {
