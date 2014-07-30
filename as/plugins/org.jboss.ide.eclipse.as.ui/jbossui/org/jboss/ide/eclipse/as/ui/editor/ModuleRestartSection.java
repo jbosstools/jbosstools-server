@@ -35,10 +35,11 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
-import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.wtp.ui.editor.ServerWorkingCopyPropertyButtonCommand;
 import org.jboss.ide.eclipse.as.wtp.ui.editor.ServerWorkingCopyPropertyCommand;
+import org.jboss.ide.eclipse.as.wtp.ui.util.FormDataUtility;
+import org.jboss.tools.as.core.server.controllable.subsystems.internal.StandardModuleRestartBehaviorController;
 
 public class ModuleRestartSection extends ServerEditorSection {
 
@@ -60,9 +61,10 @@ public class ModuleRestartSection extends ServerEditorSection {
 		createUI(parent);
 		DeployableServer ds = (DeployableServer)ServerConverter.getDeployableServer(server.getOriginal());
 		String defaultPattern = ds.getDefaultModuleRestartPattern();
-		String pattern = server.getAttribute(IDeployableServer.ORG_JBOSS_TOOLS_AS_RESTART_FILE_PATTERN, defaultPattern);
-		customizePattern.setSelection(!defaultPattern.equals(pattern));
-		restartPatternText.setEnabled(!defaultPattern.equals(pattern));
+		String pattern = server.getAttribute(StandardModuleRestartBehaviorController.PROPERTY_RESTART_FILE_PATTERN, defaultPattern);
+		String useDef = server.getAttribute(StandardModuleRestartBehaviorController.PROPERTY_USE_DEFAULT_RESTART_PATTERN, Boolean.TRUE.toString());
+		customizePattern.setSelection(new Boolean(useDef).booleanValue());
+		restartPatternText.setEnabled(!new Boolean(useDef).booleanValue());
 		restartPatternText.setText(pattern == null ? defaultPattern : pattern);
 		addListeners();
 	}
@@ -76,13 +78,15 @@ public class ModuleRestartSection extends ServerEditorSection {
 		
 		Composite composite = toolkit.createComposite(section);
 		composite.setLayout(new FormLayout());
+		Label desc = toolkit.createLabel(composite, "Customize application restart behavior on changes to project resources");
+		desc.setLayoutData(FormDataUtility.createFormData2(0, 5, null, 0, 0, 5, null, 0));
 		
-		customizePattern = toolkit.createButton(composite, "Customize application reload behavior on changes to project resources", SWT.CHECK);
-		customizePattern.setLayoutData(UIUtil.createFormData2(0, 5, null, 0, 0, 5, null, 0));
+		customizePattern = toolkit.createButton(composite, "Use default pattern", SWT.CHECK);
+		customizePattern.setLayoutData(FormDataUtility.createFormData2(desc, 5, null, 0, 0, 5, null, 0));
 		Label l = toolkit.createLabel(composite, "Force module restart on following regex pattern: ");
-		l.setLayoutData(UIUtil.createFormData2(customizePattern, 5, null, 0, 0, 5, null, 0));
+		l.setLayoutData(FormDataUtility.createFormData2(customizePattern, 5, null, 0, 0, 5, null, 0));
 		restartPatternText = toolkit.createText(composite, "");
-		restartPatternText.setLayoutData(UIUtil.createFormData2(l, 5, null, 0, 0, 5, 100, -5));
+		restartPatternText.setLayoutData(FormDataUtility.createFormData2(l, 5, null, 0, 0, 5, 100, -5));
 		
 		toolkit.paintBordersFor(composite);
 		section.setClient(composite);
@@ -108,16 +112,16 @@ public class ModuleRestartSection extends ServerEditorSection {
 
 	public class SetCustomizePatternCommand extends ServerWorkingCopyPropertyButtonCommand {
 		public SetCustomizePatternCommand(IServerWorkingCopy server) {
-			super(server, Messages.EditorChangeStartPollerCommandName,  
-					customizePattern, customizePattern.getSelection(), null, checkboxListener);
+			super(server, "Use default regular expression",  
+					customizePattern, customizePattern.getSelection(), StandardModuleRestartBehaviorController.PROPERTY_USE_DEFAULT_RESTART_PATTERN, checkboxListener, true);
 		}
 		public void execute() {
 			super.execute();
-			restartPatternText.setEnabled(customizePattern.getSelection());
+			restartPatternText.setEnabled(!customizePattern.getSelection());
 		}
 		public void undo() {
 			super.undo();
-			restartPatternText.setEnabled(customizePattern.getSelection());
+			restartPatternText.setEnabled(!customizePattern.getSelection());
 		}
 	}
 	

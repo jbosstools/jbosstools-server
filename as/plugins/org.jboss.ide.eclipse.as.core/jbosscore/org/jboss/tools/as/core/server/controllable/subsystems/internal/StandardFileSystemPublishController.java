@@ -468,9 +468,10 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 			monitor.beginTask("Packaging Module", 200); //$NON-NLS-1$
 			
 			IStatus result = null;
-			boolean rebuilt = false;
+			boolean rebuiltFull = false;
+			boolean rebuiltInc = false;
 			if( publishType == PublishControllerUtility.FULL_PUBLISH) {
-				rebuilt = true;
+				rebuiltFull = true;
 				result = runner.fullPublishModule(ProgressMonitorUtil.submon(monitor, 100));
 			} else {
 				// If a child module nested inside this utility requires a full publish, so do we
@@ -478,14 +479,14 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 				// a full publish
 				int childPublishType = runner.childPublishTypeRequired();
 				if( childPublishType == PublishControllerUtility.FULL_PUBLISH ) {
-					rebuilt = true;
+					rebuiltFull = true;
 					result = runner.fullPublishModule(ProgressMonitorUtil.submon(monitor, 100));
 				} else if( publishType == PublishControllerUtility.INCREMENTAL_PUBLISH || childPublishType == PublishControllerUtility.INCREMENTAL_PUBLISH) {
-					rebuilt = true;
+					rebuiltInc = true;
 					result = runner.incrementalPublishModule(ProgressMonitorUtil.submon(monitor, 100));
 				}
 			}
-			if( rebuilt && (result == null || result.isOK())) {
+			if( (rebuiltFull || rebuiltInc) && (result == null || result.isOK())) {
 				if( tmpArchive.toFile().exists()) {
 					getFilesystemController().deleteResource(archiveDestination, ProgressMonitorUtil.submon(monitor, 10));
 					result = getFilesystemController().copyFile(tmpArchive.toFile(), archiveDestination, ProgressMonitorUtil.submon(monitor, 90));
@@ -493,9 +494,14 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 					result = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Zipped archive not found"); //$NON-NLS-1$
 				}
 			}
-			if( rebuilt ) {
-				// If a zipped module has changed, then it requires restart no matter what
+			if( rebuiltFull ) {
 				markModulePublished(module, PublishControllerUtility.FULL_PUBLISH);
+			} else if( rebuiltInc) {
+				IModuleRestartBehaviorController c = getModuleRestartBehaviorController();
+				if( c != null && c.moduleRequiresRestart(module, new IModuleResource[0])) {
+					// If a zipped module has changed, then it requires restart no matter what
+					markModulePublished(module, PublishControllerUtility.FULL_PUBLISH);
+				}
 			} else {
 				markModulePublished(module, PublishControllerUtility.NO_PUBLISH);
 			}
