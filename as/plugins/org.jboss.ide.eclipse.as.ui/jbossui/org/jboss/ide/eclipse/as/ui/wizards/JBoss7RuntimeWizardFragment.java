@@ -39,6 +39,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExt
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.JavaUtils;
+import org.jboss.ide.eclipse.as.core.util.RemotePath;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
@@ -265,8 +266,9 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	private String getPresentableBaseDir(IRuntime rt) {
 		LocalJBoss7ServerRuntime rt2 = (LocalJBoss7ServerRuntime)rt.loadAdapter(LocalJBoss7ServerRuntime.class, null);
 		String baseDir = rt2.getBaseDirectory();
-		if( rt.getLocation().isPrefixOf(new Path(baseDir))) {
-			return new Path(baseDir).removeFirstSegments(rt.getLocation().segmentCount()).toString();
+		IPath rtLoc = rt.getLocation().addTrailingSeparator(); 
+		if( rtLoc.isPrefixOf(new Path(baseDir))) {
+			return baseDir.substring(rtLoc.toOSString().length());
 		}
 		return baseDir;
 	}
