@@ -7,14 +7,14 @@
 package org.jboss.tools.jmx.jvmmonitor.tools;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 /**
  * The activator that controls the plug-in life cycle.
  */
-public class Activator extends AbstractUIPlugin {
+public class Activator extends Plugin {
 
     /** The plug-in ID. */
     public static final String PLUGIN_ID = "org.jboss.tools.jmx.jvmmonitor.tools"; //$NON-NLS-1$

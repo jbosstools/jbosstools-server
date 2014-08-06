@@ -14,8 +14,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.osgi.util.NLS;
 import org.jboss.tools.jmx.jvmmonitor.core.IActiveJvm;
 import org.jboss.tools.jmx.jvmmonitor.core.IHost;
@@ -29,7 +31,7 @@ import org.jboss.tools.jmx.jvmmonitor.tools.Activator;
  * <tt>org.jboss.tools.jmx.jvmmonitor.core.jvmAttachHandler</tt>.
  */
 public class JvmAttachHandler implements IJvmAttachHandler,
-        IPropertyChangeListener, IConstants {
+	IPreferenceChangeListener, IConstants {
 
     /** The local host. */
     private IHost localhost;
@@ -43,9 +45,8 @@ public class JvmAttachHandler implements IJvmAttachHandler,
     @Override
     public void setHost(IHost host) {
         this.localhost = host;
-
-        Activator.getDefault().getPreferenceStore()
-                .addPropertyChangeListener(this);
+    	IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID);
+    	prefs.addPreferenceChangeListener(this);
     }
 
     /*
@@ -54,14 +55,6 @@ public class JvmAttachHandler implements IJvmAttachHandler,
     @Override
     public boolean hasValidJdk() {
         return Tools.getInstance().isReady();
-    }
-
-    /*
-     * @see IPropertyChangeListener#propertyChange(PropertyChangeEvent)
-     */
-    @Override
-    public void propertyChange(PropertyChangeEvent event) {
-        startMonitoring();
     }
 
     /**
@@ -86,8 +79,8 @@ public class JvmAttachHandler implements IJvmAttachHandler,
             }
         };
 
-        long period = Activator.getDefault().getPreferenceStore()
-                .getLong(IConstants.UPDATE_PERIOD);
+    	IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID);
+        long period = prefs.getLong(IConstants.UPDATE_PERIOD, IConstants.DEFAULT_UPDATE_PERIOD);
         timer.schedule(timerTask, 0, period);
     }
 
@@ -307,5 +300,10 @@ public class JvmAttachHandler implements IJvmAttachHandler,
 	@Override
 	public synchronized boolean isPolling() {
 		return timer != null;
+	}
+
+	@Override
+	public void preferenceChange(PreferenceChangeEvent event) {
+		 startMonitoring();
 	}
 }

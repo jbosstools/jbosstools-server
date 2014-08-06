@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.jboss.tools.jmx.jvmmonitor.core.IHeapDumpHandler;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmCoreException;
 import org.jboss.tools.jmx.jvmmonitor.tools.Activator;
@@ -52,8 +54,8 @@ public class HeapDumpHandler implements IHeapDumpHandler {
      */
     @Override
     public int getMaxClassesNumber() {
-        return Activator.getDefault().getPreferenceStore()
-                .getInt(IConstants.MAX_CLASSES_NUMBER);
+    	IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID);
+    	return prefs.getInt(IConstants.MAX_CLASSES_NUMBER, IConstants.DEFAULT_UPDATE_PERIOD);
     }
 
     /**

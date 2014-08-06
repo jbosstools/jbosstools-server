@@ -25,19 +25,4 @@
             class="org.jboss.tools.jmx.jvmmonitor.internal.tools.AgentLoadHandler">
       </handler>
    </extension>
-   <extension
-         point="org.eclipse.core.runtime.preferences">
-      <initializer
-            class="org.jboss.tools.jmx.jvmmonitor.internal.tools.ToolsPreferenceInitializer">
-      </initializer>
-   </extension>
-   <extension
-         point="org.eclipse.ui.preferencePages">
-      <page
-            category="org.jboss.tools.jmx.jvmmonitor.ui.JavaMonitorPreferencePage"
-            class="org.jboss.tools.jmx.jvmmonitor.internal.tools.ToolsPreferencePage"
-            id="org.jboss.tools.jmx.jvmmonitor.tools.ToolsPreferencePage"
-            name="%toolsPreferencePage.label">
-      </page>
-   </extension>
 </plugin>

@@ -29,35 +29,6 @@ public final class Messages extends NLS {
 
     // tools preference page
 
-    /** */
-    public static String toolsPreferencePageLabel;
-
-    /** */
-    public static String jdkRootDirectoryLabel;
-
-    /** */
-    public static String browseButton;
-
-    /** */
-    public static String autoDetectGroupLabel;
-
-    /** */
-    public static String updatePeriodLabel;
-
-    /** */
-    public static String memoryGroupLabel;
-
-    /** */
-    public static String enterMaxNumberOfClassesMsg;
-
-    /** */
-    public static String maxNumberOfClassesInvalidMsg;
-
-    /** */
-    public static String maxNumberOfClassesOutOfRangeMsg;
-
-    /** */
-    public static String maxNumberOfClassesLabel;
 
     // error log messages
 

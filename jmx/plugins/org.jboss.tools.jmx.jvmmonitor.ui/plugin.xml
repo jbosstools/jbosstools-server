@@ -204,4 +204,13 @@
             class="org.jboss.tools.jmx.jvmmonitor.internal.ui.PreferenceInitializer">
       </initializer>
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.jboss.tools.jmx.jvmmonitor.ui.JavaMonitorPreferencePage"
+            class="org.jboss.tools.jmx.jvmmonitor.internal.ui.ToolsPreferencePage"
+            id="org.jboss.tools.jmx.jvmmonitor.tools.ToolsPreferencePage"
+            name="%toolsPreferencePage.label">
+      </page>
+   </extension>
 </plugin>

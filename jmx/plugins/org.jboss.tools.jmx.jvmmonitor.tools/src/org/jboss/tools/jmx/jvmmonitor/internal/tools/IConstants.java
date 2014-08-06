@@ -16,9 +16,12 @@ import org.jboss.tools.jmx.jvmmonitor.tools.Activator;
 @SuppressWarnings("nls")
 public interface IConstants {
 
-    /** The preference key for JDK root directory. */
-    static final String JDK_ROOT_DIRECTORY = Activator.PLUGIN_ID
-            + ".jdkRootDirectory";
+	/** The preference key for JDK root directory. */
+	@Deprecated static final String JDK_ROOT_DIRECTORY = Activator.PLUGIN_ID + ".jdkRootDirectory";
+	
+	/** The preference key for VM Install containing a jdk */
+	static final String JDK_VM_INSTALL = Activator.PLUGIN_ID + ".jdkVMInstall";
+	
 
     /** The preference key for update period. */
     static final String UPDATE_PERIOD = Activator.PLUGIN_ID + ".updatePeriod";
@@ -29,6 +32,15 @@ public interface IConstants {
     /** The preference key for max number of classes. */
     static final String MAX_CLASSES_NUMBER = "org.jboss.tools.jmx.jvmmonitor.tools.class.maxNumber";
 
+    /**
+     * The default value for period to detect running JVMs on local host. The
+     * unit is milliseconds.
+     */
+    public static final int DEFAULT_UPDATE_PERIOD = 3000;
+
+    /** The default value for max number of classes. */
+    public static final int DEFAULT_MAX_CLASSES_NUMBER = 50;
+    
     /** The bundle root path. */
     static final String BUNDLE_ROOT_PATH = "/";
 

@@ -7,6 +7,7 @@
 package org.jboss.tools.jmx.jvmmonitor.internal.tools;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -14,17 +15,24 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jdt.launching.IVMInstall;
+import org.eclipse.jdt.launching.IVMInstall2;
 import org.eclipse.jdt.launching.IVMInstallType;
 import org.eclipse.jdt.launching.JavaRuntime;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.jface.util.Util;
 import org.eclipse.osgi.util.NLS;
 import org.jboss.tools.jmx.jvmmonitor.core.IHost;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmCoreException;
@@ -33,13 +41,23 @@ import org.jboss.tools.jmx.jvmmonitor.tools.Activator;
 /**
  * The class enabling to invoke the APIs in <tt>tools.jar</tt>.
  */
-public class Tools implements IPropertyChangeListener, IConstants {
+public class Tools implements IPreferenceChangeListener, IConstants {
 
     /** The shared instance of this class. */
     private static Tools tools;
 
     /** The state indicating if ready to use. */
     private boolean isReady;
+    
+    /**
+     * Has a jar already been added to the classpath
+     */
+    private boolean hasAddedToClasspath;
+    
+    /**
+     * The jdk home directory who's tools.jar has been added to the classpath
+     */
+    private String jdkHomeDirectoryAddedToClasspath = null;
 
     /**
      * The constructor.
@@ -51,10 +69,11 @@ public class Tools implements IPropertyChangeListener, IConstants {
          * have to be set.
          */
         isReady = validateClassPathAndLibraryPath();
-
+        hasAddedToClasspath = false;
+        
         if (!isReady) {
-            Activator.getDefault().getPreferenceStore()
-                    .addPropertyChangeListener(this);
+        	IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID);
+        	prefs.addPreferenceChangeListener(this);
             configureClassPathAndLibraryPath();
             isReady = validateClassPathAndLibraryPath();
         }
@@ -72,16 +91,46 @@ public class Tools implements IPropertyChangeListener, IConstants {
         return tools;
     }
 
-    /*
-     * @see IPropertyChangeListener#propertyChange(PropertyChangeEvent)
-     */
-    @Override
-    public void propertyChange(PropertyChangeEvent event) {
-        if (IConstants.JDK_ROOT_DIRECTORY.equals(event.getProperty())) {
-            configureClassPathAndLibraryPath();
-        }
-    }
 
+	@Override
+	public void preferenceChange(PreferenceChangeEvent event) {
+        if (IConstants.JDK_VM_INSTALL.equals(event.getKey())) {
+        	if( !isReady ) {
+        		configureClassPathAndLibraryPath();
+        		isReady = validateClassPathAndLibraryPath();
+        	}
+        }
+	}
+	
+    /**
+     * Get the directory that was added to the classpath
+     * @return
+     */
+    public String getDirectoryAddedToClasspath() {
+    	try {
+        	if( jdkHomeDirectoryAddedToClasspath != null )
+        		return new File(jdkHomeDirectoryAddedToClasspath).getCanonicalPath();
+    	} catch(IOException ioe) {
+    	}
+		return jdkHomeDirectoryAddedToClasspath;
+    }
+    
+    /**
+     * Return if the current java home's tools.jar was added to the classpath
+     * @return
+     */
+    public boolean runningJavaHomeAddedToClasspath() {
+    	String javaHome = findJdkRootFromJavaHome();
+    	if( javaHome == null )
+    		return false;
+    	try {
+	    	String canonical = new File(javaHome).getCanonicalPath();
+	    	return canonical.equals(getDirectoryAddedToClasspath());
+    	} catch(IOException ioe) {
+    		return false;
+    	}
+    }
+    
     /**
      * Gets the state indicating if it is ready to use.
      * 
@@ -89,6 +138,14 @@ public class Tools implements IPropertyChangeListener, IConstants {
      */
     public boolean isReady() {
         return isReady;
+    }
+    
+    /**
+     * Have additions to the running classpath been made? 
+     * @return
+     */
+    public boolean hasModifiedClasspath() {
+    	return hasAddedToClasspath;
     }
 
     /**
@@ -354,8 +411,7 @@ public class Tools implements IPropertyChangeListener, IConstants {
      *            The JDK root directory
      * @return The error message or <tt>null</tt> if not found
      */
-    protected String validateJdkRootDirectory(String jdkRootDirectory) {
-
+    public String validateJdkRootDirectory(String jdkRootDirectory) {
         // check if directory exists
         File directory = new File(jdkRootDirectory);
         if (!directory.exists() || !directory.isDirectory()) {
@@ -370,34 +426,104 @@ public class Tools implements IPropertyChangeListener, IConstants {
 
         // checks if "attach" shared library exist
         String libraryPath = getJreLibraryPath(jdkRootDirectory);
-        if (libraryPath != null) {
-            return null;
+        if (libraryPath == null) {
+        	return Messages.notJdkRootDirectoryMsg;
         }
+        
+        // TODO: verify java versions match... ... ... how? 
+        // need to verify the selected jdk does not have a max exec-env higher than currently running jre's exec-env
 
-        return Messages.notJdkRootDirectoryMsg;
+        return null;
+    }
+    
+    private IVMInstall[] getAllInstalls() {
+    	ArrayList<IVMInstall> all = new ArrayList<IVMInstall>();
+        for (IVMInstallType type : JavaRuntime.getVMInstallTypes()) {
+            for (IVMInstall install : type.getVMInstalls()) {
+            	all.add(install);
+            }
+        }
+        return (IVMInstall[]) all.toArray(new IVMInstall[all.size()]);
     }
 
+    private int compareJavaVersions(String version0, String version1) {
+		int[] arg0majorMinor = getMajorMinor(version0);
+		int[] arg1majorMinor = getMajorMinor(version1);
+		if( arg0majorMinor[0] < arg1majorMinor[0])
+			return -1;
+		if( arg0majorMinor[0] > arg1majorMinor[0])
+			return 1;
+		if( arg0majorMinor[1] < arg1majorMinor[1])
+			return -1;
+		if( arg0majorMinor[1] > arg1majorMinor[1])
+			return 1;
+		return 0;
+    }
+    
     /**
-     * Searches the JDK root directory.
+     * Get all IVMInstalls that have a major.minor <=  the currently running jre's major.minor
+     * @return
+     */
+    public IVMInstall[] getAllCompatibleInstalls() {
+    	String currentVersion = System.getProperty("java.version");
+    	ArrayList<IVMInstall2> compat = new ArrayList<IVMInstall2>();
+    	IVMInstall[] all = getAllInstalls();
+        for (int i = 0; i < all.length; i++ ) {
+        	if( all[i] instanceof IVMInstall2 ) {
+        		String vers = ((IVMInstall2)all[i]).getJavaVersion();
+        		// if running jre is gte the vm install, it's probably compatible
+        		if(compareJavaVersions(currentVersion, vers) >= 0 ) {
+        			compat.add((IVMInstall2)all[i]);
+        		}
+        	}
+        }
+        
+		// Sort them by version number, so higher matches are at the beginning of the list
+    	Comparator<IVMInstall2> comparator = new Comparator<IVMInstall2>() {
+			public int compare(IVMInstall2 arg0, IVMInstall2 arg1) {
+				String arg0vers = arg0.getJavaVersion();
+				String arg1vers = arg1.getJavaVersion();
+				return compareJavaVersions(arg0vers, arg1vers);
+			} 
+    	};
+    	
+    	Collections.sort(compat, comparator);
+    	Collections.reverse(compat);
+        return (IVMInstall[]) compat.toArray(new IVMInstall[compat.size()]);
+    }
+
+    
+    private int[] getMajorMinor(String version) {
+    	Matcher m = Pattern.compile("^(\\d+)\\.(\\d+)\\..*").matcher(version);
+    	if (!m.matches()) {
+    		throw new IllegalArgumentException("Malformed version string");
+    	}
+    	return new int[] { Integer.parseInt(m.group(1)),  // major
+                Integer.parseInt(m.group(2))};
+    }
+    
+    /**
+     * Find the first vm-install that is valid
      * 
      * @return The JDK root directory, or empty string if not found
      */
-    private String searchJdkRootDirectory() {
-
-        // search from the JREs that are specified on preference page
-        for (IVMInstallType type : JavaRuntime.getVMInstallTypes()) {
-            for (IVMInstall install : type.getVMInstalls()) {
-                String jdkRootDirectory = install.getInstallLocation()
-                        .getPath();
-                if (null == validateJdkRootDirectory(jdkRootDirectory)) {
-                    Activator.log(IStatus.INFO, NLS
-                            .bind(Messages.jdkRootDirectoryFoundMsg,
-                                    jdkRootDirectory), new Exception());
-                    return jdkRootDirectory;
-                }
+    private IVMInstall findFirstValidVMInstall() {
+        // search from the JREs that are compatible based on java version
+    	IVMInstall[] all = getAllCompatibleInstalls();
+    	for( int i = 0; i < all.length; i++ ) {
+            String jdkRootDirectory = all[i].getInstallLocation().getPath();
+            if (null == validateJdkRootDirectory(jdkRootDirectory)) {
+                Activator.log(IStatus.INFO, NLS
+                        .bind(Messages.jdkRootDirectoryFoundMsg,
+                                jdkRootDirectory), new Exception());
+                return all[i];
             }
-        }
-
+    	}
+        Activator.log(IStatus.WARNING, Messages.jdkRootDirectoryNotFoundMsg, new Exception());
+        return null; //$NON-NLS-1$
+    }
+    
+    public String findJdkRootFromJavaHome() {
         // search at the same directory as current JRE
         String javaHome = System.getProperty(JAVA_HOME_PROPERTY_KEY);
         for (File directory : getPossibleJdkRootDirectory(javaHome)) {
@@ -409,10 +535,7 @@ public class Tools implements IPropertyChangeListener, IConstants {
                 return path;
             }
         }
-
-        Activator.log(IStatus.WARNING, Messages.jdkRootDirectoryNotFoundMsg,
-                new Exception());
-        return ""; //$NON-NLS-1$
+        return null;
     }
 
     /**
@@ -429,9 +552,9 @@ public class Tools implements IPropertyChangeListener, IConstants {
          * On Mac, java home path can be for example:
          * /Library/Java/JavaVirtualMachines/jdk1.7.0_13.jdk/Contents/Home/jre
          */
-        if (Util.isMac()) {
-            int index = javaHome
-                    .indexOf(IConstants.JAVA_INSTALLATION_DIR_ON_MAC);
+        
+        if (Platform.getOS().equals(Platform.OS_MACOSX)) {
+            int index = javaHome.indexOf(IConstants.JAVA_INSTALLATION_DIR_ON_MAC);
             if (index == -1) {
                 return dirs;
             }
@@ -445,6 +568,8 @@ public class Tools implements IPropertyChangeListener, IConstants {
         }
 
         File parentDir = new File(javaHome + File.separator + ".."); //$NON-NLS-1$
+        // JRE's most often live inside a jdk's jre folder
+        dirs.add(parentDir);
         if (parentDir.exists()) {
             for (File file : parentDir.listFiles()) {
                 if (file.isDirectory()) {
@@ -493,19 +618,79 @@ public class Tools implements IPropertyChangeListener, IConstants {
         return true;
     }
 
+    // Find the home directory based on the preference settings
+    private IVMInstall findHomeDirFromPreferences() {
+    	IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID);
+        String vm = prefs.get(IConstants.JDK_VM_INSTALL, null);
+        if( vm != null ) {
+        	IVMInstall found = findVMInstall(vm);
+        	if( found != null ) {
+        		return found;
+        	}
+        }
+        return null;
+    }
+    
+	private static IVMInstall findVMInstall(String id) {
+		if(id != null) {
+			IVMInstallType[] types = JavaRuntime.getVMInstallTypes();
+			IVMInstall ret = null;
+			for( int i = 0; i < types.length; i++ ) {
+				ret = types[i].findVMInstall(id);
+				if( ret != null )
+					return ret;
+			}
+		}
+		return null;
+	}
+	
+
+	private static IVMInstall findVMByInstallLocation(String home) {
+		if(home != null) {
+			IVMInstallType[] types = JavaRuntime.getVMInstallTypes();
+			for( int i = 0; i < types.length; i++ ) {
+				IVMInstall[] installs = types[i].getVMInstalls();
+				for( int j = 0; j < installs.length; j++ ) {
+					if(home.equals( installs[j].getInstallLocation())) {
+						return installs[j];
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	
+	private String findHomeDirectoryToAddToClasspath() {
+    	// Find the jdk root for the currently running java home
+        String jdkRootDirectory = findJdkRootFromJavaHome();
+        if (jdkRootDirectory == null || jdkRootDirectory.isEmpty()) {
+        	IVMInstall vmi = findSecondaryVMInstall();
+        	jdkRootDirectory = vmi.getInstallLocation().getAbsolutePath();
+        }
+        return jdkRootDirectory;
+	}
+	
+	/**
+	 * Get the vminstall to use when the currently-running jre is not a jdk
+	 * @return
+	 */
+	public IVMInstall findSecondaryVMInstall() {
+    	IVMInstall vmi = findHomeDirFromPreferences();
+    	if( vmi == null ) {
+    		vmi = findFirstValidVMInstall();
+    	}
+    	return vmi;
+	}
+	
     /**
      * Configures the class path and library path.
      */
     private void configureClassPathAndLibraryPath() {
-        String jdkRootDirectory = Activator.getDefault().getPreferenceStore()
-                .getString(IConstants.JDK_ROOT_DIRECTORY);
-        if (jdkRootDirectory.isEmpty()) {
-            jdkRootDirectory = searchJdkRootDirectory();
-            Activator.getDefault().getPreferenceStore()
-                    .setValue(IConstants.JDK_ROOT_DIRECTORY, jdkRootDirectory);
-        }
-
-        if (validateJdkRootDirectory(jdkRootDirectory) != null) {
+    	// Find the jdk root for the currently running java home
+        String jdkRootDirectory = findHomeDirectoryToAddToClasspath();
+        String error = validateJdkRootDirectory(jdkRootDirectory);
+        if (error != null) {
             return;
         }
 
@@ -525,6 +710,24 @@ public class Tools implements IPropertyChangeListener, IConstants {
         }
     }
 
+    /**
+     * Find the IVMInstall who's home directory matches the current java.home sysprop
+     * @return
+     */
+    public IVMInstall findActiveVM() {
+    	String javaHome = System.getProperty(JAVA_HOME_PROPERTY_KEY);
+    	return findVMByInstallLocation(javaHome);
+    }
+    
+    /**
+     * Does an IVMInstall currently exist for the currently-running java.home
+     * @return
+     */
+    public boolean hasActiveVMInstall() {
+    	return findActiveVM() != null;
+    }
+    
+    
     /**
      * Gets the JRE library path.
      * 
@@ -550,7 +753,7 @@ public class Tools implements IPropertyChangeListener, IConstants {
      *            The JDK root directory
      * @throws Throwable
      */
-    private static void addClassPath(String jdkRootDirectory) throws Throwable {
+    private void addClassPath(String jdkRootDirectory) throws Throwable {
         File file = new File(jdkRootDirectory + TOOLS_JAR);
         URL toolsJarUrl = file.toURI().toURL();
 
@@ -564,6 +767,9 @@ public class Tools implements IPropertyChangeListener, IConstants {
         Activator.log(IStatus.INFO,
                 NLS.bind(Messages.classPathAddedMsg, file.getPath()),
                 new Exception());
+        
+        jdkHomeDirectoryAddedToClasspath = jdkRootDirectory;
+        hasAddedToClasspath = true;
     }
 
     /**
@@ -590,4 +796,5 @@ public class Tools implements IPropertyChangeListener, IConstants {
         field.setAccessible(true);
         field.set(clazz, null);
     }
+
 }
