@@ -266,9 +266,12 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	private String getPresentableBaseDir(IRuntime rt) {
 		LocalJBoss7ServerRuntime rt2 = (LocalJBoss7ServerRuntime)rt.loadAdapter(LocalJBoss7ServerRuntime.class, null);
 		String baseDir = rt2.getBaseDirectory();
-		IPath rtLoc = rt.getLocation().addTrailingSeparator(); 
-		if( rtLoc.isPrefixOf(new Path(baseDir))) {
-			return baseDir.substring(rtLoc.toOSString().length());
+		IPath baseDirPath = new Path(baseDir);
+		if( baseDirPath.isAbsolute()) {
+			IPath rtLocWithSep = rt.getLocation().addTrailingSeparator(); 
+			if( rtLocWithSep.isPrefixOf(new Path(baseDir))) {
+				return baseDir.substring(rtLocWithSep.toOSString().length());
+			}
 		}
 		return baseDir;
 	}
