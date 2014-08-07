@@ -73,7 +73,7 @@
           name="JMX"
           id="org.jboss.ide.eclipse.as.ui.extensions.jmx"
           icon="$nl$/icons/jmeth_obj.gif"
-          activeByDefault="false"
+          activeByDefault="true"
           priority="low"
           contentProvider="org.jboss.ide.eclipse.as.wtp.ui.view.server.jmx.JMXProvider$ContentProvider"
           labelProvider="org.jboss.ide.eclipse.as.wtp.ui.view.server.jmx.JMXProvider$LabelProvider">
@@ -123,5 +123,45 @@
        </includes>
     </viewerActionBinding>
 	</extension>
+    
+    
+    
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertyContributor">
+
+      <propertyContributor contributorId="org.eclipse.wst.server.ui.ServersView">
+         <propertyCategory category="org.eclipse.wst.server.ui.ServersView"/>
+      </propertyContributor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
+      <propertyTabs contributorId="org.eclipse.wst.server.ui.ServersView">
+         <propertyTab
+               category="org.eclipse.wst.server.ui.ServersView"
+               id="org.eclipse.wst.server.ui.ServersView.PropertiesTab"
+               label="Properties"/>
+      </propertyTabs>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views.properties.tabbed.propertySections">
+      <propertySections contributorId="org.eclipse.wst.server.ui.ServersView">
+         <propertySection
+               class="org.eclipse.ui.views.properties.tabbed.AdvancedPropertySection"
+               id="PropertiesSection"
+               filter="org.jboss.ide.eclipse.as.wtp.ui.view.server.ServerViewPropertiesSectionFilter"
+               tab="org.eclipse.wst.server.ui.ServersView.PropertiesTab">
+         </propertySection>
+      </propertySections>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="org.eclipse.wst.server.ui.internal.cnf.ServersView2"
+            class="org.jboss.ide.eclipse.as.wtp.ui.view.server.ServerViewPropertiesAdapterFactory">
+         <adapter
+               type="org.eclipse.ui.views.properties.IPropertySheetPage">
+         </adapter>
+      </factory>
+   </extension> 
     
 </plugin>

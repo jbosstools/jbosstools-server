@@ -26,7 +26,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
-import org.jboss.ide.eclipse.as.ui.views.server.extensions.XPathTreeContentProvider.ServerWrapper;
 import org.jboss.tools.as.wst.server.ui.xpl.ServerToolTip;
 
 public class FilesetContentProvider implements ITreeContentProvider {
@@ -158,7 +157,6 @@ public class FilesetContentProvider implements ITreeContentProvider {
 		}
 	}
 	
-
 	public Object[] getChildren(Object parentElement) {
 		if (parentElement instanceof IServer) {
 			// check support
