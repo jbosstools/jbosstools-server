@@ -123,8 +123,7 @@ public class DeploymentTypeUIUtil {
 			j.schedule();
 		}
 		public void setErrorMessage(String msg) {
-			if( completable != null )
-				completable.setComplete(msg == null);
+			setComplete(msg != null);
 			handle.setMessage(msg, IMessageProvider.ERROR);
 			handle.update();
 		}

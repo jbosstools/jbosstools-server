@@ -54,10 +54,13 @@ public class JBossRSEDeploymentPrefComposite extends
 	private Text rseServerHome,rseServerConfig;
 	private Button rseBrowse, rseTest;
 	private ControlDecoration serverHomeDecoration;
+	private ControlDecoration serverConfigDecoration;
 
 
 	public JBossRSEDeploymentPrefComposite(Composite parent, int style, IServerModeUICallback callback) {
 		super(parent, style, callback);
+		String error = validateWidgets(false);
+		callback.setComplete(error == null);
 	}
 
 	protected void createRSEWidgets(Composite child) {
@@ -110,6 +113,7 @@ public class JBossRSEDeploymentPrefComposite extends
 				serverConfigChanged();
 			}
 		});
+		serverConfigDecoration = new ControlDecoration(rseServerConfig, SWT.CENTER);
 		callback.getServer().addPropertyChangeListener(this);
 
 		rseTest = new Button(this, SWT.NONE);
@@ -202,6 +206,10 @@ public class JBossRSEDeploymentPrefComposite extends
 			}
 			pm.worked(300);
 			
+			if( config == null || config.trim().length() == 0) {
+				return getTestFailStatus(RSEUIMessages.REMOTE_CONFIG_BLANK);
+			}
+			
 			root2 = root2.append(IConstants.SERVER).append(config);
 			file = service.getFile(root2.removeLastSegments(1).toPortableString(), root2.lastSegment(), new NullProgressMonitor());
 			if( file == null || !file.exists()) {
@@ -243,6 +251,7 @@ public class JBossRSEDeploymentPrefComposite extends
 					getRuntime() == null ? "" : getRuntime().getJBossConfiguration(),
 							RSEUIMessages.CHANGE_REMOTE_SERVER_CONFIG));
 		}
+		validateWidgets(true);
 	}
 	protected void serverHomeChanged() {
 		if( !isUpdatingFromModelChange()) {
@@ -252,10 +261,11 @@ public class JBossRSEDeploymentPrefComposite extends
 					callback.getServer(), RSEUtils.RSE_SERVER_HOME_DIR, rseServerHome.getText(), 
 					safeString, RSEUIMessages.CHANGE_REMOTE_SERVER_HOME));
 		}
-		validateWidgets();
+		validateWidgets(true);
 	}
 	
-	protected void validateWidgets() {
+	protected String validateWidgets(boolean updateErrorMessage) {
+		String errorMsg = null;
 		if( serverHomeDecoration != null ) {
 			boolean isEmpty = rseServerHome == null || rseServerHome.getText() == null || rseServerHome.getText().trim().isEmpty();
 			if( isEmpty ) {
@@ -263,10 +273,31 @@ public class JBossRSEDeploymentPrefComposite extends
 	            Image image = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_DEC_FIELD_ERROR);
 	            serverHomeDecoration.setImage(image);
 	            serverHomeDecoration.show();
+	            errorMsg = serverHomeDecoration.getDescriptionText();
 			} else {
 				serverHomeDecoration.hide();
 			}
 		}
+		
+		if( serverConfigDecoration != null ) {
+			boolean isEmpty = rseServerConfig == null || rseServerConfig.getText() == null || rseServerConfig.getText().trim().isEmpty();
+			if( isEmpty ) {
+				serverConfigDecoration.setDescriptionText(RSEUIMessages.REMOTE_CONFIG_BLANK);
+	            Image image = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_DEC_FIELD_ERROR);
+	            serverConfigDecoration.setImage(image);
+	            serverConfigDecoration.show();
+	            if( errorMsg == null )
+	            	errorMsg = serverConfigDecoration.getDescriptionText();
+			} else {
+				serverConfigDecoration.hide();
+			}
+		}
+		
+		if( updateErrorMessage ) {
+			callback.setErrorMessage(errorMsg);
+		}
+		callback.setComplete(errorMsg == null);
+		return errorMsg;
 	}
 
 }

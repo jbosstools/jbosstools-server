@@ -10,11 +10,15 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.rse.ui;
 
+import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
@@ -50,11 +54,55 @@ public class RSEWizardFragment extends WizardFragment {
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
 		// do nothing
 	}
-	public Composite createComposite(Composite parent, IWizardHandle handle) {
+	
+	private static class DelegatingCallback implements IServerModeUICallback {
+		protected IServerModeUICallback callback;
+		public DelegatingCallback(IServerModeUICallback cb) {
+			this.callback = cb;
+		}
+		public IServerWorkingCopy getServer() {
+			return callback.getServer();
+		}
+		public IRuntime getRuntime() {
+			return callback.getRuntime();
+		}
+		public void execute(IUndoableOperation operation) {
+			callback.execute(operation);
+		}
+		public void executeLongRunning(Job j) {
+			callback.executeLongRunning(j);
+		}
+		public void setErrorMessage(String msg) {
+			callback.setErrorMessage(msg);
+		}
+		public Object getAttribute(String key) {
+			return callback.getAttribute(key);
+		}
+		public int getCallbackType() {
+			return callback.getCallbackType();
+		}
+		public void setComplete(boolean complete) {
+			callback.setComplete(complete);
+		}
+	};
+	
+	public Composite createComposite(Composite parent, final IWizardHandle handle) {
 		this.handle = handle;
 		initWizardHandle();
 		
-		IServerModeUICallback callback = (IServerModeUICallback)getTaskModel().getObject(ServerProfileWizardFragment.WORKING_COPY_CALLBACK);
+		// Problem is this one was created only to work with the 1st page.  >=[ 
+		final IServerModeUICallback callbackDelegate = (IServerModeUICallback)getTaskModel().getObject(ServerProfileWizardFragment.WORKING_COPY_CALLBACK);
+		IServerModeUICallback callback = new DelegatingCallback(callbackDelegate){
+			public void setComplete(boolean complete) {
+				RSEWizardFragment.this.setComplete(complete);
+				handle.update();
+			}
+			public void setErrorMessage(String msg) {
+				handle.setMessage(msg, IMessageProvider.ERROR);
+				setComplete(msg != null);
+			}
+		};
+		
 		
 		Composite main = new Composite(parent, SWT.NONE);
 		main.setLayout(new FillLayout());

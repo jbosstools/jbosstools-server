@@ -50,8 +50,7 @@ public class JBoss7RSEDeploymentPrefComposite extends
 	public JBoss7RSEDeploymentPrefComposite(Composite parent, int style,
 			IServerModeUICallback callback) {
 		super(parent, style, callback);
-		String error = validateWidgets(false);
-		callback.setComplete(error == null);
+		validateWidgets(false);
 	}
 
 	protected void createRSEWidgets(Composite child) {
@@ -176,6 +175,7 @@ public class JBoss7RSEDeploymentPrefComposite extends
 		if( updateErrorMessage ) {
 			callback.setErrorMessage(errorMsg);
 		}
+		callback.setComplete(errorMsg == null);
 		return errorMsg;
 	}
 

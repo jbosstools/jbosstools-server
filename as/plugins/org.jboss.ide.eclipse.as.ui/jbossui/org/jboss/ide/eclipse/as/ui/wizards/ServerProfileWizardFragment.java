@@ -140,9 +140,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 	private IServerModeUICallback createCallback(final IWizardHandle handle) {
 		ICompletable c =  new ICompletable() {
 			public void setComplete(boolean complete) {
-				// set currently visible fragment to false
-				System.out.println("set complete: " + complete);
-				//RSEWizardFragment.this.setComplete(complete);
+				ServerProfileWizardFragment.this.setComplete(complete);
 			}
 		};
 		

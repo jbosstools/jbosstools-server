@@ -27,6 +27,7 @@ public class RSEUIMessages {
 	public static String FILESERVICE_NOT_FOUND;
 	public static String REMOTE_HOME_NOT_FOUND;
 	public static String REMOTE_CONFIG_NOT_FOUND;
+	public static String REMOTE_CONFIG_BLANK;
 	public static String ERROR_CHECKING_REMOTE_SYSTEM;
 	public static String BROWSE_REMOTE_SYSTEM;
 	
