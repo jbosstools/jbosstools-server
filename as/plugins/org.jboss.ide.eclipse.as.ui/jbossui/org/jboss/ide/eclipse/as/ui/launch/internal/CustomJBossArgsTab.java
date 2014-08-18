@@ -24,8 +24,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 /**
@@ -34,7 +32,6 @@ import org.jboss.ide.eclipse.as.ui.Messages;
 public class CustomJBossArgsTab extends JavaArgumentsTab {
 	
 	private Button syncWithRuntime;
-	private Button ignoreLaunch;
 	
 	/**
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#createControl(Composite)
@@ -50,9 +47,6 @@ public class CustomJBossArgsTab extends JavaArgumentsTab {
 		Label desc = new Label(comp, SWT.NONE);
 		desc.setText(Messages.ServerJavaArgsSyncDesc);
 		
-		ignoreLaunch = new Button(comp, SWT.CHECK);
-		ignoreLaunch.setText(Messages.LaunchConfigIgnoreLaunchButton);
-
 		syncWithRuntime = new Button(comp, SWT.CHECK);
 		syncWithRuntime.setText(Messages.ServerJavaArgsSyncText);
 
@@ -64,13 +58,11 @@ public class CustomJBossArgsTab extends JavaArgumentsTab {
 		super.performApply(configuration);
 		configuration.setAttribute(JBossServer.AUTOMATICALLY_UPDATE_LAUNCH, 
 				syncWithRuntime.getSelection());
-		LaunchCommandPreferences.setIgnoreLaunchCommand(configuration, ignoreLaunch.getSelection());
 	}
 
 	public void initializeFrom(ILaunchConfiguration configuration) {
 		super.initializeFrom(configuration);
 		try {
-			ignoreLaunch.setSelection(LaunchCommandPreferences.isIgnoreLaunchCommand(configuration));
 			boolean selected = configuration.getAttribute(JBossServer.AUTOMATICALLY_UPDATE_LAUNCH, true);
 			syncWithRuntime.setSelection(selected);
 		} catch (CoreException e) {

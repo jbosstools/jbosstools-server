@@ -14,6 +14,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
@@ -33,8 +35,9 @@ public class StopLaunchConfiguration extends AbstractJavaServerLaunchDelegate {
 	@Override
 	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor)
 			throws CoreException {
+		IServer server = ServerUtil.getServer(configuration);
 		IControllableServerBehavior jbsBehavior = JBossServerBehaviorUtils.getControllableBehavior(configuration);
-		if (LaunchCommandPreferences.isIgnoreLaunchCommand(configuration)) {
+		if (LaunchCommandPreferences.isIgnoreLaunchCommand(server)) {
 			((ControllableServerBehavior)jbsBehavior).setServerStopping();
 			((ControllableServerBehavior)jbsBehavior).setServerStopped();
 			return false;

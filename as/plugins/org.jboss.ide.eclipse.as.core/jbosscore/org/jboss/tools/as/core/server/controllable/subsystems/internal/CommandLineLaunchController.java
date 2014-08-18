@@ -54,7 +54,7 @@ public class CommandLineLaunchController extends AbstractSubsystemController imp
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		IServer server = ServerUtil.getServer(configuration);
-		boolean isSkipLaunch = LaunchCommandPreferences.isIgnoreLaunchCommand(configuration, true); 
+		boolean isSkipLaunch = LaunchCommandPreferences.isIgnoreLaunchCommand(server, true); 
 		IControllableServerBehavior beh = getServerBehavior(configuration);
 		String command = new CommandLineLaunchConfigProperties().getStartupCommand(configuration);
 		boolean emptyCommand = (command == null || command.trim().length() == 0);

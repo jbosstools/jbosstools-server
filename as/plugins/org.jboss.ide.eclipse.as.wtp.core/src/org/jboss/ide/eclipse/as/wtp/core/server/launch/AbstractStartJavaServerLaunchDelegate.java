@@ -73,7 +73,8 @@ public abstract class AbstractStartJavaServerLaunchDelegate extends AbstractJava
 
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		if( LaunchCommandPreferences.isIgnoreLaunchCommand(configuration)) {
+		IServer server = ServerUtil.getServer(configuration);
+		if( LaunchCommandPreferences.isIgnoreLaunchCommand(server)) {
 			return;
 		}
 		beforeVMRunner(configuration, mode, launch, monitor);
@@ -96,7 +97,7 @@ public abstract class AbstractStartJavaServerLaunchDelegate extends AbstractJava
 			throw new CoreException(s);
 		
 		IControllableServerBehavior jbsBehavior = JBossServerBehaviorUtils.getControllableBehavior(server);
-		if (LaunchCommandPreferences.isIgnoreLaunchCommand(configuration)) {
+		if (LaunchCommandPreferences.isIgnoreLaunchCommand(server)) {
 			Trace.trace(Trace.STRING_FINEST, "Server is marked as ignore Launch. Marking as started."); //$NON-NLS-1$
 			((ControllableServerBehavior)jbsBehavior).setServerStarted();
 			return false;

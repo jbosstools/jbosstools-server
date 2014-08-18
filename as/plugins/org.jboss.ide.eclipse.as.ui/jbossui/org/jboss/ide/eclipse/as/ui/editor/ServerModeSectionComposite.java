@@ -13,7 +13,6 @@ package org.jboss.ide.eclipse.as.ui.editor;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -69,6 +68,7 @@ public class ServerModeSectionComposite extends Composite {
 	private ServerEditorUICallback callback;
 	private Button listenOnAllHosts; // may be null
 	private Button exposeManagement; // may be null
+	private Button executeShellScripts; // may be null;
 	protected Link configureProfileLink;
 	
 	private DeployUIAdditions currentUIAddition;
@@ -87,6 +87,7 @@ public class ServerModeSectionComposite extends Composite {
 		setLayout(new FormLayout());
 		
 		Control top = null;
+		
 		configureProfileLink = new Link( this, SWT.NONE);
 		FormData fd = FormDataUtility.createFormData2(top, 5, null, 0, 0, 5, null, 0);
 		configureProfileLink.setLayoutData(fd);
@@ -102,6 +103,23 @@ public class ServerModeSectionComposite extends Composite {
 		
 		profileLabel.setText(( profName == null ? "Not Found" : profName));
 		top = configureProfileLink;
+		
+
+		if( showExecuteShellCheckbox()) {
+			executeShellScripts = new Button(this, SWT.CHECK);
+			executeShellScripts.setText(Messages.EditorDoNotLaunch);
+			fd = FormDataUtility.createFormData2(top, 5, null, 0, 0, 5, null, 0);
+			executeShellScripts.setLayoutData(fd);
+			top = executeShellScripts;
+			executeShellScripts.setSelection(LaunchCommandPreferences.isIgnoreLaunchCommand(callback.getServer()));
+			executeShellScripts.addSelectionListener(new SelectionListener(){
+				public void widgetSelected(SelectionEvent e) {
+					executeShellToggled();
+				}
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+			});
+		}
 		
 		if( showListenOnAllHostsCheckbox()) {
 			listenOnAllHosts = new Button(this, SWT.CHECK);
@@ -145,7 +163,13 @@ public class ServerModeSectionComposite extends Composite {
 		updateProfilePagebook();
 	}
 	
-
+	// Set the 'ignore launch' boolean on the server wc
+	protected void executeShellToggled() {
+		callback.execute(new ChangeServerPropertyCommand(
+				callback.getServer(), IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS,
+				new Boolean(executeShellScripts.getSelection()).toString(), Messages.EditorDoNotLaunchCommand));
+	}
+	
 	protected String getCurrentProfileId() {
 		IServer original = callback.getServer().getOriginal();
 		IControllableServerBehavior ds = original == null ? null : JBossServerBehaviorUtils.getControllableBehavior(callback.getServer().getOriginal());
@@ -232,7 +256,7 @@ public class ServerModeSectionComposite extends Composite {
 	
 	/* Can this server type expose management port? */
 	protected boolean showExecuteShellCheckbox() {
-		return false;
+		return true;
 	}
 	/* Can this server type listen on all ports via -b flag? */
 	protected boolean showListenOnAllHostsCheckbox() {

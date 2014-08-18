@@ -16,7 +16,6 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.ILaunch;
-import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.IProcess;
@@ -58,14 +57,7 @@ public class LocalLegacyShutdownController extends AbstractSubsystemController
 		if( removeScanners ) {
 			removeScanners();
 		}
-		boolean ignoreLaunch = false;
-		try {
-			ILaunchConfiguration config = getServer().getLaunchConfiguration(true, new NullProgressMonitor());
-			ignoreLaunch = LaunchCommandPreferences.isIgnoreLaunchCommand(config);
-		} catch(CoreException ce) {
-			JBossServerCorePlugin.log(ce.getStatus());
-		}
-		
+		boolean ignoreLaunch = LaunchCommandPreferences.isIgnoreLaunchCommand(getServer());
 		if(ignoreLaunch) {
 			((ControllableServerBehavior)getControllableBehavior()).setServerStopped();
 			return;

@@ -50,7 +50,6 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 	
 	protected Text startText,stopText;
 	protected Button autoStartArgs, autoStopArgs;
-	protected Button ignoreLaunch;
 	protected ILaunchConfiguration initialConfig;
 	protected CommandLineLaunchConfigProperties propertyUtil;
 	private boolean supportsCommandLineShutdown = supportsCommandLineShutdown();
@@ -70,19 +69,10 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 	}
 	
 	protected void createGroups(Composite main) {
-
-		ignoreLaunch = new Button(main, SWT.CHECK);
-		ignoreLaunch.setText(Messages.LaunchConfigIgnoreLaunchButton);
-		ignoreLaunch.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				setTabEnablement(!ignoreLaunch.getSelection());
-			}
-		});
-		
 		Group startGroup = createStartGroup(main);
 		Group stopGroup = createStopGroup(main);
 		// Set the layout data of the two main widgets
-		startGroup.setLayoutData(UIUtil.createFormData(getStartCommandHeightHint(), SWT.DEFAULT, ignoreLaunch, 5, stopGroup, -5, 0, 5, 100, -5));
+		startGroup.setLayoutData(UIUtil.createFormData(getStartCommandHeightHint(), SWT.DEFAULT, 0, 5, stopGroup, -5, 0, 5, 100, -5));
 		stopGroup.setLayoutData(UIUtil.createFormData(getStopCommandHeightHint(), SWT.DEFAULT, 50, 0, 100, -5, 0, 5, 100, -5));
 	}
 	
@@ -235,12 +225,6 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 	
 	
 	protected void validate() {
-		if( ignoreLaunch.getSelection()) {
-			setErrorMessage(null);			
-			getLaunchConfigurationDialog().updateButtons();
-			return;
-		}
-		
 		boolean empty = (startText.getText().trim().length() == 0);
 		setErrorMessage(empty ? "Start Command must not be empty." : null);
 		if( !empty && supportsCommandLineShutdown ) {
@@ -261,8 +245,6 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 		setErrorMessage(null);
 		
 		try {
-			ignoreLaunch.setSelection(LaunchCommandPreferences.isIgnoreLaunchCommand(configuration));
-			
 			CommandLineLaunchConfigProperties propUtil = getPropertyUtility();
 			String startCommand = propUtil.getStartupCommand(configuration);
 			startText.setText(startCommand == null ? "" : startCommand);
@@ -293,7 +275,7 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 		
 		// Disable all if launch is ignored
 		try {
-			if (LaunchCommandPreferences.isIgnoreLaunchCommand(configuration)) {
+			if (LaunchCommandPreferences.isIgnoreLaunchCommand(ServerUtil.getServer(configuration))) {
 				disableTab();
 			}
 		} catch(CoreException ce) {
@@ -347,9 +329,6 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 				propUtil.setDetectShutdownCommand(autoStopArgs.getSelection(), configuration);
 			}
 		}
-		
-		LaunchCommandPreferences.setIgnoreLaunchCommand(configuration, ignoreLaunch.getSelection());
-		
 		if( updateButtons)
 			getLaunchConfigurationDialog().updateButtons();
 	}
