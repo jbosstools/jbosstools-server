@@ -28,6 +28,7 @@ import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
+import org.jboss.ide.eclipse.as.core.server.IUserPrompter;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.jboss.ide.eclipse.as.core.server.UserPrompter;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerListener;
@@ -141,7 +142,7 @@ public class JBossServerCorePlugin extends Plugin  {
         log(IStatus.ERROR, message, e);
     }
     
-    public UserPrompter getPrompter() {
+    public IUserPrompter getPrompter() {
     	return prompter;
     }
 }

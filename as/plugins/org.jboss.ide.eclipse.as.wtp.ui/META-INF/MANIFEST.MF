@@ -35,11 +35,13 @@ Require-Bundle: org.eclipse.ui;bundle-version="3.7.0",
  org.jboss.tools.foundation.ui;bundle-version="1.1.0",
  org.jboss.tools.foundation.core;bundle-version="1.1.0",
  org.eclipse.ui.views;bundle-version="3.7.0",
- org.eclipse.ui.views.properties.tabbed;bundle-version="3.6.0"
+ org.eclipse.ui.views.properties.tabbed;bundle-version="3.6.0",
+ org.eclipse.jdt.debug
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: JBoss by Red Hat
-Export-Package: org.jboss.ide.eclipse.as.wtp.ui.composites,
+Export-Package: org.jboss.ide.eclipse.as.wtp.ui,
+ org.jboss.ide.eclipse.as.wtp.ui.composites,
  org.jboss.ide.eclipse.as.wtp.ui.editor,
  org.jboss.ide.eclipse.as.wtp.ui.profile,
  org.jboss.ide.eclipse.as.wtp.ui.util,

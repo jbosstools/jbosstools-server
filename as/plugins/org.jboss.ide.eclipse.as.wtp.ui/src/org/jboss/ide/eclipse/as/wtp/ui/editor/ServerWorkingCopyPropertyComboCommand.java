@@ -51,19 +51,42 @@ public class ServerWorkingCopyPropertyComboCommand extends ServerCommand {
 		if( listener != null )
 			combo.removeModifyListener(listener);
 		wc.setAttribute(key, oldVal);
-		if( combo != null && !combo.isDisposed())
-			combo.setText(oldVal);
+		if( combo != null && !combo.isDisposed()) {
+			String oldValAsText = getStringForValue(oldVal);
+			int toSel = getItemIndex(oldValAsText);
+			if( toSel != -1 ) {
+				combo.select(toSel);
+			} else {
+				combo.setText(oldValAsText);
+			}
+		}
 		if( listener != null )
 			combo.addModifyListener(listener);
 		postOp(POST_UNDO);
 	}
 
+	protected int getItemIndex(String text) {
+		String[] items = combo.getItems();
+		for( int i = 0; i < items.length; i++ ) {
+			if( items[i].equals(text))
+				return i;
+		}
+		return -1;
+	}
+	
 	public IStatus redo() {
 		if( listener != null )
 			combo.removeModifyListener(listener);
 		wc.setAttribute(key, newVal);
-		if( combo != null && !combo.isDisposed())
-			combo.setText(newVal);
+		if( combo != null && !combo.isDisposed()) {
+			String newValAsText = getStringForValue(newVal);
+			int toSel = getItemIndex(newValAsText);
+			if( toSel != -1 ) {
+				combo.select(toSel);
+			} else {
+				combo.setText(newValAsText);
+			}
+		}
 		if( listener != null )
 			combo.addModifyListener(listener);
 		postOp(POST_REDO);
@@ -71,5 +94,15 @@ public class ServerWorkingCopyPropertyComboCommand extends ServerCommand {
 	}
 	protected void postOp(int type) {
 		// Do Nothing
+	}
+	
+	
+	/**
+	 * If you're using a combo with user visible strings different from stored values, this
+	 * method will assist in setting the combo text properly
+	 * @return
+	 */
+	protected String getStringForValue(String value) {
+		return value;
 	}
 }

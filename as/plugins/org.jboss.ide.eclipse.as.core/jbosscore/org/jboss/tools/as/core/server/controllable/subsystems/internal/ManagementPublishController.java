@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.Server;
@@ -45,6 +46,7 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IModuleStateController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPrimaryPublishController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishControllerDelegate;
+import org.jboss.ide.eclipse.as.wtp.core.server.launch.AbstractStartJavaServerLaunchDelegate;
 import org.jboss.ide.eclipse.as.wtp.core.server.publish.LocalZippedModulePublishRunner;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 import org.jboss.tools.as.core.server.controllable.systems.IModuleDeployPathController;
@@ -170,6 +172,20 @@ public class ManagementPublishController extends AbstractSubsystemController
 		return moduleDeployPathController;
 	}
 	
+	/**
+	 * Should we be minimizing redeployments at this time. 
+	 * Currently, we minimize redeployments when the server is in debug mode, 
+	 * and the user has enabled our custom hotcode replace mechanism.
+	 * 
+	 * @return
+	 */
+	protected boolean shouldMinimizeRedeployments() {
+		boolean debugMode = ILaunchManager.DEBUG_MODE.equals(getServer().getMode());
+		Object o = getControllableBehavior().getSharedData(AbstractStartJavaServerLaunchDelegate.HOTCODE_REPLACE_OVERRIDDEN);
+		return debugMode && o instanceof Boolean && ((Boolean)o).booleanValue();
+	}
+	
+	
 	@Override
 	public int publishModule(int kind, int deltaKind, IModule[] module,
 			IProgressMonitor monitor) throws CoreException {
@@ -197,9 +213,15 @@ public class ManagementPublishController extends AbstractSubsystemController
 		
 		int publishType = PublishControllerUtility.getPublishType(getServer(), module, kind, deltaKind);
 		if( publishType == PublishControllerUtility.NO_PUBLISH) {
-			// Do nothing, server is stopped
+			// Do nothing, no publish is requested
 			return getServer().getModulePublishState(module);
 		}
+
+		if( publishType == PublishControllerUtility.INCREMENTAL_PUBLISH && shouldMinimizeRedeployments()) {
+			// Do nothing... we are minimizing redeployments at the moment
+			return getServer().getModulePublishState(module);
+		}
+
 		if( publishType == PublishControllerUtility.REMOVE_PUBLISH) {
 			return removeModule(module, monitor);
 		}

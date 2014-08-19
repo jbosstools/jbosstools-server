@@ -58,8 +58,15 @@ public abstract class AbstractStartJavaServerLaunchDelegate extends AbstractJava
 	 */
 	public static final String NEXT_STOP_REQUIRES_FORCE = "DeployableServerBehavior.RequiresForceStop"; //$NON-NLS-1$\
 
+	/**
+	 * Did we override the hotcode replace mechanism
+	 */
+	public static final String HOTCODE_REPLACE_OVERRIDDEN = "AbstractStartJavaServerLaunchDelegate.HotCodeReplaceOverridden"; //$NON-NLS-1$\
+
 	
 	private static final String PROCESS_TERMINATION_DELAY_PREF_KEY = "org.jboss.ide.eclipse.as.wtp.core.server.launch.PROCESS_TERMINATION_DELAY_PREF_KEY"; //$NON-NLS-1$
+	
+	
 	
 	/**
 	 * Get the fail-safe delay for ensuring process termination after a server shutdown
@@ -100,6 +107,7 @@ public abstract class AbstractStartJavaServerLaunchDelegate extends AbstractJava
 		if (LaunchCommandPreferences.isIgnoreLaunchCommand(server)) {
 			Trace.trace(Trace.STRING_FINEST, "Server is marked as ignore Launch. Marking as started."); //$NON-NLS-1$
 			((ControllableServerBehavior)jbsBehavior).setServerStarted();
+			((ControllableServerBehavior)jbsBehavior).setRunMode(mode);
 			return false;
 		}
 		
@@ -242,4 +250,19 @@ public abstract class AbstractStartJavaServerLaunchDelegate extends AbstractJava
 
 	
 	protected abstract void validateServerStructure(IServer server) throws CoreException;
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.jboss.ide.eclipse.as.wtp.core.server.launch.AbstractJavaServerLaunchDelegate#overrideHotcodeReplace(org.eclipse.debug.core.ILaunchConfiguration, org.eclipse.debug.core.ILaunch)
+	 */
+	protected boolean overrideHotcodeReplace(ILaunchConfiguration configuration, ILaunch launch) throws CoreException {
+		boolean added = super.overrideHotcodeReplace(configuration, launch);
+		IServer server = ServerUtil.getServer(configuration);
+		IControllableServerBehavior jbsBehavior = JBossServerBehaviorUtils.getControllableBehavior(server);
+		if( added ) {
+			jbsBehavior.putSharedData(HOTCODE_REPLACE_OVERRIDDEN, added); //$NON-NLS-1$
+		}
+		return added;
+	}
+
 }

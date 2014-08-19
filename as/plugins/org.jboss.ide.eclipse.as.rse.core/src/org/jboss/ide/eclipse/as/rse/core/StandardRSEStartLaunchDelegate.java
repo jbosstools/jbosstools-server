@@ -68,6 +68,7 @@ public class StandardRSEStartLaunchDelegate extends
 		final IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(configuration);
 		boolean dontLaunch = LaunchCommandPreferences.isIgnoreLaunchCommand(configuration);
 		if (dontLaunch || isStarted(server)) {
+			((ControllableServerBehavior)beh).setRunMode(mode);
 			((ControllableServerBehavior)beh).setServerStarted();
 			return false;
 		}
@@ -85,8 +86,8 @@ public class StandardRSEStartLaunchDelegate extends
 			throws CoreException {
 		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(configuration);
 		if( beh != null ) {
-			((ControllableServerBehavior)beh).setRunMode(mode);
 			((ControllableServerBehavior)beh).setServerStarting();
+			((ControllableServerBehavior)beh).setRunMode(mode);
 		}
 	}
 	

@@ -15,6 +15,17 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.jboss.ide.eclipse.as.wtp.ui.messages"; //$NON-NLS-1$
 	public static String MODULE_EXISTS_ERROR;
+	public static String ModuleRestartSection_0;
+	public static String ModuleRestartSection_1;
+	public static String ModuleRestartSection_2;
+	public static String ModuleRestartSection_3;
+	public static String ModuleRestartSection_5;
+	public static String ModuleRestartSection_appReloadCommandName;
+	public static String ModuleRestartSection_appReloadPatternCommandName;
+	public static String ModuleRestartSection_hcrBehaviorCommandName;
+	public static String ModuleRestartSection_hcrComboLabel;
+	public static String ModuleRestartSection_hcrOverrideCommandName;
+	public static String ModuleRestartSection_invalidPatternError;
 	public static String DESTINATION_INVALID;
 	public static String DESTINATION_ARCHIVE_SHOULD_END_WITH;
 	public static String RESOURCE_EXISTS_ERROR;
@@ -46,6 +57,19 @@ public class Messages extends NLS {
 	public static String rwf_jboss7homeNotValid;
 	public static String rwf_homeIncorrectVersionError; 
 
+	
+	public static String HotCodeReplaceObsolete_Title;
+	public static String HotCodeReplaceFailed_Title;
+	public static String HotCodeReplaceHeader;
+	public static String HotCodeReplaceDesc;
+	public static String RememberChoiceServer;
+	public static String hcrRestartServer;
+	public static String hcrRestartModules;
+	public static String hcrContinue;
+	public static String hcrShowDialog;
+	public static String hcrTerminate;
+
+	
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

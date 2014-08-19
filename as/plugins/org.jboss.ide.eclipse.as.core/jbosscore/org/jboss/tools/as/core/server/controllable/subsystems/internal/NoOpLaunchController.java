@@ -52,6 +52,7 @@ public class NoOpLaunchController extends AbstractSubsystemController implements
 		if( beh != null ) {
 			((ControllableServerBehavior)beh).setServerStarting();
 			((ControllableServerBehavior)beh).setServerStarted();
+			((ControllableServerBehavior)getControllableBehavior()).setRunMode(mode);
 		} else {
 			// TODO throw error
 		}

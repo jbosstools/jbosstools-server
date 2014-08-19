@@ -212,6 +212,7 @@ public class ControllableServerBehavior extends ServerBehaviourDelegate implemen
 		synchronized(serverStateLock) {
 			setServerState(IServer.STATE_STOPPED);
 		}
+		setRunMode(null);
 		setModulesStopped(new IModule[]{}, getServer().getModules());
 	}
 	

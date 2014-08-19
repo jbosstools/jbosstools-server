@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
@@ -53,6 +54,8 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IModuleStateController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPrimaryPublishController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishControllerDelegate;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.util.PublishControllerUtil;
+import org.jboss.ide.eclipse.as.wtp.core.server.launch.AbstractStartJavaServerLaunchDelegate;
 import org.jboss.ide.eclipse.as.wtp.core.server.publish.LocalZippedModulePublishRunner;
 import org.jboss.ide.eclipse.as.wtp.core.server.publish.PublishModuleFullRunner;
 import org.jboss.ide.eclipse.as.wtp.core.server.publish.PublishModuleIncrementalRunner;
@@ -243,9 +246,10 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 	@Override
 	public void publishFinish(IProgressMonitor monitor) throws CoreException {
 		validate();
+		IServer s = getServer();
 		// handle markers / touch xml files depending on server version
 		ensureModulesRestarted();
-		IServer s = getServer();
+		
 		((Server)s).setServerPublishState(getUpdatedPublishState(s));
 		
 
@@ -660,24 +664,46 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		return collector;
 	}
 	
+	/**
+	 * Should we be minimizing redeployments at this time. 
+	 * Currently, we minimize redeployments when the server is in debug mode, 
+	 * and the user has enabled our custom hotcode replace mechanism.
+	 * 
+	 * @return
+	 */
+	protected boolean shouldMinimizeRedeployments() {
+		boolean debugMode = ILaunchManager.DEBUG_MODE.equals(getServer().getMode());
+		Object o = getControllableBehavior().getSharedData(AbstractStartJavaServerLaunchDelegate.HOTCODE_REPLACE_OVERRIDDEN);
+		return debugMode && o instanceof Boolean && ((Boolean)o).booleanValue();
+	}
+	
 	protected boolean moduleRequiresRestart(IModule m) {
+		boolean minimizeRedeployments = shouldMinimizeRedeployments();
 		// If this module or any of its children require a restart, 
 		// we restart the root module
 		Iterator<IModule[]> it = publishType.keySet().iterator();
 		while(it.hasNext()) {
 			IModule[] fromMap = it.next();
-			// if we're a child module of param m, or are param m, 
-			if( fromMap.length > 0 && fromMap[0] == m) {
-				int type = publishType.get(fromMap);
-				Object t = requiresRestart.get(fromMap);
-				boolean matchesPattern = t != null && ((Boolean)t).booleanValue();
-				boolean isRemovedChild = (fromMap.length > 1 && type == PublishControllerUtility.REMOVE_PUBLISH);
-				// If we're a child and we're removed, the parent must be restarted
-				// if we match a restart pattern, the parent must be restarted
-				// if we're full published, the parent must be restarted
-				if( matchesPattern || type == PublishControllerUtility.FULL_PUBLISH
-						|| isRemovedChild)
-					return true;
+			if( minimizeRedeployments ) {
+				// In debug mode, we'll only restart if a full publish is initialized
+				if( fromMap.length == 1 && fromMap[0] == m) {
+					int type = publishType.get(fromMap);
+					return type == PublishControllerUtil.FULL_PUBLISH;
+				}
+			} else {
+				// if we're a child module of param m, or are param m, 
+				if( fromMap.length > 0 && fromMap[0] == m) {
+					int type = publishType.get(fromMap);
+					Object t = requiresRestart.get(fromMap);
+					boolean matchesPattern = t != null && ((Boolean)t).booleanValue();
+					boolean isRemovedChild = (fromMap.length > 1 && type == PublishControllerUtility.REMOVE_PUBLISH);
+					// If we're a child and we're removed, the parent must be restarted
+					// if we match a restart pattern, the parent must be restarted
+					// if we're full published, the parent must be restarted
+					if( matchesPattern || type == PublishControllerUtility.FULL_PUBLISH
+							|| isRemovedChild)
+						return true;
+				}
 			}
 		}
 		return false;

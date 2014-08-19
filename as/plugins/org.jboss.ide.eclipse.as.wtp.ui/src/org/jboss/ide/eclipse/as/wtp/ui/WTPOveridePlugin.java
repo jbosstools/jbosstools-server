@@ -16,7 +16,9 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.jboss.ide.eclipse.as.core.server.UserPrompter;
+import org.jboss.ide.eclipse.as.wtp.core.server.launch.ServerHotCodeReplaceListener;
 import org.jboss.ide.eclipse.as.wtp.ui.prompt.ServerAlreadyStartedPrompter;
+import org.jboss.ide.eclipse.as.wtp.ui.prompt.ServerHotCodeReplacePrompter;
 import org.jboss.ide.eclipse.as.wtp.ui.prompt.ZombieProcessPrompter;
 import org.jboss.tools.foundation.ui.plugin.BaseUISharedImages;
 import org.osgi.framework.Bundle;
@@ -49,6 +51,9 @@ public class WTPOveridePlugin extends AbstractUIPlugin {
 		plugin = this;
 		UserPrompter.getDefaultPrompter().addPromptHandler(UserPrompter.EVENT_CODE_SERVER_ALREADY_STARTED, new ServerAlreadyStartedPrompter());
 		UserPrompter.getDefaultPrompter().addPromptHandler(UserPrompter.EVENT_CODE_PROCESS_UNTERMINATED, new ZombieProcessPrompter());
+		ServerHotCodeReplacePrompter hcrPrompt = new ServerHotCodeReplacePrompter();
+		UserPrompter.getDefaultPrompter().addPromptHandler(ServerHotCodeReplaceListener.EVENT_HCR_FAIL, hcrPrompt);
+		UserPrompter.getDefaultPrompter().addPromptHandler(ServerHotCodeReplaceListener.EVENT_HCR_OBSOLETE, hcrPrompt);
 	}
 
 	/*

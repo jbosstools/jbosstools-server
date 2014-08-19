@@ -73,6 +73,7 @@ public class CommandLineLaunchController extends AbstractSubsystemController imp
 		// For now we just have to assume its started, but should investigate polling being launched
 		// Deploy-only server has no polling... mostly because it has no ports declared
 		((ControllableServerBehavior)beh).setServerStarted();
+		((ControllableServerBehavior)getControllableBehavior()).setRunMode(mode);
 	}
 	
 	
