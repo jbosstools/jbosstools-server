@@ -11,28 +11,16 @@
 package org.jboss.ide.eclipse.as.ui.editor;
 
 import java.beans.PropertyChangeEvent;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.operations.IUndoableOperation;
-import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
@@ -40,19 +28,14 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.IRuntimeLifecycleListener;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.TaskModel;
-import org.eclipse.wst.server.core.util.SocketUtil;
 import org.eclipse.wst.server.ui.editor.ServerEditorOverviewPageModifier;
 import org.eclipse.wst.server.ui.internal.ContextIds;
 import org.eclipse.wst.server.ui.internal.Messages;
 import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
-import org.eclipse.wst.server.ui.internal.Trace;
-import org.eclipse.wst.server.ui.internal.command.SetServerRuntimeCommand;
 import org.eclipse.wst.server.ui.internal.editor.OverviewEditorPart;
 import org.eclipse.wst.server.ui.internal.wizard.TaskWizard;
 import org.eclipse.wst.server.ui.internal.wizard.WizardTaskUtil;
@@ -64,13 +47,14 @@ import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
  * {@link OverviewEditorPart} class, and is intended to be 
  * a way for us to re-add the runtime combo to the editor for server types
  * that don't require a runtime but do allow for one, such as most JBT runtimes
+ * 
  */
 public class AddRuntimeComboOverviewPageModifier extends
 		ServerEditorOverviewPageModifier {
 
 	private IRuntime[] runtimes;
-	private Combo runtimeCombo;
-	private IRuntimeLifecycleListener runtimeListener;
+	private Text runtimeCombo;
+	private IRuntime current = null;
 	protected boolean updating = false;
 
 	@Override
@@ -82,11 +66,6 @@ public class AddRuntimeComboOverviewPageModifier extends
 	@Override
 	public void createControl(UI_LOCATION location, Composite parent) {
 		addControl(parent, null);
-		parent.addDisposeListener(new DisposeListener() {
-			public void widgetDisposed(DisposeEvent e) {
-				ServerCore.removeRuntimeLifecycleListener(runtimeListener);
-			}
-		});
 	}
 
 
@@ -113,142 +92,24 @@ public class AddRuntimeComboOverviewPageModifier extends
 			});
 			
 			final IRuntime runtime = serverWc.getRuntime();
+			current = runtime;
+			link.setEnabled(current != null);
 			if (runtime == null || !ServerUIPlugin.hasWizardFragment(RuntimeUtils.getRuntimeTypeId(serverWc.getServerType())))
 				link.setEnabled(false);
 			
 			IRuntimeType runtimeType = serverWc.getServerType().getRuntimeType();
 			runtimes = ServerUIPlugin.getRuntimes(runtimeType);
 			
-			runtimeCombo = new Combo(composite, SWT.READ_ONLY);
+			runtimeCombo = new Text(composite, SWT.READ_ONLY);
+			runtimeCombo.setEnabled(false);
 			GridData data = new GridData(GridData.FILL_HORIZONTAL);
 			data.horizontalIndent = decorationWidth;
 			runtimeCombo.setLayoutData(data);
-			updateRuntimeCombo();
-			
-			int size = runtimes.length;
-			for (int i = 0; i < size; i++) {
-				if (runtimes[i].equals(runtime))
-					runtimeCombo.select(i);
-			}
-			
-			runtimeCombo.addSelectionListener(runtimeComboSelectionListener(link));
+			runtimeCombo.setText(current == null ? "" : current.getName());
 			whs.setHelp(runtimeCombo, ContextIds.EDITOR_RUNTIME);
-			
-			// add runtime listener
-			runtimeListener = runtimeLifecycleListener(runtime);
-			ServerCore.addRuntimeLifecycleListener(runtimeListener);
 		}
 	}
 
-	protected IRuntimeLifecycleListener runtimeLifecycleListener(final IRuntime originalRuntime) {
-		return new IRuntimeLifecycleListener() {
-			public void runtimeChanged(final IRuntime runtime2) {
-				// may be name change of current runtime
-				Display.getDefault().syncExec(new Runnable() {
-					public void run() {
-						if (runtime2.equals(serverWc.getRuntime())) {
-							try {
-								if (updating)
-									return;
-								updating = true;
-								executeCommand(new SetServerRuntimeCommand(serverWc, runtime2));
-								updating = false;
-							} catch (Exception ex) {
-								// ignore
-							}
-						}
-						
-						if (runtimeCombo != null && !runtimeCombo.isDisposed()) {
-							updateRuntimeCombo();
-							
-							int size2 = runtimes.length;
-							for (int i = 0; i < size2; i++) {
-								if (runtimes[i].equals(originalRuntime))
-									runtimeCombo.select(i);
-							}
-						}
-					}
-				});
-			}
-
-			public void runtimeAdded(final IRuntime runtime2) {
-				Display.getDefault().syncExec(new Runnable() {
-					public void run() {
-						if (runtimeCombo != null && !runtimeCombo.isDisposed()) {
-							updateRuntimeCombo();
-							
-							int size2 = runtimes.length;
-							for (int i = 0; i < size2; i++) {
-								if (runtimes[i].equals(originalRuntime))
-									runtimeCombo.select(i);
-							}
-						}
-					}
-				});
-			}
-
-			public void runtimeRemoved(IRuntime runtime2) {
-				Display.getDefault().syncExec(new Runnable() {
-					public void run() {
-						if (runtimeCombo != null && !runtimeCombo.isDisposed()) {
-							updateRuntimeCombo();
-							
-							int size2 = runtimes.length;
-							for (int i = 0; i < size2; i++) {
-								if (runtimes[i].equals(originalRuntime))
-									runtimeCombo.select(i);
-							}
-						}
-					}
-				});
-			}
-		};
-	}
-	protected SelectionListener runtimeComboSelectionListener(final Hyperlink link) {
-		return (new SelectionListener() {
-			public void widgetSelected(SelectionEvent e) {
-				try {
-					if (updating)
-						return;
-					updating = true;
-					IRuntime newRuntime = runtimes[runtimeCombo.getSelectionIndex()];
-					executeCommand(new SetServerRuntimeCommand(serverWc, newRuntime));
-					link.setEnabled(newRuntime != null && ServerUIPlugin.hasWizardFragment(RuntimeUtils.getRuntimeTypeId(newRuntime)));
-					updating = false;
-				} catch (Exception ex) {
-					// ignore
-				}
-			}
-			public void widgetDefaultSelected(SelectionEvent e) {
-				widgetSelected(e);
-			}
-		});
-	}
-	
-	protected void updateRuntimeCombo() {
-		IRuntimeType runtimeType = serverWc.getServerType().getRuntimeType();
-		runtimes = ServerUIPlugin.getRuntimes(runtimeType);
-		
-		if (SocketUtil.isLocalhost(serverWc.getHost())) {
-			List<IRuntime> runtimes2 = new ArrayList<IRuntime>();
-			int size = runtimes.length;
-			for (int i = 0; i < size; i++) {
-				IRuntime runtime2 = runtimes[i];
-				if (!runtime2.isStub())
-					runtimes2.add(runtime2);
-			}
-			runtimes = new IRuntime[runtimes2.size()];
-			runtimes2.toArray(runtimes);
-		}
-		
-		int size = runtimes.length;
-		String[] items = new String[size];
-		for (int i = 0; i < size; i++)
-			items[i] = runtimes[i].getName();
-		
-		runtimeCombo.setItems(items);
-	}
-	
 
 	protected void editRuntime(IRuntime runtime) {
 		IRuntimeWorkingCopy runtimeWorkingCopy = runtime.createWorkingCopy();
