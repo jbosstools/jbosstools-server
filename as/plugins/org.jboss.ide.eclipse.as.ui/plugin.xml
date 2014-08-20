@@ -210,21 +210,6 @@
       </contexts>
    </extension>
 
-   <extension point="org.eclipse.ui.popupMenus">
-	<objectContribution
-       adaptable="true"
-       id="org.jboss.ide.eclipse.as.ui.popups.makeDeployable.contrib"
-       nameFilter="*"
-       objectClass="org.eclipse.core.resources.IResource">
-      <action
-         id="org.jboss.ide.eclipse.as.ui.popups.makeDeployable.action"
-         label="Make Publishable"
-         icon="$nl$/icons/publish.gif"
-         menubarPath="additions"
-      class="org.jboss.ide.eclipse.as.ui.actions.DeployAction">
-      </action>
-   </objectContribution>
-</extension>
    <extension
          point="org.eclipse.ui.console.consolePatternMatchListeners">
       <consolePatternMatchListener
@@ -823,5 +808,84 @@
        </serverEditorOverviewPageModifier>
     </extension>
 
-   
+   <extension point="org.eclipse.core.expressions.propertyTesters">
+    <propertyTester
+          class="org.jboss.ide.eclipse.as.ui.actions.DeployablePropertyTester"
+          id="org.jboss.ide.eclipse.as.ui.actions.DeployablePropertyTester"
+          namespace="org.jboss.ide.eclipse.as.ui"
+          properties="deployable"
+          type="org.eclipse.core.resources.IResource">
+    </propertyTester>
+ </extension>
+ 
+ <extension
+         point="org.eclipse.ui.commands">
+      	<command
+            	categoryId="org.eclipse.ui.category.file"
+            	description="%MakeDeployable"
+            	id="org.jboss.ide.eclipse.as.ui.actions.deploy"
+            	name="%MakeDeployable">
+      	</command>
+      	<command
+            	categoryId="org.eclipse.ui.category.file"
+            	description="%MakeUndeployable"
+            	id="org.jboss.ide.eclipse.as.ui.actions.undeploy"
+            	name="%MakeUndeployable">
+      	</command>
+ </extension>
+ 
+ <extension
+       point="org.eclipse.ui.handlers">
+       <handler
+             class="org.jboss.ide.eclipse.as.ui.actions.DeployHandler"
+             commandId="org.jboss.ide.eclipse.as.ui.actions.deploy">
+             <activeWhen>
+				<with variable="selection">
+					<iterate ifEmpty="false" operator="and">
+						<adapt type="org.eclipse.core.resources.IResource">
+							<test property="org.jboss.ide.eclipse.as.ui.deployable" />
+						</adapt>
+					</iterate>
+				</with>
+             </activeWhen>
+       </handler>
+       <handler
+             class="org.jboss.ide.eclipse.as.ui.actions.UndeployHandler"
+             commandId="org.jboss.ide.eclipse.as.ui.actions.undeploy">
+             <activeWhen>
+				<with variable="selection">
+					<iterate ifEmpty="false" operator="and">
+						<adapt type="org.eclipse.core.resources.IResource">
+							<not>								
+								<test property="org.jboss.ide.eclipse.as.ui.deployable" />
+							</not>
+						</adapt>
+					</iterate>
+				</with>
+             </activeWhen>
+       </handler>
+</extension>
+
+<extension point="org.eclipse.ui.menus">
+	<menuContribution
+	   allPopups="false"
+	   locationURI="popup:org.eclipse.jdt.ui.PackageExplorer?before=additions">
+	<command
+       commandId="org.jboss.ide.eclipse.as.ui.actions.deploy"
+       icon="icons/publish.gif"
+       id="org.jboss.ide.eclipse.as.ui.actions.Deploy"
+       label="%MakeDeployable"
+       style="push">
+	   <visibleWhen checkEnabled="true" />
+	</command>
+	<command
+       commandId="org.jboss.ide.eclipse.as.ui.actions.undeploy"
+       icon="icons/unpublish.gif"
+       id="org.jboss.ide.eclipse.as.ui.actions.Undeploy"
+       label="%MakeUndeployable"
+       style="push">
+	   <visibleWhen checkEnabled="true" />
+	</command>
+</menuContribution>
+</extension>
 </plugin>

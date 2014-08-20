@@ -1,6 +1,6 @@
 /**
  * JBoss by Red Hat
- * Copyright 2006-2009, Red Hat Middleware, LLC, and individual contributors as indicated
+ * Copyright 2006-2014, Red Hat Middleware, LLC, and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import org.eclipse.core.commands.AbstractHandler;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -32,7 +35,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.action.IAction;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -53,8 +56,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
-import org.eclipse.ui.IObjectActionDelegate;
-import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
@@ -73,79 +75,40 @@ import org.jboss.ide.eclipse.as.ui.Messages;
  * @author Rob Stryker
  *
  */
-public class DeployAction implements IObjectActionDelegate {
+public class DeployHandler extends AbstractHandler {
 
-	protected ISelection selection;
-	private Shell shell;
+	protected Shell shell;
 	
-	public DeployAction() {
-	}
-
-	public void selectionChanged(IAction action, ISelection selection) {
-		this.selection = selection;
-		action.setEnabled(verifyEnablement());
-		action.setText(getText(verifyType()));
-	}
-
-	protected boolean verifyEnablement() {
-		if( selection instanceof IStructuredSelection ) {
-			IStructuredSelection sel = (IStructuredSelection)selection;
-			if( sel.isEmpty())
-				return false;
-			Iterator i = sel.iterator();
-			while(i.hasNext())
-				if( !(i.next() instanceof IResource ))
-					return false;
-		}
-		return true;
-	}
-
-	protected String getText(boolean type) {
-		if( type )
-			return Messages.ActionDelegateMakeUndeployable;
-		return Messages.ActionDelegateMakeDeployable;
+//	protected String getText(boolean type) {
+//		if( type )
+//			return Messages.ActionDelegateMakeUndeployable;
+//		return Messages.ActionDelegateMakeDeployable;
+//	}
+	
+	public Object execute(ExecutionEvent event) throws ExecutionException {
+		shell = HandlerUtil.getActiveShell(event);
+		ISelection selection = HandlerUtil.getCurrentSelection(event);
+		makeDeployable(selection);
+		return null;
 	}
 	
-	// True if we want to unpublish, false if we want to publish
-	protected boolean verifyType() {
-		if( selection instanceof IStructuredSelection ) {
-			IStructuredSelection sel = (IStructuredSelection)selection;
-			if( sel.isEmpty())
-				return false;
-			Iterator i = sel.iterator();
-			Object o;
-			while(i.hasNext()) {
-				o = i.next();
-				if( !(o instanceof IResource) || SingleDeployableFactory.findModule(((IResource)o).getFullPath()) == null)
-					return false;
-			}
-		}
-		return true;
-	}
-
-	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
-		if(targetPart!=null && targetPart.getSite()!=null) {
-			shell = targetPart.getSite().getShell();
-		}
-	}
-
-	public void run(IAction action) {
-		if( verifyType())
-			makeUndeployable();
-		else
-			makeDeployable();
-	}
-	
-	protected void makeDeployable() {
+	protected void makeDeployable(ISelection selection) {
 		IStructuredSelection sel2 = (IStructuredSelection)selection;
 		Object[] objs = sel2.toArray();
 		IModule[] modules = new IModule[objs.length];
 		HashSet<IProject> alreadyDeployable = new HashSet<IProject>();
 		for( int i = 0; i < objs.length; i++ ) {
-			IProject p = ((IResource)objs[i]).getProject();
-			IModule[] mods = ServerUtil.getModules(p);
-			if( mods != null && mods.length > 0 && ModuleCoreNature.isFlexibleProject(p))
-				alreadyDeployable.add(p);
+			IProject p=null;
+			if(objs[i] instanceof IResource){
+				p = ((IResource)objs[i]).getProject();
+			}else if(objs[i] instanceof IJavaProject){
+				p = ((IJavaProject)objs[i]).getProject();
+			}
+			if(p != null){
+				IModule[] mods = ServerUtil.getModules(p);
+				if( mods != null && mods.length > 0 && ModuleCoreNature.isFlexibleProject(p))
+					alreadyDeployable.add(p);
+			}
 		}
 		
 		if( alreadyDeployable.size() > 0 ) {
@@ -154,11 +117,16 @@ public class DeployAction implements IObjectActionDelegate {
 		}
 		
 		for( int i = 0; i < objs.length; i++ ) {
-			SingleDeployableFactory.makeDeployable(((IResource)objs[i]).getFullPath());
-			modules[i] = SingleDeployableFactory.findModule(((IResource)objs[i]).getFullPath());
+			if(objs[i] instanceof IResource){
+				SingleDeployableFactory.makeDeployable(((IResource)objs[i]).getFullPath());
+				modules[i] = SingleDeployableFactory.findModule(((IResource)objs[i]).getFullPath());
+			}else if(objs[i] instanceof IJavaProject){
+				SingleDeployableFactory.makeDeployable(((IJavaProject)objs[i]).getPath());
+				modules[i] = SingleDeployableFactory.findModule(((IJavaProject)objs[i]).getPath());
+			}
 		}
 		
-		tryToPublish();
+		tryToPublish(selection);
 	}
 
 	private boolean showAreYouSureDialog(HashSet<IProject> set) {
@@ -174,17 +142,21 @@ public class DeployAction implements IObjectActionDelegate {
 		return ret;
 	}
 	
-	protected void makeUndeployable() {
+	protected void makeUndeployable(ISelection selection) {
 		IStructuredSelection sel2 = (IStructuredSelection)selection;
 		Object[] objs = sel2.toArray();
 		ArrayList<IPath> paths = new ArrayList<IPath>();
-		for( int i = 0; i < objs.length; i++ )
-			if(objs[i] instanceof IResource )
+		for( int i = 0; i < objs.length; i++ ){
+			if(objs[i] instanceof IResource ){
 				paths.add(((IResource)objs[i]).getFullPath());
+			}else if(objs[i] instanceof IJavaProject ){
+				paths.add(((IJavaProject)objs[i]).getPath());
+			}
+		}
 		new UndeployFromServerJob(paths).schedule();
 	}
 	
-	protected void tryToPublish() {
+	protected void tryToPublish(ISelection selection) {
 		IServer[] deployableServersAsIServers = ServerConverter.getDeployableServersAsIServers();
 		if(deployableServersAsIServers.length==0) {
 			MessageDialog.openInformation(shell, 

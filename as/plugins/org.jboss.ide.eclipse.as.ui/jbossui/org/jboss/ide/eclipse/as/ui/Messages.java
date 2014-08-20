@@ -128,8 +128,6 @@ public class Messages extends NLS {
 
 	/* Action Delegate */
 
-	public static String ActionDelegateMakeDeployable;
-	public static String ActionDelegateMakeUndeployable;
 	public static String ActionDelegateDeployableServersNotFoundTitle;
 	public static String ActionDelegateDeployableServersNotFoundDesc;
 	public static String ActionDelegateCannotPublish;
