@@ -14,12 +14,6 @@ import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.operations.IUndoableOperation;
-import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -32,7 +26,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
@@ -51,13 +44,14 @@ import org.eclipse.wst.server.ui.editor.ServerEditorOverviewPageModifier;
 import org.eclipse.wst.server.ui.internal.ContextIds;
 import org.eclipse.wst.server.ui.internal.Messages;
 import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
-import org.eclipse.wst.server.ui.internal.Trace;
 import org.eclipse.wst.server.ui.internal.command.SetServerRuntimeCommand;
 import org.eclipse.wst.server.ui.internal.editor.OverviewEditorPart;
 import org.eclipse.wst.server.ui.internal.wizard.TaskWizard;
 import org.eclipse.wst.server.ui.internal.wizard.WizardTaskUtil;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel.ServerProfile;
 
 /**
  * The large majority of this class has been copied and modified from the 
@@ -125,10 +119,21 @@ public class AddRuntimeComboOverviewPageModifier extends
 			runtimeCombo.setLayoutData(data);
 			updateRuntimeCombo();
 			
-			int size = runtimes.length;
-			for (int i = 0; i < size; i++) {
-				if (runtimes[i].equals(runtime))
-					runtimeCombo.select(i);
+			if( runtime == null ) {
+				if( !requiresRuntime()) {
+					// we dont require, and found is -1, so select the last item (No Runtime)
+					String[] items = runtimeCombo.getItems();
+					if( items.length > 0 )
+						runtimeCombo.select(items.length-1);
+				}
+			} else {
+				int size = runtimes.length;
+				for (int i = 0; i < size; i++) {
+					if (runtimes[i].equals(runtime)) { 
+						runtimeCombo.select(i);
+						break;
+					}
+				}
 			}
 			
 			runtimeCombo.addSelectionListener(runtimeComboSelectionListener(link));
@@ -211,8 +216,19 @@ public class AddRuntimeComboOverviewPageModifier extends
 					if (updating)
 						return;
 					updating = true;
-					IRuntime newRuntime = runtimes[runtimeCombo.getSelectionIndex()];
-					executeCommand(new SetServerRuntimeCommand(serverWc, newRuntime));
+					int selIndex = runtimeCombo.getSelectionIndex();
+					IRuntime newRuntime = selIndex < runtimes.length ? runtimes[selIndex] : null;
+					
+					// are they both null
+					boolean bothNull = ( newRuntime == null && serverWc.getRuntime() == null );
+					// Which one is not null
+					IRuntime notNull = (newRuntime == null ? serverWc.getRuntime() : newRuntime);
+					// Which one is not equal to notNull
+					IRuntime notNotNull = (notNull == newRuntime ? serverWc.getRuntime() : newRuntime);
+					// if the values are equal, do not execute the command, as no change has been made
+					if(!( bothNull || notNull.equals(notNotNull)) ){
+						executeCommand(new SetServerRuntimeCommand(serverWc, newRuntime));
+					}
 					link.setEnabled(newRuntime != null && ServerUIPlugin.hasWizardFragment(RuntimeUtils.getRuntimeTypeId(newRuntime)));
 					updating = false;
 				} catch (Exception ex) {
@@ -242,10 +258,15 @@ public class AddRuntimeComboOverviewPageModifier extends
 		}
 		
 		int size = runtimes.length;
-		String[] items = new String[size];
+		boolean requiresRuntime = requiresRuntime();
+		int size2 = size + (requiresRuntime ? 0 : 1);
+		String[] items = new String[size2];
 		for (int i = 0; i < size; i++)
 			items[i] = runtimes[i].getName();
-		
+		if( !requiresRuntime ) {
+			// Add a "no runtime" option
+			items[size2-1] = "(No Runtime)";
+		}
 		runtimeCombo.setItems(items);
 	}
 	
@@ -282,6 +303,16 @@ public class AddRuntimeComboOverviewPageModifier extends
 		wizard.setForcePreviousAndNextButtons(true);
 		WizardDialog dialog = new WizardDialog(runtimeCombo.getShell(), wizard);
 		return dialog.open();
+	}
+	
+	
+	private boolean requiresRuntime() {
+		String currentProfile = ServerProfileModel.getProfile(serverWc, ServerProfileModel.DEFAULT_SERVER_PROFILE);
+		ServerProfile sp = ServerProfileModel.getDefault().getProfile(serverWc.getServerType().getId(), currentProfile);
+		boolean requires = ServerProfileModel.getDefault().profileRequiresRuntime(serverWc.getServerType().getId(), 
+				sp.getId());
+		return requires;
+
 	}
 	
 }

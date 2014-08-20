@@ -51,7 +51,6 @@ import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.DeploymentTypeUIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.DeploymentTypeUIUtil.EditServerWizardBehaviourCallback;
 import org.jboss.ide.eclipse.as.ui.editor.DeploymentTypeUIUtil.ICompletable;
@@ -60,6 +59,7 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IServerProfileInitializ
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel.ServerProfile;
 import org.jboss.ide.eclipse.as.wtp.ui.profile.ProfileUI;
+import org.jboss.ide.eclipse.as.wtp.ui.util.FormDataUtility;
 import org.jboss.tools.usage.event.UsageEventType;
 import org.jboss.tools.usage.event.UsageReporter;
 
@@ -277,7 +277,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		runtimeWrap.setLayout(new FormLayout());
 		
 		requiresRuntimeLabel = new Label(runtimeWrap, SWT.WRAP);
-		FormData requiresRuntimeLabelData = UIUtil.createFormData2(0, 15, null, 0, 0,5,100,-5);
+		FormData requiresRuntimeLabelData = FormDataUtility.createFormData2(0, 15, null, 0, 0,5,100,-5);
 		requiresRuntimeLabelData.width = 300;
 		requiresRuntimeLabel.setLayoutData(requiresRuntimeLabelData);
 		
@@ -285,7 +285,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		if( runtime == null && !runtimeForbidden()) {
 			useRuntimeButton = new Button(runtimeWrap, SWT.CHECK);
 			useRuntimeButton.setText("Assign a runtime to this server");
-			FormData useRuntimeButtonData = UIUtil.createFormData2(requiresRuntimeLabel, 5, null, 0, 0,5,100,-5);
+			FormData useRuntimeButtonData = FormDataUtility.createFormData2(requiresRuntimeLabel, 5, null, 0, 0,5,100,-5);
 			useRuntimeButton.setLayoutData(useRuntimeButtonData);
 			
 			useRuntimeButton.addSelectionListener(new SelectionAdapter() {
@@ -302,7 +302,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 			if( runtimeNamesWithNew.length > 0 ) {
 				runtimeComboChanged();
 			}
-			FormData runtimeComboData = UIUtil.createFormData2(useRuntimeButton, 5, null, 0, 0,5,50,0);
+			FormData runtimeComboData = FormDataUtility.createFormData2(useRuntimeButton, 5, null, 0, 0,5,50,0);
 			runtimeCombo.setLayoutData(runtimeComboData);
 
 			runtimeCombo.addSelectionListener(new SelectionAdapter() {
@@ -341,10 +341,10 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 			
 			Label comboLabel = new Label(this, SWT.NONE);
 			comboLabel.setText("Profile: ");
-			FormData labelData = UIUtil.createFormData2(0, 12, null, 0, 0,5,null,0);
+			FormData labelData = FormDataUtility.createFormData2(0, 12, null, 0, 0,5,null,0);
 			comboLabel.setLayoutData(labelData);
 			
-			FormData groupData = UIUtil.createFormData2(0, 10, null, 0, comboLabel,5,null,0);
+			FormData groupData = FormDataUtility.createFormData2(0, 10, null, 0, comboLabel,5,null,0);
 			profileCombo.setLayoutData(groupData);
 			
 			profileCombo.addSelectionListener(new SelectionAdapter() {
@@ -358,7 +358,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 			});
 			
 			profileDescriptionLabel = new Label(this, SWT.WRAP);
-			FormData profileDescriptionLabelData = UIUtil.createFormData2(profileCombo, 5, profileCombo, 100, 0,5,100,-5);
+			FormData profileDescriptionLabelData = FormDataUtility.createFormData2(profileCombo, 5, profileCombo, 100, 0,5,100,-5);
 			profileDescriptionLabelData.width = 300;
 			profileDescriptionLabel.setLayoutData(profileDescriptionLabelData);
 			initializeWidgetDefaults();
@@ -463,16 +463,27 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 				getTaskModel().putObject(TASK_CUSTOM_RUNTIME, null);
 				rt = runtimes[runtimeSelIndex];
 			}
-			if( rt != null && s instanceof IServerWorkingCopy) {
-				((IServerWorkingCopy)s).setRuntime(rt);
-			}
+			fireSetRuntimeCommand((IServerWorkingCopy)s, rt);
 		} else {
 			getTaskModel().putObject(TASK_CUSTOM_RUNTIME, null);
 			getTaskModel().putObject(TaskModel.TASK_RUNTIME, null);
-			((IServerWorkingCopy)s).setRuntime(null);
+			fireSetRuntimeCommand((IServerWorkingCopy)s, null);
 		}
 		updateErrorMessage();
 	}
+	
+	// Fire the delayed setting of the runtime
+	private void fireSetRuntimeCommand(IServerWorkingCopy server, final IRuntime rt) {
+		IServerModeUICallback o = (IServerModeUICallback)getTaskModel().getObject(WORKING_COPY_CALLBACK);
+		o.execute(new ServerCommand(server, "Set Runtime"){
+			public void execute() {
+				server.setRuntime(rt);
+			}
+			public void undo() {
+			}
+		});
+	}
+	
 	
 	protected void setProfile(ServerProfile sp) {
 		selectedProfile = sp;
