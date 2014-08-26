@@ -137,7 +137,7 @@ public class JVMConnectionProvider extends AbstractConnectionProvider
 			working = newIt.next();
 			if( newModel.get(working) == null ) {
 				// removed
-				list.add(newModel.get(working));
+				list.add(connections.get(working));
 			}
 		}
 		return (JvmConnectionWrapper[]) list.toArray(new JvmConnectionWrapper[list.size()]);

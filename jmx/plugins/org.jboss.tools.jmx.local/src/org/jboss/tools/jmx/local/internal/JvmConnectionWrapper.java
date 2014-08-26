@@ -200,12 +200,12 @@ public class JvmConnectionWrapper implements IConnectionWrapper, HasName, ImageP
 	}
 
 	protected void fireConnectionChanged() {
-		DefaultConnectionProvider provider = (DefaultConnectionProvider) getProvider();
+		JVMConnectionProvider provider = (JVMConnectionProvider) getProvider();
 		provider.fireChanged(this);
 	}
 
 	public IConnectionProvider getProvider() {
-		return ExtensionManager.getProvider(DefaultConnectionProvider.PROVIDER_ID);
+		return ExtensionManager.getProvider(JVMConnectionProvider.PROVIDER_ID);
 	}
 
 	/**

@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.StructuredViewer;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
@@ -81,6 +82,7 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
         return null;
     }
 
+    private ProviderCategory[] categories;
     
     static class ProviderCategory {
     	private String id;
@@ -98,7 +100,11 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
      * 
      * @return
      */
-    private Object[] getTopLevelElements() {
+    private synchronized Object[] getTopLevelElements() {
+    	if( this.categories != null ) {
+    		return this.categories;
+    	}
+    	
 		// Return the providers
     	IConnectionProvider[] providers = ExtensionManager.getProviders();
     	Set<String> categoryIds = new TreeSet<String>();
@@ -116,6 +122,7 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
     		}
     	}
     	ArrayList<Object> toReturn = new ArrayList<Object>();
+    	this.categories = (ProviderCategory[]) categories.toArray(new ProviderCategory[categories.size()]);
     	toReturn.addAll(categories);
     	toReturn.addAll(unaffiliated);
     	return (Object[]) toReturn.toArray(new Object[toReturn.size()]);
@@ -227,8 +234,23 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
         return true;
     }
 
+    private synchronized ProviderCategory findCategory(String type) {
+    	if( categories != null ) {
+    		for( int i = 0; i < categories.length; i++ ) {
+    			if( categories[i].getId().equals(type))
+    				return categories[i];
+    		}
+    	}
+    	return null;
+    }
+    
 	public void connectionAdded(IConnectionWrapper connection) {
-		fireRefresh(connection, true);
+		IConnectionProvider provider = connection.getProvider();
+		if( provider instanceof IConnectionCategory ) {
+			String type = ((IConnectionCategory)provider).getCategoryId();
+			ProviderCategory parent = findCategory(type);
+			addConnection(connection, parent == null ? viewer.getInput() : parent);
+		}
 	}
 
 	public void connectionChanged(IConnectionWrapper connection) {
@@ -236,7 +258,7 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 	}
 
 	public void connectionRemoved(IConnectionWrapper connection) {
-		fireRefresh(connection, true);
+		removeConnection(connection);
 	}
 
 	private void fireRefresh(final IConnectionWrapper connection, final boolean full) {
@@ -247,6 +269,31 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 						viewer.refresh();
 					else
 						((StructuredViewer)viewer).refresh(connection);
+				}
+			}
+		});
+	}
+	private void addConnection(final IConnectionWrapper connection, final Object parent) {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				if( viewer != null && !viewer.getControl().isDisposed()) {
+					if(!(viewer instanceof StructuredViewer))
+						viewer.refresh();
+					else
+						((TreeViewer)viewer).add(parent, connection);
+				}
+			}
+		});
+	}
+
+	private void removeConnection(final IConnectionWrapper connection) {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				if( viewer != null && !viewer.getControl().isDisposed()) {
+					if(!(viewer instanceof StructuredViewer))
+						viewer.refresh();
+					else
+						((TreeViewer)viewer).remove(connection);
 				}
 			}
 		});
