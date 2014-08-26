@@ -18,7 +18,7 @@ import de.schlichtherle.io.AbstractArchiveDetector;
 import de.schlichtherle.io.ArchiveDetector;
 import de.schlichtherle.io.ArchiveException;
 import de.schlichtherle.io.archive.spi.ArchiveDriver;
-import de.schlichtherle.io.archive.zip.Zip32Driver;
+import de.schlichtherle.io.archive.zip.JarDriver;
 
 /**
  * Accesses raw files with the truezip filesystem
@@ -205,7 +205,7 @@ public class TrueZipUtil {
 
 	public static class JarArchiveDetector extends AbstractArchiveDetector {
 		public ArchiveDriver getArchiveDriver(String arg0) {
-			return new Zip32Driver();
+			return new JarDriver();
 		}
 
 	}

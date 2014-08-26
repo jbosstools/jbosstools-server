@@ -34,6 +34,7 @@ import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.jboss.ide.eclipse.archives.core.util.internal.TrueZipUtil;
+import org.jboss.ide.eclipse.archives.core.util.internal.TrueZipUtil.JarArchiveDetector;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilterProvider;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
@@ -408,7 +409,7 @@ public class LocalZippedModulePublishRunner extends ModuleResourceUtil {
 					results.addAll(Arrays.asList(publishChanges(deltas[i].getAffectedChildren(), root, filter, monitor)));
 				}
 			} else if( dKind == IModuleResourceDelta.REMOVED) {
-				de.schlichtherle.io.File f = getFileInArchive(root, 
+				de.schlichtherle.io.File f = getDestinationJar(root, 
 						resource.getModuleRelativePath().append(
 								resource.getName()));
 				boolean b = f.deleteAll();
@@ -430,14 +431,14 @@ public class LocalZippedModulePublishRunner extends ModuleResourceUtil {
 				IModuleFile mf = (IModuleFile)children[i];
 				java.io.File source = getFile(mf);
 				if( source != null ) {
-					de.schlichtherle.io.File destination = getFileInArchive(root, mf.getModuleRelativePath().append(mf.getName()));
+					de.schlichtherle.io.File destination = getDestinationJar(root, mf.getModuleRelativePath().append(mf.getName()));
 					boolean b = new de.schlichtherle.io.File(source, ArchiveDetector.NULL).archiveCopyAllTo(destination);
 					if( !b )
 						results.add(generateCopyFailStatus(source, destination));
 				}
 				monitor.worked(100);
 			} else if( children[i] instanceof IModuleFolder ) {
-				de.schlichtherle.io.File destination = getFileInArchive(root, children[i].getModuleRelativePath().append(children[i].getName()));
+				de.schlichtherle.io.File destination = getDestinationJar(root, children[i].getModuleRelativePath().append(children[i].getName()));
 				destination.mkdirs();
 				IModuleFolder mf = (IModuleFolder)children[i];
 				results.addAll(Arrays.asList(copy(root, mf.members(), monitor)));
@@ -454,6 +455,20 @@ public class LocalZippedModulePublishRunner extends ModuleResourceUtil {
 	}
 	private IStatus generateCopyFailStatus(java.io.File source, java.io.File destination) {
 		return new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, "Copy of " + source + " to " + destination + " has failed");//$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+	}
+	
+	private de.schlichtherle.io.File getDestinationJar(de.schlichtherle.io.File root, IPath relative) {
+		while(relative.segmentCount() > 0 ) {
+			if( relative.segmentCount() == 1 ) {
+				root = new de.schlichtherle.io.File(root, 
+						relative.segment(0), JarArchiveDetector.ALL);
+			} else {
+				root = new de.schlichtherle.io.File(root, 
+						relative.segment(0), ArchiveDetector.NULL);
+			}
+			relative = relative.removeFirstSegments(1);
+		}
+		return root;
 	}
 	
 	private de.schlichtherle.io.File getFileInArchive(de.schlichtherle.io.File root, IPath relative) {
