@@ -888,4 +888,48 @@
 	</command>
 </menuContribution>
 </extension>
+<extension point="org.eclipse.ui.menus">
+	<menuContribution
+	   allPopups="false"
+	   locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?before=additions">
+	<command
+       commandId="org.jboss.ide.eclipse.as.ui.actions.deploy"
+       icon="icons/publish.gif"
+       id="org.jboss.ide.eclipse.as.ui.actions.Deploy"
+       label="%MakeDeployable"
+       style="push">
+	   <visibleWhen checkEnabled="true" />
+	</command>
+	<command
+       commandId="org.jboss.ide.eclipse.as.ui.actions.undeploy"
+       icon="icons/unpublish.gif"
+       id="org.jboss.ide.eclipse.as.ui.actions.Undeploy"
+       label="%MakeUndeployable"
+       style="push">
+	   <visibleWhen checkEnabled="true" />
+	</command>
+</menuContribution>
+</extension>
+<extension point="org.eclipse.ui.menus">
+	<menuContribution
+	   allPopups="false"
+	   locationURI="popup:org.eclipse.ui.views.ResourceNavigator?before=additions">
+	<command
+       commandId="org.jboss.ide.eclipse.as.ui.actions.deploy"
+       icon="icons/publish.gif"
+       id="org.jboss.ide.eclipse.as.ui.actions.Deploy"
+       label="%MakeDeployable"
+       style="push">
+	   <visibleWhen checkEnabled="true" />
+	</command>
+	<command
+       commandId="org.jboss.ide.eclipse.as.ui.actions.undeploy"
+       icon="icons/unpublish.gif"
+       id="org.jboss.ide.eclipse.as.ui.actions.Undeploy"
+       label="%MakeUndeployable"
+       style="push">
+	   <visibleWhen checkEnabled="true" />
+	</command>
+</menuContribution>
+</extension>
 </plugin>
