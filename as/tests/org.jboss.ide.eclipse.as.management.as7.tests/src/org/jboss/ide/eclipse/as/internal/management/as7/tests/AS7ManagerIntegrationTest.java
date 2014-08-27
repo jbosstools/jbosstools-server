@@ -23,6 +23,8 @@ import org.jboss.ide.eclipse.as.internal.management.as7.tests.utils.AS7ManagerTe
 import org.jboss.ide.eclipse.as.internal.management.as7.tests.utils.AssertUtility;
 import org.jboss.ide.eclipse.as.internal.management.as7.tests.utils.ParameterUtils;
 import org.jboss.ide.eclipse.as.internal.management.as7.tests.utils.StartupUtility;
+import org.jboss.ide.eclipse.as.internal.management.as7.tests.utils.AS7ManagerTestUtils.MockAS7ManagementDetails;
+import org.jboss.ide.eclipse.as.management.core.IAS7ManagementDetails;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7DeploymentState;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerServiceProxy;
@@ -112,8 +114,8 @@ public class AS7ManagerIntegrationTest extends AssertUtility {
 		}
 		// Make sure a server is up
 		assertTrue("There is no server at " + AS7ManagerTestUtils.LOCALHOST +
-				" that listens on port " + AS7ManagerTestUtils.MGMT_PORT,
-				AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.LOCALHOST, AS7ManagerTestUtils.MGMT_PORT));
+				" that listens on port " + util.getPort(),
+				AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.LOCALHOST, util.getPort()));
 		service = service2;
 	}
 
@@ -127,7 +129,7 @@ public class AS7ManagerIntegrationTest extends AssertUtility {
 		File warFile = AS7ManagerTestUtils.getWarFile(AS7ManagerTestUtils.MINIMALISTIC_WAR);
 		try {
 			
-			service.deploySync(AS7ManagerTestUtils.createStandardDetails(), 
+			service.deploySync(createManagementDetails(), 
 					warFile.getName(), warFile, true, new NullProgressMonitor());
 
 			String response = AS7ManagerTestUtils.waitForRespose(
@@ -136,7 +138,7 @@ public class AS7ManagerIntegrationTest extends AssertUtility {
 					&& response.indexOf("minimalistic") >= 0);
 
 		} finally {
-			AS7ManagerTestUtils.quietlyUndeploy(warFile, service);
+			AS7ManagerTestUtils.quietlyUndeploy(warFile.getName(), service, createManagementDetails());
 		}
 	}
 
@@ -166,13 +168,13 @@ public class AS7ManagerIntegrationTest extends AssertUtility {
 		String deploymentName = "testDeployment";
 		File warFile = AS7ManagerTestUtils.getWarFile(AS7ManagerTestUtils.MINIMALISTIC_WAR);
 		try {
-			service.deploySync(AS7ManagerTestUtils.createStandardDetails(),
+			service.deploySync(createManagementDetails(),
 					deploymentName, warFile, true, new NullProgressMonitor());
-			JBoss7DeploymentState state = service.getDeploymentState(AS7ManagerTestUtils.createStandardDetails(), deploymentName);
+			JBoss7DeploymentState state = service.getDeploymentState(createManagementDetails(), deploymentName);
 			assertNotNull(state);
 			assertTrue(areEqual(state, JBoss7DeploymentState.STARTED));
 		} finally {
-			AS7ManagerTestUtils.quietlyUndeploy(deploymentName, service);
+			AS7ManagerTestUtils.quietlyUndeploy(deploymentName, service, createManagementDetails());
 		}
 	}
 
@@ -182,12 +184,12 @@ public class AS7ManagerIntegrationTest extends AssertUtility {
 		String deploymentName = "testDeployment";
 		File warFile = AS7ManagerTestUtils.getWarFile(AS7ManagerTestUtils.MINIMALISTIC_WAR);
 		try {
-			service.addDeployment(AS7ManagerTestUtils.createStandardDetails(), deploymentName, warFile, new NullProgressMonitor());
-			JBoss7DeploymentState state = service.getDeploymentState(AS7ManagerTestUtils.createStandardDetails(), deploymentName);
+			service.addDeployment(createManagementDetails(), deploymentName, warFile, new NullProgressMonitor());
+			JBoss7DeploymentState state = service.getDeploymentState(createManagementDetails(), deploymentName);
 			assertNotNull(state);
 			assertTrue(areEqual(state, JBoss7DeploymentState.STOPPED));
 		} finally {
-			AS7ManagerTestUtils.quietlyRemove(deploymentName, service);
+			AS7ManagerTestUtils.quietlyRemove(deploymentName, service, createManagementDetails());
 		}
 	}
 
@@ -195,15 +197,20 @@ public class AS7ManagerIntegrationTest extends AssertUtility {
 	public void getErrorIfDeploymentIsNotDeployed() throws URISyntaxException, IOException, JBoss7ManangerException {
 		String deploymentName = "testDeployment";
 		try {
-			JBoss7DeploymentState state = service.getDeploymentState(AS7ManagerTestUtils.createStandardDetails(), deploymentName);
+			JBoss7DeploymentState state = service.getDeploymentState(createManagementDetails(), deploymentName);
 			assertEquals(state, JBoss7DeploymentState.NOT_FOUND);
 		} finally {
-			AS7ManagerTestUtils.quietlyUndeploy(deploymentName, service);
+			AS7ManagerTestUtils.quietlyUndeploy(deploymentName, service, createManagementDetails());
 		}
 	}
 
 	@Test
 	public void canGetServerState() throws JBoss7ManangerException {
-		assertEquals(JBoss7ServerState.RUNNING, service.getServerState(AS7ManagerTestUtils.createStandardDetails()));
+		assertEquals(JBoss7ServerState.RUNNING, service.getServerState(createManagementDetails()));
 	}
+	
+	public static IAS7ManagementDetails createManagementDetails() {
+		return new MockAS7ManagementDetails(AS7ManagerTestUtils.LOCALHOST, util.getPort());
+	}
+	
 }

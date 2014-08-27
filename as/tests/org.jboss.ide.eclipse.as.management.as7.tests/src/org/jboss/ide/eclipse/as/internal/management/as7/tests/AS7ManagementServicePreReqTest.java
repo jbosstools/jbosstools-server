@@ -34,9 +34,9 @@ public class AS7ManagementServicePreReqTest extends Assert {
 	@Test 
 	public void verifyCorrectService() {
 		assertNotNull(homeDir);
-		assertTrue(new Path(homeDir).toFile().exists());
+		assertTrue(homeDir + " does not exist.", new Path(homeDir).toFile().exists());
 		String rtType = ParameterUtils.serverHomeToRuntimeType.get(homeDir);
-		assertNotNull(rtType);
+		assertNotNull("runtime type for homedir " + homeDir + " is null", rtType);
 		
 		IJBoss7ManagerService service = AS7ManagerTestUtils.findService(rtType);
 		assertNotNull("Management Service for runtime type " + rtType + " not found.", service);

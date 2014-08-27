@@ -49,6 +49,7 @@ public class AS7ManagerTestUtils {
 	public static final String LOCALHOST = "localhost";
 	public static final int WEB_PORT = 8080;
 	public static final int MGMT_PORT = 9999;
+	
 
 	private static final String WAR_FOLDER = "/wars/";
 	private static final String BUNDLE_ID = "org.jboss.ide.eclipse.as.management.as7.tests";
@@ -73,23 +74,19 @@ public class AS7ManagerTestUtils {
 		return result;
 	}
 
-	public static void quietlyUndeploy(File file, IJBoss7ManagerService manager) {
-		quietlyUndeploy(file.getName(), manager);
-	}
-
-	public static void quietlyUndeploy(String name, IJBoss7ManagerService manager) {
+	public static void quietlyUndeploy(String name, IJBoss7ManagerService manager, IAS7ManagementDetails details) {
 		try {
-			waitUntilFinished(manager.undeploySync(createStandardDetails(), 
+			waitUntilFinished(manager.undeploySync(details, 
 					name, true, new NullProgressMonitor()));
 		} catch (Exception e) {
 			// ignore
 		}
 	}
 
-	public static void quietlyRemove(String name, IJBoss7ManagerService manager) {
+	public static void quietlyRemove(String name, IJBoss7ManagerService manager, IAS7ManagementDetails details) {
 		try {
 			waitUntilFinished(manager.removeDeployment(
-					createStandardDetails(), name, new NullProgressMonitor()));
+					details, name, new NullProgressMonitor()));
 		} catch (Exception e) {
 			// ignore
 		}

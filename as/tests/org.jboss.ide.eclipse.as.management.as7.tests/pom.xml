@@ -13,12 +13,15 @@
 		<!-- jbosstools.test.jre.7 defined in ../pom.xml so it's available to all tests -->
 		<jbosstools.test.jboss.home.7.0>${requirementsDirectory}/jboss-as-7.0.0.Final</jbosstools.test.jboss.home.7.0>
 		<jbosstools.test.jboss.home.7.1>${requirementsDirectory}/jboss-as-7.1.0.Final</jbosstools.test.jboss.home.7.1>
-		<jbosstools.test.jboss.home.8.0>${requirementsDirectory}/wildfly-8.0.0.Beta1</jbosstools.test.jboss.home.8.0>
+		<jbosstools.test.jboss.home.8.0>${requirementsDirectory}/wildfly-8.0.0.Final</jbosstools.test.jboss.home.8.0>
+		<jbosstools.test.jboss.home.8.1>${requirementsDirectory}/wildfly-8.1.0.Final</jbosstools.test.jboss.home.8.1>
 		<jbosstools.test.jboss.home.eap.6.0>${requirementsDirectory}/jboss-eap-6.0</jbosstools.test.jboss.home.eap.6.0>
 		<jbosstools.test.jboss.home.eap.6.1>${requirementsDirectory}/jboss-eap-6.1</jbosstools.test.jboss.home.eap.6.1>
+		<jbosstools.test.jboss.home.eap.6.2>${requirementsDirectory}/jboss-eap-6.2</jbosstools.test.jboss.home.eap.6.2>
+		<jbosstools.test.jboss.home.eap.6.3>${requirementsDirectory}/jboss-eap-6.3</jbosstools.test.jboss.home.eap.6.3>
 		<!-- skipPrivateRequirements is inherited from parent pom -->
 
-		<systemProperties> -Djbosstools.test.jre.7=${jbosstools.test.jre.7} -Djbosstools.test.jboss.home.7.0=${jbosstools.test.jboss.home.7.0} -Djbosstools.test.jboss.home.7.1=${jbosstools.test.jboss.home.7.1} -Djbosstools.test.jboss.home.8.0=${jbosstools.test.jboss.home.8.0} -Djbosstools.test.jboss.home.eap.6.0=${jbosstools.test.jboss.home.eap.6.0} -Djbosstools.test.jboss.home.eap.6.1=${jbosstools.test.jboss.home.eap.6.1} -Dorg.jboss.tools.tests.skipPrivateRequirements=${skipPrivateRequirements} </systemProperties>
+		<systemProperties> -Djbosstools.test.jre.7=${jbosstools.test.jre.7} -Djbosstools.test.jboss.home.7.0=${jbosstools.test.jboss.home.7.0} -Djbosstools.test.jboss.home.7.1=${jbosstools.test.jboss.home.7.1} -Djbosstools.test.jboss.home.8.0=${jbosstools.test.jboss.home.8.0} -Djbosstools.test.jboss.home.8.1=${jbosstools.test.jboss.home.8.1} -Djbosstools.test.jboss.home.eap.6.0=${jbosstools.test.jboss.home.eap.6.0} -Djbosstools.test.jboss.home.eap.6.1=${jbosstools.test.jboss.home.eap.6.1} -Djbosstools.test.jboss.home.eap.6.2=${jbosstools.test.jboss.home.eap.6.2} -Djbosstools.test.jboss.home.eap.6.3=${jbosstools.test.jboss.home.eap.6.3} -Dorg.jboss.tools.tests.skipPrivateRequirements=${skipPrivateRequirements} </systemProperties>
 	</properties>
 	<build>
 		<plugins>
@@ -71,7 +74,7 @@
 				<artifactId>maven-download-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>install-eap-6.0.0</id>
+						<id>install-eap-6.0.1</id>
 						<phase>pre-integration-test</phase>
 						<goals>
 							<goal>wget</goal>
@@ -84,27 +87,65 @@
 						</configuration>
 					</execution>
 					<execution>
-						<id>install-eap-6.1.0</id>
+						<id>install-eap-6.1.2</id>
 						<phase>pre-integration-test</phase>
 						<goals>
 							<goal>wget</goal>
 						</goals>
 						<configuration>
-							<url>http://download.devel.redhat.com/released/JBEAP-6/6.1.1/jboss-eap-6.1.1.zip</url>
-							<md5>d7abd98375b6ff9fb16581d688465207</md5>
+							<url>http://download.devel.redhat.com/released/JBEAP-6/6.1.2/jboss-eap-6.1.2.zip</url>
+							<md5>1c431e8ff2179a2dc10b8793b7505046</md5>
 							<unpack>true</unpack>
 							<skip>${skipPrivateRequirements}</skip>
 						</configuration>
 					</execution>
 					<execution>
-						<id>install-wildfly-8.0.0.Beta1</id>
+						<id>install-eap-6.2.4</id>
 						<phase>pre-integration-test</phase>
 						<goals>
 							<goal>wget</goal>
 						</goals>
 						<configuration>
-							<url>http://download.jboss.org/wildfly/8.0.0.Beta1/wildfly-8.0.0.Beta1.zip</url>
-							<md5>1485c119c1740eaf3ce3e1d5c7b66098</md5>
+							<url>http://download.devel.redhat.com/released/JBEAP-6/6.2.4/jboss-eap-6.2.4-full-build.zip</url>
+							<md5>180e27786c84328e67fbb10fbeed6af8</md5>
+							<unpack>true</unpack>
+							<skip>${skipPrivateRequirements}</skip>
+						</configuration>
+					</execution>
+					<execution>
+						<id>install-eap-6.3.0</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>wget</goal>
+						</goals>
+						<configuration>
+							<url>http://download.devel.redhat.com/released/JBEAP-6/6.3.0/jboss-eap-6.3.0.zip</url>
+							<md5>f1ce6b83cd117bc612e9d15ff64575dd</md5>
+							<unpack>true</unpack>
+							<skip>${skipPrivateRequirements}</skip>
+						</configuration>
+					</execution>
+					<execution>
+						<id>install-wildfly-8.0.0.Final</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>wget</goal>
+						</goals>
+						<configuration>
+							<url>http://download.jboss.org/wildfly/8.0.0.Final/wildfly-8.0.0.Final.zip</url>
+							<md5>9df208525e7c8c03bd592a6a0f554bea</md5>
+							<unpack>true</unpack>
+						</configuration>
+					</execution>
+					<execution>
+						<id>install-wildfly-8.1.0.Final</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>wget</goal>
+						</goals>
+						<configuration>
+							<url>http://download.jboss.org/wildfly/8.1.0.Final/wildfly-8.1.0.Final.zip</url>
+							<md5>b7df11f92ee80155702a351aee4b003b</md5>
 							<unpack>true</unpack>
 						</configuration>
 					</execution>

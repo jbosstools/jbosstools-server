@@ -12,11 +12,14 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.wst.server.core.IRuntimeType;
+import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.ThreadUtils;
+import org.jboss.ide.eclipse.as.internal.management.as7.tests.utils.AS7ManagerTestUtils.MockAS7ManagementDetails;
+import org.jboss.ide.eclipse.as.management.core.IAS7ManagementDetails;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
@@ -82,11 +85,21 @@ public class StartupUtility extends Assert {
 	private String homeDir, runtimeType;
 	private Process process;
 	private boolean started = false;
+	private int port;
+	
 	public StartupUtility() {
 	}
 	public void setHomeDir(String homeDir) {
 		this.homeDir = homeDir;
 		setRuntimeType(ParameterUtils.serverHomeToRuntimeType.get(homeDir));
+		setPort(ManagementPortTestUtility.getManagementPort(homeDir));
+		assertTrue(getPort() != -1);
+	}
+	protected void setPort(int port) {
+		this.port = port;
+	}
+	public int getPort() {
+		return port;
 	}
 	public String getHomeDir() {
 		return homeDir;
@@ -140,7 +153,7 @@ public class StartupUtility extends Assert {
 					Thread.sleep(1000);
 				} catch(InterruptedException ie){}
 				try {
-					state = service.getServerState(AS7ManagerTestUtils.createStandardDetails());
+					state = service.getServerState(createConnectionDetails());
 					ex = null;
 				} catch(JBoss7ManangerException ioe) {
 					ex = ioe;
@@ -165,12 +178,12 @@ public class StartupUtility extends Assert {
 		Exception ex = null;
 		try {
 			boolean isListening = (AS7ManagerTestUtils.isListening(
-					AS7ManagerTestUtils.LOCALHOST, AS7ManagerTestUtils.MGMT_PORT));
+					AS7ManagerTestUtils.LOCALHOST, getPort()));
 			assertTrue(isListening);
-			service.stop(AS7ManagerTestUtils.createStandardDetails());
+			service.stop(createConnectionDetails());
 			ThreadUtils.sleepFor(3000);
 			isListening = (AS7ManagerTestUtils.isListening(
-					AS7ManagerTestUtils.LOCALHOST, AS7ManagerTestUtils.MGMT_PORT));
+					AS7ManagerTestUtils.LOCALHOST, getPort()));
 			assertFalse(isListening);
 		} catch(Exception e) {
 			ex = e;
@@ -184,4 +197,8 @@ public class StartupUtility extends Assert {
 		}
 	}
 
+	protected IAS7ManagementDetails createConnectionDetails() {
+		return new MockAS7ManagementDetails(AS7ManagerTestUtils.LOCALHOST, getPort());
+	}
+	
 }
