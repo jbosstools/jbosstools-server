@@ -155,20 +155,23 @@ public class StandardRSEStartLaunchDelegate extends
 				String s = null;
 				for (int i = 0; i < out.length; i++) {
 					s = out[i].toString();
-					if( s.startsWith(ECHO_KEY_DISCOVER_PID)) {
+					if( s.contains(ECHO_KEY_DISCOVER_PID)) {
 						// pid found. Let's save it,
 						int lastColon = s.lastIndexOf(DELIMETER);
 						String pid = s.substring(lastColon+1);
-						behavior.putSharedData(IDeployableServerBehaviorProperties.PROCESS_ID, pid);
-						
-						// Let's send another command to wait for the pid to terminate
-						// Then we can ensure that the server is marked as 'stopped' if the server
-						// terminates on its own somehow. 
-						IServer ser = behavior.getServer();
-						ServerShellModel model = RSEHostShellModel.getInstance().getModel(ser);
-						IHostShell startupShell = model.getStartupShell();
-						String waitTerminated = "wait " + pid + "; echo \"" + ECHO_KEY_PID_TERMD + DELIMETER + ser.getId() + DELIMETER + "\" $?";
-						startupShell.writeToShell(waitTerminated);
+						// make sure it's an integer
+						if(pid.trim().matches("-?\\d+")) {
+							behavior.putSharedData(IDeployableServerBehaviorProperties.PROCESS_ID, pid);
+							
+							// Let's send another command to wait for the pid to terminate
+							// Then we can ensure that the server is marked as 'stopped' if the server
+							// terminates on its own somehow. 
+							IServer ser = behavior.getServer();
+							ServerShellModel model = RSEHostShellModel.getInstance().getModel(ser);
+							IHostShell startupShell = model.getStartupShell();
+							String waitTerminated = "wait " + pid + "; echo \"" + ECHO_KEY_PID_TERMD + DELIMETER + ser.getId() + DELIMETER + "\" $?";
+							startupShell.writeToShell(waitTerminated);
+						}
 					}
 					if( s.startsWith(ECHO_KEY_PID_TERMD)) {
 						((ControllableServerBehavior)behavior).setServerStopped();
