@@ -22,7 +22,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	PublishRemovalMarkerDefectTest.class,
 	UnchangedUtilRestartedDefectTest.class,
 	UnchangedJarRestartedDefectTest.class,
-	UtilInWebPathDefectTest.class
+	UtilInWebPathDefectTest.class,
+	NonAsciiInUtilJarPublishDefectTest.class
 })
 public class PublishDefectSuite {
 }

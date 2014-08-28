@@ -79,7 +79,13 @@ public class CustomPublishController extends StandardFileSystemPublishController
 	// The methods here typically ask a server for its actual publish information, 
 	//and since I'm not testing server.publish() but rather on a controller instance dirrectly,
 	//the server has no knowledge of the module, and I must mock this a bit. 
+	@Override
 	public LocalZippedModulePublishRunner createZippedRunner(IModule m, IPath p) {
+		return createZippedRunner(new IModule[]{m}, p);
+	}
+	
+	@Override
+	protected LocalZippedModulePublishRunner createZippedRunner(IModule[] m, IPath p) {
 		return new LocalZippedModulePublishRunner(getServer(), m,p, 
 				getModulePathFilterProvider()) {
 			@Override
@@ -99,6 +105,7 @@ public class CustomPublishController extends StandardFileSystemPublishController
 					return false;
 				return b; 
 			}
+			@Override
 			public IModule[] getChildModules(IModule[] parent) {
 				ServerDelegate sd = ((ServerDelegate)getServer().loadAdapter(ServerDelegate.class, null));
 				return sd.getChildModules(parent);

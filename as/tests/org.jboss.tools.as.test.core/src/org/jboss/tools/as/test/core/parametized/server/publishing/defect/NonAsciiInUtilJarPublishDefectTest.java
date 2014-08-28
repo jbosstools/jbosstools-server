@@ -10,16 +10,18 @@
  ******************************************************************************/ 
 package org.jboss.tools.as.test.core.parametized.server.publishing.defect;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.internal.ModuleResourceDelta;
 import org.eclipse.wst.server.core.model.IModuleResource;
-import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.tools.as.core.server.controllable.subsystems.internal.StandardFileSystemPublishController;
@@ -45,24 +47,18 @@ import org.junit.runners.Parameterized.Parameters;
  *
  */
 @RunWith(value = Parameterized.class)
-public class UnchangedJarRestartedDefectTest extends AbstractPublishingTest {
+public class NonAsciiInUtilJarPublishDefectTest extends AbstractPublishingTest {
 	@Parameters
 	public static Collection<Object[]> params() {
-		Object[] servers = new String[] {  IJBossToolingConstants.SERVER_AS_71 };
-		Object[] zipOption = new String[]{ServerParameterUtils.UNZIPPED};
-		Object[] defaultDeployLoc = new String[]{ServerParameterUtils.DEPLOY_META};
-		Object[] perModOverrides = new String[]{ServerParameterUtils.DEPLOY_PERMOD_DEFAULT};
-		Object[][] allOptions = new Object[][] {
-				servers, zipOption, defaultDeployLoc, perModOverrides
-		};
+		Object[] zipOption = new String[]{ServerParameterUtils.UNZIPPED, ServerParameterUtils.ZIPPED};
+		Object[][] allOptions = new Object[][] {zipOption};
 		return MatrixUtils.toMatrix(allOptions);
 	}
 
 	private IModule[] module;
 	
-	public UnchangedJarRestartedDefectTest(String serverType, String zip,
-			String deployLoc, String perMod) {
-		super(serverType, zip, deployLoc, perMod);
+	public NonAsciiInUtilJarPublishDefectTest(String zip) {
+		super(IJBossToolingConstants.SERVER_AS_71 , zip, ServerParameterUtils.DEPLOY_META, ServerParameterUtils.DEPLOY_PERMOD_DEFAULT);
 	}
 	
 	@Before @Override
@@ -77,7 +73,7 @@ public class UnchangedJarRestartedDefectTest extends AbstractPublishingTest {
 	
 	@Override
 	protected void createProjects() throws Exception {
-		module = createUtilInWebInEarModule();
+		module = createUtilInWebModule();
 		addModuleToServer(module[0]);
 	}
 
@@ -89,7 +85,8 @@ public class UnchangedJarRestartedDefectTest extends AbstractPublishingTest {
 		
 		IModule[] web = new IModule[]{module[0]};
 		IModule[] utilInWeb = new IModule[]{module[0], module[1]};
-		
+		setUnderlyingVersion(1);
+		setUtilUnderlyingVersion(1);
 		
 		/*
 		 * Publish all 3 (ear,  ear/web,  ear/web/lib) with full publishes
@@ -104,50 +101,15 @@ public class UnchangedJarRestartedDefectTest extends AbstractPublishingTest {
 		assertEquals(resultWeb, IServer.PUBLISH_STATE_NONE);
 		assertEquals(resultUtil, IServer.PUBLISH_STATE_NONE);
 		
-		
-		// Verify the .dodeploy marker is created
+		// verify the util jar exists
 		IPath depPath = controller.getDeployPathController().getDeployDirectory(web);
-		IPath depFolder = depPath.removeLastSegments(1);
-		String name = depPath.lastSegment();
-		String nameDoDeployMarker = name + ".dodeploy";
-		String nameDeployedMarker = name + ".deployed";
-		String s = depPath.toOSString();
-		assertTrue(new Path(s).toFile().exists());
-		assertEquals(testIsZip(), new Path(s).toFile().isFile());
-		assertTrue(depFolder.append(nameDoDeployMarker).toFile().exists());
+		IPath utilJar = depPath.append("WEB-INF/lib/util.jar");
 		
-		// Pretend the server picked it up
-		depFolder.append(nameDoDeployMarker).toFile().delete();
-		depFolder.append(nameDeployedMarker).toFile().createNewFile();
+		// If we're not zipped, the util jar should exist in fs
+		if( !isZipped()) 
+			assertTrue(utilJar.toFile().exists());
 		
-		
-		// Create a delta for an arbitrary file in the web project 
-		IModuleResource toChange = MockModuleUtil.createMockResources(
-				new IPath[]{new Path("w")}, new IPath[0], getUnderlying().toFile())[0];
-		IModuleResourceDelta[] delta = new IModuleResourceDelta[]{
-				new ModuleResourceDelta(toChange, IModuleResourceDelta.CHANGED)
-		};
-		// Store in our mock publish controller
-		controller.setDeltaMap(web, delta);
-		
-		
-		/*
-		 * Publish again, simulating an incremental publish with only a change to one file in the web project. 
-		 */
-		controller.publishStart(new NullProgressMonitor());
-		controller.publishServer(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
-		resultWeb = controller.publishModule(IServer.PUBLISH_INCREMENTAL, ServerBehaviourDelegate.CHANGED, web, new NullProgressMonitor());
-		resultUtil = controller.publishModule(IServer.PUBLISH_INCREMENTAL, ServerBehaviourDelegate.NO_CHANGE, utilInWeb, new NullProgressMonitor());
-		controller.publishFinish(new NullProgressMonitor());
-		
-		// Verify .dodeploy marker is NOT added
-		assertFalse(depFolder.append(nameDoDeployMarker).toFile().exists());
-	}
-
-	
-
-	private boolean testIsZip() {
-		return (param_zip.equals(ServerParameterUtils.ZIPPED));
+		verifyListRelativePath(utilJar, Arrays.asList(new IPath[]{new Path("笨.txt")}), true);
 	}
 	
 	/*
@@ -158,6 +120,12 @@ public class UnchangedJarRestartedDefectTest extends AbstractPublishingTest {
 		IPath underlying = ASMatrixTests.getDefault().getStateLocation().append("underlying.txt");
 		return underlying;
 	}
+
+	private IPath getUtilUnderlying() {
+		IPath underlying = ASMatrixTests.getDefault().getStateLocation().append("笨.txt");
+		return underlying;
+	}
+
 	private IPath setUnderlyingVersion(int v) throws Exception {
 		IPath underlying = getUnderlying();
 		underlying.toFile().getParentFile().mkdirs();
@@ -165,44 +133,31 @@ public class UnchangedJarRestartedDefectTest extends AbstractPublishingTest {
 		return underlying;
 	}
 
+	private IPath setUtilUnderlyingVersion(int v) throws Exception {
+		IPath underlying = getUtilUnderlying();
+		underlying.toFile().getParentFile().mkdirs();
+		IOUtil.setContents(underlying.toFile(), "version" + v);
+		return underlying;
+	}
+
 	private IPath[] getUtilLeafPaths() {
 		return new IPath[]{
-				new Path("Clazz1.class")
+				new Path("笨.txt")
 		};
 	}
 	private IPath[] getWebLeafPaths() {
 		IPath[] leafs = new IPath[] {
-				new Path("w"),
-				new Path("x"),
-				new Path("y"),
-				new Path("z"),
-				new Path("a/a1"),
-				new Path("a/a2"),
-				new Path("a/q1"),
-				new Path("a/q2"),
-				new Path("b/b1"),
-				new Path("b/b2"),
-				new Path("b/b3"),
-				new Path("b/b4"),
-				new Path("c/y1"),
-				new Path("c/y2.png"),
-				new Path("c/y3.jpg"),
-				new Path("c/y4.pdf"),
-				new Path("d/F/f1.jar"),
-				new Path("d/F/f2.txt"),
-				new Path("d/F/f3.txt"),
-				new Path("d/F/f4.txt")
+				new Path("w.txt"),
 		};
 		return leafs;
 	}
 	
-	private MockModule[] createUtilInWebInEarModule() throws Exception {
+	private MockModule[] createUtilInWebModule() throws Exception {
 		IPath underlying = setUnderlyingVersion(1);
+		IPath utilUnderlying = setUtilUnderlyingVersion(1);
 		
 		MockModule web = MockModuleUtil.createMockWebModule();
 		MockModule util = MockModuleUtil.createMockUtilModule();
-		util.setBinary(true);
-		
 		web.addChildModule(util, "WEB-INF/lib/util.jar");
 		
 		
@@ -212,9 +167,20 @@ public class UnchangedJarRestartedDefectTest extends AbstractPublishingTest {
 		web.setExists(true);
 
 		IPath[] utilLeafs = getUtilLeafPaths();
-		IModuleResource[] utilR = MockModuleUtil.createMockResources(utilLeafs, new IPath[0], underlying.toFile());
+		IModuleResource[] utilR = MockModuleUtil.createMockResources(utilLeafs, new IPath[0], utilUnderlying.toFile());
 		util.setMembers(utilR);
 		util.setExists(true);
 		return new MockModule[]{ web, util};
 	}
+	
+
+
+	protected void verifyListRelativePath(IPath root, List<IPath> list, boolean exists) {
+		ArrayList<IPath> list2 = new ArrayList<IPath>();
+		for(Iterator<IPath> i = list.iterator(); i.hasNext(); ) {
+			list2.add(root.append(i.next()));
+		}
+		super.verifyList(root, list2, exists);
+	}
+	
 }
