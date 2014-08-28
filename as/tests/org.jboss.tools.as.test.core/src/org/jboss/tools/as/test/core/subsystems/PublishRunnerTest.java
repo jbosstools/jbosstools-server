@@ -359,6 +359,12 @@ public class PublishRunnerTest extends TestCase {
 			touch.add(path);
 			return null;
 		}
+
+		@Override
+		public boolean exists(IPath path, IProgressMonitor monitor)
+				throws CoreException {
+			return false;
+		}
 	}	
 	
 	private IPath[] getLeafs1() {

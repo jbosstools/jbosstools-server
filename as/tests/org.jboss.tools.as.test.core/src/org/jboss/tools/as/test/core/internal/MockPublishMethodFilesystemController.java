@@ -92,4 +92,10 @@ public class MockPublishMethodFilesystemController extends AbstractSubsystemCont
 		getDelegate().makeDirectoryIfRequired(path, monitor);
 		return Status.OK_STATUS;
 	}
+
+	@Override
+	public boolean exists(IPath path, IProgressMonitor monitor)
+			throws CoreException {
+		return path.toFile().exists();
+	}
 }

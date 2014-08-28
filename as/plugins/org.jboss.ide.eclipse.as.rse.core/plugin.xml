@@ -122,6 +122,7 @@
           <subsystem system="publish" subsystem="publish.management"/>
           <subsystem system="serverDetails" subsystem="serverDetails.rse"/>
           <subsystem system="shutdown" subsystem="shutdown.default"/> <!-- mgmt shutdown -->
+          <subsystem system="filesystem" subsystem="filesystem.rse"/>
        </serverProfile>
     </extension>
 	

@@ -326,6 +326,7 @@ public class ServerProfileModel {
 		}
 		
 		private void addSystemMapping(String system, String subsystem) throws CoreException {
+			System.out.println("Adding " + system + " -> " + subsystem + " for server " + serverType + " with profile " + id);
 			String val = subsystems.get(system);
 			if( val != null )
 				throw new CoreException(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, 

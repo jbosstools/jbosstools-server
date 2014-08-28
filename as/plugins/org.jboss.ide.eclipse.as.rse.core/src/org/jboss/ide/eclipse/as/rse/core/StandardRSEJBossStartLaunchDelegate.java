@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.as.rse.core;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -21,8 +22,10 @@ import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
+import org.jboss.ide.eclipse.as.core.util.RemotePath;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IFilesystemController;
 
 /**
  * This is a launch configuration delegate for use with rse jboss servers. 
@@ -35,6 +38,21 @@ public class StandardRSEJBossStartLaunchDelegate extends
 	StandardRSEStartLaunchDelegate {
 	protected static final String DELIMETER = ":";
 	protected static final String ECHO_KEY_DISCOVER_PID = "JBTOOLS_SERVER_START_CMD";
+	
+	@Override
+	protected void beforeVMRunner(ILaunchConfiguration configuration, String mode,
+			ILaunch launch, IProgressMonitor monitor) throws CoreException {
+		// Verify the remote server home exists
+		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(configuration);
+		String serverHome = RSEUtils.getRSEHomeDir(beh.getServer());
+		IPath remoteHome = new RemotePath(serverHome, RSEUtils.getRemoteSystemSeparatorCharacter(beh.getServer()));
+		IFilesystemController fs = (IFilesystemController)beh.getController(IFilesystemController.SYSTEM_ID);
+		if( !fs.exists(remoteHome, monitor)) {
+			throw new CoreException(new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, "The remote server's home directory does not exist: " + serverHome));
+		}
+			
+	}
+	
 	@Override
 	protected void actualLaunch(ILaunchConfiguration configuration,
 			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {

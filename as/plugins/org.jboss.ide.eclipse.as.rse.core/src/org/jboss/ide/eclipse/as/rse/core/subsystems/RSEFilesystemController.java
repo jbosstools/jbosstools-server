@@ -186,5 +186,25 @@ public class RSEFilesystemController extends AbstractSubsystemController impleme
 	public IFileService getFileService() throws CoreException {
 		return getFileServiceSubSystem().getFileService();
 	}
+
+	@Override
+	public boolean exists(final IPath absolutePath, IProgressMonitor monitor)
+			throws CoreException {
+		
+		final Boolean[] boolRet = new Boolean[1];
+		boolRet[0] = null;
+		
+		NamedRunnableWithProgress run = new NamedRunnableWithProgress("Verify remote file exists: " + absolutePath.toOSString()) {
+			public Object run(IProgressMonitor monitor) throws CoreException,
+					SystemMessageException, RuntimeException {
+				IRemoteFile rf = getFileServiceSubSystem().getRemoteFileObject(absolutePath.toOSString(), new NullProgressMonitor());
+				boolRet[0] = rf.exists();
+				return Status.OK_STATUS;
+			}
+		};
+
+		RemoteCallWrapperUtility.wrapRemoteCall(getServer(), run, absolutePath.toOSString(), "failed to verify the existence of {0} on host {1}", true, monitor);
+		return boolRet[0];
+	}
 }
 

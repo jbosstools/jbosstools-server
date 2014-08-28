@@ -76,6 +76,15 @@ public interface IFilesystemController extends ISubsystemController {
 	public boolean isFile(IPath path, IProgressMonitor monitor) throws CoreException;
 
 	/**
+	 * Returns true if the given absolute path exists.
+	 * 
+	 * @param path
+	 * @param monitor
+	 * @return
+	 * @throws CoreException
+	 */
+	public boolean exists(IPath path, IProgressMonitor monitor) throws CoreException;
+	/**
 	 * Make a directory for this absolute path 
 	 * 
 	 * @param dir

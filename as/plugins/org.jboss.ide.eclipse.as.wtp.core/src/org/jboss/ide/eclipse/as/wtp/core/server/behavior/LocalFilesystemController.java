@@ -369,5 +369,9 @@ public class LocalFilesystemController extends AbstractSubsystemController imple
 		File tmp = absolutePath.toFile();
 		return tmp.exists() && tmp.isFile();
 	}
+
+	public boolean exists(IPath path, IProgressMonitor monitor) throws CoreException {
+		return path.toFile().exists();
+	}
 	
 }
