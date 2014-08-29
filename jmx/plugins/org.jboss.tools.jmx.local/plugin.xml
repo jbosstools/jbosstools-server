@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
-   <extension-point id="jvmConnectionHandler" name="jvmConnectionHandler" schema="schema/jvmConnectionHandler.exsd"/>
+   <extension-point id="jvmConnectionLabelProvider" name="jvmConnectionLabelProvider" schema="schema/jvmConnectionLabelProvider.exsd"/>
+   
    <extension
          point="org.jboss.tools.jmx.core.MBeanServerConnectionProvider">
       <connectionProvider
@@ -44,6 +45,33 @@
             </or>
          </enablement>
       </actionProvider>
+   </extension>
+   <extension
+         point="org.jboss.tools.jmx.ui.providerUI">
+      <providerUI
+            editable="false"
+            icon="image/container.gif"
+            id="org.jboss.tools.jmx.local.JVMConnectionProvider"
+            name="Local Java Process">
+         <connectionLabelProvider
+               class="org.jboss.tools.jmx.local.internal.ui.JVMConnectionLabelProvider">
+         </connectionLabelProvider>
+      </providerUI>
+   </extension>
+   <extension
+         point="org.jboss.tools.jmx.local.jvmConnectionLabelProvider">
+      <labelProvider
+            class="org.jboss.tools.jmx.local.internal.ui.MavenLabelProvider"
+            weight="5">
+      </labelProvider>
+      <labelProvider
+            class="org.jboss.tools.jmx.local.internal.ui.EclipseProcessLabelProvider"
+            weight="5">
+      </labelProvider>
+      <labelProvider
+            class="org.jboss.tools.jmx.local.internal.ui.JavaProcessLabelProvider"
+            weight="10">
+      </labelProvider>
    </extension>
 
 </plugin>

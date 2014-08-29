@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.jmx.local.internal;
+package org.jboss.tools.jmx.local;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -19,9 +19,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
@@ -82,16 +84,22 @@ public class ProcessInformationStore {
 	private Map<Integer, String> loadProcessStore(IProgressMonitor monitor) {
 
 		Map<Integer, String> tmp = new HashMap<Integer, String>();
-		
-		String path = String.format("%s%sbin%s", System.getProperty("java.home"), File.separator, File.separator);
-		List<String> cmds = new ArrayList<String>();
-		cmds.add("jps");
-		cmds.add("-v");
-		ProcessBuilder pb = new ProcessBuilder(cmds);
-		pb.directory(new File(path));
+		String javaHome = System.getProperty("java.home");
+		IPath jHomePath = new Path(javaHome);
+		File jHome = jHomePath.toFile();
+		String binFolder = null;
+		File jps = null;
+		if( jHome.getName().equalsIgnoreCase("jre")) {
+			jps = jHomePath.removeLastSegments(1).append("bin").append("jps").toFile();
+			binFolder = jps.getParentFile().getAbsolutePath();
+		}
+		if( !jps.exists()) {
+			jps = jHomePath.append("bin").append("jps").toFile();
+			binFolder = jHomePath.append("bin").toFile().getAbsolutePath();
+		}
 		BufferedReader br = null;
 		try {
-			Process p = pb.start();
+			Process p = Runtime.getRuntime().exec(jps.getAbsolutePath() + " -v");
 			br = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String line = "";
 			while (!monitor.isCanceled() && (line = br.readLine()) != null) {
@@ -113,6 +121,7 @@ public class ProcessInformationStore {
 			return tmp;
 		} catch (Exception ex) {
 			// we don't want to scare the user with this
+			ex.printStackTrace();
 		} finally {
 			if (br != null) {
 				try {

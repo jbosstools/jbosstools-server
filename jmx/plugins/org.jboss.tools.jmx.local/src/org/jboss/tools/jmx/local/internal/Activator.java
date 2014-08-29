@@ -17,6 +17,7 @@ import org.jboss.tools.foundation.core.plugin.log.StatusFactory;
 import org.jboss.tools.foundation.ui.plugin.BaseUIPlugin;
 import org.jboss.tools.foundation.ui.plugin.BaseUISharedImages;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmModel;
+import org.jboss.tools.jmx.local.ProcessInformationStore;
 import org.osgi.framework.BundleContext;
 
 

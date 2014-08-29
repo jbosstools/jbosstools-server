@@ -70,10 +70,6 @@ public class MBeanExplorerLabelProvider extends LabelProvider {
     }
 
 	public String getText(Object obj) {
-		return MBeanExplorerLabelProvider.getText2(obj);
-	}
-
-	public static String getText2(Object obj) {
 		if (obj instanceof HasName) {
 			HasName hasName = (HasName) obj;
 			return hasName.getName();
@@ -91,9 +87,8 @@ public class MBeanExplorerLabelProvider extends LabelProvider {
 		}
 		if( obj instanceof IConnectionWrapper ) {
 			IConnectionProvider provider = ((IConnectionWrapper)obj).getProvider();
-			return provider.getName((IConnectionWrapper)obj);
+			return getLabelForConnection(provider, ((IConnectionWrapper)obj));
 		}
-
 		if( obj instanceof DelayProxy ) {
 			return Messages.Loading;
 		}
@@ -140,6 +135,34 @@ public class MBeanExplorerLabelProvider extends LabelProvider {
 		return null;
 	}
 	
+	private Image getImageForConnection(IConnectionProvider provider, IConnectionWrapper connection) {
+		ConnectionProviderUI ui = UIExtensionManager.getConnectionProviderUI(provider.getId());
+		if( ui != null ) {
+			if( ui.hasLabelProvider()) {
+				Image i = ui.getImageForConnection(connection);
+				if( i != null ) {
+					return i;
+				}
+			}
+		}
+		// As a fallback, use the default image for the provider
+		return getImageForProvider(provider);
+	}
+
+	private String getLabelForConnection(IConnectionProvider provider, IConnectionWrapper connection) {
+		ConnectionProviderUI ui = UIExtensionManager.getConnectionProviderUI(provider.getId());
+		if( ui != null ) {
+			if( ui.hasLabelProvider()) {
+				String s = ui.getTextForConnection(connection);
+				if( s != null ) {
+					return s;
+				}
+			}
+		}
+		// As a fallback, use the default image for the provider
+		return provider.getName(connection);
+	}
+	
 
 	private Image getImageForCategory(ProviderCategory provider) {
 		ConnectionCategoryUI ui = UIExtensionManager.getConnectionCategoryUI(provider.getId());
@@ -173,7 +196,7 @@ public class MBeanExplorerLabelProvider extends LabelProvider {
 		
 		if( obj instanceof IConnectionWrapper ) {
 			IConnectionProvider provider = ((IConnectionWrapper)obj).getProvider();
-			return getImageForProvider(provider);
+			return getImageForConnection(provider, ((IConnectionWrapper)obj));
 		}
 		if( obj instanceof DelayProxy ) {
 			return null;

@@ -8,20 +8,19 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.jmx.local;
+package org.jboss.tools.jmx.local.ui;
 
-import org.jboss.tools.jmx.jvmmonitor.core.IJvm;
+import org.eclipse.swt.graphics.Image;
+import org.jboss.tools.jmx.jvmmonitor.core.IActiveJvm;
 
-public interface IJvmConnectionHandler {
-	/**
-	 * Does this connection handler already 
-	 * provide a connection that duplicates this Jvm?
-	 * 
-	 *  If yes, org.jboss.tools.jmx.local should ignore 
-	 *  changes to this JVM and not provide a connection.
-	 *  
-	 * @param jvm
-	 * @return True if already handled, false if jmx.local should handle
-	 */
-	public boolean handles(IJvm jvm);
+/**
+ * An interface representing an object capable of 
+ * customizing the user-visible strings and icons for 
+ * a given jvm connection.
+ */
+public interface JVMLabelProviderDelegate {
+	public abstract boolean accepts(IActiveJvm jvm);
+	public abstract Image getImage(IActiveJvm jvm);
+	public abstract String getDisplayString(IActiveJvm jvm);
+
 }

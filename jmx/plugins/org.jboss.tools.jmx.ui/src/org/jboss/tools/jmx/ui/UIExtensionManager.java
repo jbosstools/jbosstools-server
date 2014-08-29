@@ -11,6 +11,7 @@
 package org.jboss.tools.jmx.ui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.CoreException;
@@ -23,9 +24,12 @@ import org.eclipse.core.runtime.InvalidRegistryObjectException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.jboss.tools.jmx.core.IConnectionWrapper;
 
 /**
  * Extension Manager for UI extensions
@@ -77,13 +81,61 @@ public class UIExtensionManager {
 	public static class ConnectionProviderUI extends ConnectionCategoryUI {
 		String id, name, icon;
 		boolean editable;
+		IConfigurationElement labelProviderElement;
+		ILabelProvider labelProvider;
 		IConfigurationElement[] wizardPages;
 		ImageDescriptor imageDescriptor;
 		public ConnectionProviderUI(IConfigurationElement element) {
 			super(element);
 			editable = Boolean.parseBoolean(element.getAttribute(EDITABLE));
-			wizardPages = element.getChildren();
+			IConfigurationElement[] children = element.getChildren();
+			ArrayList<IConfigurationElement> wizardPageList = new ArrayList<IConfigurationElement>();
+			labelProviderElement = null;
+			for( int i = 0; i < children.length; i++ ) {
+				if( children[i].getName().equals("wizardPage")) { //$NON-NLS-1$
+					wizardPageList.add(children[i]);
+				} else if( children[i].getName().equals("connectionLabelProvider")) { //$NON-NLS-1$
+					labelProviderElement = children[i];
+				}
+			}
+			wizardPages = (IConfigurationElement[]) wizardPageList.toArray(new IConfigurationElement[wizardPageList.size()]);
 		}
+		/**
+		 * Return true if the image can change
+		 * Return false if the image is static for this provider ui under all circumstances and can be cached
+		 * @return
+		 */
+		public boolean hasLabelProvider() {
+			return getLabelProvider() != null;
+		}
+		
+		public Image getImageForConnection(IConnectionWrapper connection) {
+			if( hasLabelProvider()) {
+				return getLabelProvider().getImage(connection);
+			}
+			return null;
+		}
+		
+		public String getTextForConnection(IConnectionWrapper connection) {
+			if( hasLabelProvider()) {
+				return getLabelProvider().getText(connection);
+			}
+			return null;
+		}
+		
+		private ILabelProvider getLabelProvider() {
+			if( labelProvider == null ) {
+				if( labelProviderElement != null ) {
+					try {
+						labelProvider = (ILabelProvider) labelProviderElement.createExecutableExtension(CLASS);
+					} catch(CoreException ce) {
+						JMXUIActivator.log(ce.getStatus());
+					}
+				}
+			}
+			return labelProvider;
+		}
+		
 		public boolean isEditable() {
 			return editable;
 		}
@@ -94,8 +146,7 @@ public class UIExtensionManager {
 					ConnectionWizardPage wp = (ConnectionWizardPage)wizardPages[i].createExecutableExtension(CLASS);
 					list.add(wp);
 				} catch( CoreException ce ) {
-					ce.printStackTrace();
-					// TODO LOG
+					JMXUIActivator.log(ce.getStatus());
 				}
 			}
 			return list.toArray(new ConnectionWizardPage[list.size()]);
@@ -108,6 +159,8 @@ public class UIExtensionManager {
 	private static void ensureLoaded() {
 		if( connectionUIElements == null ) {
 			loadConnectionUI();
+		}
+		if( connectionCategoryUIElements == null ) {
 			loadConnectionCategoryUI();
 		}
 	}
@@ -154,7 +207,7 @@ public class UIExtensionManager {
 		for (int i = 0; i < extensions.length; i++) {
 			IConfigurationElement elements[] = extensions[i].getConfigurationElements();
 			for (int j = 0; j < elements.length; j++) {
-				if( elements[i].getName().equals("providerCategoryUI")) { //$NON-NLS-1$
+				if( elements[j].getName().equals("providerCategoryUI")) { //$NON-NLS-1$
 					try {
 						pUI = new ConnectionCategoryUI(elements[j]);
 						map.put(pUI.getId(), pUI);
