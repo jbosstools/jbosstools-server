@@ -71,14 +71,14 @@ public class ModuleSlot {
 			IPath lay = new Path(layeredPaths[i].getAbsolutePath());
 			File layeredPath = new File(lay.append(getPath()).toOSString());
 			if( layeredPath.exists()) {
-				return getJarsFrom(layeredPath);
+				return getJarsFrom(layeredPath, modulesFolder);
 			}
 		}
 		return new IPath[0];
 	}
 
 	
-	private IPath[] getJarsFrom(File layeredPath) {
+	private IPath[] getJarsFrom(File layeredPath, IPath modulesFolder) {
 		ArrayList<IPath> list = new ArrayList<IPath>();
 		File[] children = layeredPath.listFiles();
 		for( int i = 0; i < children.length; i++ ) {
@@ -86,6 +86,15 @@ public class ModuleSlot {
 				list.add(new Path(children[i].getAbsolutePath()));
 			}
 		}
+		if( list.size() == 0 ) {
+			// Odds are high this is a module-alias, so we should check. 
+			File modulexml = new File(layeredPath, "module.xml");
+			String alias = new ModuleAliasUtil().getAlias(modulexml);
+			if( alias != null ) {
+				return new ModuleSlot(alias).getJars(modulesFolder);
+			}
+		}
+		
 		return (IPath[]) list.toArray(new IPath[list.size()]);
 	}
 }
