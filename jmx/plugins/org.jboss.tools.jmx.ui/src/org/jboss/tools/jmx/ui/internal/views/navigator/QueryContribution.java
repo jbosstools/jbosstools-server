@@ -99,7 +99,9 @@ public class QueryContribution {
 		}
 
 		// If I match, all my children and grandchildren must match
-		String elementAsString = MBeanExplorerLabelProvider.getText2(o);
+		MBeanExplorerLabelProvider tmpLabel = new MBeanExplorerLabelProvider();
+		String elementAsString = tmpLabel.getText(o);
+		tmpLabel.dispose();
 		if( elementAsString != null && filterText != null && elementAsString.contains(filterText)) {
 			recurseTrue(o, provider);
 			return true;

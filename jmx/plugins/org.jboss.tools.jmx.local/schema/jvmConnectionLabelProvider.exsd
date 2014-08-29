@@ -3,10 +3,13 @@
 <schema targetNamespace="org.jboss.tools.jmx.local" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.jboss.tools.jmx.local" id="jvmConnectionHandler" name="jvmConnectionHandler"/>
+         <meta.schema plugin="org.jboss.tools.jmx.local" id="jvmConnectionLabelProvider" name="jvmConnectionLabelProvider"/>
       </appInfo>
       <documentation>
-         The org.jboss.tools.jmx.local plugin helps detect new JVMs running on your local host, and provides JMX connections for them. In some situations, a different IConnectionProvider may already be providing connections for the same running process. This extension point allows another provider to declare it is in charge of a given IActiveJVM and that org.jboss.tools.jmx.local should ignore this specific connection. 
+         The local jvm connection allows other plugins to customize the user-visible
+   strings and icons for a given connection. The list of label providers will
+   be sorted  by weight. The list will be iterated until a label provider
+   returns a non-null result.
       </documentation>
    </annotation>
 
@@ -17,8 +20,8 @@
          </appInfo>
       </annotation>
       <complexType>
-         <sequence>
-            <element ref="jvmConnectionHandler"/>
+         <sequence minOccurs="1" maxOccurs="unbounded">
+            <element ref="labelProvider"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -47,16 +50,9 @@
       </complexType>
    </element>
 
-   <element name="jvmConnectionHandler">
+   <element name="labelProvider">
       <complexType>
-         <attribute name="id" type="string" use="required">
-            <annotation>
-               <documentation>
-                  
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="weight" type="string">
+         <attribute name="weight" type="string" use="required">
             <annotation>
                <documentation>
                   
@@ -69,7 +65,7 @@
                   
                </documentation>
                <appInfo>
-                  <meta.attribute kind="java" basedOn=":org.jboss.tools.jmx.local.IJvmConnectionHandler"/>
+                  <meta.attribute kind="java" basedOn=":org.jboss.tools.jmx.local.ui.JVMLabelProviderDelegate"/>
                </appInfo>
             </annotation>
          </attribute>

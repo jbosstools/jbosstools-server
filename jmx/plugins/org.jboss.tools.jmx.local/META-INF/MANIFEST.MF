@@ -16,7 +16,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.navigator;bundle-version="3.5.400"
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: org.jboss.tools.jmx.local
+Export-Package: org.jboss.tools.jmx.local,
+ org.jboss.tools.jmx.local.ui
 Bundle-ActivationPolicy: lazy
 Eclipse-LazyStart: true
 Import-Package: org.eclipse.ui.views.properties.tabbed

@@ -19,7 +19,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.jboss.tools.jmx.local.IJvmConnectionHandler;
+import org.jboss.tools.jmx.local.ui.JVMLabelProviderDelegate;
 
 public class JmxLocalExtensionManager {
 	private static JmxLocalExtensionManager instance;
@@ -30,63 +30,67 @@ public class JmxLocalExtensionManager {
 		return instance;
 	}
 	
-	
-	
-	private ArrayList<HandlerWrapper> handlers = null;
+	private ArrayList<WeightedLabelProvider> weightedLabelProviders = null;
 	public JmxLocalExtensionManager() {
-		loadJvmHandlers();
+		loadLabelProviders();
 	}
 	
 	/** The method used to load / instantiate the pollers */
-	public void loadJvmHandlers() {
-		handlers = new ArrayList<HandlerWrapper>();
+	public void loadLabelProviders() {
+		weightedLabelProviders = new ArrayList<WeightedLabelProvider>();
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		IConfigurationElement[] cf = registry.getConfigurationElementsFor(Activator.PLUGIN_ID, "jvmConnectionHandler"); //$NON-NLS-1$
+		IConfigurationElement[] cf = registry.getConfigurationElementsFor(Activator.PLUGIN_ID, "jvmConnectionLabelProvider"); //$NON-NLS-1$
 		for( int i = 0; i < cf.length; i++ ) {
-			HandlerWrapper sspt = new HandlerWrapper(cf[i]);
-			handlers.add(sspt);
+			WeightedLabelProvider sspt = new WeightedLabelProvider(cf[i]);
+			weightedLabelProviders.add(sspt);
 		}
 		// Sort
-		Collections.sort(handlers, new Comparator<HandlerWrapper>(){
-			public int compare(HandlerWrapper o1, HandlerWrapper o2) {
+		Collections.sort(weightedLabelProviders, new Comparator<WeightedLabelProvider>(){
+			public int compare(WeightedLabelProvider o1, WeightedLabelProvider o2) {
 				return o1.getWeight() - o2.getWeight();
 			}});
 	}
 	
-	public IJvmConnectionHandler[] getJvmConnectionHandlers() {
-		ArrayList<IJvmConnectionHandler> ret = new ArrayList<IJvmConnectionHandler>();
-		IJvmConnectionHandler h;
-		for( Iterator<HandlerWrapper> i = handlers.iterator(); i.hasNext(); ) {
-			h = i.next().getHandler();
+	public JVMLabelProviderDelegate[] getJvmConnectionLabelProviders() {
+		ArrayList<JVMLabelProviderDelegate> ret = new ArrayList<JVMLabelProviderDelegate>();
+		JVMLabelProviderDelegate h;
+		for( Iterator<WeightedLabelProvider> i = weightedLabelProviders.iterator(); i.hasNext(); ) {
+			h = i.next().getLabelProvider();
 			if( h != null )
 				ret.add(h);
 		}
-		return ret.toArray(new IJvmConnectionHandler[ret.size()]);
+		return ret.toArray(new JVMLabelProviderDelegate[ret.size()]);
 	}
 	
-	private static class HandlerWrapper {
+	private static class WeightedLabelProvider {
 		private IConfigurationElement el;
-		private IJvmConnectionHandler handler;
+		private JVMLabelProviderDelegate handler;
+		private int weight = Integer.MIN_VALUE;
 		private boolean loadFailed = false;
-		public HandlerWrapper(IConfigurationElement el) {
+		
+		public WeightedLabelProvider(IConfigurationElement el) {
 			this.el = el;
 		}
 		public int getWeight() {
-			String s = el.getAttribute("weight");
-			try {
-				if( s != null ) { 
-					int i = Integer.parseInt(s);
-					return i;
+			if( weight == Integer.MIN_VALUE ) {
+				String s = el.getAttribute("weight");
+				try {
+					if( s != null ) { 
+						int i = Integer.parseInt(s);
+						weight = i;
+					}
+				} catch(NumberFormatException nfe) {
+					weight = -1;
 				}
-			} catch(NumberFormatException nfe) {
 			}
-			return -1;
+			return weight;
 		}
-		public IJvmConnectionHandler getHandler() {
+		
+		public JVMLabelProviderDelegate getLabelProvider() {
 			if( handler == null && !loadFailed) {
 				// load handler
 				try {
-					handler = (IJvmConnectionHandler)el.createExecutableExtension("class"); //$NON-NLS-1$
+					handler = (JVMLabelProviderDelegate)el.createExecutableExtension("class"); //$NON-NLS-1$
 				} catch(CoreException ce) {
 					loadFailed = true;
 				}
