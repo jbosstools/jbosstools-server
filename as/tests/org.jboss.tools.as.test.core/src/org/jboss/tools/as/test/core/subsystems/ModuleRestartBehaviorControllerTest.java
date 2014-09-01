@@ -68,6 +68,7 @@ public class ModuleRestartBehaviorControllerTest extends TestCase {
 	public void testTxtPattern() throws CoreException {
 		assertEquals(server.getAttribute(StandardModuleRestartBehaviorController.PROPERTY_RESTART_FILE_PATTERN, (String)null), null);
 		IServerWorkingCopy wc = server.createWorkingCopy();
+		wc.setAttribute(StandardModuleRestartBehaviorController.PROPERTY_USE_DEFAULT_RESTART_PATTERN,  Boolean.FALSE.toString());
 		wc.setAttribute(StandardModuleRestartBehaviorController.PROPERTY_RESTART_FILE_PATTERN, "\\.txt$");
 		server = wc.save(true, new NullProgressMonitor());
 		assertEquals(server.getAttribute(StandardModuleRestartBehaviorController.PROPERTY_RESTART_FILE_PATTERN, (String)null), "\\.txt$");		
@@ -84,6 +85,7 @@ public class ModuleRestartBehaviorControllerTest extends TestCase {
 	public void testMissingExtPattern() throws CoreException {
 		assertEquals(server.getAttribute(StandardModuleRestartBehaviorController.PROPERTY_RESTART_FILE_PATTERN, (String)null), null);
 		IServerWorkingCopy wc = server.createWorkingCopy();
+		wc.setAttribute(StandardModuleRestartBehaviorController.PROPERTY_USE_DEFAULT_RESTART_PATTERN,  Boolean.FALSE.toString());
 		wc.setAttribute(StandardModuleRestartBehaviorController.PROPERTY_RESTART_FILE_PATTERN, 
 				"\\.svg$");
 		server = wc.save(true, new NullProgressMonitor());
@@ -112,6 +114,7 @@ public class ModuleRestartBehaviorControllerTest extends TestCase {
 	public void testTxtPatternDelta() throws CoreException {
 		assertEquals(server.getAttribute(StandardModuleRestartBehaviorController.PROPERTY_RESTART_FILE_PATTERN, (String)null), null);
 		IServerWorkingCopy wc = server.createWorkingCopy();
+		wc.setAttribute(StandardModuleRestartBehaviorController.PROPERTY_USE_DEFAULT_RESTART_PATTERN,  Boolean.FALSE.toString());
 		wc.setAttribute(StandardModuleRestartBehaviorController.PROPERTY_RESTART_FILE_PATTERN, 
 				"\\.txt$");
 		server = wc.save(true, new NullProgressMonitor());
@@ -123,12 +126,30 @@ public class ModuleRestartBehaviorControllerTest extends TestCase {
 		boolean ret = controller.moduleRequiresRestart(null, createDelta(testModule));
 		assertTrue(ret);
 	}
+	
+	@Test
+	public void testUseDefaultButTxtPatternDelta() throws CoreException {
+		// The txt pattern should match, but, we're setting it to use default, 
+		// so the txt pattern should be ignored and only .jar should be used
+		assertEquals(server.getAttribute(StandardModuleRestartBehaviorController.PROPERTY_RESTART_FILE_PATTERN, (String)null), null);
+		IServerWorkingCopy wc = server.createWorkingCopy();
+		wc.setAttribute(StandardModuleRestartBehaviorController.PROPERTY_USE_DEFAULT_RESTART_PATTERN,  Boolean.TRUE.toString());
+		wc.setAttribute(StandardModuleRestartBehaviorController.PROPERTY_RESTART_FILE_PATTERN,  "\\.txt$");
+		server = wc.save(true, new NullProgressMonitor());
+		assertEquals(server.getAttribute(StandardModuleRestartBehaviorController.PROPERTY_RESTART_FILE_PATTERN, (String)null), "\\.txt$");
+		StandardModuleRestartBehaviorController controller = new StandardModuleRestartBehaviorController();
+		controller.initialize(server, null, null);
+		IModule testModule = createTestMockModuleNoJar();
+		boolean ret = controller.moduleRequiresRestart(null, createDelta(testModule));
+		assertFalse(ret);
+	}
 
 	
 	@Test
 	public void testMissingExtPatternDelta() throws CoreException {
 		IServerWorkingCopy wc = server.createWorkingCopy();
 		assertEquals(server.getAttribute(StandardModuleRestartBehaviorController.PROPERTY_RESTART_FILE_PATTERN, (String)null), null);
+		wc.setAttribute(StandardModuleRestartBehaviorController.PROPERTY_USE_DEFAULT_RESTART_PATTERN,  Boolean.FALSE.toString());
 		wc.setAttribute(StandardModuleRestartBehaviorController.PROPERTY_RESTART_FILE_PATTERN, 
 				"\\.svg$");
 		server = wc.save(true, new NullProgressMonitor());
@@ -147,6 +168,7 @@ public class ModuleRestartBehaviorControllerTest extends TestCase {
 	public void testDeepTxtPatternDelta() throws CoreException {
 		assertEquals(server.getAttribute(StandardModuleRestartBehaviorController.PROPERTY_RESTART_FILE_PATTERN, (String)null), null);
 		IServerWorkingCopy wc = server.createWorkingCopy();
+		wc.setAttribute(StandardModuleRestartBehaviorController.PROPERTY_USE_DEFAULT_RESTART_PATTERN,  Boolean.FALSE.toString());
 		wc.setAttribute(StandardModuleRestartBehaviorController.PROPERTY_RESTART_FILE_PATTERN, 
 				"F.*txt$");
 		server = wc.save(true, new NullProgressMonitor());
@@ -163,6 +185,7 @@ public class ModuleRestartBehaviorControllerTest extends TestCase {
 	public void testDeepTxtPatternDeltaNotFound() throws CoreException {
 		assertEquals(server.getAttribute(StandardModuleRestartBehaviorController.PROPERTY_RESTART_FILE_PATTERN, (String)null), null);
 		IServerWorkingCopy wc = server.createWorkingCopy();
+		wc.setAttribute(StandardModuleRestartBehaviorController.PROPERTY_USE_DEFAULT_RESTART_PATTERN,  Boolean.FALSE.toString());
 		wc.setAttribute(StandardModuleRestartBehaviorController.PROPERTY_RESTART_FILE_PATTERN, 
 				"b.*txt$");
 		server = wc.save(true, new NullProgressMonitor());
@@ -192,31 +215,45 @@ public class ModuleRestartBehaviorControllerTest extends TestCase {
 	private IModule createTestMockModule() {
 		// Create a custom mock project structure
 		MockModule m = MockModuleUtil.createMockWebModule();
-		IPath[] leafs = new IPath[] {
-				new Path("w"),
-				new Path("x"),
-				new Path("y"),
-				new Path("z"),
-				new Path("a/a1"),
-				new Path("a/a2"),
-				new Path("a/q1"),
-				new Path("a/q2"),
-				new Path("b/b1"),
-				new Path("b/b2"),
-				new Path("b/b3"),
-				new Path("b/b4"),
-				new Path("c/y1"),
-				new Path("c/y2.png"),
-				new Path("c/y3.jpg"),
-				new Path("c/y4.pdf"),
-				new Path("d/F/f1.jar"),
-				new Path("d/F/f2.txt"),
-				new Path("d/F/f3.txt"),
-				new Path("d/F/f4.txt")
-		};
+		IPath[] leafs = getLeafs(true);
 		IModuleResource[] all = MockModuleUtil.createMockResources(leafs, new IPath[0]);
 		m.setMembers(all);
 		return m;
+	}
+
+	private IModule createTestMockModuleNoJar() {
+		// Create a custom mock project structure
+		MockModule m = MockModuleUtil.createMockWebModule();
+		IPath[] leafs = getLeafs(false);
+		IModuleResource[] all = MockModuleUtil.createMockResources(leafs, new IPath[0]);
+		m.setMembers(all);
+		return m;
+	}
+	
+	private IPath[] getLeafs(boolean includeJar) {
+		ArrayList<IPath> leafs = new ArrayList<IPath>();
+		leafs.add(new Path("w"));
+		leafs.add(new Path("x"));
+		leafs.add(new Path("y"));
+		leafs.add(new Path("z"));
+		leafs.add(new Path("a/a1"));
+		leafs.add(new Path("a/a2"));
+		leafs.add(new Path("a/q1"));
+		leafs.add(new Path("a/q2"));
+		leafs.add(new Path("b/b1"));
+		leafs.add(new Path("b/b2"));
+		leafs.add(new Path("b/b3"));
+		leafs.add(new Path("b/b4"));
+		leafs.add(new Path("c/y1"));
+		leafs.add(new Path("c/y2.png"));
+		leafs.add(new Path("c/y3.jpg"));
+		leafs.add(new Path("c/y4.pdf"));
+		if( includeJar ) 
+			leafs.add(new Path("d/F/f1.jar"));
+		leafs.add(new Path("d/F/f2.txt"));
+		leafs.add(new Path("d/F/f3.txt"));
+		leafs.add(new Path("d/F/f4.txt"));
+		return (IPath[]) leafs.toArray(new IPath[leafs.size()]);
 	}
 	
 }
