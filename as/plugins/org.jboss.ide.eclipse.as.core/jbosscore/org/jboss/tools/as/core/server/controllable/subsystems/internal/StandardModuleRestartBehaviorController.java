@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.jboss.tools.as.core.server.controllable.subsystems.internal;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -82,18 +84,38 @@ public class StandardModuleRestartBehaviorController extends
 	private Pattern restartFilePattern;
 	
 	private boolean moduleRequiresRestart(IModule[] module) {
-		// Just validate the module name itself
-		// Find dependency will throw a CoreException if an object is not found, rather than return null
+		// Just validate the module relative path to its parent module
 		try {
 			IDeploymentOptionsController opts = getDeploymentOptions();
 			IModuleDeployPathController depPath = getDeployPathController();
 			IPath dest = new RemotePath(depPath.getDeployDirectory(module).toOSString(), 
 					opts.getPathSeparatorCharacter());
-			return testPath(dest);
+			
+			IModule[] parentModule = getParentModule(module);
+			String relativePath = null;
+			if( parentModule != null ) {
+				// Get the relative path of this module to its parent module 
+				IPath parentModuleDestPath = new RemotePath(depPath.getDeployDirectory(parentModule).toOSString(), 
+						opts.getPathSeparatorCharacter()).addTrailingSeparator();
+				relativePath = dest.toOSString().substring(parentModuleDestPath.toOSString().length());
+			} else {
+				relativePath = dest.lastSegment();
+			}
+			return testPath(relativePath);
 		} catch(CoreException ce) {
 			JBossServerCorePlugin.getDefault().log(ce);
 		}
 		return false;
+	}
+	
+	private IModule[] getParentModule(IModule[] current) {
+		if( current.length > 1 ) {
+			ArrayList<IModule> parent = new ArrayList<IModule>();
+			parent.addAll(Arrays.asList(current));
+			parent.remove(current[current.length-1]);
+			return (IModule[]) parent.toArray(new IModule[parent.size()]);
+		}
+		return null;
 	}
 	
 	@Override
@@ -101,7 +123,7 @@ public class StandardModuleRestartBehaviorController extends
 			IModuleResource[] resourcesToTest) {
 		loadPattern();
 		// Check if the module name itself counts as something that must be force-restarted
-		if( moduleRequiresRestart(module)) {
+		if( module != null && moduleRequiresRestart(module)) {
 			return true;
 		}
 		boolean matches = false;
@@ -148,8 +170,8 @@ public class StandardModuleRestartBehaviorController extends
 		return matches;
 	}
 	
-	private boolean testPath(IPath path) {
-		return restartFilePattern.matcher(path.toString()).find();
+	private boolean testPath(String path) {
+		return restartFilePattern.matcher(path).find();
 	}
 
 	@Override

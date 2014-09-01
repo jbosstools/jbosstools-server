@@ -498,9 +498,13 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 					result = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Zipped archive not found"); //$NON-NLS-1$
 				}
 			}
-			if( rebuiltFull ) {
+			// If this has been rebuilt fully, it must be restarted
+			// If it has been rebuilt incrementally, but is a TOP LEVEL module, it must be restarted
+			if( rebuiltFull || ( rebuiltInc && module.length == 1)) {
 				markModulePublished(module, PublishControllerUtility.FULL_PUBLISH);
 			} else if( rebuiltInc) {
+				// If it is not top-level, and is incrementally updated, 
+				// Only restart the module if it matches the given regex pattern
 				IModuleRestartBehaviorController c = getModuleRestartBehaviorController();
 				if( c != null && c.moduleRequiresRestart(module, new IModuleResource[0])) {
 					// If a zipped module has changed, then it requires restart no matter what
