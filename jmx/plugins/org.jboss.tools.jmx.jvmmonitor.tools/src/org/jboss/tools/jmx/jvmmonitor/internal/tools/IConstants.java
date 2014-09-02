@@ -8,6 +8,7 @@ package org.jboss.tools.jmx.jvmmonitor.internal.tools;
 
 import java.io.File;
 
+import org.eclipse.core.runtime.IPath;
 import org.jboss.tools.jmx.jvmmonitor.tools.Activator;
 
 /**
@@ -140,8 +141,7 @@ public interface IConstants {
     static final String HEAP_HISTO_LIVE_OPTION = "-live";
 
     /** The relative path for jvmmonitor agent jar file. */
-    static final String JVMMONITOR_AGENT_JAR = File.separator + "lib"
-            + File.separator + "jvmmonitor-agent.jar";
+    static final String JVMMONITOR_AGENT_JAR = "lib" + IPath.SEPARATOR + "jvmmonitor-agent.jar";
 
     /** The charset UTF8. */
     static final String UTF8 = "UTF8";
