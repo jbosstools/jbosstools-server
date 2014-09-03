@@ -29,7 +29,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 public class UndeployHandler extends DeployHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		shell = HandlerUtil.getActiveShell(event);
-		ISelection selection = HandlerUtil.getCurrentSelection(event);
+		ISelection selection = getSelection(event);
 		makeUndeployable(selection);
 		return null;
 	}
