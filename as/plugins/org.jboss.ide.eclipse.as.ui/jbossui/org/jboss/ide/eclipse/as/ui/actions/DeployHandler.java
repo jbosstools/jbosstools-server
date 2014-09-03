@@ -46,6 +46,7 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
@@ -56,7 +57,11 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
@@ -79,17 +84,34 @@ public class DeployHandler extends AbstractHandler {
 
 	protected Shell shell;
 	
-//	protected String getText(boolean type) {
-//		if( type )
-//			return Messages.ActionDelegateMakeUndeployable;
-//		return Messages.ActionDelegateMakeDeployable;
-//	}
-	
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		shell = HandlerUtil.getActiveShell(event);
-		ISelection selection = HandlerUtil.getCurrentSelection(event);
+		ISelection selection = getSelection(event);
+		
 		makeDeployable(selection);
 		return null;
+	}
+	
+	protected ISelection getSelection(ExecutionEvent event){
+		ISelection selection = null;
+		
+		IWorkbenchPart part = HandlerUtil.getActivePart(event);
+		if(part instanceof ITextEditor){
+			IEditorInput input = ((ITextEditor)part).getEditorInput();
+			if(input instanceof FileEditorInput){
+				selection = new StructuredSelection(((FileEditorInput)input).getFile());
+			}
+		}else{
+			selection = HandlerUtil.getCurrentSelection(event);
+			Object[] objs = ((IStructuredSelection)selection).toArray();
+			for(int i = 0; i < objs.length; i++){
+				if(objs[i] instanceof IJavaProject){
+					objs[i] = ((IJavaProject)objs[i]).getProject();
+				}
+			}
+			selection = new StructuredSelection(objs);
+		}
+		return selection;
 	}
 	
 	protected void makeDeployable(ISelection selection) {
@@ -101,8 +123,6 @@ public class DeployHandler extends AbstractHandler {
 			IProject p=null;
 			if(objs[i] instanceof IResource){
 				p = ((IResource)objs[i]).getProject();
-			}else if(objs[i] instanceof IJavaProject){
-				p = ((IJavaProject)objs[i]).getProject();
 			}
 			if(p != null){
 				IModule[] mods = ServerUtil.getModules(p);
@@ -120,9 +140,6 @@ public class DeployHandler extends AbstractHandler {
 			if(objs[i] instanceof IResource){
 				SingleDeployableFactory.makeDeployable(((IResource)objs[i]).getFullPath());
 				modules[i] = SingleDeployableFactory.findModule(((IResource)objs[i]).getFullPath());
-			}else if(objs[i] instanceof IJavaProject){
-				SingleDeployableFactory.makeDeployable(((IJavaProject)objs[i]).getPath());
-				modules[i] = SingleDeployableFactory.findModule(((IJavaProject)objs[i]).getPath());
 			}
 		}
 		
@@ -149,8 +166,6 @@ public class DeployHandler extends AbstractHandler {
 		for( int i = 0; i < objs.length; i++ ){
 			if(objs[i] instanceof IResource ){
 				paths.add(((IResource)objs[i]).getFullPath());
-			}else if(objs[i] instanceof IJavaProject ){
-				paths.add(((IJavaProject)objs[i]).getPath());
 			}
 		}
 		new UndeployFromServerJob(paths).schedule();
