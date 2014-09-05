@@ -16,7 +16,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	AS7RuntimeTest.class
+	AS7RuntimeTest.class,
+	RuntimeMatcherStringUtilTest.class
 })
 public class RuntimeSuite {
 }
