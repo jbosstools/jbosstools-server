@@ -88,6 +88,7 @@
     <!--  XSD -->
   
 		<uri name="http://java.sun.com/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb3-spec-2_0.xsd"/>
+		<uri name="http://www.jboss.com/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb3-2_0.xsd"/>
 		<uri name="http://www.jboss.com/ws-security/config" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ws-security_1_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-app_7_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-app_7_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-client_5_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-client_5_0.xsd"/>
