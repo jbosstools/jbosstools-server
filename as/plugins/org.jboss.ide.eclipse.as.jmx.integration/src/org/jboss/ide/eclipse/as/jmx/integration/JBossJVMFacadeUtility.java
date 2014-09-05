@@ -48,7 +48,6 @@ public class JBossJVMFacadeUtility {
 		
 		String target = main + " " + progArgs;
 		target = target.replaceAll("\"", "").trim();
-		System.out.println(target);
 		JvmModel model = JvmModel.getInstance();
 		List<IHost> hosts = model.getHosts();
 		for (IHost host : hosts) {
@@ -57,9 +56,7 @@ public class JBossJVMFacadeUtility {
 			for (IActiveJvm jvm : jvms) {
 				int pid = jvm.getPid();
 				String command = jvm.getLaunchCommand();
-				System.out.println(command);
 				if( command.equals(target)) {
-					System.out.println("FOUND");
 					return jvm;
 				}
 			}

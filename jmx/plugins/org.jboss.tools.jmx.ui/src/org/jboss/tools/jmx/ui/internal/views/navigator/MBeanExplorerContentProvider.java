@@ -28,6 +28,11 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.navigator.CommonViewer;
 import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.IConnectionCategory;
 import org.jboss.tools.jmx.core.IConnectionProvider;
@@ -277,23 +282,50 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				if( viewer != null && !viewer.getControl().isDisposed()) {
-					if(!(viewer instanceof StructuredViewer))
-						viewer.refresh();
-					else
+					if(isJMXView())
 						((TreeViewer)viewer).add(parent, connection);
+					else
+						viewer.refresh();
 				}
 			}
 		});
 	}
 
+	private boolean isJMXView() {
+		IWorkbenchPart nav = findView(JMXNavigator.VIEW_ID);
+		if( nav != null ) {
+			if( nav instanceof JMXNavigator) {
+				JMXNavigator jmxn = (JMXNavigator)nav;
+				CommonViewer viewer = jmxn.getCommonViewer();
+				if( this.viewer == viewer && viewer != null ) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+
+	private static final IWorkbenchPart findView(String viewId) {
+		IWorkbenchPart part = null;
+		IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow() ;
+		if (window != null) {
+			IWorkbenchPage page = window.getActivePage();
+			if (page != null) {
+				part = page.findView(viewId);
+			}
+		}
+		return part;
+	}
+	
 	private void removeConnection(final IConnectionWrapper connection) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				if( viewer != null && !viewer.getControl().isDisposed()) {
-					if(!(viewer instanceof StructuredViewer))
-						viewer.refresh();
-					else
+					if(isJMXView())
 						((TreeViewer)viewer).remove(connection);
+					else
+						viewer.refresh();
 				}
 			}
 		});
