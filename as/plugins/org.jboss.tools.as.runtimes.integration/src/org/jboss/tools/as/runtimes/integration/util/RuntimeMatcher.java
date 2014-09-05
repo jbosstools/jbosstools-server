@@ -19,6 +19,7 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.tools.as.runtimes.integration.internal.DownloadRuntimesProvider;
+import org.jboss.tools.as.runtimes.integration.internal.RuntimeMatcherStringUtil;
 import org.jboss.tools.runtime.core.RuntimeCoreActivator;
 import org.jboss.tools.runtime.core.model.DownloadRuntime;
 import org.osgi.framework.Version;
@@ -41,7 +42,7 @@ public class RuntimeMatcher {
 			this.bInclusive = bInclusive;
 			this.eInclusive = eInclusive;
 		}
-		public RuntimeRangeRepresentation(String pattern) {
+		public RuntimeRangeRepresentation(String pattern) throws IllegalArgumentException {
 			int openCurly = pattern.indexOf('{');
 			wtpId = pattern;
 			if( openCurly != -1 ) {
@@ -78,12 +79,20 @@ public class RuntimeMatcher {
 				}
 			}
 		}
-		
+
 		public boolean matchesVersion(String version) {
-			Version v = new Version(version);
-			return osgiRange.includes(v);
+			try {
+				Version v = new Version(RuntimeMatcherStringUtil.getSafeVersionString(version));
+				return osgiRange.includes(v);
+			} catch(IllegalArgumentException iae) {
+				// If this level is reached, it means our version is valid, 
+				// but what we're being asked to match against is invalid
+				// For this case, I simply return that we do not match the invalid string	
+				return false;
+			}
 		}
 		
+
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
 			sb.append(wtpId);
@@ -147,8 +156,14 @@ public class RuntimeMatcher {
 	 * @return
 	 */
 	public IRuntime[] findExistingRuntimes(String pattern) {
-		RuntimeRangeRepresentation rep = new RuntimeRangeRepresentation(pattern);
-		return findExistingRuntimes(rep);
+		// Ideally I'd prefer to throw a CoreException here if their pattern is invalid, 
+		// but that would break api with central and would need to be coordinated
+		try {
+			RuntimeRangeRepresentation rep = new RuntimeRangeRepresentation(pattern);
+			return findExistingRuntimes(rep);
+		} catch(IllegalArgumentException iae) {
+			return new IRuntime[0];
+		}
 	}
 	
 	private IRuntime[] findExistingRuntimes(RuntimeRangeRepresentation rep) {
@@ -208,8 +223,14 @@ public class RuntimeMatcher {
 	 * @return
 	 */
 	public DownloadRuntime[] findDownloadRuntimes(String pattern, IProgressMonitor monitor) {
-		RuntimeRangeRepresentation rep = new RuntimeRangeRepresentation(pattern);
-		return findDownloadRuntimes(rep, monitor);
+		// Ideally I'd prefer to throw a CoreException here if their pattern is invalid, 
+		// but that would break api with central and would need to be coordinated
+		try {
+			RuntimeRangeRepresentation rep = new RuntimeRangeRepresentation(pattern);
+			return findDownloadRuntimes(rep, monitor);
+		} catch(IllegalArgumentException iae) {
+			return new DownloadRuntime[0];
+		}
 	}
 	
 	private DownloadRuntime[] findDownloadRuntimes(RuntimeRangeRepresentation rep, IProgressMonitor monitor) {

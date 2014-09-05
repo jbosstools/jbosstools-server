@@ -24,6 +24,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Export-Package: org.jboss.tools.as.runtimes.integration,
+ org.jboss.tools.as.runtimes.integration.internal;x-friends:="org.jboss.tools.as.test.core",
  org.jboss.tools.as.runtimes.integration.ui.composites,
  org.jboss.tools.as.runtimes.integration.ui.wizard,
  org.jboss.tools.as.runtimes.integration.util
