@@ -50,7 +50,7 @@ public class StandardRSEJBossStartLaunchDelegate extends
 		if( !fs.exists(remoteHome, monitor)) {
 			throw new CoreException(new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, "The remote server's home directory does not exist: " + serverHome));
 		}
-			
+		super.beforeVMRunner(configuration, mode, launch, monitor);
 	}
 	
 	@Override
