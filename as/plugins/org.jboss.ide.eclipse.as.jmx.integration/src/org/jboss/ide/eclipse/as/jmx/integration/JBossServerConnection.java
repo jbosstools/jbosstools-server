@@ -375,7 +375,6 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 		if( server.getServerState() == IServer.STATE_STARTED && isConnected ) {
 			if( customJvm == null ) {
 				IActiveJvm active = JBossJVMFacadeUtility.findJvmForServer(server);
-				// TODO cache this activejvm until disconnected
 				try {
 					customJvm = new JBossActiveJvm(this, active);
 				} catch(JvmCoreException jvmce) {
