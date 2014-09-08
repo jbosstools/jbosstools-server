@@ -150,7 +150,11 @@ public class JvmAttachHandler implements IJvmAttachHandler,
             monitoredVm = tools.invokeGetMonitoredVm(monitoredHost,
                     tools.invokeVmIdentifier(vmId));
         } catch (JvmCoreException e) {
-            Activator.log(IStatus.ERROR, Messages.getMonitoredJvmFailedMsg, e);
+        	// We do not need to log an error here. Odds are the 
+        	// VM has either already terminated or has some other issue
+        	// preventing us from connecting to it. Regardless, I feel 
+        	// we should ignore this error and not create the connection at all.
+        	return;
         }
 
         String mainClass = null;
@@ -231,6 +235,8 @@ public class JvmAttachHandler implements IJvmAttachHandler,
 
     /**
      * Gets the local connector address.
+     * This involves **attaching the agent** and discovering the connection url
+     * via jmx!
      * 
      * @param monitoredVm
      *            The monitored JVM
