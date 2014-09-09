@@ -21,8 +21,10 @@ import org.eclipse.jdt.internal.launching.environments.EnvironmentsManager;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.jface.preference.IPreferenceNode;
+import org.eclipse.jface.preference.IPreferencePage;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
+import org.eclipse.jface.preference.PreferenceNode;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -329,10 +331,13 @@ public abstract class AbstractJREComposite extends Composite {
 //		return PreferencesUtil.createPreferenceDialogOn(getShell(), pageId, new String[] { pageId }, null).open() == Window.OK;
 		PreferenceManager manager = PlatformUI.getWorkbench().getPreferenceManager();
 		IPreferenceNode node = manager.find(pageId);
+		node.createPage();
+		IPreferencePage page = node.getPage();
 		PreferenceManager manager2 = new PreferenceManager();
-		manager2.addToRoot(node);
+		manager2.addToRoot(new PreferenceNode(pageId, page));
 		PreferenceDialog dialog = new PreferenceDialog(getShell(), manager2);
 		dialog.create();
+		dialog.setMessage(node.getLabelText());
 		return (dialog.open() == Window.OK);
 	}
 }
