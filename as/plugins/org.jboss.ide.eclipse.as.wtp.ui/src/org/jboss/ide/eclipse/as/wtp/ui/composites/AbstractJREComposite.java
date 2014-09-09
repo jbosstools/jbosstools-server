@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.internal.debug.ui.jres.ExecutionEnvironmentsPreferencePage;
 import org.eclipse.jdt.internal.debug.ui.jres.JREsPreferencePage;
 import org.eclipse.jdt.internal.launching.environments.EnvironmentsManager;
@@ -44,6 +45,11 @@ import org.jboss.ide.eclipse.as.wtp.ui.Messages;
 
 public abstract class AbstractJREComposite extends Composite {
 
+	protected static final String JAVA_PREF_PAGE_ID = "org.eclipse.jdt.ui.preferences.JavaBasePreferencePage";
+	protected static final String JRE_PREF_PAGE_PATH = JAVA_PREF_PAGE_ID + Path.SEPARATOR + JREsPreferencePage.ID;
+	protected static final String EXEC_ENV_PREF_PAGE_PATH = JRE_PREF_PAGE_PATH + Path.SEPARATOR + ExecutionEnvironmentsPreferencePage.ID;
+	
+	
 	private TaskModel taskModel;
 	private Group installedJREGroup;
 	private Combo alternateJRECombo;
@@ -107,20 +113,12 @@ public abstract class AbstractJREComposite extends Composite {
 
 		environmentsButton.addSelectionListener(new SelectionAdapter(){
 			public void widgetSelected(SelectionEvent e) {
-				showPreferencePage(ExecutionEnvironmentsPreferencePage.ID); 
+				showPreferencePage(EXEC_ENV_PREF_PAGE_PATH); 
 			}
 		});
 		installedJREsButton.addSelectionListener(new SelectionAdapter(){
 			public void widgetSelected(SelectionEvent e) {
-				showPreferencePage(JREsPreferencePage.ID); 
-				// Need to refresh available jvms
-				execEnvironmentCombo.removeModifyListener(comboModifyListener);
-				alternateJRECombo.removeModifyListener(comboModifyListener);
-				loadModel();
-				refreshWidgets();
-				execEnvironmentCombo.addModifyListener(comboModifyListener);
-				alternateJRECombo.addModifyListener(comboModifyListener);
-				vmChanged();
+				jreButtonPressed();
 			}
 		});
 		 
@@ -245,29 +243,26 @@ public abstract class AbstractJREComposite extends Composite {
 	}
 	
 	protected void jreButtonPressed() {
-		if (showPreferencePage()) {
-			vmChanged();
-		}
+		showPreferencePage(JRE_PREF_PAGE_PATH); 
+		// Need to refresh available jvms
+		execEnvironmentCombo.removeModifyListener(comboModifyListener);
+		alternateJRECombo.removeModifyListener(comboModifyListener);
+		loadModel();
+		refreshWidgets();
+		execEnvironmentCombo.addModifyListener(comboModifyListener);
+		alternateJRECombo.addModifyListener(comboModifyListener);
+		vmChanged();
 	}
 	
 	// Other
+	/**
+	 * This method should not be used, as it does not indicate 
+	 * which preference page should be shown. 
+	 * @return
+	 */
+	@Deprecated
 	protected boolean showPreferencePage() {
-		PreferenceManager manager = PlatformUI.getWorkbench()
-				.getPreferenceManager();
-		IPreferenceNode node = manager
-				.find("org.eclipse.jdt.ui.preferences.JavaBasePreferencePage") //$NON-NLS-1$
-				.findSubNode(
-						"org.eclipse.jdt.debug.ui.preferences.VMPreferencePage"); //$NON-NLS-1$
-		PreferenceManager manager2 = new PreferenceManager();
-		manager2.addToRoot(node);
-		final PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(
-				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-				JREsPreferencePage.ID, 
-				new String[] {}, 
-				null);
-		if (dialog.open() == Window.OK)
-			return true;
-		return false;
+		return showPreferencePage(JRE_PREF_PAGE_PATH);
 	}
 	
 	private void vmChanged() {
@@ -330,7 +325,14 @@ public abstract class AbstractJREComposite extends Composite {
 	 */
 	public abstract List<IVMInstall> getValidJREs();
 	
-	protected void showPreferencePage(String pageId) {
-		PreferencesUtil.createPreferenceDialogOn(getShell(), pageId, new String[] { pageId }, null).open();
+	protected boolean showPreferencePage(String pageId) {
+//		return PreferencesUtil.createPreferenceDialogOn(getShell(), pageId, new String[] { pageId }, null).open() == Window.OK;
+		PreferenceManager manager = PlatformUI.getWorkbench().getPreferenceManager();
+		IPreferenceNode node = manager.find(pageId);
+		PreferenceManager manager2 = new PreferenceManager();
+		manager2.addToRoot(node);
+		PreferenceDialog dialog = new PreferenceDialog(getShell(), manager2);
+		dialog.create();
+		return (dialog.open() == Window.OK);
 	}
 }
