@@ -92,25 +92,26 @@ public class AgentLoadHandler implements IAgentLoadHandler {
         	agentJar = new File(entryFileURI);
         } catch (IOException e) {
             Activator.log(IStatus.ERROR, Messages.corePluginNoFoundMsg,
-                    new Exception());
+                    new Exception(e));
             return;
         } catch (URISyntaxException e) {
             Activator.log(IStatus.ERROR, Messages.corePluginNoFoundMsg,
-                    new Exception());
+                    new Exception(e));
             return;
 		} 
 
-        if (!agentJar.exists()) {
-            Activator.log(
-                    IStatus.ERROR,
-                    NLS.bind(Messages.agentJarNotFoundMsg,
-                            agentJar.getAbsolutePath()), new Exception());
+        if( agentJar != null ) {
+	        agentJarPath = agentJar.getAbsolutePath();
+	        if (!agentJar.exists()) {
+	            Activator.log(
+	                    IStatus.ERROR,
+	                    NLS.bind(Messages.agentJarNotFoundMsg,
+	                            agentJar.getAbsolutePath()), new Exception());
+	        } else {
+		        Activator.log(IStatus.INFO,
+		                NLS.bind(Messages.agentJarFoundMsg, agentJarPath),
+		                new Exception());
+	        }
         }
-
-        agentJarPath = agentJar.getAbsolutePath();
-
-        Activator.log(IStatus.INFO,
-                NLS.bind(Messages.agentJarFoundMsg, agentJarPath),
-                new Exception());
     }
 }
