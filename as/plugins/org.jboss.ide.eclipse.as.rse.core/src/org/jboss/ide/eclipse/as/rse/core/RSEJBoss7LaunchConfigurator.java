@@ -129,6 +129,14 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 		return programArguments;
 	}
 
+	protected String getArgsOverrideBaseDir(IServer server, String preArgs) {
+		Character c = RSEUtils.getRemoteSystemSeparatorCharacter(server);
+		String basedir = RSEUtils.getBaseDirectory(server, c);
+		String programArguments = ArgsUtil.setArg(preArgs, null,
+				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JBOSS_SERVER_BASE_DIR, basedir);
+		return programArguments;
+	}
+
 	protected String getArgsOverrideExposedManagement(IServer server, String preArgs) {
 		boolean overrides = LaunchCommandPreferences.exposesManagement(server);
 		if( overrides ) {
@@ -144,6 +152,7 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 		String programArguments = getDefaultProgramArguments(jbossServer.getServer());
 		programArguments = getArgsOverrideHost(jbossServer.getServer(), programArguments);
 		programArguments = getArgsOverrideConfigFile(jbossServer.getServer(), programArguments);
+		programArguments = getArgsOverrideBaseDir(jbossServer.getServer(), programArguments);
 		
 		String vmArguments = getDefaultVMArguments(jbossServer.getServer());
 		vmArguments = getArgsOverrideExposedManagement(jbossServer.getServer(), vmArguments);
