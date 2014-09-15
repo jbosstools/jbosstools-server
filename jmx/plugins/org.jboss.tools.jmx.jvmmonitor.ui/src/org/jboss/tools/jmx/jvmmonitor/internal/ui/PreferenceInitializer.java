@@ -16,7 +16,7 @@ import org.jboss.tools.jmx.jvmmonitor.ui.Activator;
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
     /** The default value for period to update model. The unit is milliseconds. */
-    private static final int DEFAULT_UPDATE_PERIOD = 1000;
+    private static final int DEFAULT_UPDATE_PERIOD = 5000;
 
     /*
      * @see AbstractPreferenceInitializer#initializeDefaultPreferences()
