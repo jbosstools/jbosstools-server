@@ -672,6 +672,21 @@
             serverTypes="%AllJBTServerTypes">
       </subsystemMapping>
 
+      <subsystem
+            system="exploreBehavior"
+            id="exploreBehavior.mgmt.default"
+            name="Explore Server (Local Management)"
+            class="org.jboss.ide.eclipse.as.ui.subsystems.internal.ManagementExploreBehavior">
+         <properties>
+            <property key="target" value="local"/>
+         </properties>
+      </subsystem>
+      <subsystemMapping
+            id="exploreBehavior.mgmt.default"
+            mappedId="exploreBehavior.mgmt"
+            serverTypes="%AllJBTServerTypes">
+      </subsystemMapping>
+
 
       <subsystem
             system="browseBehavior"
@@ -782,7 +797,7 @@
        <serverProfile id="local.mgmt" serverTypes="%ServerTypesJBoss7OrHigher">
           <subsystem system="deploymentPage" subsystem="deploymentPage.management"/>
           <subsystem system="launchTabProvider" subsystem="launchTabProvider.local"/>
-          <subsystem system="exploreBehavior" subsystem="exploreBehavior.local"/>
+          <subsystem system="exploreBehavior" subsystem="exploreBehavior.mgmt"/>
        </serverProfile>
     </extension>
    
