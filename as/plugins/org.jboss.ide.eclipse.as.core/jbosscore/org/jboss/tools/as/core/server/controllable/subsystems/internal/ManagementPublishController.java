@@ -11,6 +11,7 @@
 package org.jboss.tools.as.core.server.controllable.subsystems.internal;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -240,6 +241,14 @@ public class ManagementPublishController extends AbstractSubsystemController
 			// How to handle binary modules?? 
 			// Single file deployable is easy if its just the 1 file,
 			// but when its a folder, not sure what to do here yet
+			ArrayList<File> fileList = new ArrayList<File>();
+			for( int i = 0; i < resources.length; i++ ) {
+				File f = (File)resources[i].getAdapter(File.class);
+				if( f != null ) {
+					fileList.add(f);
+				}
+			}
+			toTransfer = (File[]) fileList.toArray(new File[fileList.size()]);
 		}
 		
 		if( toTransfer != null ) {
