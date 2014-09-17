@@ -328,14 +328,12 @@ public abstract class AbstractJREComposite extends Composite {
 	public abstract List<IVMInstall> getValidJREs();
 	
 	protected boolean showPreferencePage(String pageId) {
-//		return PreferencesUtil.createPreferenceDialogOn(getShell(), pageId, new String[] { pageId }, null).open() == Window.OK;
 		PreferenceManager manager = PlatformUI.getWorkbench().getPreferenceManager();
 		IPreferenceNode node = manager.find(pageId);
-		node.createPage();
-		IPreferencePage page = node.getPage();
 		PreferenceManager manager2 = new PreferenceManager();
-		manager2.addToRoot(new PreferenceNode(pageId, page));
+		manager2.addToRoot(node);
 		PreferenceDialog dialog = new PreferenceDialog(getShell(), manager2);
+		dialog.setSelectedNode(pageId);
 		dialog.create();
 		dialog.setMessage(node.getLabelText());
 		return (dialog.open() == Window.OK);
