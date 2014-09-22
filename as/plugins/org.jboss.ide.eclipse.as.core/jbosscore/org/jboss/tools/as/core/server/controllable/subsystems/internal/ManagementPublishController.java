@@ -241,7 +241,7 @@ public class ManagementPublishController extends AbstractSubsystemController
 			// How to handle binary modules?? 
 			// Single file deployable is easy if its just the 1 file,
 			// but when its a folder, not sure what to do here yet
-			ArrayList<File> fileList = new ArrayList<File>();
+			ArrayList<File> fileList = new ArrayList<File>(resources.length);
 			for( int i = 0; i < resources.length; i++ ) {
 				File f = (File)resources[i].getAdapter(File.class);
 				if( f != null ) {
