@@ -13,9 +13,7 @@ package org.jboss.tools.jmx.local;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -87,15 +85,12 @@ public class ProcessInformationStore {
 		String javaHome = System.getProperty("java.home");
 		IPath jHomePath = new Path(javaHome);
 		File jHome = jHomePath.toFile();
-		String binFolder = null;
 		File jps = null;
 		if( jHome.getName().equalsIgnoreCase("jre")) {
 			jps = jHomePath.removeLastSegments(1).append("bin").append("jps").toFile();
-			binFolder = jps.getParentFile().getAbsolutePath();
 		}
-		if( !jps.exists()) {
+		if( jps == null || !jps.exists()) {
 			jps = jHomePath.append("bin").append("jps").toFile();
-			binFolder = jHomePath.append("bin").toFile().getAbsolutePath();
 		}
 		BufferedReader br = null;
 		try {
