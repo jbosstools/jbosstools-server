@@ -108,9 +108,9 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 		getFactory().saveDeployableList(project.getName());
 		return ret;
 	}
-	public static boolean makeDeployable(IPath workspaceRelative) {
-		boolean ret = getFactory().addModule(workspaceRelative);
-		getFactory().saveDeployableList(workspaceRelative.segment(0));
+	public static boolean makeDeployable(IPath workspaceAbsolute) {
+		boolean ret = getFactory().addModule(workspaceAbsolute);
+		getFactory().saveDeployableList(workspaceAbsolute.segment(0));
 		return ret;
 	}
 
@@ -168,7 +168,7 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 			IPath tmp;
 			for( int j = 0; j < paths.length; j++ ) {
 				if( !paths[j].trim().equals("")) { //$NON-NLS-1$
-					tmp = new Path(allProjects[i].getName()).append(paths[j]);
+					tmp = new Path(allProjects[i].getName()).append(paths[j]).makeAbsolute();
 					addModule(tmp);
 				}
 			}
@@ -192,7 +192,10 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 		IPath tmp;
 		while(j.hasNext()) {
 			tmp = j.next();
-			list += tmp.removeFirstSegments(1).makeRelative() + "\n"; //$NON-NLS-1$
+			String firstSegment = tmp.segment(0);
+			if( firstSegment != null && firstSegment.equals(projectName)) {
+				list += tmp.removeFirstSegments(1).makeRelative() + "\n"; //$NON-NLS-1$
+			}
 		}
 		
 		String qualifier = JBossServerCorePlugin.PLUGIN_ID;
@@ -266,14 +269,15 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 	}
 	
 	public IModule getModule(IPath path) {
-		return moduleIdToModule.get(path);
+		return moduleIdToModule.get(path.makeAbsolute());
 	}
 	
 	@Override
 	public IModule findModule(String id) {
 		IModule s = super.findModule(id);
-		if( s == null && new Path(id).isAbsolute()) 
-			s = super.findModule(id.substring(1));
+		if( s == null && !(new Path(id).isAbsolute()))
+			// This should never be reached, but I think it's safer to leave it for now
+			s = super.findModule(Path.SEPARATOR + id);
 		return s;
 	}
 	
