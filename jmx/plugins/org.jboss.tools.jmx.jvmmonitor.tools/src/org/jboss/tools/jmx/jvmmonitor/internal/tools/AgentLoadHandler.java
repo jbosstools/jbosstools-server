@@ -8,8 +8,6 @@ package org.jboss.tools.jmx.jvmmonitor.internal.tools;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.eclipse.core.runtime.FileLocator;
@@ -88,18 +86,12 @@ public class AgentLoadHandler implements IAgentLoadHandler {
             URL entry = org.jboss.tools.jmx.jvmmonitor.core.Activator.getDefault().getBundle()
                     .getEntry(IConstants.JVMMONITOR_AGENT_JAR);
         	URL entryFileUrl = FileLocator.toFileURL(entry);
-        	URI entryFileURI = entryFileUrl.toURI();
-        	agentJar = new File(entryFileURI);
+        	agentJar = new File(entryFileUrl.getPath());
         } catch (IOException e) {
             Activator.log(IStatus.ERROR, Messages.corePluginNoFoundMsg,
                     new Exception(e));
             return;
-        } catch (URISyntaxException e) {
-            Activator.log(IStatus.ERROR, Messages.corePluginNoFoundMsg,
-                    new Exception(e));
-            return;
-		} 
-
+        }
         if( agentJar != null ) {
 	        agentJarPath = agentJar.getAbsolutePath();
 	        if (!agentJar.exists()) {
