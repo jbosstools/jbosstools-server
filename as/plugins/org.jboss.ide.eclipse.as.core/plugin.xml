@@ -657,7 +657,7 @@
       <serverPoller
             class="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManagerServicePoller"
             id="org.jboss.ide.eclipse.as.core.server.JBoss7ManagerServicePoller"
-            name="JBoss 7 Manager Service"
+            name="Management Service"
             serverTypes="%ServerTypesJBoss7"
             supportsShutdown="true"
             supportsStartup="true">
@@ -666,11 +666,15 @@
        		We need to use a different id here for this poller. Under the current impl, 
        		these are stored in a map with the id as key, and the entries cannot be 
        		merged into a single model. Therefore we need to give it a different id. 
+       		
+       		This is legacy. This additional poller was added simply to  
+       		give different poller names to the same poller, which was a dumb workaround.
+       		But the poller Id is api now, and so cannot be changed. At least the names can be unified
        -->
       <serverPoller
             class="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManagerServicePoller"
             id="org.jboss.ide.eclipse.as.core.server.Wildfly8ManagerServicePoller"
-            name="Wildfly Manager Service"
+            name="Management Service"
             serverTypes="%ServerTypesWildfly8"
             supportsShutdown="true"
             supportsStartup="true">
