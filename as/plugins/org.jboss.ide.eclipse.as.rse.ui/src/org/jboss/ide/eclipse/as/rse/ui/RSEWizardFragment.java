@@ -16,6 +16,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.server.core.IRuntime;
@@ -35,6 +37,8 @@ import org.jboss.ide.eclipse.as.ui.wizards.ServerProfileWizardFragment;
 
 public class RSEWizardFragment extends WizardFragment {
 	private IWizardHandle handle;
+	private Composite main;
+	
 	public RSEWizardFragment() {
 	}
 
@@ -49,6 +53,10 @@ public class RSEWizardFragment extends WizardFragment {
 
 	public boolean hasComposite() {
 		return true;
+	}
+
+	public boolean isComplete() {
+		return main != null && !main.isDisposed() && super.isComplete();
 	}
 	
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
@@ -104,7 +112,7 @@ public class RSEWizardFragment extends WizardFragment {
 		};
 		
 		
-		Composite main = new Composite(parent, SWT.NONE);
+		main = new Composite(parent, SWT.NONE);
 		main.setLayout(new FillLayout());
 		RSEDeploymentPreferenceComposite composite = null;
 
@@ -122,6 +130,12 @@ public class RSEWizardFragment extends WizardFragment {
 			composite = new JBoss7RSEDeploymentPrefComposite(main, SWT.NONE, callback);
 		}
 		// NEW_SERVER_ADAPTER potential location for new server details
+		
+		main.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent e) {
+				main = null;
+			}
+		});
 		return main;
 	}
 	
