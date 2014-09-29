@@ -412,6 +412,9 @@ public class Tools implements IPreferenceChangeListener, IConstants {
      * @return The error message or <tt>null</tt> if not found
      */
     public String validateJdkRootDirectory(String jdkRootDirectory) {
+    	if( jdkRootDirectory == null  || jdkRootDirectory.trim().isEmpty()) {
+    		return Messages.NoJdkDirectoryFoundMsg;
+    	}
         // check if directory exists
         File directory = new File(jdkRootDirectory);
         if (!directory.exists() || !directory.isDirectory()) {
@@ -664,9 +667,10 @@ public class Tools implements IPreferenceChangeListener, IConstants {
 	private String findHomeDirectoryToAddToClasspath() {
     	// Find the jdk root for the currently running java home
         String jdkRootDirectory = findJdkRootFromJavaHome();
-        if (jdkRootDirectory == null || jdkRootDirectory.isEmpty()) {
+        if (jdkRootDirectory == null || jdkRootDirectory.trim().isEmpty()) {
         	IVMInstall vmi = findSecondaryVMInstall();
-        	jdkRootDirectory = vmi.getInstallLocation().getAbsolutePath();
+        	if( vmi != null ) 
+        		jdkRootDirectory = vmi.getInstallLocation().getAbsolutePath();
         }
         return jdkRootDirectory;
 	}
