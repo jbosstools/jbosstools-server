@@ -106,4 +106,6 @@ public final class Messages extends NLS {
 
     /** */
     public static String fileNotFoundMsg;
+    
+    public static String NoJdkDirectoryFoundMsg;
 }
