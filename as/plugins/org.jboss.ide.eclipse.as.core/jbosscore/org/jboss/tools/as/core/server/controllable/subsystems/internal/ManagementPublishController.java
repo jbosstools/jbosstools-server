@@ -122,21 +122,34 @@ public class ManagementPublishController extends AbstractSubsystemController
 	
 	@Override
 	public IStatus canPublish() {
-		IStatus isRunningStatus = isRunning();
-		if( !isRunningStatus.isOK()) 
-			return isRunningStatus;
-		return validate();
+		return canPublishInternal(false);
 	}
 
+	private IStatus canPublishInternal(boolean checkServerResponds) {
+		// We can only publish if the server adapter is 'started'
+		boolean started = getServer().getServerState() == IServer.STATE_STARTED;
+		if( !started )
+			return Status.CANCEL_STATUS;
+		
+		// If we should check if the server is actually running, do it
+		if( checkServerResponds ) {
+			IStatus isRunningStatus = isRunning();
+			if( !isRunningStatus.isOK()) 
+				return isRunningStatus;
+		}
+		
+		// If it passed previous 2 checks, just validate we have everything we need
+		return validate();
+	}
+	
 	@Override
 	public boolean canPublishModule(IModule[] module) {
-		return isRunning().isOK();
+		return canPublishInternal(false).isOK();
 	}
 
 	@Override
 	public void publishStart(IProgressMonitor monitor) throws CoreException {
-		// intentionally blank
-		IStatus canPublish = canPublish();
+		IStatus canPublish = canPublishInternal(true);
 		if( !canPublish.isOK() && canPublish().getSeverity() != IStatus.CANCEL) {
 			throw new CoreException(canPublish);
 		}
@@ -190,7 +203,7 @@ public class ManagementPublishController extends AbstractSubsystemController
 	@Override
 	public int publishModule(int kind, int deltaKind, IModule[] module,
 			IProgressMonitor monitor) throws CoreException {
-		IStatus canPublish = canPublish();
+		IStatus canPublish = canPublishInternal(true);
 		if( !canPublish.isOK() && canPublish.getSeverity() != IStatus.CANCEL) {
 			IStatus error = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "The server must be started to publish."); //$NON-NLS-1$
 			throw new CoreException(error);
