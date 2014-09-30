@@ -16,9 +16,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.rse.core.model.IHost;
@@ -30,15 +33,17 @@ import org.eclipse.rse.services.shells.IHostShellOutputListener;
 import org.eclipse.rse.services.shells.IShellService;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.server.IJBASHostShellListener;
+import org.jboss.ide.eclipse.as.core.server.IProvideCredentials;
 import org.jboss.ide.eclipse.as.core.util.ThreadUtils;
 import org.jboss.ide.eclipse.as.rse.core.xpl.ConnectAllSubsystemsUtil;
 
 public class RSEHostShellModel {
 
 	private static RSEHostShellModel instance;
-	public static RSEHostShellModel getInstance() {
+	public static synchronized RSEHostShellModel getInstance() {
 		if( instance == null )
 			instance = new RSEHostShellModel();
 		return instance;
@@ -46,17 +51,32 @@ public class RSEHostShellModel {
 	
 	private HashMap<String, ServerShellModel> map = 
 		new HashMap<String, ServerShellModel>();
+	private ArrayList<IJBASHostShellListener> listeners;
 	RSEHostShellModel() {
+		loadListeners();
+	}
+	
+	private void loadListeners() {
+		listeners = new ArrayList<IJBASHostShellListener>();
+		IExtensionRegistry registry = Platform.getExtensionRegistry();
+		IConfigurationElement[] cf = registry.getConfigurationElementsFor(RSECorePlugin.PLUGIN_ID, "shellListener"); //$NON-NLS-1$
+		for( int i = 0; i < cf.length; i++ ) {
+			try {
+				IJBASHostShellListener l = (IJBASHostShellListener)cf[i].createExecutableExtension("class");
+				listeners.add(l);
+			} catch( CoreException e ) {
+				RSECorePlugin.pluginLog().logError(e);
+			}
+		}
 		
 	}
 	
-	private ArrayList<IJBASHostShellListener> listeners = new ArrayList<IJBASHostShellListener>();
-	public void addHostShellListener(IJBASHostShellListener listener) {
-		listeners.add(listener);
-	}
-	public void removeHostShellListener(IJBASHostShellListener listener) {
-		listeners.remove(listener);
-	}
+//	public void addHostShellListener(IJBASHostShellListener listener) {
+//		listeners.add(listener);
+//	}
+//	public void removeHostShellListener(IJBASHostShellListener listener) {
+//		listeners.remove(listener);
+//	}
 	
 	public ServerShellModel getModel(IServer server) {
 		if( map.get(server.getId()) == null ) {

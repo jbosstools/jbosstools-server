@@ -92,5 +92,11 @@
              class="org.jboss.ide.eclipse.as.rse.ui.RSEWizardFragment">
        </wizardFragment>
     </extension>
+    <extension
+          point="org.jboss.ide.eclipse.as.rse.core.shellListener">
+       <shellListener
+             class="org.jboss.ide.eclipse.as.ui.console.JBASConsoleWriter">
+       </shellListener>
+    </extension>
    
 </plugin>
