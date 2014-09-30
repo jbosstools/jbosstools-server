@@ -24,7 +24,6 @@ public class RSEUIPlugin implements BundleActivator {
 	public static final String PLUGIN_ID = "org.jboss.ide.eclipse.as.rse.ui";
 	private static BundleContext context;
 	private static RSEUIPlugin plugin;
-	private JBASConsoleWriter consoleWriter;
 	
 	
 	static BundleContext getContext() {
@@ -38,8 +37,6 @@ public class RSEUIPlugin implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		context = bundleContext;
 		plugin = this;
-		consoleWriter = new JBASConsoleWriter();
-		RSEHostShellModel.getInstance().addHostShellListener(consoleWriter);
 	}
 
 	/*
@@ -49,7 +46,6 @@ public class RSEUIPlugin implements BundleActivator {
 	public void stop(BundleContext bundleContext) throws Exception {
 		RSEUIPlugin.context = null;
 		plugin = null;
-		RSEHostShellModel.getInstance().removeHostShellListener(consoleWriter);
 	}
 
 	public static ILog getLog() {
