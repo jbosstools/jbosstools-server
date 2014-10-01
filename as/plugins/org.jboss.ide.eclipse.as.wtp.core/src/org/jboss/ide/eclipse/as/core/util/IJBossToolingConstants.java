@@ -33,7 +33,7 @@ public interface IJBossToolingConstants {
 	public static final String[] ALL_JBOSS_RUNTIMES = new String[] {
 		AS_32,AS_40,AS_42,AS_50,AS_51,AS_60,
 		AS_70,AS_71,WILDFLY_80,
-		EAP_43,EAP_50,EAP_60
+		EAP_43,EAP_50,EAP_60, EAP_61
 	};
 	// NEW_SERVER_ADAPTER Add the new runtime constant above this line
 	
