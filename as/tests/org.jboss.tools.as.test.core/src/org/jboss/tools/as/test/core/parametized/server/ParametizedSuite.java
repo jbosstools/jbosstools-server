@@ -20,6 +20,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
 	ServerHomeTest.class,
+	ServerRuntimeArrayConstantsTest.class,
 	ServerBeanLoader3Test.class,
 	CreateServerCheckDefaultsTest.class,
 	ServerModeRuntimeDetailsTest.class,
