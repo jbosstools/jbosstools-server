@@ -52,6 +52,7 @@ import org.jboss.tools.jmx.jvmmonitor.ui.JvmMonitorPreferences;
  */
 public class JvmConnectionWrapper implements IConnectionWrapper, IAdaptable, IJvmFacade {
 	private IActiveJvm activeJvm;
+	private JvmKey key;
 	private Root root;
 	private List<Runnable> afterLoadRunnables = new ArrayList<Runnable>();
         private IProgressMonitor progressMonitor;
@@ -60,6 +61,7 @@ public class JvmConnectionWrapper implements IConnectionWrapper, IAdaptable, IJv
 	public JvmConnectionWrapper(IActiveJvm vm) {
 		this.activeJvm = vm;
 		this.progressMonitor = null;
+		this.key = getJvmKey(vm);
 	}
 
 	@Override
@@ -75,6 +77,7 @@ public class JvmConnectionWrapper implements IConnectionWrapper, IAdaptable, IJv
 		if (this.activeJvm != activeJvm) {
 			IActiveJvm oldJvm = this.activeJvm;
 			this.activeJvm = activeJvm;
+			this.key = getJvmKey(activeJvm);
 			if (oldJvm != null) {
 				try {
 					oldJvm.disconnect();
@@ -143,7 +146,7 @@ public class JvmConnectionWrapper implements IConnectionWrapper, IAdaptable, IJv
 
 		    root = NodeUtils.createObjectNameTree(this, progressMonitor);
 		    for (Runnable task : afterLoadRunnables) {
-			task.run();
+		    	task.run();
 		    }
 		    afterLoadRunnables.clear();
 		} catch (Throwable e) {
@@ -208,4 +211,27 @@ public class JvmConnectionWrapper implements IConnectionWrapper, IAdaptable, IJv
 	    progressMonitor = monitor;
 	    loadRoot();
 	}
+	
+	
+	@Override
+	public int hashCode() {
+		return key.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof JvmConnectionWrapper && key.equals(((JvmConnectionWrapper)obj).getKey());
+	}
+
+	protected JvmKey getKey() {
+		return key;
+	}
+	
+	
+	private JvmKey getJvmKey(IActiveJvm jvm) {
+		int pid = jvm.getPid();
+		String hostName = jvm.getHost().getName();
+		return new JvmKey(hostName, pid, jvm);
+	}
+
 }
