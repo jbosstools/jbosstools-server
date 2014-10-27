@@ -18,10 +18,12 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.server.IDefaultClasspathLaunchConfigurator;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.AbstractStartLaunchConfigurator;
@@ -30,7 +32,7 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
 
-public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurator {
+public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurator implements IDefaultClasspathLaunchConfigurator  {
 
 	public LocalJBoss7StartConfigurator(IServer server) throws CoreException {
 		super(server);
@@ -99,6 +101,14 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 		return rt.getBaseDirectory();
 	}
 	
+
+	@Override
+	public IRuntimeClasspathEntry[] getDefaultClasspathEntries(ILaunchConfiguration config) throws CoreException {
+		IVMInstall vmInstall = getJBossRuntime().getVM();
+		IRuntimeClasspathEntry modulesEntry = LaunchConfigUtils.getModulesClasspathEntry(server); 
+		IRuntimeClasspathEntry jreEntry = LaunchConfigUtils.getJREEntry(vmInstall);
+		return new IRuntimeClasspathEntry[]{jreEntry, modulesEntry};
+	}
 
 	@Override
 	protected List<String> getClasspath(List<String> currentClasspath) throws CoreException {
