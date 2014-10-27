@@ -25,6 +25,7 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.ILaunchConfigConfigurator;
+import org.jboss.ide.eclipse.as.core.server.ILaunchConfigConfiguratorProvider;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.StandardLocalJBossStartLaunchDelegate;
@@ -42,7 +43,7 @@ import org.jboss.tools.as.core.server.controllable.IDeployableServerBehaviorProp
  * The default launch controller for all local launches
  */
 public class LocalJBossLaunchController  extends AbstractSubsystemController 
-	implements ILaunchServerController, ILaunchConfigurationDelegate2, IShutdownControllerDelegate {
+	implements ILaunchServerController, ILaunchConfigurationDelegate2, IShutdownControllerDelegate, ILaunchConfigConfiguratorProvider {
 
 	private StandardLocalJBossStartLaunchDelegate launchDelegate;
 	private StandardLocalJBossStartLaunchDelegate getLaunchDelegate() {
@@ -124,6 +125,13 @@ public class LocalJBossLaunchController  extends AbstractSubsystemController
 		IServerShutdownController c = new LocalLegacyShutdownController();
 		c.initialize(getServer(), null, null);
 		return c;
+	}
+
+
+	@Override
+	public ILaunchConfigConfigurator getLaunchConfigurator()
+			throws CoreException {
+		return getConfigurator();
 	}
 
 	

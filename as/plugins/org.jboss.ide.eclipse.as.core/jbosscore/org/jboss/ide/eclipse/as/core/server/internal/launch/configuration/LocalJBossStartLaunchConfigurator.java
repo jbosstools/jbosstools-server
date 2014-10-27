@@ -20,9 +20,11 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.server.IDefaultClasspathLaunchConfigurator;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.RunJarContainerWrapper;
@@ -32,7 +34,7 @@ import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
-public class LocalJBossStartLaunchConfigurator extends AbstractStartLaunchConfigurator {
+public class LocalJBossStartLaunchConfigurator extends AbstractStartLaunchConfigurator implements IDefaultClasspathLaunchConfigurator {
 
 	public LocalJBossStartLaunchConfigurator(IServer server) throws CoreException {
 		super(server);
@@ -48,6 +50,15 @@ public class LocalJBossStartLaunchConfigurator extends AbstractStartLaunchConfig
 		return ServerUtil.checkedGetServerHome(getJBossServer()) 
 				+ Path.SEPARATOR 
 				+ IJBossRuntimeResourceConstants.BIN;
+	}
+	
+
+	@Override
+	public IRuntimeClasspathEntry[] getDefaultClasspathEntries(ILaunchConfiguration config) throws CoreException {
+		IVMInstall vmInstall = getJBossRuntime().getVM();
+		IRuntimeClasspathEntry modulesEntry = LaunchConfigUtils.getRunJarRuntimeCPEntry(server); 
+		IRuntimeClasspathEntry jreEntry = LaunchConfigUtils.getJREEntry(vmInstall);
+		return new IRuntimeClasspathEntry[]{jreEntry, modulesEntry};
 	}
 	
 	@Override

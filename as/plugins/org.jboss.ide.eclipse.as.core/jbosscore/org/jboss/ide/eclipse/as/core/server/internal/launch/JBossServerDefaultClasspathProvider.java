@@ -10,20 +10,20 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.core.server.internal.launch;
 
-import java.util.ArrayList;
-
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
-import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.StandardClasspathProvider;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.server.internal.AbstractLocalJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.IDefaultClasspathLaunchConfigurator;
+import org.jboss.ide.eclipse.as.core.server.ILaunchConfigConfigurator;
+import org.jboss.ide.eclipse.as.core.server.ILaunchConfigConfiguratorProvider;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties;
-import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
+import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ISubsystemController;
 
 /**
  * This class provides a default classpath for server launches. 
@@ -42,14 +42,17 @@ public class JBossServerDefaultClasspathProvider extends StandardClasspathProvid
 		try {
 			String server = new JBossLaunchConfigProperties().getServerId(config);
 			IServer s = ServerCore.findServer(server);
-			AbstractLocalJBossServerRuntime ibjsrt = (AbstractLocalJBossServerRuntime)
-					s.getRuntime().loadAdapter(AbstractLocalJBossServerRuntime.class, new NullProgressMonitor());
-			IVMInstall install = ibjsrt.getVM();
-			ArrayList<IRuntimeClasspathEntry> list = new ArrayList<IRuntimeClasspathEntry>();
-			LaunchConfigUtils.addJREEntry(install, list);
-			list.add(LaunchConfigUtils.getRunJarRuntimeCPEntry(s));
-			return (IRuntimeClasspathEntry[]) list
-					.toArray(new IRuntimeClasspathEntry[list.size()]);
+			IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(config);
+			if( beh != null ) {
+				ISubsystemController cont = beh.getController(IControllableServerBehavior.SYSTEM_LAUNCH);
+				if( cont instanceof ILaunchConfigConfiguratorProvider ) {
+					ILaunchConfigConfigurator c = ((ILaunchConfigConfiguratorProvider)cont).getLaunchConfigurator();
+					if( c instanceof IDefaultClasspathLaunchConfigurator ) {
+						return ((IDefaultClasspathLaunchConfigurator)c).getDefaultClasspathEntries(config);
+					}
+				}
+			}
+			return new IRuntimeClasspathEntry[0]; 
 		} catch (CoreException ce) {
 			JBossServerCorePlugin.log(ce.getStatus());
 		}
