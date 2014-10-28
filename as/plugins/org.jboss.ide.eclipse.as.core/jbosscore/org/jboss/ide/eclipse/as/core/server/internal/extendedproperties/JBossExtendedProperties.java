@@ -27,6 +27,8 @@ import org.jboss.ide.eclipse.as.core.resolvers.RuntimeVariableResolver;
 import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
 import org.jboss.ide.eclipse.as.core.server.IDeploymentScannerModifier;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
+import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
+import org.jboss.ide.eclipse.as.core.server.bean.ServerBean;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossLT6ModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
@@ -164,6 +166,19 @@ public class JBossExtendedProperties extends ServerExtendedProperties {
 		
 		// IF we're AS 5, return the 5x args
 		if( isAS5 ) {
+			// Special case workaround for soa-p 5.3.1
+			ServerBean sb = new ServerBeanLoader(runtime.getLocation().toFile()).getServerBean();
+			if( sb.getBeanType().getId().equals(JBossServerType.EAP_STD.getId())) {
+				// load from the parent folder
+				sb = new ServerBeanLoader(runtime.getLocation().toFile().getParentFile()).getServerBean();
+				if( sb != null && JBossServerType.SOAP.getId().equals(sb.getBeanType().getId()) && sb.getVersion().startsWith("5.")) {  //$NON-NLS-1$
+					if( server != null)
+						return new JBossSoa5xDefaultLaunchArguments(server);
+					return new JBossSoa5xDefaultLaunchArguments(runtime);
+					
+				}
+			}
+			
 			if( server != null)
 				return new JBoss5xDefaultLaunchArguments(server);
 			return new JBoss5xDefaultLaunchArguments(runtime);
