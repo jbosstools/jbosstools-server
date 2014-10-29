@@ -744,8 +744,21 @@
       <subsystemMapping
             id="deploymentPage.standard"
             mappedId="deploymentPage.standard"
-            serverTypes="%AllJBTServerTypes">
+            serverTypes="%AllJBossServerTypes">
       </subsystemMapping>
+
+       <subsystem
+            system="deploymentPage"
+            id="deploymentPage.deployOnly"
+            name="Deployment Page"
+            class="org.jboss.ide.eclipse.as.ui.editor.internal.DeployOnlyDeploymentPageController">
+      </subsystem>
+      <subsystemMapping
+            id="deploymentPage.deployOnly"
+            mappedId="deploymentPage.standard"
+            serverTypes="org.jboss.ide.eclipse.as.systemCopyServer">
+      </subsystemMapping>
+
       
       
        <subsystem
@@ -757,7 +770,7 @@
       <subsystemMapping
             id="deploymentPage.noTemporaryFolder"
             mappedId="deploymentPage.noTemporaryFolder"
-            serverTypes="%AllJBTServerTypes">
+            serverTypes="%ServerTypesJBoss6OrLower">
       </subsystemMapping>
       
       <subsystem

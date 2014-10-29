@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
@@ -424,12 +425,7 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 	}
 	
 	protected boolean getShowRadios() {
-		// Do not show radios for deploy-only server
-		IRuntime rt = getServer().getServer().getRuntime();
-		boolean showRadios = true;
-		if( rt == null || rt.loadAdapter(IJBossServerRuntime.class, null) == null)
-			showRadios = false;
-		return showRadios;
+		return true;
 	}
 		
 	private void updateWidgets() {
@@ -577,8 +573,8 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 			id = server.getId();
 		}
 		public void execute() {
-			oldDir = deployText.getText();
-			oldTemp = tempDeployText.getText();
+			oldDir = deployText == null ? null : deployText.getText();
+			oldTemp = tempDeployText == null ? null : tempDeployText.getText();
 			String newType = newSelection == customRadio ? IDeployableServer.DEPLOY_CUSTOM :
 	 			newSelection == serverRadio ? IDeployableServer.DEPLOY_SERVER :
 	 				IDeployableServer.DEPLOY_METADATA;
@@ -739,5 +735,9 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 	
 	private static String makeRelative(String path, IRuntime runtime) {
 		return ServerUtil.makeRelative(runtime, new Path(path)).toString();
+	}
+	
+	public IStatus[] validate() {
+		return new IStatus[0];
 	}
 }
