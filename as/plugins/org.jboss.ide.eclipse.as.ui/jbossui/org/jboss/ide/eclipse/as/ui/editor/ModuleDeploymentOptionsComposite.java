@@ -494,4 +494,9 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 			return new Path(folder).append(outputName).toPortableString();
 		return outputName;
 	}
+	
+	public IStatus[] validate() {
+		return new IStatus[0];
+	}
+
 }

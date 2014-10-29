@@ -13,6 +13,8 @@ package org.jboss.ide.eclipse.as.ui.editor;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -29,9 +31,7 @@ import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
-import org.jboss.ide.eclipse.as.ui.editor.internal.ChangeModuleDeploymentPropertyCommand;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
-import org.jboss.tools.as.core.internal.modules.DeploymentModulePrefs;
 import org.jboss.tools.as.core.internal.modules.DeploymentPreferences;
 import org.jboss.tools.as.core.internal.modules.DeploymentPreferencesLoader;
 
@@ -140,5 +140,10 @@ public class DeploymentPage extends ServerEditorPart implements IServerWorkingCo
 	
 	public DeploymentPreferences getPreferences() {
 		return preferences;
+	}
+	
+	@Override
+	public IStatus[] getSaveStatus() {
+		return new IStatus[]{};
 	}
 }
