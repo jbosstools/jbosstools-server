@@ -21,6 +21,7 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
+import org.jboss.ide.eclipse.as.ui.editor.IDeploymentPageUIController;
 import org.jboss.ide.eclipse.as.ui.subsystems.IBrowseBehavior;
 import org.jboss.ide.eclipse.as.ui.subsystems.IExploreBehavior;
 import org.jboss.ide.eclipse.as.ui.subsystems.IJBossLaunchTabProvider;
@@ -79,6 +80,7 @@ public class AllSubsystemResolutionTest extends TestCase {
 				IModuleDeployPathController.SYSTEM_ID,
 				IBrowseBehavior.SYSTEM_ID,
 				IExploreBehavior.SYSTEM_ID,
+				IDeploymentPageUIController.SYSTEM_ID,
 		};
 		return subsystems;
 	}

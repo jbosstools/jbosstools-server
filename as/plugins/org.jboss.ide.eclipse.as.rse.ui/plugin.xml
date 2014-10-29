@@ -49,6 +49,22 @@
             serverTypes="%AllJBossServerTypes">
       </subsystemMapping>
     </extension>
+    
+    <extension
+         point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">    
+           <subsystem
+            system="deploymentPage"
+            id="deploymentPage.rse7x"
+            name="Deployment Page"
+            class="org.jboss.ide.eclipse.as.rse.ui.RSE7xDeploymentPageController">
+      </subsystem>
+      <subsystemMapping
+            id="deploymentPage.rse7x"
+            mappedId="deploymentPage.rse7x"
+            serverTypes="%ServerTypesJBoss7OrHigher">
+      </subsystemMapping>
+	</extension>    
+    
    
     <extension
           point="org.jboss.ide.eclipse.as.wtp.core.serverProfile">
@@ -61,8 +77,14 @@
        <serverProfile id="rse" serverTypes="%AllJBTServerTypes">
           <subsystem system="exploreBehavior" subsystem="exploreBehavior.rse"/>
           <subsystem system="browseBehavior" subsystem="browseBehavior.rse"/>
+       </serverProfile>
+       <serverProfile id="rse" serverTypes="%ServerTypesJBoss6OrLower">
           <subsystem system="deploymentPage" subsystem="deploymentPage.noTemporaryFolder"/>
        </serverProfile>
+       <serverProfile id="rse" serverTypes="%ServerTypesJBoss7OrHigher">
+          <subsystem system="deploymentPage" subsystem="deploymentPage.rse7x"/>
+       </serverProfile>
+       
     </extension>
     
     <extension
