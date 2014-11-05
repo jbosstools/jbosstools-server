@@ -22,7 +22,6 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
 Export-Package: org.jboss.ide.eclipse.archives.test,
- org.jboss.ide.eclipse.archives.test.core,
  org.jboss.ide.eclipse.archives.test.model,
  org.jboss.ide.eclipse.archives.test.projects,
  org.jboss.ide.eclipse.archives.test.util

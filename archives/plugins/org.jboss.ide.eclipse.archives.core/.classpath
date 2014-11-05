@@ -4,7 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/main"/>
 	<classpathentry kind="src" path="src/xml"/>
-	<classpathentry kind="src" path="src/eclipse"/>
 	<classpathentry exported="true" kind="lib" path="lib/truezip-6.6.jar" sourcepath="/home/rob/code/truezip/truezip/src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

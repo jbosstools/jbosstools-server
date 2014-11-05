@@ -17,13 +17,11 @@ Require-Bundle: org.apache.ant;bundle-version="1.7.1",
  org.jboss.tools.archives.scanner;bundle-version="3.5.0";visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
-Bundle-ClassPath: archivescore.jar,
- archivescore-eclipse.jar,
- lib/truezip-6.6.jar
+Bundle-ClassPath: lib/truezip-6.6.jar,
+ .
 Export-Package: de.schlichtherle.io;x-friends:="org.jboss.ide.eclipse.archives.test",
  de.schlichtherle.io.archive.spi,
  org.jboss.ide.eclipse.archives.core,
- org.jboss.ide.eclipse.archives.core.ant,
  org.jboss.ide.eclipse.archives.core.asf,
  org.jboss.ide.eclipse.archives.core.build,
  org.jboss.ide.eclipse.archives.core.model,

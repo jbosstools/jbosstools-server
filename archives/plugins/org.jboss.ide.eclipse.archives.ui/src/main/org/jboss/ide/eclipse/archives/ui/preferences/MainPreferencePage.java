@@ -32,7 +32,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
-import org.jboss.ide.eclipse.archives.core.asf.DirectoryScanner;
+import org.jboss.ide.eclipse.archives.core.asf.DirectoryScannerStringUtil;
 import org.jboss.ide.eclipse.archives.core.model.IPreferenceManager;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
 import org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages;
@@ -274,7 +274,7 @@ public class MainPreferencePage extends PropertyPage implements
 		showAllProjects.setSelection(false);
 		showNodeOnAllProjects.setSelection(false);
 		enableDefaultExcludes.setSelection(false);
-		defaultExcludes.setText(DirectoryScanner.implodeStrings(DirectoryScanner.getDefaultExcludes()));
+		defaultExcludes.setText(DirectoryScannerStringUtil.implodeStrings(DirectoryScannerStringUtil.getDefaultExcludes()));
 		if( getResourceLocationIfExists() != null ) {
 			overrideButton.setSelection(false);
 			setWidgetsEnabled(overrideButton.getSelection());

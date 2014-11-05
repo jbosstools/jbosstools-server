@@ -22,7 +22,7 @@ import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
-import org.jboss.ide.eclipse.archives.core.asf.DirectoryScanner;
+import org.jboss.ide.eclipse.archives.core.asf.DirectoryScannerStringUtil;
 
 public class PrefsInitializer extends AbstractPreferenceInitializer {
 
@@ -53,7 +53,7 @@ public class PrefsInitializer extends AbstractPreferenceInitializer {
 		prefs.putBoolean(PREF_SHOW_BUILD_ERROR_DIALOG, true);
 		prefs.putBoolean(PREF_ALWAYS_SHOW_PROJECT_EXPLORER_NODE, false);
 		prefs.putBoolean(PREF_USE_DEFAULT_EXCLUDES, true);
-		prefs.put(PREF_DEFAULT_EXCLUDE_LIST, DirectoryScanner.implodeStrings(DirectoryScanner.getDefaultExcludes()));
+		prefs.put(PREF_DEFAULT_EXCLUDE_LIST, DirectoryScannerStringUtil.implodeStrings(DirectoryScannerStringUtil.getDefaultExcludes()));
 		
 		try {
 			prefs.flush();
