@@ -44,12 +44,15 @@ public abstract class AbstractJBossJMXConnectionProvider extends AbstractConnect
 	private UnitedServerListener createUnitedListener() {
 		UnitedServerListener listener = new UnitedServerListener() {
 			public void serverChanged(ServerEvent event) {
-				IConnectionWrapper con = idToConnection.get(event.getServer().getId());
-				if( con != null ) {
-					if( serverSwitchesToState(event, IServer.STATE_STARTED)) {
-						fireAdded(con);
-					} else if( serverSwitchesToState(event, IServer.STATE_STOPPED)) {
-						fireRemoved(con);
+				if( belongsHere(event.getServer())) {
+					getConnections();
+					IConnectionWrapper con = idToConnection.get(event.getServer().getId());
+					if( con != null ) {
+						if( serverSwitchesToState(event, IServer.STATE_STARTED)) {
+							fireAdded(con);
+						} else if( serverSwitchesToState(event, IServer.STATE_STOPPED)) {
+							fireRemoved(con);
+						}
 					}
 				}
 			}
