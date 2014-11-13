@@ -133,7 +133,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 	 * the description label. 
 	 */
 	protected boolean hasDisposedWidgets() {
-		return serverExplanationLabel.isDisposed();
+		return serverExplanationLabel != null && serverExplanationLabel.isDisposed();
 	}
 	
 	
