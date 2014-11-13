@@ -225,11 +225,22 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 	
 	
 	protected void validate() {
-		boolean empty = (startText.getText().trim().length() == 0);
-		setErrorMessage(empty ? "Start Command must not be empty." : null);
-		if( !empty && supportsCommandLineShutdown ) {
-			empty = (stopText.getText().trim().length() == 0);
-			setErrorMessage(empty ? "Stop Command must not be empty." : null);
+		try {
+			if( initialConfig != null && LaunchCommandPreferences.isIgnoreLaunchCommand(ServerUtil.getServer(initialConfig))) {
+				// Should not show an error since we're ignoring launches. Should still warn, though. 
+				setErrorMessage(null);
+				String msg = "Your server is currently configured to ignore startup and shutdown actions.";
+				setWarningMessage(msg);
+			} else {
+				boolean empty = (startText.getText().trim().length() == 0);
+				setErrorMessage(empty ? "Start Command must not be empty." : null);
+				if( !empty && supportsCommandLineShutdown ) {
+					empty = (stopText.getText().trim().length() == 0);
+					setErrorMessage(empty ? "Stop Command must not be empty." : null);
+				}
+			}
+		} catch(CoreException ce) {
+			JBossServerUIPlugin.getDefault().getLog().log(new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, "Error loading details from launch configuration", ce));
 		}
 		getLaunchConfigurationDialog().updateButtons();
 	}
@@ -302,13 +313,7 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 				autoStopArgs.setEnabled(val);
 			}
 		}
-		if( val ) {
-			validate();
-		} else {
-			setErrorMessage(null);
-			String msg = "Your server is currently configured to ignore startup and shutdown actions.";
-			setWarningMessage(msg);
-		}
+		validate();
 		updateLaunchConfigurationDialog();
 	}
 	
