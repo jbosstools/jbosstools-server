@@ -18,6 +18,7 @@ import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.server.IDelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ISubsystemController;
 
 /**
  * TODO These methods should be put into ServerConverter
@@ -50,5 +51,23 @@ public class JBossServerBehaviorUtils {
 		}
 		return behavior;
 	}
-	
+
+	/**
+	 * Get a controller type for a given server and subsystem that conforms to a class, or null if not possible 
+	 * @param server
+	 * @param id
+	 * @param clazz
+	 * @return
+	 * @throws CoreException
+	 */
+	public static < T > T getController(IServerAttributes server, String id, Class< T > clazz) throws CoreException {
+		IControllableServerBehavior behavior = getControllableBehavior(server);
+		if (behavior != null) {
+			ISubsystemController controller = behavior.getController(id);
+			if (controller != null && clazz.isAssignableFrom(controller.getClass())) {
+				return (T)controller;
+			}
+		}
+		return null;
+	}
 }
