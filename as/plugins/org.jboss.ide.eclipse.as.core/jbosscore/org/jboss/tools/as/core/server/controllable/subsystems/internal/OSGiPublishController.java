@@ -31,6 +31,7 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBeha
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPrimaryPublishController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishControllerDelegate;
+import org.jboss.tools.as.core.server.controllable.util.PublishControllerUtility;
 
 public class OSGiPublishController extends AbstractSubsystemController implements IPublishControllerDelegate {
 
@@ -74,6 +75,10 @@ public class OSGiPublishController extends AbstractSubsystemController implement
 	@Override
 	public int publishModule(int kind, int deltaKind, IModule[] module,
 			IProgressMonitor monitor) throws CoreException {
+		int publishType = PublishControllerUtility.getPublishType(getServer(), module, kind, deltaKind);
+		if( publishType == PublishControllerUtility.REMOVE_PUBLISH){
+			return removeModule(module, monitor);
+		}
 		
 		IDeployableServer server2 = ServerConverter.getDeployableServer(getServer());
 		IPath metadataLoc = getMetadataTemporaryLocation(getServer());
@@ -103,6 +108,14 @@ public class OSGiPublishController extends AbstractSubsystemController implement
 		return IServer.PUBLISH_STATE_UNKNOWN;
 	}
 
+	private int removeModule(IModule[] module, IProgressMonitor monitor) throws CoreException {
+		IPrimaryPublishController pc = JBossServerBehaviorUtils.getController(getServer(), IPublishController.SYSTEM_ID, IPrimaryPublishController.class);
+		if( pc != null) {
+			return pc.removeModule(module, monitor);
+		}
+		return IServer.PUBLISH_STATE_UNKNOWN;
+	}
+	
 	private int transferBuiltModule(IModule[] module, IPath srcFile, IProgressMonitor monitor) throws CoreException {
 		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(getServer());
 		if( beh != null ) {
