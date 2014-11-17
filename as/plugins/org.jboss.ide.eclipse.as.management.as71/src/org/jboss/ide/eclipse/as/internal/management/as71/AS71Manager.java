@@ -118,15 +118,21 @@ public class AS71Manager {
 	
 	public IJBoss7DeploymentResult undeploySync(String name, boolean removeFile, IProgressMonitor monitor)
 			throws JBoss7ManangerException {
+		monitor.beginTask("Undeploy via management: " + name, 100);
 		IJBoss7DeploymentResult result = undeploy(name, removeFile);
 		result.getStatus();
+		monitor.worked(100);
+		monitor.done();
 		return result;
 	}
 
 	public IJBoss7DeploymentResult deploySync(String name, File file, boolean add, IProgressMonitor monitor)
 			throws JBoss7ManangerException {
+		monitor.beginTask("Deploy via management: " + name, 100);
 		IJBoss7DeploymentResult result = deploy(name, file, add);
 		result.getStatus();
+		monitor.worked(100);
+		monitor.done();
 		return result;
 	}
 
