@@ -45,6 +45,7 @@ public class JBossModulesDefaultClasspathModel extends InternalRuntimeClasspathM
 		sets.addAll(Arrays.asList(getDefaultJBossModulesEntries()));
 		sets.add(createModulePath("javax.batch.api")); //$NON-NLS-1$ 
 		sets.add(createModulePath("javax.websocket.api")); //$NON-NLS-1$ 
+		sets.add(createModulePath("javax.json.api")); //$NON-NLS-1$ 
 		return (IRuntimePathProvider[]) sets.toArray(new IRuntimePathProvider[sets.size()]);
 	}
 	
