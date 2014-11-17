@@ -240,15 +240,17 @@ public class ManagementPublishController extends AbstractSubsystemController
 			return removeModule(module, monitor);
 		}
 		
-		
-		monitor.beginTask("Publishing " + module[0].getName(), 1000); //$NON-NLS-1$
-
+		// ServerBehaviourDelegate already started this monitor with a 1000 total work to do
+		monitor.setTaskName("Publishing " + module[0].getName()); //$NON-NLS-1$
 		
 		boolean isBinaryObject = ServerModelUtilities.isBinaryModule(module);
 		File[] toTransfer = null;
 		if( !isBinaryObject ) {
-			File file = zipLocally(module[0], publishType, ProgressMonitorUtil.submon(monitor, 100));
+			monitor.setTaskName("Zipping module: " + module[0].getName()); //$NON-NLS-1$
+			IProgressMonitor submon = ProgressMonitorUtil.submon(monitor, 200);
+			File file = zipLocally(module[0], publishType, submon);
 			toTransfer = new File[]{file};
+			submon.done();
 		} else {
 			IModuleResource[] resources = ModuleResourceUtil.getMembers(module[0]);
 			// How to handle binary modules?? 
@@ -262,22 +264,28 @@ public class ManagementPublishController extends AbstractSubsystemController
 				}
 			}
 			toTransfer = (File[]) fileList.toArray(new File[fileList.size()]);
+			monitor.worked(200);
 		}
 		
 		if( toTransfer != null ) {
 			MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL, "Deployment of module " + module[0].getName() + " has failed", null);  //$NON-NLS-1$//$NON-NLS-2$
-			IProgressMonitor transferMonitor = ProgressMonitorUtil.submon(monitor, 900);
+			IProgressMonitor transferMonitor = ProgressMonitorUtil.submon(monitor, 800);
 			transferMonitor.beginTask("Transfering " + module[0].getName(), 100*toTransfer.length); //$NON-NLS-1$
 			for( int i = 0; i < toTransfer.length; i++ ) {
+
 				// Maybe name will be customized in UI? 
 				JBoss7DeploymentState state = getService().getDeploymentState(managementDetails, toTransfer[i].getName());
 				if( state != JBoss7DeploymentState.NOT_FOUND) {
-					IJBoss7DeploymentResult removeResult = getService().undeploySync(managementDetails, toTransfer[i].getName(), true,  ProgressMonitorUtil.submon(transferMonitor, 10));
+					monitor.setTaskName("Undeploying: " + toTransfer[i].getName()); //$NON-NLS-1$
+					IJBoss7DeploymentResult removeResult = getService().undeploySync(managementDetails, toTransfer[i].getName(), true,  ProgressMonitorUtil.submon(transferMonitor, 5));
 					ms.add(removeResult.getStatus());
+				} else {
+					transferMonitor.worked(5);
 				}
 				
+				monitor.setTaskName("Transfering: " + toTransfer[i].getName()); //$NON-NLS-1$
 				IJBoss7DeploymentResult result = getService().deploySync(managementDetails, toTransfer[i].getName(), toTransfer[i], 
-						true, ProgressMonitorUtil.submon(transferMonitor, 100));
+						true, ProgressMonitorUtil.submon(transferMonitor, 95));
 				IStatus s = result.getStatus();
 				ms.add(s);
 			}
@@ -285,6 +293,7 @@ public class ManagementPublishController extends AbstractSubsystemController
 				return IServer.PUBLISH_STATE_NONE;
 			}
 			ServerLogger.getDefault().log(getServer(), ms);
+			transferMonitor.done();
 			return IServer.PUBLISH_STATE_FULL;
 		} else {
 			// TODO error?
@@ -308,10 +317,13 @@ public class ManagementPublishController extends AbstractSubsystemController
 	public void publishServer(int kind, IProgressMonitor monitor)
 			throws CoreException {
 		// intentionally blank
+		monitor.beginTask("", 100); //$NON-NLS-1$
+		monitor.done();
 	}
 	
 	
 	private File zipLocally(IModule module, int publishType, IProgressMonitor monitor) throws CoreException {
+		monitor.beginTask("Zip module " + module.getName(), 100); //$NON-NLS-1$
 		// Zip into a temporary folder, then transfer to the proper location
 		IPath localTempLocation = getMetadataTemporaryLocation(getServer());
 		String name = getDeploymentOutputName(getServer(), module);
@@ -325,6 +337,7 @@ public class ManagementPublishController extends AbstractSubsystemController
 		} else if( publishType == PublishControllerUtility.INCREMENTAL_PUBLISH) {
 			result = runner.incrementalPublishModule(ProgressMonitorUtil.submon(monitor, 100));
 		}
+		monitor.done();
 		if( result != null && result.isOK()) {
 			if( tmpArchive.toFile().exists()) {
 				return tmpArchive.toFile();
