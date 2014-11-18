@@ -23,6 +23,51 @@
 		<module>site</module>
 	</modules>
 
+	<build>
+	  <plugins>
+            <plugin>
+              <groupId>org.eclipse.tycho</groupId>
+              <artifactId>tycho-surefire-plugin</artifactId>
+              <configuration>
+                  <includes>
+                    <include>**/*TestSuite.class</include>
+                  </includes>
+                  <excludes>
+                    <exclude>**/Abstract*.class</exclude>
+                    <exclude>**/*IntegrationTestSuite.class</exclude>
+                  </excludes>
+                </configuration>
+              </plugin>	
+	  </plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>itest</id>
+			<properties>
+				<!-- timeout in seconds; 3000s = 50m -->
+				<surefire.timeout>3000</surefire.timeout>
+			</properties>
+			<build>
+			  <plugins>
+		            <plugin>
+		              <groupId>org.eclipse.tycho</groupId>
+		              <artifactId>tycho-surefire-plugin</artifactId>
+		              <configuration>
+		                  <includes>
+		                    <include>**/*IntegrationTestSuite.class</include>
+		                    <include>**/*TestSuite.class</include>
+		                  </includes>
+		                  <excludes>
+		                    <exclude>**/Abstract*.class</exclude>
+		                  </excludes>
+		                </configuration>
+		              </plugin>	
+			  </plugins>
+			</build>
+		</profile>
+	</profiles>
+
 	<repositories>
 		<repository>
 			<id>jbosstools-base</id>
