@@ -426,7 +426,7 @@ public class ServerCreationTestUtils extends Assert {
 	private static void createStandaloneXML(IPath loc) throws IOException {
 		IPath standalonexml = loc.append("standalone").append("configuration").append("standalone.xml");
 		standalonexml.toFile().getParentFile().mkdirs();
-		standalonexml.toFile().createNewFile();
+		IOUtil.setContents(standalonexml.toFile(), "<server></server>");
 	}
 	
 	

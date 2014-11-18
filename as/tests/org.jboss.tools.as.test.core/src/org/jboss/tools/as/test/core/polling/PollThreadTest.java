@@ -28,8 +28,6 @@ import org.jboss.ide.eclipse.as.core.server.IPollResultListener;
 import org.jboss.ide.eclipse.as.core.server.IProvideCredentials;
 import org.jboss.ide.eclipse.as.core.server.IServerProvider;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
-import org.jboss.ide.eclipse.as.core.server.IServerStatePoller.PollingException;
-import org.jboss.ide.eclipse.as.core.server.IServerStatePoller.RequiresInfoException;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManagerServicePoller;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -56,7 +54,7 @@ public class PollThreadTest extends TestCase {
 	}
 	
 	private IServer createServer(String addendum) throws CoreException {
-		return ServerCreationTestUtils.createServerWithRuntime(IJBossToolingConstants.SERVER_AS_32, 
+		return ServerCreationTestUtils.createMockServerWithRuntime(IJBossToolingConstants.SERVER_AS_32, 
 				IJBossToolingConstants.SERVER_AS_32 + addendum);
 	}
 		

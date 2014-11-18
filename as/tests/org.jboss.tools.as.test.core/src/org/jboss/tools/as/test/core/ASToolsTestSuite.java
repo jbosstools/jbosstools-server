@@ -10,32 +10,13 @@
  ******************************************************************************/
 package org.jboss.tools.as.test.core;
 
-import org.jboss.tools.as.test.core.catalog.CatalogMissingEntriesTest;
-import org.jboss.tools.as.test.core.catalog.CatalogValidationTest;
-import org.jboss.tools.as.test.core.classpath.ClasspathSuite;
-import org.jboss.tools.as.test.core.parametized.server.ParametizedSuite;
-import org.jboss.tools.as.test.core.polling.PollThreadTest;
-import org.jboss.tools.as.test.core.portal.LaunchProjectOnJPP6Test;
-import org.jboss.tools.as.test.core.runtime.RuntimeSuite;
-import org.jboss.tools.as.test.core.runtimedetect.RuntimeDetectionTest;
-import org.jboss.tools.as.test.core.subsystems.SubsystemSuite;
-import org.jboss.tools.as.test.core.utiltests.UtilsSuite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	SubsystemSuite.class,
-	ParametizedSuite.class,
-	RuntimeSuite.class,
-	UtilsSuite.class,
-	PollThreadTest.class,
-	LaunchProjectOnJPP6Test.class,
-	ClasspathSuite.class,
-	RuntimeDetectionTest.class,
-	CatalogMissingEntriesTest.class,
-	CatalogValidationTest.class
+	ASToolsUnitTestSuite.class,
 })
 public class ASToolsTestSuite {
 }

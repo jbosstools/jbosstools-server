@@ -17,7 +17,6 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
 	PublishWeb2DeletesWeb1LibsTest.class, 
-	RepublishDefectTest.class,
 	ClosedProjectPublishTest.class,
 	PublishRemovalMarkerDefectTest.class,
 	UnchangedUtilRestartedDefectTest.class,

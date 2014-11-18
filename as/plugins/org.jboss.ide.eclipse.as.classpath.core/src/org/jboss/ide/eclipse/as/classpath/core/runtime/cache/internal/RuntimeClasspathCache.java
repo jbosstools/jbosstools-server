@@ -81,7 +81,6 @@ public class RuntimeClasspathCache implements IRuntimeLifecycleListener {
 
 		IJBossServerRuntime jbsrt = (IJBossServerRuntime)runtime.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
 		if( jbsrt == null ) {
-			logError(runtime);
 			return null;
 		}
 		IPath loc = runtime.getLocation();

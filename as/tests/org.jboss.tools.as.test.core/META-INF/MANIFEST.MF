@@ -85,6 +85,22 @@ Require-Bundle: org.eclipse.ui,
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.jboss.tools.as.test.core,
+ org.jboss.tools.as.test.core.catalog,
+ org.jboss.tools.as.test.core.classpath,
+ org.jboss.tools.as.test.core.classpath.modules,
  org.jboss.tools.as.test.core.internal,
  org.jboss.tools.as.test.core.internal.utils,
- org.jboss.tools.as.test.core.internal.utils.wtp
+ org.jboss.tools.as.test.core.internal.utils.classpath,
+ org.jboss.tools.as.test.core.internal.utils.wtp,
+ org.jboss.tools.as.test.core.launch,
+ org.jboss.tools.as.test.core.parametized.server,
+ org.jboss.tools.as.test.core.parametized.server.publishing,
+ org.jboss.tools.as.test.core.parametized.server.publishing.defect,
+ org.jboss.tools.as.test.core.parametized.server.publishing.sar,
+ org.jboss.tools.as.test.core.polling,
+ org.jboss.tools.as.test.core.portal,
+ org.jboss.tools.as.test.core.runtime,
+ org.jboss.tools.as.test.core.runtimedetect,
+ org.jboss.tools.as.test.core.subsystems,
+ org.jboss.tools.as.test.core.subsystems.impl,
+ org.jboss.tools.as.test.core.utiltests

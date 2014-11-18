@@ -79,6 +79,7 @@ public class JBoss70DefaultLaunchArguments extends JBossDefaultLaunchArguments {
 			SPACE + QUOTE + SYSPROP + JB7_BOOT_LOG_ARG + EQ + bootLog.toString() + QUOTE + 
 			SPACE + QUOTE + SYSPROP + JB7_LOGGING_CONFIG_FILE + EQ + 
 			"file:" + logConfig.toString() + QUOTE + //$NON-NLS-1$  
+			SPACE + SYSPROP + "java.util.logging.manager=org.jboss.logmanager.LogManager" +  //$NON-NLS-1$
 			SPACE + QUOTE + SYSPROP + JBOSS_HOME_DIR + EQ + serverHome.toString() + QUOTE + SPACE;
 		return ret;
 	}
