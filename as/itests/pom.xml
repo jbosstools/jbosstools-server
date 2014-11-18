@@ -15,9 +15,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<jbosstools.test.jre.7>/qa/tools/opt/jdk1.7.0_last</jbosstools.test.jre.7>
 	</properties>
 	<modules>
-		<module>org.jboss.ide.eclipse.as.archives.integration.test</module>		
-		<module>org.jboss.tools.as.test.core</module>
-		<module>org.jboss.ide.eclipse.as.ui.test</module>
+		<module>org.jboss.ide.eclipse.as.management.as7.tests</module>
 	</modules>
 </project>
 	

@@ -8,19 +8,24 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.as.test.core.classpath;
+package org.jboss.ide.eclipse.as.integration.tests;
 
-import org.jboss.tools.as.test.core.classpath.modules.JBossModulesClasspathTest;
-import org.jboss.tools.as.test.core.classpath.modules.LayeredModulePathFactoryTest;
+import org.jboss.ide.eclipse.as.integration.tests.server.publishing.PublishingSuite;
+import org.jboss.ide.eclipse.as.integration.tests.server.publishing.RepublishDefectTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	JEEClasspathContainerTest.class,
-	LayeredModulePathFactoryTest.class,
-	JBossModulesClasspathTest.class
+	ServerHomeTest.class, 
+	CreateServerCheckDefaultsTest.class,
+	ProjectRuntimeClasspathTest.class,
+	ServerBeanLoaderIntegrationTest.class,
+	PublishingSuite.class,
+	RepublishDefectTest.class,
+	RuntimeJarUtilityTest.class,
+	EJB3SupportVerifierTest.class,
 })
-public class ClasspathSuite {
+public class ASToolsIntegrationTestSuite {
 }

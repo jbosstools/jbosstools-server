@@ -8,10 +8,8 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.as.test.core.parametized.server;
+package org.jboss.ide.eclipse.as.integration.tests.server.publishing;
 
-import org.jboss.tools.as.test.core.launch.DeploymentScannerAdditionsTest;
-import org.jboss.tools.as.test.core.launch.MockArgsTests;
 import org.jboss.tools.as.test.core.parametized.server.publishing.defect.PublishDefectSuite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -19,17 +17,18 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	ServerRuntimeArrayConstantsTest.class,
-	ServerBeanLoader3Test.class,
-	ServerModeRuntimeDetailsTest.class,
-	CreateRuntimeTwiceTest.class,
-	XPathModelTest.class,
-	MockArgsTests.class, 
-	DeploymentScannerAdditionsTest.class,
-	PublishDefectSuite.class,
-	ServerBeanRuntimeMatcherTest.class,
-	DownloadRuntimeMatcherTest.class,
-	ServerDefaultLaunchArgsTest.class,
+	DeploymentAssemblyArchivePathVarTest.class,
+ 	DeploymentAssemblyArchivePathVarWarTest.class,
+	DeploymentAssemblyArchivePathVarNestedWarTest.class,
+	DeploymentAssemblyExternalArchiveVarTest.class,
+	DeploymentAssemblyExternalArchiveVarWarTest.class,
+	DeploymentAssemblyExternalArchiveVarNestedWarTest.class,
+	DeploymentAssemblyWorkspaceArchiveVarTest.class,
+	DeploymentAssemblyWorkspaceArchiveVarWarTest.class,
+	DeploymentAssemblyWorkspaceArchiveVarNestedWarTest.class,
+	DeploymentAssemblyFilesetReferenceTest.class,
+	SingleDeployableFileTest.class,
+	SingleDeployableFolderTest.class,
 })
-public class ParametizedSuite {
+public class PublishingSuite {
 }
