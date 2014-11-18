@@ -30,15 +30,12 @@ import junit.framework.TestCase;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
-import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.jboss.tools.as.test.core.ASMatrixTests;
@@ -124,44 +121,7 @@ public class ProjectRuntimeClasspathTest extends TestCase {
 		}
 	}
 	
-	@Test
-	public void testJBIDE1657EquivilentEntries() {
-		try {
-			IJavaProject jp = JavaCore.create(project);
-	
-			// lets try a runtime
-			IRuntime createdRuntime = server.getRuntime();
-			ProjectRuntimeUtil.setTargetRuntime(createdRuntime, project);
-			IClasspathEntry[] raw1 = jp.getRawClasspath();
-			IClasspathEntry[] resolved1 = jp.getResolvedClasspath(false);
-			
-			IClasspathEntry[] raw2 = cloneAndReplace(raw1, createdRuntime.getName());
-			jp.setRawClasspath(raw2, new NullProgressMonitor());
-			IClasspathEntry[] resolved2 = jp.getResolvedClasspath(false);
-			assertEquals("New classpath container path should return the same classpath entries as the old. ", 
-					resolved1.length , resolved2.length);
-			assertTrue("Should be more than one classpath entry", resolved1.length > 0);
-		} catch( CoreException ce ) {
-			ce.printStackTrace();
-			fail(ce.getMessage());
-		}
-	}
 
-	/* Replace the jst.server.core.container entry with one from jbt. They should be 100% equivilent */
-	private IClasspathEntry[] cloneAndReplace(IClasspathEntry[] raw1, String rtName) {
-		IClasspathEntry[] raw2 = new IClasspathEntry[raw1.length];
-		for( int i = 0; i < raw1.length; i++ ) {
-			if( !raw1[i].getPath().segment(0).equals("org.eclipse.jst.server.core.container")) {
-				raw2[i]=raw1[i];
-			} else {
-				 IPath containerPath = new Path("org.jboss.ide.eclipse.as.classpath.core.runtime.ProjectRuntimeInitializer");
-				 containerPath = containerPath.append(rtName);
-				 raw2[i] = JavaCore.newContainerEntry(containerPath);
-			}
-		}
-		return raw2;
-	}
-	
 	protected void verifyPostRuntimeCPE(IJavaProject jp) throws CoreException {
 		IClasspathEntry[] entries = jp.getRawClasspath();
 		String[] required = new String[] { 
