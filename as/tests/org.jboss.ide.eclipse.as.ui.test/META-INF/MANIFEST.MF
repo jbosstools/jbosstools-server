@@ -4,7 +4,7 @@ Bundle-Name: %BundleName
 Bundle-Vendor: %BundleVendor
 Bundle-Localization: plugin
 Bundle-SymbolicName: org.jboss.ide.eclipse.as.ui.test;singleton:=true
-Bundle-Version: 3.0.0.qualifier
+Bundle-Version: 3.0.1.qualifier
 Require-Bundle: org.junit;bundle-version="4.5",
  org.eclipse.ui,
  org.jboss.tools.tests,
