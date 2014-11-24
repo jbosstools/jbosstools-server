@@ -53,7 +53,7 @@ public class ConfigNameResolverTest extends TestCase {
 	
 	@Before
 	public void setUp() throws CoreException {
-		server = ServerCreationTestUtils.createServerWithRuntime(serverType, getClass().getName() + serverType);
+		server = ServerCreationTestUtils.createMockServerWithRuntime(serverType, getClass().getName() + serverType);
 	}
 
 	@After

@@ -13,6 +13,6 @@
       %license
    </license>
 
-	<plugin id="org.jboss.tools.wtp.runtimes.tomcat.tests" download-size="0" install-size="0" version="0.0.0" />
+	<plugin id="org.jboss.tools.wtp.runtimes.tomcat.itests" download-size="0" install-size="0" version="0.0.0" />
 
 </feature>

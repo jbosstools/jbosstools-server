@@ -16,6 +16,7 @@ import java.net.URL;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
@@ -40,10 +41,12 @@ public class BundleUtils {
 	 * @return
 	 */
 	public static File getFileLocation(String bundleId, String path) throws CoreException {
+		
 		Bundle bundle = Platform.getBundle(bundleId);
+		URL url1 = bundle.getEntry(path);
 		URL url = null;
 		try {
-			url = FileLocator.resolve(bundle.getEntry(path));
+			url = FileLocator.toFileURL(url1);
 		} catch (IOException e) {
 			String msg = "Cannot find file " + path + " in " + ASMatrixTests.PLUGIN_ID;
 			IStatus status = new Status(IStatus.ERROR, ASMatrixTests.PLUGIN_ID, msg, e);

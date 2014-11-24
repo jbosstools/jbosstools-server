@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.jboss.tools.wtp</groupId>
+		<artifactId>itests</artifactId>
+		<version>1.2.0-SNAPSHOT</version>
+	</parent>
+	<groupId>org.jboss.tools.wtp.itests</groupId>
+	<artifactId>org.jboss.tools.wtp.runtimes.tomcat.itests</artifactId>
+	<packaging>eclipse-test-plugin</packaging>
+
+	<properties>
+		<!-- some variables for tomcat testing so we don't have to hard code here AND in AbstractTomcatDetectionTest -->
+		<!-- Tomcat 6 version is not necessarily the latest as we need to use a *stable* url (from http://archive.apache.org/dist/)-->
+		<jbosstools.test.tomcat.version.6>6.0.39</jbosstools.test.tomcat.version.6>
+		<jbosstools.test.tomcat.version.7>7.0.54</jbosstools.test.tomcat.version.7>
+		<jbosstools.test.tomcat.version.8>8.0.8</jbosstools.test.tomcat.version.8>
+
+		<!-- jbosstools.test.jre.7 is defined in root pom for convenience of reuse -->
+		<systemProperties> -Djbosstools.test.jre.7=${jbosstools.test.jre.7} -Djbosstools.test.jre.8=${jbosstools.test.jre.8} -Dbasedir=${project.basedir} -Djbosstools.test.tomcat.version.6=${jbosstools.test.tomcat.version.6} -Djbosstools.test.tomcat.version.7=${jbosstools.test.tomcat.version.7} -Djbosstools.test.tomcat.version.8=${jbosstools.test.tomcat.version.8} </systemProperties>
+	</properties>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>install-tomcat78</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.apache.tomcat</groupId>
+									<artifactId>tomcat</artifactId>
+									<version>${jbosstools.test.tomcat.version.7}</version>
+									<type>zip</type>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.apache.tomcat</groupId>
+									<artifactId>tomcat</artifactId>
+									<version>${jbosstools.test.tomcat.version.8}</version>
+									<type>zip</type>
+								</artifactItem>
+							</artifactItems>
+							<skip>${skipITests}</skip>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.googlecode.maven-download-plugin</groupId>
+				<artifactId>maven-download-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>install-tomcat6</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>wget</goal>
+						</goals>
+						<configuration>
+							<url>http://archive.apache.org/dist/tomcat/tomcat-6/v${jbosstools.test.tomcat.version.6}/bin/apache-tomcat-${jbosstools.test.tomcat.version.6}.zip</url>
+							<unpack>true</unpack>
+							<md5>a3d585de50bfe7998a2034ec6ead0b09</md5>
+							<skip>${skipITests}</skip>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-dependency-plugin</artifactId>
+										<versionRange>[2.4,)</versionRange>
+										<goals>
+											<goal>unpack</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute>
+											<runOnConfiguration>true</runOnConfiguration>
+											<runOnIncremental>false</runOnIncremental>
+										</execute>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>com.googlecode.maven-download-plugin</groupId>
+										<artifactId>maven-download-plugin</artifactId>
+										<versionRange>[1.0,)</versionRange>
+										<goals>
+											<goal>wget</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute>
+											<runOnConfiguration>true</runOnConfiguration>
+											<runOnIncremental>false</runOnIncremental>
+										</execute>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+</project>

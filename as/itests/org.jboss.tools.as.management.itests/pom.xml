@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion> 
+	<parent>
+		<groupId>org.jboss.tools.as</groupId>
+		<artifactId>itests</artifactId>
+		<version>3.1.0-SNAPSHOT</version>
+	</parent>
+	<groupId>org.jboss.tools.as.itests</groupId>
+	<artifactId>org.jboss.tools.as.management.itests</artifactId> 
+	<packaging>eclipse-test-plugin</packaging>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-surefire-plugin</artifactId>
+				<configuration>
+					<testSuite>org.jboss.tools.as.management.itests</testSuite>
+					<testClass>org.jboss.tools.as.management.itests.AS7IntegrationTestSuite</testClass>
+					<dependencies>
+						<dependency>
+							<type>eclipse-plugin</type>
+							<artifactId>org.jboss.ide.eclipse.as.management.as71</artifactId>
+							<version>0.0.0</version>
+						</dependency>
+					</dependencies>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

@@ -12,25 +12,21 @@ package org.jboss.tools.as.test.core.parametized.server;
 
 import org.jboss.tools.as.test.core.launch.DeploymentScannerAdditionsTest;
 import org.jboss.tools.as.test.core.launch.MockArgsTests;
-import org.jboss.tools.as.test.core.parametized.server.publishing.PublishingSuite;
+import org.jboss.tools.as.test.core.parametized.server.publishing.defect.PublishDefectSuite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	ServerHomeTest.class,
 	ServerRuntimeArrayConstantsTest.class,
 	ServerBeanLoader3Test.class,
-	CreateServerCheckDefaultsTest.class,
 	ServerModeRuntimeDetailsTest.class,
-	ProjectRuntimeClasspathTest.class,
-	RuntimeJarUtilityTest.class, 
 	CreateRuntimeTwiceTest.class,
 	XPathModelTest.class,
 	MockArgsTests.class, 
 	DeploymentScannerAdditionsTest.class,
-	PublishingSuite.class,
+	PublishDefectSuite.class,
 	ServerBeanRuntimeMatcherTest.class,
 	DownloadRuntimeMatcherTest.class,
 	ServerDefaultLaunchArgsTest.class,

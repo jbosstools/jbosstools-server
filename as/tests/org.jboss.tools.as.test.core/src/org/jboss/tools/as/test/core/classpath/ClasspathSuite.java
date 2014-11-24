@@ -19,7 +19,6 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
 	JEEClasspathContainerTest.class,
-	EJB3SupportVerifierTest.class,
 	LayeredModulePathFactoryTest.class,
 	JBossModulesClasspathTest.class
 })

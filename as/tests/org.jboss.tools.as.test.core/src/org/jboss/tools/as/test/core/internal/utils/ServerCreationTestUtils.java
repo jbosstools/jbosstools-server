@@ -223,7 +223,8 @@ public class ServerCreationTestUtils extends Assert {
 			loc.append("server").append(configurationName).toFile().mkdirs();
 			IPath configConf = loc.append("server").append(configurationName).append("conf");
 			configConf.toFile().mkdirs();
-			File twiddleLoc = BundleUtils.getFileLocation("serverMock/" + twiddleJar);
+			
+        	File twiddleLoc = BundleUtils.getFileLocation("serverMock/" + twiddleJar);
 			FileUtil.fileSafeCopy(twiddleLoc, loc.append("bin").append("twiddle.jar").toFile());
 			File runJar = BundleUtils.getFileLocation("serverMock/run.jar");
 			FileUtil.fileSafeCopy(runJar, loc.append("bin").append("run.jar").toFile());
@@ -426,7 +427,7 @@ public class ServerCreationTestUtils extends Assert {
 	private static void createStandaloneXML(IPath loc) throws IOException {
 		IPath standalonexml = loc.append("standalone").append("configuration").append("standalone.xml");
 		standalonexml.toFile().getParentFile().mkdirs();
-		standalonexml.toFile().createNewFile();
+		IOUtil.setContents(standalonexml.toFile(), "<server></server>");
 	}
 	
 	

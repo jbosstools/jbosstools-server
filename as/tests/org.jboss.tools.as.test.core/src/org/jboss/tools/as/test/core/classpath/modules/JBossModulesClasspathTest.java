@@ -27,6 +27,7 @@ import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.validation.ValidationFramework;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.IRuntimePathProvider;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.internal.ProjectRuntimeClasspathProvider;
@@ -39,12 +40,19 @@ import org.jboss.tools.as.test.core.internal.utils.wtp.JavaEEFacetConstants;
 import org.jboss.tools.as.test.core.internal.utils.wtp.OperationTestCase;
 import org.jboss.tools.test.util.JobUtils;
 import org.junit.After;
+import org.junit.Before;
 
 public class JBossModulesClasspathTest  extends TestCase {
 
+	@Before
+	public void setUp() throws Exception {
+		ValidationFramework.getDefault().suspendAllValidation(true);
+	}
+	
 	@After
 	public void tearDown() throws Exception {
 		ASMatrixTests.getDefault().cleanup();
+		ValidationFramework.getDefault().suspendAllValidation(false);
 	} 
 	
 	/**

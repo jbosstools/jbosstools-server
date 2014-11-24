@@ -92,27 +92,6 @@ public class ServerBeanLoader3Test extends TestCase {
 		expected.put(ServerCreationTestUtils.TEST_SERVER_TYPE_WONKA_1, new Data(JBossServerType.UNKNOWN_AS72_PRODUCT, "1.0", "WONKA"));
 		// NEW_SERVER_ADAPTER
 	}
-	
-	/*
-	 * Test the server bean loader using runtime home flags passed in to the build
-	 */
-	@Test
-	public void testServerBeanLoaderFromRuntimes() {
-		String fLoc = TestConstants.getServerHome(serverType);
-		if( fLoc == null ) {
-			if( Arrays.asList(IJBossToolingConstants.ALL_JBOSS_SERVERS).contains(serverType)) {
-				// This type should be tested but has no server-home, so fail
-				fail("Test Suite has no server home for server type " + serverType);
-			}
-			// IF we're not one of the standard types, we're a test type (jpp, gate-in, etc), and this isn't a fail
-			return;
-		}
-		Data p = expected.get(serverType);
-		inner_testServerBeanLoaderForFolder(new File(fLoc), p.type, p.version, p.overrideId);
-		if( p.type.equals(JBossServerType.EAP_STD)) {
-			inner_testServerBeanLoaderForFolder(new File(fLoc).getParentFile(), JBossServerType.EAP, p.version, p.overrideId);
-		}
-	}
 
 	/*
 	 * Create a mock folder and verify the mock folder matches also
@@ -126,7 +105,7 @@ public class ServerBeanLoader3Test extends TestCase {
 		inner_testServerBeanLoaderForFolder(serverDir, p.type, p.version, p.overrideId);
 	}
 	
-	private void inner_testServerBeanLoaderForFolder(File serverDir, JBossServerType expectedType, String expectedVersion, String underlyingId) {
+	protected void inner_testServerBeanLoaderForFolder(File serverDir, JBossServerType expectedType, String expectedVersion, String underlyingId) {
 		assertNotNull(serverType);
 		IServerType itype = ServerCore.findServerType(expectedType.getServerAdapterTypeId(expectedVersion));
 		if( itype == null )

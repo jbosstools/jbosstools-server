@@ -14,7 +14,8 @@
 	<modules>
 		<module>../archives/tests</module>
 		<module>../as/tests</module>
+		<module>../as/itests</module>
 		<module>../jmx/tests</module>
-		<module>../wtp/tests</module>
+		<module>../wtp/itests</module>
 	</modules>
 </project>
