@@ -13,7 +13,6 @@ package org.jboss.ide.eclipse.archives.test;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.jboss.ide.eclipse.archives.test.core.ant.SimpleAntTest;
 import org.jboss.ide.eclipse.archives.test.model.DirectoryScannerModelTest;
 import org.jboss.ide.eclipse.archives.test.model.DirectoryScannerRegexTest;
 import org.jboss.ide.eclipse.archives.test.model.DirectoryScannerTest;
@@ -47,7 +46,6 @@ public class ArchivesTestSuite extends TestSuite {
         suite.addTestSuite(DirectoryScannerTest.class);
         suite.addTestSuite(ModelCreationTest.class);
         suite.addTestSuite(ModelTruezipBridgeTest.class);
-        suite.addTestSuite(SimpleAntTest.class);
         suite.addTestSuite(FilesetMatchesPathTest.class);
         
         // jiras
