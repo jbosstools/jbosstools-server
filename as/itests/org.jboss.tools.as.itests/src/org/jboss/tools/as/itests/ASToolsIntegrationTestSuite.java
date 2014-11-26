@@ -19,15 +19,18 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
+	// First run specific tests
 	ServerHomeTest.class, 
 	CreateServerCheckDefaultsTest.class,
 	ProjectRuntimeClasspathTest.class,
 	ServerBeanLoaderIntegrationTest.class,
-	PublishingSuite.class,
 	RepublishDefectTest.class,
 	RuntimeJarUtilityTest.class,
 	EJB3SupportVerifierTest.class,
 	ProjectArchivesBuildDeployTest.class,
+	
+	// Then run extensive suites
+	PublishingSuite.class,
 })
 public class ASToolsIntegrationTestSuite {
 }

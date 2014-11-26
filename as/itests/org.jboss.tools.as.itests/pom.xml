@@ -9,16 +9,4 @@
 	<groupId>org.jboss.tools.as.itests</groupId>
 	<artifactId>org.jboss.tools.as.itests</artifactId> 
 	<packaging>eclipse-test-plugin</packaging>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-surefire-plugin</artifactId>
-				<configuration>
-					<testSuite>org.jboss.tools.as.itests</testSuite>
-					<testClass>org.jboss.tools.as.itests.ASToolsIntegrationTestSuite</testClass>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 </project>

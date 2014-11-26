@@ -15,8 +15,6 @@
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
 				<configuration>
-					<testSuite>org.jboss.tools.as.management.itests</testSuite>
-					<testClass>org.jboss.tools.as.management.itests.AS7IntegrationTestSuite</testClass>
 					<dependencies>
 						<dependency>
 							<type>eclipse-plugin</type>

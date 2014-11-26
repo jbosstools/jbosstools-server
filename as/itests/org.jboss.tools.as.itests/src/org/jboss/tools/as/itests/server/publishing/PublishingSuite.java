@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.jboss.tools.as.itests.server.publishing;
 
-import org.jboss.tools.as.test.core.parametized.server.publishing.defect.PublishDefectSuite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
