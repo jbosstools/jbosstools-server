@@ -19,6 +19,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
@@ -114,6 +115,10 @@ public class RSEWizardFragment extends WizardFragment {
 		
 		main = new Composite(parent, SWT.NONE);
 		main.setLayout(new FillLayout());
+		GridData gd = new GridData();
+		gd.grabExcessHorizontalSpace = true;
+		main.setLayoutData(gd);
+		
 		RSEDeploymentPreferenceComposite composite = null;
 
 		IServerWorkingCopy cServer = (IServerWorkingCopy)getTaskModel().getObject(TaskModel.TASK_SERVER);

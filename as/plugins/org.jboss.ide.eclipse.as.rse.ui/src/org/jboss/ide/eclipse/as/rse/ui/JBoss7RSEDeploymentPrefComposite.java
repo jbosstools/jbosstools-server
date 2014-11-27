@@ -10,6 +10,8 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.rse.ui;
 
+import java.beans.PropertyChangeEvent;
+
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.fieldassist.ControlDecoration;
@@ -20,8 +22,11 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
@@ -29,10 +34,14 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.server.core.IRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI.IServerModeUICallback;
 import org.jboss.ide.eclipse.as.ui.editor.ServerModeSectionComposite.ChangeServerPropertyCommand;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
+import org.jboss.ide.eclipse.as.wtp.ui.util.FormDataUtility;
 
 public class JBoss7RSEDeploymentPrefComposite extends
 		RSEDeploymentPreferenceComposite {
@@ -46,20 +55,69 @@ public class JBoss7RSEDeploymentPrefComposite extends
 	private Text rseConfigFileText;
 	private Button rseConfigFileBrowse;
 	private ControlDecoration serverHomeDecoration;
-
+	private Label remoteRuntimeRequiredLabel;
+	
 	public JBoss7RSEDeploymentPrefComposite(Composite parent, int style,
 			IServerModeUICallback callback) {
 		super(parent, style, callback);
 		validateWidgets(false);
+		callback.getServer().addPropertyChangeListener(this);
+	}
+	
+	private boolean isRemoteRuntimeRequired() {
+		// remote runtime is required for all cases except rse+mgmt with externally-managed
+		// I do not like this code. I would prefer if there was some way to accurately test this
+		// by iterating through active subsystems to determine if any require a remote runtime or not. 
+		
+		String currentProfile = ServerProfileModel.getProfile(callback.getServer(), ServerProfileModel.DEFAULT_SERVER_PROFILE);
+		if( currentProfile.equals("rse.mgmt")) {
+			boolean ignoreLaunch = LaunchCommandPreferences.isIgnoreLaunchCommand(callback.getServer());
+			if( ignoreLaunch )
+				return false;
+		}
+		return true;
 	}
 
-	protected void createRSEWidgets(Composite child) {
-		Label serverHomeLabel = new Label(this, SWT.NONE);
+	
+	@Override
+	protected void propertyChangeBody(PropertyChangeEvent evt) {
+		if( evt.getPropertyName().equals(ServerProfileModel.SERVER_PROFILE_PROPERTY_KEY)
+				|| evt.getPropertyName().equals(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS)) {
+			updateRuntimeLabel();
+			validateWidgets();
+		}
+		super.propertyChangeBody(evt);
+	}
+	
+	private void updateRuntimeLabel() {
+		if( isRemoteRuntimeRequired())
+			remoteRuntimeRequiredLabel.setText("");
+		else
+			remoteRuntimeRequiredLabel.setText("Remote runtime details are optional for your current configuration.");
+	}
+	
+	protected void createRSEWidgets(Composite child2) {
+		isRemoteRuntimeRequired();
+		
+		Group child = new Group(child2, SWT.BORDER);
+		
+		// Where I belong in the parent
+		GridData data = new GridData();
+		data.horizontalAlignment = GridData.FILL;
+		child.setLayoutData(data);
+		
+		child.setText("Remote Runtime Details");
+		child.setLayout(new FormLayout());
+		
+		remoteRuntimeRequiredLabel = new Label(child, SWT.NONE);
+		updateRuntimeLabel();
+		remoteRuntimeRequiredLabel.setLayoutData(FormDataUtility.createFormData2(0, 5, null,0, 0, 10, 100, -5));
+		
+		Label serverHomeLabel = new Label(child, SWT.NONE);
 		serverHomeLabel.setText(RSEUIMessages.REMOTE_SERVER_HOME_LABEL);
-		rseBrowse = new Button(this, SWT.NONE);
+		rseBrowse = new Button(child, SWT.NONE);
 		rseBrowse.setText(RSEUIMessages.BROWSE);
-		rseBrowse.setLayoutData(UIUtil.createFormData2(child, 5, null,
-				0, null, 0, 100, -5));
+		rseBrowse.setLayoutData(UIUtil.createFormData2(remoteRuntimeRequiredLabel, 5, null,0, null, 0, 100, -5));
 		rseBrowse.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
 				remoteHomeBrowseClicked();
@@ -69,11 +127,9 @@ public class JBoss7RSEDeploymentPrefComposite extends
 				remoteHomeBrowseClicked();
 			}
 		});
-		rseServerHome = new Text(this, SWT.SINGLE | SWT.BORDER);
-		serverHomeLabel.setLayoutData(UIUtil.createFormData2(child, 7,
-				null, 0, 0, 10, null, 0));
-		rseServerHome.setLayoutData(UIUtil.createFormData2(child, 5,
-				null, 0, serverHomeLabel, 10, rseBrowse, -5));
+		rseServerHome = new Text(child, SWT.SINGLE | SWT.BORDER);
+		serverHomeLabel.setLayoutData(UIUtil.createFormData2(remoteRuntimeRequiredLabel, 7, null, 0, 0, 10, null, 0));
+		rseServerHome.setLayoutData(UIUtil.createFormData2(remoteRuntimeRequiredLabel, 5, null, 0, serverHomeLabel, 10, rseBrowse, -5));
 		rseServerHome.setText(callback.getServer().getAttribute(
 				RSEUtils.RSE_SERVER_HOME_DIR, ""));
 		serverHomeDecoration = new ControlDecoration(rseServerHome, SWT.CENTER);
@@ -84,9 +140,9 @@ public class JBoss7RSEDeploymentPrefComposite extends
 		});
 		
 		
-		Label baseDirLabel = new Label(this, SWT.NONE);
+		Label baseDirLabel = new Label(child, SWT.NONE);
 		baseDirLabel.setText(RSEUIMessages.REMOTE_BASE_DIR_LABEL);
-		rseBaseDirBrowse = new Button(this, SWT.NONE);
+		rseBaseDirBrowse = new Button(child, SWT.NONE);
 		rseBaseDirBrowse.setText(RSEUIMessages.BROWSE);
 		rseBaseDirBrowse.setLayoutData(UIUtil.createFormData2(rseServerHome, 5, null,
 				0, null, 0, 100, -5));
@@ -95,7 +151,7 @@ public class JBoss7RSEDeploymentPrefComposite extends
 				remoteBaseDirBrowseClicked();
 			}
 		});
-		rseBaseDirText = new Text(this, SWT.SINGLE | SWT.BORDER);
+		rseBaseDirText = new Text(child, SWT.SINGLE | SWT.BORDER);
 		baseDirLabel.setLayoutData(UIUtil.createFormData2(rseServerHome, 7,
 				null, 0, 0, 10, null, 0));
 		rseBaseDirText.setLayoutData(UIUtil.createFormData2(rseServerHome, 5,
@@ -108,15 +164,9 @@ public class JBoss7RSEDeploymentPrefComposite extends
 			}
 		});
 
-		
-		
-		
-		
-
-	
-		Label serverConfigLabel = new Label(this, SWT.NONE);
+		Label serverConfigLabel = new Label(child, SWT.NONE);
 		serverConfigLabel.setText(RSEUIMessages.REMOTE_CONFIG_FILE_LABEL);
-		rseConfigFileBrowse = new Button(this, SWT.NONE);
+		rseConfigFileBrowse = new Button(child, SWT.NONE);
 		rseConfigFileBrowse.setText(RSEUIMessages.BROWSE);
 		rseConfigFileBrowse.setLayoutData(UIUtil.createFormData2(rseBaseDirText, 5, null,
 				0, null, 0, 100, -5));
@@ -129,7 +179,7 @@ public class JBoss7RSEDeploymentPrefComposite extends
 				remoteConfigBrowseClicked();
 			}
 		});
-		rseConfigFileText = new Text(this, SWT.SINGLE | SWT.BORDER);
+		rseConfigFileText = new Text(child, SWT.SINGLE | SWT.BORDER);
 		serverConfigLabel.setLayoutData(UIUtil.createFormData2(rseBaseDirText, 7,
 				null, 0, 0, 10, null, 0));
 		rseConfigFileText.setLayoutData(UIUtil.createFormData2(rseBaseDirText, 5,
@@ -141,6 +191,8 @@ public class JBoss7RSEDeploymentPrefComposite extends
 				configFileChanged();
 			}
 		});
+		
+		validateWidgets();
 	}
 	protected void serverHomeChanged() {
 		if( !isUpdatingFromModelChange()) {
@@ -158,11 +210,11 @@ public class JBoss7RSEDeploymentPrefComposite extends
 		return validateWidgets(true);
 	}
 	protected String validateWidgets(boolean updateErrorMessage) {
-
+		
 		String errorMsg = null;
 		if( serverHomeDecoration != null ) {
 			boolean isEmpty = rseServerHome == null || rseServerHome.getText() == null || rseServerHome.getText().trim().isEmpty();
-			if( isEmpty ) {
+			if( isEmpty && isRemoteRuntimeRequired()) {
 				serverHomeDecoration.setDescriptionText("Remote server home cannot be empty.");
 	            Image image = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_DEC_FIELD_ERROR);
 	            serverHomeDecoration.setImage(image);

@@ -31,6 +31,7 @@ import org.eclipse.wst.server.ui.internal.editor.ServerResourceCommandManager;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI.IServerModeUICallback;
+import org.jboss.ide.eclipse.as.ui.editor.internal.DelayedServerWorkingCopy;
 
 /**
  * Provide utility methods to acquire a valid callback for
@@ -61,14 +62,18 @@ public class DeploymentTypeUIUtil {
 	
 	public static class EditServerWizardBehaviourCallback extends NewServerWizardBehaviourCallback implements IServerModeUICallback {
 		private ArrayList<IUndoableOperation> list;
+		private DelayedServerWorkingCopy delayed;
 		public EditServerWizardBehaviourCallback(TaskModel tm,
 				IWizardHandle handle, ICompletable completable) {
 			super(tm, handle, completable);
 			list = new ArrayList<IUndoableOperation>();
 		}
 		
-		public void execute(IUndoableOperation operation) {
-			list.add(operation);
+		public IServerWorkingCopy getServer() {
+			if( delayed == null ) {
+				delayed = new DelayedServerWorkingCopy(super.getServer());
+			}
+			return delayed;
 		}
 		
 		public void performFinish() {
