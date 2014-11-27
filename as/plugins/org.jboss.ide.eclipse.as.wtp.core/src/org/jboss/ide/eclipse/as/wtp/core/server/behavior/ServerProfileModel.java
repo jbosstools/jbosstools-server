@@ -56,7 +56,11 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.SubsystemModel.Subsyste
  * 
  */
 public class ServerProfileModel {
-	private static final String SERVER_PROFILE_PROPERTY_KEY = "org.jboss.ide.eclipse.as.core.server.serverMode"; //$NON-NLS-1$
+	/**
+	 * This really shouldn't be public, but, other composites need to be alerted if this property
+	 * changes, and they can't compare to the key without this being public. 
+	 */
+	public static final String SERVER_PROFILE_PROPERTY_KEY = "org.jboss.ide.eclipse.as.core.server.serverMode"; //$NON-NLS-1$
 	private static final String LEGACY_MODE_KEY = IDeployableServer.SERVER_MODE;
 	
 	/**

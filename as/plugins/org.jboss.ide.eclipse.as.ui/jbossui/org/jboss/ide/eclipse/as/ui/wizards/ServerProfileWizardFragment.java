@@ -25,6 +25,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
@@ -47,6 +48,8 @@ import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
@@ -55,6 +58,8 @@ import org.jboss.ide.eclipse.as.ui.editor.DeploymentTypeUIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.DeploymentTypeUIUtil.EditServerWizardBehaviourCallback;
 import org.jboss.ide.eclipse.as.ui.editor.DeploymentTypeUIUtil.ICompletable;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI.IServerModeUICallback;
+import org.jboss.ide.eclipse.as.ui.editor.ServerModeSectionComposite.ChangeServerPropertyCommand;
+import org.jboss.ide.eclipse.as.ui.editor.internal.DelayedServerWorkingCopy;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IServerProfileInitializer;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel.ServerProfile;
@@ -106,6 +111,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 	private Label requiresRuntimeLabel;
 	private Button useRuntimeButton;
 	private Combo runtimeCombo;
+	private Button executeShellScripts;
 	
 	private IRuntime[] runtimes;
 	private String[] runtimeNames;
@@ -153,16 +159,20 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		}
 	}
 	
-	public Composite createComposite(Composite parent, IWizardHandle handle) {
-		this.handle = handle;
-		IRuntime initialRuntime = getRuntimeFromTaskModel();
-		
+	
+	private IServerModeUICallback getOrCreateCallback() {
 		// Ensure we have a callback detailing how to set info into the wc
 		Object cb = getTaskModel().getObject(WORKING_COPY_CALLBACK);
 		if( cb == null ) {
 			cb = createCallback(handle);
 			getTaskModel().putObject(WORKING_COPY_CALLBACK, cb);
 		}
+		return (IServerModeUICallback)cb;
+	}
+	public Composite createComposite(Composite parent, IWizardHandle handle) {
+		this.handle = handle;
+		IRuntime initialRuntime = getRuntimeFromTaskModel();
+		IServerModeUICallback cb = getOrCreateCallback();
 		
 		// make modifications to parent
 		setPageDetails(handle);
@@ -173,6 +183,19 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 
 		createExplanationLabel(wrapper);
 		this.profileComposite = createProfileSection(wrapper);
+		
+		executeShellScripts = new Button(wrapper, SWT.CHECK);
+		executeShellScripts.setText(Messages.EditorDoNotLaunch);
+		executeShellScripts.setSelection(LaunchCommandPreferences.isIgnoreLaunchCommand(cb.getServer()));
+		executeShellScripts.addSelectionListener(new SelectionListener(){
+			public void widgetSelected(SelectionEvent e) {
+				executeShellToggled();
+			}
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+		
+		
 		createRuntimeSection(wrapper);
 		if( !runtimeForbidden()) {
 			addRuntimeDetailsGroup(wrapper);
@@ -195,6 +218,13 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		return wrapper;
 	}
 
+	// Set the 'ignore launch' boolean on the server wc
+	protected void executeShellToggled() {
+		getOrCreateCallback().execute(new ChangeServerPropertyCommand(
+				getOrCreateCallback().getServer(), IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS,
+				new Boolean(executeShellScripts.getSelection()).toString(), Messages.EditorDoNotLaunchCommand));
+	}
+	
 	/**
 	 * Intended to be overridden by subclasses that wish to list details for their runtime
 	 * @param parent
@@ -657,6 +687,15 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 			for( int i = 0; i < initializers.length; i++ ) {
 				initializers[i].initialize(wc);
 			}
+			
+			IServerModeUICallback cb = (IServerModeUICallback)getTaskModel().getObject(WORKING_COPY_CALLBACK); // TODO
+			if( cb != null ) {
+				IServerWorkingCopy wc2 = cb.getServer();
+				if( wc2 instanceof DelayedServerWorkingCopy ) {
+					((DelayedServerWorkingCopy)wc2).saveToOriginalWorkingCopy();
+				}
+			}
+			
 			server = wc.save(false, null);
 			getTaskModel().putObject(TaskModel.TASK_SERVER, server.createWorkingCopy());
 		}
