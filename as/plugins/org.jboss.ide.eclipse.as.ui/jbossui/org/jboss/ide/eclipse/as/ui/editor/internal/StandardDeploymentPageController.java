@@ -16,6 +16,7 @@ import java.beans.PropertyChangeListener;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -181,11 +182,11 @@ public class StandardDeploymentPageController extends
 		errorImage.setLayoutData(fd);
 
 
-		errorLabel = toolkit.createLabel(parent, "");
+		errorLabel = toolkit.createLabel(parent, "", SWT.WRAP);
 		fd = new FormData();
 		fd.top = new FormAttachment(l1, 5); 
 		fd.left = new FormAttachment(0, 20);
-		fd.right = new FormAttachment(100, -5);
+		fd.right = new FormAttachment(0, 600);
 		errorLabel.setLayoutData(fd);
 
 		
