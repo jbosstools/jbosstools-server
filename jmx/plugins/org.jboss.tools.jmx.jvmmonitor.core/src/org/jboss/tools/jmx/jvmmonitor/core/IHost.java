@@ -10,6 +10,9 @@ import java.util.List;
 
 /**
  * The host where the target JVM is running.
+ * 
+ * <p>This interface is not intended to be implemented by clients.</p>
+ * @noimplement 
  */
 public interface IHost {
 
@@ -102,6 +105,31 @@ public interface IHost {
     		String launchCommand, String url,
             String errorStateMessage) throws JvmCoreException;
 
+    
+
+
+    /**
+     * Adds the local active JVM.
+     * 
+     * @param pid
+     *            The process id of JVM.
+     * @param mainClass
+     *            The main class
+     * @param launchCommand
+     *            The full launch command
+     * @param url
+     *            The JMX URL, or <tt>null</tt> if target JVM doesn't support
+     *            attach
+     * @param errorStateMessage
+     *            The error state message
+     * @return The active JVM
+     * @throws JvmCoreException
+     */
+    IActiveJvm addLocalActiveJvm(int pid, String mainClass, 
+    		String launchCommand, Object monitoredVm,
+            String errorStateMessage) throws JvmCoreException;
+
+    
     
     /**
      * Removes the JVM.

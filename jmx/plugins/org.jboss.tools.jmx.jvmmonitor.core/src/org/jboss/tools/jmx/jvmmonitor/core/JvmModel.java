@@ -113,6 +113,14 @@ public class JvmModel {
     }
 
     /**
+     * Get the attach handler
+     * @return
+     */
+    public IJvmAttachHandler getAttachHandler() {
+    	return jvmAttachHandler;
+    }
+    
+    /**
      * Gets the hosts.
      * 
      * @return the hosts

@@ -64,6 +64,9 @@ public class ActiveJvm extends AbstractJvm implements IActiveJvm {
 
     /** The state indicating if JVM has agent attached. */
     private boolean isAttached;
+    
+    /** Has this been initialized yet */
+    private boolean isInitialized;
 
     /** The MXBean server. */
     private MBeanServer mBeanServer;
@@ -73,6 +76,8 @@ public class ActiveJvm extends AbstractJvm implements IActiveJvm {
 
     /** The SWT resource monitor. */
     private ISWTResourceMonitor swtResourceMonitor;
+    
+    private Object monitoredVm;
 
     /**
      * The constructor for local JVM.
@@ -87,22 +92,30 @@ public class ActiveJvm extends AbstractJvm implements IActiveJvm {
      */
     public ActiveJvm(int pid, String url, IHost host) throws JvmCoreException {
         super(pid, host);
-
         isRemote = false;
-
-        JMXServiceURL jmxUrl = null;
-        try {
-            if (url != null) {
-                jmxUrl = new JMXServiceURL(url);
-                isConnectSupported = true;
-                isAttachSupported = true;
-            }
-        } catch (MalformedURLException e) {
-            throw new JvmCoreException(IStatus.ERROR, NLS.bind(
-                    Messages.getJmxServiceUrlForPidFailedMsg, pid), e);
-        }
-
-        initialize(jmxUrl);
+        saveJvmProperties();
+        isConnectSupported = true;
+        isAttachSupported = true;
+        initialize( url, pid);
+    }
+    
+    /**
+     * The constructor for local JVM.
+     * 
+     * @param pid
+     *            The process ID
+     * @param url
+     *            The JMX service URL
+     * @param host
+     *            The host
+     * @throws JvmCoreException
+     */
+    public ActiveJvm(int pid, Object monitoredVm, IHost host) throws JvmCoreException {
+        super(pid, host);
+        this.isRemote = false;
+        this.monitoredVm = monitoredVm;
+        this.isAttachSupported = true;
+        this.isConnectSupported = true;
         saveJvmProperties();
     }
 
@@ -207,14 +220,24 @@ public class ActiveJvm extends AbstractJvm implements IActiveJvm {
 	@Override
 	public void connect(int updatePeriod, boolean attach)
 			throws JvmCoreException {
-    	if( !isConnectSupported ) {
-      		 throw new IllegalStateException(Messages.connectNotSupportedMsg);
-      	}
+		// If you won't let us attach, and we're not already attached, error out
+		if( !attach && !isAttached ) {
+    		 throw new IllegalStateException(Messages.connectNotSupportedMsg);
+		}
+		
+    	if( !isConnectionSupported() ) {
+     		 throw new IllegalStateException(Messages.connectNotSupportedMsg);
+     	}
+
+    	if( isAttached || attach ) {
+        	initialize();
+        	attach();
+    	}
+    	
+    	
         mBeanServer.connect(updatePeriod);
         isConnected = true;
         
-        if( attach ) 
-        	attach();
         
         JvmModel.getInstance().fireJvmModelChangeEvent(
                 new JvmModelEvent(State.JvmConnected, this));
@@ -413,6 +436,33 @@ public class ActiveJvm extends AbstractJvm implements IActiveJvm {
         cpuProfiler = new CpuProfiler(this);
         mBeanServer = new MBeanServer(url, this);
         swtResourceMonitor = new SWTResourceMonitor(this);
+        isInitialized = true;
+    }
+    
+    private void initialize() throws JvmCoreException {
+    	if( monitoredVm != null ) {
+    		String url = getLocalConnectorAddress(monitoredVm, getPid());
+    		initialize(url, getPid());
+    	}
+    }
+    
+    /**
+     * Initializes the active JVM.
+     * 
+     * @param url
+     *            The JMX service URL
+     */
+    private void initialize(String url, int pid) throws JvmCoreException {
+        JMXServiceURL jmxUrl = null;
+        try {
+            if (url != null) {
+                jmxUrl = new JMXServiceURL(url);
+            }
+        } catch (MalformedURLException e) {
+            throw new JvmCoreException(IStatus.ERROR, NLS.bind(
+                    Messages.getJmxServiceUrlForPidFailedMsg, pid), e);
+        }
+        initialize(jmxUrl);
     }
 
     /**
@@ -479,5 +529,25 @@ public class ActiveJvm extends AbstractJvm implements IActiveJvm {
                 break;
             }
         }
+    }
+    
+    
+    
+    /**
+     * Gets the local connector address.
+     * This involves **attaching the agent** and discovering the connection url
+     * via jmx!
+     * 
+     * @param monitoredVm
+     *            The monitored JVM
+     * @param pid
+     *            The process ID
+     * 
+     * @return The local connector address
+     * @throws JvmCoreException
+     */
+    private static String getLocalConnectorAddress(Object monitoredVm, int pid)
+            throws JvmCoreException {
+    	return JvmModel.getInstance().getAttachHandler().getLocalConnectorAddress(monitoredVm, pid);
     }
 }
