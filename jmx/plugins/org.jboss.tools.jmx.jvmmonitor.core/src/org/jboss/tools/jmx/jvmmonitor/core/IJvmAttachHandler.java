@@ -52,5 +52,16 @@ public interface IJvmAttachHandler {
      * @throws JvmCoreException
      */
     void refreshJVMs() throws JvmCoreException;
+    
+    /**
+     * This method will invoke an attachment of the agent to the jvm 
+     * in order to discover the vm's jmx url. 
+     * 
+     * @param monitoredVm
+     * @param pid
+     * @return
+     * @throws JvmCoreException
+     */
+    public String getLocalConnectorAddress(Object monitoredVm, int pid) throws JvmCoreException;
 
 }

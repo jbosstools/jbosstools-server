@@ -159,25 +159,15 @@ public class JvmAttachHandler implements IJvmAttachHandler,
 
         String mainClass = null;
         String launchCommand = null;
-        String localConnectorAddress = null;
         String stateMessage = null;
         if (monitoredVm != null) {
             mainClass = getMainClass(monitoredVm, pid);
             launchCommand = getJavaCommand(monitoredVm, pid);
-            try {
-                localConnectorAddress = getLocalConnectorAddress(monitoredVm,
-                        pid);
-            } catch (JvmCoreException e) {
-                stateMessage = e.getMessage();
-                String message = NLS.bind(
-                        Messages.getLocalConnectorAddressFailedMsg, pid);
-                Activator.log(IStatus.WARNING, message, e);
-            }
         }
 
         try {
         	localhost.addLocalActiveJvm(pid, mainClass, launchCommand, 
-        			localConnectorAddress, stateMessage);
+        			monitoredVm, stateMessage);
         } catch (JvmCoreException e) {
             String message = NLS.bind(Messages.connectTargetJvmFailedMsg, pid);
             Activator.log(IStatus.WARNING, message, e);
@@ -246,8 +236,19 @@ public class JvmAttachHandler implements IJvmAttachHandler,
      * @return The local connector address
      * @throws JvmCoreException
      */
-    private static String getLocalConnectorAddress(Object monitoredVm, int pid)
-            throws JvmCoreException {
+    public String getLocalConnectorAddress(Object monitoredVm, int pid) throws JvmCoreException {
+    	
+        try {
+            return getLocalConnectorAddressInternal(monitoredVm, pid);
+        } catch (JvmCoreException e) {
+            String message = NLS.bind(
+                    Messages.getLocalConnectorAddressFailedMsg, pid);
+            Activator.log(IStatus.WARNING, message, e);
+            return null;
+        }
+    }
+
+    public String getLocalConnectorAddressInternal(Object monitoredVm, int pid) throws JvmCoreException {
         String url = null;
 
         Tools tools = Tools.getInstance();

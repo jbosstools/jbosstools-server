@@ -148,6 +148,28 @@ public class Host implements IHost {
         return addActiveJvm(jvm);
     }
     
+    
+
+
+	@Override
+	public IActiveJvm addLocalActiveJvm(int pid, String mainClass,
+			String launchCommand, Object monitoredVm, String errorStateMessage)
+			throws JvmCoreException {
+        for (IActiveJvm jvm : getActiveJvms()) {
+            if (jvm.getPid() == pid) {
+                return jvm;
+            }
+        }
+
+        ActiveJvm jvm = new ActiveJvm(pid, monitoredVm, this);
+        jvm.setMainClass(mainClass);
+        jvm.setLaunchCommand(launchCommand);
+        jvm.setErrorStateMessage(errorStateMessage);
+        return addActiveJvm(jvm);
+    }
+	
+	
+    
     /*
      * @see IHost#removeJvm(int)
      */
