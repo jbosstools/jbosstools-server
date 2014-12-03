@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -728,13 +729,37 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 		return true;
 	}
 	
+	protected char getSeparatorCharacter(IServer server) {
+		// Discover the proper separator character for the paths being used
+		try {
+			IDeploymentOptionsController cont = (IDeploymentOptionsController)JBossServerBehaviorUtils.getController(server, 
+					IDeploymentOptionsController.SYSTEM_ID, IDeploymentOptionsController.class);
+			return cont == null ? File.separatorChar : cont.getPathSeparatorCharacter();
+		} catch(CoreException ce) {
+			// Ignore
+		}
+		return File.separatorChar;
+	}
 	
+	/**
+	 * Make the path relative to the local runtime, only if it's a local system
+	 * or a remote system with the same separators. This is to ensure that
+	 * paths can be persisted as "standalone/mycustom" and resolved later. 
+	 * It's a slight convenience to the user and makes the UI a bit cleaner. 
+	 *   
+	 * @param path
+	 * @return
+	 */
 	private String makeRelative(String path) {
+		char sep = getSeparatorCharacter(getPage().getServer().getOriginal()); 
+		if( sep != File.separatorChar ) {
+			return path;
+		}
 		return makeRelative(path, getPage().getServer().getRuntime());
 	}
 	
 	private static String makeRelative(String path, IRuntime runtime) {
-		return ServerUtil.makeRelative(runtime, new Path(path)).toString();
+		return ServerUtil.makeRelative(runtime, new Path(path)).toOSString();
 	}
 	
 	public IStatus[] validate() {

@@ -158,10 +158,11 @@ public abstract class AbstractDeploymentScannerAdditions implements IDeploymentS
 			String serverHome = det.getProperty(IServerModeDetails.PROP_SERVER_HOME);
 			
 			String custom1 = server.getAttribute(IDeployableServer.DEPLOY_DIRECTORY, (String)null);
-			if( custom1 != null && !new RemotePath(custom1, sep).isAbsolute()) {
-				custom1 = new RemotePath(serverHome, sep).append(custom1).removeTrailingSeparator().toOSString();
+			IPath customPath = new RemotePath(custom1, sep);
+			if( custom1 != null && !customPath.isAbsolute()) {
+				customPath = new RemotePath(serverHome, sep).append(custom1).removeTrailingSeparator();
 			}
-			
+			custom1 = customPath.toOSString();
 			if( custom1 != null && !folders.contains(custom1) && !serverHome.equals(custom1))
 				folders.add(custom1);
 		}
