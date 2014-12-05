@@ -113,11 +113,14 @@ public class XPathModel extends UnitedServerListener {
 	
 	private IStatus handleAddJBossXPaths(IServer server2, String baseDir) {
 		ArrayList<XPathCategory> defaults = loadDefaultPortQueries(server2, baseDir);
-		serverToCategories.put(server2.getId(), defaults);
+		setCategoryCollections(server2.getId(), defaults);
 		save(server2);
 		return Status.OK_STATUS;
 	}
 	
+	private synchronized void setCategoryCollections(String id, ArrayList<XPathCategory> list) {
+		serverToCategories.put(id, list);
+	}
 	
 	public XPathQuery getQuery(IServer server, IPath path) {
 		if( server == null || path == null || path.segmentCount() != 2)
@@ -128,7 +131,7 @@ public class XPathModel extends UnitedServerListener {
 		return null;
 	}
 	
-	protected ArrayList<XPathCategory> getCategoryCollection(IServer server) {
+	protected synchronized ArrayList<XPathCategory> getCategoryCollection(IServer server) {
 		if( serverToCategories.get(server.getId()) == null ) {
 			ArrayList<XPathCategory> val = new ArrayList<XPathCategory>(Arrays.asList(load(server)));
 			serverToCategories.put(server.getId(), val);
@@ -191,7 +194,7 @@ public class XPathModel extends UnitedServerListener {
 		return JBossServerCorePlugin.getServerStateLocation(server).append(IJBossToolingConstants.XPATH_FILE_NAME).toFile();
 	}
 	
-	public void save(IServer server) {
+	public synchronized void save(IServer server) {
 		if( !serverToCategories.containsKey(server.getId()))
 			return;
 		XMLMemento memento = XMLMemento.createWriteRoot("xpaths"); //$NON-NLS-1$
