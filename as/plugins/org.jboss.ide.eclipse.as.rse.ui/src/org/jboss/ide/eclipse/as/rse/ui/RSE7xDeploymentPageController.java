@@ -10,11 +10,14 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.rse.ui;
 
+import java.util.ArrayList;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.ui.editor.internal.JBossDeploymentOptionsComposite;
@@ -28,15 +31,26 @@ public class RSE7xDeploymentPageController extends NoTempDeploymentPageControlle
 				return false;
 			}
 			public IStatus[] validate() {
-				if( supportsExposeManagementCheckbox()) {
-					boolean exposePort = getPage().getServer().getAttribute(IJBossToolingConstants.EXPOSE_MANAGEMENT_SERVICE, false);
-					if( !exposePort ) {
-						return new IStatus[]{
-								new Status(IStatus.WARNING, RSEUIPlugin.PLUGIN_ID, "Your server is not currently configured to expose the management port. Deploying to custom remote folders may not work as expected if the remote server is not configured to scan those folders for deployments")
-						};
+				ArrayList<IStatus> ret = new ArrayList<IStatus>();
+				
+				if( !getDeployType().equals(IDeployableServer.DEPLOY_SERVER)) {
+					boolean canAddScanners = true;
+					if( supportsExposeManagementCheckbox()) {
+						boolean exposePort = getPage().getServer().getAttribute(IJBossToolingConstants.EXPOSE_MANAGEMENT_SERVICE, false);
+						if( !exposePort ) {
+							canAddScanners = false;
+						}
+					}
+					boolean add = getPage().getServer().getAttribute(IJBossToolingConstants.PROPERTY_ADD_DEPLOYMENT_SCANNERS, true);
+					if( !add ) {
+						canAddScanners = false;
+					}
+					if( !canAddScanners ) {
+						ret.add(new Status(IStatus.WARNING, RSEUIPlugin.PLUGIN_ID, 
+								"Your server is not currently set up to configure non-standard deploy folders. Please ensure that both \"Expose your management port\" and \"Add missing deployment scanners\" on the Overview page are checked."));
 					}
 				}
-				return new IStatus[0];
+				return (IStatus[]) ret.toArray(new IStatus[ret.size()]);
 			}
 			protected boolean supportsExposeManagementCheckbox() {
 				JBossExtendedProperties props = getExtendedProperties();

@@ -651,7 +651,7 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 		}
 	}
 	
-	private String getDeployType() {
+	protected String getDeployType() {
 		return getServer().getDeployLocationType();
 	}
 

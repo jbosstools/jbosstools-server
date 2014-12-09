@@ -234,6 +234,7 @@ public class StandardDeploymentPageController extends
 				case IStatus.INFO: toUse = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_INFO_TSK); break;
 			}
 			errorImage.setImage(toUse);
+			errorImage.setVisible(true);
 		}
 	}
 	
