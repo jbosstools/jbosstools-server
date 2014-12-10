@@ -106,8 +106,9 @@ public abstract class AbstractStartJavaServerLaunchDelegate extends AbstractJava
 		IControllableServerBehavior jbsBehavior = JBossServerBehaviorUtils.getControllableBehavior(server);
 		if (LaunchCommandPreferences.isIgnoreLaunchCommand(server)) {
 			Trace.trace(Trace.STRING_FINEST, "Server is marked as ignore Launch. Marking as started."); //$NON-NLS-1$
-			((ControllableServerBehavior)jbsBehavior).setServerStarted();
 			((ControllableServerBehavior)jbsBehavior).setRunMode(mode);
+			((ControllableServerBehavior)jbsBehavior).setServerStarting();
+			initiatePolling(server);
 			return false;
 		}
 		

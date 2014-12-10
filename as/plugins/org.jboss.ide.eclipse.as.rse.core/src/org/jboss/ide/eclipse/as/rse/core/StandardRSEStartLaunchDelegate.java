@@ -27,6 +27,7 @@ import org.eclipse.rse.services.shells.IHostShellChangeEvent;
 import org.eclipse.rse.services.shells.IHostShellOutputListener;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.launch.CommandLineLaunchConfigProperties;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
@@ -36,11 +37,13 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBeha
 import org.jboss.tools.as.core.server.controllable.IDeployableServerBehaviorProperties;
 
 /**
- * This is a launch configuration delegate for use with rse jboss servers. 
+ * This is a launch configuration delegate for use with rse servers. 
  * It will launch the remote commands, update server state, and store
  * the PID for the remote process
  * 
- * We also kick off the polling mechanism from here as part of the launch
+ * We have API for initiating polling, but since this class is used for minimal
+ * servers (such as deploy-only) polling is not guaranteed to be present, so 
+ * subclasses should override the polling methods 
  */
 public class StandardRSEStartLaunchDelegate extends
 	AbstractJavaLaunchConfigurationDelegate {
@@ -67,11 +70,16 @@ public class StandardRSEStartLaunchDelegate extends
 		IServer server = ServerUtil.getServer(configuration);
 		final IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(configuration);
 		boolean dontLaunch = LaunchCommandPreferences.isIgnoreLaunchCommand(configuration);
-		if (dontLaunch || isStarted(server)) {
-			((ControllableServerBehavior)beh).setRunMode(mode);
+		((ControllableServerBehavior)beh).setRunMode(mode);
+		if (isStarted(server)) {
 			((ControllableServerBehavior)beh).setServerStarted();
 			return false;
+		} else if( dontLaunch ) {
+			((ControllableServerBehavior)beh).setServerStarting();
+			pollServer(server,  IServerStatePoller.SERVER_UP);
+			return false;
 		}
+		
 		String currentHost = server.getAttribute(RSEUtils.RSE_SERVER_HOST, (String)null);
 		if( currentHost == null || RSEFrameworkUtils.findHost(currentHost) == null ) {
 			throw new CoreException(new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, 
@@ -109,11 +117,7 @@ public class StandardRSEStartLaunchDelegate extends
 	
 	protected void afterVMRunner(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(configuration);
-		if( beh != null ) {
-			// We don't have pollers here, so we just set server to started
-			((ControllableServerBehavior)beh).setServerStarted();
-		}
+		pollServer(ServerUtil.getServer(configuration),  IServerStatePoller.SERVER_UP);
 	}
 	
 	/*
@@ -122,6 +126,16 @@ public class StandardRSEStartLaunchDelegate extends
 	protected boolean isStarted(IServer server) {
 		return false; // We have no way to determine this
 	}
+	
+	protected void pollServer(IServer server, final boolean expectedState) {
+		// We don't have pollers here, so we just set server to started
+		// Subclasses can override
+		final IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(server);
+		if( beh != null ) {
+			((ControllableServerBehavior)beh).setServerStarted();
+		}
+	}
+
 	
 	/*
 	 * The following is for executing commands on the remote system
