@@ -77,13 +77,17 @@ public class StandardRSEJBossStartLaunchDelegate extends
 	}
 	
 	/*
-	 * Below is code for kicking off a poll thread
+	 * Synchronous check to see if server is currently up. 
 	 */
 	@Override
 	protected boolean isStarted(IServer server) {
 		return PollThreadUtils.isServerStarted(server).isOK();
 	}
 	
+	/*
+	 * Kick off a poll thread
+	 */
+	@Override
 	protected void pollServer(IServer server, final boolean expectedState) {
 		PollThreadUtils.pollServer(server, expectedState);
 	}
