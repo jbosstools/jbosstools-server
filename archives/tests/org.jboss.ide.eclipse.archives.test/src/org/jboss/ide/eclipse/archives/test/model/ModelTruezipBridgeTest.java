@@ -222,7 +222,7 @@ public class ModelTruezipBridgeTest extends ModelTest {
 		assertTrue(zippedF.exists());
 		assertTrue(!zippedF.isDirectory());
 
-		IArchiveStandardFileSet fs = createFileSet("**/*.gif", new Path(proj.getName()).makeAbsolute().toString());
+		IArchiveStandardFileSet fs = createFileSet("**/*.gif", "bin/**", new Path(proj.getName()).makeAbsolute().toString());
 		fs.setInWorkspace(true);
 		zipped.addChild(fs);
 		ModelTruezipBridge.fullFilesetBuild(fs, new NullProgressMonitor(), true);

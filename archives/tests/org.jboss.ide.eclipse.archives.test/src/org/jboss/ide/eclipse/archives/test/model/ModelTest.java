@@ -40,8 +40,13 @@ public abstract class ModelTest extends TestCase {
 	}
 	
 	public static IArchiveStandardFileSet createFileSet(String includes, String path) {
+		return createFileSet(includes, null, path);
+	}
+	
+	public static IArchiveStandardFileSet createFileSet(String includes, String excludes, String path) {
 		IArchiveStandardFileSet fs = getFactory().createFileset();
 		fs.setIncludesPattern(includes);
+		fs.setExcludesPattern(excludes);
 		fs.setRawSourcePath( path );
 		return fs;
 	}
