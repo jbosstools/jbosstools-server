@@ -94,10 +94,17 @@ public class DeploymentMarkerUtils {
 		return controller.deleteResource(p, new NullProgressMonitor());
 	}
 
+	public static IStatus removeDoDeployMarker(IPath module, IFilesystemController controller) throws CoreException {
+		IPath folder = module.removeLastSegments(1);
+		IPath p = folder.append(getDoDeployMarkerName(module.lastSegment()));
+		return controller.deleteResource(p, new NullProgressMonitor());
+	}
+	
 	public static IStatus createDoDeployMarker(IPath module, IFilesystemController controller) throws CoreException {
 		IPath folder = module.removeLastSegments(1);
 		IPath p = folder.append(getDoDeployMarkerName(module.lastSegment()));
 		return controller.touchResource(p, new NullProgressMonitor());
 	}
+
 }
 

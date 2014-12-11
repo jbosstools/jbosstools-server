@@ -624,6 +624,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 			// AS7-derived requires the .deployed markers to be removed. Other servers require no action
 			if( useAS7Behavior) {
 				IFilesystemController controller = getFilesystemController();
+				DeploymentMarkerUtils.removeDoDeployMarker(archiveDestination, controller);
 				DeploymentMarkerUtils.removedDeployedMarker(archiveDestination, controller);
 				DeploymentMarkerUtils.removedDeployFailedMarker(archiveDestination, controller);
 			}
