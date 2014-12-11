@@ -1471,9 +1471,22 @@
       </subsystem>
       <subsystemMapping
             id="modules.state.wf"
-            mappedId="modules.default"
+            mappedId="modules.mgmt"
             serverTypes="%ServerTypesJBoss7OrHigher">
       </subsystemMapping>
+      
+     <subsystem
+            system="modules"
+            id="modules.state.wf.fs"
+            name="Module Controller (Filesystem)"
+            class="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7FSModuleStateVerifier">
+      </subsystem>
+      <subsystemMapping
+            id="modules.state.wf.fs"
+            mappedId="modules.fs"
+            serverTypes="%ServerTypesJBoss7OrHigher">
+      </subsystemMapping>
+      
       
       <!-- Publisher Controllers for specific module types. This one will not be mapped, and will be global  -->
       <subsystem
@@ -1577,6 +1590,9 @@
           <subsystem system="shutdown" subsystem="shutdown.default"/>
           <subsystem system="publish" subsystem="publish.filesystem.default"/>
        </serverProfile>
+       <serverProfile id="local" serverTypes="%ServerTypesJBoss7OrHigher">
+ 			<subsystem system="modules" subsystem="modules.fs"/>
+        </serverProfile>
        <serverProfile id="local" serverTypes="org.jboss.ide.eclipse.as.systemCopyServer">
           <subsystem system="launch" subsystem="launch.commandLine.local"/>
           <subsystem system="shutdown" subsystem="shutdown.commandLine.local"/>
@@ -1594,6 +1610,7 @@
           <subsystem system="shutdown" subsystem="shutdown.default"/>
           <subsystem system="publish" subsystem="publish.management"/>
           <subsystem system="serverDetails" subsystem="serverDetails.local"/>
+          <subsystem system="modules" subsystem="modules.mgmt"/>
        </serverProfile>
     </extension>
 

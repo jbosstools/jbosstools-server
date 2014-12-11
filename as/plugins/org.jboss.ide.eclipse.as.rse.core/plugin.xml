@@ -111,6 +111,9 @@
           <subsystem system="publish" subsystem="publish.filesystem.default"/> 
           <subsystem system="shutdown" subsystem="shutdown.rse.default"/> <!-- cmd line shutdown -->
        </serverProfile>
+       <serverProfile id="rse" serverTypes="%ServerTypesJBoss7OrHigher">
+       		 <subsystem system="modules" subsystem="modules.fs"/>
+       </serverProfile>
     </extension>
 	
 	<!-- RSE profile preferring management for as7 or above -->
@@ -124,6 +127,7 @@
           <subsystem system="serverDetails" subsystem="serverDetails.rse"/>
           <subsystem system="shutdown" subsystem="shutdown.default"/> <!-- mgmt shutdown -->
           <subsystem system="filesystem" subsystem="filesystem.rse"/>
+          <subsystem system="modules" subsystem="modules.mgmt"/>
        </serverProfile>
     </extension>
 	

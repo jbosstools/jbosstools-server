@@ -70,6 +70,10 @@ public class DeploymentMarkerUtils {
 		return file + DEPLOYED;
 	}
 
+	public static String getUndeployedMarker(String file) {
+		return file + UNDEPLOYED;
+	}
+
 	public static String getFailedMarkerName(String file) {
 		return file + FAILED_DEPLOY;
 	}
@@ -94,6 +98,12 @@ public class DeploymentMarkerUtils {
 		return controller.deleteResource(p, new NullProgressMonitor());
 	}
 
+	public static IStatus removedUndeployedMarker(IPath module, IFilesystemController controller) throws CoreException {
+		IPath folder = module.removeLastSegments(1);
+		IPath p = folder.append(getUndeployedMarker(module.lastSegment()));
+		return controller.deleteResource(p, new NullProgressMonitor());
+	}
+
 	public static IStatus removeDoDeployMarker(IPath module, IFilesystemController controller) throws CoreException {
 		IPath folder = module.removeLastSegments(1);
 		IPath p = folder.append(getDoDeployMarkerName(module.lastSegment()));
@@ -105,6 +115,12 @@ public class DeploymentMarkerUtils {
 		IPath p = folder.append(getDoDeployMarkerName(module.lastSegment()));
 		return controller.touchResource(p, new NullProgressMonitor());
 	}
+	
 
+	public static boolean markerExists(IPath module, IFilesystemController controller, String markerId) throws CoreException {
+		IPath folder = module.removeLastSegments(1);
+		IPath p = folder.append(markerId);
+		return controller.exists(p, new NullProgressMonitor());
+	}
 }
 
