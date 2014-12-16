@@ -100,6 +100,14 @@ public class UIExtensionManager {
 			}
 			wizardPages = (IConfigurationElement[]) wizardPageList.toArray(new IConfigurationElement[wizardPageList.size()]);
 		}
+		
+		public void dispose() {
+			if( hasLabelProvider()) {
+				getLabelProvider().dispose();
+				labelProvider = null;
+			}
+		}
+		
 		/**
 		 * Return true if the image can change
 		 * Return false if the image is static for this provider ui under all circumstances and can be cached

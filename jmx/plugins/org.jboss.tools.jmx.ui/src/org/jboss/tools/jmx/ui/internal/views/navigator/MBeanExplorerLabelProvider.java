@@ -19,6 +19,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
+import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.HasName;
 import org.jboss.tools.jmx.core.IConnectionCategory;
 import org.jboss.tools.jmx.core.IConnectionProvider;
@@ -64,6 +65,15 @@ public class MBeanExplorerLabelProvider extends LabelProvider {
 	    		Image o = i.next();
 	    		if( o != null )
 	    			o.dispose();
+	    	}
+	    	
+	    	// Dispose the contributed label providers
+	    	IConnectionProvider[] providers = ExtensionManager.getProviders();
+	    	for( int j = 0; j < providers.length; j++ ) {
+	    		ConnectionProviderUI ui = UIExtensionManager.getConnectionProviderUI(providers[j].getId());
+	    		if( ui != null ) {
+	    			ui.dispose();
+	    		}
 	    	}
 		}
 	    super.dispose();
