@@ -318,13 +318,15 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		boolean forceZip = forceZipModule(module);
 		boolean forzeZipAnyParent = parentModuleIsForcedZip(module);
 		
+		// if we have to force-zip any of the parents, we already did zip this one as well
+		if( forzeZipAnyParent) {
+			// We can assume the parent was already published.
+			// In the future, we may wish to check the parent's publish state and simply use that one as well
+			return IServer.PUBLISH_STATE_NONE;				
+		}
+
+		
 		if( !isBinaryObject && forceZip ) {
-			// if we have to force-zip any of the parents, we already did zip this one as well
-			if( forzeZipAnyParent) {
-				// We can assume the parent was already published.
-				// In the future, we may wish to check the parent's publish state and simply use that one as well
-				return IServer.PUBLISH_STATE_NONE;				
-			}
 			// Otherwise we need to zip this module and its children. 
 			return handleZippedPublish(module, publishType, archiveDestination, true, monitor);
 		}
