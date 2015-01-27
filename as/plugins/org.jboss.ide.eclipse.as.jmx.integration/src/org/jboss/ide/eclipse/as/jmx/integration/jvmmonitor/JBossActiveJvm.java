@@ -34,6 +34,7 @@ import org.jboss.tools.jmx.jvmmonitor.internal.core.Messages;
 import org.jboss.tools.jmx.jvmmonitor.internal.core.SWTResourceMonitor;
 import org.jboss.tools.jmx.jvmmonitor.internal.core.Util;
 import org.jboss.tools.jmx.jvmmonitor.internal.core.cpu.CpuProfiler;
+import org.jboss.tools.jmx.jvmmonitor.ui.JvmMonitorPreferences;
 
 /**
  * The active JVM.
@@ -79,7 +80,7 @@ public class JBossActiveJvm extends AbstractJvm implements IActiveJvm {
     }
 
     public void connect() throws JvmCoreException {
-    	connect(500); // TODO doesn't follow preferences
+    	connect( JvmMonitorPreferences.getJvmUpdatePeriod());
     }
     
     /*
