@@ -67,7 +67,17 @@ public class JBoss7LaunchConfigProperties extends JBossLaunchConfigProperties {
 			setVmArguments(vmArgs, launchConfig);
 		}
 	}
+	
+	
+	public void setPreferIP4(boolean flag, ILaunchConfigurationWorkingCopy launchConfig)
+			throws CoreException {
+		String vmArgs =  getVMArguments(launchConfig);
+		vmArgs = ArgsUtil.setArg(vmArgs, null, 
+				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JAVA_PREFER_IP4_ARG, new Boolean(flag).toString());
+		setVmArguments(vmArgs, launchConfig);
+	}
 
+	
 	public void setLoggingConfigFile(String lcf, ILaunchConfigurationWorkingCopy launchConfig)
 			throws CoreException {
 		if (isSet(lcf)) {
