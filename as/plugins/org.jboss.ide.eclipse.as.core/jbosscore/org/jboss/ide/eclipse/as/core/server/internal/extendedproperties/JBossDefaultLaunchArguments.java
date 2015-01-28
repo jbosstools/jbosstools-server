@@ -30,6 +30,7 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.JavaUtils;
 import org.jboss.ide.eclipse.as.core.util.PortalUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 public class JBossDefaultLaunchArguments implements IDefaultLaunchArguments, IJBossRuntimeConstants {
 	protected IServer server;
@@ -121,14 +122,19 @@ public class JBossDefaultLaunchArguments implements IDefaultLaunchArguments, IJB
 		return getJavaFlags(isLinux());
 	}
 	
-	protected String getJavaFlags(boolean forceIP4) {
+	protected String getJavaFlags(boolean includeIPVersionFlag) {
 		String ret = new String();
-		if( forceIP4 )
-			ret += SYSPROP + JAVA_PREFER_IP4_ARG + EQ + true + SPACE; 
+		if( includeIPVersionFlag )
+			ret += SYSPROP + JAVA_PREFER_IP4_ARG + EQ + !isIP6() + SPACE; 
 		ret += SYSPROP + SUN_CLIENT_GC_ARG + EQ + 3600000 + SPACE;
 		ret += SYSPROP + SUN_SERVER_GC_ARG + EQ + 3600000 + SPACE;
 		return ret;
 	}
+	
+	protected boolean isIP6() {
+		return ServerUtil.matchesIP6t(server.getHost());
+	}
+	
 	
 	// Get flags that are java flags that point to files somewhere in the AS or dependent on runtime data
 	protected String getJBossJavaFlags() {

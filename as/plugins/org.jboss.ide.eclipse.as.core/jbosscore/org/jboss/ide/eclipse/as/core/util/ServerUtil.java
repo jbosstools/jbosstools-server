@@ -14,6 +14,9 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -267,5 +270,37 @@ public class ServerUtil {
                 return address;
             }
             return "[" + address + "]"; //$NON-NLS-1$//$NON-NLS-2$
-        }
+    }
+    
+    private static Pattern VALID_IPV4_PATTERN = null;
+    private static Pattern VALID_IPV6_PATTERN = null;
+    private static Pattern VALID_IPV6_COMPRESSED_PATTERN = null;
+    
+    private static final String ip4PatternString = "^(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)(\\.(25[0-5]|2[0-4]\\d|[0-1]?\\d?\\d)){3}$"; //$NON-NLS-1$
+	private static final String ip6StandardPatternString = "^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$"; //$NON-NLS-1$
+	private static final String ip6CompressedPatternString = "^((?:[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4})*)?)::((?:[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4})*)?)$"; //$NON-NLS-1$
+
+    static {
+      try {
+        VALID_IPV4_PATTERN = Pattern.compile(ip4PatternString, Pattern.CASE_INSENSITIVE);
+        VALID_IPV6_PATTERN = Pattern.compile(ip6StandardPatternString, Pattern.CASE_INSENSITIVE);
+        VALID_IPV6_COMPRESSED_PATTERN = Pattern.compile(ip6CompressedPatternString, Pattern.CASE_INSENSITIVE);
+      } catch (PatternSyntaxException e) {
+        //logger.severe("Unable to compile pattern", e);
+      }
+    }
+
+	public static boolean matchesIP4t(String ipAddress) {
+		Matcher m1 = VALID_IPV4_PATTERN.matcher(ipAddress);
+		return m1.matches();
+	}
+
+	public static boolean matchesIP6t(String ipAddress) {
+		Matcher m1 = VALID_IPV6_PATTERN.matcher(ipAddress);
+		if( m1.matches() )
+			return true;
+		Matcher m2 = VALID_IPV6_COMPRESSED_PATTERN.matcher(ipAddress);
+		return m2.matches();
+	}
+    
 }

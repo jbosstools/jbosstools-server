@@ -31,6 +31,7 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurator implements IDefaultClasspathLaunchConfigurator  {
 
@@ -72,6 +73,7 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 		getProperties().setBaseDirectory(getBaseDir(jbossRuntime), launchConfig);
 		getProperties().setBootLogFile(getBootLogPath(jbossRuntime), launchConfig);
 		getProperties().setLoggingConfigFile(getLoggingConfigPath(jbossRuntime), launchConfig);
+		getProperties().setPreferIP4(getPreferIP4(server.getHost()), launchConfig);
 	}
 	
 	@Override
@@ -197,6 +199,12 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 			return null;
 		}
 	}
+	
+	protected boolean getPreferIP4(String host) {
+		boolean matches6 = ServerUtil.matchesIP6t(host);
+		return !matches6;
+	}
+
 
 
 }
