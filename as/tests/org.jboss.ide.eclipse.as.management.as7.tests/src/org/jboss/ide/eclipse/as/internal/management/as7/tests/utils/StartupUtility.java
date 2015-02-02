@@ -43,6 +43,9 @@ public class StartupUtility extends Assert {
 	private static boolean requiresJava7(String runtimeType) {
 		return "JavaSE-1.7".equals(getRequiredExecEnv(runtimeType).getId());
 	}
+	private static boolean requiresJava6(String runtimeType) {
+		return "JavaSE-1.6".equals(getRequiredExecEnv(runtimeType).getId());
+	}
 
 	public static Process runServer(String homeDir) {
 		String rtType = ParameterUtils.serverHomeToRuntimeType.get(homeDir);
@@ -62,13 +65,13 @@ public class StartupUtility extends Assert {
 		}
 
 		List<String> envp = new ArrayList<String>();
-		if( !isJava7() && requiresJava7(rtType)) {
+		if( requiresJava6(rtType) || requiresJava7(rtType)) {
 			String java = System.getProperty(JRE7_SYSPROP);
 			if( java == null || !new File(java).exists()) {
 				fail("Launching " + homeDir + " requires a java7 jdk, which has not been provided via the " + JRE7_SYSPROP + " system property, or does not exist");
 			}
 			envp.add("JAVA_HOME=" + java);
-		}
+		} 
 		
 		String[] envList = (String[]) envp.toArray(new String[envp.size()]);
 		Process p = null;
