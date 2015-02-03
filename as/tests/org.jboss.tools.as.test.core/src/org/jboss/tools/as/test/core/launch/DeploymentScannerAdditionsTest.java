@@ -23,6 +23,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.Server;
+import org.eclipse.wst.validation.ValidationFramework;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractDeploymentScannerAdditions;
 import org.jboss.ide.eclipse.as.core.server.internal.JMXServerDeploymentScannerAdditions;
@@ -39,6 +40,8 @@ import org.jboss.tools.as.test.core.internal.utils.wtp.JavaEEFacetConstants;
 import org.jboss.tools.as.test.core.internal.utils.wtp.OperationTestCase;
 import org.jboss.tools.as.test.core.parametized.server.publishing.AbstractPublishingTest;
 import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -56,6 +59,17 @@ public class DeploymentScannerAdditionsTest extends TestCase  {
 	public DeploymentScannerAdditionsTest(String serverType) {
 		this.serverType = serverType;
 	}
+	
+	@BeforeClass
+	public static void beforeClass() {
+		ValidationFramework.getDefault().suspendAllValidation(true);
+	}
+
+	@AfterClass
+	public static void afterClass() {
+		ValidationFramework.getDefault().suspendAllValidation(false);
+	}
+
 	
 	@After
 	public void tearDown() throws Exception {

@@ -40,19 +40,23 @@ import org.jboss.tools.as.test.core.internal.utils.wtp.JavaEEFacetConstants;
 import org.jboss.tools.as.test.core.internal.utils.wtp.OperationTestCase;
 import org.jboss.tools.test.util.JobUtils;
 import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 
 public class JBossModulesClasspathTest  extends TestCase {
 
-	@Before
-	public void setUp() throws Exception {
+	@BeforeClass
+	public static void setUpClass() throws Exception {
 		ValidationFramework.getDefault().suspendAllValidation(true);
 	}
 	
+	@AfterClass
+	public static void tearDownClass() {
+		ValidationFramework.getDefault().suspendAllValidation(false);
+	}
 	@After
 	public void tearDown() throws Exception {
 		ASMatrixTests.getDefault().cleanup();
-		ValidationFramework.getDefault().suspendAllValidation(false);
 	} 
 	
 	/**
