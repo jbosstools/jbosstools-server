@@ -81,7 +81,9 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.rse.subsystems.terminals.core;bundle-version="1.0.300",
  org.jboss.tools.as.catalog;bundle-version="3.0.0",
  org.eclipse.wst.xml.ui;bundle-version="1.1.401",
- org.eclipse.wst.xml.core;bundle-version="1.1.900"
+ org.eclipse.wst.xml.core;bundle-version="1.1.900",
+ org.eclipse.wst.dtd.core;bundle-version="1.1.700",
+ org.eclipse.wst.xsd.core;bundle-version="1.1.900"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.jboss.tools.as.test.core,
