@@ -165,7 +165,7 @@ public class SingleDeployableFolderTest extends AbstractPublishingTest {
 			assertTrue("Incremental removal has failed", foundRemoved);
 		} else {
 			File foundZip = findZip(MockPublishMethodFilesystemController.StaticModel.getChangedFiles());
-			de.schlichtherle.io.File zipRoot = new de.schlichtherle.io.File(foundZip, new TrueZipUtil.JarArchiveDetector());
+			de.schlichtherle.io.File zipRoot = new de.schlichtherle.io.File(foundZip, TrueZipUtil.getJarArchiveDetector());
 			de.schlichtherle.io.File removed2 = new de.schlichtherle.io.File(zipRoot, filePath.removeFirstSegments(1).toString());
 			assertFalse(removed2.exists());
 		}

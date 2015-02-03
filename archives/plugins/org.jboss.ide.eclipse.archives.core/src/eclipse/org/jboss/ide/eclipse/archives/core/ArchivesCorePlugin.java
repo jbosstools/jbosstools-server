@@ -17,6 +17,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.wiring.BundleWiring;
 
+import de.schlichtherle.io.ArchiveDetector;
 import de.schlichtherle.key.KeyManager;
 
 /**
@@ -31,6 +32,7 @@ public class ArchivesCorePlugin extends Plugin {
 
 	// The shared instance
 	private static ArchivesCorePlugin plugin;
+	private static BundleContext context;
 	
 	/**
 	 * The constructor
@@ -45,15 +47,14 @@ public class ArchivesCorePlugin extends Plugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		this.context = context;
 		
 		// Load the workspace version of ArchivesCore
 		new WorkspaceArchivesCore();
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(new WorkspaceChangeListener());
 		
 		// JBIDE-17700  workaround
-		Bundle bundle = context.getBundle();
-		BundleWiring bundleWiring = bundle.adapt(BundleWiring.class);
-		ClassLoader bundleLoader = bundleWiring.getClassLoader();
+		ClassLoader bundleLoader = getBundleClassLoader();
 		ClassLoader originalTCCL = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(bundleLoader);
@@ -63,6 +64,14 @@ public class ArchivesCorePlugin extends Plugin {
 		}
 	}
 
+	public ClassLoader getBundleClassLoader() {
+		// JBIDE-17700  workaround
+		Bundle bundle = context.getBundle();
+		BundleWiring bundleWiring = bundle.adapt(BundleWiring.class);
+		ClassLoader bundleLoader = bundleWiring.getClassLoader();
+		return bundleLoader;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)

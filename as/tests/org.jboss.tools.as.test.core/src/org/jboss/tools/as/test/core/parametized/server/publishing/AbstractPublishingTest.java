@@ -29,7 +29,7 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.internal.ServerPreferences;
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.validation.ValidationFramework;
-import org.jboss.ide.eclipse.archives.core.util.internal.TrueZipUtil;
+import org.jboss.ide.eclipse.archives.core.util.TrueZipUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
@@ -50,7 +50,9 @@ import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
 import org.jboss.tools.as.test.core.parametized.server.ServerParameterUtils;
 import org.jboss.tools.test.util.JobUtils;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -128,6 +130,16 @@ public abstract class AbstractPublishingTest extends TestCase {
 	protected void completeSetUp() {
 	}
 	
+	@BeforeClass
+	public static void beforeClass() {
+		ValidationFramework.getDefault().suspendAllValidation(true);
+	}
+
+	@AfterClass
+	public static void afterClass() {
+		ValidationFramework.getDefault().suspendAllValidation(false);
+	}
+
 	@After 
 	public void tearDown() throws Exception {
 		try {
@@ -319,7 +331,7 @@ public abstract class AbstractPublishingTest extends TestCase {
 	protected void verifyZipContents(java.io.File foundZip, IPath[] paths, String[] contents) throws CoreException, IOException {
 		for( int i = 0; i < paths.length; i++ ) {
 			IPath relative = paths[i].removeFirstSegments(1);
-			de.schlichtherle.io.File zipRoot = new de.schlichtherle.io.File(foundZip, new TrueZipUtil.JarArchiveDetector());
+			de.schlichtherle.io.File zipRoot = new de.schlichtherle.io.File(foundZip, TrueZipUtil.getJarArchiveDetector());
 			de.schlichtherle.io.File truezipFile = new de.schlichtherle.io.File(zipRoot, relative.toString(), ArchiveDetector.ALL);
 			de.schlichtherle.io.FileInputStream fis = new de.schlichtherle.io.FileInputStream(truezipFile);
 			byte[] b = IOUtil.getBytesFromInputStream(fis);
@@ -393,7 +405,7 @@ public abstract class AbstractPublishingTest extends TestCase {
 	protected void verifyList(IPath root, List<IPath> list, boolean exists) {
 		File[] changed = MockPublishMethodFilesystemController.StaticModel.getChangedFiles();
 		Iterator<IPath> iterator = list.iterator();
-		ArchiveDetector detector = isZipped() ? new TrueZipUtil.JarArchiveDetector() : ArchiveDetector.DEFAULT;
+		ArchiveDetector detector = isZipped() ? TrueZipUtil.getJarArchiveDetector() : ArchiveDetector.DEFAULT;
 		while(iterator.hasNext()) {
 			de.schlichtherle.io.File f = new de.schlichtherle.io.File(root.toFile(), detector);
 			IPath next = iterator.next();

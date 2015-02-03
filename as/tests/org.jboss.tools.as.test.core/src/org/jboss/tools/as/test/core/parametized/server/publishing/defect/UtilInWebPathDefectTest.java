@@ -111,7 +111,7 @@ public class UtilInWebPathDefectTest extends AbstractPublishingTest {
 		
 		// Verify the .dodeploy marker is created
 		IPath depPath = controller.getDeployPathController().getDeployDirectory(utilInWeb);
-		de.schlichtherle.io.File f = new de.schlichtherle.io.File(depPath.toFile(), new TrueZipUtil.JarArchiveDetector());
+		de.schlichtherle.io.File f = new de.schlichtherle.io.File(depPath.toFile(), TrueZipUtil.getJarArchiveDetector());
 		de.schlichtherle.io.File clazz1 = new de.schlichtherle.io.File(f, "Clazz1.class");
 		assertTrue(clazz1.exists());
 
