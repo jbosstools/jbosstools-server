@@ -20,7 +20,7 @@ Eclipse-BundleShape: dir
 Bundle-ClassPath: lib/truezip-6.6.jar,
  .
 Export-Package: de.schlichtherle.io;x-friends:="org.jboss.ide.eclipse.archives.test",
- de.schlichtherle.io.archive.spi,
+ de.schlichtherle.io.archive.spi;x-friends:="org.jboss.ide.eclipse.archives.test",
  org.jboss.ide.eclipse.archives.core,
  org.jboss.ide.eclipse.archives.core.asf,
  org.jboss.ide.eclipse.archives.core.build,
@@ -30,7 +30,7 @@ Export-Package: de.schlichtherle.io;x-friends:="org.jboss.ide.eclipse.archives.t
  org.jboss.ide.eclipse.archives.core.model.other.internal,
  org.jboss.ide.eclipse.archives.core.model.types,
  org.jboss.ide.eclipse.archives.core.project,
- org.jboss.ide.eclipse.archives.core.util;x-friends:="org.jboss.ide.eclipse.archives.test",
+ org.jboss.ide.eclipse.archives.core.util,
  org.jboss.ide.eclipse.archives.core.util.internal;x-friends:="org.jboss.ide.eclipse.archives.test",
  org.jboss.ide.eclipse.archives.core.xpl
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

@@ -377,7 +377,7 @@ public class ZippedPublishRunnerTest extends TestCase {
 	// used to verify the files exist
 	protected void verifyList(IPath root, List<IPath> listOfRelativePaths, boolean exists) {
 		Iterator<IPath> iterator = listOfRelativePaths.iterator();
-		ArchiveDetector detector = new TrueZipUtil.JarArchiveDetector();
+		ArchiveDetector detector = TrueZipUtil.getJarArchiveDetector();
 		while(iterator.hasNext()) {
 			de.schlichtherle.io.File f = new de.schlichtherle.io.File(root.toFile(), detector);
 			IPath nextRelative = iterator.next();
