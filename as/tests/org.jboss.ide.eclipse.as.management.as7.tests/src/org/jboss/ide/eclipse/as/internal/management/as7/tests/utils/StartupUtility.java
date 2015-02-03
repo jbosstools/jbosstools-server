@@ -65,13 +65,7 @@ public class StartupUtility extends Assert {
 		}
 
 		List<String> envp = new ArrayList<String>();
-		if( requiresJava6(rtType) || requiresJava7(rtType)) {
-			String java = System.getProperty(JRE7_SYSPROP);
-			if( java == null || !new File(java).exists()) {
-				fail("Launching " + homeDir + " requires a java7 jdk, which has not been provided via the " + JRE7_SYSPROP + " system property, or does not exist");
-			}
-			envp.add("JAVA_HOME=" + java);
-		} 
+		envp.add("JAVA_HOME=" + getJavaHome(rtType, homeDir));
 		
 		String[] envList = (String[]) envp.toArray(new String[envp.size()]);
 		Process p = null;
@@ -84,6 +78,27 @@ public class StartupUtility extends Assert {
 		System.out.println("Somehow launch completed without returning a process");
 		return null;
 	}
+	
+	private static String getJavaHome(String rtType, String serverHome) {
+		//Currently for all rt types we use java7
+		return getJavaHome(serverHome, JRE7_SYSPROP, "java7 jdk");
+		
+		// In the future we may have some with java8 requirements. 
+	}
+	
+	private static String getJavaHome(String serverHome, String sysprop, String javaVersion) {
+		String java = System.getProperty(sysprop);
+		if( java == null ) {
+			fail("Launching " + serverHome + " requires a " + javaVersion + ", which has not been provided via the " + sysprop + " system property");
+		}
+
+		if( !new File(java).exists()) {
+			fail("Java Home " + java + " provided by the " + sysprop + " system property does not exist.");
+		}
+
+		return java;
+	}
+	
 
 	private String homeDir, runtimeType;
 	private Process process;
