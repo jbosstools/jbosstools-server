@@ -18,6 +18,7 @@ import org.jboss.ide.eclipse.as.core.server.IManagementPortProvider;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 public class JBossAS710ExtendedProperties extends JBossAS7ExtendedProperties implements IJMXURLProvider {
 
@@ -71,8 +72,8 @@ public class JBossAS710ExtendedProperties extends JBossAS7ExtendedProperties imp
 		ServerDelegate sd = (ServerDelegate)server.loadAdapter(ServerDelegate.class, null);
 		int port = (sd instanceof IManagementPortProvider) ? 
 					((IManagementPortProvider)sd).getManagementPort() : defaultPort;
-		String url = jmxScheme + "://" + server.getHost() + ":" + port;  //$NON-NLS-1$ //$NON-NLS-2$
-		return url;
+		String ret = ServerUtil.createSafeURLString(jmxScheme, server.getHost(), port, null);
+		return ret;
 	}
 
 

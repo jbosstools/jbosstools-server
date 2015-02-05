@@ -89,14 +89,13 @@ public class JBossExtendedProperties extends ServerExtendedProperties {
 		return true;
 	}
 	
+	@Deprecated
 	protected static final String WELCOME_PAGE_URL_PATTERN = "http://{0}:{1}/"; //$NON-NLS-1$
 	public String getWelcomePageUrl() {
 		try {
 			JBossServer jbossServer = ServerUtil.checkedGetServerAdapter(server, JBossServer.class);
-			String host = jbossServer.getHost();
-			host = ServerUtil.formatPossibleIpv6Address(host);
 			int webPort = jbossServer.getJBossWebPort();
-			String consoleUrl = MessageFormat.format(WELCOME_PAGE_URL_PATTERN, host, String.valueOf(webPort));
+			String consoleUrl = ServerUtil.createSafeURLString("http", server.getHost(), webPort, null); //$NON-NLS-1$
 			return consoleUrl;
 		} catch(CoreException ce) {
 			return null;
