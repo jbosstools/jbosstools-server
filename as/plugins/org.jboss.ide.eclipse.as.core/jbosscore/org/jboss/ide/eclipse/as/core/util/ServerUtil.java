@@ -259,6 +259,50 @@ public class ServerUtil {
     	ServerSecureStorageUtil.storeInSecureStorage(SECURE_PREFERNCES_BASEKEY, server, key, val);
     }
 
+    /**
+     * Create a URL string which is safe for all valid versions of IP.
+     *  
+     * For example, given a host 192.168.1.1, scheme http, and path my/folder, 
+     * this will return  http://192.168.1.1/my/folder 
+     * 
+     * @param scheme  A scheme to connect over
+     * @param host    A host
+     * @param path    A path
+     * @return
+     */
+    public static String createSafeURLString(String scheme, String host, String path) {
+    	return createSafeURLString(scheme, host, -1, path);
+    }
+    
+    /**
+     * Create a URL string which is safe for all valid versions of IP.
+     *  
+     * For example, given a host 5a:55:4f:e6:e7:ea, scheme http, port 8080, and path my/folder, 
+     * this will return  http://[5a:55:4f:e6:e7:ea]:8080/my/folder 
+     * 
+     * @param scheme  A scheme to connect over
+     * @param host    A host
+     * @param port    A port to connect over, or -1 if none is to be set
+     * @param path    A path
+     * @return
+     */
+    public static String createSafeURLString(String scheme, String host, int port, String path) {
+    	StringBuilder sb = new StringBuilder();
+    	sb.append(scheme);
+    	sb.append("://"); //$NON-NLS-1$
+    	sb.append(formatPossibleIpv6Address(host));
+    	if( port != -1 ) {
+    		sb.append(":"); //$NON-NLS-1$
+    		sb.append(port);
+    	}
+    	if( path != null ) {
+    		if( !path.startsWith("/")) //$NON-NLS-1$
+    			sb.append("/"); //$NON-NLS-1$
+    		sb.append(path);
+    	}
+    	return sb.toString();
+    }
+
     public static String formatPossibleIpv6Address(String address) {
             if (address == null) {
                 return address;

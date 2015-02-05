@@ -79,14 +79,10 @@ public class WebPortPoller implements IServerStatePoller2 {
 	}
 	
 	private static String getURL(IServer server) {
-		String host = server.getHost();
 		// v6_safe
-		String host2 = ServerUtil.formatPossibleIpv6Address(server.getHost());
-		String url = "http://"+host2; //$NON-NLS-1$
 		IJBossServer jbs = ServerConverter.getJBossServer(server);
 		int port = jbs.getJBossWebPort();
-		url += ":" + port; //$NON-NLS-1$
-		return url;
+		return ServerUtil.createSafeURLString("http", server.getHost(), port, null); //$NON-NLS-1$
 	}
 	
 	public static boolean onePing(IServer server) {
