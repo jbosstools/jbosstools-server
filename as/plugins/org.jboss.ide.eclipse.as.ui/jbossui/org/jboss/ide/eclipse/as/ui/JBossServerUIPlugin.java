@@ -37,7 +37,7 @@ import org.osgi.framework.BundleContext;
 /**
  * The main plugin class to be used in the desktop.
  */
-public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
+public class JBossServerUIPlugin extends AbstractUIPlugin {
 
 	private static JBossServerUIPlugin plugin;
 	private ResourceBundle resourceBundle;
@@ -123,10 +123,6 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 	 */
 	public ResourceBundle getResourceBundle() {
 		return resourceBundle;
-	}
-
-	public void earlyStartup() {
-		JBossServerCorePlugin.getDefault();
 	}
 	
 	public static void log(String message, Exception e) {

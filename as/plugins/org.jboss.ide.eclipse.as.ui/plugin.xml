@@ -64,7 +64,8 @@
    </extension>
 
    <extension point="org.eclipse.ui.startup">
-      <startup />
+      <startup
+            class="org.jboss.ide.eclipse.as.ui.JBossServerUIStartup"/>
    </extension>
 
 
