@@ -110,7 +110,7 @@ public final class XMLMemento implements IMemento {
 			document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
 			
 			// THIS IS DIFFERENT THAN OTHER VERSIONS OF XMLMEMENTO
-			((DocumentImpl)document).setXmlStandalone(true);
+			document.setXmlStandalone(true);
 			Element element = document.createElement(type);
 			document.appendChild(element);
 			return new XMLMemento(document, element);
