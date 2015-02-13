@@ -2,10 +2,9 @@ package org.jboss.tools.as.management.itests.utils;
 
 import java.io.File;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
-import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
-import org.jboss.tools.as.core.server.controllable.systems.IPortsController;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
 
 /**
@@ -18,9 +17,9 @@ public class ManagementPortTestUtility {
 		try {
 			String serverType = ParameterUtils.getServerType(serverHome);
 			IServer server = ServerCreationTestUtils.createServerWithRuntime(serverType, serverType, new File(serverHome));
-			ControllableServerBehavior beh = (ControllableServerBehavior) JBossServerBehaviorUtils.getControllableBehavior(server);
-			IPortsController controller = (IPortsController) beh.getController(IPortsController.SYSTEM_ID);
-			return controller.findPort(IPortsController.KEY_MANAGEMENT_PORT, -1);
+			JBoss7Server jb7s = (JBoss7Server)server.loadAdapter(JBoss7Server.class, new NullProgressMonitor());
+			int mgmtPort = jb7s.getManagementPort();
+			return mgmtPort;
 		} catch(Exception e) {
 			e.printStackTrace();
 		} finally {

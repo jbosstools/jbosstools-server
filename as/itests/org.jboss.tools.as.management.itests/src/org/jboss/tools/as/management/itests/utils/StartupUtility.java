@@ -110,7 +110,7 @@ public class StartupUtility extends Assert {
 		this.homeDir = homeDir;
 		setRuntimeType(ParameterUtils.serverHomeToRuntimeType.get(homeDir));
 		setPort(ManagementPortTestUtility.getManagementPort(homeDir));
-		assertTrue(getPort() != -1);
+		assertTrue("Management port for server " + homeDir + " must not be -1", getPort() != -1);
 	}
 	protected void setPort(int port) {
 		this.port = port;
