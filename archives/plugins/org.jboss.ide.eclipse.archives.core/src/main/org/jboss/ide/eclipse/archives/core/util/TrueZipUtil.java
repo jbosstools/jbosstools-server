@@ -13,14 +13,13 @@ package org.jboss.ide.eclipse.archives.core.util;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.IPath;
-import org.jboss.ide.eclipse.archives.core.ArchivesCorePlugin;
+import org.jboss.ide.eclipse.archives.core.internal.TrueZipContextClassloaderUtil;
 
 import de.schlichtherle.io.AbstractArchiveDetector;
 import de.schlichtherle.io.ArchiveDetector;
 import de.schlichtherle.io.ArchiveException;
 import de.schlichtherle.io.archive.spi.ArchiveDriver;
 import de.schlichtherle.io.archive.zip.JarDriver;
-import de.schlichtherle.key.KeyManager;
 
 /**
  * Accesses raw files with the truezip filesystem
@@ -30,7 +29,7 @@ import de.schlichtherle.key.KeyManager;
 public class TrueZipUtil {
 
 	public static de.schlichtherle.io.File getFile(IPath path) {
-		ClassLoader bundleLoader = ArchivesCorePlugin.getDefault().getBundleClassLoader();
+		ClassLoader bundleLoader = TrueZipContextClassloaderUtil.getDefault().getClassLoader();
 		ClassLoader originalTCCL = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(bundleLoader);
@@ -43,7 +42,7 @@ public class TrueZipUtil {
 	
 	public static de.schlichtherle.io.File getFile(java.io.File f, ArchiveDetector detector) {
 		
-		ClassLoader bundleLoader = ArchivesCorePlugin.getDefault().getBundleClassLoader();
+		ClassLoader bundleLoader = TrueZipContextClassloaderUtil.getDefault().getClassLoader();
 		ClassLoader originalTCCL = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(bundleLoader);
@@ -56,7 +55,7 @@ public class TrueZipUtil {
 
 	public static de.schlichtherle.io.File getFile(java.io.File f, String segment, ArchiveDetector detector) {
 		
-		ClassLoader bundleLoader = ArchivesCorePlugin.getDefault().getBundleClassLoader();
+		ClassLoader bundleLoader = TrueZipContextClassloaderUtil.getDefault().getClassLoader();
 		ClassLoader originalTCCL = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(bundleLoader);
@@ -70,7 +69,7 @@ public class TrueZipUtil {
 	
 	public static de.schlichtherle.io.File getFile(IPath path, ArchiveDetector detector) {
 		
-		ClassLoader bundleLoader = ArchivesCorePlugin.getDefault().getBundleClassLoader();
+		ClassLoader bundleLoader = TrueZipContextClassloaderUtil.getDefault().getClassLoader();
 		ClassLoader originalTCCL = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(bundleLoader);
@@ -85,7 +84,7 @@ public class TrueZipUtil {
 		return pathExists( getFile(path));
 	}
 	public static boolean pathExists( de.schlichtherle.io.File file) {
-		ClassLoader bundleLoader = ArchivesCorePlugin.getDefault().getBundleClassLoader();
+		ClassLoader bundleLoader = TrueZipContextClassloaderUtil.getDefault().getClassLoader();
 		ClassLoader originalTCCL = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(bundleLoader);
@@ -102,7 +101,7 @@ public class TrueZipUtil {
 	}
 
 	public static long getTimestamp(de.schlichtherle.io.File file) {
-		ClassLoader bundleLoader = ArchivesCorePlugin.getDefault().getBundleClassLoader();
+		ClassLoader bundleLoader = TrueZipContextClassloaderUtil.getDefault().getClassLoader();
 		ClassLoader originalTCCL = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(bundleLoader);
@@ -119,7 +118,7 @@ public class TrueZipUtil {
 	}
 
 	public static boolean copyFile(String source, de.schlichtherle.io.File file, boolean updateTimestamps) {
-		ClassLoader bundleLoader = ArchivesCorePlugin.getDefault().getBundleClassLoader();
+		ClassLoader bundleLoader = TrueZipContextClassloaderUtil.getDefault().getClassLoader();
 		ClassLoader originalTCCL = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(bundleLoader);
@@ -133,7 +132,7 @@ public class TrueZipUtil {
 	}
 
 	public static boolean touchFile(IPath path) {
-		ClassLoader bundleLoader = ArchivesCorePlugin.getDefault().getBundleClassLoader();
+		ClassLoader bundleLoader = TrueZipContextClassloaderUtil.getDefault().getClassLoader();
 		ClassLoader originalTCCL = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(bundleLoader);
@@ -155,7 +154,7 @@ public class TrueZipUtil {
 		return deleteAll(getFile(path));
 	}
 	public static boolean deleteAll(de.schlichtherle.io.File file) {
-		ClassLoader bundleLoader = ArchivesCorePlugin.getDefault().getBundleClassLoader();
+		ClassLoader bundleLoader = TrueZipContextClassloaderUtil.getDefault().getClassLoader();
 		ClassLoader originalTCCL = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(bundleLoader);
@@ -189,7 +188,7 @@ public class TrueZipUtil {
 
 
 	public static boolean createFolder(IPath parent, String folderName) {
-		ClassLoader bundleLoader = ArchivesCorePlugin.getDefault().getBundleClassLoader();
+		ClassLoader bundleLoader = TrueZipContextClassloaderUtil.getDefault().getClassLoader();
 		ClassLoader originalTCCL = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(bundleLoader);
@@ -204,7 +203,7 @@ public class TrueZipUtil {
 		return createFolder(path.removeLastSegments(1), path.lastSegment());
 	}
 	public static boolean createArchive(IPath parent, String folderName) {
-		ClassLoader bundleLoader = ArchivesCorePlugin.getDefault().getBundleClassLoader();
+		ClassLoader bundleLoader = TrueZipContextClassloaderUtil.getDefault().getClassLoader();
 		ClassLoader originalTCCL = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(bundleLoader);
@@ -230,7 +229,7 @@ public class TrueZipUtil {
 	 * @return
 	 */
 	public static boolean createArchive(java.io.File parentFile, IPath relative) {
-		ClassLoader bundleLoader = ArchivesCorePlugin.getDefault().getBundleClassLoader();
+		ClassLoader bundleLoader = TrueZipContextClassloaderUtil.getDefault().getClassLoader();
 		ClassLoader originalTCCL = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(bundleLoader);
@@ -244,7 +243,7 @@ public class TrueZipUtil {
 	}
 	
 	public static de.schlichtherle.io.File getRelativeArchiveFile(java.io.File parentFile, IPath relative) {
-		ClassLoader bundleLoader = ArchivesCorePlugin.getDefault().getBundleClassLoader();
+		ClassLoader bundleLoader = TrueZipContextClassloaderUtil.getDefault().getClassLoader();
 		ClassLoader originalTCCL = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(bundleLoader);
@@ -279,7 +278,7 @@ public class TrueZipUtil {
 	
 	
 	public static void umount() {
-		ClassLoader bundleLoader = ArchivesCorePlugin.getDefault().getBundleClassLoader();
+		ClassLoader bundleLoader = TrueZipContextClassloaderUtil.getDefault().getClassLoader();
 		ClassLoader originalTCCL = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(bundleLoader);
@@ -316,7 +315,7 @@ public class TrueZipUtil {
 	
 	// Update only the PARENT timestamps. 
 	public static boolean updateParentTimestamps(de.schlichtherle.io.File file) {
-		ClassLoader bundleLoader = ArchivesCorePlugin.getDefault().getBundleClassLoader();
+		ClassLoader bundleLoader = TrueZipContextClassloaderUtil.getDefault().getClassLoader();
 		ClassLoader originalTCCL = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(bundleLoader);
@@ -337,7 +336,7 @@ public class TrueZipUtil {
 
 	private static ArchiveDetector JAR_ARCHIVE_DETECTOR;
 	public static ArchiveDetector getJarArchiveDetector() {
-		ClassLoader bundleLoader = ArchivesCorePlugin.getDefault().getBundleClassLoader();
+		ClassLoader bundleLoader = TrueZipContextClassloaderUtil.getDefault().getClassLoader();
 		ClassLoader originalTCCL = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(bundleLoader);
@@ -352,7 +351,7 @@ public class TrueZipUtil {
 	}
 
 	public static ArchiveDetector getNullArchiveDetector() {
-		ClassLoader bundleLoader = ArchivesCorePlugin.getDefault().getBundleClassLoader();
+		ClassLoader bundleLoader = TrueZipContextClassloaderUtil.getDefault().getClassLoader();
 		ClassLoader originalTCCL = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(bundleLoader);
@@ -365,7 +364,7 @@ public class TrueZipUtil {
 	
 
 	public static ArchiveDetector getDefaultArchiveDetector() {
-		ClassLoader bundleLoader = ArchivesCorePlugin.getDefault().getBundleClassLoader();
+		ClassLoader bundleLoader = TrueZipContextClassloaderUtil.getDefault().getClassLoader();
 		ClassLoader originalTCCL = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(bundleLoader);
@@ -377,7 +376,7 @@ public class TrueZipUtil {
 	}
 	
 	public static boolean archiveCopyAllTo(java.io.File source, ArchiveDetector detector, java.io.File destination) {
-		ClassLoader bundleLoader = ArchivesCorePlugin.getDefault().getBundleClassLoader();
+		ClassLoader bundleLoader = TrueZipContextClassloaderUtil.getDefault().getClassLoader();
 		ClassLoader originalTCCL = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(bundleLoader);
@@ -412,7 +411,7 @@ public class TrueZipUtil {
 	}
 
 	public static de.schlichtherle.io.File getFileInArchive(de.schlichtherle.io.File root, IPath relative) {
-		ClassLoader bundleLoader = ArchivesCorePlugin.getDefault().getBundleClassLoader();
+		ClassLoader bundleLoader = TrueZipContextClassloaderUtil.getDefault().getClassLoader();
 		ClassLoader originalTCCL = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(bundleLoader);
@@ -430,7 +429,7 @@ public class TrueZipUtil {
 	
 	
 	public static java.io.File getDestinationJar(java.io.File root, IPath relative) {
-		ClassLoader bundleLoader = ArchivesCorePlugin.getDefault().getBundleClassLoader();
+		ClassLoader bundleLoader = TrueZipContextClassloaderUtil.getDefault().getClassLoader();
 		ClassLoader originalTCCL = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(bundleLoader);

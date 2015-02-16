@@ -13,6 +13,8 @@ package org.jboss.ide.eclipse.archives.core;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Plugin;
+import org.jboss.ide.eclipse.archives.core.internal.IClassLoaderProvider;
+import org.jboss.ide.eclipse.archives.core.internal.TrueZipContextClassloaderUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.wiring.BundleWiring;
@@ -48,7 +50,11 @@ public class ArchivesCorePlugin extends Plugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		this.context = context;
-		
+		TrueZipContextClassloaderUtil.getDefault().setProvider(new IClassLoaderProvider() {
+			public ClassLoader getClassLoader() {
+				return getBundleClassLoader();
+			}
+		});
 		// Load the workspace version of ArchivesCore
 		new WorkspaceArchivesCore();
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(new WorkspaceChangeListener());
