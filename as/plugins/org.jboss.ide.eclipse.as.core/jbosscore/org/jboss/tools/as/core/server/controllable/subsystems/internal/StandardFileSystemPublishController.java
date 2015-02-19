@@ -162,7 +162,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 	protected IModuleStateController getModuleStateController() throws CoreException {
 		if( moduleStateController == null && !moduleStateControllerLoadFailed) {
 			try {
-				moduleStateController = (IModuleStateController)findDependency(IModuleStateController.SYSTEM_ID);
+				moduleStateController = (IModuleStateController)findDependencyFromBehavior(IModuleStateController.SYSTEM_ID);
 			} catch(CoreException ce) {
 				// Do not log; this is optional. But trace
 				moduleStateControllerLoadFailed = true;
