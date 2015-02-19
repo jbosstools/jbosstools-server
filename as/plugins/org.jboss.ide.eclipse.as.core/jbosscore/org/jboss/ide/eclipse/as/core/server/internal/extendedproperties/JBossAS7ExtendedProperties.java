@@ -22,6 +22,8 @@ import org.eclipse.jdt.internal.launching.environments.EnvironmentsManager;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
 import org.jboss.ide.eclipse.as.core.server.IDeploymentScannerModifier;
@@ -30,10 +32,14 @@ import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ModuleStateVerifie
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7DeploymentScannerAdditions;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.IJBossManagerServiceProvider;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 
 public class JBossAS7ExtendedProperties extends JBossExtendedProperties implements IJBossManagerServiceProvider {
 	public JBossAS7ExtendedProperties(IAdaptable obj) {
@@ -92,7 +98,13 @@ public class JBossAS7ExtendedProperties extends JBossExtendedProperties implemen
 	}
 	
 	public IServerModuleStateVerifier getModuleStateVerifier() {
-		return new JBoss7ModuleStateVerifier();
+		try {
+			IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(server);
+			return (IServerModuleStateVerifier)beh.getController(IControllableServerBehavior.SYSTEM_MODULES);
+		} catch(CoreException ce) {
+			JBossServerCorePlugin.log(ce);
+			return null;
+		}
 	}
 	public IDefaultLaunchArguments getDefaultLaunchArguments() {
 		if( server != null)

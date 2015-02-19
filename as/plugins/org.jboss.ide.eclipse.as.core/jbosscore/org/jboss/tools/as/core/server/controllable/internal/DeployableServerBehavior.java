@@ -140,7 +140,7 @@ public class DeployableServerBehavior extends ControllableServerBehavior {
 			IServerModuleStateVerifier verifier = properties.getModuleStateVerifier();
 			Job moduleStateJob = null;
 			if( verifier != null ) {
-				moduleStateJob = new UpdateModuleStateJob(s, verifier);
+				moduleStateJob = new UpdateModuleStateJob(s, verifier, true, 10000);
 			}
 			
 			Job rootJob = chainJobs(scannerJob, moduleStateJob);
