@@ -119,7 +119,7 @@ public class DeploymentMarkerUtils {
 
 	public static boolean markerExists(IPath module, IFilesystemController controller, String markerId) throws CoreException {
 		IPath folder = module.removeLastSegments(1);
-		IPath p = folder.append(getDeployedMarker(module.lastSegment()));
+		IPath p = folder.append(module.lastSegment() + markerId);
 		return controller.exists(p, new NullProgressMonitor());
 	}
 }
