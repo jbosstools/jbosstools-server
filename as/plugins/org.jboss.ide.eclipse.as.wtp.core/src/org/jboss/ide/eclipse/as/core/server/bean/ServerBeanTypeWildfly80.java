@@ -24,6 +24,11 @@ public class ServerBeanTypeWildfly80 extends JBossServerType {
 						"org","jboss","as","server","main"),
 				new String[]{V8_0}, new Wildfly80ServerTypeCondition());
 	}
+	
+	protected String getServerTypeBaseName() {
+		return getId();
+	}
+	
 	public static class Wildfly80ServerTypeCondition extends AbstractCondition {
 		public boolean isServerRoot(File location) {
 			return scanManifestPropFromJBossModules(new File[]{new File(location, "modules")}, "org.jboss.as.server", null, AS_RELEASE_MANIFEST_KEY, "8.");

@@ -212,23 +212,11 @@ public class ServerUtil {
 	}
 	
 	public static String getDefaultServerName(IRuntime rt) {
-		String runtimeName = rt.getName();
-		String base = null;
-		if( runtimeName == null || runtimeName.equals("")) { //$NON-NLS-1$
-			IRuntimeType rtt = rt.getRuntimeType();
-			base = NLS.bind(Messages.serverVersionName, rtt == null ? null : rtt.getVersion());
-		} else 
-			base = NLS.bind(Messages.serverName, runtimeName);
-		
-		return getDefaultServerName( base);
+		return ServerNamingUtility.getDefaultServerName(rt);
 	}
+
 	public static String getDefaultServerName( String base) {
-		if( ServerUtil.findServer(base) == null ) return base;
-		int i = 1;
-		while( ServerUtil.findServer(
-				NLS.bind(Messages.serverCountName, base, i)) != null )
-			i++;
-		return NLS.bind(Messages.serverCountName, base, i);
+		return ServerNamingUtility.getDefaultServerName(base);
 	}
 	
 	public static String checkedGetServerHome(JBossServer jbs) throws CoreException {

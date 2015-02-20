@@ -34,7 +34,7 @@ public class ServerBeanTypeFSW6 extends ServerBeanTypeUnknownAS71Product {
 	
 	@Override
 	public String getServerBeanName(File root) {
-		return "jboss-fsw-" + condition.getFullVersion(root, null);
+		return "JBoss FSW " + condition.getFullVersion(root, null);
 	}
 	public static class FSW6Condition extends UnknownAS72ProductServerTypeCondition {
 		public String getFullVersion(File location, File systemJarFile) {

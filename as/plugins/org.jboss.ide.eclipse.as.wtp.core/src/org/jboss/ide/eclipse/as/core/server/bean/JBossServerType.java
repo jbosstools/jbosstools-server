@@ -86,4 +86,13 @@ public class JBossServerType extends ServerBeanType implements IJBossToolingCons
 	public String[] getVersions() {
 		return versions;
 	}
+	
+	@Override
+	public String getServerBeanName(File root) {
+		return getServerTypeBaseName() + " " + ServerBeanLoader.getMajorMinorVersion(getFullVersion(root));
+	}
+	
+	protected String getServerTypeBaseName() {
+		return "JBoss " + getId();
+	}
 }

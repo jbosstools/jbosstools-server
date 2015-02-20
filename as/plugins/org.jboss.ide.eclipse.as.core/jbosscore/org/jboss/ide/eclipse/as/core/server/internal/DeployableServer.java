@@ -36,6 +36,7 @@ import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.core.util.ServerNamingUtility;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
@@ -52,9 +53,9 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	public void setDefaults(IProgressMonitor monitor) {
 		IRuntime rt = getServer().getRuntime();
 		if( rt != null ) {
-			getServerWorkingCopy().setName(ServerUtil.getDefaultServerName(rt));
+			getServerWorkingCopy().setName(ServerNamingUtility.getDefaultServerName(rt));
 		} else {
-			getServerWorkingCopy().setName(ServerUtil.getDefaultServerName(getServer().getServerType().getName()));
+			getServerWorkingCopy().setName(ServerNamingUtility.getNextShortServerName(getServer().getServerType()));
 		}
 		setAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, true);
 	}

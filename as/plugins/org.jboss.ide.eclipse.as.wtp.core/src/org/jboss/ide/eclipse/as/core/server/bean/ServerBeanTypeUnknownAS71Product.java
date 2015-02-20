@@ -31,6 +31,13 @@ public class ServerBeanTypeUnknownAS71Product extends JBossServerType {
 		this( id, desc, path, new String[]{}, condition);
 	}
 	
+	@Override
+	public String getServerBeanName(File root) {
+		if( getId().equals("AS-Product"))
+			return root.getName();
+		return super.getServerBeanName(root);
+	}
+	
 	/**
 	 * @since 3.0 (actually 2.4.101)
 	 */
