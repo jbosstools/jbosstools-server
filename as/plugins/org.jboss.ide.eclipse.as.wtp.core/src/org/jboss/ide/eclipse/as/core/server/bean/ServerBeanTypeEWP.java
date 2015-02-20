@@ -26,6 +26,11 @@ public class ServerBeanTypeEWP extends JBossServerType {
 		return "jboss-as-web";
 	}
 
+
+	protected String getServerTypeBaseName() {
+		return "JBoss Web Platform";
+	}
+	
 	public static class EWPTypeCondition extends org.jboss.ide.eclipse.as.core.server.bean.ServerBeanTypeEAP.EAPServerTypeCondition {
 		public boolean isServerRoot(File location) {
 			File ewpSystemJar = new File(location,JBossServerType.EWP.getSystemJarPath());

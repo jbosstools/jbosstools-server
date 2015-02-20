@@ -24,6 +24,12 @@ public class ServerBeanTypeJPP6 extends JBossServerType {
 				asPath("modules", "org", "jboss", "as", "server", "main"),
 				new String[]{V6_0}, new JPP6ServerTypeCondition());
 	}	
+	
+
+	protected String getServerTypeBaseName() {
+		return "JBoss Portal";
+	}
+	
 	public static class JPP6ServerTypeCondition extends org.jboss.ide.eclipse.as.core.server.bean.ServerBeanTypeEAP6.EAP6ServerTypeCondition {
 		public boolean isServerRoot(File location) {
 			return getFullVersion(location, null) != null;

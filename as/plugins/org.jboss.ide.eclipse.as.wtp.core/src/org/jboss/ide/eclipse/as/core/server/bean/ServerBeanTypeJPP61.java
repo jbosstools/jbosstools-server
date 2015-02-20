@@ -24,6 +24,11 @@ public class ServerBeanTypeJPP61 extends ServerBeanTypeUnknownAS71Product {
 				new String[] { V6_1 },
 				new JPP61Condition());
 	}
+
+	protected String getServerTypeBaseName() {
+		return "JBoss Portal";
+	}
+	
 	public static class JPP61Condition extends UnknownAS72ProductServerTypeCondition {
 		@Override
 		public boolean isServerRoot(File location) {

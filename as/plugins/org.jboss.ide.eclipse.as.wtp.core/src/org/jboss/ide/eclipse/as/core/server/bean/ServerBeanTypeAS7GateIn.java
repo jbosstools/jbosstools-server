@@ -32,6 +32,10 @@ public class ServerBeanTypeAS7GateIn extends JBossServerType {
 			asPath( "modules","org","jboss","as","server","main"),
 			new String[]{V3_3,V3_4, V3_5, "3.6"}, new AS7GateInServerTypeCondition());
 	}
+	
+	protected String getServerTypeBaseName() {
+		return getId();
+	}
 
 	public static class AS7GateInServerTypeCondition extends AbstractCondition {
 		public boolean isServerRoot(File location) {

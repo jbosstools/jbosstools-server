@@ -24,6 +24,12 @@ public class ServerBeanTypeEPP extends JBossServerType {
 				asPath(JBOSS_AS_PATH,BIN_PATH,RUN_JAR_NAME),
 				new String[]{V4_3, V5_0}, new EPPTypeCondition());
 	}
+	
+
+	protected String getServerTypeBaseName() {
+		return "JBoss Portal";
+	}
+	
 	@Override
 	public String getRootToAdapterRelativePath(String version) {
 		return "jboss-as";
