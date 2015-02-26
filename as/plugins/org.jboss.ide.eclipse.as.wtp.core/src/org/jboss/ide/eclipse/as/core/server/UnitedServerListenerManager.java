@@ -10,8 +10,8 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.server.core.IPublishListener;
@@ -36,18 +36,42 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
  */
 public class UnitedServerListenerManager implements 
 	IServerLifecycleListener, IServerListener, IPublishListener, IRuntimeLifecycleListener {
-	protected static UnitedServerListenerManager instance;
-	private boolean isInitialized = false;
 	
-	public static synchronized UnitedServerListenerManager getDefault() {
-		if( instance == null )
-			instance = new UnitedServerListenerManager();
-		return instance;
+	static class SingletonHolder {
+		  static UnitedServerListenerManager instance = new UnitedServerListenerManager();    
 	}
 	
-	protected ArrayList<UnitedServerListener> list;
+	public static UnitedServerListenerManager getDefault() {
+		return SingletonHolder.instance;
+	}
+	
+	protected CopyOnWriteArrayList<UnitedServerListener> list;
+	private boolean isInitialized = false;
 	private UnitedServerListenerManager() {
-		list = new ArrayList<UnitedServerListener>();
+		list = new CopyOnWriteArrayList<UnitedServerListener>();
+		
+		/* 
+		 
+		   Initialize in a new thread, to ensure fast exit of constructor, and
+		   that any bundle-loading caused by calls into WTP are all executed in a different thread. 
+		   
+		   Even Calls in this same thread accessing UnitedServerListenerManager.getDefault() can lead to bugs.
+		   The lock on the class object is still in effect, so if  execution flows back into 
+		   getDefault() during the constructor, it will instantiate a second UnitedServerListenerManager 
+		   object rather than just one. This can possibly cause other bugs, such as missing listeners.
+		    
+		*/ 
+		new Thread() {
+			public void run() {
+				initializeManager();
+			}
+		}.start();
+	}
+	
+	private void initializeManager() {
+		// Make unsynchronized calls into WTP to register this class as a listener
+		// If any bundles get loaded because of these calls, even if in new threads, 
+		// execution can still flow into this class's synchronized methods
 		ServerCore.addServerLifecycleListener(UnitedServerListenerManager.this);
 		ServerCore.addRuntimeLifecycleListener(UnitedServerListenerManager.this);
 		IServer[] allServers = ServerCore.getServers();
@@ -60,8 +84,13 @@ public class UnitedServerListenerManager implements
 			allServers[i].addServerListener(UnitedServerListenerManager.this);
 			allServers[i].addPublishListener(UnitedServerListenerManager.this);
 		}
+		initializeCurrentListeners();
 	}
 	
+	/*
+	 * Should not be public
+	 */
+	@Deprecated
 	public synchronized UnitedServerListener[] getListeners() {
 		return (UnitedServerListener[]) list.toArray(new UnitedServerListener[list.size()]);
 	}
@@ -71,108 +100,129 @@ public class UnitedServerListenerManager implements
 	}
 
 
-	public synchronized void addListener(UnitedServerListener listener) {
-		if( !list.contains(listener)) {
-			list.add(listener);
-			// united listener manager is already initialized, so init this new listener individually
-			if( isInitialized )
-				initializeListener(listener);
+	private synchronized boolean isInitialized() {
+		return isInitialized;
+	}
+	
+	private synchronized void setInitialized(boolean val) {
+		isInitialized = val;
+	}
+	
+	public void addListener(UnitedServerListener listener) {
+		boolean requiresInit = false;
+		synchronized(this) {
+			if( !list.contains(listener)) {
+				requiresInit = isInitialized();
+				list.add(listener);
+			}
+		}
+		// united listener manager is already initialized, so init this new listener individually
+		if( requiresInit ) {
+			initializeListener(listener);
 		}
 	}
 
-	private synchronized void initializeCurrentListeners() {
-		Iterator<UnitedServerListener> it = list.iterator();
-		while(it.hasNext()) {
+	private void initializeCurrentListeners() {
+		Iterator<UnitedServerListener> it = null;
+		// Get the current listeners and set initialized to true in one guaranteed block
+		synchronized(this) {
+			it = list.iterator();
+			// Set isInitialized to true now instead of later. 
+			// If somehow any init calls load bundles or add new listeners, 
+			// the addListener method will need to initialize the new listeners
+			setInitialized(true);
+		}
+		while( it.hasNext() ) {
 			initializeListener(it.next());
 		}
-		isInitialized = true;
 	}
 
 	
-	private synchronized void initializeListener(UnitedServerListener listener) {
+	private void initializeListener(UnitedServerListener listener) {
 		IServer[] allServers = ServerCore.getServers();
 		for( int i = 0; i < allServers.length; i++ ) {
 			listener.init(allServers[i]);
 		}
 	}
-	public synchronized void removeListener(UnitedServerListener listener) {
+	public void removeListener(UnitedServerListener listener) {
 		list.remove(listener);
 		IServer[] allServers = ServerCore.getServers();
 		for( int i = 0; i < allServers.length; i++ ) {
 			listener.cleanUp(allServers[i]);
 		}
 	}
+	
+	
+	/*
+	 * Below are all methods for the various WTP server listener interfaces,
+	 * which we forward directly to all listeners registered in this class's list
+	 * 
+	 * They are all unsynchronized to ensure minimal impact or chance for deadlock, 
+	 * since any listener could theoretically cause bundles to be loaded
+	 * or new listeners to be added.  
+	 */
 
 	public void serverAdded(IServer server) {
 		server.addServerListener(this);
 		server.addPublishListener(this);
-		UnitedServerListener[] listeners = getListeners();
-		for( int i = 0; i < listeners.length; i++) {
-			if( listeners[i].canHandleServer(server))
-				listeners[i].serverAdded(server);
+		for (UnitedServerListener working : list) {
+			if( working.canHandleServer(server))
+				working.serverAdded(server);
 		}
 	}
 	public void serverChanged(IServer server) {
-		UnitedServerListener[] listeners = getListeners();
-		for( int i = 0; i < listeners.length; i++) {
-			if( listeners[i].canHandleServer(server))
-				listeners[i].serverChanged(server);
+		for (UnitedServerListener working : list) {
+			if( working.canHandleServer(server))
+				working.serverChanged(server);
 		}
 	}
 	public void serverRemoved(IServer server) {
 		server.removeServerListener(this);
 		server.removePublishListener(this);
-		UnitedServerListener[] listeners = getListeners();
-		for( int i = 0; i < listeners.length; i++) {
-			if( listeners[i].canHandleServer(server))
-				listeners[i].serverRemoved(server);
+		for (UnitedServerListener working : list) {
+			if( working.canHandleServer(server))
+				working.serverRemoved(server);
 		}
 	}
 	
 	public void serverChanged(ServerEvent event) {
 		IServer server = event.getServer();
-		UnitedServerListener[] listeners = getListeners();
-		for( int i = 0; i < listeners.length; i++) {
-			if( listeners[i].canHandleServer(server))
-				listeners[i].serverChanged(event);
+		for (UnitedServerListener working : list) {
+			if( working.canHandleServer(server))
+				working.serverChanged(event);
 		}
 	}
 
 	public void publishStarted(IServer server) {
-		UnitedServerListener[] listeners = getListeners();
-		for( int i = 0; i < listeners.length; i++) {
-			if( listeners[i].canHandleServer(server))
-				listeners[i].publishStarted(server);
+		for (UnitedServerListener working : list) {
+			if( working.canHandleServer(server))
+				working.publishStarted(server);
 		}
 	}
 
 	public void publishFinished(IServer server, IStatus status) {
-		UnitedServerListener[] listeners = getListeners();
-		for( int i = 0; i < listeners.length; i++) {
-			if( listeners[i].canHandleServer(server))
-				listeners[i].publishFinished(server, status);
+		for (UnitedServerListener working : list) {
+			if( working.canHandleServer(server))
+				working.publishFinished(server, status);
 		}
 	}
 
 	public void runtimeAdded(IRuntime runtime) {
-		UnitedServerListener[] listeners = getListeners();
-		for( int i = 0; i < listeners.length; i++) {
-			if( listeners[i].canHandleRuntime(runtime))
-				listeners[i].runtimeAdded(runtime);
+		for (UnitedServerListener working : list) {
+			if( working.canHandleRuntime(runtime))
+				working.runtimeAdded(runtime);
 		}
 	}
 	public void runtimeChanged(IRuntime runtime) {
-		UnitedServerListener[] listeners = getListeners();
-		for( int i = 0; i < listeners.length; i++) {
-			if( listeners[i].canHandleRuntime(runtime))
-				listeners[i].runtimeChanged(runtime);
+		for (UnitedServerListener working : list) {
+			if( working.canHandleRuntime(runtime))
+				working.runtimeChanged(runtime);
 		}
 	}
 	public void runtimeRemoved(IRuntime runtime) {
-		UnitedServerListener[] listeners = getListeners();
-		for( int i = 0; i < listeners.length; i++) {
-			if( listeners[i].canHandleRuntime(runtime))
-				listeners[i].runtimeRemoved(runtime);
+		for (UnitedServerListener working : list) {
+			if( working.canHandleRuntime(runtime))
+				working.runtimeRemoved(runtime);
 		}
 	}
 }
