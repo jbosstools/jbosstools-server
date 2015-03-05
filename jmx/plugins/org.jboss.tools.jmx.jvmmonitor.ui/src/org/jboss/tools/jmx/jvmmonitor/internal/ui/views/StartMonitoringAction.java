@@ -263,7 +263,8 @@ public class StartMonitoringAction extends Action implements
                 .getShowInContext();
         if (context.getSelection() == null) {
             JvmExplorer jvmExplorer = (JvmExplorer) context.getPart();
-            view.selectionChanged(jvmExplorer, jvmExplorer.getSelection());
+            if( jvmExplorer != null )
+            	view.selectionChanged(jvmExplorer, jvmExplorer.getSelection());
         }
     }
 

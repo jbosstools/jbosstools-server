@@ -13,6 +13,8 @@ import java.io.UnsupportedEncodingException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.jboss.tools.common.jdt.debug.tools.ToolsCore;
+import org.jboss.tools.common.jdt.debug.tools.ToolsCoreException;
 import org.jboss.tools.jmx.jvmmonitor.core.IHeapDumpHandler;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmCoreException;
 import org.jboss.tools.jmx.jvmmonitor.tools.Activator;
@@ -32,17 +34,17 @@ public class HeapDumpHandler implements IHeapDumpHandler {
      */
     @Override
     public String dumpHeap(int pid, boolean isLive) throws JvmCoreException {
-        Tools tools = Tools.getInstance();
-
-        Object virtualMachine = null;
+        ToolsCore.AttachedVM virtualMachine = null;
         try {
-            virtualMachine = tools.invokeAttach(pid);
+            virtualMachine = ToolsCore.attach(pid);
             return getHeapHistogram(virtualMachine, isLive);
+        } catch(ToolsCoreException e) {
+        	throw new JvmCoreException(IStatus.ERROR, e.getMessage(), e);
         } finally {
             if (virtualMachine != null) {
                 try {
-                    tools.invokeDetach(virtualMachine);
-                } catch (JvmCoreException e) {
+                    ToolsCore.detach(virtualMachine);
+                } catch (ToolsCoreException e) {
                     // ignore
                 }
             }
@@ -80,10 +82,14 @@ public class HeapDumpHandler implements IHeapDumpHandler {
      * @return The heap histogram
      * @throws JvmCoreException
      */
-    private static String getHeapHistogram(Object virtualMachine, boolean isLive)
+    private static String getHeapHistogram(ToolsCore.AttachedVM virtualMachine, boolean isLive)
             throws JvmCoreException {
-        InputStream in = Tools.getInstance().invokeHeapHisto(virtualMachine,
-                isLive);
+        InputStream in = null;
+        try {
+        	in = ToolsCore.getHeapHistogram(virtualMachine, isLive);
+        } catch(ToolsCoreException tce ) {
+        	throw new JvmCoreException(IStatus.ERROR, tce.getMessage(), tce);
+        }
 
         byte[] bytes = new byte[BUFFER_SIZE];
         int length;

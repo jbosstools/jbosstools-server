@@ -6,6 +6,7 @@
  *******************************************************************************/
 package org.jboss.tools.jmx.jvmmonitor.core;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.jboss.tools.jmx.jvmmonitor.core.cpu.ICpuProfiler;
 import org.jboss.tools.jmx.jvmmonitor.core.mbean.IMBeanServer;
 
@@ -13,7 +14,7 @@ import org.jboss.tools.jmx.jvmmonitor.core.mbean.IMBeanServer;
  * The active JVM that means the JVM is running. If JVM is terminated, it
  * becomes {@link ITerminatedJvm}.
  */
-public interface IActiveJvm extends IJvm {
+public interface IActiveJvm extends IJvm, IAdaptable {
 
     /**
      * Connects the target JVM with JVM Monitor via JMX. The client can check

@@ -299,7 +299,8 @@ public class JvmTreeViewer extends TreeViewer implements
                 element = selection.getFirstElement();
                 if (element instanceof IActiveJvm) {
                     IActiveJvm activeJvm = (IActiveJvm) element;
-                    state = activeJvm.getCpuProfiler().getState();
+                    if( activeJvm.getCpuProfiler() != null )
+                    	state = activeJvm.getCpuProfiler().getState();
                 }
             }
 

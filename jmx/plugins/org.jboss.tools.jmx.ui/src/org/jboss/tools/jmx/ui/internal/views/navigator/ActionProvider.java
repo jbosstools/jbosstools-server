@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
@@ -32,11 +33,15 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.navigator.CommonActionProvider;
 import org.eclipse.ui.navigator.ICommonActionConstants;
 import org.eclipse.ui.navigator.ICommonActionExtensionSite;
+import org.jboss.tools.common.jdt.debug.RemoteDebugActivator;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
+import org.jboss.tools.jmx.core.IDebuggableConnection;
 import org.jboss.tools.jmx.core.tree.Root;
 import org.jboss.tools.jmx.ui.UIExtensionManager;
 import org.jboss.tools.jmx.ui.UIExtensionManager.ConnectionProviderUI;
+import org.jboss.tools.jmx.ui.internal.actions.ConnectDebuggerAction;
 import org.jboss.tools.jmx.ui.internal.actions.DeleteConnectionAction;
+import org.jboss.tools.jmx.ui.internal.actions.DisconnectDebuggerAction;
 import org.jboss.tools.jmx.ui.internal.actions.DoubleClickAction;
 import org.jboss.tools.jmx.ui.internal.actions.EditConnectionAction;
 import org.jboss.tools.jmx.ui.internal.actions.MBeanServerConnectAction;
@@ -106,6 +111,21 @@ public class ActionProvider extends CommonActionProvider {
 			//menu.add(new Separator());
 		}
 		//menu.add(refreshAction);
+		
+		if( firstSelection != null && firstSelection instanceof IConnectionWrapper ) {
+			if(firstSelection instanceof IDebuggableConnection) {
+				IDebuggableConnection debuggable = (IDebuggableConnection)firstSelection;
+				if( debuggable.debugEnabled()) {
+					// Add an action to connect the debugger
+					menu.add(new Separator());
+					if( RemoteDebugActivator.isRemoteDebuggerConnected(debuggable.getDebugHost(), debuggable.getDebugPort())) {
+						menu.add(new DisconnectDebuggerAction(debuggable));
+					} else {
+						menu.add(new ConnectDebuggerAction(debuggable));
+					}
+				}
+			}
+		}
 	}
 
 	protected boolean anyConnected(IConnectionWrapper[] connections) {

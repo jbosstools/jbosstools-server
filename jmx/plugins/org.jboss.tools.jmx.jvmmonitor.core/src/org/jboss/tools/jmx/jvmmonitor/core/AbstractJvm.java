@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.osgi.util.NLS;
@@ -24,7 +25,7 @@ import org.jboss.tools.jmx.jvmmonitor.internal.core.Util;
 /**
  * The JVM.
  */
-abstract public class AbstractJvm implements IJvm {
+abstract public class AbstractJvm implements IJvm, IAdaptable {
 
     /** The process ID. */
     private int pid;
@@ -306,5 +307,10 @@ abstract public class AbstractJvm implements IJvm {
     
     public void saveJvmProperties() {
     	
+    }
+    
+    // Stub, please override in subclasses
+    public Object getAdapter(Class adapter) {
+    	return null;
     }
 }
