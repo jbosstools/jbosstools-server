@@ -14,7 +14,12 @@ Require-Bundle: org.eclipse.ui;bundle-version="3.7.0",
  org.jboss.tools.foundation.ui;bundle-version="1.1.0",
  org.jboss.tools.jmx.core,
  org.eclipse.core.resources,
- org.eclipse.ui.ide
+ org.eclipse.ui.ide,
+ org.eclipse.jdt.core;bundle-version="3.11.0",
+ org.jboss.tools.common.jdt.debug;bundle-version="3.7.0",
+ org.eclipse.debug.core;bundle-version="3.10.0",
+ org.jboss.tools.foundation.core;bundle-version="1.2.0",
+ org.eclipse.debug.ui;bundle-version="3.10.100"
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.jboss.tools.jmx.ui,

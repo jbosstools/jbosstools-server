@@ -7,7 +7,9 @@ Bundle-Activator: org.jboss.tools.jmx.jvmmonitor.tools.Activator
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jdt.launching,
- org.jboss.tools.jmx.jvmmonitor.core
+ org.jboss.tools.jmx.jvmmonitor.core,
+ org.jboss.tools.common.jdt.debug;bundle-version="3.7.0",
+ org.jboss.tools.foundation.core;bundle-version="1.2.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Eclipse-BuddyPolicy: app

@@ -16,15 +16,17 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.jboss.tools.foundation.ui.plugin.BaseUIPlugin;
+import org.jboss.tools.foundation.ui.plugin.BaseUISharedImages;
 import org.jboss.tools.jmx.ui.internal.adapters.JMXAdapterFactory;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 
 /**
  * The activator class controls the plug-in life cycle
  */
-public class JMXUIActivator extends AbstractUIPlugin {
+public class JMXUIActivator extends BaseUIPlugin {
 
     // The plug-in ID
     public static final String PLUGIN_ID = "org.jboss.tools.jmx.ui"; //$NON-NLS-1$
@@ -121,4 +123,18 @@ public class JMXUIActivator extends AbstractUIPlugin {
     		Platform.getAdapterManager().unregisterAdapters(adapterFactory, aClass);
     	}
     }
+    
+    
+	
+	public static final String CONNECT_DEBUGGER_SHARED_IMAGE = "icons/full/obj16/debug_view.gif"; //$NON-NLS-1$
+	private static class JMXUISharedImages extends BaseUISharedImages {
+		public JMXUISharedImages(Bundle pluginBundle) {
+			super(pluginBundle);
+			addImage(CONNECT_DEBUGGER_SHARED_IMAGE,CONNECT_DEBUGGER_SHARED_IMAGE);
+		}
+	}
+	protected BaseUISharedImages createSharedImages() {
+		return new JMXUISharedImages(getBundle());
+	}
+	
 }

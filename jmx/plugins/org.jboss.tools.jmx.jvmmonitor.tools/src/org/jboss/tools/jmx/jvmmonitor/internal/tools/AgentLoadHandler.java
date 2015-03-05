@@ -13,6 +13,8 @@ import java.net.URL;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.osgi.util.NLS;
+import org.jboss.tools.common.jdt.debug.tools.ToolsCore;
+import org.jboss.tools.common.jdt.debug.tools.ToolsCoreException;
 import org.jboss.tools.jmx.jvmmonitor.core.IActiveJvm;
 import org.jboss.tools.jmx.jvmmonitor.core.IAgentLoadHandler;
 import org.jboss.tools.jmx.jvmmonitor.core.JvmCoreException;
@@ -47,22 +49,20 @@ public class AgentLoadHandler implements IAgentLoadHandler {
         if (agentJarPath == null) {
             return;
         }
-
-        Tools tools = Tools.getInstance();
-        Object virtualMachine = null;
+        ToolsCore.AttachedVM virtualMachine = null;
 
         try {
-            virtualMachine = tools.invokeAttach(jvm.getPid());
-            tools.invokeLoadAgent(virtualMachine, agentJarPath, agentJarPath);
+            virtualMachine = ToolsCore.attach(jvm.getPid());
+            ToolsCore.loadAgent(virtualMachine, agentJarPath, agentJarPath);
             isAgentLoaded = true;
-        } catch (JvmCoreException e) {
+        } catch (ToolsCoreException e) {
             Activator.log(IStatus.ERROR,
                     NLS.bind(Messages.loadAgentFailedMsg, agentJarPath), e);
         } finally {
             if (virtualMachine != null) {
                 try {
-                    tools.invokeDetach(virtualMachine);
-                } catch (JvmCoreException e) {
+                    ToolsCore.detach(virtualMachine);
+                } catch (ToolsCoreException e) {
                     // ignore
                 }
             }

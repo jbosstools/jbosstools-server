@@ -14,11 +14,16 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.osgi.util.NLS;
+import org.jboss.tools.common.jdt.debug.RemoteDebugActivator;
+import org.jboss.tools.common.jdt.debug.tools.ToolsCore;
+import org.jboss.tools.common.jdt.debug.tools.ToolsCore.AttachedVM;
+import org.jboss.tools.common.jdt.debug.tools.ToolsCoreException;
 import org.jboss.tools.jmx.jvmmonitor.core.IActiveJvm;
 import org.jboss.tools.jmx.jvmmonitor.core.IHost;
 import org.jboss.tools.jmx.jvmmonitor.core.IJvmAttachHandler;
@@ -54,7 +59,7 @@ public class JvmAttachHandler implements IJvmAttachHandler,
      */
     @Override
     public boolean hasValidJdk() {
-        return Tools.getInstance().isReady();
+        return ToolsCore.isToolsReady();
     }
 
     /**
@@ -90,29 +95,34 @@ public class JvmAttachHandler implements IJvmAttachHandler,
      * @throws JvmCoreException
      */
     void updatesActiveJvms() throws JvmCoreException {
-        Object monitoredHost = Tools.getInstance().invokeGetMonitoredHost(
-                IHost.LOCALHOST);
-
-        Set<Integer> activeJvms = Tools.getInstance().invokeActiveVms(
-                monitoredHost);
-
-        // add JVMs
-        List<IActiveJvm> previousVms = localhost.getActiveJvms();
-        for (int pid : activeJvms) {
-            if (containJvm(previousVms, pid)) {
-                continue;
-            }
-
-            addActiveJvm(pid, monitoredHost);
-        }
-
-        // remove JVMs
-        for (IActiveJvm jvm : previousVms) {
-            Integer pid = jvm.getPid();
-            if (!activeJvms.contains(pid)) {
-                localhost.removeJvm(pid);
-            }
-        }
+    	try {
+        	// There is a big bug here where force-killed pid's are still being returned. 
+	        Set<Integer> activeJvms = ToolsCore.getActiveProcessIds(IHost.LOCALHOST);
+	
+	        // add JVMs 
+	        List<IActiveJvm> previousVms = localhost.getActiveJvms();
+	        for (int pid : activeJvms) {
+	            if (containJvm(previousVms, pid)) {
+	            	// So we need to check for false-positives here
+			        boolean terminated = RemoteDebugActivator.getDefault().getVmModel(IHost.LOCALHOST, pid, true, new NullProgressMonitor()) == null;
+			        if( terminated ) 
+			        	localhost.removeJvm(pid);
+	                continue;
+	            }
+	
+	            addActiveJvm(pid, IHost.LOCALHOST);
+	        }
+	        
+	        // remove JVMs
+	        for (IActiveJvm jvm : previousVms) {
+	            Integer pid = jvm.getPid();
+	            if (!activeJvms.contains(pid)) {
+	                localhost.removeJvm(pid);
+	            }
+	        }
+    	} catch(ToolsCoreException tce) {
+    		throw new JvmCoreException(tce.getStatus().getSeverity(), tce.getMessage(), tce);
+    	}
     }
 
     /**
@@ -141,15 +151,11 @@ public class JvmAttachHandler implements IJvmAttachHandler,
      * @param monitoredHost
      *            The monitored host
      */
-    private void addActiveJvm(int pid, Object monitoredHost) {
-        String vmId = String.format(IConstants.VM_IDENTIFIRER, pid);
-        Tools tools = Tools.getInstance();
-
-        Object monitoredVm = null;
+    private void addActiveJvm(int pid, String host) {
+    	ToolsCore.MonitoredVM vm = null;
         try {
-            monitoredVm = tools.invokeGetMonitoredVm(monitoredHost,
-                    tools.invokeVmIdentifier(vmId));
-        } catch (JvmCoreException e) {
+        	vm = ToolsCore.getMonitoredVm(host, pid);
+        } catch (ToolsCoreException e) {
         	// We do not need to log an error here. Odds are the 
         	// VM has either already terminated or has some other issue
         	// preventing us from connecting to it. Regardless, I feel 
@@ -159,18 +165,17 @@ public class JvmAttachHandler implements IJvmAttachHandler,
 
         String mainClass = null;
         String launchCommand = null;
-        String stateMessage = null;
-        if (monitoredVm != null) {
-            mainClass = getMainClass(monitoredVm, pid);
-            launchCommand = getJavaCommand(monitoredVm, pid);
-        }
-
         try {
+	        if (vm != null) {
+	            mainClass = getMainClass(host, pid);
+	            launchCommand = getJavaCommand(host, pid);
+	        }
         	localhost.addLocalActiveJvm(pid, mainClass, launchCommand, 
-        			monitoredVm, stateMessage);
+        			vm == null ? vm : vm.getMonitoredVM(), null);
         } catch (JvmCoreException e) {
-            String message = NLS.bind(Messages.connectTargetJvmFailedMsg, pid);
-            Activator.log(IStatus.WARNING, message, e);
+            Activator.log(IStatus.WARNING, NLS.bind(Messages.connectTargetJvmFailedMsg, pid), e);
+        } catch(ToolsCoreException tce) {
+            Activator.log(IStatus.WARNING, NLS.bind(Messages.connectTargetJvmFailedMsg, pid), tce);
         }
     }
 
@@ -183,44 +188,13 @@ public class JvmAttachHandler implements IJvmAttachHandler,
      *            The pid
      * @return The main class name.
      */
-    private static String getMainClass(Object monitoredVm, int pid) {
-        String javaCommand = getJavaCommand(monitoredVm, pid);
-        if( !"".equals(javaCommand)) {
-            /*
-             * javaCommand contains Java executable options that are sorted so that
-             * the main class or jar comes first.
-             */
-            String[] elements = javaCommand
-                    .split(IConstants.JAVA_OPTIONS_DELIMITER);
-            String mainClass;
-            if (elements.length > 0) {
-                mainClass = elements[0];
-            } else {
-                mainClass = javaCommand;
-            }
-            return mainClass;
-        }
-        return "";
+    private static String getMainClass(String host, int pid) throws ToolsCoreException {
+    	return ToolsCore.getMainClass(host, pid);
     }
     
 
-    private static String getJavaCommand(Object monitoredVm, int pid) {
-        String javaCommand = null;
-        try {
-            Tools tools = Tools.getInstance();
-            Object monitor = tools.invokeFindByName(monitoredVm,
-                    IConstants.JAVA_COMMAND_KEY);
-            if (monitor == null) {
-                return ""; //$NON-NLS-1$
-            }
-
-            javaCommand = tools.invokeGetValue(monitor).toString();
-            return javaCommand == null ? "" : javaCommand;
-        } catch (JvmCoreException e) {
-            String message = NLS.bind(Messages.getMainClassNameFailed, pid);
-            Activator.log(IStatus.ERROR, message, e);
-            return ""; //$NON-NLS-1$
-        }
+    private static String getJavaCommand(String host, int pid)  throws ToolsCoreException {
+    	return ToolsCore.getJavaCommand(host, pid);
     }
 
     /**
@@ -251,13 +225,11 @@ public class JvmAttachHandler implements IJvmAttachHandler,
     public String getLocalConnectorAddressInternal(Object monitoredVm, int pid) throws JvmCoreException {
         String url = null;
 
-        Tools tools = Tools.getInstance();
-        Object virtualMachine = null;
+        AttachedVM virtualMachine = null;
         try {
-            virtualMachine = tools.invokeAttach(pid);
+            virtualMachine = ToolsCore.attach(pid);
 
-            String javaHome = ((Properties) tools
-                    .invokeGetSystemProperties(virtualMachine))
+            String javaHome = ToolsCore.getSystemProperties(virtualMachine)
                     .getProperty(IConstants.JAVA_HOME_PROPERTY_KEY);
 
             File file = new File(javaHome + IConstants.MANAGEMENT_AGENT_JAR);
@@ -269,16 +241,18 @@ public class JvmAttachHandler implements IJvmAttachHandler,
                         new Exception());
             }
 
-            tools.invokeLoadAgent(virtualMachine, file.getAbsolutePath(),
+            ToolsCore.loadAgent(virtualMachine, file.getAbsolutePath(),
                     IConstants.JMX_REMOTE_AGENT);
 
-            Properties props = tools.invokeGetAgentProperties(virtualMachine);
+            Properties props = ToolsCore.getAgentProperties(virtualMachine);
             url = (String) props.get(LOCAL_CONNECTOR_ADDRESS);
+        } catch(ToolsCoreException tce) {
+        	throw new JvmCoreException(IStatus.ERROR, tce.getMessage(), tce);
         } finally {
             if (virtualMachine != null) {
                 try {
-                    tools.invokeDetach(virtualMachine);
-                } catch (JvmCoreException e) {
+                    ToolsCore.detach(virtualMachine);
+                } catch (ToolsCoreException e) {
                     // ignore
                 }
             }

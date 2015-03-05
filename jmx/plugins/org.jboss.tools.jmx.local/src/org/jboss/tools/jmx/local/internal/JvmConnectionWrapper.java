@@ -29,10 +29,13 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
+import org.jboss.tools.common.jdt.debug.RemoteDebugActivator;
+import org.jboss.tools.common.jdt.debug.VmModel;
 import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.HasName;
 import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
+import org.jboss.tools.jmx.core.IDebuggableConnection;
 import org.jboss.tools.jmx.core.IJMXRunnable;
 import org.jboss.tools.jmx.core.JMXActivator;
 import org.jboss.tools.jmx.core.JMXCoreMessages;
@@ -50,7 +53,8 @@ import org.jboss.tools.jmx.jvmmonitor.ui.JvmMonitorPreferences;
  * custom launches can determine how their jvm appears. 
  * 
  */
-public class JvmConnectionWrapper implements IConnectionWrapper, IAdaptable, IJvmFacade {
+public class JvmConnectionWrapper implements IConnectionWrapper, 
+	IAdaptable, IJvmFacade, IDebuggableConnection {
 	private IActiveJvm activeJvm;
 	private JvmKey key;
 	private Root root;
@@ -232,6 +236,50 @@ public class JvmConnectionWrapper implements IConnectionWrapper, IAdaptable, IJv
 		int pid = jvm.getPid();
 		String hostName = jvm.getHost().getName();
 		return new JvmKey(hostName, pid, jvm);
+	}
+
+	
+	
+	/*
+	 * For Connecting debugger integration
+	 */
+	private VmModel vmModel;
+	private VmModel getVmModel() {
+		if( vmModel == null ) {
+			if( activeJvm != null ) {
+				String hostname = activeJvm.getHost().getName();
+				int pid = activeJvm.getPid();
+				vmModel = RemoteDebugActivator.getDefault().getDebugModel(hostname, pid, true, new NullProgressMonitor());
+			}
+		}
+		return vmModel;
+	}
+	
+	@Override
+	public boolean debugEnabled() {
+		return getVmModel() != null;
+	}
+
+	@Override
+	public String getDebugHost() {
+		return activeJvm == null ? null : activeJvm.getHost().getName();
+	}
+
+	@Override
+	public int getDebugPort() {
+		VmModel m = getVmModel();
+		if( m != null )
+			return Integer.parseInt(m.getDebugPort());
+		return -1;
+	}
+
+	@Override
+	public String getMainClass() {
+		VmModel m = getVmModel();
+		if( m != null) {
+			return m.getMainClass();
+		}
+		return null;
 	}
 
 }
