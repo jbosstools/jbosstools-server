@@ -177,8 +177,9 @@ public class TimelineSection extends AbstractJvmPropertySection {
             }
         }
 
-        newJvm.getMBeanServer().addServerChangeListener(
-                mBeanServerChangeListener);
+        if( newJvm.getMBeanServer() != null )
+	        newJvm.getMBeanServer().addServerChangeListener(
+	                mBeanServerChangeListener);
     }
 
     /*
@@ -374,9 +375,9 @@ public class TimelineSection extends AbstractJvmPropertySection {
                         .log(Messages.configureMonitoredAttributesFailedMsg, e);
             }
         }
-
-        List<IMonitoredMXBeanGroup> groups = activeJvm.getMBeanServer()
-                .getMonitoredAttributeGroups();
+        IMBeanServer mbs = activeJvm.getMBeanServer();
+        List<IMonitoredMXBeanGroup> groups = mbs == null ? new ArrayList<IMonitoredMXBeanGroup>(0) 
+        			: mbs.getMonitoredAttributeGroups();
         if (groups.size() == 0) {
             timelinePageBook.showPage(messagePage);
             return;

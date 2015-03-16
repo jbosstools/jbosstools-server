@@ -131,7 +131,7 @@ public class NotificationsTab extends AbstractMBeanTab {
      */
     protected void clear() {
         IActiveJvm jvm = section.getJvm();
-        if (jvm != null) {
+        if (jvm != null && jvm.getMBeanServer() != null) {
             jvm.getMBeanServer().getMBeanNotification().clear(objectName);
         }
     }

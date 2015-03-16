@@ -117,7 +117,9 @@ public class ThreadsSection extends AbstractJvmPropertySection {
         sashForm.setInput(new IThreadInput() {
             @Override
             public IThreadElement[] getThreadListElements() {
-                return newJvm.getMBeanServer().getThreadCache();
+            	if( newJvm.getMBeanServer() != null )
+            		return newJvm.getMBeanServer().getThreadCache();
+            	return new IThreadElement[0];
             }
         });
     }

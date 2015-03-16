@@ -96,14 +96,18 @@ public class MemorySection extends AbstractJvmPropertySection {
         heapHistogramPage.setInput(new IHeapInput() {
             @Override
             public IHeapElement[] getHeapListElements() {
-                return newJvm.getMBeanServer().getHeapCache();
+            	if( newJvm.getMBeanServer() != null )
+            		return newJvm.getMBeanServer().getHeapCache();
+            	return new IHeapElement[0];
             }
         });
 
         swtResourcePage.setInput(new ISWTResorceInput() {
             @Override
             public ISWTResourceElement[] getSWTResourceElements() {
-                return newJvm.getSWTResourceMonitor().getResources();
+            	if( newJvm.getSWTResourceMonitor() != null)
+            		return newJvm.getSWTResourceMonitor().getResources();
+            	return new ISWTResourceElement[0];
             }
         });
     }
@@ -209,7 +213,8 @@ public class MemorySection extends AbstractJvmPropertySection {
 
             @Override
             protected void refreshModel(IProgressMonitor monitor) {
-                isSupported = jvm.getSWTResourceMonitor().isSupported();
+                isSupported = jvm.getSWTResourceMonitor() != null && 
+                		jvm.getSWTResourceMonitor().isSupported();
             }
 
             @Override

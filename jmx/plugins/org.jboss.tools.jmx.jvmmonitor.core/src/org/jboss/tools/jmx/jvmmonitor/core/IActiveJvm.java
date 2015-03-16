@@ -93,21 +93,24 @@ public interface IActiveJvm extends IJvm, IAdaptable {
     boolean isRemote();
 
     /**
-     * Gets the CPU profiler.
+     * Gets the CPU profiler, or 
+     * null if the connection has not been initialized / connected.
      * 
      * @return The CPU profiler
      */
     ICpuProfiler getCpuProfiler();
 
     /**
-     * Gets the SWT resource monitor.
+     * Gets the SWT resource monitor, or 
+     * null if the connection has not been initialized / connected.
      * 
      * @return The SWT resource monitor
      */
     ISWTResourceMonitor getSWTResourceMonitor();
 
     /**
-     * Gets the MBean server.
+     * Gets the MBean server, or 
+     * null if the connection has not been initialized / connected. 
      * 
      * @return The MBean server
      */

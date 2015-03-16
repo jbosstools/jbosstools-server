@@ -25,9 +25,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.PropertySheet;
 import org.jboss.tools.jmx.jvmmonitor.core.IActiveJvm;
 import org.jboss.tools.jmx.jvmmonitor.core.cpu.CpuModelEvent;
-import org.jboss.tools.jmx.jvmmonitor.core.cpu.ICallTreeNode;
-import org.jboss.tools.jmx.jvmmonitor.core.cpu.ICpuModelChangeListener;
 import org.jboss.tools.jmx.jvmmonitor.core.cpu.CpuModelEvent.CpuModelState;
+import org.jboss.tools.jmx.jvmmonitor.core.cpu.ICallTreeNode;
+import org.jboss.tools.jmx.jvmmonitor.core.cpu.ICpuModel;
+import org.jboss.tools.jmx.jvmmonitor.core.cpu.ICpuModelChangeListener;
 import org.jboss.tools.jmx.jvmmonitor.internal.ui.properties.cpu.actions.ConfigureCpuProfilerAction;
 import org.jboss.tools.jmx.jvmmonitor.ui.Activator;
 import org.jboss.tools.jmx.jvmmonitor.ui.ISharedImages;
@@ -86,7 +87,8 @@ public class CallTreeTabPage extends AbstractTabPage {
     @Override
     protected void setInput(IActiveJvm jvm) {
         super.setInput(jvm);
-        filteredTree.getViewer().setInput(jvm.getCpuProfiler().getCpuModel());
+        ICpuModel in = jvm.getCpuProfiler() != null ? jvm.getCpuProfiler().getCpuModel() : null;
+        filteredTree.getViewer().setInput(in);
     }
 
     /*
@@ -166,8 +168,8 @@ public class CallTreeTabPage extends AbstractTabPage {
             return;
         }
 
-        ICallTreeNode focusedNode = jvm.getCpuProfiler().getCpuModel()
-                .getFocusTarget();
+        ICallTreeNode focusedNode = jvm.getCpuProfiler() == null ? null 
+        		: jvm.getCpuProfiler().getCpuModel().getFocusTarget();
         StringBuilder description = new StringBuilder();
         if (focusedNode != null) {
             description.append(

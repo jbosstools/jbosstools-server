@@ -90,7 +90,8 @@ public class HotSpotsTabPage extends AbstractTabPage {
     @Override
     protected void setInput(IActiveJvm jvm) {
         super.setInput(jvm);
-        filteredTree.getViewer().setInput(jvm.getCpuProfiler().getCpuModel());
+        ICpuModel m = jvm.getCpuProfiler() == null ? null : jvm.getCpuProfiler().getCpuModel();
+        filteredTree.getViewer().setInput(m);
     }
 
     /*
@@ -178,8 +179,8 @@ public class HotSpotsTabPage extends AbstractTabPage {
             return;
         }
 
-        ICallTreeNode focusedNode = jvm.getCpuProfiler().getCpuModel()
-                .getFocusTarget();
+        ICallTreeNode focusedNode = jvm.getCpuProfiler() == null ? null : 
+        	jvm.getCpuProfiler().getCpuModel().getFocusTarget();
         StringBuilder description = new StringBuilder();
         if (focusedNode != null) {
             description.append(

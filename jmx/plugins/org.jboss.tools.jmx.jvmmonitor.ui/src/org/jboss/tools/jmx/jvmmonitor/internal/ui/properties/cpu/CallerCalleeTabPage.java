@@ -112,10 +112,10 @@ public class CallerCalleeTabPage extends AbstractTabPage {
     @Override
     protected void setInput(IActiveJvm jvm) {
         super.setInput(jvm);
-        callerFilteredTree.getViewer().setInput(
-                jvm.getCpuProfiler().getCpuModel());
-        calleeFilteredTree.getViewer().setInput(
-                jvm.getCpuProfiler().getCpuModel());
+        ICpuModel m = jvm.getCpuProfiler() == null ? null : jvm.getCpuProfiler().getCpuModel();
+
+        callerFilteredTree.getViewer().setInput(m);
+        calleeFilteredTree.getViewer().setInput(m);
     }
 
     /*
@@ -287,20 +287,18 @@ public class CallerCalleeTabPage extends AbstractTabPage {
      * Refreshes the content description.
      */
     private void refreshContentDescription() {
-        if (jvm == null) {
+        if (jvm == null || jvm.getCpuProfiler() == null) {
             return;
         }
 
         StringBuilder description = new StringBuilder();
-
-        IMethodNode callersCalleesTarget = jvm.getCpuProfiler().getCpuModel()
-                .getCallersCalleesTarget();
+        ICpuModel cpuModel = jvm.getCpuProfiler().getCpuModel();
+        IMethodNode callersCalleesTarget = cpuModel == null ? null : cpuModel.getCallersCalleesTarget();
         if (callersCalleesTarget != null) {
             description.append(NLS.bind(Messages.callersCalleesTargetIndicator,
                     callersCalleesTarget.getName()));
         }
 
-        ICpuModel cpuModel = jvm.getCpuProfiler().getCpuModel();
         ICallTreeNode focusedNode = cpuModel.getFocusTarget();
         if (focusedNode != null) {
             if (callersCalleesTarget != null) {
@@ -345,8 +343,11 @@ public class CallerCalleeTabPage extends AbstractTabPage {
             throw new IllegalStateException("label and sashform cannot be null"); //$NON-NLS-1$
         }
 
-        Control control = (jvm.getCpuProfiler().getCpuModel()
-                .getCallersCalleesTarget() == null) ? label : sashForm;
+        Control control = label;
+        if(jvm != null && jvm.getCpuProfiler() != null && 
+        		jvm.getCpuProfiler().getCpuModel() != null && 
+        				jvm.getCpuProfiler().getCpuModel().getCallersCalleesTarget() != null)
+        	control = sashForm;
         callersCalleesPageBook.showPage(control);
     }
 

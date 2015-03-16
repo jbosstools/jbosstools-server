@@ -127,13 +127,15 @@ abstract public class AbstractTabPage extends PageBook {
      */
     protected void setInput(IActiveJvm newJvm) {
         if (!newJvm.equals(jvm)) {
-            if (jvm != null) {
+            if (jvm != null && jvm.getCpuProfiler() != null) {
                 jvm.getCpuProfiler().getCpuModel()
                         .removeModelChangeListener(cpuModelChangeListener);
             }
             jvm = newJvm;
-            newJvm.getCpuProfiler().getCpuModel()
-                    .addModelChangeListener(cpuModelChangeListener);
+            if( newJvm.getCpuProfiler() != null ) {
+	            newJvm.getCpuProfiler().getCpuModel()
+	                    .addModelChangeListener(cpuModelChangeListener);
+            }
         }
     }
 

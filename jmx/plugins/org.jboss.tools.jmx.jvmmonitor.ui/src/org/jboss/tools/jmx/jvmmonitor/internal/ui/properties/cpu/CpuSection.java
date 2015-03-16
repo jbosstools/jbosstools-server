@@ -186,13 +186,16 @@ public class CpuSection extends AbstractJvmPropertySection implements
             return;
         }
 
-        if (oldJvm != null) {
+        if (oldJvm != null && oldJvm.getCpuProfiler() != null) {
             oldJvm.getCpuProfiler().getCpuModel()
                     .removeModelChangeListener(cpuModelChangeListener);
         }
-        newJvm.getCpuProfiler().getCpuModel()
-                .addModelChangeListener(cpuModelChangeListener);
-
+        
+        if( newJvm.getCpuProfiler() != null ) {
+	        newJvm.getCpuProfiler().getCpuModel()
+	                .addModelChangeListener(cpuModelChangeListener);
+        }
+        
         if (newJvm.isConnected()) {
             refresh(true);
         }
@@ -533,7 +536,7 @@ public class CpuSection extends AbstractJvmPropertySection implements
      */
     boolean isPackageSpecified() {
         IActiveJvm jvm = getJvm();
-        if (jvm == null
+        if (jvm == null || jvm.getCpuProfiler() == null
                 || jvm.getCpuProfiler().getState() == ProfilerState.AGENT_NOT_LOADED) {
             return false;
         }
