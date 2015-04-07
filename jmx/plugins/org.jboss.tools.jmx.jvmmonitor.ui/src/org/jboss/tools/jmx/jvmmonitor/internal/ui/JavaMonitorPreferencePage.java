@@ -13,6 +13,8 @@ import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -207,7 +209,29 @@ public class JavaMonitorPreferencePage extends PreferencePage implements
                 validateUpdatePeriod();
             }
         });
+        updatePeriodText.addVerifyListener(createIntegerVerifier());
     }
+    
+    private VerifyListener createIntegerVerifier() {
+    	return new VerifyListener() {
+            @Override
+            public void verifyText(VerifyEvent e) {
+                Text text = (Text)e.getSource();
+                // get old text and create new text by using the VerifyEvent.text
+                final String oldS = text.getText();
+                String newS = oldS.substring(0, e.start) + e.text + oldS.substring(e.end);
+                boolean isInt = true;
+                try {
+                    Integer.parseInt(newS);
+                } catch(NumberFormatException ex) {
+                    isInt = false;
+                }
+                if(!isInt)
+                    e.doit = false;
+            }
+        };
+    }
+    
 
     /**
      * Creates the timeline group.
@@ -383,6 +407,7 @@ public class JavaMonitorPreferencePage extends PreferencePage implements
             	validateUpdatePeriodTools();
             }
         });
+        updatePeriodTextTools.addVerifyListener(createIntegerVerifier());
     }
 
     /**
@@ -412,7 +437,7 @@ public class JavaMonitorPreferencePage extends PreferencePage implements
                 validateMaxNumberOfClasses();
             }
         });
-
+        maxNumberOfClassesText.addVerifyListener(createIntegerVerifier());
         maxNumberOfClassesText.setLayoutData(new GridData(
                 GridData.FILL_HORIZONTAL));
     }
