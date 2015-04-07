@@ -55,7 +55,7 @@
 			</plugin>
 			<plugin>
 				<groupId>com.googlecode.maven-download-plugin</groupId>
-				<artifactId>maven-download-plugin</artifactId>
+				<artifactId>download-maven-plugin</artifactId>
 				<executions>
 					<execution>
 						<id>install-tomcat6</id>
@@ -104,7 +104,7 @@
 								<pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>com.googlecode.maven-download-plugin</groupId>
-										<artifactId>maven-download-plugin</artifactId>
+										<artifactId>download-maven-plugin</artifactId>
 										<versionRange>[1.0,)</versionRange>
 										<goals>
 											<goal>wget</goal>
