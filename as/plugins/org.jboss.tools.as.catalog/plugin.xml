@@ -127,6 +127,7 @@
 		<uri name="urn:jboss:domain:1.5" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-config_1_5.xsd"/>
 		<uri name="urn:jboss:domain:2.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-config_2_0.xsd"/>
 		<uri name="urn:jboss:domain:2.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-config_2_1.xsd"/>
+                <uri name="urn:jboss:domain:2.2" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-config_2_2.xsd"/>
 		<uri name="urn:jboss:domain:batch:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-batch_1_0.xsd"/>
 		<uri name="urn:jboss:domain:cmp:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-cmp_1_0.xsd"/>
 		<uri name="urn:jboss:domain:cmp:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-cmp_1_1.xsd"/>
@@ -225,6 +226,7 @@
 		<uri name="urn:jboss:domain:transactions:2.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-txn_2_0.xsd"/>
 		<uri name="urn:jboss:domain:undertow:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-undertow_1_0.xsd"/>
 		<uri name="urn:jboss:domain:undertow:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-undertow_1_1.xsd"/>
+                <uri name="urn:jboss:domain:undertow:1.2" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-undertow_1_2.xsd"/>
 		<uri name="urn:jboss:domain:web:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-web_1_0.xsd"/>
 		<uri name="urn:jboss:domain:web:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-web_1_1.xsd"/>
 		<uri name="urn:jboss:domain:web:1.2" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-web_1_2.xsd"/>
