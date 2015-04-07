@@ -145,7 +145,6 @@ public class ShowInWelcomePageActionProvider extends CommonActionProvider {
 						return (JBTCustomHttpLaunchable)launchable2;
 				} catch (CoreException ce) {
 					lastStatus = ce.getStatus();
-				} catch (Exception e) {
 				}
 			}
 			if (lastStatus != null)
