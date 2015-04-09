@@ -1035,109 +1035,112 @@
    <extension
          point="org.eclipse.wst.common.project.facet.core.defaultFacets">
       <default-facets>
-         <runtime-component
-               id="org.jboss.ide.eclipse.as.runtime.component"
-               version="4.2">
-         </runtime-component>
-         <facet
-               id="jst.java"
-               version="5.0">
-         </facet>
+         <runtime-component id="org.jboss.ide.eclipse.as.runtime.component" version="4.2"></runtime-component>
+         <facet id="jst.java" version="5.0"></facet>
       </default-facets>
       <default-facets>
-         <runtime-component
-               id="org.jboss.ide.eclipse.as.runtime.component"
-               version="5.1">
-         </runtime-component>
-         <facet
-               id="jst.java"
-               version="5.0">
-         </facet>
+         <runtime-component id="org.jboss.ide.eclipse.as.runtime.component" version="5.1"></runtime-component>
+         <facet id="jst.java" version="5.0"></facet>
       </default-facets>
       <default-facets>
-         <runtime-component
-               id="org.jboss.ide.eclipse.as.runtime.component"
-               version="6.0">
-         </runtime-component>
-         <facet
-               id="jst.java"
-               version="6.0">
-         </facet>
+         <runtime-component id="org.jboss.ide.eclipse.as.runtime.component" version="6.0"></runtime-component>
+         <facet id="jst.java" version="6.0"></facet>
       </default-facets>
       <default-facets>
-         <runtime-component
-               id="org.jboss.ide.eclipse.as.runtime.component"
-               version="7.0">
-         </runtime-component>
-         <facet
-               id="jst.java"
-               version="6.0">
-         </facet>
+         <runtime-component id="org.jboss.ide.eclipse.as.runtime.component" version="7.0"></runtime-component>
+         <facet id="jst.java" version="6.0"></facet>
       </default-facets>
       <default-facets>
-         <runtime-component
-               id="org.jboss.ide.eclipse.as.runtime.component"
-               version="7.1">
-         </runtime-component>
-         <facet
-               id="jst.java"
-               version="6.0">
-         </facet>
+         <runtime-component id="org.jboss.ide.eclipse.as.runtime.component" version="7.1"></runtime-component>
+         <facet id="jst.java" version="6.0"></facet>
       </default-facets>
       <default-facets>
-         <runtime-component
-               id="org.jboss.ide.eclipse.as.runtime.wildfly.component"
-               version="8.0">
-         </runtime-component>
-         <facet
-               id="jst.java"
-               version="1.7">
-         </facet>
+         <runtime-component id="org.jboss.ide.eclipse.as.runtime.component" version="8.0"></runtime-component>
+         <facet id="jst.java" version="1.7"></facet>
+      </default-facets>
+      <default-facets>
+         <runtime-component id="org.jboss.ide.eclipse.eap.runtime.component" version="4.3"></runtime-component>
+         <facet id="jst.java" version="5.0"></facet>
+      </default-facets>
+      <default-facets>
+         <runtime-component id="org.jboss.ide.eclipse.eap.runtime.component" version="5.0"></runtime-component>
+         <facet id="jst.java" version="5.0"></facet>
+      </default-facets>
+      <default-facets>
+         <runtime-component id="org.jboss.ide.eclipse.eap.runtime.component" version="6.0"></runtime-component>
+         <facet id="jst.java" version="6.0"></facet>
+      </default-facets>
+      
+      
+      <!-- 
+         Much more configuration needed for eap6.1+ since we support a wider range of facets
+         Basically, we must only set the defaults based on the fixed facet rather than add them 
+         all to a global default list for the runtime component.  
+      -->
+      <default-facets>
+         <runtime-component version="6.1" id="org.jboss.ide.eclipse.eap.runtime.component"></runtime-component>
+         <facet id="jst.java" version="6.0"></facet>
       </default-facets>
       
       <default-facets>
-         <runtime-component
-               id="org.jboss.ide.eclipse.eap.runtime.component"
-               version="4.3">
-         </runtime-component>
-         <facet
-               id="jst.java"
-               version="5.0">
-         </facet>
-      </default-facets>
-      <default-facets>
-         <runtime-component
-               id="org.jboss.ide.eclipse.eap.runtime.component"
-               version="5.0">
-         </runtime-component>
-         <facet
-               id="jst.java"
-               version="5.0">
-         </facet>
-      </default-facets>
-      <default-facets>
-         <runtime-component
-               id="org.jboss.ide.eclipse.eap.runtime.component"
-               version="6.0">
-         </runtime-component>
-         <facet
-               id="jst.java"
-               version="6.0">
-         </facet>
-      </default-facets>
-      <default-facets>
-         <runtime-component
-               id="org.jboss.ide.eclipse.eap.runtime.component"
-               version="6.1">
-         </runtime-component>
-         <facet id="jst.java" version="6.0"></facet>
+        <context>
+          <runtime-component version="6.1" id="org.jboss.ide.eclipse.eap.runtime.component"></runtime-component>
+          <fixed-facet id="jst.appclient"></fixed-facet>
+        </context>
          <facet id="jst.appclient" version="6.0"></facet>
+      </default-facets>
+      
+      <default-facets>
+        <context>
+          <runtime-component version="6.1" id="org.jboss.ide.eclipse.eap.runtime.component"></runtime-component>
+          <fixed-facet id="jst.web"></fixed-facet>
+        </context>
          <facet id="jst.web" version="3.0"></facet>
+      </default-facets>
+         
+      <default-facets>
+        <context>
+          <runtime-component version="6.1" id="org.jboss.ide.eclipse.eap.runtime.component"></runtime-component>
+          <fixed-facet id="jst.ejb"></fixed-facet>
+        </context>
          <facet id="jst.ejb" version="3.1"></facet>
+      </default-facets>
+      
+      <default-facets>
+        <context>
+          <runtime-component version="6.1" id="org.jboss.ide.eclipse.eap.runtime.component"></runtime-component>
+          <fixed-facet id="jst.ear"></fixed-facet>
+        </context>
          <facet id="jst.ear" version="6.0"></facet>
+      </default-facets>
+      
+      <default-facets>
+        <context>
+          <runtime-component version="6.1" id="org.jboss.ide.eclipse.eap.runtime.component"></runtime-component>
+          <fixed-facet id="jst.connector"></fixed-facet>
+        </context>
          <facet id="jst.connector" version="1.6"></facet>
+      </default-facets>
+      
+      <default-facets>
+        <context>
+          <runtime-component version="6.1" id="org.jboss.ide.eclipse.eap.runtime.component"></runtime-component>
+          <fixed-facet id="jst.webfragment"></fixed-facet>
+        </context>
          <facet id="jst.webfragment" version="3.0"></facet>
       </default-facets>
+
+      <default-facets>
+        <context>
+          <runtime-component version="6.1" id="org.jboss.ide.eclipse.eap.runtime.component"></runtime-component>
+          <fixed-facet id="jpt.jpa"></fixed-facet>
+        </context>
+         <facet id="jpt.jpa" version="2.1"></facet>
+         <facet id="jst.utility" version="1.0"></facet>
+      </default-facets>
+      
+      
+      
       <!-- NEW_SERVER_ADAPTER Add the new default facet for a new runtime above this line -->
    </extension>
 
