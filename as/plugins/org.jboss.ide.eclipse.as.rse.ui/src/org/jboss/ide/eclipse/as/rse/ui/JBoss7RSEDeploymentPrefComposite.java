@@ -22,6 +22,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
@@ -117,7 +118,7 @@ public class JBoss7RSEDeploymentPrefComposite extends
 		serverHomeLabel.setText(RSEUIMessages.REMOTE_SERVER_HOME_LABEL);
 		rseBrowse = new Button(child, SWT.NONE);
 		rseBrowse.setText(RSEUIMessages.BROWSE);
-		rseBrowse.setLayoutData(UIUtil.createFormData2(remoteRuntimeRequiredLabel, 5, null,0, null, 0, 100, -5));
+		rseBrowse.setLayoutData(FormDataUtility.createFormData2(remoteRuntimeRequiredLabel, 5, null,0, null, 0, 100, -5));
 		rseBrowse.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
 				remoteHomeBrowseClicked();
@@ -128,8 +129,10 @@ public class JBoss7RSEDeploymentPrefComposite extends
 			}
 		});
 		rseServerHome = new Text(child, SWT.SINGLE | SWT.BORDER);
-		serverHomeLabel.setLayoutData(UIUtil.createFormData2(remoteRuntimeRequiredLabel, 7, null, 0, 0, 10, null, 0));
-		rseServerHome.setLayoutData(UIUtil.createFormData2(remoteRuntimeRequiredLabel, 5, null, 0, serverHomeLabel, 10, rseBrowse, -5));
+		serverHomeLabel.setLayoutData(FormDataUtility.createFormData2(remoteRuntimeRequiredLabel, 7, null, 0, 0, 10, null, 0));
+		FormData serverHomeData = FormDataUtility.createFormData2(remoteRuntimeRequiredLabel, 5, null, 0, serverHomeLabel, 10, rseBrowse, -5);
+		serverHomeData.width = 200;
+		rseServerHome.setLayoutData(serverHomeData);
 		rseServerHome.setText(callback.getServer().getAttribute(
 				RSEUtils.RSE_SERVER_HOME_DIR, ""));
 		serverHomeDecoration = new ControlDecoration(rseServerHome, SWT.CENTER);

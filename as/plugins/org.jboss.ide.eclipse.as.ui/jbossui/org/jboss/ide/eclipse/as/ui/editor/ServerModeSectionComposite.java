@@ -10,6 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.ui.editor;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -29,10 +30,14 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledPageBook;
+import org.eclipse.ui.forms.widgets.SharedScrolledComposite;
+import org.eclipse.ui.forms.widgets.SizeCache;
+import org.eclipse.ui.internal.forms.widgets.FormUtil;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.wst.server.core.IServer;
@@ -152,14 +157,18 @@ public class ServerModeSectionComposite extends Composite {
 				}}
 			);
 		}
+		
 
-
-
-	    preferencePageBook = toolkit.createPageBook(this, SWT.FLAT|SWT.TOP);
-	    preferencePageBook.setLayoutData(FormDataUtility.createFormData2(
-	    		top, 5, 0, 300, 0, 5, 100, -5));
+		
+		// If I change style to SWT.H_SCROLL | SWT.V_SCROLL, it changes the color from white to grey
+		// in the server editor, and the toolkit's attempt to change colors does not occur. Very strange. 
+	    preferencePageBook = toolkit.createPageBook(this, SWT.NONE); 
 	    
-
+	    fd =  FormDataUtility.createFormData2(top, 5, null, 0, 0, 5, 100, -5);
+	    fd.width = 100;
+	    fd.height = 250;
+	    preferencePageBook.setLayoutData(fd);
+	    
 		updateProfilePagebook();
 	}
 	
@@ -351,6 +360,7 @@ public class ServerModeSectionComposite extends Composite {
 		if( currentUIAddition != null ) {
 			if( !currentUIAddition.isRegistered()) {
 				Composite newRoot = preferencePageBook.createPage(currentUIAddition);
+
 				currentUIAddition.createComposite(newRoot);
 			}
 			preferencePageBook.showPage(currentUIAddition);
