@@ -134,13 +134,17 @@ public abstract class AbstractJREComposite extends Composite {
 	}
 	
 	protected void refreshWidgets() {
-		// Refresh with new model
-		if( execEnvironmentCombo.getItems().length == 0 ) {
-			// new exec-envs aren't going to suddenly appear, so only set this on opening
-			execEnvironmentCombo.setItems(validExecutionEnvironmentNames);
-		}
-		alternateJRECombo.setItems(jreNames);
 		
+		// First handle the execition environments
+		int selIndex = execEnvironmentCombo == null ? -1 : execEnvironmentCombo.getSelectionIndex();
+		execEnvironmentCombo.setItems(validExecutionEnvironmentNames);
+		if( selIndex != -1 ) 
+			execEnvironmentCombo.select(selIndex);
+		else 
+			execEnvironmentCombo.deselectAll();
+		
+		// Handle specific JREs
+		alternateJRECombo.setItems(jreNames);
 		// Refresh selection of vm
 		int ind = selectedVM == null ? -1 : installedJREs.indexOf(selectedVM);
 		if( ind != -1 )
@@ -203,7 +207,9 @@ public abstract class AbstractJREComposite extends Composite {
 		for( int i = 0; i < all.length; i++ ) {
 			IExecutionEnvironment[] sub = all[i].getSubEnvironments();
 			if( Arrays.asList(sub).contains(env) && !toReturn.contains(all[i])) {
-				toReturn.add(all[i]);
+				IVMInstall[] vms = all[i].getCompatibleVMs();
+				if( vms.length > 0 ) 
+					toReturn.add(all[i]);
 			}
 		}
 		return (IExecutionEnvironment[]) toReturn.toArray(new IExecutionEnvironment[toReturn.size()]);
