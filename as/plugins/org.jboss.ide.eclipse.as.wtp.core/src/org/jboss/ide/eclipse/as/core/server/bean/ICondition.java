@@ -12,7 +12,7 @@ package org.jboss.ide.eclipse.as.core.server.bean;
 
 import java.io.File;
 
-interface ICondition {
+public interface ICondition {
 	/**
 	 * Is this location the root of an installation?
 	 * @param location

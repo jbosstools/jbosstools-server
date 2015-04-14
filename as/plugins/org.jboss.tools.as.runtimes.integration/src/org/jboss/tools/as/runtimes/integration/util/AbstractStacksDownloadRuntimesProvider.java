@@ -36,6 +36,8 @@ public abstract class AbstractStacksDownloadRuntimesProvider implements IDownloa
 	public static final String LABEL_WTP_RUNTIME = "wtp-runtime-type";
 	public static final String LABEL_RUNTIME_CATEGORY = "runtime-category";
 	public static final String LABEL_RUNTIME_TYPE = "runtime-type";
+	public static final String LABEL_FILE_TYPE = "file-type";;
+	
 	public static final String PROP_WTP_RUNTIME = LABEL_WTP_RUNTIME;
 	
 	private ArrayList<DownloadRuntime> downloads = null;
@@ -124,6 +126,8 @@ public abstract class AbstractStacksDownloadRuntimesProvider implements IDownloa
 		dr.setProperty(LABEL_RUNTIME_TYPE, workingRT.getLabels().getProperty(LABEL_RUNTIME_TYPE));
 		if(workingRT.getLabels().get(DownloadRuntime.PROPERTY_REQUIRES_CREDENTIALS) != null ) 
 			dr.setProperty(DownloadRuntime.PROPERTY_REQUIRES_CREDENTIALS, workingRT.getLabels().get(DownloadRuntime.PROPERTY_REQUIRES_CREDENTIALS));
+		if(workingRT.getLabels().get(LABEL_FILE_TYPE) != null ) 
+			dr.setInstallationMethod((String)workingRT.getLabels().get(LABEL_FILE_TYPE));
 		if( legacyId != null )
 			dr.setProperty(DownloadRuntime.PROPERTY_ALTERNATE_ID, id);
 		return dr;

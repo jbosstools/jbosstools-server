@@ -41,6 +41,7 @@ public class JBossServerType extends ServerBeanType implements IJBossToolingCons
 	 * @since 3.0 (actually 2.4.101)
 	 */
 	public static final JBossServerType JPP61 = new ServerBeanTypeJPP61();
+	public static final JBossServerType DV6 = new DataVirtualization6ServerBeanType();
 	public static final JBossServerType FSW6 = new ServerBeanTypeFSW6();
 	public static final JBossServerType EAP61 = new ServerBeanTypeEAP61();
 	public static final JBossServerType UNKNOWN_AS71_PRODUCT = new ServerBeanTypeUnknownAS71Product();	
@@ -70,6 +71,7 @@ public class JBossServerType extends ServerBeanType implements IJBossToolingCons
 		JBossServerType.EAP61,
 		JBossServerType.SOA6,
 		JBossServerType.JPP61, 
+		JBossServerType.DV6, 
 		JBossServerType.UNKNOWN_AS72_PRODUCT,
 		JBossServerType.AS72, 
 		JBossServerType.JPP6, 
