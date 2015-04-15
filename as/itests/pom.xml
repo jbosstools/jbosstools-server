@@ -26,6 +26,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<jbosstools.test.jboss.home.7.1>${requirementsDirectory}/jboss-as-7.1.0.Final</jbosstools.test.jboss.home.7.1>
 		<jbosstools.test.jboss.home.8.0>${requirementsDirectory}/wildfly-8.0.0.Final</jbosstools.test.jboss.home.8.0>
 		<jbosstools.test.jboss.home.8.1>${requirementsDirectory}/wildfly-8.1.0.Final</jbosstools.test.jboss.home.8.1>
+		<jbosstools.test.jboss.home.9.0>${requirementsDirectory}/wildfly-9.0.0.Beta2</jbosstools.test.jboss.home.9.0>
 		<jbosstools.test.jboss.home.eap.4.3>${requirementsDirectory}/jboss-eap-4.3/jboss-as</jbosstools.test.jboss.home.eap.4.3>
 		<jbosstools.test.jboss.home.eap.5.0>${requirementsDirectory}/jboss-eap-5.1/jboss-as</jbosstools.test.jboss.home.eap.5.0>
 		<jbosstools.test.jboss.home.eap.6.0>${requirementsDirectory}/jboss-eap-6.0</jbosstools.test.jboss.home.eap.6.0>
@@ -35,7 +36,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<!-- skipPrivateRequirements is inherited from parent pom -->
 
 		<!-- jbosstools.test.jre.7 is defined in root pom for convenience of reuse -->
-		<systemProperties> -Djbosstools.test.jre.6=${jbosstools.test.jre.6}  -Djbosstools.test.jre.7=${jbosstools.test.jre.7}  -Djbosstools.test.jre.8=${jbosstools.test.jre.8} -Djbosstools.test.jboss.home.3.2=${jbosstools.test.jboss.home.3.2} -Djbosstools.test.jboss.home.4.0=${jbosstools.test.jboss.home.4.0} -Djbosstools.test.jboss.home.4.2=${jbosstools.test.jboss.home.4.2} -Djbosstools.test.jboss.home.5.0=${jbosstools.test.jboss.home.5.0} -Djbosstools.test.jboss.home.5.1=${jbosstools.test.jboss.home.5.1} -Djbosstools.test.jboss.home.6.0=${jbosstools.test.jboss.home.6.0} -Djbosstools.test.jboss.home.7.0=${jbosstools.test.jboss.home.7.0} -Djbosstools.test.jboss.home.7.1=${jbosstools.test.jboss.home.7.1} -Djbosstools.test.jboss.home.8.0=${jbosstools.test.jboss.home.8.0} -Djbosstools.test.jboss.home.8.1=${jbosstools.test.jboss.home.8.1} -Djbosstools.test.jboss.home.eap.4.3=${jbosstools.test.jboss.home.eap.4.3} -Djbosstools.test.jboss.home.eap.5.0=${jbosstools.test.jboss.home.eap.5.0} -Djbosstools.test.jboss.home.eap.6.0=${jbosstools.test.jboss.home.eap.6.0} -Djbosstools.test.jboss.home.eap.6.1=${jbosstools.test.jboss.home.eap.6.1} -Djbosstools.test.jboss.home.eap.6.2=${jbosstools.test.jboss.home.eap.6.2} -Djbosstools.test.jboss.home.eap.6.3=${jbosstools.test.jboss.home.eap.6.3} -Dorg.jboss.tools.tests.skipPrivateRequirements=${skipPrivateRequirements} </systemProperties>
+		<systemProperties> -Djbosstools.test.jre.6=${jbosstools.test.jre.6}  -Djbosstools.test.jre.7=${jbosstools.test.jre.7}  -Djbosstools.test.jre.8=${jbosstools.test.jre.8} -Djbosstools.test.jboss.home.3.2=${jbosstools.test.jboss.home.3.2} -Djbosstools.test.jboss.home.4.0=${jbosstools.test.jboss.home.4.0} -Djbosstools.test.jboss.home.4.2=${jbosstools.test.jboss.home.4.2} -Djbosstools.test.jboss.home.5.0=${jbosstools.test.jboss.home.5.0} -Djbosstools.test.jboss.home.5.1=${jbosstools.test.jboss.home.5.1} -Djbosstools.test.jboss.home.6.0=${jbosstools.test.jboss.home.6.0} -Djbosstools.test.jboss.home.7.0=${jbosstools.test.jboss.home.7.0} -Djbosstools.test.jboss.home.7.1=${jbosstools.test.jboss.home.7.1} -Djbosstools.test.jboss.home.8.0=${jbosstools.test.jboss.home.8.0} -Djbosstools.test.jboss.home.8.1=${jbosstools.test.jboss.home.8.1} -Djbosstools.test.jboss.home.9.0=${jbosstools.test.jboss.home.9.0} -Djbosstools.test.jboss.home.eap.4.3=${jbosstools.test.jboss.home.eap.4.3} -Djbosstools.test.jboss.home.eap.5.0=${jbosstools.test.jboss.home.eap.5.0} -Djbosstools.test.jboss.home.eap.6.0=${jbosstools.test.jboss.home.eap.6.0} -Djbosstools.test.jboss.home.eap.6.1=${jbosstools.test.jboss.home.eap.6.1} -Djbosstools.test.jboss.home.eap.6.2=${jbosstools.test.jboss.home.eap.6.2} -Djbosstools.test.jboss.home.eap.6.3=${jbosstools.test.jboss.home.eap.6.3} -Dorg.jboss.tools.tests.skipPrivateRequirements=${skipPrivateRequirements} </systemProperties>
 	</properties>
 	
 	<build>
@@ -48,6 +49,49 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 					<timeout>${surefire.itests.timeout}</timeout>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>regex-property</id>
+						<goals>
+							<goal>regex-property</goal>
+						</goals>
+						<configuration>
+							<name>skipTestOrITest</name>
+							<value>${skipTests}${skipITests}</value>
+							<regex>((..skipTests.)?(true)?((..skipITests.)|(null)|(true)|(false))?)</regex>
+							<replacement>$3</replacement>
+							<failIfNoMatch>false</failIfNoMatch>
+						</configuration>
+					</execution>
+        			</executions>
+      			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<echo>Displaying value of 'skipTestOrITest' property</echo>
+								<echo>[skipTestOrITest] ${skipTestOrITest}</echo>
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -85,7 +129,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 									<type>zip</type>
 								</artifactItem>
 							</artifactItems>
-							<skip>${skipITests}</skip>
+							<skip>${skipTestOrITest}</skip>
 						</configuration>
 					</execution>
 				</executions>
@@ -104,7 +148,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 							<url>http://repository.jboss.org/sourceforge/jboss-3.2.8.SP1.zip</url>
 							<md5>97147374ee5b048e4462c7ebaf3cccb5</md5>
 							<unpack>true</unpack>
-							<skip>${skipITests}</skip>
+							<skip>${skipTestOrITest}</skip>
 						</configuration>
 					</execution>
 					<execution>
@@ -117,7 +161,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 							<url>http://repository.jboss.org/sourceforge/jboss-4.0.5.GA.zip</url>
 							<md5>a39e85981958fea2411e9346e218aa39</md5>
 							<unpack>true</unpack>
-							<skip>${skipITests}</skip>
+							<skip>${skipTestOrITest}</skip>
 						</configuration>
 					</execution>
 					<execution>
@@ -130,7 +174,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 							<url>http://repository.jboss.org/sourceforge/jboss-5.0.1.GA.zip</url>
 							<md5>dd308175c43796db824692cb0cdea82d</md5>
 							<unpack>true</unpack>
-							<skip>${skipITests}</skip>
+							<skip>${skipTestOrITest}</skip>
 						</configuration>
 					</execution>
 					<execution>
@@ -143,7 +187,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 							<url>http://repository.jboss.org/sourceforge/jboss-5.1.0.GA.zip</url>
 							<md5>78322c75ca0c13002a04418b4a8bc920</md5>
 							<unpack>true</unpack>
-							<skip>${skipITests}</skip>
+							<skip>${skipTestOrITest}</skip>
 						</configuration>
 					</execution>
 					<execution>
@@ -234,7 +278,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 							<url>http://download.jboss.org/wildfly/8.0.0.Final/wildfly-8.0.0.Final.zip</url>
 							<md5>9df208525e7c8c03bd592a6a0f554bea</md5>
 							<unpack>true</unpack>
-							<skip>${skipITests}</skip>
+							<skip>${skipTestOrITest}</skip>
 						</configuration>
 					</execution>
 					<execution>
@@ -247,7 +291,20 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 							<url>http://download.jboss.org/wildfly/8.1.0.Final/wildfly-8.1.0.Final.zip</url>
 							<md5>b7df11f92ee80155702a351aee4b003b</md5>
 							<unpack>true</unpack>
-							<skip>${skipITests}</skip>
+							<skip>${skipTestOrITest}</skip>
+						</configuration>
+					</execution>
+					<execution>
+						<id>install-wildfly-9.0.0.Beta2</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>wget</goal>
+						</goals>
+						<configuration>
+							<url>http://download.jboss.org/wildfly/9.0.0.Beta2/wildfly-9.0.0.Beta2.zip</url>
+							<md5>f79781d4902a68ce1be6c2dcf441c2d6</md5>
+							<unpack>true</unpack>
+							<skip>${skipTestOrITest}</skip>
 						</configuration>
 					</execution>
 				</executions>

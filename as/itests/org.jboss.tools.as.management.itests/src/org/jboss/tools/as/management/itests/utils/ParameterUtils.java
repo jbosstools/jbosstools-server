@@ -14,6 +14,7 @@ public class ParameterUtils {
 	public static final String JBOSS_AS_71_HOME = TestConstants.JBOSS_AS_71_HOME;
 	public static final String JBOSS_WILDFLY_80_HOME = TestConstants.JBOSS_AS_80_HOME;
 	public static final String JBOSS_WILDFLY_81_HOME = TestConstants.JBOSS_AS_81_HOME;
+	public static final String JBOSS_WILDFLY_90_HOME = TestConstants.JBOSS_AS_90_HOME;
 	public static final String JBOSS_EAP_60_HOME = TestConstants.JBOSS_EAP_60_HOME;
 	public static final String JBOSS_EAP_61_HOME = TestConstants.JBOSS_EAP_61_HOME;
 	public static final String JBOSS_EAP_62_HOME = TestConstants.JBOSS_EAP_62_HOME;
@@ -26,6 +27,7 @@ public class ParameterUtils {
 		serverHomeToRuntimeType.put(JBOSS_AS_71_HOME, IJBossToolingConstants.AS_71);
 		serverHomeToRuntimeType.put(JBOSS_WILDFLY_80_HOME, IJBossToolingConstants.WILDFLY_80);
 		serverHomeToRuntimeType.put(JBOSS_WILDFLY_81_HOME, IJBossToolingConstants.WILDFLY_80);
+		serverHomeToRuntimeType.put(JBOSS_WILDFLY_90_HOME, IJBossToolingConstants.WILDFLY_90);
 		serverHomeToRuntimeType.put(JBOSS_EAP_60_HOME, IJBossToolingConstants.EAP_60);
 		serverHomeToRuntimeType.put(JBOSS_EAP_61_HOME, IJBossToolingConstants.EAP_61);
 		serverHomeToRuntimeType.put(JBOSS_EAP_62_HOME, IJBossToolingConstants.EAP_61);
@@ -58,6 +60,7 @@ public class ParameterUtils {
 		paths.add(JBOSS_AS_71_HOME);
 		paths.add(JBOSS_WILDFLY_80_HOME);
 		paths.add(JBOSS_WILDFLY_81_HOME);
+		paths.add(JBOSS_WILDFLY_90_HOME);
 		if( !skipReqs ) {
 			paths.add(JBOSS_EAP_60_HOME);
 			paths.add(JBOSS_EAP_61_HOME);

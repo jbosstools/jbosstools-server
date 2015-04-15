@@ -14,12 +14,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.wst.server.core.IRuntimeType;
+import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
+import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.IRuntimePathProvider;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.RuntimeJarUtility;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.cache.internal.InternalRuntimeClasspathModel;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.jbossmodules.internal.JBossModulesDefaultClasspathModel;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.path.internal.LayeredProductPathProvider;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.path.internal.RuntimePathProviderFileset;
+import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
@@ -66,7 +70,7 @@ public class DefaultClasspathModelLoader implements IJBossToolingConstants, IJBo
 		
 		// Delegate the other defaults to a more customized
 		// model for as7 and above
-		if( jbossModulesStyle(type.getId())) {
+		if( jbossModulesStyle(type)) {
 			return new JBossModulesDefaultClasspathModel(type);
 		}
 		
@@ -74,22 +78,11 @@ public class DefaultClasspathModelLoader implements IJBossToolingConstants, IJBo
 		return new InternalRuntimeClasspathModel();
 	}
 	
-	private boolean jbossModulesStyle(String id) {
+	private boolean jbossModulesStyle(IRuntimeType rtt) {
 		// NEW_SERVER_ADAPTER add logic for new adapter here
 		// TODO this needs to be updated
-		if(AS_70.equals(id))
-			return true;
-		if(AS_71.equals(id))
-			return true;
-		if(EAP_60.equals(id))
-			return true;
-		
-		// This will change if jboss-as ever gets us an api
-		if(EAP_61.equals(id))
-			return true;
-		if(WILDFLY_80.equals(id))
-			return true;
-		return false;
+		ServerExtendedProperties props = new ExtendedServerPropertiesAdapterFactory().getExtendedProperties(rtt);
+		return props.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS;
 	}
 	
 	private IRuntimePathProvider[] getDefaultAS3Entries() {

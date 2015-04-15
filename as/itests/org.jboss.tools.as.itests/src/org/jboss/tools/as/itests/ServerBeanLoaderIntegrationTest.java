@@ -13,7 +13,6 @@ package org.jboss.tools.as.itests;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -43,23 +42,6 @@ public class ServerBeanLoaderIntegrationTest extends ServerBeanLoader3Test {
 		 return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerTypeParametersPlusAdditionalMocks());
 	 }
 
-	private HashMap<String, Data> expected = new HashMap<String, Data>();
-	private class Data {
-		private JBossServerType type;
-		private String version, overrideId;
-		public Data(JBossServerType type, String version) {
-			this.type = type;
-			this.version = version;
-			this.overrideId = null;
-		}
-		public Data(JBossServerType type, String version, String oid) {
-			this(type, version);
-			this.overrideId = oid;
-		}
-	}
-	
-	
-	private String serverType;
 	public ServerBeanLoaderIntegrationTest(String serverType) {
 		super(serverType);
 	}

@@ -66,7 +66,7 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 
 		
 		baseDirLabel = new Label(configComposite, SWT.NONE);
-		baseDirLabel.setText("Configuration base directory: ");
+		baseDirLabel.setText("Server base directory: ");
 		baseDirText = new Text(configComposite, SWT.BORDER);
 		
 		baseDirBrowse = new Button(configComposite, SWT.NONE);

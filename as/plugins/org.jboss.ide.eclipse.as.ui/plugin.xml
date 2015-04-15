@@ -45,7 +45,7 @@
       <fragment
             class="org.jboss.ide.eclipse.as.ui.wizards.Wildfly80RuntimeWizardFragment"
             id="org.jboss.ide.eclipse.as.ui.Wildfly80RuntimeWizardFragment"
-            typeIds="%RuntimeTypesWildfly8"/>
+            typeIds="%RuntimeTypesWildfly"/>
             
       <fragment
             class="org.jboss.ide.eclipse.as.ui.wizards.LegacyServerProfileWizardFragment"
@@ -275,7 +275,7 @@
       </section>
        <section
             class="org.jboss.ide.eclipse.as.ui.editor.PortSection$JBoss7ManagementPortEditorExtension"
-            serverIds="%ServerTypesWildfly8">
+            serverIds="%ServerTypesWildfly">
       </section>
       
       <!-- NEW_SERVER_ADAPTER  Add the new port sections in the server editor above this line -->
@@ -549,6 +549,10 @@
                  <test
                        property="org.eclipse.wst.server.ui.serverType"
                        value="org.jboss.ide.eclipse.as.wildfly.80">
+                 </test>
+                 <test
+                       property="org.eclipse.wst.server.ui.serverType"
+                       value="org.jboss.ide.eclipse.as.wildfly.90">
                  </test>
                  <!-- NEW_SERVER_ADAPTER -->
              </or>

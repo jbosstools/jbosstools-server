@@ -47,10 +47,10 @@ public class ServerBeanLoader3Test extends TestCase {
 		 return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerTypeParametersPlusAdditionalMocks());
 	 }
 
-	private HashMap<String, Data> expected = new HashMap<String, Data>();
-	private class Data {
-		private JBossServerType type;
-		private String version, overrideId;
+	protected HashMap<String, Data> expected = new HashMap<String, Data>();
+	protected class Data {
+		public JBossServerType type;
+		public String version, overrideId;
 		public Data(JBossServerType type, String version) {
 			this.type = type;
 			this.version = version;
@@ -63,7 +63,7 @@ public class ServerBeanLoader3Test extends TestCase {
 	}
 	
 	
-	private String serverType;
+	protected String serverType;
 	public ServerBeanLoader3Test(String serverType) {
 		this.serverType = serverType;
 	}
@@ -79,6 +79,7 @@ public class ServerBeanLoader3Test extends TestCase {
 		expected.put(IJBossToolingConstants.SERVER_AS_70, new Data(JBossServerType.AS7, IJBossToolingConstants.V7_0));
 		expected.put(IJBossToolingConstants.SERVER_AS_71, new Data(JBossServerType.AS7, IJBossToolingConstants.V7_1));
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_80, new Data(JBossServerType.WILDFLY80, IJBossToolingConstants.V8_0));
+		expected.put(IJBossToolingConstants.SERVER_WILDFLY_90, new Data(JBossServerType.WILDFLY90, "9.0"));
 		expected.put(IJBossToolingConstants.SERVER_EAP_43, new Data(JBossServerType.EAP_STD, IJBossToolingConstants.V4_3));
 		expected.put(IJBossToolingConstants.SERVER_EAP_50, new Data(JBossServerType.EAP_STD, IJBossToolingConstants.V5_1));
 		expected.put(IJBossToolingConstants.SERVER_EAP_60, new Data(JBossServerType.EAP6, IJBossToolingConstants.V6_0));

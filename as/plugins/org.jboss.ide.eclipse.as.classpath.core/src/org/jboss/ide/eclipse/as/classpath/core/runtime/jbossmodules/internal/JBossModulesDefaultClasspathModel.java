@@ -36,62 +36,98 @@ public class JBossModulesDefaultClasspathModel extends InternalRuntimeClasspathM
 		if( rtt.getId().equals(IJBossToolingConstants.WILDFLY_80)) {
 			return getDefaultJEE7JBossModulesEntries();
 		}
+		if( rtt.getId().equals(IJBossToolingConstants.WILDFLY_90)) {
+			return getDefaultJEE8JBossModulesEntries();
+		}
+		
 		return getDefaultJBossModulesEntries();
 	}
 	
 
+	private IRuntimePathProvider[] getDefaultJEE8JBossModulesEntries() {
+		ArrayList<String> all = new ArrayList<String>();
+		all.addAll(Arrays.asList(getDefaultJBossModulesEntryKeys()));
+		all.add("javax.batch.api"); //$NON-NLS-1$
+		all.add("javax.enterprise.concurrent.api"); //$NON-NLS-1$
+		all.add("javax.websocket.api"); //$NON-NLS-1$ 
+		all.add("javax.json.api"); //$NON-NLS-1$ 
+		
+		// Modules removed since as7/wf8
+		all.remove("javax.enterprise.deploy.api");//$NON-NLS-1$
+		all.remove("javax.rmi.api");//$NON-NLS-1$
+		all.remove("javax.xml.registry.api");//$NON-NLS-1$
+
+		// Convert
+		String[] allString = (String[]) all.toArray(new String[all.size()]);
+		return toRuntimePathProvider(allString);
+	}
+	
 	private IRuntimePathProvider[] getDefaultJEE7JBossModulesEntries() {
+		ArrayList<String> all = new ArrayList<String>();
+		all.addAll(Arrays.asList(getDefaultJBossModulesEntryKeys()));
+		all.add("javax.batch.api"); //$NON-NLS-1$
+		all.add("javax.enterprise.concurrent.api"); //$NON-NLS-1$
+		all.add("javax.websocket.api"); //$NON-NLS-1$ 
+		all.add("javax.json.api"); //$NON-NLS-1$ 
+		String[] allString = (String[]) all.toArray(new String[all.size()]);
+		return toRuntimePathProvider(allString);
+	}
+	
+	private String[] getDefaultJBossModulesEntryKeys() {
+		String[] ret = new String[]{
+			"javax.activation.api",
+			"javax.annotation.api",
+			"javax.ejb.api",
+			"javax.el.api",
+			"javax.enterprise.api",
+			"javax.enterprise.deploy.api",
+			"javax.faces.api",
+			"javax.inject.api",
+			"javax.interceptor.api",
+			"javax.jms.api",
+			"javax.jws.api",
+			"javax.mail.api",
+			"javax.management.j2ee.api",
+			"javax.persistence.api",
+			"javax.resource.api",
+			"javax.rmi.api",
+			"javax.security.auth.message.api",
+			"javax.security.jacc.api",
+			"javax.servlet.api",
+			"javax.servlet.jsp.api",
+			"javax.servlet.jstl.api",
+			"javax.transaction.api",
+			"javax.validation.api",
+			"javax.ws.rs.api",
+			"javax.wsdl4j.api",
+			"javax.xml.bind.api",
+			"javax.xml.registry.api",
+			"javax.xml.rpc.api",
+			"javax.xml.soap.api",
+			"javax.xml.ws.api",
+			"org.hibernate.validator",
+			"org.picketbox",
+			"org.jboss.as.controller-client",
+			"org.jboss.dmr",
+			"org.jboss.logging",
+			"org.jboss.resteasy.resteasy-jaxb-provider",
+			"org.jboss.resteasy.resteasy-jaxrs",
+			"org.jboss.resteasy.resteasy-multipart-provider",
+			"org.jboss.ejb3"
+		};
+		return ret;
+	}	
+	
+	private IRuntimePathProvider[] toRuntimePathProvider(String[] modules) {
 		ArrayList<IRuntimePathProvider> sets = new ArrayList<IRuntimePathProvider>();
-		sets.addAll(Arrays.asList(getDefaultJBossModulesEntries()));
-		sets.add(createModulePath("javax.batch.api")); //$NON-NLS-1$ 
-		sets.add(createModulePath("javax.enterprise.concurrent.api")); //$NON-NLS-1$
-		sets.add(createModulePath("javax.websocket.api")); //$NON-NLS-1$ 
-		sets.add(createModulePath("javax.json.api")); //$NON-NLS-1$ 
+		for( int i = 0; i < modules.length; i++ ) {
+			sets.add(createModulePath(modules[i]));
+		}
 		return (IRuntimePathProvider[]) sets.toArray(new IRuntimePathProvider[sets.size()]);
 	}
 	
 	private IRuntimePathProvider[] getDefaultJBossModulesEntries() {
-		ArrayList<IRuntimePathProvider> sets = new ArrayList<IRuntimePathProvider>();
-		sets.add(createModulePath("javax.activation.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.annotation.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.ejb.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.el.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.enterprise.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.enterprise.deploy.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.faces.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.inject.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.interceptor.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.jms.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.jws.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.mail.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.management.j2ee.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.persistence.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.resource.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.rmi.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.security.auth.message.api")); //$NON-NLS-1$ 
-		sets.add(createModulePath("javax.security.jacc.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.servlet.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.servlet.jsp.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.servlet.jstl.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.transaction.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.validation.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.ws.rs.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.wsdl4j.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.xml.bind.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.xml.registry.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.xml.rpc.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.xml.soap.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("javax.xml.ws.api"));//$NON-NLS-1$ 
-		sets.add(createModulePath("org.hibernate.validator"));//$NON-NLS-1$ 
-		sets.add(createModulePath("org.picketbox"));//$NON-NLS-1$ 
-		sets.add(createModulePath("org.jboss.as.controller-client"));//$NON-NLS-1$ 
-		sets.add(createModulePath("org.jboss.dmr"));//$NON-NLS-1$ 
-		sets.add(createModulePath("org.jboss.logging"));//$NON-NLS-1$ 
-		sets.add(createModulePath("org.jboss.resteasy.resteasy-jaxb-provider"));//$NON-NLS-1$ 
-		sets.add(createModulePath("org.jboss.resteasy.resteasy-jaxrs"));//$NON-NLS-1$ 
-		sets.add(createModulePath("org.jboss.resteasy.resteasy-multipart-provider"));//$NON-NLS-1$ 
-		sets.add(createModulePath("org.jboss.ejb3"));//$NON-NLS-1$ 
-		return (IRuntimePathProvider[]) sets.toArray(new IRuntimePathProvider[sets.size()]);
+		return toRuntimePathProvider(getDefaultJBossModulesEntryKeys());
 	}
 	
 	private LayeredProductPathProvider createModulePath(String moduleName) {

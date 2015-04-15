@@ -49,7 +49,8 @@ public class ServerParameterUtils {
 	}
 	
 	public static Object[] getJBossServerTypeParametersPlusAdditionalMocks() {
-		ArrayList<Object> l = new ArrayList<Object>(Arrays.asList(getJBossServerTypeParameters()));
+		ArrayList<Object> l = new ArrayList<Object>(Arrays.asList(new String[]{IJBossToolingConstants.SERVER_WILDFLY_90}));		
+		//ArrayList<Object> l = new ArrayList<Object>(Arrays.asList(getJBossServerTypeParameters()));
 		l.addAll(Arrays.asList(ServerCreationTestUtils.TEST_SERVER_TYPES_TO_MOCK));
 		return (String[]) l.toArray(new String[l.size()]);
 	}

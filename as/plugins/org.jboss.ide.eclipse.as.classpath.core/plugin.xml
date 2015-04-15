@@ -115,9 +115,15 @@
       <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossClasspathProviderAdapterFactory"/>
       <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
 	</adapter>
-		<adapter>
+	<adapter>
       <runtime-component
             id="org.jboss.ide.eclipse.as.runtime.wildfly.component" version="8.0"/>
+      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossClasspathProviderAdapterFactory"/>
+      <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
+	</adapter>
+	<adapter>
+      <runtime-component
+            id="org.jboss.ide.eclipse.as.runtime.wildfly.component" version="9.0"/>
       <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossClasspathProviderAdapterFactory"/>
       <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
 	</adapter>
@@ -145,7 +151,7 @@
    <extension point="org.eclipse.jst.server.core.runtimeClasspathProviders">
      <runtimeClasspathProvider
         id="org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget"
-        runtimeTypeIds="org.jboss.ide.eclipse.as.runtime.32,org.jboss.ide.eclipse.as.runtime.40,org.jboss.ide.eclipse.as.runtime.42,org.jboss.ide.eclipse.as.runtime.50,org.jboss.ide.eclipse.as.runtime.51,org.jboss.ide.eclipse.as.runtime.60,org.jboss.ide.eclipse.as.runtime.70,org.jboss.ide.eclipse.as.runtime.71,org.jboss.ide.eclipse.as.runtime.eap.43,org.jboss.ide.eclipse.as.runtime.eap.50,org.jboss.ide.eclipse.as.runtime.eap.60,org.jboss.ide.eclipse.as.runtime.eap.61,org.jboss.ide.eclipse.as.runtime.wildfly.80"
+        runtimeTypeIds="org.jboss.ide.eclipse.as.runtime.32,org.jboss.ide.eclipse.as.runtime.40,org.jboss.ide.eclipse.as.runtime.42,org.jboss.ide.eclipse.as.runtime.50,org.jboss.ide.eclipse.as.runtime.51,org.jboss.ide.eclipse.as.runtime.60,org.jboss.ide.eclipse.as.runtime.70,org.jboss.ide.eclipse.as.runtime.71,org.jboss.ide.eclipse.as.runtime.eap.43,org.jboss.ide.eclipse.as.runtime.eap.50,org.jboss.ide.eclipse.as.runtime.eap.60,org.jboss.ide.eclipse.as.runtime.eap.61,org.jboss.ide.eclipse.as.runtime.wildfly.80,org.jboss.ide.eclipse.as.runtime.wildfly.90"
         class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.ProjectRuntimeClasspathProvider"/>
    </extension>
    

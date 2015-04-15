@@ -25,6 +25,7 @@ public interface IJBossToolingConstants {
 	public static final String AS_70 = "org.jboss.ide.eclipse.as.runtime.70"; //$NON-NLS-1$
 	public static final String AS_71 = "org.jboss.ide.eclipse.as.runtime.71"; //$NON-NLS-1$
 	public static final String WILDFLY_80 = "org.jboss.ide.eclipse.as.runtime.wildfly.80"; //$NON-NLS-1$
+	public static final String WILDFLY_90 = "org.jboss.ide.eclipse.as.runtime.wildfly.90"; //$NON-NLS-1$
 	public static final String RUNTIME_PREFIX = "org.jboss.ide.eclipse.as.runtime."; //$NON-NLS-1$
 	public static final String EAP_RUNTIME_PREFIX = "org.jboss.ide.eclipse.as.runtime.eap."; //$NON-NLS-1$
 	public static final String EAP_43 = "org.jboss.ide.eclipse.as.runtime.eap.43"; //$NON-NLS-1$
@@ -33,7 +34,7 @@ public interface IJBossToolingConstants {
 	public static final String EAP_61 = "org.jboss.ide.eclipse.as.runtime.eap.61"; //$NON-NLS-1$
 	public static final String[] ALL_JBOSS_RUNTIMES = new String[] {
 		AS_32,AS_40,AS_42,AS_50,AS_51,AS_60,
-		AS_70,AS_71,WILDFLY_80,
+		AS_70,AS_71,WILDFLY_80,WILDFLY_90,
 		EAP_43,EAP_50,EAP_60, EAP_61
 	};
 	// NEW_SERVER_ADAPTER Add the new runtime constant above this line
@@ -48,6 +49,7 @@ public interface IJBossToolingConstants {
 	public static final String SERVER_AS_70 = "org.jboss.ide.eclipse.as.70"; //$NON-NLS-1$
 	public static final String SERVER_AS_71 = "org.jboss.ide.eclipse.as.71"; //$NON-NLS-1$
 	public static final String SERVER_WILDFLY_80 = "org.jboss.ide.eclipse.as.wildfly.80"; //$NON-NLS-1$
+	public static final String SERVER_WILDFLY_90 = "org.jboss.ide.eclipse.as.wildfly.90"; //$NON-NLS-1$
 	public static final String EAP_SERVER_PREFIX = "org.jboss.ide.eclipse.as.eap."; //$NON-NLS-1$
 	public static final String SERVER_EAP_43 = "org.jboss.ide.eclipse.as.eap.43"; //$NON-NLS-1$
 	public static final String SERVER_EAP_50 = "org.jboss.ide.eclipse.as.eap.50"; //$NON-NLS-1$
@@ -55,7 +57,7 @@ public interface IJBossToolingConstants {
 	public static final String SERVER_EAP_61 = "org.jboss.ide.eclipse.as.eap.61"; //$NON-NLS-1$
 	public static final String[] ALL_JBOSS_SERVERS = new String[] {
 		SERVER_AS_32,SERVER_AS_40,SERVER_AS_42,SERVER_AS_50,SERVER_AS_51,
-		SERVER_AS_60,SERVER_AS_70,SERVER_AS_71,SERVER_WILDFLY_80,
+		SERVER_AS_60,SERVER_AS_70,SERVER_AS_71,SERVER_WILDFLY_80,SERVER_WILDFLY_90,
 		SERVER_EAP_43,SERVER_EAP_50,SERVER_EAP_60, SERVER_EAP_61
 	};
 	// NEW_SERVER_ADAPTER Add the new server id above this line
@@ -88,7 +90,7 @@ public interface IJBossToolingConstants {
 	public static final String V7_2 = "7.2"; //$NON-NLS-1$
 	public static final String V8_0 = "8.0"; //$NON-NLS-1$
 	
-	// NEW_SERVER_ADAPTER  Add the new version string above this line
+	// LEGACY - unused. Previously: Add the new version string above this line
 	
 	
 	
@@ -103,7 +105,7 @@ public interface IJBossToolingConstants {
 	public static final String DOWNLOAD_RT_702 = "org.jboss.tools.runtime.core.as.702"; //$NON-NLS-1$
 	public static final String DOWNLOAD_RT_710 = "org.jboss.tools.runtime.core.as.710"; //$NON-NLS-1$
 	public static final String DOWNLOAD_RT_711 = "org.jboss.tools.runtime.core.as.711"; //$NON-NLS-1$
-	// NEW_SERVER_ADAPTER  Add the new version string above this line
+	// Above is legacy. 
 
 	
 	

@@ -32,6 +32,7 @@ public class JBossServerType extends ServerBeanType implements IJBossToolingCons
 	public static final JBossServerType UNKNOWN_AS72_PRODUCT = new ServerBeanTypeUnknownAS72Product();
 	public static final JBossServerType AS72 = new ServerBeanTypeAS72();
 	public static final JBossServerType WILDFLY80 = new ServerBeanTypeWildfly80();
+	public static final JBossServerType WILDFLY90 = new ServerBeanTypeWildfly90();
 	public static final JBossServerType JPP6 = new ServerBeanTypeJPP6();
 	
 	/**
@@ -54,10 +55,13 @@ public class JBossServerType extends ServerBeanType implements IJBossToolingCons
 	/**
 	 * This public variable duplicates the hidden one. 
 	 * We shouldn't have to update this in multiple places.
+	 * 
+	 * 	// NEW_SERVER_ADAPTER
 	 */
 	public static final JBossServerType[] KNOWN_TYPES =
 		{
 		JBossServerType.AS, 
+		JBossServerType.WILDFLY90, 
 		JBossServerType.WILDFLY80, 
 		JBossServerType.FSW6,
 		JBossServerType.EAP61,
