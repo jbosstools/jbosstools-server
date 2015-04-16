@@ -41,6 +41,8 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.sasl.RealmCallback;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.osgi.util.NLS;
 import org.jboss.as.controller.client.ModelControllerClient;
 import org.jboss.as.controller.client.helpers.standalone.DeploymentAction;
@@ -116,25 +118,55 @@ public class AS71Manager {
 		}
 	}
 	
+
 	public IJBoss7DeploymentResult undeploySync(String name, boolean removeFile, IProgressMonitor monitor)
 			throws JBoss7ManangerException {
-		monitor.beginTask("Undeploy via management: " + name, 100);
-		IJBoss7DeploymentResult result = undeploy(name, removeFile);
-		result.getStatus();
-		monitor.worked(100);
+		String task = "Undeploy via management: " + name;
+		monitor.beginTask(task, 100);
+		DeploymentOperationResult result = (DeploymentOperationResult)undeploy(name, removeFile);
+		monitor.worked(5);
+		waitFor(result, task, new SubProgressMonitor(monitor, 95));
+		monitor.done();
+		return result;
+	}
+	
+
+	public IJBoss7DeploymentResult deploySync(String name, File file, boolean add, IProgressMonitor monitor)
+			throws JBoss7ManangerException {
+		String task = "Deploy via management: " + name;
+		monitor.beginTask(task, 100);
+		DeploymentOperationResult result = (DeploymentOperationResult)deploy(name, file, add);
+		monitor.worked(5);
+		waitFor(result, task, new SubProgressMonitor(monitor, 95));
 		monitor.done();
 		return result;
 	}
 
-	public IJBoss7DeploymentResult deploySync(String name, File file, boolean add, IProgressMonitor monitor)
-			throws JBoss7ManangerException {
-		monitor.beginTask("Deploy via management: " + name, 100);
-		IJBoss7DeploymentResult result = deploy(name, file, add);
+
+	private void waitFor(DeploymentOperationResult result, String task, IProgressMonitor monitor) throws JBoss7ManangerException {
+		SubMonitor progress = SubMonitor.convert(monitor);
+		while(!monitor.isCanceled() && !result.isDone()) {
+            // Regardless of the amount of progress reported so far,
+            // use 0.01% of the space remaining in the monitor to process the next node.
+            progress.setWorkRemaining(1000);
+            IProgressMonitor tmp = progress.newChild(1);
+            tmp.beginTask("Waiting for task to complete: " + task, 1);
+            tmp.worked(1);
+            tmp.done();
+			try {
+				Thread.sleep(100);
+			} catch(InterruptedException ie) {
+				// Ignore
+			}
+		}
+		if( monitor.isCanceled()) {
+			result.cancel();
+			throw new JBoss7ManangerException("Operation canceled: " + task);
+		}
 		result.getStatus();
-		monitor.worked(100);
 		monitor.done();
-		return result;
 	}
+	
 
 	public IJBoss7DeploymentResult undeploy(String name, boolean removeFile) throws JBoss7ManangerException {
 		try {

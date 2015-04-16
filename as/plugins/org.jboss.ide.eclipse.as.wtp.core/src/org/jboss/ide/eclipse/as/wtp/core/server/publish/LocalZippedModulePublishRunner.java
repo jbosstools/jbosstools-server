@@ -270,6 +270,10 @@ public class LocalZippedModulePublishRunner extends ModuleResourceUtil {
 			return;
 		monitor.beginTask("Assembling child modules", children.length * 100);
 		for( int i = 0; i < children.length && !monitor.isCanceled(); i++ ) {
+			if( monitor.isCanceled()) {
+				results.add(new Status(IStatus.CANCEL, ASWTPToolsPlugin.PLUGIN_ID, "Operation Canceled"));
+				return;
+			}
 			if( ServerModelUtilities.isBinaryModule(children[i]))
 				results.addAll(Arrays.asList(fullBinaryPublish(module, children[i], ProgressMonitorUtil.submon(monitor, 100))));
 			else
@@ -426,6 +430,11 @@ public class LocalZippedModulePublishRunner extends ModuleResourceUtil {
 	private IStatus[] copy(java.io.File root, IModuleResource[] children, IProgressMonitor monitor) {
 		ArrayList<IStatus> results = new ArrayList<IStatus>();
 		for( int i = 0; i < children.length; i++ ) {
+			if( monitor.isCanceled()) { 
+				results.add(new Status(IStatus.CANCEL, ASWTPToolsPlugin.PLUGIN_ID, "Operation Canceled"));
+				return (IStatus[]) results.toArray(new IStatus[results.size()]);
+			}
+			
 			if( children[i] instanceof IModuleFile ) {
 				IModuleFile mf = (IModuleFile)children[i];
 				java.io.File source = getFile(mf);

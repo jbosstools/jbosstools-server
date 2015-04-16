@@ -10,6 +10,21 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.internal.management.wildfly8;
 
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.ADDRESS;
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.CHILD_TYPE;
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.DEPLOYMENT;
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.ENABLED;
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.FAILURE_DESCRIPTION;
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.NAME;
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.OP;
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.OP_ADDR;
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.READ_ATTRIBUTE_OPERATION;
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.READ_CHILDREN_NAMES_OPERATION;
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.READ_RESOURCE_OPERATION;
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.RESULT;
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.SERVER_STATE;
+import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.SHUTDOWN;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -26,6 +41,8 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.sasl.RealmCallback;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.osgi.util.NLS;
 import org.jboss.as.controller.client.ModelControllerClient;
 import org.jboss.as.controller.client.helpers.standalone.DeploymentAction;
@@ -38,21 +55,6 @@ import org.jboss.ide.eclipse.as.management.core.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.management.core.JBoss7DeploymentState;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
-
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.OP;
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.DEPLOYMENT;
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.READ_RESOURCE_OPERATION;
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.ADDRESS;
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.ENABLED;
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.SHUTDOWN;
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.FAILURE_DESCRIPTION;
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.NAME;
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.SERVER_STATE;
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.READ_ATTRIBUTE_OPERATION;
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.RESULT;
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.READ_CHILDREN_NAMES_OPERATION;
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.CHILD_TYPE;
-import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.OP_ADDR;
 
 /**
  * @author André Dietisheim
@@ -115,20 +117,46 @@ public class Wildfly8Manager {
 	
 	public IJBoss7DeploymentResult undeploySync(String name, boolean removeFile, IProgressMonitor monitor)
 			throws JBoss7ManangerException {
-		monitor.beginTask("Undeploy via management: " + name, 100);
-		IJBoss7DeploymentResult result = undeploy(name, removeFile);
-		result.getStatus();
-		monitor.worked(100);
+		String task = "Undeploy via management: " + name;
+		monitor.beginTask(task, 100);
+		DeploymentOperationResult result = (DeploymentOperationResult)undeploy(name, removeFile);
+		monitor.worked(5);
+		waitFor(result, task, new SubProgressMonitor(monitor, 95));
 		monitor.done();
 		return result;
+	}
+	
+	private void waitFor(DeploymentOperationResult result, String task, IProgressMonitor monitor) throws JBoss7ManangerException {
+		SubMonitor progress = SubMonitor.convert(monitor);
+		while(!monitor.isCanceled() && !result.isDone()) {
+            // Regardless of the amount of progress reported so far,
+            // use 0.01% of the space remaining in the monitor to process the next node.
+            progress.setWorkRemaining(1000);
+            IProgressMonitor tmp = progress.newChild(1);
+            tmp.beginTask("Waiting for task to complete: " + task, 1);
+            tmp.worked(1);
+            tmp.done();
+			try {
+				Thread.sleep(100);
+			} catch(InterruptedException ie) {
+				// Ignore
+			}
+		}
+		if( monitor.isCanceled()) {
+			result.cancel();
+			throw new JBoss7ManangerException("Operation canceled: " + task);
+		}
+		result.getStatus();
+		monitor.done();
 	}
 
 	public IJBoss7DeploymentResult deploySync(String name, File file, boolean add, IProgressMonitor monitor)
 			throws JBoss7ManangerException {
-		monitor.beginTask("Deploy via management: " + name, 100);
-		IJBoss7DeploymentResult result = deploy(name, file, add);
-		result.getStatus();
-		monitor.worked(100);
+		String task = "Deploy via management: " + name;
+		monitor.beginTask(task, 100);
+		DeploymentOperationResult result = (DeploymentOperationResult)deploy(name, file, add);
+		monitor.worked(5);
+		waitFor(result, task, new SubProgressMonitor(monitor, 95));
 		monitor.done();
 		return result;
 	}

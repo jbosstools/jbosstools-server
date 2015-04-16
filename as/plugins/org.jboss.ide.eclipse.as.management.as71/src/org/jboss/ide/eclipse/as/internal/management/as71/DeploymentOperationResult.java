@@ -94,4 +94,19 @@ public class DeploymentOperationResult implements IJBoss7DeploymentResult {
 		return new Status(severity, BUNDLE_ID, MessageFormat.format(
 				messagePattern, messageArguments));
 	}
+	
+
+	/*
+	 * Candidate for API
+	 */
+	public boolean isDone() {
+		return planResult.isDone();
+	}
+	
+	/*
+	 * Candidate for API
+	 */
+	public void cancel() {
+		planResult.cancel(true);
+	}
 }
