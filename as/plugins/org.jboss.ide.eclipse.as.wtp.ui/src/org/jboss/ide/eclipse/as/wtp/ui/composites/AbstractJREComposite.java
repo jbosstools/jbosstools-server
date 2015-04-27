@@ -21,10 +21,8 @@ import org.eclipse.jdt.internal.launching.environments.EnvironmentsManager;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.jface.preference.IPreferenceNode;
-import org.eclipse.jface.preference.IPreferencePage;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
-import org.eclipse.jface.preference.PreferenceNode;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -40,9 +38,9 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.TaskModel;
+import org.jboss.ide.eclipse.as.wtp.core.util.VMInstallUtil;
 import org.jboss.ide.eclipse.as.wtp.ui.Messages;
 
 public abstract class AbstractJREComposite extends Composite {
@@ -60,7 +58,7 @@ public abstract class AbstractJREComposite extends Composite {
 	private Button execenvRadio, vmRadio;
 	private Button environmentsButton, installedJREsButton;
 
-	private List<IVMInstall> installedJREs;
+	private List<IVMInstall> compatibleJREs, allJREs;
 	private String[] jreNames;
 	protected IVMInstall selectedVM;
 	protected IExecutionEnvironment selectedExecutionEnvironment;
@@ -146,7 +144,7 @@ public abstract class AbstractJREComposite extends Composite {
 		// Handle specific JREs
 		alternateJRECombo.setItems(jreNames);
 		// Refresh selection of vm
-		int ind = selectedVM == null ? -1 : installedJREs.indexOf(selectedVM);
+		int ind = selectedVM == null ? -1 : getDisplayableJREList().indexOf(selectedVM);
 		if( ind != -1 )
 			alternateJRECombo.select(ind);
 		else
@@ -191,13 +189,35 @@ public abstract class AbstractJREComposite extends Composite {
 		}
 		
 		// Now load all possible jres
-		installedJREs = new ArrayList<IVMInstall>();
-		IVMInstall[] allVMs = min.getCompatibleVMs();
-		installedJREs.addAll(Arrays.asList(allVMs));
-		jreNames = new String[allVMs.length];
-		for( int i = 0; i < allVMs.length; i++ ) {
-			jreNames[i] = allVMs[i].getName();
+		compatibleJREs = new ArrayList<IVMInstall>();
+		IVMInstall[] compat = min.getCompatibleVMs();
+		compatibleJREs.addAll(Arrays.asList(compat));
+		
+		
+		allJREs = new ArrayList<IVMInstall>();
+		allJREs.addAll(Arrays.asList(compat));
+		
+		// Now add all other JREs
+		IVMInstall[] allFromUtil = VMInstallUtil.getAllVMInstalls();
+		ArrayList<IVMInstall> noncompliant = new ArrayList<IVMInstall>();
+		noncompliant.addAll(Arrays.asList(allFromUtil));
+		noncompliant.removeAll(Arrays.asList(compat));
+		
+		allJREs.addAll(noncompliant);
+
+		List<IVMInstall> toDisplay = getDisplayableJREList();
+		jreNames = new String[toDisplay.size()];
+		for( int i = 0; i < toDisplay.size(); i++ ) {
+			jreNames[i] = toDisplay.get(i).getName();
 		}
+	}
+	
+	protected List<IVMInstall> getDisplayableJREList() {
+		return includeIncompatibleJREs() ? allJREs : compatibleJREs;
+	}
+	
+	protected boolean includeIncompatibleJREs() {
+		return true;
 	}
 	
 	protected IExecutionEnvironment[] findAllValidEnvironments(IExecutionEnvironment env) {
@@ -276,7 +296,7 @@ public abstract class AbstractJREComposite extends Composite {
 	private void vmChanged() {
 		// The hard vm is null if the proper radio isn't selected; otherwise use what's selected
 		int vmIndex = !vmRadio.getSelection() ? -1 : alternateJRECombo.getSelectionIndex();
-		selectedVM = vmIndex == -1 ? null : installedJREs.get(vmIndex);
+		selectedVM = vmIndex == -1 ? null : getDisplayableJREList().get(vmIndex);
 		
 		int execenvIndex = !execenvRadio.getSelection() ? -1 : execEnvironmentCombo.getSelectionIndex();
 		selectedExecutionEnvironment = execenvIndex == -1 ? null : validExecutionEnvironments[execenvIndex];
@@ -325,6 +345,14 @@ public abstract class AbstractJREComposite extends Composite {
 	 */
 	public IVMInstall getSelectedVM() {
 		return selectedVM;
+	}
+	
+	/**
+	 * Is the selected VM in the list of VMs compatible with the required execution environment?
+	 * @return
+	 */
+	public boolean selectedVMisCompatible() {
+		return compatibleJREs.contains(selectedVM); 
 	}
 	
 	/**

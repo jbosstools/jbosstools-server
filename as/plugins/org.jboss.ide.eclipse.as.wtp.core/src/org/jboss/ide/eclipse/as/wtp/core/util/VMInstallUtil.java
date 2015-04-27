@@ -42,6 +42,21 @@ public class VMInstallUtil {
 		return null;
 	}
 
+	public static IVMInstall[] getAllVMInstalls() {
+		ArrayList<IVMInstall> allRet = new ArrayList<IVMInstall>();
+		IVMInstallType[] allTypes = JavaRuntime.getVMInstallTypes();
+		for( int i = 0; i < allTypes.length; i++ ) {
+			IVMInstallType vmInstallType = allTypes[i];
+			IVMInstall[] vmInstalls = vmInstallType.getVMInstalls();
+			for (int j = 0; j < vmInstalls.length; j++) {
+				allRet.add(vmInstalls[j]);
+			}
+		}
+		return (IVMInstall[]) allRet.toArray(new IVMInstall[allRet.size()]);
+	}
+
+	
+	
 	public static IVMInstall findVMInstall(IExecutionEnvironment environment) {
 		return findVMInstall(environment, PREFER_LOWEST);
 	}

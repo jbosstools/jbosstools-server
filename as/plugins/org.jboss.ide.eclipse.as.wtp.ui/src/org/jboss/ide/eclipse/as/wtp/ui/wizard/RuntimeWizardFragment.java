@@ -267,8 +267,12 @@ public abstract class RuntimeWizardFragment extends WizardFragment {
 	}
 	
 	protected String getWarningString() {
-		if( getHomeVersionWarning() != null )
-			return getHomeVersionWarning();
+		String homeVersionWarning = getHomeVersionWarning();
+		if( homeVersionWarning != null )
+			return homeVersionWarning;
+		if( !jreComposite.selectedVMisCompatible()) {
+			return Messages.rwf_incompatibleJRE;
+		}
 		return null;
 	}
 	
