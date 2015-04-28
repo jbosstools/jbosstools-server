@@ -68,12 +68,54 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 		}
 	}
 
+	/**
+	 * The framework will no longer call this method, but will instead call 
+	 * boolean initializeRuntime(RuntimeDefinition runtimeDefinition) throws CoreException 
+	 */
+	@Override @Deprecated
 	public void initializeRuntimes(List<RuntimeDefinition> runtimeDefinitions) {
-		createJBossServerFromDefinitions(runtimeDefinitions);
+		initializeRuntimesStatic(runtimeDefinitions);
 	}
-		
+
+	@Override
+	public boolean initializeRuntime(RuntimeDefinition runtimeDefinition) throws CoreException {
+		return createJBossServerFromDefinitionsWithReturn(runtimeDefinition);
+	}
+	
+	/**
+	 * Returns true if any definition is created
+	 * @param runtimeDefinitions
+	 * @return
+	 */
+	private static boolean initializeRuntimesStatic(List<RuntimeDefinition> runtimeDefinitions) {
+		boolean created = false;
+		for (RuntimeDefinition runtimeDef : runtimeDefinitions) {
+			created |= createJBossServerFromDefinitionsWithReturn(runtimeDef);
+		}
+		return created;
+	}
+	
+	
+	/**
+	 * This method should not be public and is Deprecated. 
+	 * Please use the interface methods, specifically, 
+	 * boolean initializeRuntime(RuntimeDefinition runtimeDefinition) throws CoreException
+	 * 
+	 * @param runtimeDefinitions
+	 */
+	@Deprecated
 	public static void createJBossServerFromDefinitions(List<RuntimeDefinition> runtimeDefinitions) {
 		for (RuntimeDefinition runtimeDefinition:runtimeDefinitions) {
+			createJBossServerFromDefinition(runtimeDefinition);
+		}
+	}
+	
+	private static void createJBossServerFromDefinition(RuntimeDefinition runtimeDefinition) {
+		createJBossServerFromDefinitionsWithReturn(runtimeDefinition);
+	}
+	
+	private static boolean createJBossServerFromDefinitionsWithReturn(RuntimeDefinition runtimeDefinition) {
+			boolean created = false;
 			if (runtimeDefinition.isEnabled()) {
 				ServerBean sb = new ServerBeanLoader(runtimeDefinition.getLocation()).getServerBean();
 				File asLocation = getServerAdapterRuntimeLocation(sb, runtimeDefinition.getLocation());
@@ -83,12 +125,12 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 						String typeId = sb.getServerAdapterTypeId();
 						String name = runtimeDefinition.getName();
 						String runtimeName = name + " " + RUNTIME; //$NON-NLS-1$
-						createJBossServer(asLocation, typeId, name, runtimeName);
+						created |= createJBossServer(asLocation, typeId, name, runtimeName);
 					}
 				}
 			}
-			createJBossServerFromDefinitions(runtimeDefinition.getIncludedRuntimeDefinitions());
-		}	
+			created |= initializeRuntimesStatic(runtimeDefinition.getIncludedRuntimeDefinitions());
+			return created;
 	}
 	
 	/*
@@ -130,20 +172,21 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 		return null;
 	}
 	
-	private static void createJBossServer(File asLocation, String serverTypeId, String name, String runtimeName) {
+	private static boolean createJBossServer(File asLocation, String serverTypeId, String name, String runtimeName) {
 		if (asLocation == null || !asLocation.isDirectory() || serverTypeId == null)
-			return;
+			return false;
 		IServerType serverType = ServerCore.findServerType(serverTypeId);
 		if( serverType == null )
-			return;
+			return false;
 		IRuntimeType rtType = serverType.getRuntimeType();
 		if( rtType == null )
-			return;
+			return false;
 		
 		IPath jbossAsLocationPath = new Path(asLocation.getAbsolutePath());
 		if( serverExistsForPath(jbossAsLocationPath))
-			return;
+			return false;
 		
+		IServer s = null;
 		IRuntime runtime = findRuntimeForPath(jbossAsLocationPath);
 		IProgressMonitor progressMonitor = new NullProgressMonitor();
 		try {
@@ -151,7 +194,7 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 				runtime = createRuntime(runtimeName, asLocation.getAbsolutePath(), progressMonitor, rtType);
 			}
 			if (runtime != null) {
-				createServer(progressMonitor, runtime, serverType, name);
+				s = createServer(progressMonitor, runtime, serverType, name);
 			}
 			
 			if( isDtpPresent())
@@ -161,6 +204,7 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 		} catch (DriverUtilityException e) {
 			ServerRuntimesIntegrationActivator.pluginLog().logError(Messages.JBossRuntimeStartup_Cannott_create_new_DTP_Connection_Profile,e);
 		}
+		return s != null;
 	}
 
 	private static boolean isDtpPresent() {
@@ -221,7 +265,7 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 	 * @return server working copy
 	 * @throws CoreException
 	 */
-	private static void createServer(IProgressMonitor progressMonitor, IRuntime runtime,
+	private static IServer createServer(IProgressMonitor progressMonitor, IRuntime runtime,
 			IServerType serverType, String name) throws CoreException {
 		if( !serverWithNameExists(name)) {
 			IServerWorkingCopy serverWC = serverType.createServer(null, null,
@@ -234,9 +278,11 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 				initializers[i].initialize(serverWC);
 			}
 			
-			serverWC.save(true, new NullProgressMonitor());
+			IServer ret = serverWC.save(true, new NullProgressMonitor());
 			ServerRuntimesIntegrationActivator.getDefault().trackNewDetectedServerEvent(serverType.getId());
+			return ret;
 		}
+		return null;
 	}
 	
 	private static boolean serverWithNameExists(String name) {

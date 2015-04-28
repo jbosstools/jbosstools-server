@@ -74,10 +74,27 @@ public class TomcatRuntimeDetectorDelegate extends AbstractRuntimeDetectorDelega
 	
 	public static final String TOMCAT_TYPE = "TOMCAT";  //$NON-NLS-1$
 		
-	@Override
+	/**
+	 * The framework will no longer call this method, but should instead call 
+	 * boolean initializeRuntime(RuntimeDefinition runtimeDef) throws CoreException 
+	 * 
+	 */
+	@Override @Deprecated
 	public void initializeRuntimes(List<RuntimeDefinition> runtimeDefinitions) {
-		
 		for (RuntimeDefinition runtimeDef : runtimeDefinitions) {
+			try {
+				initializeRuntime(runtimeDef);
+			} catch(CoreException ce) {
+				// We just have to swallow this, but this method is deprecated
+				// So log it. 
+				RuntimeTomcatActivator.logError("An error occured while creating a tomcat server", ce); //$NON-NLS-1$
+			}
+		}
+	}
+	
+	@Override
+	public boolean initializeRuntime(RuntimeDefinition runtimeDef) throws CoreException {
+			boolean ret = false; 
 			if (runtimeDef instanceof TomcatRuntimeDefinition) {
 				TomcatRuntimeDefinition trd = (TomcatRuntimeDefinition) runtimeDef;
 				IProgressMonitor monitor = new NullProgressMonitor();
@@ -90,6 +107,7 @@ public class TomcatRuntimeDetectorDelegate extends AbstractRuntimeDetectorDelega
 							runtime = createRuntime(trwc, monitor);
 						}
 						if (runtime != null) {
+							ret = true;
 							IServerType serverType = findServerType(runtime.getRuntimeType());
 							if (serverType != null) {
 								createServer(runtime, serverName, serverType, monitor);
@@ -100,7 +118,7 @@ public class TomcatRuntimeDetectorDelegate extends AbstractRuntimeDetectorDelega
 					}
 				}
 			}
-		}
+			return ret;
 	}
 
 	private IRuntime createRuntime(IRuntimeWorkingCopy trwc, IProgressMonitor monitor) throws CoreException {
@@ -292,5 +310,5 @@ public class TomcatRuntimeDetectorDelegate extends AbstractRuntimeDetectorDelega
 			return runtimeTypeId;
 		}
 	}
-	
+
 }
