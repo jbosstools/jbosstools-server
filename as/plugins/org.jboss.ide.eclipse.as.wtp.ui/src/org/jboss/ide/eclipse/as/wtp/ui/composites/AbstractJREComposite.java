@@ -352,7 +352,8 @@ public abstract class AbstractJREComposite extends Composite {
 	 * @return
 	 */
 	public boolean selectedVMisCompatible() {
-		return compatibleJREs.contains(selectedVM); 
+		// If selectedVM is null, they've chosen an execution environment
+		return selectedVM == null || compatibleJREs.contains(selectedVM); 
 	}
 	
 	/**
