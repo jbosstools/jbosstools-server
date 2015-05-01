@@ -40,6 +40,7 @@ import org.jboss.ide.eclipse.as.core.util.ServerNamingUtility;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
+import org.jboss.ide.eclipse.as.wtp.core.util.ServerTCPIPMonitorUtil;
 import org.jboss.tools.as.core.server.controllable.systems.IModuleDeployPathController;
 
 public class DeployableServer extends ServerDelegate implements IDeployableServer, IMultiModuleURLProvider {
@@ -223,11 +224,14 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 			contextRoot += "/"; //$NON-NLS-1$
 		}
         
+		String actualHost = ServerTCPIPMonitorUtil.getHostFor(host, port);
+		int actualPort = ServerTCPIPMonitorUtil.getPortFor(actualHost, port);
+		
 		String url = null;
-		if( port == 80 ) {
-			url = ServerUtil.createSafeURLString("http", host, contextRoot); //$NON-NLS-1$
+		if( actualPort == 80 ) {
+			url = ServerUtil.createSafeURLString("http", actualHost, contextRoot); //$NON-NLS-1$
 		} else {
-        	url = ServerUtil.createSafeURLString("http", host, port, contextRoot); //$NON-NLS-1$
+        	url = ServerUtil.createSafeURLString("http", actualHost, actualPort, contextRoot); //$NON-NLS-1$
 		}
 
 		try {

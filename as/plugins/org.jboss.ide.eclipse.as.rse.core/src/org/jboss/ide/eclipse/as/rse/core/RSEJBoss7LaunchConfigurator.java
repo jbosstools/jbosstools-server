@@ -29,6 +29,7 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.wtp.core.util.ServerTCPIPMonitorUtil;
 
 /**
  * @author André Dietisheim
@@ -81,7 +82,10 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 			int defPort = 9999;
 			int port = (sd instanceof IManagementPortProvider) ? 
 					((IManagementPortProvider)sd).getManagementPort() : defPort;
-			ret += " --controller=" + host + ":" + port;
+					
+			String host2 = ServerTCPIPMonitorUtil.getHostFor(host, port);
+			int port2 = ServerTCPIPMonitorUtil.getPortFor(host, port);
+			ret += " --controller=" + host2 + ":" + port2;
 		}
 		ret += " --connect command=:shutdown";
 		return ret;

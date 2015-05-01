@@ -25,6 +25,7 @@ import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.management.core.IAS7ManagementDetails;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
+import org.jboss.ide.eclipse.as.wtp.core.util.ServerTCPIPMonitorUtil;
 
 public class AS7ManagementDetails implements IServerProvider, IAS7ManagementDetails {
 	private IServer server;
@@ -39,15 +40,25 @@ public class AS7ManagementDetails implements IServerProvider, IAS7ManagementDeta
 	}
 	
 	public String getHost() {
+		return ServerTCPIPMonitorUtil.getHostFor(getUnderlyingHost(), getUnderlyingPort());
+	}
+	
+	public String getUnderlyingHost() {
 		return server.getHost();
 	}
 	
 	public int getManagementPort() {
+		return ServerTCPIPMonitorUtil.getPortFor(getUnderlyingHost(), getUnderlyingPort());
+	}
+	
+	public int getUnderlyingPort() {
 		JBoss7Server jbossServer = (JBoss7Server) server.loadAdapter(JBoss7Server.class, new NullProgressMonitor());
 		if( jbossServer != null )
 			return jbossServer.getManagementPort();
 		return IJBoss7ManagerService.MGMT_PORT;
 	}
+	
+	
 	
 	public String getManagementUsername() {
 		return null;

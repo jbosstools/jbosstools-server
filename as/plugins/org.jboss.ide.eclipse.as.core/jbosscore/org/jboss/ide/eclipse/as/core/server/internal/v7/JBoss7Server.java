@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.ServerPort;
 import org.jboss.ide.eclipse.as.core.server.IManagementPortProvider;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
@@ -38,6 +39,20 @@ public class JBoss7Server extends JBossServer implements IJBoss7Deployment, IMan
 	
 	public int getManagementPort() {
 		return findPort(IPortsController.KEY_MANAGEMENT_PORT, 9999);
+	}
+	
+	/**
+	 * Returns an array of ServerPorts that this server has.
+	 *
+	 * @return the server's ports
+	 */
+	@Override
+	public ServerPort[] getServerPorts() {
+		int webPort = getWebPort();
+		ServerPort web = new ServerPort("1", "HTTP Connector", webPort, "HTTP", new String[] { "web", "webservices" }, false); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+		int mgmtPort = getManagementPort();
+		ServerPort mgmt = new ServerPort("2", "Management Connector", mgmtPort, "TCP/IP", null, false);//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ 
+		return new ServerPort[]{web, mgmt};
 	}
 	
 	@Override

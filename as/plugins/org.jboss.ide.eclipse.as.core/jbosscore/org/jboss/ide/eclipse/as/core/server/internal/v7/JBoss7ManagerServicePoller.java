@@ -34,6 +34,7 @@ import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerConnectException;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
+import org.jboss.ide.eclipse.as.wtp.core.util.ServerTCPIPMonitorUtil;
 
 /**
  * @author André Dietisheim
@@ -246,6 +247,16 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 	public IStatus getCurrentStateSynchronous(final IServer server) {
 		final boolean[] callbacksCalled = new boolean[1];
 		callbacksCalled[0] = false;
+		String targetHost = server.getHost();
+		int targetPort = getManagementPort(server);
+		String actualHost = ServerTCPIPMonitorUtil.getHostFor(targetHost, targetPort);
+		int actualPort = ServerTCPIPMonitorUtil.getPortFor(targetHost, targetPort);
+		// If either host or port are not what we expect, monitoring is enabled
+		boolean monitoringEnabled = !targetHost.equals(actualHost) || targetPort != actualPort;
+		String hostPort = monitoringEnabled ?
+				(actualHost + ":" + actualPort) :   //$NON-NLS-1$
+				(targetHost + ":" + targetPort + " -> " + actualHost + ":" + actualPort); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				
 		
 		try {
 			Boolean result = JBoss7ManagerUtil.executeWithService(new JBoss7ManagerUtil.IServiceAware<Boolean>() {
@@ -262,20 +273,22 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 					}
 				}
 			}, server);
+			
+			
 			if( result.booleanValue()) {
 				Status s = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, 
-						"A JBoss 7 Management Service on " + server.getHost() //$NON-NLS-1$
-						+ ", port " + getManagementPort(server) + " has responded that the server is completely started."); //$NON-NLS-1$ //$NON-NLS-2$
+						"The JBoss Management Service on " + hostPort + //$NON-NLS-1$
+						" has responded that the server is completely started."); //$NON-NLS-1$ 
 				return s;
 			}
 			Status s = new Status(IStatus.INFO, JBossServerCorePlugin.PLUGIN_ID, 
-					"A JBoss 7 Management Service on " + server.getHost() //$NON-NLS-1$
-					+ ", port " + getManagementPort(server) + " has responded that the server is not completely started."); //$NON-NLS-1$ //$NON-NLS-2$
+					"The JBoss Management Service on " + hostPort + //$NON-NLS-1$
+					" has responded that the server is not completely started."); //$NON-NLS-1$ 
 			return s;
 		} catch(Exception e) {
 			Status s = new Status(IStatus.INFO, JBossServerCorePlugin.PLUGIN_ID, 
-					"An attempt to reach the JBoss 7 Management Service on host " + server.getHost() //$NON-NLS-1$
-					+ " and port " + getManagementPort(server) + " has resulted in an exception", e); //$NON-NLS-1$ //$NON-NLS-2$
+					"An attempt to reach the JBoss Management Service on " + hostPort //$NON-NLS-1$
+					+ " has resulted in an exception", e); //$NON-NLS-1$ 
 			return s;
 		}
 	}
