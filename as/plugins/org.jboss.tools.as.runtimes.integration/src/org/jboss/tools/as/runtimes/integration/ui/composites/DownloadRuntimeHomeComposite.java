@@ -59,7 +59,6 @@ public class DownloadRuntimeHomeComposite extends RuntimeHomeComposite {
 		downloadAndInstallButtonWrapper.setLayout(new FillLayout());
 		downloadAndInstallButton = new Link(downloadAndInstallButtonWrapper, SWT.NONE);
 		downloadAndInstallButton.setText("<a href=\"\">" + Messages.rwf_DownloadRuntime + "</a>");
-		downloadAndInstallButton.addSelectionListener(new DownloadAndInstallListener());
 		downloadAndInstallButton.setEnabled(false);
 		downloadAndInstallButtonWrapper.setToolTipText(Messages.rwf_downloadTooltipLoading);
 		downloadAndInstallButtonWrapper.setLayoutData(FormDataUtility.createFormData2(0,0,homeDirButton,-5,null,0,100,-10));
@@ -158,8 +157,10 @@ public class DownloadRuntimeHomeComposite extends RuntimeHomeComposite {
 					public void run() {
 						if( downloads != null && downloads.length > 0 ) {
 							try {
-								if( !downloadAndInstallButton.isDisposed())
+								if( !downloadAndInstallButton.isDisposed()) {
 									downloadAndInstallButton.setEnabled(true);
+									downloadAndInstallButton.addSelectionListener(new DownloadAndInstallListener());
+								}
 								if( !downloadAndInstallButtonWrapper.isDisposed())
 									downloadAndInstallButtonWrapper.setToolTipText(null);
 							} catch(Throwable t) {
