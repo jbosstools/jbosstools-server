@@ -131,7 +131,7 @@ public class JBoss7RSEDeploymentPrefComposite extends
 		rseServerHome = new Text(child, SWT.SINGLE | SWT.BORDER);
 		serverHomeLabel.setLayoutData(FormDataUtility.createFormData2(remoteRuntimeRequiredLabel, 7, null, 0, 0, 10, null, 0));
 		FormData serverHomeData = FormDataUtility.createFormData2(remoteRuntimeRequiredLabel, 5, null, 0, serverHomeLabel, 10, rseBrowse, -5);
-		serverHomeData.width = 200;
+		serverHomeData.width = 150;
 		rseServerHome.setLayoutData(serverHomeData);
 		rseServerHome.setText(callback.getServer().getAttribute(
 				RSEUtils.RSE_SERVER_HOME_DIR, ""));
@@ -157,8 +157,10 @@ public class JBoss7RSEDeploymentPrefComposite extends
 		rseBaseDirText = new Text(child, SWT.SINGLE | SWT.BORDER);
 		baseDirLabel.setLayoutData(UIUtil.createFormData2(rseServerHome, 7,
 				null, 0, 0, 10, null, 0));
-		rseBaseDirText.setLayoutData(UIUtil.createFormData2(rseServerHome, 5,
-				null, 0, baseDirLabel, 5, rseBaseDirBrowse, -5));
+		FormData rseBaseDirTextData = UIUtil.createFormData2(rseServerHome, 5,
+				null, 0, baseDirLabel, 5, rseBaseDirBrowse, -5);
+		rseBaseDirTextData.width = 100;
+		rseBaseDirText.setLayoutData(rseBaseDirTextData);
 		rseBaseDirText.setText(callback.getServer().getAttribute(
 				RSEUtils.RSE_BASE_DIR, IJBossRuntimeResourceConstants.AS7_STANDALONE));
 		rseBaseDirText.addModifyListener(new ModifyListener() {
