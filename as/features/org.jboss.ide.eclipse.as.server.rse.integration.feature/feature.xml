@@ -25,7 +25,7 @@ Raleigh NC 27606 USA.
    </license>
 
 	<requires>
-		<import plugin="org.eclipse.core.runtime" version="3.7.0" match="greaterOrEqual" />
+		<import plugin="org.eclipse.core.runtime" version="3.8.0" match="greaterOrEqual" />
 		<import plugin="org.jboss.ide.eclipse.as.wtp.core" version="1.0.0" match="greaterOrEqual" />
 		<import plugin="org.eclipse.wst.server.core" version="1.1.302" match="greaterOrEqual" />
 		<import plugin="org.eclipse.wst.common.project.facet.core" version="1.4.200" match="greaterOrEqual" />
@@ -35,11 +35,11 @@ Raleigh NC 27606 USA.
 		<import plugin="org.eclipse.jem.util" version="2.1.2" match="greaterOrEqual" />
 		<import plugin="org.eclipse.debug.core" version="3.7.0" match="greaterOrEqual" />
 		<import plugin="org.eclipse.jdt.launching" version="3.6.0" match="greaterOrEqual" />
-		<import plugin="org.eclipse.ui" version="3.7.0" match="greaterOrEqual" />
+		<import plugin="org.eclipse.ui" version="3.8.0" match="greaterOrEqual" />
 		<import plugin="org.eclipse.wst.server.ui" version="1.1.305" match="greaterOrEqual" />
 		<import plugin="org.eclipse.debug.ui" version="3.7.0" match="greaterOrEqual" />
-		<import plugin="org.eclipse.rse.core" version="3.1.200" match="greaterOrEqual" />
-		<import plugin="org.eclipse.rse.subsystems.files.core" version="3.2.100" match="greaterOrEqual" />
+		<import plugin="org.eclipse.rse.core" version="3.3.100" match="greaterOrEqual" />
+		<import plugin="org.eclipse.rse.subsystems.files.core" version="3.3.1" match="greaterOrEqual" />
 		<import plugin="org.eclipse.rse.services" version="3.2.100" match="greaterOrEqual" />
 		<import plugin="org.eclipse.rse.services.files.ftp" version="3.0.300" match="greaterOrEqual" />
 		<import plugin="org.eclipse.rse.services.local" version="2.1.300" match="greaterOrEqual" />
@@ -47,10 +47,9 @@ Raleigh NC 27606 USA.
 		<import plugin="org.eclipse.rse.subsystems.shells.core" version="3.1.200" match="greaterOrEqual" />
 		<import plugin="org.jboss.ide.eclipse.as.core" />
 		<import plugin="org.jboss.ide.eclipse.archives.webtools" />
-		<import plugin="org.eclipse.tm.terminal" version="3.1.0" match="greaterOrEqual" />
 		<import plugin="org.jboss.ide.eclipse.as.ui" />
 		<import plugin="org.eclipse.rse.files.ui" version="3.2.0" match="greaterOrEqual" />
-		<import plugin="org.eclipse.rse.ui" version="3.2.0" match="greaterOrEqual" />
+		<import plugin="org.eclipse.rse.ui" version="3.3.100" match="greaterOrEqual"/>
 		<import plugin="org.eclipse.rse.subsystems.shells.local" version="2.1.300" match="greaterOrEqual" />
 		<import plugin="org.eclipse.rse.subsystems.shells.ssh" version="2.1.300" match="greaterOrEqual" />
 		<import plugin="org.eclipse.rse.subsystems.shells.telnet" version="1.2.200" match="greaterOrEqual" />
@@ -75,6 +74,18 @@ Raleigh NC 27606 USA.
 		<import plugin="org.eclipse.rse.subsystems.terminals.core"/>
 		<import plugin="org.eclipse.rse.subsystems.terminals.ssh"/>
 		<import plugin="org.eclipse.rse.terminals.ui"/>
+
+		<!-- new for Mars M7 -->
+		<import plugin="org.eclipse.core.expressions" version="3.4.400" match="greaterOrEqual"/>
+		<import plugin="org.eclipse.tm.terminal.control" version="4.0.0" match="greaterOrEqual"/>
+		<import plugin="org.eclipse.tm.terminal.view.core" version="4.0.0" match="greaterOrEqual"/>
+		<import plugin="org.eclipse.tm.terminal.view.ui" version="4.0.0" match="greaterOrEqual"/>
+		<import plugin="org.eclipse.tm.terminal.view.ui.rse" version="4.0.0" match="greaterOrEqual"/>
+    <import feature="org.eclipse.tm.terminal.connector.local.feature" version="4.0.0" match="greaterOrEqual"/>
+    <import feature="org.eclipse.tm.terminal.connector.serial.feature" version="4.0.0" match="greaterOrEqual"/>
+    <import feature="org.eclipse.tm.terminal.connector.ssh.feature" version="4.0.0" match="greaterOrEqual"/>
+    <import feature="org.eclipse.tm.terminal.connector.telnet.feature" version="4.0.0" match="greaterOrEqual"/>
+
 	</requires>
 
    <plugin

@@ -33,20 +33,26 @@ The general idea is to keep your 'master' branch in-sync with the
 To build _Server Tools_ requires specific versions of Java (1.6+) and
 +Maven (3.1+). See this [link](https://github.com/jbosstools/jbosstools-devdoc/blob/master/building/readme.md) for more information on how to setup, run and configure build.
 
-Running unit tests and integration tests for Server Tools requires pointing to your java 7 path. This can be done as shown below:
+Unit and integration tests for Server Tools (such as org.jboss.tools.as.management.itests) require the following path to Java 7 Home folder be defined via commandline:
+
+	mvn verify -Djbosstools.test.jre.7=/path/to/jre7
+
+If not defined, you'll get this error:
+
+	junit.framework.AssertionFailedError: Java Home 
+	provided by the jbosstools.test.jre.7 system property does not exist.
 
 This command will run the build, including tests and integration tests:
 
-    $ mvn clean verify -Djbosstools.test.jre.7=/your/path/to/jre7
+    $ mvn clean verify -Djbosstools.test.jre.7=/path/to/jre7
 
 If you want to run the build and run unit tests, but not integration tests, you can run:
 
-    $ mvn clean verify -DskipITests -Djbosstools.test.jre.7=/your/path/to/jre7
+    $ mvn clean verify -DskipITests -Djbosstools.test.jre.7=/path/to/jre7
 
 If you just want to check if things compile/build, and run no tests at all, you can run:
 
-    $ mvn clean verify -DskipTests
-
+	$ mvn clean verify -DskipTests
 
 But *do not* push changes without having the new and existing unit tests pass!
  
