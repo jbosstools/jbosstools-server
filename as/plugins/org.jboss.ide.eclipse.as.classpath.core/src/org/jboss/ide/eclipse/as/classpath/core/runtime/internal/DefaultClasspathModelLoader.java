@@ -82,7 +82,8 @@ public class DefaultClasspathModelLoader implements IJBossToolingConstants, IJBo
 		// NEW_SERVER_ADAPTER add logic for new adapter here
 		// TODO this needs to be updated
 		ServerExtendedProperties props = new ExtendedServerPropertiesAdapterFactory().getExtendedProperties(rtt);
-		return props.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS;
+		// deploy-only server causes invalid values here somehow? 
+		return props != null && props.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS;
 	}
 	
 	private IRuntimePathProvider[] getDefaultAS3Entries() {
