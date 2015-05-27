@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.remote.core.remoteServices">
+      <connectionType
+            canAdd="false"
+            canEdit="false"
+            id="org.jboss.tools.server.launchbar.connection"
+            name="Server Adapter"
+            scheme="dummyscheme">
+      </connectionType>
+      <connectionTypeService
+            connectionTypeId="org.jboss.tools.server.launchbar.connection"
+            factory="org.jboss.tools.wtp.server.launchbar.ui.RemoteTypeUIService$Factory"
+            service="org.eclipse.remote.ui.IRemoteUIConnectionService">
+      </connectionTypeService>
+   </extension>
+   
+   
+   
+   <extension
+         point="org.eclipse.launchbar.core.launchBarContributions">
+      <objectProvider
+            class="org.jboss.tools.wtp.server.launchbar.ModuleObjectProvider"
+            id="org.jboss.tools.server.launchbar.ModuleObjectProvider">
+      </objectProvider>
+      <descriptorType
+            class="org.jboss.tools.wtp.server.launchbar.ModuleDescriptorType"
+            id="org.jboss.tools.server.launchbar.ModuleDescriptorType"
+            priority="5">
+      </descriptorType>
+      <configProvider
+            descriptorType="org.jboss.tools.server.launchbar.ModuleDescriptorType"
+            class="org.jboss.tools.wtp.server.launchbar.ModuleLaunchConfigurationProvider"
+            priority="1">
+      </configProvider>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="org.jboss.tools.wtp.server.launchbar.ServerLaunchBarDelegate"
+            delegateDescription="A launch for executing the &quot;Run on Server&quot; action"
+            delegateName="Run On Server Launch"
+            id="org.jboss.tools.server.launchbar.serverAdapterLaunch"
+            modes="run,debug,profile"
+            name="Server Adapter Launchbar Configuration"
+            public="false">
+      </launchConfigurationType>
+   </extension>
+   <extension
+         point="org.eclipse.launchbar.ui.launchBarUIContributions">
+      <descriptorUI
+            descriptorTypeId="org.jboss.tools.server.launchbar.ModuleDescriptorType"
+            labelProvider="org.jboss.tools.wtp.server.launchbar.ui.ModuleDescriptorLabelProvider">
+      </descriptorUI>
+      <descriptorUI
+            descriptorTypeId="org.jboss.tools.server.launchbar.ModuleDescriptorType"
+            labelProvider="org.jboss.tools.wtp.server.launchbar.ui.ModuleDescriptorLabelProvider">
+      </descriptorUI>
+   </extension>
+
+</plugin>

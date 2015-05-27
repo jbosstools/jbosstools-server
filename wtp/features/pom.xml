@@ -4,15 +4,16 @@
 	<parent>
 		<groupId>org.jboss.tools</groupId>
 		<artifactId>wtp</artifactId>
-		<version>1.2.0-SNAPSHOT</version>
+		<version>1.3.0-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jboss.tools.wtp</groupId>
 	<artifactId>features</artifactId>
 	<name>wtp.features</name>
 	<packaging>pom</packaging>
 	<modules>
-		 <module>org.jboss.tools.wtp.runtimes.tomcat.feature</module>
-		 <module>org.jboss.tools.wtp.runtimes.tomcat.tests.feature</module>
+		<module>org.jboss.tools.wtp.runtimes.tomcat.feature</module>
+		<module>org.jboss.tools.wtp.runtimes.tomcat.tests.feature</module>
+		<module>org.jboss.tools.wtp.server.launchbar.feature</module>
 	</modules>
 	<build>
 		<plugins>

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.jboss.tools.wtp.runtimes.tomcat.feature"
+      id="org.jboss.tools.wtp.server.launchbar.feature"
       label="%featureName"
       version="1.3.0.qualifier"
       provider-name="%providerName"
-      plugin="org.jboss.tools.wtp.runtimes.tomcat">
+      plugin="org.jboss.tools.wtp.server.launchbar">
 
    <description url="http://www.jboss.org/tools">
       %description
@@ -25,19 +25,21 @@ Raleigh NC 27606 USA.
    </license>
 
    <requires>
-      <import feature="org.jboss.tools.runtime.core.feature" version="2.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.jboss.tools.runtime.core"/>
-      <import plugin="org.eclipse.wst.server.core"/>
-      <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.eclipse.jst.server.tomcat.core" version="1.1.400" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.jdt.launching"/>
-      <import plugin="org.eclipse.jst.server.core" version="1.2.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.jst.server.tomcat.ui" version="1.1.300" match="greaterOrEqual"/>
-   </requires>
+       <import plugin="org.eclipse.core.resources"/>
+       <import plugin="org.eclipse.core.runtime"/>
+       <import plugin="org.eclipse.debug.core"/>
+       <import plugin="org.eclipse.launchbar.core"/>
+       <import plugin="org.eclipse.launchbar.ui"/>
+       <import plugin="org.eclipse.remote.core"/>
+       <import plugin="org.eclipse.remote.ui"/>
+       <import plugin="org.eclipse.ui"/>
+       <import plugin="org.eclipse.wst.server.core"/>
+       <import plugin="org.eclipse.wst.server.ui"/>
+       <import plugin="org.eclipse.cdt.core.native"/> 
+  </requires>
 
    <plugin
-         id="org.jboss.tools.wtp.runtimes.tomcat"
+         id="org.jboss.tools.wtp.server.launchbar"
          download-size="0"
          install-size="0"
          version="0.0.0"

@@ -73,6 +73,10 @@
 	<feature id="org.jboss.tools.wtp.runtimes.tomcat.tests.feature">
 		<category name="AllFeatures" />
 	</feature>
+	<feature id="org.jboss.tools.wtp.server.launchbar.feature">
+		<category name="AllFeatures"/>
+	</feature>
+
 	<!-- sources -->
 	<feature id="org.jboss.tools.wtp.runtimes.tomcat.feature.source">
 		<category name="AllSources" />
@@ -80,6 +84,8 @@
 	<feature id="org.jboss.tools.wtp.runtimes.tomcat.tests.feature.source">
 		<category name="AllSources" />
 	</feature>
-
+        <feature id="org.jboss.tools.wtp.server.launchbar.feature.source">
+                <category name="AllFeatures"/>
+        </feature>
 </site>
 
