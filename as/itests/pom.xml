@@ -49,28 +49,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 					<timeout>${surefire.itests.timeout}</timeout>
 				</configuration>
 			</plugin>
-
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>1.7</version>
-				<executions>
-					<execution>
-						<id>regex-property</id>
-						<goals>
-							<goal>regex-property</goal>
-						</goals>
-						<configuration>
-							<name>skipTestOrITest</name>
-							<value>${skipTests}${skipITests}</value>
-							<regex>((..skipTests.)?(true)?((..skipITests.)|(null)|(true)|(false))?)</regex>
-							<replacement>$3</replacement>
-							<failIfNoMatch>false</failIfNoMatch>
-						</configuration>
-					</execution>
-        			</executions>
-      			</plugin>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -108,7 +86,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 									<type>zip</type>
 								</artifactItem>
 							</artifactItems>
-							<skip>${skipTestOrITest}</skip>
+							<skip>${skipTestsOrITests}</skip>
 						</configuration>
 					</execution>
 				</executions>
@@ -127,7 +105,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 							<url>http://repository.jboss.org/sourceforge/jboss-3.2.8.SP1.zip</url>
 							<md5>97147374ee5b048e4462c7ebaf3cccb5</md5>
 							<unpack>true</unpack>
-							<skip>${skipTestOrITest}</skip>
+							<skip>${skipTestsOrITests}</skip>
 						</configuration>
 					</execution>
 					<execution>
@@ -140,7 +118,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 							<url>http://repository.jboss.org/sourceforge/jboss-4.0.5.GA.zip</url>
 							<md5>a39e85981958fea2411e9346e218aa39</md5>
 							<unpack>true</unpack>
-							<skip>${skipTestOrITest}</skip>
+							<skip>${skipTestsOrITests}</skip>
 						</configuration>
 					</execution>
 					<execution>
@@ -153,7 +131,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 							<url>http://repository.jboss.org/sourceforge/jboss-5.0.1.GA.zip</url>
 							<md5>dd308175c43796db824692cb0cdea82d</md5>
 							<unpack>true</unpack>
-							<skip>${skipTestOrITest}</skip>
+							<skip>${skipTestsOrITests}</skip>
 						</configuration>
 					</execution>
 					<execution>
@@ -166,7 +144,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 							<url>http://repository.jboss.org/sourceforge/jboss-5.1.0.GA.zip</url>
 							<md5>78322c75ca0c13002a04418b4a8bc920</md5>
 							<unpack>true</unpack>
-							<skip>${skipTestOrITest}</skip>
+							<skip>${skipTestsOrITests}</skip>
 						</configuration>
 					</execution>
 					<execution>
@@ -257,7 +235,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 							<url>http://download.jboss.org/wildfly/8.0.0.Final/wildfly-8.0.0.Final.zip</url>
 							<md5>9df208525e7c8c03bd592a6a0f554bea</md5>
 							<unpack>true</unpack>
-							<skip>${skipTestOrITest}</skip>
+							<skip>${skipTestsOrITests}</skip>
 						</configuration>
 					</execution>
 					<execution>
@@ -270,7 +248,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 							<url>http://download.jboss.org/wildfly/8.1.0.Final/wildfly-8.1.0.Final.zip</url>
 							<md5>b7df11f92ee80155702a351aee4b003b</md5>
 							<unpack>true</unpack>
-							<skip>${skipTestOrITest}</skip>
+							<skip>${skipTestsOrITests}</skip>
 						</configuration>
 					</execution>
 					<execution>
@@ -283,7 +261,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 							<url>http://download.jboss.org/wildfly/9.0.0.Beta2/wildfly-9.0.0.Beta2.zip</url>
 							<md5>f79781d4902a68ce1be6c2dcf441c2d6</md5>
 							<unpack>true</unpack>
-							<skip>${skipTestOrITest}</skip>
+							<skip>${skipTestsOrITests}</skip>
 						</configuration>
 					</execution>
 				</executions>
