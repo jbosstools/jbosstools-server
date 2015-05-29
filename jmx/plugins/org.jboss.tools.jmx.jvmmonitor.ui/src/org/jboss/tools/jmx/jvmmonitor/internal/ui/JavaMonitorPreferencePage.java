@@ -6,6 +6,8 @@
  *******************************************************************************/
 package org.jboss.tools.jmx.jvmmonitor.internal.ui;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.IMessageProvider;
@@ -158,7 +160,12 @@ public class JavaMonitorPreferencePage extends PreferencePage implements
         Integer period = Integer.valueOf(updatePeriodText.getText());
         for (IHost host : JvmModel.getInstance().getHosts()) {
             for (IActiveJvm jvm : host.getActiveJvms()) {
-                jvm.getMBeanServer().setUpdatePeriod(period);
+            	if( jvm.getMBeanServer() != null ) {
+            		jvm.getMBeanServer().setUpdatePeriod(period);
+            	} else {
+            		// This should never happen
+            		Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, "Active JVM has no MBean Server declared: " + jvm.getHost().getName() + ":" + jvm.getPort()));
+            	}
             }
         }
     }
