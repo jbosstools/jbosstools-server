@@ -20,8 +20,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.wst.server.core.IRuntime;
 
 /**
- * This class caches individual manifest files and what
- * ModuleSlot combinations they require. 
+ * This class caches individual manifest or deployment-structure 
+ * files and what ModuleSlot combinations they require. 
  */
 public class ModuleSlotCache {
 	private static ModuleSlotCache instance = null;
@@ -41,25 +41,45 @@ public class ModuleSlotCache {
 	
 	// Keep a list of manifest files for each project
 	private Map<IProject, ArrayList<IFile>> manifests;
-	
+
+	// Keep a list of manifest files for each project
+	private Map<IProject, ArrayList<IFile>> deploymentStructures;
+
 	
 	ModuleSlotCache() {
 		moduleSlotEntries = new HashMap<IFile, ModuleSlot[]>();
 		lastUpdated = new HashMap<IFile, Long>();
 		defaultModuleSlots = new HashMap<RuntimeKey, ModuleSlot[]>();
 		manifests = new HashMap<IProject, ArrayList<IFile>>();
+		deploymentStructures = new HashMap<IProject, ArrayList<IFile>>();
 	}
 	
 	public boolean hasInitializedManifests(IProject p) {
 		return manifests.containsKey(p) && manifests.get(p) != null;
 	}
-	
+
+	public boolean hasInitializedDeploymentStructures(IProject p) {
+		return deploymentStructures.containsKey(p) && deploymentStructures.get(p) != null;
+	}
+
 	public void setManifests(IProject p, IFile[] manFiles) {
 		manifests.put(p, new ArrayList<IFile>(Arrays.asList(manFiles)));
 	}
 	
+	public void setDeploymentStructures(IProject p, IFile[] manFiles) {
+		deploymentStructures.put(p, new ArrayList<IFile>(Arrays.asList(manFiles)));
+	}
+	
 	public IFile[] getManifests(IProject p) {
 		ArrayList<IFile> ret = manifests.get(p);
+		if( ret != null ) {
+			return (IFile[]) ret.toArray(new IFile[ret.size()]);
+		}
+		return null;
+	}
+	
+	public IFile[] getDeploymentStructures(IProject p) {
+		ArrayList<IFile> ret = deploymentStructures.get(p);
 		if( ret != null ) {
 			return (IFile[]) ret.toArray(new IFile[ret.size()]);
 		}
@@ -71,6 +91,7 @@ public class ModuleSlotCache {
 		moduleSlotEntries.put(file, ms);
 		
 	}
+	
 	public ModuleSlot[] getEntries(IFile file) {
 		return moduleSlotEntries.get(file);
 	}

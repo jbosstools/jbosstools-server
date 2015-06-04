@@ -25,6 +25,8 @@ import org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathMod
 import org.jboss.ide.eclipse.as.classpath.core.runtime.IRuntimePathProvider;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.cache.internal.ProjectRuntimeClasspathCache;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.cache.internal.RuntimeClasspathCache;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.modules.manifest.DeploymentStructureEntryContainerInitializer.DeploymentStructureEntryContainer;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.modules.manifest.DeploymentStructureUtil;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.modules.manifest.ModuleSlotManifestUtil;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.modules.manifest.ModulesManifestEntryContainerInitializer.ModulesManifestEntryContainer;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.path.internal.LayeredProductPathProvider;
@@ -109,14 +111,23 @@ public class ProjectRuntimeClasspathProvider
 	private IClasspathEntry[] jbossModulesImplementation(IProject project, IRuntime runtime) {
 		// check outdated
 		boolean manifestsChanged = new ModuleSlotManifestUtil().isCacheOutdated(project); 
+		// TODO fix impl of next line
+		boolean deploymentStructureChanged = new DeploymentStructureUtil().isCacheOutdated(project);
 		boolean defaultsPerRuntimeChanged = (RuntimeClasspathCache.getInstance().getEntries(runtime) == null ? true : false);
 		IClasspathEntry[] entries = ProjectRuntimeClasspathCache.getInstance().getEntries(project, runtime);
-		if( manifestsChanged || defaultsPerRuntimeChanged || entries == null) {
+		if( manifestsChanged || defaultsPerRuntimeChanged || deploymentStructureChanged ||  entries == null) {
 			// load new, add to cache
 			ModulesManifestEntryContainer cpc = new ModulesManifestEntryContainer(runtime, project);
 			IRuntimePathProvider[] fromManifest = cpc.getRuntimePathProviders();
+			
+			// TODO fix impl of next line
+			DeploymentStructureEntryContainer depStructureContainer = new DeploymentStructureEntryContainer(runtime, project);
+			IRuntimePathProvider[] fromStructure = depStructureContainer.getRuntimePathProviders();
+			
+			
 			IRuntimePathProvider[] fromRuntimeDefaults = CustomRuntimeClasspathModel.getInstance().getEntries(runtime.getRuntimeType());
-			IRuntimePathProvider[] merged = jbossModulesMerge(fromManifest, fromRuntimeDefaults);
+			IRuntimePathProvider[] merged = jbossModulesMerge(jbossModulesMerge(fromManifest, fromRuntimeDefaults), fromStructure);
+			
 			IPath[] allPaths = PathProviderResolutionUtil.getAllPaths(runtime, merged);
 			IClasspathEntry[] runtimeClasspath = PathProviderResolutionUtil.getClasspathEntriesForResolvedPaths(allPaths);
 			

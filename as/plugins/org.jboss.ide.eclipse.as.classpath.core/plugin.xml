@@ -162,6 +162,10 @@
             class="org.jboss.ide.eclipse.as.classpath.core.runtime.modules.manifest.ModulesManifestEntryContainerInitializer"
             id="org.jboss.ide.eclipse.as.classpath.core.runtime.modules.manifest">
       </classpathContainerInitializer>
+      <classpathContainerInitializer
+            class="org.jboss.ide.eclipse.as.classpath.core.runtime.modules.manifest.DeploymentStructureEntryContainerInitializer"
+            id="org.jboss.ide.eclipse.as.classpath.core.runtime.modules.deploymentstructure">
+      </classpathContainerInitializer>
    </extension>
    
    

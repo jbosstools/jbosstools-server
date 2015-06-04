@@ -13,20 +13,14 @@ package org.jboss.ide.eclipse.as.classpath.core.runtime.modules.manifest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
-import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
-import org.jboss.ide.eclipse.as.classpath.core.runtime.IRuntimePathProvider;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.cache.internal.ModuleSlot;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.cache.internal.ModuleSlotCache;
-import org.jboss.ide.eclipse.as.classpath.core.runtime.path.internal.LayeredProductPathProvider;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 
 /**
@@ -34,80 +28,31 @@ import org.jboss.ide.eclipse.as.core.util.FileUtil;
  * module/slot combinations that are being requested
  * for classpath addition
  */
-public class ModuleSlotManifestUtil {
+public class ModuleSlotManifestUtil extends AbstractModuleSlotUtil {
 	public ModuleSlotManifestUtil() {
 		
 	}
-	public boolean isCacheOutdated(IProject p) {
-		IFile[] all = getManifests(p);
-		if( all != null ) {
-			return isCacheOutdated(all);
-		}
-		return true;
-	}
 	
-	public void esureInCache(IFile f) {
-		IProject p = f.getProject();
-		boolean initialized = ModuleSlotCache.getInstance().hasInitializedManifests(p);
-		if( !initialized ) {
-			try {
-				ModuleSlotCache.getInstance().setManifests(p, locateManifestFiles(p));
-			} catch(CoreException ce) {
-				ClasspathCorePlugin.getDefault().getLog().log(ce.getStatus());
-			}
-		}
-		IFile[] all = ModuleSlotCache.getInstance().getManifests(p);
-		ArrayList<IFile> tmp = all == null ? new ArrayList<IFile>() : new ArrayList<IFile>(Arrays.asList(all));
-		if( !tmp.contains(f)) {
-			tmp.add(f);
-			ModuleSlotCache.getInstance().setManifests(p, (IFile[]) tmp.toArray(new IFile[tmp.size()]));
-		}
-		
+	@Override
+	protected boolean cacheInitializedProject(IProject p) {
+		return ModuleSlotCache.getInstance().hasInitializedManifests(p);
 	}
-	
-	private IFile[] getManifests(IProject p) {
-		boolean initialized = ModuleSlotCache.getInstance().hasInitializedManifests(p);
-		if( !initialized ) {
-			try {
-				ModuleSlotCache.getInstance().setManifests(p, locateManifestFiles(p));
-			} catch(CoreException ce) {
-				return new IFile[0];
-			}
-		}
+
+	@Override
+	protected IFile[] getCachedFiles(IProject p) {
 		return ModuleSlotCache.getInstance().getManifests(p);
 	}
-	
-	private boolean isCacheOutdated(IFile[] all) {
-		for(int i = 0; i < all.length; i++ ) {
-			if( ModuleSlotCache.getInstance().isOutdated(all[i])) {
-				return true;
-			}
-		}
-		return false;
+
+	@Override
+	protected void cacheFiles(IProject p, IFile[] files) {
+		ModuleSlotCache.getInstance().setManifests(p, files);
 	}
 	
-	public ModuleSlot[] getAllModuleSlots(IProject p) {
-		ArrayList<ModuleSlot> all = new ArrayList<ModuleSlot>();
-		IFile[] manifests = getManifests(p);
-		if( manifests == null )
-			return new ModuleSlot[0];
-		
-		for( int i = 0; i < manifests.length; i++ ) {
-			IFile f = manifests[i];
-			if( !ModuleSlotCache.getInstance().isOutdated(f)) {
-				all.addAll(Arrays.asList(ModuleSlotCache.getInstance().getEntries(f)));
-			}
-
-			// don't use the cache
-			// read the manifests to get a list of modules
-			ModuleSlot[] forFile = getSlotsForManifest(manifests[i]);
-			all.addAll(Arrays.asList(forFile));
-			ModuleSlotCache.getInstance().cache(f, forFile);
-		}
-		return (ModuleSlot[]) all.toArray(new ModuleSlot[all.size()]);
+	protected boolean isInitialized(IProject p) {
+		return ModuleSlotCache.getInstance().hasInitializedManifests(p);
 	}
-
-	private ModuleSlot[] getSlotsForManifest(IFile f) {
+	
+	protected ModuleSlot[] calculateModuleSlots(IFile f) {
 		ArrayList<ModuleSlot> list = new ArrayList<ModuleSlot>();
 		try {
 			if( f.exists()) {
@@ -135,49 +80,7 @@ public class ModuleSlotManifestUtil {
 		return (ModuleSlot[]) list.toArray(new ModuleSlot[list.size()]);
 	}
 	
-	private ModuleSlot getModuleSlot(String ms) {
-		if( ms != null ) {
-			ms = ms.trim();
-			if( ms.contains(" ")) {
-				ms = ms.substring(0, ms.indexOf(" ")).trim();
-			}
-			int colon = ms.indexOf(":");
-			String mod = null;
-			String slot = null;
-			if( colon != -1 ) {
-				slot = ms.substring(colon+1);
-				mod = ms.substring(0,colon);
-			} else {
-				mod = ms;
-			}
-			return new ModuleSlot(mod, slot);
-		}
-		return null;
+	protected IFile[] locateRelevantFiles(IProject p) throws CoreException {
+		return super.locateFiles(p, "manifest.mf");
 	}
-	
-	
-	private IFile[] locateManifestFiles(IProject p) throws CoreException {
-		final ArrayList<IFile> ret = new ArrayList<IFile>();
-		if( p != null ) {
-			p.accept(new IResourceVisitor(){
-				public boolean visit(IResource resource) throws CoreException {
-					if( resource.getName().toLowerCase().equals("manifest.mf")) {
-						if( resource instanceof IFile) {
-							ret.add((IFile)resource);
-						}
-					}
-					return true;
-				}});
-		}
-		return (IFile[]) ret.toArray(new IFile[ret.size()]);
-	}
-
-	public static IRuntimePathProvider[] moduleSlotsAsProviders(ModuleSlot[] all) {
-		ArrayList<IRuntimePathProvider> ret = new ArrayList<IRuntimePathProvider>();
-		for( int i = 0; i < all.length; i++ ) {
-			ret.add(new LayeredProductPathProvider(all[i]));
-		}
-		return (IRuntimePathProvider[]) ret.toArray(new IRuntimePathProvider[ret.size()]);
-	}
-	
 }
