@@ -40,6 +40,14 @@ public class ManifestChangeListener implements IResourceChangeListener {
 		}
 	}
 
+	protected String getFilePattern() {
+		return "manifest.mf";
+	}
+	
+	protected void ensureInCache(IFile f) {
+		new ModuleSlotManifestUtil().esureInCache(f);
+	}
+	
 	@Override
 	public void resourceChanged(IResourceChangeEvent event) {
 		IResourceDelta delta = event.getDelta();
@@ -49,7 +57,7 @@ public class ManifestChangeListener implements IResourceChangeListener {
 			delta.accept(new IResourceDeltaVisitor() {
 				public boolean visit(IResourceDelta delta) throws CoreException {
 					String name = delta.getResource().getName();
-					if (name.toLowerCase().equals("manifest.mf")) {
+					if (name.toLowerCase().equals(getFilePattern())) {
 						if( delta.getResource() instanceof IFile) {
 							changedManifests.add((IFile)delta.getResource());
 						}
@@ -66,7 +74,7 @@ public class ManifestChangeListener implements IResourceChangeListener {
 		// ensure in project cache
 		IFile[] asArr = changedManifests.toArray(new IFile[changedManifests.size()]);
 		for( int i = 0; i < asArr.length; i++ ) {
-			new ModuleSlotManifestUtil().esureInCache(asArr[i]);
+			ensureInCache(asArr[i]);
 		}
 		
 		// reset classpath containers for affected projects
