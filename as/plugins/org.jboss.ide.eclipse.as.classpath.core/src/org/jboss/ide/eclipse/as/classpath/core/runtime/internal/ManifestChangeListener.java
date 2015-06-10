@@ -30,16 +30,30 @@ import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.modules.manifest.ModuleSlotManifestUtil;
 
 public class ManifestChangeListener implements IResourceChangeListener {
+	private static ManifestChangeListener listener;
 	public static void register() {
 		try {
-			final ManifestChangeListener listener = new ManifestChangeListener();
-			final IWorkspace ws = ResourcesPlugin.getWorkspace();
+			listener = new ManifestChangeListener();
+			IWorkspace ws = ResourcesPlugin.getWorkspace();
 			ws.addResourceChangeListener(listener, IResourceChangeEvent.POST_CHANGE | IResourceChangeEvent.PRE_BUILD);
 		} catch(Exception e) {
 			ClasspathCorePlugin.log("Unable to add manifest change listener", e);
 		}
 	}
 
+	public static void deregister() {
+		IWorkspace ws = ResourcesPlugin.getWorkspace();
+		ws.removeResourceChangeListener(listener);
+	}
+	
+	protected String getFileName() {
+		return "manifest.mf";
+	}
+	
+	protected void ensureInCache(IFile f) {
+		new ModuleSlotManifestUtil().ensureInCache(f);
+	}
+	
 	@Override
 	public void resourceChanged(IResourceChangeEvent event) {
 		IResourceDelta delta = event.getDelta();
@@ -49,7 +63,7 @@ public class ManifestChangeListener implements IResourceChangeListener {
 			delta.accept(new IResourceDeltaVisitor() {
 				public boolean visit(IResourceDelta delta) throws CoreException {
 					String name = delta.getResource().getName();
-					if (name.toLowerCase().equals("manifest.mf")) {
+					if (name.toLowerCase().equals(getFileName())) {
 						if( delta.getResource() instanceof IFile) {
 							changedManifests.add((IFile)delta.getResource());
 						}
@@ -66,7 +80,7 @@ public class ManifestChangeListener implements IResourceChangeListener {
 		// ensure in project cache
 		IFile[] asArr = changedManifests.toArray(new IFile[changedManifests.size()]);
 		for( int i = 0; i < asArr.length; i++ ) {
-			new ModuleSlotManifestUtil().esureInCache(asArr[i]);
+			ensureInCache(asArr[i]);
 		}
 		
 		// reset classpath containers for affected projects

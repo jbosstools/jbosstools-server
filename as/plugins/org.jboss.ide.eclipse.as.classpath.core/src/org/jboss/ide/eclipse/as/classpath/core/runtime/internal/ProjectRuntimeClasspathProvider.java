@@ -65,6 +65,7 @@ public class ProjectRuntimeClasspathProvider
 	// classpath container.
 	static {
 		ManifestChangeListener.register();
+		DeploymentStructureChangeListener.register();
 	}
 	
 	
