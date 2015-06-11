@@ -18,22 +18,27 @@ import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.modules.manifest.DeploymentStructureUtil;
 
 public class DeploymentStructureChangeListener extends ManifestChangeListener {
+	private static DeploymentStructureChangeListener listener;
 	public static void register() {
 		try {
-			final DeploymentStructureChangeListener listener = new DeploymentStructureChangeListener();
+			listener = new DeploymentStructureChangeListener();
 			final IWorkspace ws = ResourcesPlugin.getWorkspace();
 			ws.addResourceChangeListener(listener, IResourceChangeEvent.POST_CHANGE | IResourceChangeEvent.PRE_BUILD);
 		} catch(Exception e) {
 			ClasspathCorePlugin.log("Unable to add jboss-deployment-structure.xml change listener", e);
 		}
 	}
+	
+	public static void deregister() {
+		final IWorkspace ws = ResourcesPlugin.getWorkspace();
+		ws.removeResourceChangeListener(listener);
+	}
 
-
-	protected String getFilePattern() {
+	protected String getFileName() {
 		return "jboss-deployment-structure.xml";
 	}
 	
 	protected void ensureInCache(IFile f) {
-		new DeploymentStructureUtil().esureInCache(f);
+		new DeploymentStructureUtil().ensureInCache(f);
 	}
 }

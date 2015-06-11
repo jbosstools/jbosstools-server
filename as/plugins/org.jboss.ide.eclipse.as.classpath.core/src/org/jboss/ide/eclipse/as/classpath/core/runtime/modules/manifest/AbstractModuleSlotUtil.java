@@ -162,7 +162,12 @@ public abstract class AbstractModuleSlotUtil {
 		return getAllModuleSlots(p, getRelevantFiles(p));
 	}
 	
+	@Deprecated  /* Misspelled method */
 	public void esureInCache(IFile f) {
+		ensureInCache(f);
+	}
+	
+	public void ensureInCache(IFile f) {
 		IProject p = f.getProject();
 		boolean initialized = cacheInitializedProject(p);
 		if( !initialized ) {
