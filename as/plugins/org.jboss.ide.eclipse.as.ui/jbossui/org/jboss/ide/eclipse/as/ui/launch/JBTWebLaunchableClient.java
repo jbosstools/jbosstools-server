@@ -53,7 +53,7 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 				launch2(server, launchable, launchMode, launch);
 			}
 		}.start();
-		return null;  // intentional null return
+		return Status.OK_STATUS;  // intentional null return
 	}
 	
 	public IStatus launch2(IServer server, Object launchable, String launchMode, ILaunch launch) {
@@ -71,7 +71,7 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 					new Status(IStatus.WARNING, JBossServerUIPlugin.PLUGIN_ID, 
 							"Server stopped before before browser could be opened.", null));
 		}
-		return null;
+		return Status.OK_STATUS;
 	}
 	
 	protected void wait(final IServer server, final IModule[] module) {
