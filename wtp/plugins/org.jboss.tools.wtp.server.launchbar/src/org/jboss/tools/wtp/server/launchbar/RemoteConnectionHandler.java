@@ -47,7 +47,33 @@ public class RemoteConnectionHandler implements IServerLifecycleListener {
 	
 	public RemoteConnectionHandler() {
 		manager = getRemoteServicesManager();
+		init();
 	}
+	
+	private void init() {
+		IRemoteConnectionType type = manager.getConnectionType(REMOTE_ID);
+		List<IRemoteConnection> preExisting = type.getConnections();
+		IServer[] allServers = ServerCore.getServers();
+		for( int i = 0; i < allServers.length; i++ ) {
+			IRemoteConnection remote = findConnectionFor(allServers[i], type.getConnections());
+			if( remote == null ) {
+				serverAdded(allServers[i]);
+			}
+		}
+		
+		for(IRemoteConnection con : preExisting) {
+			if( findServerFor(con, allServers) == null ) {
+				// server is in o.e.remote but is not in IServer list
+				try {
+					type.removeConnection(con);
+				} catch (RemoteConnectionException e) {
+					IStatus status = new Status(IStatus.INFO, Activator.PLUGIN_ID, e.getMessage(), e);
+					Activator.getDefault().getLog().log(status);
+				}
+			}
+		}
+	}
+	
 	IRemoteServicesManager getRemoteServicesManager() {
 		return getService(IRemoteServicesManager.class);
 	}
