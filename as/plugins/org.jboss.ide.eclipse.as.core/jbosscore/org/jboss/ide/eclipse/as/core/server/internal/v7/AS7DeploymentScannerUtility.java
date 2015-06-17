@@ -121,6 +121,8 @@ public class AS7DeploymentScannerUtility {
 		try {
 			response = executeWithResult(server, request);
 		} catch(Exception e) {
+			JBossServerCorePlugin.getDefault().getLog().log(new Status(
+					IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Unable to retrieve a list of remote deployment scanners",e)); //$NON-NLS-1$
 			return new Scanner[0];
 		}
 		
