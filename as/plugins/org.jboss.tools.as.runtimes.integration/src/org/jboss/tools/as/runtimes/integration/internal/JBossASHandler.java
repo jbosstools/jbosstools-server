@@ -34,6 +34,7 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBean;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
+import org.jboss.ide.eclipse.as.core.util.ServerNamingUtility;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IServerProfileInitializer;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.tools.as.runtimes.integration.Messages;
@@ -267,22 +268,23 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 	 */
 	private static IServer createServer(IProgressMonitor progressMonitor, IRuntime runtime,
 			IServerType serverType, String name) throws CoreException {
-		if( !serverWithNameExists(name)) {
-			IServerWorkingCopy serverWC = serverType.createServer(null, null,
-					new NullProgressMonitor());
-			serverWC.setRuntime(runtime);
-			if( name != null )
-				serverWC.setName(name);
-			IServerProfileInitializer[] initializers = ServerProfileModel.getDefault().getInitializers(serverWC.getServerType().getId(), "local");
-			for( int i = 0; i < initializers.length; i++ ) {
-				initializers[i].initialize(serverWC);
-			}
-			
-			IServer ret = serverWC.save(true, new NullProgressMonitor());
-			ServerRuntimesIntegrationActivator.getDefault().trackNewDetectedServerEvent(serverType.getId());
-			return ret;
+		if( serverWithNameExists(name)) {
+			name = ServerNamingUtility.getDefaultServerName(runtime);
 		}
-		return null;
+		
+		IServerWorkingCopy serverWC = serverType.createServer(null, null,
+				new NullProgressMonitor());
+		serverWC.setRuntime(runtime);
+		if( name != null )
+			serverWC.setName(name);
+		IServerProfileInitializer[] initializers = ServerProfileModel.getDefault().getInitializers(serverWC.getServerType().getId(), "local");
+		for( int i = 0; i < initializers.length; i++ ) {
+			initializers[i].initialize(serverWC);
+		}
+		
+		IServer ret = serverWC.save(true, new NullProgressMonitor());
+		ServerRuntimesIntegrationActivator.getDefault().trackNewDetectedServerEvent(serverType.getId());
+		return ret;
 	}
 	
 	private static boolean serverWithNameExists(String name) {

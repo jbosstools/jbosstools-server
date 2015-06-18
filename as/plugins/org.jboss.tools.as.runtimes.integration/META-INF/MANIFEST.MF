@@ -19,7 +19,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.jboss.ide.eclipse.as.wtp.ui;bundle-version="3.0.0",
  org.jboss.tools.runtime.ui;bundle-version="3.0.0",
  org.jboss.tools.foundation.ui;bundle-version="1.1.0",
- org.jboss.tools.usage;bundle-version="2.0.0"
+ org.jboss.tools.usage;bundle-version="2.0.0",
+ org.jboss.ide.eclipse.as.core;bundle-version="3.1.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
