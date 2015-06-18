@@ -25,6 +25,23 @@ public class ServerSecureStorageUtil {
     /**
 	 * @since 3.0
 	 */
+    public static String legacyGetFromSecureStorage(String baseKey, IServerAttributes server, String key) {
+        try {
+        	ISecurePreferences node = legacyGetNode(baseKey, server);
+            String val = node.get(key, null);
+            if (val == null) {
+            	return null;
+            }
+            return new String(EncodingUtils.decodeBase64(val));
+        } catch(IOException e) {
+        	return null;
+        } catch (StorageException e) {
+        	return null;
+		}
+    }
+    /**
+	 * @since 3.0
+	 */
     public static String getFromSecureStorage(String baseKey, IServerAttributes server, String key) {
         try {
         	ISecurePreferences node = getNode(baseKey, server);
@@ -51,7 +68,19 @@ public class ServerSecureStorageUtil {
         	node.put(key, EncodingUtils.encodeBase64(val.getBytes()), true /* encrypt */); 
     }
 
-    private static ISecurePreferences getNode(String baseKey, IServerAttributes server) 
+    
+    /**
+	 * @since 3.0
+	 */
+    public static void legacyStoreInSecureStorage(String baseKey, IServerAttributes server, String key, String val ) throws StorageException, UnsupportedEncodingException {
+        ISecurePreferences node = legacyGetNode(baseKey, server);
+        if( val == null )
+        	node.put(key, val, true);
+        else
+        	node.put(key, EncodingUtils.encodeBase64(val.getBytes()), true /* encrypt */); 
+    }
+
+    private static ISecurePreferences legacyGetNode(String baseKey, IServerAttributes server) 
     		throws UnsupportedEncodingException {
 		String secureKey = new StringBuilder(baseKey)
 			.append(server.getName())
@@ -60,5 +89,13 @@ public class ServerSecureStorageUtil {
 		ISecurePreferences root = SecurePreferencesFactory.getDefault();
 		String encoded = URLEncoder.encode(secureKey, "UTF-8"); //$NON-NLS-1$
 		return root.node(encoded);
+    }
+
+    private static ISecurePreferences getNode(String baseKey, IServerAttributes server) 
+    		throws UnsupportedEncodingException {
+		ISecurePreferences root = SecurePreferencesFactory.getDefault();
+		ISecurePreferences node = root.node(baseKey);
+		ISecurePreferences node2 = node.node(server.getName());
+		return node2;
     }
 }

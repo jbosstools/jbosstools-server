@@ -231,13 +231,18 @@ public class ServerUtil {
 		return new Path(checkedGetServerHome(jbs));
 	}
 	
-	private static final String SECURE_PREFERNCES_BASEKEY = JBossServerCorePlugin.PLUGIN_ID.replace('.', Path.SEPARATOR);
+	private static final String LEGACY_SECURE_PREFERNCES_BASEKEY = JBossServerCorePlugin.PLUGIN_ID.replace('.', Path.SEPARATOR);
+	private static final String SECURE_PREFERNCES_BASEKEY = JBossServerCorePlugin.PLUGIN_ID;
 	
     /**
 	 * @since 2.3
 	 */
     public static String getFromSecureStorage(IServerAttributes server, String key) {
-    	return ServerSecureStorageUtil.getFromSecureStorage(SECURE_PREFERNCES_BASEKEY, server, key);
+    	String ret = ServerSecureStorageUtil.getFromSecureStorage(SECURE_PREFERNCES_BASEKEY, server, key);
+    	if( ret == null ) {
+    		ret = ServerSecureStorageUtil.legacyGetFromSecureStorage(LEGACY_SECURE_PREFERNCES_BASEKEY, server, key);
+    	}
+    	return ret;
     }
     
     /**
