@@ -30,8 +30,8 @@ The general idea is to keep your 'master' branch in-sync with the
 
 ## Building Server Tools
 
-To build _Server Tools_ requires specific versions of Java (1.6+) and
-+Maven (3.1+). See this [link](https://github.com/jbosstools/jbosstools-devdoc/blob/master/building/readme.md) for more information on how to setup, run and configure build.
+To build _Server Tools_ requires specific versions of Java (1.8) and
++Maven (3.1+). See this [link](https://github.com/jbosstools/jbosstools-devdoc/blob/master/building/build_from_commandline.adoc) for more information on how to setup, run and configure build.
 
 Unit and integration tests for Server Tools (such as org.jboss.tools.as.management.itests) require the following path to Java 7 Home folder be defined via commandline:
 
