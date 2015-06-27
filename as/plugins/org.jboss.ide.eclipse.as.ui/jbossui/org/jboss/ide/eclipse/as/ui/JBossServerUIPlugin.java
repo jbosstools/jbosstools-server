@@ -106,7 +106,7 @@ public class JBossServerUIPlugin extends AbstractUIPlugin {
 		UnitedServerListenerManager.getDefault().removeListener(ShowConsoleServerStateListener.getDefault());
 		UnitedServerListenerManager.getDefault().removeListener(as7ScannerAssist);
 		if (PlatformUI.isWorkbenchRunning()) {
-			JBossServerUISharedImages.instance().cleanup();
+			JBossServerUISharedImages.optionalCleanup();
 		}
 		super.stop(context);
 	}

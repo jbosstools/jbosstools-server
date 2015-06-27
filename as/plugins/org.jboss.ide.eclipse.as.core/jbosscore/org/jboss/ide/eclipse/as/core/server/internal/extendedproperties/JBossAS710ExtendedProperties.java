@@ -19,6 +19,7 @@ import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
+import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 
 public class JBossAS710ExtendedProperties extends JBossAS7ExtendedProperties implements IJMXURLProvider {
 
@@ -77,4 +78,8 @@ public class JBossAS710ExtendedProperties extends JBossAS7ExtendedProperties imp
 	}
 
 
+	public String getManagerServiceId() {
+		return IJBoss7ManagerService.AS_VERSION_71x;
+	}
+	
 }

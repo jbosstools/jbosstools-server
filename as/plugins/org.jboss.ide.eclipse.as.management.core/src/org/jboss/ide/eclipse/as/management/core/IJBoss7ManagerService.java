@@ -18,12 +18,37 @@ public interface IJBoss7ManagerService {
 
 	public static final String AS_VERSION_PROPERTY = "as.version"; //$NON-NLS-1$
 
-	@Deprecated public static final String AS_VERSION_700 = "700"; //$NON-NLS-1$
-	public static final String AS_VERSION_710_Beta = "710.beta1"; //$NON-NLS-1$
+	// Used for 7.0 
+	public static final String AS_VERSION_700 = "7.0.x"; //$NON-NLS-1$
 	
+	// used for 7.1 which is a wrapper for wf8 but with higher delay
+	public static final String AS_VERSION_71x = "7.1.x"; //$NON-NLS-1$
+	@Deprecated public static final String AS_VERSION_710_Beta = AS_VERSION_71x;
 	// I believe this is unused
-	public static final String AS_VERSION_720 = "720"; //$NON-NLS-1$
+	@Deprecated public static final String AS_VERSION_720 = AS_VERSION_71x; //$NON-NLS-1$
+
+	// Primary wf service version
 	public static final String WILDFLY_VERSION_800 = "8.0.0"; //$NON-NLS-1$
+
+	public static final String WILDFLY_VERSION_900 = "9.0.0"; //$NON-NLS-1$
+
+	
+	/**
+	 * This is a list of all service versions that have been publicly
+	 * exposed as API at one time or another, and which must resolve
+	 * to a functional service object for the future. 
+	 * 
+	 * This list is primarily exposed only for the unit tests. 
+	 */
+	public static final String[] ALL_SERVICE_VERSIONS = new String[]{
+			AS_VERSION_700,
+			AS_VERSION_71x,
+			WILDFLY_VERSION_800,
+			WILDFLY_VERSION_900
+	};
+	
+	
+	
 	
 	public static final int MGMT_PORT = 9999;
 

@@ -8,5 +8,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.wst.server.core
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: org.jboss.ide.eclipse.as.management.core
+Export-Package: org.jboss.ide.eclipse.as.management.core,
+ org.jboss.ide.eclipse.as.management.core.service
 Bundle-Vendor: JBoss by Red Hat

@@ -128,6 +128,12 @@ public class JBossServerUISharedImages {
 		instance = null;
 	}
 	
+	public static void optionalCleanup() {
+		if( instance != null ) {
+			instance.cleanup();
+		}
+	}
+	
 	protected void finalize() throws Throwable {
 		cleanup();
 		super.finalize();

@@ -194,8 +194,8 @@ public class AS7ManagerTestUtils {
 	
 	public static IJBoss7ManagerService findService(IRuntimeType runtimeType) {
 		forceStart("org.jboss.ide.eclipse.as.core");
-		forceStart("org.jboss.ide.eclipse.as.management.as71");
-		forceStart("org.jboss.ide.eclipse.as.management.wildfly8");
+		forceStart("org.jboss.ide.eclipse.as.management.as7");
+		forceStart("org.jboss.ide.eclipse.as.management.wildfly9");
 		IJBossManagerServiceProvider serviceProvider = (IJBossManagerServiceProvider)Platform.getAdapterManager().getAdapter(runtimeType, IJBossManagerServiceProvider.class);
 		if( serviceProvider != null ) {
 			return serviceProvider.getManagerService();

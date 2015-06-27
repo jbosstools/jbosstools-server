@@ -18,6 +18,7 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+	AS7ManagementServiceResolutionTest.class,
 	AS7ManagementServicePreReqTest.class,
 	AS7ManagementServiceStartupShutdownTest.class,
 	AS7ManagerIntegrationTest.class,

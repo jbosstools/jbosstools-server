@@ -139,7 +139,7 @@ public class JBossAS7ExtendedProperties extends JBossExtendedProperties implemen
 	 * @since 3.0
 	 */
 	public String getManagerServiceId() {
-		return IJBoss7ManagerService.AS_VERSION_710_Beta;
+		return IJBoss7ManagerService.AS_VERSION_700;
 	}
 	
 	/**
