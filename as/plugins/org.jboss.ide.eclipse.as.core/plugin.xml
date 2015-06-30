@@ -218,7 +218,7 @@
             id="org.jboss.ide.eclipse.as.wildfly.90"
             behaviourClass="org.jboss.tools.as.core.server.controllable.internal.DeployableServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.v7.Wildfly8Server"
-            description="%jboss.version.wildfly8.description"
+            description="%jboss.version.wildfly9.description"
             hasConfiguration="false"
             initialState="stopped"
             launchConfigId="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
