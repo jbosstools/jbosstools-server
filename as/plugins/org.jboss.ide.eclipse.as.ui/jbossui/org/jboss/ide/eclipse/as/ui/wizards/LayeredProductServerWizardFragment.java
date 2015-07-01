@@ -180,6 +180,25 @@ public class LayeredProductServerWizardFragment extends ServerProfileWizardFragm
 			remoteButton.addSelectionListener(sl);
 			fsButton.addSelectionListener(sl);
 			mgmtButton.addSelectionListener(sl);
+			
+			
+			boolean localExists = ServerProfileModel.getDefault().getProfile(server.getServerType().getId(), "local") != null;
+			boolean localMgmtExists = ServerProfileModel.getDefault().getProfile(server.getServerType().getId(), "local.mgmt") != null;
+			boolean rseExists = ServerProfileModel.getDefault().getProfile(server.getServerType().getId(), "rse") != null;
+			boolean rseMgmtExists = ServerProfileModel.getDefault().getProfile(server.getServerType().getId(), "rse.mgmt") != null;
+			
+			if( !rseExists && !rseMgmtExists) {
+				remoteButton.setEnabled(false);
+			}
+			if( !localExists && !localMgmtExists) {
+				localButton.setEnabled(false);
+			}
+			if( !localExists && !rseExists) {
+				fsButton.setEnabled(false);
+			}
+			if( !rseMgmtExists && !localMgmtExists) {
+				mgmtButton.setEnabled(false);
+			}
 		}
 		
 		private void setSelectionsForProfile(String currentProfile) {

@@ -309,10 +309,12 @@ public class AddRuntimeComboOverviewPageModifier extends
 	private boolean requiresRuntime() {
 		String currentProfile = ServerProfileModel.getProfile(serverWc, ServerProfileModel.DEFAULT_SERVER_PROFILE);
 		ServerProfile sp = ServerProfileModel.getDefault().getProfile(serverWc.getServerType().getId(), currentProfile);
-		boolean requires = ServerProfileModel.getDefault().profileRequiresRuntime(serverWc.getServerType().getId(), 
-				sp.getId());
-		return requires;
-
+		if( sp != null ) {
+			boolean requires = ServerProfileModel.getDefault().profileRequiresRuntime(serverWc.getServerType().getId(), 
+					sp.getId());
+			return requires;
+		}
+		return false;
 	}
 	
 }

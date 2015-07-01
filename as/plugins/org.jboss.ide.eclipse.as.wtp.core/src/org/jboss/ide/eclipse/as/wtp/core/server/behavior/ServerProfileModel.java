@@ -97,9 +97,15 @@ public class ServerProfileModel {
 	}
 	
 	private InternalProfileModel internal;
+	ProfileErrorLogger logger;
 	private ServerProfileModel() {
+		logger = new ProfileErrorLogger();
 		internal = new InternalProfileModel();
 		internal.load();
+	}
+	
+	public void logMissingProfile(IServer server, String profileId) {
+		logger.logMissingProfile(server, profileId);
 	}
 	
 	public boolean profileRequiresRuntime(String serverType, String profile) {
@@ -378,6 +384,29 @@ public class ServerProfileModel {
 				}
 			}
 			return initializer;
+		}
+	}
+	
+	
+	private static class ProfileErrorLogger {
+		HashMap<String, HashMap<String, Boolean>> missingProfileErrors = new 
+				HashMap<String, HashMap<String, Boolean>>();
+		public void logMissingProfile(IServer server, String profileId) {
+			String serverType = server.getServerType().getId();
+			if( missingProfileErrors.get(serverType) == null ) {
+				missingProfileErrors.put(serverType, new HashMap<String, Boolean>());
+			}
+			HashMap<String, Boolean> profileMap = missingProfileErrors.get(serverType);
+			if( profileMap.get(profileId) == null ) {
+				profileMap.put(profileId, false);
+			}
+			Boolean logged = profileMap.get(profileId);
+			if( !logged.booleanValue()) {
+				String msg = "Server " + server.getName() + " (and all servers of type " + serverType + ") is unable to locate profile " + profileId + ". Your installation is missing functionality or dependencies.";
+				IStatus status = new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, msg);
+				ASWTPToolsPlugin.getDefault().log(status);
+				profileMap.put(profileId, new Boolean(true));
+			}
 		}
 	}
 	

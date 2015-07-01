@@ -85,7 +85,12 @@ public class DeployableServerBehavior extends ControllableServerBehavior {
 		if( ret == null ) {
 			// Check profile
 			String profile = ServerProfileModel.getProfile(getServer());
-			ret = ServerProfileModel.getDefault().getController(getServer(), profile, system, env);
+			ServerProfileModel.ServerProfile sp = ServerProfileModel.getDefault().getProfile(getServer().getServerType().getId(), profile);
+			if( sp == null ) {
+				ServerProfileModel.getDefault().logMissingProfile(getServer(), profile);
+			} else {
+				ret = ServerProfileModel.getDefault().getController(getServer(), profile, system, env);
+			}
 		}
 		if( ret == null ) {
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 0, 

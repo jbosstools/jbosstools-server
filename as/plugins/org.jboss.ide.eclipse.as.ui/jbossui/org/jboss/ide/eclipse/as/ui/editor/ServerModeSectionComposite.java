@@ -10,7 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.ui.editor;
 
-import java.lang.reflect.Field;
+import java.awt.Color;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -26,18 +26,15 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledPageBook;
-import org.eclipse.ui.forms.widgets.SharedScrolledComposite;
-import org.eclipse.ui.forms.widgets.SizeCache;
-import org.eclipse.ui.internal.forms.widgets.FormUtil;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.wst.server.core.IServer;
@@ -97,7 +94,6 @@ public class ServerModeSectionComposite extends Composite {
 		FormData fd = FormDataUtility.createFormData2(top, 5, null, 0, 0, 5, null, 0);
 		configureProfileLink.setLayoutData(fd);
 		
-		
 		profileLabel = new Label(this, SWT.READ_ONLY);
 		fd = FormDataUtility.createFormData2(top, 5, null, 0, configureProfileLink, 5, 0, 400);
 		profileLabel.setLayoutData(fd);
@@ -109,7 +105,6 @@ public class ServerModeSectionComposite extends Composite {
 		profileLabel.setText(( profName == null ? "Not Found" : profName));
 		top = configureProfileLink;
 		
-
 		if( showExecuteShellCheckbox()) {
 			executeShellScripts = new Button(this, SWT.CHECK);
 			executeShellScripts.setText(Messages.EditorDoNotLaunch);
@@ -158,7 +153,19 @@ public class ServerModeSectionComposite extends Composite {
 			);
 		}
 		
-
+		String profileId = getCurrentProfileId();
+		ServerProfileModel.ServerProfile sp = ServerProfileModel.getDefault().getProfile(
+				callback.getServer().getServerType().getId(), profileId);
+		if( sp == null ) {
+			// The current devenv does not have this profile in it. 
+			String warn = "Your current environment is missing functionality\nassociated with your behavior profile.";
+			Label myLabel = new Label(this, SWT.LEFT);
+			myLabel.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
+			myLabel.setText(warn);
+			FormData fd2 = FormDataUtility.createFormData2(top, 5, null, 0, 0, 5, null, 0);
+			myLabel.setLayoutData(fd2);
+			top = myLabel;
+		}
 		
 		// If I change style to SWT.H_SCROLL | SWT.V_SCROLL, it changes the color from white to grey
 		// in the server editor, and the toolkit's attempt to change colors does not occur. Very strange. 
@@ -198,6 +205,8 @@ public class ServerModeSectionComposite extends Composite {
 		}
 		return currentProfileName;
 	}
+	
+	
 	
 	protected Listener createConfigureListener() {
 		return new Listener() {
