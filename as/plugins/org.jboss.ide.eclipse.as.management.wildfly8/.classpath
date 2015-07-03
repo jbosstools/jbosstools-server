@@ -2,17 +2,17 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="lib/jboss-marshalling-1.4.9.Final.jar"/>
-	<classpathentry kind="lib" path="lib/jboss-marshalling-river-1.4.9.Final.jar"/>
-	<classpathentry kind="lib" path="lib/jboss-remoting-4.0.6.Final.jar"/>
-	<classpathentry kind="lib" path="lib/wildfly-controller-client-8.2.0.Final.jar"/>
-	<classpathentry kind="lib" path="lib/wildfly-protocol-8.2.0.Final.jar"/>
-	<classpathentry kind="lib" path="lib/xnio-api-3.3.0.Final.jar"/>
-	<classpathentry kind="lib" path="lib/xnio-nio-3.3.0.Final.jar"/>
-	<classpathentry kind="lib" path="lib/jboss-dmr-1.2.0.Final.jar"/>
-	<classpathentry kind="lib" path="lib/jboss-logging-3.1.4.GA.jar"/>
-	<classpathentry kind="lib" path="lib/jboss-sasl-1.0.4.Final.jar"/>
-	<classpathentry kind="lib" path="lib/jboss-threads-2.1.1.Final.jar"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="src" path="src/"/>
+	<classpathentry exported="true" kind="lib" path="lib/jboss-dmr-1.2.0.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jboss-logging-3.1.4.GA.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jboss-marshalling-1.4.9.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jboss-marshalling-river-1.4.9.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jboss-remoting-4.0.6.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jboss-sasl-1.0.4.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jboss-threads-2.1.1.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/wildfly-controller-client-8.2.0.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/wildfly-protocol-8.2.0.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xnio-api-3.3.0.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xnio-nio-3.3.0.Final.jar"/>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>
