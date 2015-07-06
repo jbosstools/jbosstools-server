@@ -24,8 +24,28 @@ public class MBeansNode extends Node {
 		return "MBeans"; //$NON-NLS-1$
 	}
 
+	public boolean equals(Object o) {
+		return o instanceof MBeansNode && compareTo(o) == 0;
+	}
+	
+	public int hashCode() {
+		if( getConnection() != null && getConnection().getProvider() != null ) {
+			return ("MBeansNode" + getConnection().getProvider().getName(getConnection())).hashCode();
+		}
+		return super.hashCode();
+	}
+	
 	@Override
 	public int compareTo(Object o) {
+		if( o instanceof MBeansNode ) {
+			Root r = ((MBeansNode)o).getRoot();
+			if( r.getConnection() != null && getConnection() != null ) {
+				if( r.getConnection().getProvider() != null && getConnection().getProvider() != null ) {
+					String oName = r.getConnection().getProvider().getName(r.getConnection());
+					return getConnection().getProvider().getName(getConnection()).compareTo(oName);
+				}
+			}
+		}
 		return 0;
 	}
 

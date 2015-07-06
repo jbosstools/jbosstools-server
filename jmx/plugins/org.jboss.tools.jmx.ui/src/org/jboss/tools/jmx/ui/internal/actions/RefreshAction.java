@@ -20,6 +20,7 @@ import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
+import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Display;
@@ -83,6 +84,7 @@ public class RefreshAction extends Action implements IWorkbenchWindowActionDeleg
 			refreshViewer(onode);
 		}
 		else {
+			
 			IConnectionWrapper wrapper = null;
 
 			// Identify the connection wrapper.
@@ -95,6 +97,11 @@ public class RefreshAction extends Action implements IWorkbenchWindowActionDeleg
 			}
 
 			if (wrapper != null && wrapper.isConnected()) {
+				ISelection sel = viewer.getSelection();
+				TreePath[] paths = ((TreeViewer)viewer).getExpandedTreePaths();
+				RefreshActionState.getDefault().setSelection(wrapper, sel);
+				RefreshActionState.getDefault().setExpansion(wrapper, paths);
+				
 				try {
 					wrapper.disconnect();
 					wrapper.connect();
