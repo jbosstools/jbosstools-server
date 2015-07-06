@@ -21,9 +21,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.StructuredViewer;
+import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.widgets.Display;
@@ -44,6 +46,7 @@ import org.jboss.tools.jmx.core.tree.Node;
 import org.jboss.tools.jmx.core.tree.ObjectNameNode;
 import org.jboss.tools.jmx.core.tree.Root;
 import org.jboss.tools.jmx.ui.Messages;
+import org.jboss.tools.jmx.ui.internal.actions.RefreshActionState;
 
 /**
  * Content provider for the view
@@ -199,6 +202,12 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 							((StructuredViewer)viewer).refresh(parent);
 						else
 							viewer.refresh();
+						
+						TreePath[] treePaths = RefreshActionState.getDefault().getExpansion(w);
+						ISelection sel = RefreshActionState.getDefault().getSelection(w);
+						((TreeViewer)viewer).setExpandedTreePaths(treePaths);
+						((TreeViewer)viewer).setSelection(sel);
+						
 					}
 				});
 				return Status.OK_STATUS;
