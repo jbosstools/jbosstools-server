@@ -64,13 +64,6 @@ public class PublishUtil extends ModuleResourceUtil {
 			return true;
 		} else if( moduleTypeId.equals(IWTPConstants.FACET_APP_CLIENT)) { 
 			return true;
-		} else if( moduleTypeId.equals(IWTPConstants.FACET_WEB_FRAGMENT)) {
-			return true;
-		} else if( moduleTypeId.equals(IWTPConstants.FACET_EJB) && moduleTree.length > 1) {
-			 String parentModuleTypeId = moduleTree[moduleTree.length - 2].getModuleType().getId(); 
-			 if( !parentModuleTypeId.equals(IWTPConstants.FACET_EAR)) {
-				 return true; 
-			 }
 		}
 		return false;
 	}
