@@ -554,7 +554,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 	 * @return
 	 */
 	protected boolean forceZipModule(IModule[] moduleTree) {
-		return PublishUtil.deployPackaged(moduleTree);
+		return PublishUtil.deployPackaged(moduleTree, getServer());
 	}
 	
 	/**
