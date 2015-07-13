@@ -100,4 +100,15 @@ public class ServerExtendedProperties {
 	public int getFileStructure() {
 		return FILE_STRUCTURE_UNKNOWN;
 	}
+
+	/**
+	 * Server allows exploded modules in some.war/WEB-INF/lib (JBIDE-20071, AS7-4704).
+	 * <p>
+	 * The default is to assume that the server allows this.
+	 * 
+	 * @return exploded modules in some.war/WEB-INF/lib are allowed
+	 */
+	public boolean allowExplodedModulesInWarLibs() {
+		return true;
+	}
 }
