@@ -51,4 +51,9 @@ public class Wildfly80ExtendedProperties extends JBossAS710ExtendedProperties {
 	public String getManagerServiceId() {
 		return IJBoss7ManagerService.WILDFLY_VERSION_900;
 	}
+	
+	@Override
+	public boolean allowExplodedModulesInWarLibs() {
+		return true;
+	}
 }

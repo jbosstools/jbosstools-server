@@ -19,12 +19,14 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.util.ProjectModule;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.xpl.ModulePackager;
 import org.jboss.ide.eclipse.as.core.util.IEventCodes;
 import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
@@ -58,22 +60,32 @@ public class PublishUtil extends ModuleResourceUtil {
 	}
 	
 	
-	public static boolean deployPackaged(IModule[] moduleTree) {
+	public static boolean deployPackaged(IModule[] moduleTree, IServer server) {
 		String moduleTypeId = moduleTree[moduleTree.length-1].getModuleType().getId(); 
-		if( moduleTypeId.equals(IWTPConstants.FACET_UTILITY)) {
+		if (moduleTypeId.equals(IWTPConstants.FACET_UTILITY)) {
 			return true;
-		} else if( moduleTypeId.equals(IWTPConstants.FACET_APP_CLIENT)) { 
+		} else if (moduleTypeId.equals(IWTPConstants.FACET_APP_CLIENT)) { 
 			return true;
-		} else if( moduleTypeId.equals(IWTPConstants.FACET_WEB_FRAGMENT)) {
-			return true;
-		} else if( moduleTypeId.equals(IWTPConstants.FACET_EJB) && moduleTree.length > 1) {
-			 String parentModuleTypeId = moduleTree[moduleTree.length - 2].getModuleType().getId(); 
-			 if( !parentModuleTypeId.equals(IWTPConstants.FACET_EAR)) {
-				 return true; 
-			 }
+		} else if (isWarLibModule(moduleTypeId, moduleTree)) {
+			// deploy warlib exploded only if the server supports it
+			ServerExtendedProperties props = (ServerExtendedProperties)server.loadAdapter(ServerExtendedProperties.class, null);
+			return props == null || !props.allowExplodedModulesInWarLibs();
 		}
+		
 		return false;
 	}
+	
+	private static boolean isWarLibModule(String moduleTypeId, IModule[] moduleTree) {
+		if (moduleTypeId.equals(IWTPConstants.FACET_WEB_FRAGMENT)) {
+			return true;
+		} else if (moduleTypeId.equals(IWTPConstants.FACET_EJB) && moduleTree.length > 1) {
+			String parentModuleTypeId = moduleTree[moduleTree.length - 2].getModuleType().getId();
+			return !parentModuleTypeId.equals(IWTPConstants.FACET_EAR);
+		} else {
+			return false;
+		}
+	}
+	
 	/*
 	 * Just package into a jar raw.  Don't think about it, just do it
 	 */

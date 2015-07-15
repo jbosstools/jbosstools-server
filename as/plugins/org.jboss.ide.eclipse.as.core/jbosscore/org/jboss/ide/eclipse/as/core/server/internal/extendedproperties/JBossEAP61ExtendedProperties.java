@@ -27,5 +27,10 @@ public class JBossEAP61ExtendedProperties extends JBossEAP60ExtendedProperties {
 			return new JBoss72Eap61DefaultLaunchArguments(server);
 		return new JBoss72Eap61DefaultLaunchArguments(runtime);
 	}
+	
+	@Override
+	public boolean allowExplodedModulesInWarLibs() {
+		return true;
+	}
 
 }

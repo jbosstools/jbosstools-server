@@ -49,4 +49,15 @@ public class JBossEAP60ExtendedProperties extends JBossAS710ExtendedProperties {
 	public boolean requiresJDK() {
 		return true;
 	}
+
+	@Override
+	public boolean allowExplodedModulesInWarLibs() {
+		String version = getServerBeanLoader().getFullServerVersion();
+		if (version == null)
+			return false;
+		else if (version.startsWith("6.0.0")) //$NON-NLS-1$
+			return false; // 6.0.0 contains AS 7.1.2 which is bugged, 6.0.1 contains AS 7.1.3 which is fixed
+		else
+			return true;
+	}
 }

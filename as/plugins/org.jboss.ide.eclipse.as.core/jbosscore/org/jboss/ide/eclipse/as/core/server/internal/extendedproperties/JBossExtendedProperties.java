@@ -208,4 +208,14 @@ public class JBossExtendedProperties extends ServerExtendedProperties {
 		// NEW_SERVER_ADAPTER  Subclasses override this
 		return EnvironmentsManager.getDefault().getEnvironment("J2SE-1.4"); //$NON-NLS-1$
 	}
+
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * For JBoss servers allow only for servers which are know to support this according to AS7-4704.
+	 */
+	@Override
+	public boolean allowExplodedModulesInWarLibs() {
+		return false;
+	}
 }
