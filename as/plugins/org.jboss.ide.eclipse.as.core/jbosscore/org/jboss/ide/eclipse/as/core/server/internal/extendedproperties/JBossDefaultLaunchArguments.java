@@ -91,8 +91,9 @@ public class JBossDefaultLaunchArguments implements IDefaultLaunchArguments, IJB
 	}
 
 	public String getStartDefaultVMArgs() {
-		return getProgramNameArgs() + getServerFlagArgs() + 
-				getMemoryArgs() + getJavaFlags() + getJBossJavaFlags();
+		return getProgramNameArgs() + getServerFlagArgs() +   
+				"-Djava.awt.headless=true " + //$NON-NLS-1$
+				getMemoryArgs() + getJavaFlags() + getJBossJavaFlags();  
 	}
 
 	protected String getProgramNameArgs() {
