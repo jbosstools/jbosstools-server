@@ -59,6 +59,10 @@ public class PublishUtil extends ModuleResourceUtil {
 		return new ModuleDeploymentPrefsUtil().getDefaultSuffix(type);
 	}
 	
+	@Deprecated
+	public static boolean deployPackaged(IModule[] moduleTree) {
+		return deployPackaged(moduleTree, null);
+	}
 	
 	public static boolean deployPackaged(IModule[] moduleTree, IServer server) {
 		String moduleTypeId = moduleTree[moduleTree.length-1].getModuleType().getId(); 
@@ -67,9 +71,11 @@ public class PublishUtil extends ModuleResourceUtil {
 		} else if (moduleTypeId.equals(IWTPConstants.FACET_APP_CLIENT)) { 
 			return true;
 		} else if (isWarLibModule(moduleTypeId, moduleTree)) {
-			// deploy warlib exploded only if the server supports it
-			ServerExtendedProperties props = (ServerExtendedProperties)server.loadAdapter(ServerExtendedProperties.class, null);
-			return props == null || !props.allowExplodedModulesInWarLibs();
+			if( server != null ) {
+				// deploy warlib exploded only if the server supports it
+				ServerExtendedProperties props = (ServerExtendedProperties)server.loadAdapter(ServerExtendedProperties.class, null);
+				return props == null || !props.allowExplodedModulesInWarLibs();
+			}
 		}
 		
 		return false;
