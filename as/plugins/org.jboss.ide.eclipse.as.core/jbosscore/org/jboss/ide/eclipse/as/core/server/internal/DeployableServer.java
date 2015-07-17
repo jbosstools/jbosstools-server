@@ -59,6 +59,7 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 			getServerWorkingCopy().setName(ServerNamingUtility.getNextShortServerName(getServer().getServerType()));
 		}
 		setAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, true);
+		getServerWorkingCopy().setHost("localhost"); //$NON-NLS-1$
 	}
 	
 	public void importRuntimeConfiguration(IRuntime runtime, IProgressMonitor monitor) throws CoreException {
