@@ -32,7 +32,6 @@ import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.jboss.tools.common.jdt.debug.RemoteDebugActivator;
 import org.jboss.tools.common.jdt.debug.VmModel;
 import org.jboss.tools.jmx.core.ExtensionManager;
-import org.jboss.tools.jmx.core.HasName;
 import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.IDebuggableConnection;
@@ -249,7 +248,13 @@ public class JvmConnectionWrapper implements IConnectionWrapper,
 			if( activeJvm != null ) {
 				String hostname = activeJvm.getHost().getName();
 				int pid = activeJvm.getPid();
-				vmModel = RemoteDebugActivator.getDefault().getDebugModel(hostname, pid, true, new NullProgressMonitor());
+				VmModel model2 = RemoteDebugActivator.getDefault().getCachedVmModel(hostname, pid);
+				if( RemoteDebugActivator.getDefault().isDebugModel(model2)) {
+					vmModel = model2;
+				} else if(model2.getMainClass() == null ) {
+					// No main class, may be a suspended process
+					vmModel = model2;
+				}
 			}
 		}
 		return vmModel;
@@ -268,8 +273,11 @@ public class JvmConnectionWrapper implements IConnectionWrapper,
 	@Override
 	public int getDebugPort() {
 		VmModel m = getVmModel();
-		if( m != null )
-			return Integer.parseInt(m.getDebugPort());
+		if( m != null ) {
+			String debugPort = m.getDebugPort();
+			if( debugPort != null )
+				return Integer.parseInt(debugPort);
+		}
 		return -1;
 	}
 

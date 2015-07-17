@@ -25,6 +25,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.action.Action;
 import org.jboss.tools.common.jdt.debug.RemoteDebugActivator;
+import org.jboss.tools.common.jdt.debug.ui.RemoteDebugUIActivator;
 import org.jboss.tools.jmx.core.IDebuggableConnection;
 import org.jboss.tools.jmx.ui.JMXUIActivator;
 
@@ -66,6 +67,9 @@ public class ConnectDebuggerAction extends Action {
 			} catch(CoreException ce) {
 				JMXUIActivator.log(IStatus.ERROR, ce.getMessage(), ce);
 			}
+		} else {
+			// We have a null main class, it might be suspended
+			RemoteDebugUIActivator.getDefault().openLaunchDebuggerDialog();
 		}
 	}
 	

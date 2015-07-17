@@ -167,15 +167,19 @@ public class JvmAttachHandler implements IJvmAttachHandler,
         String launchCommand = null;
         try {
 	        if (vm != null) {
-	            mainClass = getMainClass(host, pid);
-	            launchCommand = getJavaCommand(host, pid);
+	        	try {
+		            mainClass = getMainClass(host, pid);
+		            launchCommand = getJavaCommand(host, pid);
+	            } catch(Exception tce) {
+	                Activator.log(IStatus.WARNING, NLS.bind(Messages.connectTargetJvmFailedMsg, pid), tce);
+	            }
 	        }
-        	localhost.addLocalActiveJvm(pid, mainClass, launchCommand, 
-        			vm == null ? vm : vm.getMonitoredVM(), null);
+	        
+	        // Still add a stub if possible
+	    	localhost.addLocalActiveJvm(pid, mainClass, launchCommand, 
+	    			vm == null ? vm : vm.getMonitoredVM(), null);
         } catch (JvmCoreException e) {
             Activator.log(IStatus.WARNING, NLS.bind(Messages.connectTargetJvmFailedMsg, pid), e);
-        } catch(ToolsCoreException tce) {
-            Activator.log(IStatus.WARNING, NLS.bind(Messages.connectTargetJvmFailedMsg, pid), tce);
         }
     }
 
