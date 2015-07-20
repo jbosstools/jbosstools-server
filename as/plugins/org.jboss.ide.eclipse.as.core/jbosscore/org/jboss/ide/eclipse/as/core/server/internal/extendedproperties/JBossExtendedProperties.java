@@ -218,4 +218,9 @@ public class JBossExtendedProperties extends ServerExtendedProperties {
 	public boolean allowExplodedModulesInWarLibs() {
 		return false;
 	}
+	
+	public boolean allowExplodedModulesInEars() {
+		return false;
+	}
+
 }

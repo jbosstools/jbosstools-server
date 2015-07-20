@@ -66,17 +66,25 @@ public class PublishUtil extends ModuleResourceUtil {
 	
 	public static boolean deployPackaged(IModule[] moduleTree, IServer server) {
 		String moduleTypeId = moduleTree[moduleTree.length-1].getModuleType().getId(); 
-		if (moduleTypeId.equals(IWTPConstants.FACET_UTILITY)) {
-			return true;
-		} else if (moduleTypeId.equals(IWTPConstants.FACET_APP_CLIENT)) { 
-			return true;
-		} else if (isWarLibModule(moduleTypeId, moduleTree)) {
+		if (isWarLibModule(moduleTypeId, moduleTree)) {
 			if( server != null ) {
 				// deploy warlib exploded only if the server supports it
 				ServerExtendedProperties props = (ServerExtendedProperties)server.loadAdapter(ServerExtendedProperties.class, null);
 				return props == null || !props.allowExplodedModulesInWarLibs();
 			}
-		}
+		} else if (moduleTypeId.equals(IWTPConstants.FACET_UTILITY)) {
+			if( moduleTree.length > 1 ) {
+				String parentModuleTypeId = moduleTree[moduleTree.length - 2].getModuleType().getId();
+				if( parentModuleTypeId.equals(IWTPConstants.FACET_EAR) ) {
+					// Util in an ear
+					ServerExtendedProperties props = (ServerExtendedProperties)server.loadAdapter(ServerExtendedProperties.class, null);
+					return props == null || !props.allowExplodedModulesInEars();
+				}
+			}
+			return true;
+		} else if (moduleTypeId.equals(IWTPConstants.FACET_APP_CLIENT)) { 
+			return true;
+		} 
 		
 		return false;
 	}
@@ -85,6 +93,9 @@ public class PublishUtil extends ModuleResourceUtil {
 		if (moduleTypeId.equals(IWTPConstants.FACET_WEB_FRAGMENT)) {
 			return true;
 		} else if (moduleTypeId.equals(IWTPConstants.FACET_EJB) && moduleTree.length > 1) {
+			String parentModuleTypeId = moduleTree[moduleTree.length - 2].getModuleType().getId();
+			return !parentModuleTypeId.equals(IWTPConstants.FACET_EAR);
+		} else if (moduleTypeId.equals(IWTPConstants.FACET_UTILITY) && moduleTree.length > 1) {
 			String parentModuleTypeId = moduleTree[moduleTree.length - 2].getModuleType().getId();
 			return !parentModuleTypeId.equals(IWTPConstants.FACET_EAR);
 		} else {

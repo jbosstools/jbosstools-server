@@ -111,4 +111,9 @@ public class ServerExtendedProperties {
 	public boolean allowExplodedModulesInWarLibs() {
 		return true;
 	}
+	
+	public boolean allowExplodedModulesInEars() {
+		return true;
+	}
+
 }
