@@ -18,8 +18,8 @@ public class ServerBeanTypeWildfly80 extends JBossServerType {
 	private static final String AS_RELEASE_MANIFEST_KEY = "JBossAS-Release-Version"; //$NON-NLS-1$
 	public ServerBeanTypeWildfly80() {
 		super(
-				"Wildfly", //$NON-NLS-1$
-				"Wildfly Application Server", //$NON-NLS-1$
+				"WildFly", //$NON-NLS-1$
+				"WildFly Application Server", //$NON-NLS-1$
 				asPath("modules","system","layers","base",
 						"org","jboss","as","server","main"),
 				new String[]{V8_0}, new Wildfly80ServerTypeCondition());
