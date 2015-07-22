@@ -307,7 +307,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		runtimeWrap.setLayout(new FormLayout());
 		
 		requiresRuntimeLabel = new Label(runtimeWrap, SWT.WRAP);
-		FormData requiresRuntimeLabelData = FormDataUtility.createFormData2(0, 15, null, 0, 0,5,100,-5);
+		FormData requiresRuntimeLabelData = FormDataUtility.createFormData2(0, 5, null, 0, 0,5,100,-5);
 		requiresRuntimeLabelData.width = 300;
 		requiresRuntimeLabel.setLayoutData(requiresRuntimeLabelData);
 		
@@ -315,7 +315,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		if( runtime == null && !runtimeForbidden()) {
 			useRuntimeButton = new Button(runtimeWrap, SWT.CHECK);
 			useRuntimeButton.setText("Assign a runtime to this server");
-			FormData useRuntimeButtonData = FormDataUtility.createFormData2(requiresRuntimeLabel, 5, null, 0, 0,5,100,-5);
+			FormData useRuntimeButtonData = FormDataUtility.createFormData2(requiresRuntimeLabel, 15, null, 0, 0,5,100,-5);
 			useRuntimeButton.setLayoutData(useRuntimeButtonData);
 			
 			useRuntimeButton.addSelectionListener(new SelectionAdapter() {
@@ -529,7 +529,13 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		boolean requires = ServerProfileModel.getDefault().profileRequiresRuntime(serverWC.getServerType().getId(), sp.getId());
 		requiresRuntime = requires;
 		if( !runtimeForbidden() && requiresRuntimeLabel != null && !requiresRuntimeLabel.isDisposed()) {
-			requiresRuntimeLabel.setText("The selected profile " + (requiresRuntime ? "requires" : "does not require") + " a runtime.");
+			String requiresText = null;
+			if( requiresRuntime ) {
+				requiresText = "\nThe selected profile requires a runtime.";
+			} else {
+				requiresText = "The selected profile does not require a runtime, though some features (ex: JMX) may not be available without one.";
+			}
+			requiresRuntimeLabel.setText(requiresText);
 			if( requires) {
 				if( useRuntimeButton != null ) {
 					useRuntimeButton.setSelection(true);
