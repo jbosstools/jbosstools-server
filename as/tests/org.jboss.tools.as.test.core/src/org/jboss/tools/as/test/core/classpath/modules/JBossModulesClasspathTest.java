@@ -77,6 +77,12 @@ public class JBossModulesClasspathTest  extends TestCase {
 		// Ensure no results
 		ProjectRuntimeClasspathProvider provider = new ProjectRuntimeClasspathProvider();
 		IClasspathEntry[] entries = provider.resolveClasspathContainer(p, rt);
+		if( entries.length != 0 ) {
+			System.out.println("Debugging failing test:  ");
+			System.out.println("content kind: " + entries[0].getContentKind());
+			System.out.println("entry kind: " + entries[0].getEntryKind());
+			System.out.println("path: " + entries[0].getPath());
+		}
 		assertEquals(entries.length,0);
 		
 		// add a path provider, verify 1 result
@@ -210,6 +216,12 @@ public class JBossModulesClasspathTest  extends TestCase {
 
 		provider = new ProjectRuntimeClasspathProvider();
 		entries = provider.resolveClasspathContainer(p, rt);
+		if( entries.length != 0 ) {
+			System.out.println("Debugging failing test:  ");
+			System.out.println("content kind: " + entries[0].getContentKind());
+			System.out.println("entry kind: " + entries[0].getEntryKind());
+			System.out.println("path: " + entries[0].getPath());
+		}
 		assertEquals(entries.length,0);
 
 		

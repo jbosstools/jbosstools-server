@@ -79,7 +79,7 @@ public class XPathModelTest extends TestCase {
 			found = xpathFile.exists();
 		} 
 		if( !found)
-			fail("The XPath File has not been created. Xpaths will be lost on workspace restart");
+			fail("The XPath File has not been created for servertype=" + serverType + ". Xpaths will be lost on workspace restart");
 	}
 
 }
