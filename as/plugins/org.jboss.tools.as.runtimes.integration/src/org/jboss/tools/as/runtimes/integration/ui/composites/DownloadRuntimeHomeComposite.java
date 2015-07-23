@@ -65,7 +65,14 @@ public class DownloadRuntimeHomeComposite extends RuntimeHomeComposite {
 	}
 
 	protected class DownloadAndInstallListener extends SelectionAdapter {
-		public void widgetSelected(SelectionEvent se) {
+		public void widgetSelected(final SelectionEvent se) {
+			Display.getDefault().asyncExec(new Runnable(){
+				public void run() {
+					widgetSelectedWorkaround(se);
+				}
+			});
+		}
+		public void widgetSelectedWorkaround(SelectionEvent se) {
 			IRuntimeType type = getRuntimeFromTaskModel().getRuntimeType();
 			final DownloadRuntimesTaskWizard wizard = new DownloadRuntimesWizard(downloadAndInstallButton.getShell(), 
 					new JBossASDownloadRuntimeFilter(type));
