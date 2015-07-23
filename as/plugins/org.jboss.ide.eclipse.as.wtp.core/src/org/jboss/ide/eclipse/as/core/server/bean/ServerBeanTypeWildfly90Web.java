@@ -18,8 +18,8 @@ public class ServerBeanTypeWildfly90Web extends JBossServerType {
 	private static final String WF_90_RELEASE_MANIFEST_KEY = "JBoss-Product-Release-Version"; //$NON-NLS-1$
 	public ServerBeanTypeWildfly90Web() {
 		super(
-				"Wildfly-Web", //$NON-NLS-1$
-				"Wildfly Application Server", //$NON-NLS-1$
+				"WildFly-Web", //$NON-NLS-1$
+				"WildFly Application Server", //$NON-NLS-1$
 				asPath("modules","system","layers","base",
 						"org","jboss","as","server","main"),
 				new String[]{"9.0"}, new Wildfly90WebServerTypeCondition());
