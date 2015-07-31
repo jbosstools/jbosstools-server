@@ -10,19 +10,8 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.publishers.patterns;
 
-import java.util.ArrayList;
-
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.wst.server.core.IModule;
-import org.eclipse.wst.server.core.internal.ModuleResourceDelta;
-import org.eclipse.wst.server.core.model.IModuleFile;
-import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
-import org.eclipse.wst.server.core.model.IModuleResourceDelta;
-import org.eclipse.wst.server.core.util.ModuleFolder;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
-import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
 
 /**
  * This class is a default implementation for two of the three IModulePathFilter
@@ -39,79 +28,11 @@ import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
  * should be sure to cache any results that may be requested often.
  * 
  * @since 3.0
+ * @deprecated - please use superclass
  */
-public class ModulePathFilterUtility {
-	private IModulePathFilter filter;
+@Deprecated
+public class ModulePathFilterUtility extends org.jboss.ide.eclipse.as.wtp.core.modules.filter.patterns.ModulePathFilterUtility {
 	public ModulePathFilterUtility(IModulePathFilter filter) {
-		this.filter = filter;
+		super(filter);
 	}
-	
-    public IModuleResource[] getCleanedMembers(IModule module) throws CoreException {
-    	return getCleanedChildren(ModuleResourceUtil.getMembers(module));
-    }
-
-	
-    public IModuleResource[] getCleanedMembers(IModuleResource[] resources) {
-    	return getCleanedChildren(resources);
-    }
-    
-    public IModuleResourceDelta[] getCleanedDelta(IModuleResourceDelta[] deltas) {
-    	if( deltas == null )
-    		return new IModuleResourceDelta[0];
-    	
-    	ArrayList<IModuleResourceDelta> collector = new ArrayList<IModuleResourceDelta>();
-    	for( int i = 0; i < deltas.length; i++ ) {
-    		IModuleResourceDelta delta = cleanCloneDelta(deltas[i]);
-    		if( delta != null ) {
-    			collector.add(delta);
-    		}
-    	}
-    	return (IModuleResourceDelta[]) collector.toArray(new IModuleResourceDelta[collector.size()]);
-    }
-    
-    private IModuleResourceDelta cleanCloneDelta(IModuleResourceDelta delta) {
-    	IModuleResource r = delta.getModuleResource();
-    	if( filter.shouldInclude(r)) {
-    		IModuleResourceDelta[] children = delta.getAffectedChildren();
-    		IModuleResourceDelta[] cleanedChildren = getCleanedDelta(children);
-    		ModuleResourceDelta d = new ModuleResourceDelta(r, delta.getKind());
-    		d.setChildren(cleanedChildren);
-    		return d;
-    	}
-    	return null;
-    }
-    
-
-    private IModuleResource[] getCleanedChildren(IModuleFolder parent) {
-    	return getCleanedChildren(parent.members());
-    }
-    
-    private IModuleResource[] getCleanedChildren(IModuleResource[] children) {
-    	// Depth-first cleaning
-    	ArrayList<IModuleResource> cleaned = new ArrayList<IModuleResource>(children.length);
-    	IModuleResource tmp = null;
-    	for( int i = 0; i < children.length; i++ ) {
-    		tmp = getCleanedResource(children[i]);
-    		if( tmp != null )
-    			cleaned.add(tmp);
-    	}
-    	return cleaned.toArray(new IModuleResource[cleaned.size()]);
-    }
-    
-    private IModuleResource getCleanedResource(IModuleResource r) {
-    	if( r instanceof IModuleFile && filter.shouldInclude(r)) {
-    		return r; // No need to clone or clean since there are no setters
-    	}
-    	// IF the folder is included, OR, some file below it is included, this folder must be created
-    	if( r instanceof IModuleFolder && filter.shouldInclude(r)) {
-    		// Cloning folders
-    		IModuleFolder o = (IModuleFolder)r;
-    		IContainer c = (IContainer)r.getAdapter(IContainer.class);
-    		ModuleFolder mf = new ModuleFolder(c, o.getName(), o.getModuleRelativePath());
-    		mf.setMembers(getCleanedChildren(o));
-    		return mf;
-    	}
-    	return null;
-    }
-
 }

@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.util.ProjectModule;
@@ -51,9 +52,28 @@ public class PublishUtil extends ModuleResourceUtil {
 	 * @param server
 	 * @return
 	 */
+	@Deprecated // Use IServer signature
 	public static IPath getModuleNestedDeployPath(IModule[] moduleTree, String rootFolder, IDeployableServer server) {
-		return new ModuleDeploymentPrefsUtil().getModuleNestedDeployPath(moduleTree, rootFolder, server.getServer());
+		return getModuleNestedDeployPath(moduleTree, rootFolder, server.getServer());
 	}
+	
+	
+	/**
+	 * Given a folder to deploy this module, append the various
+	 * subparts of this module[] into the name. For example, if we
+	 * know that this specific module should be published to 
+	 *  /home/user/custom/path, then append the module names to yield
+	 *  a return value of /home/user/custom/path/some.ear/some.war
+	 * 
+	 * @param moduleTree
+	 * @param deployFolder
+	 * @param server
+	 * @return
+	 */
+	public static IPath getModuleNestedDeployPath(IModule[] moduleTree, String rootFolder, IServerAttributes server) {
+		return new ModuleDeploymentPrefsUtil().getModuleNestedDeployPath(moduleTree, rootFolder, server);
+	}
+
 	
 	public static String getSuffix(String type) {
 		return new ModuleDeploymentPrefsUtil().getDefaultSuffix(type);

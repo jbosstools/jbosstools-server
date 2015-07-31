@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.core.publishers.patterns.internal;
+package org.jboss.ide.eclipse.as.wtp.core.modules.filter.patterns.internal;
 
 import java.util.ArrayList;
 
@@ -26,17 +26,14 @@ public class ModuleResourceTreeNode implements ITreeNode {
 		this.resource = resource;
 	}
 	
-	@Override
 	public String getName() {
 		return resource.getName();
 	}
 
-	@Override
 	public boolean isLeaf() {
 		return !(resource instanceof IModuleFolder);
 	}
 
-	@Override
 	public ITreeNode getChild(String name) {
 		if( resource instanceof IModuleFolder) {
 			IModuleResource[] children = ((IModuleFolder)resource).members();
@@ -49,7 +46,6 @@ public class ModuleResourceTreeNode implements ITreeNode {
 		return null;
 	}
 
-	@Override
 	public ITreeNode[] listChildren() {
 		ArrayList<ITreeNode> l = new ArrayList<ITreeNode>();
 		if( resource instanceof IModuleFolder) {

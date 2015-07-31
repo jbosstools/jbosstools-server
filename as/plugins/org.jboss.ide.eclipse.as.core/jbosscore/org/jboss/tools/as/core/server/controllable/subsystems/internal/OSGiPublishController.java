@@ -80,12 +80,11 @@ public class OSGiPublishController extends AbstractSubsystemController implement
 			return removeModule(module, monitor);
 		}
 		
-		IDeployableServer server2 = ServerConverter.getDeployableServer(getServer());
 		IPath metadataLoc = getMetadataTemporaryLocation(getServer());
 		if( metadataLoc.toFile().exists())
 			metadataLoc.toFile().mkdirs();
 		
-		IPath presumedSourcePath = PublishUtil.getModuleNestedDeployPath(module, metadataLoc.toOSString(), server2);
+		IPath presumedSourcePath = PublishUtil.getModuleNestedDeployPath(module, metadataLoc.toOSString(), getServer());
 		String name = presumedSourcePath.lastSegment();
 		IPath realSourcePathFolder = presumedSourcePath.removeLastSegments(1).append("plugins"); //$NON-NLS-1$
 		IProject project = module[module.length-1].getProject();

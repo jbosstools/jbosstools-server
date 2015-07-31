@@ -11,15 +11,7 @@
 
 package org.jboss.ide.eclipse.as.core.publishers.patterns.internal;
 
-import java.util.Vector;
-
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.wst.server.core.model.IModuleFile;
-import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
-import org.eclipse.wst.server.core.util.ModuleFolder;
-import org.jboss.tools.archives.scanner.VirtualDirectoryScanner;
 
 /**
  * Class for scanning the servertools IModuleResource model
@@ -48,115 +40,11 @@ import org.jboss.tools.archives.scanner.VirtualDirectoryScanner;
 
 /**
  * @since 2.3
+ * @deprecated - please use superclass
  */
-public class PublishFilterDirectoryScanner extends VirtualDirectoryScanner<ModuleResourceTreeNode> {
-    /** The directories which were found and did not match any includes, but must be created because files under it are required */
-    protected Vector<String> dirsNotIncludedButRequired;
-    
-    /**
-     * Sole constructor.
-     */
+@Deprecated
+public class PublishFilterDirectoryScanner extends org.jboss.ide.eclipse.as.wtp.core.modules.filter.patterns.internal.PublishFilterDirectoryScanner {
     public PublishFilterDirectoryScanner(IModuleResource[] resources) {
-    	this.dirsNotIncludedButRequired  = new Vector<String>();
-    	IModuleFolder mf = new ModuleFolder(null, "", new Path("/")); //$NON-NLS-1$ //$NON-NLS-2$
-    	((ModuleFolder)mf).setMembers(resources);
-    	ModuleResourceTreeNode n = new ModuleResourceTreeNode(mf);
-    	super.setBasedir(n);
-    }
-    /* end Base dir */
-
-    @Override
-    protected void postInclude(ModuleResourceTreeNode f, String name) {
-    	if( iterator != null ) {
-    		iterator.addMatch(f, name);
-    	}
-        // Ensure that all parents which are "notIncluded" are added here
-        IPath p = new Path(name).removeLastSegments(1);
-        while(p.segmentCount() > 0 ) {
-        	if( !dirsIncluded.contains(p.toString()) && 
-        			!dirsNotIncludedButRequired.contains(p.toString())) {
-        		dirsNotIncludedButRequired.add(p.toString());
-        	}
-        	p = p.removeLastSegments(1);
-        }
-    }
-
-    @Override
-    public void scan() throws IllegalStateException {
-    	scanPrepare();
-        super.scandirWrap( super.basedir, "", true );//$NON-NLS-1$
-    }
-
-    /*
-     * Public accessors
-     */    
-    public boolean isIncludedFile(IModuleFile resource) {
-    	return isIncludedFile(getResourcePath(resource));
-    }
-    public boolean isIncludedDir(IModuleFolder resource) {
-    	return isIncludedDir(getResourcePath(resource));
-    }
-    public boolean isNotIncludedButRequiredMember(IModuleResource resource) {
-    	return isNotIncludedButRequired(getResourcePath(resource));
-    }
-    public boolean isIncludedMember(IModuleResource resource) {
-      String path = getResourcePath(resource);
-    	return isIncludedFile(path) 
-    			|| isIncludedDir(path);
-    }
-    public boolean isRequiredMember(IModuleResource resource) {
-      String path = getResourcePath(resource);
-    	return isIncludedFile(path) 
-    			|| isIncludedDir(path)
-    			|| isNotIncludedButRequired(path);
-    }
-    public boolean isIncludedFile(String vpath) {
-    	return filesIncluded.contains(vpath);
-    }
-    public boolean isIncludedDir(String vpath) {
-    	return dirsIncluded.contains(vpath);
-    }
-    public boolean isNotIncludedButRequired(String vpath) {
-    	return dirsNotIncludedButRequired.contains(vpath);
-    }
-    public boolean isIncludedMember(String vpath) {
-    	return isIncludedFile(vpath) || isIncludedDir(vpath);
-    }
-    public boolean isRequiredMember(String vpath) {
-    	return isIncludedFile(vpath) || isIncludedDir(vpath) || isNotIncludedButRequired(vpath);
-    }
-    
-
-    /*
-     * Utility methods for traversing the servertools IModuleResource model. 
-     */
-    
-    
-    /**
-     * Returns the platform-dependent resource path.
-     */
-    private String getResourcePath(IModuleResource resource) {
-    	return resource.getModuleRelativePath().append(resource.getName()).makeRelative().toOSString();
-    }
-
-    public static IModuleResource findResource(IModuleResource[] allMembers, 
-    		IModuleFolder parent, IPath path) {
-    	if( path == null || path.segmentCount() == 0 )
-    		return null;
-    	
-    	IModuleResource[] children = parent == null ? allMembers : parent.members();
-    	for( int i = 0; i < children.length; i++ ) {
-    		if( children[i].getName().equals(path.segment(0))) {
-    			// we found our leaf
-    			if( path.segmentCount() == 1 )
-    				return children[i];
-    			// keep digging
-    			if( children[i] instanceof IModuleFolder ) 
-    				return findResource(allMembers, (IModuleFolder)children[i], path.removeFirstSegments(1));
-    			else 
-    				throw new IllegalStateException("Requested Path Not Found"); //$NON-NLS-1$
-    		}
-    	}
-    	throw new IllegalStateException("Requested Path Not Found"); //$NON-NLS-1$
+    	super(resources);
     }
 }
