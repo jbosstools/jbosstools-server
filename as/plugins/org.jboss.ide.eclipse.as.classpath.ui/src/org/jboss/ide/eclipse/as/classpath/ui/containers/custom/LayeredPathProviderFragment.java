@@ -27,6 +27,9 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
+import org.eclipse.jface.fieldassist.ControlDecoration;
+import org.eclipse.jface.fieldassist.FieldDecoration;
+import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.fieldassist.SimpleContentProposalProvider;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.swt.SWT;
@@ -85,6 +88,17 @@ public class LayeredPathProviderFragment extends WizardFragment {
 		slotText = new Text(c, SWT.SINGLE | SWT.BORDER);
 		slotText.setText("main");
 
+		final ControlDecoration moduleDecoration = new ControlDecoration(moduleText, SWT.TOP | SWT.LEAD);
+		final ControlDecoration slotDecoration = new ControlDecoration(slotText, SWT.TOP | SWT.LEAD);
+		FieldDecorationRegistry registry = FieldDecorationRegistry.getDefault();
+		FieldDecoration fd = registry.getFieldDecoration(FieldDecorationRegistry.DEC_CONTENT_PROPOSAL);
+		moduleDecoration.setImage(fd.getImage());
+		moduleDecoration.setDescriptionText(fd.getDescription());
+		slotDecoration.setImage(fd.getImage());
+		slotDecoration.setDescriptionText(fd.getDescription());
+
+		
+		
 		GridData gd = new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
 		gd.widthHint = 200;
 		moduleText.setLayoutData(gd);
