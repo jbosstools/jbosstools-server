@@ -26,7 +26,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<jbosstools.test.jboss.home.7.1>${requirementsDirectory}/jboss-as-7.1.0.Final</jbosstools.test.jboss.home.7.1>
 		<jbosstools.test.jboss.home.8.0>${requirementsDirectory}/wildfly-8.0.0.Final</jbosstools.test.jboss.home.8.0>
 		<jbosstools.test.jboss.home.8.1>${requirementsDirectory}/wildfly-8.1.0.Final</jbosstools.test.jboss.home.8.1>
-		<jbosstools.test.jboss.home.9.0>${requirementsDirectory}/wildfly-9.0.0.Beta2</jbosstools.test.jboss.home.9.0>
+		<jbosstools.test.jboss.home.9.0>${requirementsDirectory}/wildfly-9.0.1.Final</jbosstools.test.jboss.home.9.0>
+                <jbosstools.test.jboss.home.10.0>${requirementsDirectory}/wildfly-10.0.0.Beta1</jbosstools.test.jboss.home.10.0>
 		<jbosstools.test.jboss.home.eap.4.3>${requirementsDirectory}/jboss-eap-4.3/jboss-as</jbosstools.test.jboss.home.eap.4.3>
 		<jbosstools.test.jboss.home.eap.5.0>${requirementsDirectory}/jboss-eap-5.1/jboss-as</jbosstools.test.jboss.home.eap.5.0>
 		<jbosstools.test.jboss.home.eap.6.0>${requirementsDirectory}/jboss-eap-6.0</jbosstools.test.jboss.home.eap.6.0>
@@ -36,7 +37,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<!-- skipPrivateRequirements is inherited from parent pom -->
 
 		<!-- jbosstools.test.jre.7 is defined in root pom for convenience of reuse -->
-		<systemProperties> -Djbosstools.test.jre.6=${jbosstools.test.jre.6}  -Djbosstools.test.jre.7=${jbosstools.test.jre.7}  -Djbosstools.test.jre.8=${jbosstools.test.jre.8} -Djbosstools.test.jboss.home.3.2=${jbosstools.test.jboss.home.3.2} -Djbosstools.test.jboss.home.4.0=${jbosstools.test.jboss.home.4.0} -Djbosstools.test.jboss.home.4.2=${jbosstools.test.jboss.home.4.2} -Djbosstools.test.jboss.home.5.0=${jbosstools.test.jboss.home.5.0} -Djbosstools.test.jboss.home.5.1=${jbosstools.test.jboss.home.5.1} -Djbosstools.test.jboss.home.6.0=${jbosstools.test.jboss.home.6.0} -Djbosstools.test.jboss.home.7.0=${jbosstools.test.jboss.home.7.0} -Djbosstools.test.jboss.home.7.1=${jbosstools.test.jboss.home.7.1} -Djbosstools.test.jboss.home.8.0=${jbosstools.test.jboss.home.8.0} -Djbosstools.test.jboss.home.8.1=${jbosstools.test.jboss.home.8.1} -Djbosstools.test.jboss.home.9.0=${jbosstools.test.jboss.home.9.0} -Djbosstools.test.jboss.home.eap.4.3=${jbosstools.test.jboss.home.eap.4.3} -Djbosstools.test.jboss.home.eap.5.0=${jbosstools.test.jboss.home.eap.5.0} -Djbosstools.test.jboss.home.eap.6.0=${jbosstools.test.jboss.home.eap.6.0} -Djbosstools.test.jboss.home.eap.6.1=${jbosstools.test.jboss.home.eap.6.1} -Djbosstools.test.jboss.home.eap.6.2=${jbosstools.test.jboss.home.eap.6.2} -Djbosstools.test.jboss.home.eap.6.3=${jbosstools.test.jboss.home.eap.6.3} -Dorg.jboss.tools.tests.skipPrivateRequirements=${skipPrivateRequirements} </systemProperties>
+		<systemProperties> -Djbosstools.test.jre.6=${jbosstools.test.jre.6}  -Djbosstools.test.jre.7=${jbosstools.test.jre.7}  -Djbosstools.test.jre.8=${jbosstools.test.jre.8} -Djbosstools.test.jboss.home.3.2=${jbosstools.test.jboss.home.3.2} -Djbosstools.test.jboss.home.4.0=${jbosstools.test.jboss.home.4.0} -Djbosstools.test.jboss.home.4.2=${jbosstools.test.jboss.home.4.2} -Djbosstools.test.jboss.home.5.0=${jbosstools.test.jboss.home.5.0} -Djbosstools.test.jboss.home.5.1=${jbosstools.test.jboss.home.5.1} -Djbosstools.test.jboss.home.6.0=${jbosstools.test.jboss.home.6.0} -Djbosstools.test.jboss.home.7.0=${jbosstools.test.jboss.home.7.0} -Djbosstools.test.jboss.home.7.1=${jbosstools.test.jboss.home.7.1} -Djbosstools.test.jboss.home.8.0=${jbosstools.test.jboss.home.8.0} -Djbosstools.test.jboss.home.8.1=${jbosstools.test.jboss.home.8.1} -Djbosstools.test.jboss.home.9.0=${jbosstools.test.jboss.home.9.0} -Djbosstools.test.jboss.home.10.0=${jbosstools.test.jboss.home.10.0} -Djbosstools.test.jboss.home.eap.4.3=${jbosstools.test.jboss.home.eap.4.3} -Djbosstools.test.jboss.home.eap.5.0=${jbosstools.test.jboss.home.eap.5.0} -Djbosstools.test.jboss.home.eap.6.0=${jbosstools.test.jboss.home.eap.6.0} -Djbosstools.test.jboss.home.eap.6.1=${jbosstools.test.jboss.home.eap.6.1} -Djbosstools.test.jboss.home.eap.6.2=${jbosstools.test.jboss.home.eap.6.2} -Djbosstools.test.jboss.home.eap.6.3=${jbosstools.test.jboss.home.eap.6.3} -Dorg.jboss.tools.tests.skipPrivateRequirements=${skipPrivateRequirements} </systemProperties>
 	</properties>
 	
 	<build>
@@ -252,18 +253,32 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 						</configuration>
 					</execution>
 					<execution>
-						<id>install-wildfly-9.0.0.Beta2</id>
+						<id>install-wildfly-9.0.1.Final</id>
 						<phase>pre-integration-test</phase>
 						<goals>
 							<goal>wget</goal>
 						</goals>
 						<configuration>
-							<url>http://download.jboss.org/wildfly/9.0.0.Beta2/wildfly-9.0.0.Beta2.zip</url>
-							<md5>f79781d4902a68ce1be6c2dcf441c2d6</md5>
+							<url>http://download.jboss.org/wildfly/9.0.1.Final/wildfly-9.0.1.Final.zip</url>
+							<md5>d8920358e99151915da08cd1cd576ab6</md5>
 							<unpack>true</unpack>
 							<skip>${skipTestsOrITests}</skip>
 						</configuration>
 					</execution>
+                                        <execution>
+                                                <id>install-wildfly-10.0.0.Beta1</id>
+                                                <phase>pre-integration-test</phase>
+                                                <goals>
+                                                        <goal>wget</goal>
+                                                </goals>
+                                                <configuration>
+                                                        <url>http://download.jboss.org/wildfly/10.0.0.Beta1/wildfly-10.0.0.Beta1.zip</url>
+                                                        <md5>2e7f179b7706c13d071acfc539d585ed</md5>
+                                                        <unpack>true</unpack>
+                                                        <skip>${skipTestsOrITests}</skip>
+                                                </configuration>
+                                        </execution>
+
 				</executions>
 			</plugin>
 		</plugins>

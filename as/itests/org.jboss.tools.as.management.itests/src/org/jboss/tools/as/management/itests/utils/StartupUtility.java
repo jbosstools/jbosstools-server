@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.ServerCore;
+import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
@@ -25,7 +26,7 @@ import org.jboss.tools.as.management.itests.utils.AS7ManagerTestUtils.MockAS7Man
 
 public class StartupUtility extends Assert {
 	private static final String JRE7_SYSPROP = "jbosstools.test.jre.7";
-
+	private static final String JRE8_SYSPROP = "jbosstools.test.jre.8";
 
 	private static boolean isJava7() {
 		return (System.getProperty("java.version").startsWith("1.7."));
@@ -79,10 +80,18 @@ public class StartupUtility extends Assert {
 	}
 	
 	private static String getJavaHome(String rtType, String serverHome) {
-		//Currently for all rt types we use java7
+		// We have some with java8 requirements. 
+		ServerBeanLoader sb = new ServerBeanLoader(new File(serverHome));
+		String version = sb.getFullServerVersion();
+		System.out.println("**** ____  server version is " + version);
+		if( version.startsWith("10.")) {
+			return getJavaHome(serverHome, JRE8_SYSPROP, "java8 jdk");
+		}
+		
+		// For all older, use j7
 		return getJavaHome(serverHome, JRE7_SYSPROP, "java7 jdk");
 		
-		// In the future we may have some with java8 requirements. 
+		
 	}
 	
 	private static String getJavaHome(String serverHome, String sysprop, String javaVersion) {
