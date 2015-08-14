@@ -11,12 +11,15 @@
 package org.jboss.ide.eclipse.as.wtp.core.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.internal.launching.environments.EnvironmentsManager;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMInstall2;
 import org.eclipse.jdt.launching.IVMInstallType;
@@ -57,24 +60,47 @@ public class VMInstallUtil {
 
 	
 	
-	public static IVMInstall findVMInstall(IExecutionEnvironment environment) {
-		return findVMInstall(environment, PREFER_LOWEST);
+	public static IVMInstall findVMInstall(IExecutionEnvironment min) {
+		return findVMInstall(min, null);
 	}
 
-	private static IVMInstall findVMInstall(IExecutionEnvironment environment,
-			boolean preference) {
-		if( environment != null ) {
-			IVMInstall[] installs = environment.getCompatibleVMs();
-			if( environment.getDefaultVM() != null )
-				return environment.getDefaultVM();
+	public static IVMInstall findVMInstall(IExecutionEnvironment min, IExecutionEnvironment max) {
+		return findVMInstall(min, max, min, PREFER_LOWEST);
+	}
+	
+	public static IVMInstall findVMInstall(IExecutionEnvironment min, IExecutionEnvironment max, IExecutionEnvironment defaultEnv) {
+		return findVMInstall(min, max, defaultEnv, PREFER_LOWEST);
+	}
 
+	
+	private static IVMInstall findVMInstall(IExecutionEnvironment min, IExecutionEnvironment max, IExecutionEnvironment defaultEnv, boolean preference) {
+		if( defaultEnv != null ) {
+			if( defaultEnv.getDefaultVM() != null ) {
+				if( !isHigherThanMaximumAllowed(min.getDefaultVM(), max))
+					return defaultEnv.getDefaultVM();
+			}
+		}
+		if( preference == PREFER_LOWEST) {
 			// Find an install that is strictly compatible first
+			IVMInstall[] installs = min.getCompatibleVMs();
 			for (int i = 0; i < installs.length; i++) {
 				IVMInstall install = installs[i];
-				if (environment.isStrictlyCompatible(install)) {
+				if (min.isStrictlyCompatible(install)) {
 					return install;
 				}
 			}
+		} else if( preference == PREFER_HIGHEST && max != null) {
+			IVMInstall[] installs = max.getCompatibleVMs();
+			for (int i = 0; i < installs.length; i++) {
+				IVMInstall install = installs[i];
+				if (max.isStrictlyCompatible(install)) {
+					return install;
+				}
+			}
+		}		
+
+		if( min != null ) {
+			IVMInstall[] installs = getValidJREs(min, max);
 
 			// If there aren't any, check if the workspace default vm is in the
 			// list of compatible vms
@@ -100,10 +126,38 @@ public class VMInstallUtil {
 			if( installs != null && installs.length > 0 && installs[0] != null )
 				return installs[0];
 		}
+		
 		// not found, return default vm
-		IVMInstall i = environment == null ? null : environment.getDefaultVM();
+		IVMInstall i = min == null ? null : min.getDefaultVM();
 		return i == null ? JavaRuntime.getDefaultVMInstall() : i;
 	}
+	
+	public static boolean hasValidJRE(IExecutionEnvironment minimum, IExecutionEnvironment maximum, IExecutionEnvironment selected) {
+		IVMInstall[] valid = getValidJREs(minimum, maximum);
+		ArrayList<IVMInstall> validArray = new ArrayList(Arrays.asList(valid));
+		IVMInstall[] compatible = selected.getCompatibleVMs();
+		for( int i = 0; i < compatible.length; i++ ) {
+			if( validArray.contains(compatible[i])) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static boolean isHigherThanMaximumAllowed(IVMInstall install, IExecutionEnvironment maximum) {
+		if( maximum == null )
+			return false;
+		
+		IExecutionEnvironment[] invalid = findSuperEnvironments(maximum);
+		for( int i = 0; i < invalid.length; i++ ) {
+			IVMInstall[] invalidArray = invalid[i].getCompatibleVMs();
+			if( Arrays.asList(invalidArray).contains(install)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 
 	/**
 	 * Return an array of vms that implement IVMInstall2 and are sorted based on
@@ -160,5 +214,67 @@ public class VMInstallUtil {
 		}
 		return new int[] { Integer.parseInt(m.group(1)), // major
 				Integer.parseInt(m.group(2)) };
+	}
+	
+
+	public static IExecutionEnvironment[] findAllValidEnvironments(IExecutionEnvironment minimum, IExecutionEnvironment maximum) {
+		ArrayList<IExecutionEnvironment> toReturn = new ArrayList<IExecutionEnvironment>();
+		toReturn.add(minimum);
+		if( maximum != null )
+			toReturn.add(maximum);
+		
+		IExecutionEnvironment[] superEnv = findSuperEnvironments(minimum);
+		IExecutionEnvironment[] forbiddenEnv = findSuperEnvironments(maximum);
+		ArrayList<IExecutionEnvironment> superList = new ArrayList(Arrays.asList(superEnv));
+		superList.removeAll(Arrays.asList(forbiddenEnv));
+		
+		// Remove any env that has no compatible vm's installed
+		Iterator<IExecutionEnvironment> it = superList.iterator();
+		while(it.hasNext()) {
+			IExecutionEnvironment working = it.next();
+			if( working.getCompatibleVMs().length == 0 || toReturn.contains(working))
+				it.remove();
+		}
+		
+		toReturn.addAll(superList);
+		return (IExecutionEnvironment[]) toReturn.toArray(new IExecutionEnvironment[toReturn.size()]);
+	}
+	
+	
+
+	public static IExecutionEnvironment[] findSuperEnvironments(IExecutionEnvironment minimum) {
+		if( minimum == null )
+			return new IExecutionEnvironment[0];
+		
+		ArrayList<IExecutionEnvironment> toReturn = new ArrayList<IExecutionEnvironment>();
+		IExecutionEnvironment[] all = EnvironmentsManager.getDefault().getExecutionEnvironments();
+		for( int i = 0; i < all.length; i++ ) {
+			IExecutionEnvironment[] sub = all[i].getSubEnvironments();
+			if( !toReturn.contains(all[i]) ) {
+				// Environment is not in our current list of valid, so lets check it
+				if( Arrays.asList(sub).contains(minimum) ) {
+					toReturn.add(all[i]);
+				}
+			}
+		}
+		return (IExecutionEnvironment[]) toReturn.toArray(new IExecutionEnvironment[toReturn.size()]);
+	}
+	
+	public static IVMInstall[] getValidJREs(IExecutionEnvironment minimum, IExecutionEnvironment maximum) {
+		if( minimum == null )
+			return new IVMInstall[0];
+		
+		IVMInstall[] minimumInstalls = minimum.getCompatibleVMs();
+		if( maximum == null )
+			return minimumInstalls;
+		
+		ArrayList<IVMInstall> ret = new ArrayList(Arrays.asList(minimumInstalls));
+		IExecutionEnvironment[] invalid = findSuperEnvironments(maximum);
+		// find vminstalls that are in an invalid super environment (ie java9) and remove them
+		for( int i = 0; i < invalid.length; i++ ) {
+			ret.removeAll(Arrays.asList(invalid[i].getCompatibleVMs()));
+		}
+
+		return (IVMInstall[]) ret.toArray(new IVMInstall[ret.size()]);
 	}
 }

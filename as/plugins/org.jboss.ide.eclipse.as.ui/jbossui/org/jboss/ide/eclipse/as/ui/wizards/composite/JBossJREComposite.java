@@ -63,7 +63,14 @@ public class JBossJREComposite extends AbstractJREComposite {
 	public IExecutionEnvironment getMinimumExecutionEnvironment() {
 		IRuntime r = getRuntimeFromTaskModel();
 		AbstractLocalJBossServerRuntime jbsrt = (AbstractLocalJBossServerRuntime)r.loadAdapter(AbstractLocalJBossServerRuntime.class, null);
-		return jbsrt.getDefaultExecutionEnvironment(r.getRuntimeType());
+		return jbsrt.getMinimumExecutionEnvironment(r.getRuntimeType());
+	}
+
+	@Override
+	public IExecutionEnvironment getMaximumExecutionEnvironment() {
+		IRuntime r = getRuntimeFromTaskModel();
+		AbstractLocalJBossServerRuntime jbsrt = (AbstractLocalJBossServerRuntime)r.loadAdapter(AbstractLocalJBossServerRuntime.class, null);
+		return jbsrt.getMaximumExecutionEnvironment(r.getRuntimeType());
 	}
 
 	@Override

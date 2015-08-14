@@ -271,7 +271,13 @@ public abstract class RuntimeWizardFragment extends WizardFragment {
 		if( homeVersionWarning != null )
 			return homeVersionWarning;
 		if( !jreComposite.selectedVMisCompatible()) {
-			return Messages.rwf_incompatibleJRE;
+			boolean hasMax = jreComposite.getMaximumExecutionEnvironment() != null;
+			if( hasMax ) {
+				return NLS.bind(Messages.rwf_incompatibleJREMinMax, 
+						jreComposite.getMinimumExecutionEnvironment().getId(),
+						jreComposite.getMaximumExecutionEnvironment().getId());
+			}
+			return NLS.bind(Messages.rwf_incompatibleJRE, jreComposite.getMinimumExecutionEnvironment().getId());
 		}
 		return null;
 	}

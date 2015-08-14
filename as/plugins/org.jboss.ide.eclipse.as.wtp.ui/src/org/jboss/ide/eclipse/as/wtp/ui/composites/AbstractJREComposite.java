@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.wtp.ui.composites;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.Path;
@@ -179,6 +180,12 @@ public abstract class AbstractJREComposite extends Composite {
 		alternateJRECombo.setEnabled(vmRadio.getSelection());
 	}
 	
+	protected IVMInstall[] getCompatibleVMs() {
+		IExecutionEnvironment minimum = getMinimumExecutionEnvironment();
+		IExecutionEnvironment maximum = getMaximumExecutionEnvironment();
+		return VMInstallUtil.getValidJREs(minimum, maximum);
+	}
+	
 	protected void loadModel() {
 		// first load all possible exec-envs.
 		IExecutionEnvironment min = getMinimumExecutionEnvironment();
@@ -190,7 +197,7 @@ public abstract class AbstractJREComposite extends Composite {
 		
 		// Now load all possible jres
 		compatibleJREs = new ArrayList<IVMInstall>();
-		IVMInstall[] compat = min.getCompatibleVMs();
+		IVMInstall[] compat = getCompatibleVMs();
 		compatibleJREs.addAll(Arrays.asList(compat));
 		
 		
@@ -220,19 +227,21 @@ public abstract class AbstractJREComposite extends Composite {
 		return true;
 	}
 	
-	protected IExecutionEnvironment[] findAllValidEnvironments(IExecutionEnvironment env) {
-		IExecutionEnvironment[] all = EnvironmentsManager.getDefault().getExecutionEnvironments();
-		ArrayList<IExecutionEnvironment> toReturn = new ArrayList<IExecutionEnvironment>();
-		toReturn.add(env);
-		for( int i = 0; i < all.length; i++ ) {
-			IExecutionEnvironment[] sub = all[i].getSubEnvironments();
-			if( Arrays.asList(sub).contains(env) && !toReturn.contains(all[i])) {
-				IVMInstall[] vms = all[i].getCompatibleVMs();
-				if( vms.length > 0 ) 
-					toReturn.add(all[i]);
-			}
-		}
-		return (IExecutionEnvironment[]) toReturn.toArray(new IExecutionEnvironment[toReturn.size()]);
+	/**
+	 * Find all valid execution environments
+	 * @param env
+	 * @return
+	 */
+	protected IExecutionEnvironment[] findAllValidEnvironments(IExecutionEnvironment min) {
+		return findAllValidEnvironments(min, getMaximumExecutionEnvironment());
+	}
+	
+	protected IExecutionEnvironment[] findAllValidEnvironments(IExecutionEnvironment minimum, IExecutionEnvironment maximum) {
+		return VMInstallUtil.findAllValidEnvironments(minimum, maximum);
+	}
+	
+	private IExecutionEnvironment[] findSuperEnvironments(IExecutionEnvironment minimum) {
+		return VMInstallUtil.findSuperEnvironments(minimum);
 	}
 	
 	protected void createWidgets() {
@@ -313,11 +322,19 @@ public abstract class AbstractJREComposite extends Composite {
 	protected abstract IRuntime getRuntimeFromTaskModel();
 	
 	/**
-	 * Get the default execution environment for the runtime type 
+	 * Get the minimum execution environment for the runtime type 
 	 * @return
 	 */
 	public abstract IExecutionEnvironment getMinimumExecutionEnvironment();
 	
+	/**
+	 * Get the maximum execution environment for the runtime type, or null if no max set 
+	 * @return
+	 */
+	public IExecutionEnvironment getMaximumExecutionEnvironment() {
+		return null;  // Only has an impl to avoid API breakage
+	}
+
 	/**
 	 * Get the execution environment currently stored in the runtime
 	 * @return
@@ -353,7 +370,11 @@ public abstract class AbstractJREComposite extends Composite {
 	 */
 	public boolean selectedVMisCompatible() {
 		// If selectedVM is null, they've chosen an execution environment
-		return selectedVM == null || compatibleJREs.contains(selectedVM); 
+		if( selectedVM == null ) {
+			return VMInstallUtil.hasValidJRE(getMinimumExecutionEnvironment(), getMaximumExecutionEnvironment(), selectedExecutionEnvironment);
+		} else {
+			return compatibleJREs.contains(selectedVM);
+		}
 	}
 	
 	/**

@@ -208,6 +208,17 @@ public class JBossExtendedProperties extends ServerExtendedProperties {
 		// NEW_SERVER_ADAPTER  Subclasses override this
 		return EnvironmentsManager.getDefault().getEnvironment("J2SE-1.4"); //$NON-NLS-1$
 	}
+	
+	public IExecutionEnvironment getMinimumExecutionEnvironment() {
+		// NEW_SERVER_ADAPTER  Subclasses override this
+		return getDefaultExecutionEnvironment();
+	}
+	
+	// Return an exec-env or null if it can run on any higher exec-env. 
+	public IExecutionEnvironment getMaximumExecutionEnvironment() {
+		// NEW_SERVER_ADAPTER  Subclasses override this
+		return null;
+	}
 
 	/**
 	 * {@inheritDoc}

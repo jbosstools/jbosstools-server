@@ -10,6 +10,9 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.internal.launching.environments.EnvironmentsManager;
 import org.eclipse.jdt.launching.IVMInstall;
@@ -107,8 +110,14 @@ public abstract class AbstractLocalJBossServerRuntime extends RuntimeDelegate im
 	}
 	
 	public IVMInstall[] getValidJREs(IRuntimeType type) {
-		return getDefaultExecutionEnvironment(type) == null ? new IVMInstall[0] 
-				: getDefaultExecutionEnvironment(type).getCompatibleVMs();
+		return getValidJREs(getMinimumExecutionEnvironment(type), getMaximumExecutionEnvironment(type));
+	}
+	public IVMInstall[] getValidJREs(IExecutionEnvironment minimum, IExecutionEnvironment maximum) {
+		return VMInstallUtil.getValidJREs(minimum, maximum);
+	}
+	
+	private IExecutionEnvironment[] findSuperEnvironments(IExecutionEnvironment minimum) {
+		return VMInstallUtil.findSuperEnvironments(minimum);
 	}
 	
 	public IExecutionEnvironment getExecutionEnvironment() {
@@ -118,8 +127,7 @@ public abstract class AbstractLocalJBossServerRuntime extends RuntimeDelegate im
 	}
 	
 	/**
-	 * This is being used to indicate the MINIMUM execution environment, 
-	 * not just the default!
+	 * This is being used to indicate the DEFAULT execution environment
 	 * 
 	 * @param rtType
 	 * @return
@@ -130,6 +138,34 @@ public abstract class AbstractLocalJBossServerRuntime extends RuntimeDelegate im
 			return ((JBossExtendedProperties)sep).getDefaultExecutionEnvironment();
 		}
 		return EnvironmentsManager.getDefault().getEnvironment("J2SE-1.4"); //$NON-NLS-1$
+	}
+
+	/**
+	 * Get the minimum execution environment
+	 * 
+	 * @param rtType
+	 * @return
+	 */
+	public IExecutionEnvironment getMinimumExecutionEnvironment(IRuntimeType rtType) {
+		ServerExtendedProperties sep = new ExtendedServerPropertiesAdapterFactory().getExtendedProperties(rtType);
+		if( sep instanceof JBossExtendedProperties) {
+			return ((JBossExtendedProperties)sep).getMinimumExecutionEnvironment();
+		}
+		return getDefaultExecutionEnvironment(rtType);
+	}
+	
+	/**
+	 * Get the maximum execution environment, or null
+	 * 
+	 * @param rtType
+	 * @return
+	 */
+	public IExecutionEnvironment getMaximumExecutionEnvironment(IRuntimeType rtType) {
+		ServerExtendedProperties sep = new ExtendedServerPropertiesAdapterFactory().getExtendedProperties(rtType);
+		if( sep instanceof JBossExtendedProperties) {
+			return ((JBossExtendedProperties)sep).getMaximumExecutionEnvironment();
+		}
+		return null;
 	}
 
 	public void setExecutionEnvironment(IExecutionEnvironment environment) {

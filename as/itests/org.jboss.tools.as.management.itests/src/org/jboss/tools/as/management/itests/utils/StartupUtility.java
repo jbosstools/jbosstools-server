@@ -40,6 +40,9 @@ public class StartupUtility extends Assert {
 		return env;
 	}
 
+	private static boolean requiresJava8(String runtimeType) {
+		return "JavaSE-1.8".equals(getRequiredExecEnv(runtimeType).getId());
+	}
 	private static boolean requiresJava7(String runtimeType) {
 		return "JavaSE-1.7".equals(getRequiredExecEnv(runtimeType).getId());
 	}
