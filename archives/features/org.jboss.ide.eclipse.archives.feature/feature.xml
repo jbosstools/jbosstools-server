@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<feature id="org.jboss.ide.eclipse.archives.feature" label="%featureName" version="3.6.0.qualifier" provider-name="%providerName" plugin="org.jboss.ide.eclipse.archives.ui">
+<feature 
+   id="org.jboss.ide.eclipse.archives.feature" 
+   label="%featureName" 
+   version="3.6.0.qualifier" 
+   provider-name="%providerName" 
+   license-feature="org.jboss.tools.foundation.license.feature"
+   license-feature-version="0.0.0"
+   plugin="org.jboss.ide.eclipse.archives.ui">
 
-	<description url="http://www.jboss.org/tools">
-      %description
+   <description url="http://www.jboss.org/tools">
+       %description
    </description>
-
-	<copyright>
-      %copyright
+   <copyright>
+       %copyright
    </copyright>
-
-	<license url="license.html">
-      %license
+   <license url="license.html">
+       %license
    </license>
 
 	<requires>
