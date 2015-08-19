@@ -554,6 +554,10 @@
                        property="org.eclipse.wst.server.ui.serverType"
                        value="org.jboss.ide.eclipse.as.wildfly.90">
                  </test>
+                 <test
+                       property="org.eclipse.wst.server.ui.serverType"
+                       value="org.jboss.ide.eclipse.as.wildfly.100">
+                 </test>
                  <!-- NEW_SERVER_ADAPTER -->
              </or>
           </and>

@@ -29,7 +29,7 @@ public class ParameterUtils {
 		serverHomeToRuntimeType.put(JBOSS_WILDFLY_80_HOME, IJBossToolingConstants.WILDFLY_80);
 		serverHomeToRuntimeType.put(JBOSS_WILDFLY_81_HOME, IJBossToolingConstants.WILDFLY_80);
 		serverHomeToRuntimeType.put(JBOSS_WILDFLY_90_HOME, IJBossToolingConstants.WILDFLY_90);
-		serverHomeToRuntimeType.put(JBOSS_WILDFLY_100_HOME, IJBossToolingConstants.WILDFLY_90);
+		serverHomeToRuntimeType.put(JBOSS_WILDFLY_100_HOME, IJBossToolingConstants.WILDFLY_100);
 		serverHomeToRuntimeType.put(JBOSS_EAP_60_HOME, IJBossToolingConstants.EAP_60);
 		serverHomeToRuntimeType.put(JBOSS_EAP_61_HOME, IJBossToolingConstants.EAP_61);
 		serverHomeToRuntimeType.put(JBOSS_EAP_62_HOME, IJBossToolingConstants.EAP_61);

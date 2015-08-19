@@ -57,6 +57,7 @@ public class TestConstants {
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_AS_71, JBOSS_AS_71_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_WILDFLY_80, JBOSS_AS_80_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_WILDFLY_90, JBOSS_AS_90_HOME);
+		serverTypeToHome.put(IJBossToolingConstants.SERVER_WILDFLY_100, JBOSS_WF_100_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_43, JBOSS_EAP_43_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_50, JBOSS_EAP_50_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_60, JBOSS_EAP_60_HOME);
