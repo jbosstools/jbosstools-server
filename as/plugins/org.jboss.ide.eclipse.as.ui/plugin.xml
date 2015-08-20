@@ -255,7 +255,7 @@
          point="org.jboss.ide.eclipse.as.ui.ServerEditorPortSection">
       <section
             class="org.jboss.ide.eclipse.as.ui.editor.PortSection$JBoss7PortOffsetEditorExtension"
-            serverIds="org.jboss.ide.eclipse.as.71,org.jboss.ide.eclipse.as.eap.60,org.jboss.ide.eclipse.as.eap.61,org.jboss.ide.eclipse.as.wildfly.80">
+            serverIds="%ServerTypesJBoss71rHigher">
       </section>
       <section
             class="org.jboss.ide.eclipse.as.ui.editor.PortSection$JNDIPortEditorExtension"
