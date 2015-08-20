@@ -91,7 +91,7 @@ public class ModifyDeploymentScannerIntervalDialog extends TitleAreaDialog {
 					}
 					return Status.OK_STATUS;
 				}
-			}.schedule();
+			}.schedule(1000);
 		}
 		
 		private void launchDialog(final IServer server, AS7DeploymentScannerUtility.Scanner[] scanners) {
