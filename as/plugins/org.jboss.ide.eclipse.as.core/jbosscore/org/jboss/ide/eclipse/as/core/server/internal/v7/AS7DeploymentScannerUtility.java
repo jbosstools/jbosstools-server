@@ -13,6 +13,7 @@ package org.jboss.ide.eclipse.as.core.server.internal.v7;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -108,7 +109,45 @@ public class AS7DeploymentScannerUtility {
 		return getDeploymentScanners(server, true);
 	}
 	
+	public Scanner[] getDeploymentScannersBlocking(final IServer server, boolean all) {
+		return getDeploymentScannersBlocking(server, all, 5, 1500);
+	}
+	public Scanner[] getDeploymentScannersBlocking(final IServer server, boolean all, int maxTries, long sleep) {
+
+		Scanner[] scanners = null;
+		int attempt = 0;
+		Exception ie2 = null;
+		while( scanners == null && attempt < maxTries) {
+			attempt++;
+			try {
+				scanners = getDeploymentScanners(server, all, false, true);
+			} catch(Exception e) {
+				try {
+					Thread.sleep(sleep);
+				} catch(InterruptedException ie) {
+					ie2 = ie;
+				}
+			}
+		}
+		if( scanners != null )
+			return scanners;
+		
+		JBossServerCorePlugin.getDefault().getLog().log(new Status(
+				IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Unable to retrieve a list of remote deployment scanners",ie2)); //$NON-NLS-1$
+		return null;
+	}
+	
 	public Scanner[] getDeploymentScanners(final IServer server, boolean allScanners) {
+		try {
+			return getDeploymentScanners(server, allScanners, true, false);
+		} catch(Exception e) {
+			// Should never happen
+			return new Scanner[0];
+		}
+	}
+	
+	public Scanner[] getDeploymentScanners(final IServer server, boolean allScanners, boolean log, boolean rethrow) throws Exception {
+
 		ArrayList<Scanner> list = new ArrayList<Scanner>();
 		
 		ModelNode op = new ModelNode();
@@ -121,9 +160,13 @@ public class AS7DeploymentScannerUtility {
 		try {
 			response = executeWithResult(server, request);
 		} catch(Exception e) {
-			JBossServerCorePlugin.getDefault().getLog().log(new Status(
-					IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Unable to retrieve a list of remote deployment scanners",e)); //$NON-NLS-1$
-			return new Scanner[0];
+			if( log )
+				JBossServerCorePlugin.getDefault().getLog().log(new Status(
+						IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Unable to retrieve a list of remote deployment scanners",e)); //$NON-NLS-1$
+			if( rethrow) {
+				throw e;
+			}
+			return null;
 		}
 		
 		List<ModelNode> mnList = response.asList();
@@ -194,14 +237,26 @@ public class AS7DeploymentScannerUtility {
 	 * @return
 	 */
 	public HashMap<String, String> getDeploymentScannersFromServer(final IServer server, boolean all) {
+		try {
+			return getDeploymentScannersFromServer(server, all, true, false);
+		} catch(Exception e) {
+			// Never happen
+		}
+		return new HashMap<String, String>();
+	}
+	
+	public HashMap<String, String> getDeploymentScannersFromServer(final IServer server, boolean all, boolean log, boolean rethrow) throws Exception {
+		Scanner[] scanners = getDeploymentScanners(server, all, log, rethrow);
+		return getDeploymentScannersFromServer(server, scanners);
+	}
+
+	public HashMap<String, String> getDeploymentScannersFromServer(final IServer server, Scanner[] scanners) {
 		HashMap<String, String> retval=new HashMap<String, String>();
-		Scanner[] scanners = getDeploymentScanners(server, all);
 		for( int i = 0; i < scanners.length; i++ ) {
 			retval.put(scanners[i].getName(), scanners[i].getAddress());
 		}
 		return retval;
 	}
-
 	
 	/**
 	 * Get the deployment scanner with path=deployments and relative-to=jboss.server.base.dir

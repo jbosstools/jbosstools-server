@@ -12,12 +12,15 @@ package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.server.IServerModeDetails;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractDeploymentScannerAdditions;
@@ -54,7 +57,16 @@ public class LocalJBoss7DeploymentScannerAdditions extends AbstractDeploymentSca
 		added.addAll(Arrays.asList(folders));
 		ArrayList<String> removed = new ArrayList<String>(); // list of the scanner names
 		
-		Map<String, String> props = loadScannersFromServer(server);
+		
+		
+		Map<String, String> props = null;
+		Scanner[] all = new AS7DeploymentScannerUtility().getDeploymentScannersBlocking(server, false); 
+		if( all == null )
+			return;
+		
+		props = new AS7DeploymentScannerUtility().getDeploymentScannersFromServer(server, all);
+
+		
 		Scanner defaultScanner = loadDefaultScannerFromServer(server);
 		int existingScannerTimeout = (defaultScanner == null ? 5000 : defaultScanner.getTimeout());
 		int existingScannerInterval = (defaultScanner == null ? AS7DeploymentScannerUtility.IGNORE : defaultScanner.getInterval());
@@ -116,9 +128,26 @@ public class LocalJBoss7DeploymentScannerAdditions extends AbstractDeploymentSca
 		Trace.trace(Trace.STRING_FINER, "Finished Adding AS7 Deployment Scanners"); //$NON-NLS-1$
 	}
 	
+	private Map<String, String> loadScannersFromServerSafely(final IServer server) {
+		Map<String, String> props = null;
+		Exception e2 = null;
+		try {
+			props = loadScannersFromServer(server);
+		} catch(Exception e) {
+			e2 = e;
+		}
+		if( props == null ) {
+			// Aborted
+			JBossServerCorePlugin.getDefault().getLog().log(new Status(
+					IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Unable to retrieve a list of remote deployment scanners",e2)); //$NON-NLS-1$
+			return new HashMap<String, String>();
+		}
+		return props;
+	}
+	
 	@Override
 	protected void ensureScannersRemoved(final IServer server, String[] folders) {
-		Map<String, String> props = loadScannersFromServer(server);
+		Map<String, String> props = loadScannersFromServerSafely(server);
 		AS7DeploymentScannerUtility util = new AS7DeploymentScannerUtility(); 
 		Iterator<String> i = props.keySet().iterator();
 		while(i.hasNext()) {
@@ -130,7 +159,7 @@ public class LocalJBoss7DeploymentScannerAdditions extends AbstractDeploymentSca
 	}
 	
 	protected void setAllScannerEnablement(final IServer server, boolean state) {
-		Map<String, String> props = loadScannersFromServer(server);
+		Map<String, String> props = loadScannersFromServerSafely(server);
 		AS7DeploymentScannerUtility util = new AS7DeploymentScannerUtility(); 
 		Iterator<String> i = props.keySet().iterator();
 		while(i.hasNext()) {
@@ -140,8 +169,8 @@ public class LocalJBoss7DeploymentScannerAdditions extends AbstractDeploymentSca
 	}	
 	
 
-	protected Map<String, String> loadScannersFromServer(IServer server) {
-		return new AS7DeploymentScannerUtility().getDeploymentScannersFromServer(server, false);
+	protected Map<String, String> loadScannersFromServer(IServer server) throws Exception {
+		return new AS7DeploymentScannerUtility().getDeploymentScannersFromServer(server, false, false, true);
 	}
 	
 	protected Scanner loadDefaultScannerFromServer(IServer server) {

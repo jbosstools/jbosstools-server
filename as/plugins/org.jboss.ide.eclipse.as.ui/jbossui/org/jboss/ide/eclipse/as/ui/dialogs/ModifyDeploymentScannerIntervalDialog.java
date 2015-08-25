@@ -79,8 +79,8 @@ public class ModifyDeploymentScannerIntervalDialog extends TitleAreaDialog {
 					boolean ignore = prefs.getBoolean(AS7_IGNORE_ZERO_INTERVAL_SCANNER_SETTING, false);
 					if( !ignore ) {
 						final AS7DeploymentScannerUtility.Scanner[] scanners =
-								new AS7DeploymentScannerUtility().getDeploymentScanners(server);
-						if( hasScannersAtZero(server,scanners)) {
+								new AS7DeploymentScannerUtility().getDeploymentScannersBlocking(server, true);
+						if( scanners != null && hasScannersAtZero(server,scanners)) {
 							Display.getDefault().asyncExec(new Runnable() {
 								public void run() {
 									// NOW launch the dialog
@@ -91,7 +91,7 @@ public class ModifyDeploymentScannerIntervalDialog extends TitleAreaDialog {
 					}
 					return Status.OK_STATUS;
 				}
-			}.schedule(1000);
+			}.schedule();
 		}
 		
 		private void launchDialog(final IServer server, AS7DeploymentScannerUtility.Scanner[] scanners) {
