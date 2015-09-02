@@ -525,7 +525,7 @@
       <runtimeType
              vendor="%providerName"
              class="org.jboss.ide.eclipse.as.core.server.internal.v7.LocalWildfly80ServerRuntime"
-             description="%jboss.version.wildfly910.description"
+             description="%jboss.version.wildfly10.description"
              name="%jboss.version.wildfly10.runtime.name"
              id="org.jboss.ide.eclipse.as.runtime.wildfly.100"
              version="10.0">
