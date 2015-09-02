@@ -85,6 +85,7 @@ public class ServerBeanLoader3Test extends TestCase {
 		expected.put(IJBossToolingConstants.SERVER_EAP_50, new Data(JBossServerType.EAP_STD, IJBossToolingConstants.V5_1));
 		expected.put(IJBossToolingConstants.SERVER_EAP_60, new Data(JBossServerType.EAP6, IJBossToolingConstants.V6_0));
 		expected.put(IJBossToolingConstants.SERVER_EAP_61, new Data(JBossServerType.EAP61, IJBossToolingConstants.V6_1));
+		expected.put(IJBossToolingConstants.SERVER_EAP_70, new Data(JBossServerType.EAP70, IJBossToolingConstants.V7_0));
 		expected.put(ServerCreationTestUtils.TEST_SERVER_TYPE_EAP_65, new Data(JBossServerType.EAP61, "6.5"));
 		expected.put(ServerCreationTestUtils.TEST_SERVER_TYPE_GATEIN_34, new Data(JBossServerType.AS7GateIn, IJBossToolingConstants.V3_4));
 		expected.put(ServerCreationTestUtils.TEST_SERVER_TYPE_GATEIN_35, new Data(JBossServerType.AS7GateIn, IJBossToolingConstants.V3_5));

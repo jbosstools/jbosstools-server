@@ -14,8 +14,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
-import junit.framework.Assert;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -33,6 +31,8 @@ import org.jboss.ide.eclipse.as.core.util.ServerCreationUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.TestConstants;
+
+import junit.framework.Assert;
 
 /**
  * This class is intended to assist in the creation ONLY 
@@ -65,6 +65,7 @@ public class ServerCreationTestUtils extends Assert {
 	private static final String twiddle_eap_5_1 = "eap5.1" + twiddle_suffix;
 	private static final String eap_server_6_0_jar = "eap6.0.0.mf.jboss-as-server.jar";
 	private static final String eap_server_6_1_jar = "eap6.1.0.mf.jboss-as-server.jar";
+	private static final String eap_server_7_0_jar = "eap7.0.0.mf.jboss-as-server.jar";
 	private static final String jpp_server_6_0_jar = "jpp6.0.0.mf.jboss-as-server.jar";
 	private static final String jpp_server_6_1_jar = "jpp6.1.0.mf.jboss-as-server.jar";
 	private static final String gatein_3_4_0_jar = "gatein3.4.0.mf.jboss-as7-integration.jar";
@@ -107,6 +108,7 @@ public class ServerCreationTestUtils extends Assert {
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_50, twiddle_eap_5_1);
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_60, eap_server_6_0_jar);
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_61, eap_server_6_1_jar);
+		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_70, eap_server_7_0_jar);
 		asSystemJar.put(TEST_SERVER_TYPE_EAP_65, eap_server_6_1_jar);
 		asSystemJar.put(TEST_SERVER_TYPE_JPP_60, jpp_server_6_0_jar);
 		asSystemJar.put(TEST_SERVER_TYPE_JPP_61, jpp_server_6_1_jar);
@@ -129,6 +131,7 @@ public class ServerCreationTestUtils extends Assert {
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_50, IJBossToolingConstants.EAP_50);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_60, IJBossToolingConstants.EAP_60);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_61, IJBossToolingConstants.EAP_61);
+		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_70, IJBossToolingConstants.EAP_70);
 		// NEW_SERVER_ADAPTER Add the new runtime constant above this line
 		
 		
@@ -165,6 +168,8 @@ public class ServerCreationTestUtils extends Assert {
 			serverDir = createEAP6StyleMockServerDirectory(name, serverType, asSystemJar.get(serverType));
 		} else if( IJBossToolingConstants.SERVER_EAP_61.equals(serverType)) {
 			serverDir = createAS72EAP61StyleMockServerDirectory(name, serverType, asSystemJar.get(serverType));
+		} else if( IJBossToolingConstants.SERVER_EAP_70.equals(serverType)) {
+			serverDir = createEAP70StyleMockServerDirectory(name, serverType, asSystemJar.get(serverType));
 		} else if( IJBossToolingConstants.SERVER_WILDFLY_80.equals(serverType)) {
 			serverDir = createWildfly80MockServerDirectory(name, serverType, asSystemJar.get(serverType));
 		} else if( IJBossToolingConstants.SERVER_WILDFLY_90.equals(serverType)) {
@@ -337,6 +342,14 @@ public class ServerCreationTestUtils extends Assert {
 		return loc;
 	}
 
+	private static IPath createEAP70StyleMockServerDirectory(String name, String serverTypeId, String serverJar) {
+		IPath loc = mockedServers.append(name);
+		String manString = "JBoss-Product-Release-Name: EAP\nJBoss-Product-Release-Version: 7.0.0.Alpha\nJBoss-Product-Console-Slot: eap";
+		createAS7xProductStructure(loc, true, serverJar, "eap", manString);
+		return loc;
+	}
+
+	
 	private static IPath createAS72EAP65StyleMockServerDirectory(String name, String serverTypeId, String serverJar) {
 		IPath loc = mockedServers.append(name);
 		String manString = "JBoss-Product-Release-Name: EAP\nJBoss-Product-Release-Version: 6.5.0.Alpha\nJBoss-Product-Console-Slot: eap";

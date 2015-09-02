@@ -42,7 +42,9 @@ public class JBossModulesDefaultClasspathModel extends InternalRuntimeClasspathM
 		if( rtt.getId().equals(IJBossToolingConstants.WILDFLY_100)) {
 			return getDefaultJEE8JBossModulesEntries();
 		}
-		
+		if( rtt.getId().equals(IJBossToolingConstants.EAP_70)) {
+			return getDefaultJEE8JBossModulesEntries();
+		}
 		return getDefaultJBossModulesEntries();
 	}
 	

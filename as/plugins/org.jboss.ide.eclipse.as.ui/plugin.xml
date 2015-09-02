@@ -39,14 +39,17 @@
             id="org.jboss.ide.eclipse.as.ui.jboss7RuntimeWizardFragment"
             typeIds="org.jboss.ide.eclipse.as.runtime.70,org.jboss.ide.eclipse.as.runtime.71,org.jboss.ide.eclipse.as.runtime.eap.60"/>
       <fragment
-            class="org.jboss.ide.eclipse.as.ui.wizards.JBoss72Eap61RuntimeWizardFragment"
+            class="org.jboss.ide.eclipse.as.ui.wizards.JBoss7RuntimeWizardFragment"
             id="org.jboss.ide.eclipse.as.ui.jboss72Eap61RuntimeWizardFragment"
             typeIds="org.jboss.ide.eclipse.as.runtime.eap.61"/>
       <fragment
-            class="org.jboss.ide.eclipse.as.ui.wizards.Wildfly80RuntimeWizardFragment"
+            class="org.jboss.ide.eclipse.as.ui.wizards.JBoss7RuntimeWizardFragment"
             id="org.jboss.ide.eclipse.as.ui.Wildfly80RuntimeWizardFragment"
             typeIds="%RuntimeTypesWildfly"/>
-            
+      <fragment
+            class="org.jboss.ide.eclipse.as.ui.wizards.JBoss7RuntimeWizardFragment"
+            id="org.jboss.ide.eclipse.as.ui.EAP70RuntimeWizardFragment"
+            typeIds="org.jboss.ide.eclipse.as.runtime.eap.70"/>
       <fragment
             class="org.jboss.ide.eclipse.as.ui.wizards.LegacyServerProfileWizardFragment"
             id="org.jboss.ide.eclipse.as.ui.wizards.LegacyServerProfileWizardFragment"
@@ -545,6 +548,10 @@
                  <test
                        property="org.eclipse.wst.server.ui.serverType"
                        value="org.jboss.ide.eclipse.as.eap.61">
+                 </test>
+                 <test
+                       property="org.eclipse.wst.server.ui.serverType"
+                       value="org.jboss.ide.eclipse.as.eap.70">
                  </test>
                  <test
                        property="org.eclipse.wst.server.ui.serverType"
