@@ -1,17 +1,18 @@
 package org.jboss.tools.as.management.itests.utils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import junit.framework.Assert;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.wst.server.core.IRuntimeType;
+import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
@@ -23,6 +24,8 @@ import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
 import org.jboss.tools.as.management.itests.utils.AS7ManagerTestUtils.MockAS7ManagementDetails;
+
+import junit.framework.Assert;
 
 public class StartupUtility extends Assert {
 	private static final String JRE7_SYSPROP = "jbosstools.test.jre.7";
@@ -87,14 +90,11 @@ public class StartupUtility extends Assert {
 		ServerBeanLoader sb = new ServerBeanLoader(new File(serverHome));
 		String version = sb.getFullServerVersion();
 		System.out.println("**** ____  server version is " + version);
-		if( version.startsWith("10.")) {
-			return getJavaHome(serverHome, JRE8_SYSPROP, "java8 jdk");
+		if( requiresJava8(rtType)) {
+			return getJavaHome(serverHome, JRE8_SYSPROP, "JavaSE-1.8");
 		}
-		
 		// For all older, use j7
-		return getJavaHome(serverHome, JRE7_SYSPROP, "java7 jdk");
-		
-		
+		return getJavaHome(serverHome, JRE7_SYSPROP, "JavaSE-1.7");
 	}
 	
 	private static String getJavaHome(String serverHome, String sysprop, String javaVersion) {
@@ -143,11 +143,56 @@ public class StartupUtility extends Assert {
 		if( !started )
 			start(wait);
 	}
+	
+	String out = null;
+	String err = null;
+	
 	public void start(boolean wait) {
+		out = "";
+		err = "";
 		process = runServer(homeDir);
+		addDebugging(process);
+		
 		if( wait )
 			waitForStarted(process);
 		started = true;
+	}
+	
+	private void addDebugging(Process process) {
+		final InputStream inStream = process.getInputStream();
+		final InputStream errStream = process.getErrorStream();
+		new Thread("startupUtility_out") {
+			public void run() {
+				ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+				try {
+					int nRead;
+					byte[] data = new byte[16384];
+	
+					while ((nRead = inStream.read(data, 0, data.length)) != -1) {
+					  buffer.write(data, 0, nRead);
+					}
+					buffer.flush();
+				} catch(IOException ioe) {}
+				StartupUtility.this.out = buffer.toString();
+			}
+		}.start();
+
+		new Thread("startupUtility_err") {
+			public void run() {
+				ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+				try {
+					int nRead;
+					byte[] data = new byte[16384];
+	
+					while ((nRead = errStream.read(data, 0, data.length)) != -1) {
+					  buffer.write(data, 0, nRead);
+					}
+					buffer.flush();
+				} catch(IOException ioe) {}
+				StartupUtility.this.err = buffer.toString();
+			}
+		}.start();
+
 	}
 
 	public void dispose() {
@@ -178,6 +223,12 @@ public class StartupUtility extends Assert {
 			long startTime = System.currentTimeMillis();
 			long endTime = startTime + (1000*60);
 			while( state != JBoss7ServerState.RUNNING && System.currentTimeMillis() < endTime) {
+				boolean alive = process.isAlive();
+				if( !alive ) {
+					System.out.println("Output:\n" + out);
+					System.out.println("Errors:\n" + err);
+					fail("Server prematurely terminated while waiting to complete startup: " + homeDir + " " );
+				}
 				try {
 					Thread.sleep(1000);
 				} catch(InterruptedException ie){}
