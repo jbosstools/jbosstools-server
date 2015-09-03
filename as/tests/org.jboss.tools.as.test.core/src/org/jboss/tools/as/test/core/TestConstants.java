@@ -35,7 +35,7 @@ public class TestConstants {
 	public static final String JBOSS_EAP_61_HOME = System.getProperty("jbosstools.test.jboss.home.eap.6.1", "C:\\apps\\jboss\\jboss-eap-6.1.0.GA\\");
 	public static final String JBOSS_EAP_62_HOME = System.getProperty("jbosstools.test.jboss.home.eap.6.2", "C:\\apps\\jboss\\jboss-eap-6.2.0.GA\\");
 	public static final String JBOSS_EAP_63_HOME = System.getProperty("jbosstools.test.jboss.home.eap.6.3", "C:\\apps\\jboss\\jboss-eap-6.3.0.GA\\");
-	public static final String JBOSS_EAP_70_HOME = System.getProperty("jbosstools.test.jboss.home.eap.6.3", "C:\\apps\\jboss\\jboss-eap-7.0.0.GA\\");
+	public static final String JBOSS_EAP_70_HOME = System.getProperty("jbosstools.test.jboss.home.eap.7.0", "C:\\apps\\jboss\\jboss-eap-7.0.0.GA\\");
 		// NEW_SERVER_ADAPTER
 	
 	public static final String JRE_14_HOME = System.getProperty("jbosstools.test.jre.1.4", "C:\\apps\\java\\jre1.4\\");
