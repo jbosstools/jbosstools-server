@@ -26,10 +26,6 @@ public class ServerBeanTypeEAP70 extends JBossServerType {
 				new String[]{V7_0}, new EAP70ServerTypeCondition());
 	}
 	
-	protected String getServerTypeBaseName() {
-		return getId();
-	}
-	
 	public static class EAP70ServerTypeCondition extends org.jboss.ide.eclipse.as.core.server.bean.ServerBeanTypeEAP6.EAP6ServerTypeCondition {
 		private static final String EAP70_DIR_META_INF = "modules/system/layers/base/org/jboss/as/product/eap/dir/META-INF"; //$NON-NLS-1$
 		@Override
