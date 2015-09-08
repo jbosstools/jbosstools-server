@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.rse.ui;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -182,7 +183,6 @@ public abstract class RSEDeploymentPreferenceComposite extends Composite impleme
 			this.currentHostName = initialHostName;
 			this.hosts = RSECorePlugin.getTheSystemRegistry().getHostsBySubSystemConfigurationCategory(fileSubSystem);
 			this.currentHost = findHost(initialHostName);
-			RSECorePlugin.getTheSystemRegistry().addSystemModelChangeListener(this);			
 			
 			// Where I belong in the parent
 			GridData data = new GridData();
@@ -251,6 +251,8 @@ public abstract class RSEDeploymentPreferenceComposite extends Composite impleme
 				public void widgetDefaultSelected(SelectionEvent e) {
 				}
 			});
+			selectConnectionFromServer();
+			RSECorePlugin.getTheSystemRegistry().addSystemModelChangeListener(this);			
 		}
 		
 		protected void newHostClicked() {
@@ -326,26 +328,51 @@ public abstract class RSEDeploymentPreferenceComposite extends Composite impleme
 			}
 		}
 		public void systemModelResourceChanged(ISystemModelChangeEvent event) {
-			if( combo.isDisposed())
+			if( combo == null || combo.isDisposed())
 				return;
 			Display.getDefault().asyncExec(new Runnable(){
 				public void run() {
-					List<String> before = (List<String>)Arrays.asList(combo.getItems());
-					combo.removeModifyListener(comboMListener);
-					refreshConnections();
-					combo.addModifyListener(comboMListener);
-					String[] after = combo.getItems();
-					// Find whichever is new, and select that. 
-					for( int i = 0; i < after.length; i++ ) {
-						if( !before.contains(after[i])) {
-							combo.select(i);
-							return;
-						}
-					}
-					
+					selectNewestConnection();
 				}
 			});
 		}
+		
+		private void selectNewestConnection() {
+			List<String> before = (List<String>)Arrays.asList(combo.getItems());
+			combo.removeModifyListener(comboMListener);
+			refreshConnections();
+			combo.addModifyListener(comboMListener);
+			String[] after = combo.getItems();
+			ArrayList<String> newest = new ArrayList<String>(Arrays.asList(after));
+			newest.removeAll(before);
+			
+			if( newest.size() == 1) {
+				combo.select(combo.indexOf(newest.get(0)));
+			}
+			if( newest.size() != 0 ) {
+				// more than one added... means likely not from wizard (ie model is still initializing)
+				// Find best match based on existing setting
+				for( int i = 0; i < newest.size(); i++ ) {
+					if( newest.get(i).equalsIgnoreCase(callback.getServer().getHost())) {
+						combo.select(combo.indexOf(newest.get(i)));
+					}
+				}
+			}
+		}
+		
+		private void selectConnectionFromServer() {
+			refreshConnections();
+			String[] after = combo.getItems();
+			String host = callback.getServer().getHost();
+			// Find whichever is new, and select that. 
+			for( int i = 0; i < after.length; i++ ) {
+				if( after[i].equalsIgnoreCase(host)) {
+					combo.select(i);
+					return;
+				}
+			}
+		}
+		
 		@Override
 		public void dispose () {
 			super.dispose();
