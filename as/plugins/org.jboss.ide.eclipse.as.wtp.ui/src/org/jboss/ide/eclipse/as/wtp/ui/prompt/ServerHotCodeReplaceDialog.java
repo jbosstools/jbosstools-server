@@ -65,7 +65,7 @@ public class ServerHotCodeReplaceDialog extends TitleAreaDialog  {
 		
 		String title = NLS.bind(Messages.HotCodeReplaceHeader, server.getName());
 		setTitle(title);
-		setMessage(e == null ? "" : e.getMessage(), IMessageProvider.WARNING );
+		setMessage(e == null ? shellTitle : e.getMessage(), IMessageProvider.WARNING );
 		Shell parentShell = getParentShell();
 		Point p2 = parentShell.getLocation();
 		getShell().setSize(525,400);
