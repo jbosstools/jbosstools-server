@@ -94,6 +94,11 @@ public class ProcessInformationStore {
 		}
 		BufferedReader br = null;
 		try {
+			String[] cmd = new String[] {
+					jps.getAbsolutePath(),
+					"-v"
+			};
+
 			Process p = Runtime.getRuntime().exec(jps.getAbsolutePath() + " -v");
 			br = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String line = "";
