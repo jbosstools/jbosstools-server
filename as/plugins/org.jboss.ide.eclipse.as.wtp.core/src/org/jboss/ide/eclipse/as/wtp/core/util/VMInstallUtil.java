@@ -135,10 +135,12 @@ public class VMInstallUtil {
 	public static boolean hasValidJRE(IExecutionEnvironment minimum, IExecutionEnvironment maximum, IExecutionEnvironment selected) {
 		IVMInstall[] valid = getValidJREs(minimum, maximum);
 		ArrayList<IVMInstall> validArray = new ArrayList(Arrays.asList(valid));
-		IVMInstall[] compatible = selected.getCompatibleVMs();
-		for( int i = 0; i < compatible.length; i++ ) {
-			if( validArray.contains(compatible[i])) {
-				return true;
+		if( selected != null ) {
+			IVMInstall[] compatible = selected.getCompatibleVMs();
+			for( int i = 0; i < compatible.length; i++ ) {
+				if( validArray.contains(compatible[i])) {
+					return true;
+				}
 			}
 		}
 		return false;
