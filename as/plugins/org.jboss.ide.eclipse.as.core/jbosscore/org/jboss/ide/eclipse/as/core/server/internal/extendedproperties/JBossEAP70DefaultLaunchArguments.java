@@ -14,15 +14,11 @@ import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 
 public class JBossEAP70DefaultLaunchArguments extends
-		Wildfly80DefaultLaunchArguments {
+		Wildfly100DefaultLaunchArguments {
 	public JBossEAP70DefaultLaunchArguments(IServer s) {
 		super(s);
 	}
 	public JBossEAP70DefaultLaunchArguments(IRuntime rt) {
 		super(rt);
-	}
-	
-	protected String getMemoryArgs() {
-		return "-Xms64m -Xmx512m "; //$NON-NLS-1$
 	}
 }

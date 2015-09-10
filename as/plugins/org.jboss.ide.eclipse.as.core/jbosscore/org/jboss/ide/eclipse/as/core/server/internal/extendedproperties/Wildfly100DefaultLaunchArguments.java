@@ -24,4 +24,9 @@ public class Wildfly100DefaultLaunchArguments extends
 	protected String getMemoryArgs() {
 		return "-Xms64m -Xmx512m "; //$NON-NLS-1$
 	}
+	
+	protected String getJaxpProvider() {
+		return ""; //$NON-NLS-1$
+	}
+
 }

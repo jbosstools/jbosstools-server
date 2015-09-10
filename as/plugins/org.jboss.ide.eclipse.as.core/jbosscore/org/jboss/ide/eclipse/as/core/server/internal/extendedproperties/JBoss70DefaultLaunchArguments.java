@@ -31,9 +31,14 @@ public class JBoss70DefaultLaunchArguments extends JBossDefaultLaunchArguments {
 	public String getStartDefaultProgramArgs() {
 		return DASH + JB7_MP_ARG + SPACE + QUOTE 
 				+ getServerHome().append(MODULES).toString() + QUOTE 
-				+ getLoggingProgramArg()
-				+ SPACE + DASH + JB7_JAXPMODULE + SPACE + JB7_JAXP_PROVIDER
+				+ getLoggingProgramArg() + SPACE
+				+ getJaxpProvider() + SPACE
+				+ getJaxpProvider()
 				+ SPACE + JB7_STANDALONE_ARG;
+	}
+	
+	protected String getJaxpProvider() {
+		return DASH + JB7_JAXPMODULE + SPACE + JB7_JAXP_PROVIDER;
 	}
 	
 	protected String getLoggingProgramArg() {
