@@ -88,7 +88,7 @@ public class DoubleClickAction extends Action implements
 			}
 		} 
 
-		IEditorInput editorInput = EditorUtils.getEditorInput(element);
+		IEditorInput editorInput = element == null ? null : EditorUtils.getEditorInput(element);
 		if (editorInput != null) {
 			IEditorPart editor = EditorUtils
 					.openMBeanEditor(editorInput);

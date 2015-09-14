@@ -376,7 +376,11 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 			if( customJvm == null ) {
 				IActiveJvm active = JBossJVMFacadeUtility.findJvmForServer(server);
 				try {
-					customJvm = new JBossActiveJvm(this, active);
+					if( active != null ) {
+						customJvm = new JBossActiveJvm(this, active);
+					} else {
+						throw new JvmCoreException(IStatus.ERROR, "Cannot find matching local process for server " + server.getName(), null);
+					}
 				} catch(JvmCoreException jvmce) {
 					Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, jvmce.getMessage(), jvmce));
 				}

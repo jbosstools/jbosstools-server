@@ -205,8 +205,10 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 						
 						TreePath[] treePaths = RefreshActionState.getDefault().getExpansion(w);
 						ISelection sel = RefreshActionState.getDefault().getSelection(w);
-						((TreeViewer)viewer).setExpandedTreePaths(treePaths);
-						((TreeViewer)viewer).setSelection(sel);
+						if( treePaths != null )
+							((TreeViewer)viewer).setExpandedTreePaths(treePaths);
+						if( sel != null ) 
+							((TreeViewer)viewer).setSelection(sel);
 						
 					}
 				});
