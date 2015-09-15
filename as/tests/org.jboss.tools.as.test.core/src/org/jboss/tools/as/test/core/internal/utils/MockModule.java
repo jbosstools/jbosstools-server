@@ -22,11 +22,12 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jst.server.core.IEnterpriseApplication;
 import org.eclipse.jst.server.core.IJ2EEModule;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IModule2;
 import org.eclipse.wst.server.core.IModuleType;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 
-public class MockModule extends ModuleDelegate implements IModule, IEnterpriseApplication, IJ2EEModule {
+public class MockModule extends ModuleDelegate implements IModule, IModule2, IEnterpriseApplication, IJ2EEModule {
 	private String id, name;
 	private MockModuleType type;
 	private HashMap<IModule, String> children;
@@ -35,6 +36,7 @@ public class MockModule extends ModuleDelegate implements IModule, IEnterpriseAp
 	private boolean exists = false;
 	private boolean binary = false;
 	private boolean external = false;
+	private HashMap<String, String> props;
 	
 	public MockModule(final String id, final String name, 
 			final String typeId, final String typeName, final String typeVersion) {
@@ -43,6 +45,7 @@ public class MockModule extends ModuleDelegate implements IModule, IEnterpriseAp
 		this.type = new MockModuleType(typeId, typeName, typeVersion);
 		children = new HashMap<IModule, String>();
 		project = null;
+		props = new HashMap<String, String>();
 	}
 	public String getId() {
 		return id;
@@ -136,5 +139,14 @@ public class MockModule extends ModuleDelegate implements IModule, IEnterpriseAp
 		MockModule o2 = (MockModule)other;
 		return o2.getModuleType().getId().equals(getModuleType().getId()) && 
 				o2.getId().equals(getId()) && o2.getName().equals(getName());
+	}
+	
+	public void setProperty(String k, String v) {
+		props.put(k, v);
+	}
+	
+	@Override
+	public String getProperty(String key) {
+		return props.get(key);
 	}
 }

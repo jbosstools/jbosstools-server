@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.wst.server.core.IModule;
@@ -50,6 +51,7 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishControllerDeleg
 import org.jboss.ide.eclipse.as.wtp.core.server.launch.AbstractStartJavaServerLaunchDelegate;
 import org.jboss.ide.eclipse.as.wtp.core.server.publish.LocalZippedModulePublishRunner;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
+import org.jboss.tools.as.core.server.controllable.internal.DeployableServerBehavior;
 import org.jboss.tools.as.core.server.controllable.systems.IModuleDeployPathController;
 import org.jboss.tools.as.core.server.controllable.util.PublishControllerUtility;
 
@@ -170,7 +172,8 @@ public class ManagementPublishController extends AbstractSubsystemController
 	protected IModuleStateController getModuleStateController() throws CoreException {
 		if( moduleStateController == null && !moduleStateControllerLoadFailed) {
 			try {
-				moduleStateController = (IModuleStateController)findDependency(IModuleStateController.SYSTEM_ID);
+				DeployableServerBehavior o = (DeployableServerBehavior)getServer().loadAdapter(DeployableServerBehavior.class, new NullProgressMonitor());
+				moduleStateController = (IModuleStateController)o.getController(IModuleStateController.SYSTEM_ID);
 			} catch(CoreException ce) {
 				// Do not log; this is optional. But trace
 				moduleStateControllerLoadFailed = true;

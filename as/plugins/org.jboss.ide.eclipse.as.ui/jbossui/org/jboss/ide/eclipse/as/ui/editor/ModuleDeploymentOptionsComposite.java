@@ -44,6 +44,7 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IModule2;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.ui.ServerUICore;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
@@ -478,7 +479,14 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 	
 	
 	protected String getDefaultOutputName(IModule module) {
-		String lastSegment = new Path(module.getName()).lastSegment();
+		String tmpName = null;
+		if( module instanceof IModule2) {
+			tmpName = ((IModule2)module).getProperty(IModule2.PROP_DEPLOY_NAME);
+		}
+		if( tmpName == null ) {
+			tmpName = module.getName();
+		}
+		String lastSegment = new Path(tmpName).lastSegment();
 		String suffix = PublishUtil.getSuffix(module.getModuleType().getId());
 		String ret = lastSegment.endsWith(suffix) ? lastSegment : lastSegment + suffix;
 		return  ret;
