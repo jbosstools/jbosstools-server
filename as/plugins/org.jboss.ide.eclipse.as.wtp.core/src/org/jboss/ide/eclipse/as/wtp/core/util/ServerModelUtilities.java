@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jst.server.core.IJ2EEModule;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IModule2;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
@@ -49,7 +50,15 @@ public class ServerModelUtilities {
 		String modName, name, uri, suffixedName;
 		IPath working = null;
 		for( int i = 1; i < moduleTree.length; i++ ) {
-			modName = moduleTree[i].getName();
+			modName = null;
+			// Check if there's a deploy-name property
+			if (moduleTree[i] instanceof IModule2) {
+				modName = ((IModule2)moduleTree[i]).getProperty(IModule2.PROP_DEPLOY_NAME);
+			}
+			// Otherwise use the module's name
+			if( modName == null ) {
+				modName = moduleTree[i].getName();
+			}
 			name = new RemotePath(modName).lastSegment();
 			suffixedName = name + getDefaultSuffixForModule(moduleTree[i]);
 			uri = ModuleResourceUtil.getParentRelativeURI(moduleTree, i, suffixedName);

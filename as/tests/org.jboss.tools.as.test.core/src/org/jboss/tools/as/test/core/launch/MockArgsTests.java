@@ -71,13 +71,16 @@ public class MockArgsTests extends TestCase  {
 			JBossExtendedProperties props = (JBossExtendedProperties)server.loadAdapter(JBossExtendedProperties.class, new NullProgressMonitor());
 			String defaultArgs = props.getDefaultLaunchArguments().getStartDefaultProgramArgs().replace("\"", "");
 			String defaultVMArgs = props.getDefaultLaunchArguments().getStartDefaultProgramArgs().replace("\"", "");
-			assertTrue(command.replace("\"", "").contains(defaultArgs.trim()));
+			String safeQuotes = command.replace("\"", "").replaceAll("[ ]+", " ");
+			defaultArgs = defaultArgs.trim().replaceAll("[ ]+", " ");
+			assertTrue(safeQuotes + " should contain " + defaultArgs, safeQuotes.contains(defaultArgs));
 			
 			// This is done bc the only difference here will be in the "program name" argument, 
 			// which gets the runtime name or server name. In this case, it's the runtime name, since
 			// the API being used is deprecated and does not have reference to a server
 			defaultVMArgs = defaultVMArgs.replace(server.getRuntime().getRuntimeType().getId(), serverType);
-			assertTrue(command.replace("\"", "").trim().contains(defaultVMArgs.trim()));
+			defaultVMArgs = defaultVMArgs.trim().replaceAll("[ ]+", " ");
+			assertTrue(safeQuotes.contains(defaultVMArgs));
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

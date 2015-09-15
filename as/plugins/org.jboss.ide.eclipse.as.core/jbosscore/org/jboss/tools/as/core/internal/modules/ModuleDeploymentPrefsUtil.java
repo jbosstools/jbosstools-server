@@ -13,6 +13,7 @@ package org.jboss.tools.as.core.internal.modules;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IModule2;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -159,7 +160,7 @@ public class ModuleDeploymentPrefsUtil {
 	 * @return
 	 */
 	public IPath getModuleNestedDeployPath(IModule[] moduleTree, String rootFolder, IServerAttributes server, char separator) {
-		String modName, name, uri, suffixedName;
+		String modName, name, suffixedName;
 		IPath root = new RemotePath( rootFolder, separator );
 		
 		// First handle the root module
@@ -167,7 +168,15 @@ public class ModuleDeploymentPrefsUtil {
 		if( customName != null ) {
 			root = root.append(customName);
 		} else {
-			modName = moduleTree[0].getName();
+			modName = null;
+			// Check if there's a deploy-name property
+			if (moduleTree[0] instanceof IModule2) {
+				modName = ((IModule2)moduleTree[0]).getProperty(IModule2.PROP_DEPLOY_NAME);
+			}
+			if( modName == null ) {
+				modName = moduleTree[0].getName();
+			}
+			
 			name = new RemotePath(modName, separator).lastSegment();
 			suffixedName = name + getDefaultSuffix(moduleTree[0]);
 			root = root.append(suffixedName);
