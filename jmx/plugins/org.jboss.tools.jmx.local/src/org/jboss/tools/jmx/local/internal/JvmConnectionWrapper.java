@@ -249,11 +249,13 @@ public class JvmConnectionWrapper implements IConnectionWrapper,
 				String hostname = activeJvm.getHost().getName();
 				int pid = activeJvm.getPid();
 				VmModel model2 = RemoteDebugActivator.getDefault().getCachedVmModel(hostname, pid);
-				if( RemoteDebugActivator.getDefault().isDebugModel(model2)) {
-					vmModel = model2;
-				} else if(model2.getMainClass() == null ) {
-					// No main class, may be a suspended process
-					vmModel = model2;
+				if( model2 != null ) {
+					if( RemoteDebugActivator.getDefault().isDebugModel(model2)) {
+						vmModel = model2;
+					} else if(model2.getMainClass() == null ) {
+						// No main class, may be a suspended process
+						vmModel = model2;
+					}
 				}
 			}
 		}
