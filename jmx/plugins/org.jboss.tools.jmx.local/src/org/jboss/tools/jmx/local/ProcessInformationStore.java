@@ -99,7 +99,7 @@ public class ProcessInformationStore {
 					"-v"
 			};
 
-			Process p = Runtime.getRuntime().exec(jps.getAbsolutePath() + " -v");
+			Process p = Runtime.getRuntime().exec(cmd);
 			br = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String line = "";
 			while (!monitor.isCanceled() && (line = br.readLine()) != null) {
