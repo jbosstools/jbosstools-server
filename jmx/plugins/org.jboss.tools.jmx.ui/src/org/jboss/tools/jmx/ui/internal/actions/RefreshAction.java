@@ -12,8 +12,10 @@
 package org.jboss.tools.jmx.ui.internal.actions;
 
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -85,42 +87,54 @@ public class RefreshAction extends Action implements IWorkbenchWindowActionDeleg
 		}
 		else {
 			
-			IConnectionWrapper wrapper = null;
+			IConnectionWrapper wrapper2 = null;
 
 			// Identify the connection wrapper.
 			if (onode instanceof IConnectionWrapper)
-				wrapper = (IConnectionWrapper) onode;
+				wrapper2 = (IConnectionWrapper) onode;
 
 			else if (onode instanceof Node) {
 				Root r = ((Node) onode).getRoot();
-				wrapper = (r == null ? null : r.getConnection());
+				wrapper2 = (r == null ? null : r.getConnection());
 			}
 
-			if (wrapper != null && wrapper.isConnected()) {
+			if (wrapper2 != null && wrapper2.isConnected()) {
 				ISelection sel = viewer.getSelection();
 				TreePath[] paths = ((TreeViewer)viewer).getExpandedTreePaths();
-				RefreshActionState.getDefault().setSelection(wrapper, sel);
-				RefreshActionState.getDefault().setExpansion(wrapper, paths);
-				
-				try {
-					wrapper.disconnect();
-					wrapper.connect();
-					refreshViewer(wrapper);
-
-					if (viewer instanceof TreeViewer) {
-						TreeViewer treeViewer = (TreeViewer) viewer;
-						treeViewer.expandToLevel(wrapper, 1);
+				RefreshActionState.getDefault().setSelection(wrapper2, sel);
+				RefreshActionState.getDefault().setExpansion(wrapper2, paths);
+				final IConnectionWrapper wrapper = wrapper2;
+				new Job(Messages.RefreshActionJobTitle) {
+					protected IStatus run(IProgressMonitor monitor) {
+						try {
+							wrapper.disconnect();
+							wrapper.connect();
+							fireRefreshAsync(wrapper);
+						} catch (Exception ex) {
+						    Status status =
+							new Status(IStatus.ERROR, JMXActivator.PLUGIN_ID, JMXCoreMessages.RefreshJobFailed,	ex);
+							ErrorDialog.openError(Display.getCurrent().getActiveShell(), JMXCoreMessages.RefreshJob,
+									null, status);
+						}
+						return null;
 					}
-				} catch (Exception ex) {
-				    Status status =
-					new Status(IStatus.ERROR, JMXActivator.PLUGIN_ID, JMXCoreMessages.RefreshJobFailed,	ex);
-					ErrorDialog.openError(Display.getCurrent().getActiveShell(), JMXCoreMessages.RefreshJob,
-							null, status);
-				}
+				}.schedule();
 			}
 		}
 	}  // refreshObjectNode
 
+	private void fireRefreshAsync(final IConnectionWrapper wrapper) {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				refreshViewer(wrapper);
+				if (viewer instanceof TreeViewer) {
+					TreeViewer treeViewer = (TreeViewer) viewer;
+					treeViewer.expandToLevel(wrapper, 1);
+				}
+			}
+		});
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.jface.action.Action#run()
