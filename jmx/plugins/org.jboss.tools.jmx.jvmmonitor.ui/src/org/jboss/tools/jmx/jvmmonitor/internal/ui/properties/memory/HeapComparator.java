@@ -61,15 +61,15 @@ public class HeapComparator extends ViewerComparator {
         } else if (columnIndex == getColumnIndex(tree, HeapColumn.SIZE)) {
             long size1 = element1.getSize();
             long size2 = element2.getSize();
-            result = (size1 > size2) ? 1 : -1;
+            result = Long.compare(size1, size2);
         } else if (columnIndex == getColumnIndex(tree, HeapColumn.COUNT)) {
             long count1 = element1.getCount();
             long count2 = element2.getCount();
-            result = (count1 > count2) ? 1 : -1;
+            result = Long.compare(count1, count2);
         } else if (columnIndex == getColumnIndex(tree, HeapColumn.DELTA)) {
             long delta1 = element1.getSize() - element1.getBaseSize();
             long delta2 = element2.getSize() - element2.getBaseSize();
-            result = (delta1 > delta2) ? 1 : -1;
+            result = Long.compare(delta1, delta2);
         }
 
         if (sortDirection == SWT.DOWN) {
