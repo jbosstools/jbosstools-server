@@ -69,6 +69,7 @@ public class Messages extends NLS {
     public static String OpenMBeanAction_dialogTitle;
     public static String OpenMBeanAction_text;
     public static String OpenMBeanAction_tooltip;
+    public static String RefreshActionJobTitle;
     public static String RefreshAction_description;
     public static String RefreshAction_text;
     public static String RefreshAction_tooltip;
