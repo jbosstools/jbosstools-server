@@ -213,10 +213,19 @@ public class JavaMonitorPreferencePage extends PreferencePage implements
         updatePeriodText.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                validateUpdatePeriod();
+            	validatePage();
             }
         });
         updatePeriodText.addVerifyListener(createIntegerVerifier());
+    }
+    
+    private void validatePage() {
+    	setMessage(null);
+    	setValid(true);
+        boolean valid = validateUpdatePeriod() && validateUpdatePeriodTools() && validateMaxNumberOfClasses();
+        if( !valid ) {
+        	setValid(false);
+        }
     }
     
     private VerifyListener createIntegerVerifier() {
@@ -227,13 +236,15 @@ public class JavaMonitorPreferencePage extends PreferencePage implements
                 // get old text and create new text by using the VerifyEvent.text
                 final String oldS = text.getText();
                 String newS = oldS.substring(0, e.start) + e.text + oldS.substring(e.end);
-                boolean isInt = true;
-                try {
-                    Integer.parseInt(newS);
-                } catch(NumberFormatException ex) {
-                    isInt = false;
+                boolean isIntOrBlank = true;
+                if( !newS.isEmpty()) {
+	                try {
+	                    Integer.parseInt(newS);
+	                } catch(NumberFormatException ex) {
+	                	isIntOrBlank = false;
+	                }
                 }
-                if(!isInt)
+                if(!isIntOrBlank)
                     e.doit = false;
             }
         };
@@ -314,14 +325,14 @@ public class JavaMonitorPreferencePage extends PreferencePage implements
     /**
      * Validates the update period.
      */
-    void validateUpdatePeriod() {
+    boolean validateUpdatePeriod() {
 
         // check if text is empty
         String period = updatePeriodText.getText();
         if (period.isEmpty()) {
             setMessage(Messages.updatePeriodNotEnteredMsg,
                     IMessageProvider.WARNING);
-            return;
+            return false;
         }
 
         // check if text is integer
@@ -329,17 +340,17 @@ public class JavaMonitorPreferencePage extends PreferencePage implements
             Integer.parseInt(period);
         } catch (NumberFormatException e) {
             setMessage(Messages.illegalUpdatePeriodMsg, IMessageProvider.ERROR);
-            return;
+            return false;
         }
 
         // check if the value is within valid range
         if (Integer.valueOf(period) < MIN_UPDATE_PERIOD) {
             setMessage(Messages.updatePeriodOutOfRangeMsg,
                     IMessageProvider.ERROR);
-            return;
+            return false;
         }
 
-        setMessage(null);
+        return true;
     }
     
     
@@ -411,7 +422,7 @@ public class JavaMonitorPreferencePage extends PreferencePage implements
         updatePeriodTextTools.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-            	validateUpdatePeriodTools();
+            	validatePage();
             }
         });
         updatePeriodTextTools.addVerifyListener(createIntegerVerifier());
@@ -441,7 +452,7 @@ public class JavaMonitorPreferencePage extends PreferencePage implements
         maxNumberOfClassesText.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                validateMaxNumberOfClasses();
+            	validatePage();
             }
         });
         maxNumberOfClassesText.addVerifyListener(createIntegerVerifier());
@@ -452,14 +463,14 @@ public class JavaMonitorPreferencePage extends PreferencePage implements
     /**
      * Validates the update period.
      */
-    void validateUpdatePeriodTools() {
+    boolean validateUpdatePeriodTools() {
 
         // check if text is empty
         String period = updatePeriodTextTools.getText();
         if (period.isEmpty()) {
             setMessage(Messages.updatePeriodNotEnteredMsg,
                     IMessageProvider.WARNING);
-            return;
+            return false;
         }
 
         // check if text is integer
@@ -467,31 +478,31 @@ public class JavaMonitorPreferencePage extends PreferencePage implements
             Integer.parseInt(period);
         } catch (NumberFormatException e) {
             setMessage(Messages.illegalUpdatePeriodMsg, IMessageProvider.ERROR);
-            return;
+            return false;
         }
 
         // check if the value is within valid range
         if (Integer.valueOf(period) < MIN_UPDATE_PERIOD) {
             setMessage(Messages.updatePeriodOutOfRangeMsg,
                     IMessageProvider.ERROR);
-            return;
+            return false;
         }
 
-        setMessage(null);
+        return true;
     }
 
     /**
      * Validates the max number of classes.
      *
      */
-    void validateMaxNumberOfClasses() {
+    boolean validateMaxNumberOfClasses() {
 
         // check if text is empty
         String period = maxNumberOfClassesText.getText();
         if (period.isEmpty()) {
             setMessage(Messages.enterMaxNumberOfClassesMsg,
                     IMessageProvider.WARNING);
-            return;
+            return false;
         }
 
         // check if text is integer
@@ -500,16 +511,15 @@ public class JavaMonitorPreferencePage extends PreferencePage implements
         } catch (NumberFormatException e) {
             setMessage(Messages.maxNumberOfClassesInvalidMsg,
                     IMessageProvider.ERROR);
-            return;
+            return false;
         }
 
         // check if the value is within valid range
         if (Integer.valueOf(period) <= 0) {
             setMessage(Messages.maxNumberOfClassesOutOfRangeMsg,
                     IMessageProvider.ERROR);
-            return;
+            return false;
         }
-
-        setMessage(null);
+        return true;
     }
 }
