@@ -34,6 +34,9 @@ import org.eclipse.ui.part.ShowInContext;
 import org.eclipse.ui.progress.UIJob;
 import org.jboss.tools.jmx.ui.Messages;
 
+/**
+ * Updates the given view with the input from the link helper service
+ */
 public class UpdateSelectionJob extends UIJob {
 
 	public static void launchJob(String viewId) {
@@ -44,8 +47,8 @@ public class UpdateSelectionJob extends UIJob {
         if( ref != null ) {
             IWorkbenchPart part = ref.getPart(false);
             if ( part != null && page.isPartVisible(part)) {
-		if( part instanceof CommonNavigator)
-			new UpdateSelectionJob((CommonNavigator)part).schedule();
+				if( part instanceof CommonNavigator)
+					new UpdateSelectionJob((CommonNavigator)part).schedule();
             }
         }
 	}
@@ -54,7 +57,7 @@ public class UpdateSelectionJob extends UIJob {
 	private CommonNavigator commonNavigator;
 	private LinkHelperService linkService;
 	public UpdateSelectionJob(CommonNavigator commonNavigator) {
-		super(Messages.UpdatingSelectionJob); // TODO 
+		super(Messages.UpdatingSelectionJob);
 		this.commonNavigator = commonNavigator;
 		if( commonNavigator instanceof JMXNavigator ) {
 			linkService = ((JMXNavigator)commonNavigator).getLinkHelperService();
@@ -67,22 +70,27 @@ public class UpdateSelectionJob extends UIJob {
 			SafeRunner.run(new ISafeRunnable() {
 
 				public void run() throws Exception {
-					IWorkbenchPage page = commonNavigator.getSite()
+					IWorkbenchPage page = commonNavigator.getSite() 
 							.getPage();
 					if (page != null) {
 						IEditorPart editor = page.getActiveEditor();
 						if (editor != null) {
 							IEditorInput input = editor.getEditorInput();
-							// TODO is this equivalent to the now removed org.eclipse.ui.internal.navigator.LinkHelperService code?
-							commonNavigator.show(new ShowInContext(input, commonNavigator.getCommonViewer().getSelection()));
-							/*
-							IStructuredSelection newSelection = linkService.getSelectionFor(input);
-							if (!newSelection.isEmpty() &&
-									!allShown((IStructuredSelection)commonNavigator.getCommonViewer().getSelection(),
-											newSelection)) {
-								commonNavigator.selectReveal(newSelection);
+							boolean preLink = commonNavigator.isLinkingEnabled();
+							if( preLink ) {
+								commonNavigator.setLinkingEnabled(false);
+								try {
+									IStructuredSelection newSelection = linkService.getSelectionFor(input); 
+									commonNavigator.show(new ShowInContext(input, commonNavigator.getCommonViewer().getSelection()));
+									if (!newSelection.isEmpty() &&
+											!allShown((IStructuredSelection)commonNavigator.getCommonViewer().getSelection(),
+													newSelection)) {
+										commonNavigator.selectReveal(newSelection);
+									}
+								} finally {
+									commonNavigator.setLinkingEnabled(true);
+								}
 							}
-							*/
 						}
 					}
 				}
