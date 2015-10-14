@@ -127,7 +127,7 @@ public class RefreshAction extends Action implements IWorkbenchWindowActionDeleg
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				refreshViewer(wrapper);
-				if (viewer instanceof TreeViewer) {
+				if (viewer instanceof TreeViewer && !((TreeViewer) viewer).getTree().isDisposed()) {
 					TreeViewer treeViewer = (TreeViewer) viewer;
 					treeViewer.expandToLevel(wrapper, 1);
 				}
