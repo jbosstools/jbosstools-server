@@ -12,8 +12,9 @@
 package org.jboss.tools.jmx.local.internal.ui;
 
 import org.eclipse.swt.graphics.Image;
+import org.jboss.tools.common.jdt.debug.tools.ToolsCore;
+import org.jboss.tools.common.jdt.debug.tools.ToolsCoreException;
 import org.jboss.tools.jmx.jvmmonitor.core.IActiveJvm;
-import org.jboss.tools.jmx.local.ProcessInformationStore;
 import org.jboss.tools.jmx.local.internal.Activator;
 import org.jboss.tools.jmx.local.internal.LocalVMSharedImages;
 import org.jboss.tools.jmx.local.ui.JVMLabelProviderDelegate;
@@ -31,7 +32,12 @@ public class MavenLabelProvider implements JVMLabelProviderDelegate {
 	public String getDisplayString(IActiveJvm jvm) {
 		String displayName = "maven" + jvm.getMainClass().substring(MAVEN_PREFIX.length());
 		if (!jvm.isRemote()) {
-			String pInfo = ProcessInformationStore.getDefault().queryProcessInformation(jvm.getPid());
+			String pInfo = null;
+			try {
+				pInfo= ToolsCore.getMainArgs(jvm.getHost().getName(), jvm.getPid());
+			} catch(ToolsCoreException tce) {
+				// Ignore
+			}
 			if (pInfo != null) {
 				int start = pInfo.indexOf(ECLIPSE_MAVEN_PROCESS_PREFIX);
 				if (start != -1) {
