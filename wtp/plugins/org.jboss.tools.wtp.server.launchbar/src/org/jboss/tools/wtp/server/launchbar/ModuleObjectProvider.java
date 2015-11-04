@@ -28,23 +28,29 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationListener;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.launchbar.core.ILaunchBarManager;
 import org.eclipse.launchbar.core.ILaunchObjectProvider;
+import org.eclipse.launchbar.ui.internal.Activator;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IModuleArtifact;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
+import org.eclipse.wst.server.core.model.ModuleArtifactDelegate;
+import org.eclipse.wst.server.ui.internal.Trace;
 import org.jboss.tools.wtp.server.launchbar.objects.LaunchedArtifacts;
 import org.jboss.tools.wtp.server.launchbar.objects.ModuleArtifactDetailsWrapper;
 import org.jboss.tools.wtp.server.launchbar.objects.ModuleArtifactWrapper;
@@ -314,25 +320,63 @@ public class ModuleObjectProvider implements ILaunchObjectProvider,
 
 	@Override
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+		// DO nothing if launchbar is disabled
+		IPreferenceStore store = new ScopedPreferenceStore(InstanceScope.INSTANCE, "org.eclipse.launchbar.ui");
+		boolean enabled = store.getBoolean(Activator.PREF_ENABLE_LAUNCHBAR);
+		if( !enabled ) {
+			return;
+		}
+		
+		
 		if( selection instanceof IStructuredSelection ) {
 			Object o = ((IStructuredSelection)selection).getFirstElement();
 			final IModuleArtifact[] moduleArtifacts = ServerPlugin.getModuleArtifacts(o);
 			if( moduleArtifacts != null && moduleArtifacts.length > 0 ) {
-				if( mostRecent != null ) {
+				
+				// FInd an artifact that is configured properly for this type of launch
+				// It must be an instance of ModuleArtifactDelegate and also be able to
+				// be created with a no-arg constructor and have its details transmitted
+				// via serialization. If it cannot do this, it isn't a valid artifact for
+				// this usecase. 
+				ModuleArtifactWrapper tmp = null;
+				for( int i = 0; i < moduleArtifacts.length && tmp != null; i++ ) {
+					if( canLoad(moduleArtifacts[i])) {
+						tmp = new ModuleArtifactWrapper(moduleArtifacts[i]);
+					}
+				}
+				
+				
+				if( tmp != null ) {
+					if( mostRecent != null) {
+						try {
+							if( !LaunchedArtifacts.getDefault().hasBeenLaunched(mostRecent))
+								manager.launchObjectRemoved(mostRecent);
+						} catch(CoreException ce) {
+							// TODO log
+						}
+					}
+					
+					mostRecent = tmp;
 					try {
-						if( !LaunchedArtifacts.getDefault().hasBeenLaunched(mostRecent))
-							manager.launchObjectRemoved(mostRecent);
+						manager.launchObjectAdded(mostRecent);
 					} catch(CoreException ce) {
 						// TODO log
 					}
 				}
-				mostRecent = new ModuleArtifactWrapper(moduleArtifacts[0]);
-				try {
-					manager.launchObjectAdded(mostRecent);
-				} catch(CoreException ce) {
-					// TODO log
-				}
+				
 			}
 		}
+	}
+	
+	private boolean canLoad(IModuleArtifact artifact) {
+		if (artifact instanceof ModuleArtifactDelegate) {
+			try {
+				Class c = Class.forName(artifact.getClass().getName());
+				if (c.newInstance() != null)
+					return true;
+			} catch (Throwable t) {
+			}
+		}
+		return false;
 	}
 }
