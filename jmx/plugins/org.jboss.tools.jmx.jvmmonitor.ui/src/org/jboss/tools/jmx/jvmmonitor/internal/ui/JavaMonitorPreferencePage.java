@@ -131,6 +131,11 @@ public class JavaMonitorPreferencePage extends PreferencePage implements
         setPreferenceStore(Activator.getDefault().getPreferenceStore());
     }
 
+    private IEclipsePreferences getToolsPluginPreferences() {
+    	IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(org.jboss.tools.jmx.jvmmonitor.tools.Activator.PLUGIN_ID);
+    	return prefs;
+    }
+    
     /*
      * @see PreferencePage#performOk()
      */
@@ -374,7 +379,7 @@ public class JavaMonitorPreferencePage extends PreferencePage implements
     }
 
     public boolean performOkTools() {
-    	IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID);
+    	IEclipsePreferences prefs = getToolsPluginPreferences();
     	prefs.putLong(org.jboss.tools.jmx.jvmmonitor.internal.tools.IConstants.UPDATE_PERIOD, Long.valueOf(updatePeriodTextTools.getText()));
     	prefs.putInt(org.jboss.tools.jmx.jvmmonitor.internal.tools.IConstants.MAX_CLASSES_NUMBER, Integer.valueOf(maxNumberOfClassesText.getText()));
     	try {
@@ -389,7 +394,7 @@ public class JavaMonitorPreferencePage extends PreferencePage implements
      * @see PreferencePage#performDefaults()
      */
     protected void performDefaultsTools() {
-    	IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID);
+    	IEclipsePreferences prefs = getToolsPluginPreferences();
         String updatePeriod = String.valueOf(prefs.get(org.jboss.tools.jmx.jvmmonitor.internal.tools.IConstants.UPDATE_PERIOD, 
         		String.valueOf(org.jboss.tools.jmx.jvmmonitor.internal.tools.IConstants.DEFAULT_UPDATE_PERIOD)));
         String maxClasses = String.valueOf(prefs.get(org.jboss.tools.jmx.jvmmonitor.internal.tools.IConstants.MAX_CLASSES_NUMBER, String.valueOf(org.jboss.tools.jmx.jvmmonitor.internal.tools.IConstants.DEFAULT_MAX_CLASSES_NUMBER)));
@@ -415,7 +420,7 @@ public class JavaMonitorPreferencePage extends PreferencePage implements
         label.setText(Messages.prefPageUpdatePeriodLabel);
 
         updatePeriodTextTools = new Text(group, SWT.BORDER);
-    	IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID);
+    	IEclipsePreferences prefs = getToolsPluginPreferences();
         String updatePeriod = String.valueOf(prefs.get(org.jboss.tools.jmx.jvmmonitor.internal.tools.IConstants.UPDATE_PERIOD, String.valueOf(org.jboss.tools.jmx.jvmmonitor.internal.tools.IConstants.DEFAULT_UPDATE_PERIOD)));
         updatePeriodTextTools.setText(String.valueOf(updatePeriod));
         updatePeriodTextTools.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -441,7 +446,7 @@ public class JavaMonitorPreferencePage extends PreferencePage implements
         group.setLayout(layout);
         group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-    	IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(Activator.PLUGIN_ID);
+    	IEclipsePreferences prefs = getToolsPluginPreferences();
         String maxClasses = String.valueOf(prefs.get(org.jboss.tools.jmx.jvmmonitor.internal.tools.IConstants.MAX_CLASSES_NUMBER, String.valueOf(org.jboss.tools.jmx.jvmmonitor.internal.tools.IConstants.DEFAULT_MAX_CLASSES_NUMBER)));
 
         
