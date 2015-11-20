@@ -198,7 +198,7 @@ public class FilesetActionProvider extends CommonActionProvider implements IDoub
 				String defaultFolder = o == null ? "" : o.getNewFilesetDefaultRootFolder(); //$NON-NLS-1$
 
 				if (defaultFolder != null) {
-					FilesetDialog d = new FilesetDialog(new Shell(), defaultFolder, iserver);
+					FilesetDialog d = new FilesetDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), defaultFolder, iserver);
 					if (d.open() == Window.OK) {
 						Fileset fs = d.getFileset();
 						wrapper.addFileset(fs);
