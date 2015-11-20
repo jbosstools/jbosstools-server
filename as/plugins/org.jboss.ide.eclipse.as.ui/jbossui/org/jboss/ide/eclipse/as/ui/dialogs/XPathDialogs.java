@@ -56,6 +56,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XMLDocumentRepository;
@@ -423,7 +424,7 @@ public class XPathDialogs {
 				}
 			};
 			try {
-				new ProgressMonitorDialog(new Shell()).run(true, true, op);
+				new ProgressMonitorDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell()).run(true, true, op);
 			} catch (InvocationTargetException e) {
 				//Do not need to do anything
 			} catch (InterruptedException e) {
@@ -707,7 +708,7 @@ public class XPathDialogs {
 			XPathResultNode[] items = getXPath(parentPath);
 			String[] attributes;
 			for( int i = 0; i < items.length; i++ ) {
-				attributes = items[0].getElementAttributeNames();
+				attributes = items[i].getElementAttributeNames();
 				for( int j = 0; j < attributes.length; j++ ) {
 					if( attributes[j].startsWith(remainder) && !names.contains(attributes[j]))
 						names.add(attributes[j]);

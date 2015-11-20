@@ -36,13 +36,7 @@ public class XPathTreeLabelProvider extends LabelProvider {
 		ImageDescriptor des = ImageDescriptor.createFromURL(JBossServerUIPlugin.getDefault().getBundle().getEntry("icons/XMLFile.gif")); //$NON-NLS-1$
 		rootImage = des.createImage();
 	}
-//	public boolean useNativeToolTip(Object object) {
-//        return true;
-//    }
-//	public String getToolTipText(Object element) {
-//	    return "BLAAAAAAAH";
-//	}
-	
+
 	public Image getImage(Object element) {
 		if( element instanceof ServerWrapper )
 			return rootImage;

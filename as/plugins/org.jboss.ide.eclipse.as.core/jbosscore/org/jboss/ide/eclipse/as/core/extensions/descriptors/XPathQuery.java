@@ -99,9 +99,12 @@ public class XPathQuery implements Serializable {
 	}
 	
 	private String getReplacedString(String original) {
-		 RuntimeVariableResolver resolver = new RuntimeVariableResolver(server.getRuntime());
-		 ExpressionResolver process = new ExpressionResolver(resolver);
-		 return process.resolve(original);
+		if( server != null ) {
+			 RuntimeVariableResolver resolver = new RuntimeVariableResolver(server.getRuntime());
+			 ExpressionResolver process = new ExpressionResolver(resolver);
+			 return process.resolve(original);
+		}
+		return original;
 	}
 	
 	private void setEffectiveBaseDir() {
