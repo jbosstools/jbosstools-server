@@ -104,8 +104,14 @@ public class ShowInWelcomePageActionProvider extends CommonActionProvider {
 	private boolean hasURL() {
 		IServer server = getServer();
 		ServerExtendedProperties props = (ServerExtendedProperties)server.loadAdapter(ServerExtendedProperties.class, new NullProgressMonitor());
-		if( props != null )
-			return props.hasWelcomePage();
+		if( props == null )
+			return false;
+		
+		try {
+			return getUrl() != null;
+		} catch(CoreException ce) {
+			// Ignore, expected
+		}
 		return false;
 	}
 	
