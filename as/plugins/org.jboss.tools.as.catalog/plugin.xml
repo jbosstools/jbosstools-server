@@ -102,6 +102,7 @@
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-web_7_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-web_7_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-web_7_1.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-web_7_1.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-web_8_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-web_8_0.xsd"/>
+		<uri name="http://www.jboss.org/j2ee/schema/jboss-web_10_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-web_10_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss_5_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss_5_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss_5_1.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss_5_1.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jbossws-web-services_1_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jbossws-web-services_1_0.xsd"/>
@@ -249,6 +250,7 @@
 		<uri name="urn:jboss:jboss-jpa:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-jpa_1_0.xsd"/>
 		<uri name="urn:jboss:jbossws-jaxws-config:4.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jbossws-jaxws-config_4_0.xsd"/>
 		<uri name="urn:jboss:jndi-binding-service:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jndi-binding-service_1_0.xsd"/>
+		<uri name="urn:jboss:messaging-activemq-deployment:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-messaging-activemq-deployment_1_0.xsd"/>
 		<uri name="urn:jboss:messaging-deployment:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-messaging-deployment_1_0.xsd"/>
 		<uri name="urn:jboss:module:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/module-1_0.xsd"/>
 		<uri name="urn:jboss:module:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/module-1_1.xsd"/>
