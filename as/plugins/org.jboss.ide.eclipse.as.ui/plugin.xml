@@ -8,14 +8,17 @@
 
    <extension
          point="org.eclipse.wst.server.ui.serverImages">
-      <image
-            icon="$nl$/icons/jboss.png"
-            typeIds="%AllJBossServerTypes"
-            id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
-      <image
-            icon="$nl$/icons/jboss.png"
-            typeIds="%AllJBossRuntimeTypes"
-            id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
+      <image typeIds="%RuntimeTypesJBoss6OrLower"  icon="$nl$/icons/jboss.png" id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
+      <image typeIds="%ServerTypesJBoss6OrLower" icon="$nl$/icons/jboss.png" id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
+      <image typeIds="%ServerTypesJBoss7"  icon="$nl$/icons/jboss.png" id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
+      <image typeIds="%RuntimeTypesJBoss7" icon="$nl$/icons/jboss.png" id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
+      <image typeIds="%ServerTypesJBoss7"  icon="$nl$/icons/jboss.png" id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
+      <image typeIds="%RuntimeTypesJBoss7" icon="$nl$/icons/jboss.png" id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
+      <image typeIds="%ServerTypesWildflyExclusive"  icon="$nl$/icons/wildfly_icon_16.png" id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
+      <image typeIds="%RuntimeTypesWildflyExclusive" icon="$nl$/icons/wildfly_icon_16.png" id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
+      <image typeIds="%ServerTypesWildflyEAP"  icon="$nl$/icons/jboss.png" id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
+      <image typeIds="%RuntimeTypesWildflyEAP" icon="$nl$/icons/jboss.png" id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
+
 
       <image
             icon="$nl$/icons/jboss.png"
