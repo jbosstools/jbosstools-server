@@ -275,7 +275,12 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 	}
 	
 	public ImageDescriptor getImageDescriptor() {
+		IServerAttributes server = (IServerAttributes)getTaskModel().getObject(TaskModel.TASK_SERVER);
+		String type = server.getServerType().getId();
 		String imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_LOGO;
+		if( type.startsWith(IJBossToolingConstants.WF_SERVER_PREFIX)) {
+			imageKey = JBossServerUISharedImages.WIZBAN_WILDFLY_LOGO;
+		}
 		return JBossServerUISharedImages.getImageDescriptor(imageKey);
 	}
 	
