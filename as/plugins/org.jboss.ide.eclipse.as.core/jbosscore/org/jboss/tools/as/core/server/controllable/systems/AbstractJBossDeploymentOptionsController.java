@@ -76,8 +76,10 @@ public abstract class AbstractJBossDeploymentOptionsController extends
 	@Override
 	public String getDeploymentsRootFolder(boolean absolute) {
 		String result = getDeployFolder(getCurrentDeploymentLocationType());
-		if( absolute ) {
-			result = makeGlobal(result);
+		if( result != null ) {
+			if( absolute ) {
+				result = makeGlobal(result);
+			}
 		}
 		return result;
 	}
@@ -85,8 +87,10 @@ public abstract class AbstractJBossDeploymentOptionsController extends
 	@Override
 	public String getDeploymentsTemporaryFolder(boolean absolute) {
 		String result = getTempDeployFolder(getCurrentDeploymentLocationType());
-		if( absolute ) {
-			return makeGlobal(result);
+		if( result != null ) {
+			if( absolute ) {
+				return makeGlobal(result);
+			}
 		}
 		return result;
 	}

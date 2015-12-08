@@ -65,7 +65,8 @@ public class LocalDeploymentOptionsController extends
 			}
 		}
 		if( type.equals(DEPLOY_SERVER)) {
-			return makeRelative(getExtendedProperties().getServerDeployLocation());
+			String depLoc = getExtendedProperties().getServerDeployLocation();
+			return depLoc == null ? null : makeRelative(depLoc);
 		}
 		if( ret == null || type.equals(DEPLOY_METADATA)) {
 			ret = getMetadataDeployLocation(getServer());

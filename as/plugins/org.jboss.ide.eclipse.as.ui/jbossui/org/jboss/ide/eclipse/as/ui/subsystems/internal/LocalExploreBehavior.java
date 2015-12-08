@@ -102,7 +102,9 @@ public class LocalExploreBehavior extends AbstractSubsystemController implements
 			IControllableServerBehavior cs = JBossServerBehaviorUtils.getControllableBehavior(server);
 			if( module == null ) {
 				IDeploymentOptionsController controller = (IDeploymentOptionsController)cs.getController(IDeploymentOptionsController.SYSTEM_ID);
-				p = new RemotePath(controller.getDeploymentsRootFolder(true), controller.getPathSeparatorCharacter());
+				String depRoot = controller.getDeploymentsRootFolder(true);
+				if( depRoot != null )
+					p = new RemotePath(depRoot, controller.getPathSeparatorCharacter());
 			} else {
 				IModuleDeployPathController controller = (IModuleDeployPathController)cs.getController(IModuleDeployPathController.SYSTEM_ID);
 				p = controller.getDeployDirectory(module);
