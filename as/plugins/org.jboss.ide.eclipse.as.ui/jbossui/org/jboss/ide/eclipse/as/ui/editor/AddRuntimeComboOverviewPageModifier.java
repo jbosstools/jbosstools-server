@@ -67,6 +67,8 @@ public class AddRuntimeComboOverviewPageModifier extends
 	private IRuntimeLifecycleListener runtimeListener;
 	protected boolean updating = false;
 
+	private Hyperlink link;
+
 	@Override
 	public void handlePropertyChanged(PropertyChangeEvent event) {
 		// TODO Auto-generated method stub
@@ -90,7 +92,7 @@ public class AddRuntimeComboOverviewPageModifier extends
 		
 		// runtime
 		if (serverWc != null && serverWc.getServerType() != null) {
-			final Hyperlink link = new Hyperlink(composite, SWT.NONE);
+			link = new Hyperlink(composite, SWT.NONE);
 			link.setText(Messages.serverEditorOverviewRuntime);
 			
 			// The following 2 lines would be unnecessary if we had a reference to the server editor's formtoolkit
@@ -105,10 +107,7 @@ public class AddRuntimeComboOverviewPageModifier extends
 						editRuntime(runtime);
 				}
 			});
-			
-			final IRuntime runtime = serverWc.getRuntime();
-			if (runtime == null || !ServerUIPlugin.hasWizardFragment(RuntimeUtils.getRuntimeTypeId(serverWc.getServerType())))
-				link.setEnabled(false);
+			updateLink();
 			
 			IRuntimeType runtimeType = serverWc.getServerType().getRuntimeType();
 			runtimes = ServerUIPlugin.getRuntimes(runtimeType);
@@ -119,33 +118,16 @@ public class AddRuntimeComboOverviewPageModifier extends
 			runtimeCombo.setLayoutData(data);
 			updateRuntimeCombo();
 			
-			if( runtime == null ) {
-				if( !requiresRuntime()) {
-					// we dont require, and found is -1, so select the last item (No Runtime)
-					String[] items = runtimeCombo.getItems();
-					if( items.length > 0 )
-						runtimeCombo.select(items.length-1);
-				}
-			} else {
-				int size = runtimes.length;
-				for (int i = 0; i < size; i++) {
-					if (runtimes[i].equals(runtime)) { 
-						runtimeCombo.select(i);
-						break;
-					}
-				}
-			}
-			
-			runtimeCombo.addSelectionListener(runtimeComboSelectionListener(link));
+			runtimeCombo.addSelectionListener(runtimeComboSelectionListener());
 			whs.setHelp(runtimeCombo, ContextIds.EDITOR_RUNTIME);
 			
 			// add runtime listener
-			runtimeListener = runtimeLifecycleListener(runtime);
+			runtimeListener = runtimeLifecycleListener();
 			ServerCore.addRuntimeLifecycleListener(runtimeListener);
 		}
 	}
 
-	protected IRuntimeLifecycleListener runtimeLifecycleListener(final IRuntime originalRuntime) {
+	protected IRuntimeLifecycleListener runtimeLifecycleListener() {
 		return new IRuntimeLifecycleListener() {
 			public void runtimeChanged(final IRuntime runtime2) {
 				// may be name change of current runtime
@@ -165,12 +147,6 @@ public class AddRuntimeComboOverviewPageModifier extends
 						
 						if (runtimeCombo != null && !runtimeCombo.isDisposed()) {
 							updateRuntimeCombo();
-							
-							int size2 = runtimes.length;
-							for (int i = 0; i < size2; i++) {
-								if (runtimes[i].equals(originalRuntime))
-									runtimeCombo.select(i);
-							}
 						}
 					}
 				});
@@ -181,12 +157,6 @@ public class AddRuntimeComboOverviewPageModifier extends
 					public void run() {
 						if (runtimeCombo != null && !runtimeCombo.isDisposed()) {
 							updateRuntimeCombo();
-							
-							int size2 = runtimes.length;
-							for (int i = 0; i < size2; i++) {
-								if (runtimes[i].equals(originalRuntime))
-									runtimeCombo.select(i);
-							}
 						}
 					}
 				});
@@ -197,48 +167,52 @@ public class AddRuntimeComboOverviewPageModifier extends
 					public void run() {
 						if (runtimeCombo != null && !runtimeCombo.isDisposed()) {
 							updateRuntimeCombo();
-							
-							int size2 = runtimes.length;
-							for (int i = 0; i < size2; i++) {
-								if (runtimes[i].equals(originalRuntime))
-									runtimeCombo.select(i);
-							}
 						}
 					}
 				});
 			}
 		};
 	}
-	protected SelectionListener runtimeComboSelectionListener(final Hyperlink link) {
+	protected SelectionListener runtimeComboSelectionListener() {
 		return (new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
-				try {
-					if (updating)
-						return;
-					updating = true;
-					int selIndex = runtimeCombo.getSelectionIndex();
-					IRuntime newRuntime = selIndex < runtimes.length ? runtimes[selIndex] : null;
-					
-					// are they both null
-					boolean bothNull = ( newRuntime == null && serverWc.getRuntime() == null );
-					// Which one is not null
-					IRuntime notNull = (newRuntime == null ? serverWc.getRuntime() : newRuntime);
-					// Which one is not equal to notNull
-					IRuntime notNotNull = (notNull == newRuntime ? serverWc.getRuntime() : newRuntime);
-					// if the values are equal, do not execute the command, as no change has been made
-					if(!( bothNull || notNull.equals(notNotNull)) ){
-						executeCommand(new SetServerRuntimeCommand(serverWc, newRuntime));
-					}
-					link.setEnabled(newRuntime != null && ServerUIPlugin.hasWizardFragment(RuntimeUtils.getRuntimeTypeId(newRuntime)));
-					updating = false;
-				} catch (Exception ex) {
-					// ignore
+				if(runtimeCombo != null && !runtimeCombo.isDisposed()) {
+					int selectedIndex = runtimeCombo.getSelectionIndex();
+					IRuntime newRuntime = selectedIndex < runtimes.length ? runtimes[selectedIndex] : null;
+					setNewRuntime(newRuntime);
 				}
 			}
 			public void widgetDefaultSelected(SelectionEvent e) {
 				widgetSelected(e);
 			}
 		});
+	}
+
+	protected void setNewRuntime(IRuntime newRuntime) {
+		try {
+			if (updating)
+				return;
+			updating = true;
+
+			if(changed(newRuntime, serverWc.getRuntime()) ){
+				executeCommand(new SetServerRuntimeCommand(serverWc, newRuntime));
+			}
+			updateLink();
+			updating = false;
+		} catch (Exception ex) {
+			// ignore
+		}
+	}
+
+	protected boolean changed(IRuntime newRuntime, IRuntime oldRuntime) {
+		return newRuntime == null ? oldRuntime != null : (oldRuntime == null || !newRuntime.equals(oldRuntime));
+	}
+
+	protected void updateLink() {
+		if(link != null && !link.isDisposed()) {
+			IRuntime runtime = serverWc.getRuntime();
+			link.setEnabled(runtime != null && ServerUIPlugin.hasWizardFragment(RuntimeUtils.getRuntimeTypeId(runtime)));
+		}
 	}
 	
 	protected void updateRuntimeCombo() {
@@ -268,8 +242,32 @@ public class AddRuntimeComboOverviewPageModifier extends
 			items[size2-1] = "(No Runtime)";
 		}
 		runtimeCombo.setItems(items);
+
+		syncRuntimeSelection();
 	}
 	
+	protected void syncRuntimeSelection() {
+		selectRuntimeInCombo(serverWc.getRuntime());
+	}
+
+	protected void selectRuntimeInCombo(IRuntime runtime) {
+		if(runtime == null) {
+			if(!requiresRuntime()) {
+				// we dont require, and found is -1, so select the last item (No Runtime)
+				String[] items = runtimeCombo.getItems();
+				if( items.length > 0 )
+					runtimeCombo.select(items.length - 1);
+			} else {
+				//It is the correct synchronization,otherwise we cannot save the 'auto'-selected runtime.
+				runtimeCombo.select(-1);
+			}
+		} else {
+			for (int i = 0; i < runtimes.length; i++) {
+				if (runtimes[i].equals(runtime))
+					runtimeCombo.select(i);
+			}
+		}
+	}
 
 	protected void editRuntime(IRuntime runtime) {
 		IRuntimeWorkingCopy runtimeWorkingCopy = runtime.createWorkingCopy();
