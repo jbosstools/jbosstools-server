@@ -455,7 +455,7 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 					String newDir = deployOpts.getDeploymentsRootFolder(false);
 					deployText.removeModifyListener(deployListener);
 					if( !deployText.getText().equals(newDir))
-						deployText.setText(newDir);
+						deployText.setText(newDir == null ? "" : newDir); //$NON-NLS-1$
 					deployText.addModifyListener(deployListener);
 					deployText.setEnabled(shouldEnableControl(deployText));
 					deployButton.setEnabled(shouldEnableControl(deployButton));
@@ -465,7 +465,7 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 					String newTemp = deployOpts.getDeploymentsTemporaryFolder(false);
 					tempDeployText.removeModifyListener(tempDeployListener);
 					if( !tempDeployText.getText().equals(newTemp))
-						tempDeployText.setText(newTemp);
+						tempDeployText.setText(newTemp == null ? "" : newTemp); //$NON-NLS-1$
 					tempDeployText.addModifyListener(tempDeployListener);
 					
 					tempDeployText.setEnabled(shouldEnableControl(tempDeployText));

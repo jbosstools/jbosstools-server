@@ -94,16 +94,19 @@ public class LocalDeploymentOptionsController extends
 			} else {
 				ret =getASLessThan7StyleServerTempFolder();
 			}
-			return makeRelative(ret);
+			return ret == null ? null : makeRelative(ret);
 		}
 		return null;
 	}
 	
 	protected String getAS7StyleServerTempFolder() {
 		IRuntime rt = getServer().getRuntime();
-		LocalJBoss7ServerRuntime jb7rt = (LocalJBoss7ServerRuntime)rt.loadAdapter(LocalJBoss7ServerRuntime.class, null);
-		IPath p = new Path(jb7rt.getBaseDirectory()).append(FOLDER_TMP);
-		return p.toString();
+		if(rt != null) {
+			LocalJBoss7ServerRuntime jb7rt = (LocalJBoss7ServerRuntime)rt.loadAdapter(LocalJBoss7ServerRuntime.class, null);
+			IPath p = new Path(jb7rt.getBaseDirectory()).append(FOLDER_TMP);
+			return p.toString();
+		}
+		return null;
 	}
 	protected String getASLessThan7StyleServerTempFolder() {
 		// AS6 and below
