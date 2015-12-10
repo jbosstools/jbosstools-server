@@ -104,11 +104,16 @@ public class ShowInWelcomePageActionProvider extends CommonActionProvider {
 	private boolean hasURL() {
 		IServer server = getServer();
 		ServerExtendedProperties props = (ServerExtendedProperties)server.loadAdapter(ServerExtendedProperties.class, new NullProgressMonitor());
+		// Server types that have not opted in get no welcome page support
 		if( props == null )
 			return false;
 		
 		try {
-			return getUrl() != null;
+			if( getModuleServer() != null ) {
+				return getUrl() != null;
+			} else {
+				return props.hasWelcomePage(); 
+			}
 		} catch(CoreException ce) {
 			// Ignore, expected
 		}
@@ -164,29 +169,9 @@ public class ShowInWelcomePageActionProvider extends CommonActionProvider {
 		String urlString = null;
 		IServer server = getServer();
 		if(server!=null && server.getServerState() == IServer.STATE_STARTED) {
-			// When a module is selected, behave as you would during run-on-server for project-level selection
 			ModuleServer ms = getModuleServer();
 			if(ms!=null) {
-				// Go through the wtp framework to find the proper launchable adapter for the project
-				JBTCustomHttpLaunchable launchable = getCustomLaunchable(server, ms.getModule());
-				// IF its one we provide, return its url directly
-				if( launchable != null ){
-					return (launchable).getURL().toString();
-				} 
-					
-				//Otherwise, do the magic we did in the past to try our best to come up with a url
-				IModule[] mss = ms.getModule();
-				IModule m = getWebModule(mss);
-				if(m!=null) {
-					IServer s = getServer();
-					Object o = s.loadAdapter(IURLProvider.class, null);
-					if(o instanceof IURLProvider) {
-						URL url = ((IURLProvider)o).getModuleRootURL(m);
-						if(url!=null) {
-							urlString = url.toString();
-						}
-					}
-				}
+				urlString = getWelcomePageURL(ms);
 			} else {
 				// When no module is selected,use welcome page url
 				ServerExtendedProperties props = (ServerExtendedProperties)server.loadAdapter(ServerExtendedProperties.class, new NullProgressMonitor());
@@ -196,6 +181,34 @@ public class ShowInWelcomePageActionProvider extends CommonActionProvider {
 		}
 		return urlString;
 	}
+
+	private String getWelcomePageURL(ModuleServer ms) throws CoreException {
+		// When a module is selected, behave as you would during run-on-server for project-level selection
+		if(ms!=null) {
+			// Go through the wtp framework to find the proper launchable adapter for the project
+			JBTCustomHttpLaunchable launchable = getCustomLaunchable(getServer(), ms.getModule());
+			// IF its one we provide, return its url directly
+			if( launchable != null ){
+				return (launchable).getURL().toString();
+			} 
+				
+			//Otherwise, do the magic we did in the past to try our best to come up with a url
+			IModule[] mss = ms.getModule();
+			IModule m = getWebModule(mss);
+			if(m!=null) {
+				IServer s = getServer();
+				Object o = s.loadAdapter(IURLProvider.class, null);
+				if(o instanceof IURLProvider) {
+					URL url = ((IURLProvider)o).getModuleRootURL(m);
+					if(url!=null) {
+						return url.toString();
+					}
+				}
+			}
+		}
+		return null;
+	}
+
 
 	private IModule getWebModule(IModule[] m) {
 		if(m.length>0) {
