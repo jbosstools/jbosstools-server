@@ -65,8 +65,6 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel.ServerProfile;
 import org.jboss.ide.eclipse.as.wtp.ui.profile.ProfileUI;
 import org.jboss.ide.eclipse.as.wtp.ui.util.FormDataUtility;
-import org.jboss.tools.usage.event.UsageEventType;
-import org.jboss.tools.usage.event.UsageReporter;
 
 /**
  * 
@@ -599,31 +597,17 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		if( cb != null && cb instanceof EditServerWizardBehaviourCallback) {
 			((EditServerWizardBehaviourCallback)cb).performFinish();
 		}
-		if( !isEditingServer()) {
-			trackNewServerEvent(1);
-		}
-	}
-
-	private void trackNewServerEvent(int succesful) {
-		IServerAttributes server = (IServerAttributes)getTaskModel().getObject(TaskModel.TASK_SERVER);
-		String serverType = "UNKNOWN";
-		if(server.getServerType()!=null) {
-			serverType = server.getServerType().getId();
-		}
-		UsageEventType eventType = JBossServerUIPlugin.getDefault().getNewServerEventType();
-		UsageReporter.getInstance().trackEvent(eventType.event(serverType, succesful));
-		
 	}
 
 	@Override
 	public void performCancel(IProgressMonitor monitor) throws CoreException {
 		super.performCancel(monitor);
-		trackNewServerEvent(0);
 	}
 	
 	public boolean hasComposite() {
 		return true;
 	}
+	
 	// get the wizard fragment for a *new* runtime 
 	protected WizardFragment getRuntimeWizardFragment() {
 		if( runtimeFragment == null && getTaskModel() != null) {

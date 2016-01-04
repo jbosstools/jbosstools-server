@@ -131,7 +131,8 @@ public class Messages extends NLS {
 	public static String JBossRuntimeStartup_The_JBoss_AS_H2_embedded_database;
 	public static String launch_requiresJDK; 
 
-
+	public static String UsageEventTypeServerIDLabelDescription;
+	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}
