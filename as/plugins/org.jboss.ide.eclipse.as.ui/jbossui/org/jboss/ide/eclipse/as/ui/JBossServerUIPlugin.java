@@ -17,21 +17,16 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.IDecoratorManager;
-import org.eclipse.ui.IStartup;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.ui.internal.ServerUIPreferences;
-import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.jboss.ide.eclipse.as.ui.console.ShowConsoleServerStateListener;
 import org.jboss.ide.eclipse.as.ui.dialogs.ModifyDeploymentScannerIntervalDialog.DeploymentScannerUIServerStartedListener;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.XPathRuntimeListener;
 import org.jboss.ide.eclipse.as.ui.wizards.JBInitialSelectionProvider;
-import org.jboss.tools.as.runtimes.integration.ServerRuntimesIntegrationActivator;
-import org.jboss.tools.usage.event.UsageEventType;
-import org.jboss.tools.usage.event.UsageReporter;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -41,8 +36,6 @@ public class JBossServerUIPlugin extends AbstractUIPlugin {
 
 	private static JBossServerUIPlugin plugin;
 	private ResourceBundle resourceBundle;
-
-	private UsageEventType newServerEventType;
 
 	// UI plugin id
 	public static final String PLUGIN_ID = "org.jboss.ide.eclipse.as.ui"; //$NON-NLS-1$
@@ -88,13 +81,6 @@ public class JBossServerUIPlugin extends AbstractUIPlugin {
 		ServerCore.addServerLifecycleListener(selectionProvider);
 		ServerCore.addRuntimeLifecycleListener(selectionProvider);
 		ServerCore.addRuntimeLifecycleListener(XPathRuntimeListener.getDefault()); 
-		
-		newServerEventType = new UsageEventType(ServerRuntimesIntegrationActivator.USAGE_COMPONENT_NAME, UsageEventType.getVersion(this), null, UsageEventType.NEW_ACTION, ServerRuntimesIntegrationActivator.USAGE_SERVER_ID_LABEL_DESCRIPTION, UsageEventType.SUCCESFULL_FAILED_VALUE_DESCRIPTION);
-		UsageReporter.getInstance().registerEvent(newServerEventType);
-	}
-
-	public UsageEventType getNewServerEventType() {
-		return newServerEventType;
 	}
 
 	/**

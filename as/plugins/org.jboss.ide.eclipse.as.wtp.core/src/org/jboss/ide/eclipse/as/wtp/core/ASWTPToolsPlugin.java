@@ -10,12 +10,18 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.wtp.core;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.jboss.tools.foundation.core.plugin.BaseCorePlugin;
 import org.jboss.tools.foundation.core.plugin.log.IPluginLog;
 import org.jboss.tools.foundation.core.plugin.log.StatusFactory;
+import org.jboss.tools.usage.event.UsageEventType;
+import org.jboss.tools.usage.event.UsageReporter;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -25,9 +31,14 @@ public class ASWTPToolsPlugin extends BaseCorePlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.jboss.ide.eclipse.as.wtp.core"; //$NON-NLS-1$
+	
+	// Usage detection
+	public static final String USAGE_COMPONENT_NAME = "server"; //$NON-NLS-1$
 
 	// The shared instance
 	private static ASWTPToolsPlugin plugin;
+
+	private UsageEventType newServerEventType;
 	
 	
 	/**
@@ -44,7 +55,26 @@ public class ASWTPToolsPlugin extends BaseCorePlugin {
 		super.start(context);
 		plugin = this;
 		super.registerDebugOptionsListener(PLUGIN_ID, new Trace(this), context);
-		//UnitedServerListenerManager.getDefault(); // force the listener framework
+		
+		new Job("Registering Listeners"){
+			protected IStatus run(IProgressMonitor monitor) {
+				newServerEventType = new UsageEventType(USAGE_COMPONENT_NAME, UsageEventType.getVersion(ASWTPToolsPlugin.this), 
+						null, UsageEventType.NEW_ACTION, Messages.UsageEventTypeServerIDLabelDescription, 
+						UsageEventType.SUCCESFULL_FAILED_VALUE_DESCRIPTION);
+				
+				UsageReporter.getInstance().registerEvent(newServerEventType);
+
+				UnitedServerListenerManager.getDefault().addListener(new UnitedServerListener() {
+					public void serverAdded(IServer server) {
+						UsageReporter.getInstance().trackEvent(newServerEventType.event(server.getServerType().getId()));
+					}
+					public boolean canHandleServer(IServer server) {
+						return true;
+					}
+				});
+				return Status.OK_STATUS;
+			}
+		}.schedule();
 	}
 
 	/*
