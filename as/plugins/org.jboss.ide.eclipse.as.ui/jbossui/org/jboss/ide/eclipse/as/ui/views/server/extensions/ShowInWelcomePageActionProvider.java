@@ -23,10 +23,12 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.browser.ImageResource;
 import org.eclipse.ui.navigator.CommonActionProvider;
 import org.eclipse.ui.navigator.CommonViewer;
@@ -43,6 +45,7 @@ import org.eclipse.wst.server.core.model.IURLProvider;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossLaunchAdapter.JBTCustomHttpLaunchable;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties.GetWelcomePageURLException;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.actions.ServerActionMessages;
 import org.jboss.ide.eclipse.as.ui.launch.JBTWebLaunchableClient;
@@ -175,8 +178,22 @@ public class ShowInWelcomePageActionProvider extends CommonActionProvider {
 			} else {
 				// When no module is selected,use welcome page url
 				ServerExtendedProperties props = (ServerExtendedProperties)server.loadAdapter(ServerExtendedProperties.class, new NullProgressMonitor());
-				if( props != null )
-					urlString = props.getWelcomePageUrl();
+				if( props != null ) {
+					try {
+						urlString = props.getWelcomePageUrl();
+					} catch (GetWelcomePageURLException e) {
+						if(e.getCause() != null) {
+							JBossServerUIPlugin.log(new Status(IStatus.WARNING, JBossServerUIPlugin.PLUGIN_ID, "No URL found for current selection '" + server.getName() + "'."));
+						}
+						Display.getDefault().asyncExec(new Runnable() {
+							public void run() {
+								MessageDialog.openWarning(
+										PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), 
+										"No URL found for current selection", e.getMessage());
+							}
+						});
+					}
+				}
 			}
 		}
 		return urlString;
