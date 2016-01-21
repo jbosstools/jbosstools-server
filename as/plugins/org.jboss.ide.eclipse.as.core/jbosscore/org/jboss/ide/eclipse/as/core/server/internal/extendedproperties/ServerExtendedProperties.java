@@ -18,6 +18,26 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 
 public class ServerExtendedProperties {
+
+	/**
+	 * Is thrown when method getWelcomePageUrl() cannot find some resources,
+	 * and there is a reason not to log exception, for example, user 
+	 * declined authentication, or resource is missing in user application.
+	 * This exception will be caught and shown in a warning dialog.
+	 * Otherwise, either NPE error dialog would be shown, or user would 
+	 * not be notified why browser is not open. 
+	 *
+	 */
+	public static class GetWelcomePageURLException extends Exception {
+		private static final long serialVersionUID = -3723110412526178637L;
+
+		public GetWelcomePageURLException(String message) {
+			super(message);
+		}
+		public GetWelcomePageURLException(String message, Throwable cause) {
+			super(message, cause);
+		}
+	}
 	protected IServer server;
 	protected IRuntime runtime;
 	
@@ -70,7 +90,7 @@ public class ServerExtendedProperties {
 		return false;
 	}
 	
-	public String getWelcomePageUrl() {
+	public String getWelcomePageUrl() throws GetWelcomePageURLException {
 		return null;
 	}
 	

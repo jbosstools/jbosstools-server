@@ -31,6 +31,7 @@ import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties.GetWelcomePageURLException;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
@@ -110,11 +111,13 @@ public class CreateServerCheckDefaultsTest extends TestCase {
 		if( props.canVerifyRemoteModuleState())
 			assertNotNull(props.getModuleStateVerifier());
 		if( props.hasWelcomePage()) {
-			String s = props.getWelcomePageUrl();
 			try {
+				String s = props.getWelcomePageUrl();
 				URL url = new URL(s);
 			} catch(MalformedURLException murle) {
 				fail(serverType + " has an invalid welcome page url: " + murle.getMessage());
+			} catch (GetWelcomePageURLException e) {
+				fail("GetWelcomePageURLException is not expected here: " + e.getMessage());
 			}
 		}
 	}
