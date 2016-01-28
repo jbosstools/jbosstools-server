@@ -13,10 +13,7 @@ package org.jboss.tools.as.runtimes.integration.internal;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -40,9 +37,7 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.tools.as.runtimes.integration.Messages;
 import org.jboss.tools.as.runtimes.integration.ServerRuntimesIntegrationActivator;
 import org.jboss.tools.as.runtimes.integration.internal.DriverUtility.DriverUtilityException;
-import org.jboss.tools.runtime.core.RuntimeCoreActivator;
 import org.jboss.tools.runtime.core.model.AbstractRuntimeDetectorDelegate;
-import org.jboss.tools.runtime.core.model.IRuntimeDetector;
 import org.jboss.tools.runtime.core.model.RuntimeDefinition;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
@@ -294,13 +289,14 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 		ServerBean serverBean = loader.getServerBean();
 		
 		if (serverBean.getBeanType() != null && !JBossServerType.UNKNOWN.equals(serverBean.getBeanType())) {
-			RuntimeDefinition runtimeDefinition = new RuntimeDefinition(serverBean.getName(), 
+			RuntimeDefinition runtimeDefinition = createDefinition(serverBean.getName(),
 					serverBean.getVersion(), serverBean.getUnderlyingTypeId(), new File(serverBean.getLocation()));
 			calculateIncludedRuntimeDefinition(runtimeDefinition, monitor);
 			return runtimeDefinition;
 		}
 		return null;
 	}
+	
 	
 	private void calculateIncludedRuntimeDefinition(
 			RuntimeDefinition runtimeDefinition, IProgressMonitor monitor) {
@@ -310,24 +306,7 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 			return;
 		}
 		
-		runtimeDefinition.getIncludedRuntimeDefinitions().clear();
-		Set<IRuntimeDetector> s = getNestedSearchRuntimeDetectors();
-		for(Iterator<IRuntimeDetector> i = s.iterator(); i.hasNext(); ) {
-			IRuntimeDetector iNext = i.next();
-			if( iNext.isEnabled() )
-				iNext.computeIncludedRuntimeDefinition(runtimeDefinition);
-		}
-	}
-	
-	/*
-	 * This method must clone the core model's set, because otherwise we will be modifying 
-	 * the actual model's set. Also, want to remove ourself from the list of acceptable handlers.
-	 */
-	private Set<IRuntimeDetector> getNestedSearchRuntimeDetectors() {
-		Set<IRuntimeDetector> runtimeDetectors = RuntimeCoreActivator.getDefault().getRuntimeDetectors();
-		TreeSet<IRuntimeDetector> cloned = new TreeSet<IRuntimeDetector>(runtimeDetectors);
-		cloned.remove(findMyDetector());
-		return cloned;
+		loadIncludedDefinitions(runtimeDefinition);
 	}
 
 	private boolean hasIncludedRuntimes(String type) {

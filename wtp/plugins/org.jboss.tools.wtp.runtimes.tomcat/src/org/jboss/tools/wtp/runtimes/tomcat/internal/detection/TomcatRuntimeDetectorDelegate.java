@@ -296,13 +296,12 @@ public class TomcatRuntimeDetectorDelegate extends AbstractRuntimeDetectorDelega
 		return null;
 	}
 
-	public static class TomcatRuntimeDefinition extends RuntimeDefinition {
+	public class TomcatRuntimeDefinition extends RuntimeDefinition {
 
 		private String runtimeTypeId;
-
 		public TomcatRuntimeDefinition(String name, String version,
 				String type, File location, String runtimeTypeId) {
-			super(name, version, type, location);
+			super(name, version, type, location, findMyDetector() );
 			this.runtimeTypeId = runtimeTypeId;
 		}
 
