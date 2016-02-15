@@ -370,7 +370,7 @@
                 how the roles are loaded.
             </xs:documentation>
         </xs:annotation>
-        <xs:choice>
+        <xs:choice minOccurs="0">
             <xs:element name="properties" type="propertiesFileType" minOccurs="0" />
             <xs:element name="plug-in" type="plug-inAuthType" minOccurs="0" />
             <xs:element name="ldap" type="ldapAuthorizationType" minOccurs="0" />
@@ -1513,6 +1513,8 @@
             <xs:annotation>
                 <xs:documentation>
                     Name of a socket-binding configuration declared in the server's socket-binding-group to use for a HTTPS socket.
+                    
+                    Note: When specified the interface must also be configured to reference a security realm with a configured keystore.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>

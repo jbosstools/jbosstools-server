@@ -5,25 +5,38 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
-public class GenerationMain {
+public class GeneratePluginXmlCatalog {
 	
 	private static ArrayList<String> errors = new ArrayList<String>();
 	private static ArrayList<XSDObject> xsdObjs  = new ArrayList<XSDObject>();
 	private static ArrayList<DTDObject> dtObjs = new ArrayList<DTDObject>();
 	
 	public static void main(String[] args) {
+		System.out.println("<!-- DTDs -->");
 		runDTDs();
+		System.out.println("\n\n<!-- XSD -->");
 		runXSDs();
 		
 		runXSDErrors();
 	}
 	
 	private static void runXSDErrors() {
+		// A list of namespaces that are common and are not an error. 
+		List<String> commonNamespaces = new ArrayList<String>();
+		commonNamespaces.add("http://xmlns.jcp.org/xml/ns/javaee");
+		commonNamespaces.add("http://java.sun.com/xml/ns/javaee");
+		commonNamespaces.add("http://java.sun.com/xml/ns/j2ee");
+		commonNamespaces.add("http://java.sun.com/xml/ns/j2ee");
+		commonNamespaces.add("http://java.sun.com/xml/ns/persistence");
+		
+		
 		HashMap<String, XSDObject> duplicateUriMap = new HashMap<String, XSDObject>();
 		
 		Iterator<XSDObject> xsdIt = xsdObjs.iterator();
@@ -32,7 +45,7 @@ public class GenerationMain {
 			if( duplicateUriMap.containsKey(o.getName())) {
 				String f1Name = duplicateUriMap.get(o.getName()).file.getName();
 				String f2Name = o.file.getName();
-				if( !f1Name.equals(f2Name))
+				if( !f1Name.equals(f2Name) && !commonNamespaces.contains(o.getName()))
 					System.err.println( f1Name + " is a duplicate with " + f2Name + " and has name " + o.getName());
 			}
 			duplicateUriMap.put(o.getName(), o);
@@ -48,15 +61,19 @@ public class GenerationMain {
 		File root = new File(new File("").getAbsolutePath());
 		File schemas = new File(root, "schema");
 		File xsd = new File(schemas, "xsd");
-		File[] all = xsd.listFiles();
-		
-		for( int i = 0; i < all.length; i++ ) {
-			if( !all[i].getName().equalsIgnoreCase(".gitignore")) {
-				XSDObject o = new XSDObject(all[i]);
+		List<File> all = Arrays.asList(xsd.listFiles());
+		all.sort(new Comparator<File>() {
+			public int compare(File o1, File o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
+		for( File f : all) {
+			if( !f.getName().equalsIgnoreCase(".gitignore")) {
+				XSDObject o = new XSDObject(f);
 				if( o.valid ) {
 					xsdObjs.add(o);
 				} else {
-					errors.add(all[i] + " is invalid: " + (o.validException == null ? "null" : o.validException.getMessage()));
+					errors.add(f + " is invalid: " + (o.validException == null ? "null" : o.validException.getMessage()));
 				}
 			}
 		}
@@ -96,7 +113,7 @@ public class GenerationMain {
 		
 		public String toString() {
 			StringBuffer sb = new StringBuffer();
-			sb.append("\t\t<public publicId=\"");
+			sb.append("\t\t<uri name=\"");
 			sb.append(getName());
 			sb.append("\" uri=\"");
 			sb.append(getUri());
@@ -105,7 +122,7 @@ public class GenerationMain {
 		}
 		
 		String getUri() {
-			String uri = "xsd/" + file.getName();
+			String uri = "platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/" + file.getName();
 			return uri;
 		}
 		
@@ -138,9 +155,15 @@ public class GenerationMain {
 		File schemas = new File(root, "schema");
 		File dtd = new File(schemas, "dtd");
 		File[] dtdFiles = dtd.listFiles();
-		for( int i = 0; i < dtdFiles.length; i++ ) {
+		List<File> sorted = Arrays.asList(dtdFiles);
+		sorted.sort(new Comparator<File>() {
+			public int compare(File o1, File o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
+		for( File f : sorted ) {
 			try {
-				handleDTD(dtdFiles[i]);
+				handleDTD(f);
 			} catch(IOException ioe) {
 				ioe.printStackTrace();
 			}
@@ -217,7 +240,7 @@ public class GenerationMain {
 			 
 			 */
 			
-			String uri = "dtd/" + f.getName();
+			String uri = "platform:/plugin/org.jboss.tools.as.catalog/schema/dtd/" + f.getName();
 			StringBuffer sb = new StringBuffer();
 			sb.append("\t\t\t<public publicId=\"");
 			sb.append(publicString);

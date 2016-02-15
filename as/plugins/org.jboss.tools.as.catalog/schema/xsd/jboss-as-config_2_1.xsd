@@ -413,7 +413,7 @@
                 how the roles are loaded.
             </xs:documentation>
         </xs:annotation>
-        <xs:choice>
+        <xs:choice minOccurs="0">
             <xs:element name="properties" type="propertiesFileType" minOccurs="0" />
             <xs:element name="plug-in" type="plug-inAuthType" minOccurs="0" />
             <xs:element name="ldap" type="ldapAuthorizationType" minOccurs="0" />
@@ -1028,7 +1028,7 @@
                                     After a referral has been followed should the original LDAP connection defined for
                                     group loading be used or should the connection from the last referral be used instead.
 
-                                    By default each attempt to load a group will revery back to the original connection as defined
+                                    By default each attempt to load a group will revert back to the original connection as defined
                                     in the configuration, however setting this attribute to false will cause subsequent searches to
                                     use the connection of the last referral.
                                 </xs:documentation>
@@ -1783,7 +1783,7 @@
                     <xs:element name="socket" type="http-management-socketType"/>
                 </xs:sequence>
                 <xs:attribute name="console-enabled" type="xs:boolean" use="optional" default="true"/>
-                <xs:attribute name="http-upgrade-enabled" type="xs:boolean" use="optional" default="true"/>
+                <xs:attribute name="http-upgrade-enabled" type="xs:boolean" use="optional" default="false"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1907,7 +1907,7 @@
                     <xs:element name="socket-binding" type="http-management-socket-binding-refType"/>
                 </xs:choice>
                 <xs:attribute name="console-enabled" type="xs:boolean" use="optional" default="true"/>
-                <xs:attribute name="http-upgrade-enabled" type="xs:boolean" use="optional" default="true"/>
+                <xs:attribute name="http-upgrade-enabled" type="xs:boolean" use="optional" default="false"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -1929,6 +1929,8 @@
             <xs:annotation>
                 <xs:documentation>
                     Name of a socket-binding configuration declared in the server's socket-binding-group to use for a HTTPS socket.
+                    
+                    Note: When specified the interface must also be configured to reference a security realm with a configured keystore.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -1964,14 +1966,18 @@
         <xs:attribute name="host" type="xs:string" use="optional" >
             <xs:annotation>
                 <xs:documentation>
-                    The remote domain controller's host name. If not set, a discovery option must be provided.
+                    The remote domain controller's host name. If not set, a discovery option must be provided,
+                    or the --cached-dc startup option must be used, or the --admin-only startup option must be used
+                    with the 'admin-only-policy' attribute set to a value other than 'fetch-from-master'.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
         <xs:attribute name="port" type="xs:integer" use="optional" >
             <xs:annotation>
                 <xs:documentation>
-                    The remote domain controller's port. If not set, a discovery option must be provided.
+                    The remote domain controller's port. If not set, a discovery option must be provided,
+                    or the --cached-dc startup option must be used, or the --admin-only startup option must be used
+                    with the 'admin-only-policy' attribute set to a value other than 'fetch-from-master'.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -2023,9 +2029,9 @@
                 <xs:annotation>
                     <xs:documentation>
                         <![CDATA[
-                        Contact the master host controller to pull down the current domain wide configuration,
-                        but do not actually register with the master as a member of the domain. If the master
-                        cannot be reached, the start of the host controller will fail.
+                        Unless the --cached-dc startup option was used, contact the master host controller to pull down
+                        the current domain wide configuration, but do not actually register with the master as a member
+                        of the domain. If the master cannot be reached, the start of the host controller will fail.
                         ]]>
                     </xs:documentation>
                 </xs:annotation>
