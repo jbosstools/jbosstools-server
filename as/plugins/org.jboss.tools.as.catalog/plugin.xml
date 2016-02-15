@@ -5,6 +5,26 @@
          point="org.eclipse.wst.xml.core.catalogContributions">
        <catalogContribution>
 <!-- DTDs -->
+			<public publicId="-//W3C//DTD XMLSCHEMA 200102//EN"
+				uri="platform:/plugin/org.jboss.tools.as.catalog/schema/dtd/XMLSchema.dtd"/>
+			<system systemId="http://www.w3.org/2001/XMLSchema.dtd"
+				uri="platform:/plugin/org.jboss.tools.as.catalog/schema/dtd/XMLSchema.dtd"/>
+
+			<public publicId="-//Puppy Crawl//DTD Check Configuration 1.2//EN"
+				uri="platform:/plugin/org.jboss.tools.as.catalog/schema/dtd/configuration_1_2.dtd"/>
+			<system systemId="http://www.puppycrawl.com/dtds/configuration_1_2.dtd"
+				uri="platform:/plugin/org.jboss.tools.as.catalog/schema/dtd/configuration_1_2.dtd"/>
+
+			<public publicId="-//GlassFish.org//DTD GlassFish Application Server 3.1 Resource Definitions//EN"
+				uri="platform:/plugin/org.jboss.tools.as.catalog/schema/dtd/glassfish-resources_1_5.dtd"/>
+			<system systemId="http://glassfish.org/dtds/glassfish-resources_1_5.dtd"
+				uri="platform:/plugin/org.jboss.tools.as.catalog/schema/dtd/glassfish-resources_1_5.dtd"/>
+
+			<public publicId="-//GlassFish.org//DTD GlassFish Application Server 3.1 Servlet 3.0//EN"
+				uri="platform:/plugin/org.jboss.tools.as.catalog/schema/dtd/glassfish-web-app_3_0-1.dtd"/>
+			<system systemId="http://glassfish.org/dtds/glassfish-web-app_3_0-1.dtd"
+				uri="platform:/plugin/org.jboss.tools.as.catalog/schema/dtd/glassfish-web-app_3_0-1.dtd"/>
+
 			<public publicId="-//JBoss//DTD J2EE Application 1.4//EN"
 				uri="platform:/plugin/org.jboss.tools.as.catalog/schema/dtd/jboss-app_4_0.dtd"/>
 			<system systemId="http://www.jboss.org/j2ee/dtd/jboss-app_4_0.dtd"
@@ -75,6 +95,11 @@
 			<system systemId="http://www.jboss.org/j2ee/dtd/jboss_5_0.dtd"
 				uri="platform:/plugin/org.jboss.tools.as.catalog/schema/dtd/jboss_5_0.dtd"/>
 
+			<public publicId="-//JBoss//DTD Web Service Reference 4.0//EN"
+				uri="platform:/plugin/org.jboss.tools.as.catalog/schema/dtd/service-ref_4_0.dtd"/>
+			<system systemId="http://www.jboss.org/j2ee/dtd/service-ref_4_0.dtd"
+				uri="platform:/plugin/org.jboss.tools.as.catalog/schema/dtd/service-ref_4_0.dtd"/>
+
 			<public publicId="-//JBoss//DTD Web Service Reference 4.2//EN"
 				uri="platform:/plugin/org.jboss.tools.as.catalog/schema/dtd/service-ref_4_2.dtd"/>
 			<system systemId="http://www.jboss.org/j2ee/dtd/service-ref_4_2.dtd"
@@ -88,6 +113,7 @@
 
 
 <!-- XSD -->
+		<uri name="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/oasis-200401-wss-wssecurity-utility-1.0.xsd"/>
 		<uri name="http://java.sun.com/xml/ns/j2ee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/application_1_4.xsd"/>
 		<uri name="http://java.sun.com/xml/ns/j2ee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/ejb-jar_2_1.xsd"/>
 		<uri name="http://java.sun.com/xml/ns/j2ee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/j2ee_1_4.xsd"/>
@@ -120,7 +146,10 @@
 		<uri name="http://java.sun.com/xml/ns/persistence" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/persistence_1_0.xsd"/>
 		<uri name="http://java.sun.com/xml/ns/persistence" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/persistence_2_0.xsd"/>
 		<uri name="http://java.sun.com/xml/ns/persistence/orm" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/orm_1_0.xsd"/>
+		<uri name="http://jboss.org/schema/arquillian" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/arquillian_1_0.xsd"/>
+		<uri name="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/assembly-1.1.2.xsd"/>
 		<uri name="http://www.jboss.com/ws-security/config" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ws-security_1_0.xsd"/>
+		<uri name="http://www.jboss.org/ironjacamar/schema" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/ironjacamar_1_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-app_7_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-app_7_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-client_5_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-client_5_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-client_5_1.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-client_5_1.xsd"/>
@@ -131,6 +160,7 @@
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-ejb3-2_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb3-2_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-web_10_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-web_10_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-web_5_1.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-web_5_1.xsd"/>
+		<uri name="http://www.jboss.org/j2ee/schema/jboss-web_6_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-web_6_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-web_7_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-web_7_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-web_7_1.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-web_7_1.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-web_7_2.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-web_7_2.xsd"/>
@@ -138,6 +168,8 @@
 		<uri name="http://www.jboss.org/j2ee/schema/jboss_5_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss_5_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss_5_1.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss_5_1.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jbossws-web-services_1_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jbossws-web-services_1_0.xsd"/>
+		<uri name="http://www.w3.org/2000/09/xmldsig#" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/xmldsig-core-schema.xsd"/>
+		<uri name="http://www.w3.org/2005/08/addressing" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/ws-addr.xsd"/>
 		<uri name="http://www.w3.org/XML/1998/namespace" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/xml.xsd"/>
 		<uri name="http://xmlns.jcp.org/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/application-client_7.xsd"/>
 		<uri name="http://xmlns.jcp.org/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/application_7.xsd"/>
@@ -159,6 +191,7 @@
 		<uri name="urn:ejb-cache:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb-cache_1_0.xsd"/>
 		<uri name="urn:ejb-pool:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb-pool_1_0.xsd"/>
 		<uri name="urn:iiop" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb-iiop_1_0.xsd"/>
+		<uri name="urn:infinispan:config:6.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/infinispan-config-6.0.xsd"/>
 		<uri name="urn:jboss:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss_1_0.xsd"/>
 		<uri name="urn:jboss:batch-jberet:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/batch-jberet_1_0.xsd"/>
 		<uri name="urn:jboss:cli:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-cli_1_0.xsd"/>
@@ -371,6 +404,8 @@
 		<uri name="urn:jboss:weld:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-weld-1_0.xsd"/>
 		<uri name="urn:jboss:weld:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-weld-1_1.xsd"/>
 		<uri name="urn:jboss:wildfly:ejb-timers:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-ejb-timer_1_0.xsd"/>
+		<uri name="urn:oasis:names:tc:xacml:2.0:context:schema:os" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/access_control-xacml-2.0-context-schema-os.xsd"/>
+		<uri name="urn:oasis:names:tc:xacml:2.0:policy:schema:os" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/access_control-xacml-2.0-policy-schema-os.xsd"/>
 		<uri name="urn:resource-adapter-binding" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb-resource-adapter-binding_1_0.xsd"/>
 		<uri name="urn:security" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb-security_1_0.xsd"/>
 		<uri name="urn:security-role" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb-security-role_1_0.xsd"/>
