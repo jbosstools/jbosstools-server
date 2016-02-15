@@ -26,7 +26,8 @@
            xmlns="urn:security"
            xmlns:javaee="http://java.sun.com/xml/ns/javaee"
            elementFormDefault="qualified"
-           attributeFormDefault="unqualified">
+           attributeFormDefault="unqualified"
+           version="1.0">
    <xs:import namespace="http://java.sun.com/xml/ns/javaee"/>
 
    <xs:element name="security" type="securityType" substitutionGroup="javaee:assembly-descriptor-entry"/>
