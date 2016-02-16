@@ -18,7 +18,7 @@ import org.eclipse.core.runtime.Path;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanTypeEAP.AbstractEAPTypeCondition;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
-public class ServerBeanTypeEAP6 extends JBossServerType {
+public class ServerBeanTypeEAP6 extends ServerBeanTypeEnterprise {
 	private static final String EAP60_DIR_META_INF = "modules/org/jboss/as/product/eap/dir/META-INF"; //$NON-NLS-1$
 	public ServerBeanTypeEAP6() {
 		super(

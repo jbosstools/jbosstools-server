@@ -15,7 +15,7 @@ import java.io.File;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanTypeEAP.AbstractEAPTypeCondition;
 
 
-public class ServerBeanTypeEAPStandalone extends JBossServerType {
+public class ServerBeanTypeEAPStandalone extends ServerBeanTypeEnterprise {
 	private static final String TWIDDLE_JAR_NAME = "twiddle.jar"; //$NON-NLS-1$
 	public ServerBeanTypeEAPStandalone() {
 		super(

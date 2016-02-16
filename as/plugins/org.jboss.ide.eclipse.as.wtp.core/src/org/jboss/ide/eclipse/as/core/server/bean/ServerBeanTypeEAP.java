@@ -14,7 +14,7 @@ import java.io.File;
 
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
-public class ServerBeanTypeEAP extends JBossServerType {
+public class ServerBeanTypeEAP extends ServerBeanTypeEnterprise {
 	private static final String TWIDDLE_JAR_NAME = "twiddle.jar"; //$NON-NLS-1$
 	public ServerBeanTypeEAP() {
 		super(

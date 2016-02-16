@@ -40,7 +40,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
+import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
@@ -48,6 +50,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.ui.IPreferenceKeys;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
@@ -118,7 +121,28 @@ public class JBossRuntimeWizardFragment extends RuntimeWizardFragment {
 	}
 
 	protected ImageDescriptor getImageDescriptor() {
+		IRuntime rt = (IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		IRuntimeType rtt = null;
+		if( rt == null ) {
+			IServerAttributes server = (IServerAttributes)getTaskModel().getObject(TaskModel.TASK_SERVER);
+			if( server != null ) {
+				rtt = server.getServerType().getRuntimeType();
+			}
+		} else {
+			rtt = rt.getRuntimeType();
+		}
+		
+		String type = rtt == null ? null : rtt.getId();
 		String imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_LOGO;
+		if( type != null ) {
+			if( type.startsWith(IJBossToolingConstants.WF_RUNTIME_PREFIX)) {
+				imageKey = JBossServerUISharedImages.WIZBAN_WILDFLY_LOGO;
+			} else if( RuntimeUtils.isEAP(rtt)) {
+				imageKey = JBossServerUISharedImages.WIZBAN_EAP_LOGO;
+			} else if( type.equals(IJBossToolingConstants.AS_70) || type.equals(IJBossToolingConstants.AS_71)) {
+				imageKey = JBossServerUISharedImages.WIZBAN_AS7_LOGO;
+			}
+		}
 		return JBossServerUISharedImages.getImageDescriptor(imageKey);
 	}
 

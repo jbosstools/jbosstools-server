@@ -278,6 +278,10 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		String imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_LOGO;
 		if( type.startsWith(IJBossToolingConstants.WF_SERVER_PREFIX)) {
 			imageKey = JBossServerUISharedImages.WIZBAN_WILDFLY_LOGO;
+		} else if( RuntimeUtils.isEAP(server.getServerType().getRuntimeType())) {
+			imageKey = JBossServerUISharedImages.WIZBAN_EAP_LOGO;
+		} else if( type.equals(IJBossToolingConstants.SERVER_AS_70) || type.equals(IJBossToolingConstants.SERVER_AS_71)) {
+			imageKey = JBossServerUISharedImages.WIZBAN_AS7_LOGO;
 		}
 		return JBossServerUISharedImages.getImageDescriptor(imageKey);
 	}
