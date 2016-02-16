@@ -14,7 +14,7 @@ import java.io.File;
 
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
-public class ServerBeanTypeEAP61 extends JBossServerType {
+public class ServerBeanTypeEAP61 extends ServerBeanTypeEnterprise {
 	private static final String EAP61_DIR_META_INF = "modules/system/layers/base/org/jboss/as/product/eap/dir/META-INF"; //$NON-NLS-1$
 	public ServerBeanTypeEAP61() {
 		super(

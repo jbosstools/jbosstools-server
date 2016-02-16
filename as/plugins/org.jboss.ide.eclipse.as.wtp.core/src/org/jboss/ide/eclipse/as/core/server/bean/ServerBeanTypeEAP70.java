@@ -15,7 +15,7 @@ import java.io.File;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanTypeEAP61.EAP61ServerTypeCondition;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
-public class ServerBeanTypeEAP70 extends JBossServerType {
+public class ServerBeanTypeEAP70 extends ServerBeanTypeEnterprise {
 	private static final String WF_100_RELEASE_MANIFEST_KEY = "JBoss-Product-Release-Version"; //$NON-NLS-1$
 	public ServerBeanTypeEAP70() {
 		super(

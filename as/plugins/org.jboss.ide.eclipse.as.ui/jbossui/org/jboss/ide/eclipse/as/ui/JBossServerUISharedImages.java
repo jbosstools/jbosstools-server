@@ -40,6 +40,8 @@ public class JBossServerUISharedImages {
 	public static final String IMG_JBOSS_CONFIGURATION = "jbossconfiguration"; //$NON-NLS-1$
 
 	public static final String WIZBAN_JBOSS_LOGO = "jbossLogo"; //$NON-NLS-1$
+	public static final String WIZBAN_EAP_LOGO = "eap_wizban"; //$NON-NLS-1$
+	public static final String WIZBAN_AS7_LOGO = "as7_wizban"; //$NON-NLS-1$
 	public static final String WIZBAN_WILDFLY_LOGO = "wildflyBanner"; //$NON-NLS-1$
 	public static final String TWIDDLE_IMAGE = "TWIDDLE_IMAGE"; //$NON-NLS-1$
 	public static final String INACTIVE_CATEGORY_IMAGE = "INACTIVE_CATEGORY_IMAGE"; //$NON-NLS-1$
@@ -67,6 +69,8 @@ public class JBossServerUISharedImages {
 		descriptors.put(IMG_JBOSS, createImageDescriptor(pluginBundle, "/icons/jboss.gif")); //$NON-NLS-1$
 		descriptors.put(IMG_JBOSS_CONFIGURATION, createImageDescriptor(pluginBundle, "/icons/jboss-configuration.gif")); //$NON-NLS-1$
 		
+		descriptors.put(WIZBAN_EAP_LOGO, createImageDescriptor(pluginBundle, "/icons/eap_wizban.png")); //$NON-NLS-1$
+		descriptors.put(WIZBAN_AS7_LOGO, createImageDescriptor(pluginBundle, "/icons/as7_wizban.png")); //$NON-NLS-1$
 		descriptors.put(WIZBAN_JBOSS_LOGO, createImageDescriptor(pluginBundle, "/icons/JBoss_byRH_logo_rgb.png")); //$NON-NLS-1$
 		descriptors.put(WIZBAN_WILDFLY_LOGO, createImageDescriptor(pluginBundle, "/icons/wildfly_wizban.png")); //$NON-NLS-1$
 		descriptors.put(TWIDDLE_IMAGE, createImageDescriptor(pluginBundle, "icons/twiddle.gif")); //$NON-NLS-1$
