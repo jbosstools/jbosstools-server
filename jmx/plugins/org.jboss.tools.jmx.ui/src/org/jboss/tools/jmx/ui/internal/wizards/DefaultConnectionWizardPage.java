@@ -355,6 +355,9 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 
 	protected boolean nameTaken(String s) {
 		IConnectionProvider provider = ExtensionManager.getProvider(DefaultConnectionProvider.PROVIDER_ID);
+		if(initialConnection != null && s != null && s.equals(provider.getName(initialConnection))) {
+			return false;
+		}
 		IConnectionWrapper[] connections = provider.getConnections();
 		for( int i = 0; i < connections.length; i++ ) {
 			if( provider.getName(connections[i]).equals(s)) {
