@@ -13,6 +13,9 @@ package org.jboss.tools.jmx.ui.internal.actions;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.ui.Messages;
 import org.jboss.tools.jmx.ui.internal.wizards.EditConnectionWizard;
@@ -26,8 +29,10 @@ public class EditConnectionAction extends Action {
 		setText(Messages.EditConnectionAction); 
 	}
 	public void run() {
+		IWorkbench wb = PlatformUI.getWorkbench();
+		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
 		EditConnectionWizard wizard = new EditConnectionWizard(connection);
-		WizardDialog d = new WizardDialog(new Shell(), wizard);
+		WizardDialog d = new WizardDialog(win != null ? win.getShell() : new Shell(), wizard);
 		d.open();
 	}
 }
