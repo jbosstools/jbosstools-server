@@ -184,6 +184,7 @@
 		<uri name="http://xmlns.jcp.org/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/web-facesconfig_2_2.xsd"/>
 		<uri name="http://xmlns.jcp.org/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/web-fragment_3_1.xsd"/>
 		<uri name="http://xmlns.jcp.org/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/web-partialresponse_2_2.xsd"/>
+		<uri name="urn:clustering:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb-clustering_1_0.xsd"/>
 		<uri name="urn:clustering:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb-clustering_1_1.xsd"/>
 		<uri name="urn:container-interceptors:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb-container-interceptors_1_0.xsd"/>
 		<uri name="urn:delivery-active:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb-delivery-active_1_0.xsd"/>
