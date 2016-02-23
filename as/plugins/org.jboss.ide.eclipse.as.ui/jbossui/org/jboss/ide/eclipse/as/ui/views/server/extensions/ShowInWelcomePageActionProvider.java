@@ -181,7 +181,7 @@ public class ShowInWelcomePageActionProvider extends CommonActionProvider {
 				if( props != null ) {
 					try {
 						urlString = props.getWelcomePageUrl();
-					} catch (GetWelcomePageURLException e) {
+					} catch (final GetWelcomePageURLException e) {
 						if(e.getCause() != null) {
 							JBossServerUIPlugin.log(new Status(IStatus.WARNING, JBossServerUIPlugin.PLUGIN_ID, "No URL found for current selection '" + server.getName() + "'."));
 						}
