@@ -115,8 +115,9 @@ public class RefreshAction extends Action implements IWorkbenchWindowActionDeleg
 							new Status(IStatus.ERROR, JMXActivator.PLUGIN_ID, JMXCoreMessages.RefreshJobFailed,	ex);
 							ErrorDialog.openError(Display.getCurrent().getActiveShell(), JMXCoreMessages.RefreshJob,
 									null, status);
+							return status;
 						}
-						return null;
+						return Status.OK_STATUS;
 					}
 				}.schedule();
 			}
