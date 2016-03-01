@@ -33,10 +33,10 @@ public class ServerBeanTypeEAP70 extends ServerBeanTypeEnterprise {
 			return IJBossToolingConstants.SERVER_EAP_70;
 		}
 		public boolean isServerRoot(File location) {
-			return getEAP6xVersion(location, EAP70_DIR_META_INF, "7.", "eap", "EAP") != null; //$NON-NLS-1$
+			return getEAP6xVersion(location, EAP70_DIR_META_INF, "7.", "eap", "JBoss EAP") != null; //$NON-NLS-1$
 		}
 		public String getFullVersion(File location, File systemJarFile) {
-			return getEAP6xVersion(location, EAP70_DIR_META_INF, "7.", "eap", "EAP"); //$NON-NLS-1$
+			return getEAP6xVersion(location, EAP70_DIR_META_INF, "7.", "eap", "JBoss EAP"); //$NON-NLS-1$
 		}
 	}
 }
