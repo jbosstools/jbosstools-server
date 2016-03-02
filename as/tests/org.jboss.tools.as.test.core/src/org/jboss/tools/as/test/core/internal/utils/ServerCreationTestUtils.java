@@ -344,7 +344,7 @@ public class ServerCreationTestUtils extends Assert {
 
 	private static IPath createEAP70StyleMockServerDirectory(String name, String serverTypeId, String serverJar) {
 		IPath loc = mockedServers.append(name);
-		String manString = "JBoss-Product-Release-Name: EAP\nJBoss-Product-Release-Version: 7.0.0.Alpha\nJBoss-Product-Console-Slot: eap";
+		String manString = "JBoss-Product-Release-Name: JBoss EAP\nJBoss-Product-Release-Version: 7.0.0.GA\nJBoss-Product-Console-Slot: eap";
 		createAS7xProductStructure(loc, true, serverJar, "eap", manString);
 		return loc;
 	}
