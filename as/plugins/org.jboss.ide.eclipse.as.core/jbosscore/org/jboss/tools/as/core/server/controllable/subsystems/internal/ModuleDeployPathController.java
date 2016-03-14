@@ -100,21 +100,25 @@ public class ModuleDeployPathController extends AbstractSubsystemController
 		// IF the array is of size 1, it will pull from prefs.
 		// If the array is larger, it will pull from the relative path of the child to its parent module
 		IServerAttributes server = getServerOrWC();
-		IPath p = new ModuleDeploymentPrefsUtil().getModuleNestedDeployPath(module, "/", server); //$NON-NLS-1$
+		IPath p = createModuleDeploymentPrefsUtil().getModuleNestedDeployPath(module, "/", server); //$NON-NLS-1$
 		return p.lastSegment();
 	}
 
+	protected ModuleDeploymentPrefsUtil createModuleDeploymentPrefsUtil() {
+		return new ModuleDeploymentPrefsUtil();
+	}
+	
 	@Override
 	public IPath getDeployDirectory(IModule[] module) {
 		IServerAttributes server = getServerOrWC();
-		IPath fullPath = new ModuleDeploymentPrefsUtil().getModuleTreeDestinationFullPath(module, server, getDefaultDeployFolder(), getTargetSystemSeparator());
+		IPath fullPath = createModuleDeploymentPrefsUtil().getModuleTreeDestinationFullPath(module, server, getDefaultDeployFolder(), getTargetSystemSeparator());
 		return fullPath;
 	}
 
 	@Override
 	public IPath getTemporaryDeployDirectory(IModule[] module) {
 		IServerAttributes server = getServerOrWC();
-		IPath fullPath = new ModuleDeploymentPrefsUtil().getModuleTempDeployPath(module, server, getDefaultTmpDeployFolder(), getTargetSystemSeparator());
+		IPath fullPath = createModuleDeploymentPrefsUtil().getModuleTempDeployPath(module, server, getDefaultTmpDeployFolder(), getTargetSystemSeparator());
 		return fullPath;
 	}
 

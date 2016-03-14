@@ -190,7 +190,7 @@ public class ModuleDeploymentPrefsUtil {
 		return ServerModelUtilities.getRootModuleRelativePath(server, moduleTree);
 	}
 	
-	private String getOutputNameFromSettings(IServerAttributes server, IModule module) {
+	protected String getOutputNameFromSettings(IServerAttributes server, IModule module) {
 		DeploymentPreferences prefs = DeploymentPreferencesLoader.loadPreferencesFromServer(server);
 		DeploymentTypePrefs typePrefs = prefs.getOrCreatePreferences();
 		DeploymentModulePrefs modPrefs = typePrefs.getModulePrefs(module);

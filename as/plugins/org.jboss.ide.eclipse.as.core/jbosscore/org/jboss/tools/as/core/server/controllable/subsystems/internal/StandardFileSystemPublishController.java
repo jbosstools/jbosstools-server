@@ -187,9 +187,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 	 */
 	protected IModuleDeployPathController getDeployPathController() throws CoreException {
 		if( deployPathController == null ) {
-			Map<String, Object> env = getEnvironment() == null ? new HashMap<String, Object>() : new HashMap<String, Object>(getEnvironment());
-			env.put(IModuleDeployPathController.ENV_DEPLOYMENT_OPTIONS_CONTROLLER, getDeploymentOptions());
-			deployPathController = (IModuleDeployPathController)findDependency(IModuleDeployPathController.SYSTEM_ID, getServer().getServerType().getId(), env);
+			return (IModuleDeployPathController)findDependencyFromBehavior(IModuleDeployPathController.SYSTEM_ID);
 		}
 		return deployPathController;
 	}
@@ -253,13 +251,17 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		((Server)s).setServerPublishState(getUpdatedPublishState(s));
 		
 
+		launchUpdateModuleStateJob();
+	}
+
+	protected void launchUpdateModuleStateJob() throws CoreException {
 		// update the wtp model with live module state from the server
 		IModuleStateController c = getModuleStateController();
 		if( c != null && getServer().getServerState() == IServer.STATE_STARTED) {
 			new UpdateModuleStateJob( c, getServer(), true, 15000).schedule(5000);
 		}
 	}
-
+	
 	private int getUpdatedPublishState(IServer server) {
         IModule[] modules = server.getModules();
         boolean allpublished= true;
@@ -350,7 +352,9 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		} else if( publishType == PublishControllerUtility.INCREMENTAL_PUBLISH) {
 			PublishModuleIncrementalRunner runner = new PublishModuleIncrementalRunner(getFilesystemController(), archiveDestination);
 			IModuleResourceDelta[] cleanDelta = filter != null ? filter.getFilteredDelta(getDeltaForModule(module)) : getDeltaForModule(module);
-			requiresRestart.put(module, getModuleRestartBehaviorController().moduleRequiresRestart(module, cleanDelta));
+			IModuleRestartBehaviorController restartController = getModuleRestartBehaviorController();
+			if( restartController != null ) 
+				requiresRestart.put(module, restartController.moduleRequiresRestart(module, cleanDelta));
 			ret = runner.publish(cleanDelta, monitor);
 			msgForFailure = Messages.IncrementalPublishFail;
 		} else {
@@ -622,7 +626,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 	protected void completeRemoval(IModule m) {
 		try {
 			IPath archiveDestination = getModuleDeployRoot(new IModule[]{m});
-			boolean useAS7Behavior = DeploymentMarkerUtils.supportsJBoss7MarkerDeployment(getServer());
+			boolean useAS7Behavior = supportsJBoss7Markers();
 			// AS7-derived requires the .deployed markers to be removed. Other servers require no action
 			if( useAS7Behavior) {
 				IFilesystemController controller = getFilesystemController();
@@ -635,6 +639,10 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		}
 	}
 	
+	protected boolean supportsJBoss7Markers() {
+		return DeploymentMarkerUtils.supportsJBoss7MarkerDeployment(getServer());
+	}
+	
 	/*
 	 * This method will, for as6 and below, touch the deployment descriptors
 	 * of the root module if they exist. 
@@ -644,7 +652,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		try {
 			IPath archiveDestination = getModuleDeployRoot(new IModule[]{m});
 			IFilesystemController controller = getFilesystemController();
-			boolean useAS7Behavior = DeploymentMarkerUtils.supportsJBoss7MarkerDeployment(getServer());
+			boolean useAS7Behavior = supportsJBoss7Markers();
 			if( !useAS7Behavior) {
 				JSTPublisherXMLToucher.getInstance().touch(archiveDestination, 
 						m, controller);
