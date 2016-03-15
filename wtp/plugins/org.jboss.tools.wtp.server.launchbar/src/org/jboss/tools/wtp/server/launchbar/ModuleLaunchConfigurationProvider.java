@@ -19,14 +19,11 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.launchbar.core.ILaunchConfigurationProvider;
 import org.eclipse.launchbar.core.ILaunchDescriptor;
 import org.eclipse.launchbar.core.target.ILaunchTarget;
-import org.eclipse.remote.core.IRemoteConnection;
 import org.jboss.tools.wtp.server.launchbar.descriptors.ModuleArtifactDetailsLaunchDescriptor;
 import org.jboss.tools.wtp.server.launchbar.descriptors.ModuleArtifactLaunchDescriptor;
 import org.jboss.tools.wtp.server.launchbar.descriptors.ModuleLaunchDescriptor;
 
 public class ModuleLaunchConfigurationProvider implements ILaunchConfigurationProvider {
-	private static final String LAUNCH_TYPE_ID = "org.jboss.tools.wtp.server.launchbar.serverAdapterLaunch";
-	private static final String TARGET_TYPE_ID = "org.jboss.tools.wtp.server.launchbar.connection";
 	
 	public ModuleLaunchConfigurationProvider() {
 		// TODO Auto-generated constructor stub
@@ -47,7 +44,7 @@ public class ModuleLaunchConfigurationProvider implements ILaunchConfigurationPr
 	
 	@Override
 	public boolean supports(ILaunchDescriptor descriptor, ILaunchTarget target) throws CoreException {
-		if( target.getId().equals(TARGET_TYPE_ID)) {
+		if( target.getTypeId().equals(Activator.TARGET_TYPE_ID)) {
 			return true;
 		}
 		return false;
@@ -57,7 +54,7 @@ public class ModuleLaunchConfigurationProvider implements ILaunchConfigurationPr
 	@Override
 	public ILaunchConfigurationType getLaunchConfigurationType(ILaunchDescriptor descriptor, ILaunchTarget target)
 			throws CoreException {
-		return DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType(LAUNCH_TYPE_ID);
+		return DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType(Activator.LAUNCH_TYPE_ID);
 	}
 
 	@Override
@@ -124,6 +121,11 @@ public class ModuleLaunchConfigurationProvider implements ILaunchConfigurationPr
 	@Override
 	public void launchTargetRemoved(ILaunchTarget target) throws CoreException {
 		
+	}
+
+	public boolean launchDescriptorMatches(ILaunchDescriptor descriptor, ILaunchConfiguration configuration,
+			ILaunchTarget target) throws CoreException {
+		return getLaunchConfiguration(descriptor, target).equals(configuration);
 	}
 
 }

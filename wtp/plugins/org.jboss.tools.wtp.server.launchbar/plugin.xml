@@ -1,23 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension
-         point="org.eclipse.remote.core.remoteServices">
-      <connectionType
-            canAdd="false"
-            canEdit="false"
-            id="org.jboss.tools.wtp.server.launchbar.connection"
-            name="Server Adapter"
-            scheme="dummyscheme">
-      </connectionType>
-      <connectionTypeService
-            connectionTypeId="org.jboss.tools.wtp.server.launchbar.connection"
-            factory="org.jboss.tools.wtp.server.launchbar.ui.RemoteTypeUIService$Factory"
-            service="org.eclipse.remote.ui.IRemoteUIConnectionService">
-      </connectionTypeService>
-   </extension>
-   
-   
    
    <extension
          point="org.eclipse.launchbar.core.launchBarContributions">
@@ -59,5 +42,15 @@
             labelProvider="org.jboss.tools.wtp.server.launchbar.ui.ModuleDescriptorLabelProvider">
       </descriptorUI>
    </extension>
+
+
+   <extension
+         point="org.eclipse.launchbar.core.launchTargetTypes">
+      <launchTargetType
+            id="org.eclipse.launchbar.core.launchTargetType.wst.server"
+            provider="org.jboss.tools.wtp.server.launchbar.targets.ServerLaunchTargetProvider">
+      </launchTargetType>
+   </extension>
+
 
 </plugin>

@@ -11,7 +11,6 @@
 package org.jboss.tools.wtp.server.launchbar;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.eclipse.wst.server.core.ServerCore;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -22,10 +21,13 @@ public class Activator extends AbstractUIPlugin {
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.jboss.tools.wtp.server.launchbar"; //$NON-NLS-1$
 
+	public static final String LAUNCH_TYPE_ID = "org.jboss.tools.wtp.server.launchbar.serverAdapterLaunch";
+	public static final String TARGET_TYPE_ID = "org.eclipse.launchbar.core.launchTargetType.wst.server";
+
+	
+	
 	// The shared instance
 	private static Activator plugin;
-	
-	private RemoteConnectionHandler handler;
 	/**
 	 * The constructor
 	 */
@@ -39,8 +41,6 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		handler = new RemoteConnectionHandler();
-		ServerCore.addServerLifecycleListener(handler);
 	}
 
 
@@ -52,7 +52,6 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
-		ServerCore.removeServerLifecycleListener(handler);
 		super.stop(context);
 	}
 
