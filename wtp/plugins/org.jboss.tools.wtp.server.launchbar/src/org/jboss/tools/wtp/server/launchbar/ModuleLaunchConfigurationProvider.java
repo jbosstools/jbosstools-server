@@ -18,6 +18,7 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.launchbar.core.ILaunchConfigurationProvider;
 import org.eclipse.launchbar.core.ILaunchDescriptor;
+import org.eclipse.launchbar.core.target.ILaunchTarget;
 import org.eclipse.remote.core.IRemoteConnection;
 import org.jboss.tools.wtp.server.launchbar.descriptors.ModuleArtifactDetailsLaunchDescriptor;
 import org.jboss.tools.wtp.server.launchbar.descriptors.ModuleArtifactLaunchDescriptor;
@@ -45,8 +46,8 @@ public class ModuleLaunchConfigurationProvider implements ILaunchConfigurationPr
 	}
 	
 	@Override
-	public boolean supports(ILaunchDescriptor descriptor, IRemoteConnection target) throws CoreException {
-		if( target.getConnectionType().getId().equals(TARGET_TYPE_ID)) {
+	public boolean supports(ILaunchDescriptor descriptor, ILaunchTarget target) throws CoreException {
+		if( target.getId().equals(TARGET_TYPE_ID)) {
 			return true;
 		}
 		return false;
@@ -54,13 +55,13 @@ public class ModuleLaunchConfigurationProvider implements ILaunchConfigurationPr
 
 	
 	@Override
-	public ILaunchConfigurationType getLaunchConfigurationType(ILaunchDescriptor descriptor, IRemoteConnection target)
+	public ILaunchConfigurationType getLaunchConfigurationType(ILaunchDescriptor descriptor, ILaunchTarget target)
 			throws CoreException {
 		return DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType(LAUNCH_TYPE_ID);
 	}
 
 	@Override
-	public ILaunchConfiguration getLaunchConfiguration(ILaunchDescriptor descriptor, IRemoteConnection target)
+	public ILaunchConfiguration getLaunchConfiguration(ILaunchDescriptor descriptor, ILaunchTarget target)
 			throws CoreException {
 		ILaunchConfigurationType type = getLaunchConfigurationType(descriptor, target);
 		String descriptorName = descriptor.getName();
@@ -101,32 +102,28 @@ public class ModuleLaunchConfigurationProvider implements ILaunchConfigurationPr
 
 	@Override
 	public void launchDescriptorRemoved(ILaunchDescriptor descriptor) throws CoreException {
-		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
-	public void launchTargetRemoved(IRemoteConnection target) throws CoreException {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public boolean launchConfigurationRemoved(ILaunchConfiguration configuration) throws CoreException {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean launchConfigurationAdded(ILaunchConfiguration configuration) throws CoreException {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean launchConfigurationChanged(ILaunchConfiguration configuration) throws CoreException {
-		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void launchTargetRemoved(ILaunchTarget target) throws CoreException {
+		
 	}
 
 }
