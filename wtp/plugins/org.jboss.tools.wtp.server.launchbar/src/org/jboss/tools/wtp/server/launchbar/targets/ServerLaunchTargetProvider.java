@@ -30,13 +30,11 @@ public class ServerLaunchTargetProvider implements ILaunchTargetProvider, IServe
 	private ILaunchTargetManager manager = null;
 	
 	public ServerLaunchTargetProvider() {
-		System.out.println("constructor called");
 		ServerCore.addServerLifecycleListener(this);
 	}
 
 	@Override
 	public synchronized void init(ILaunchTargetManager targetManager) {
-		System.out.println("Init called");
 		manager = targetManager;
 		IServer[] all = ServerCore.getServers();
 		ArrayList<ILaunchTarget> existingTargets = new ArrayList<ILaunchTarget>(
@@ -44,10 +42,8 @@ public class ServerLaunchTargetProvider implements ILaunchTargetProvider, IServe
 		for( int i = 0; i < all.length; i++ ) {
 			ILaunchTarget t = targetManager.getLaunchTarget(TYPE, all[i].getName());
 			if( t == null ) {
-				System.out.println("Adding missing target: " + all[i].getName());
 				targetManager.addLaunchTarget(TYPE, all[i].getName());
 			} else {
-				System.out.println("Removing found target from todo list: " + all[i].getName());
 				existingTargets.remove(t);
 			}
 		}
@@ -56,7 +52,6 @@ public class ServerLaunchTargetProvider implements ILaunchTargetProvider, IServe
 		Iterator<ILaunchTarget> it = existingTargets.iterator();
 		while(it.hasNext()) {
 			ILaunchTarget lt = it.next();
-			System.out.println("removing leftover target with no backing server: " + lt.getName());
 			targetManager.removeLaunchTarget(lt);
 		}
 	}
@@ -70,7 +65,6 @@ public class ServerLaunchTargetProvider implements ILaunchTargetProvider, IServe
 	public synchronized void serverAdded(IServer server) {
 		if( manager != null ) {
 			if( server != null ) {
-				System.out.println("server added: " + server.getName());
 				manager.addLaunchTarget(TYPE, server.getName());
 			}
 		}
@@ -80,10 +74,8 @@ public class ServerLaunchTargetProvider implements ILaunchTargetProvider, IServe
 	public synchronized void serverChanged(IServer server) {
 		if( manager != null ) {
 			if( server != null ) {
-				System.out.println("server changed: " + server.getName());
 				ILaunchTarget existing = manager.getLaunchTarget(TYPE,  server.getName());
 				if( existing == null ) {
-					System.out.println("   - does not exist, re-init");
 					init(manager);
 				}
 			}
@@ -94,10 +86,8 @@ public class ServerLaunchTargetProvider implements ILaunchTargetProvider, IServe
 	public synchronized void serverRemoved(IServer server) {
 		if( manager != null ) {
 			if( server != null ) {
-				System.out.println("server removed: " + server.getName());
 				ILaunchTarget existing = manager.getLaunchTarget(TYPE,  server.getName());
 				if( existing != null ) {
-					System.out.println("   launch target exists, removing");
 					manager.removeLaunchTarget(existing);
 				}
 			}
