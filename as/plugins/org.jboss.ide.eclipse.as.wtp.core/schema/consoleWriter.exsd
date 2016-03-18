@@ -1,14 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.jboss.ide.eclipse.as.rse.core" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="org.jboss.ide.eclipse.as.wtp.core" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="org.jboss.ide.eclipse.as.rse.core" id="shellListener" name="org.jboss.ide.eclipse.as.rse.core.shellListener"/>
+         <meta.schema plugin="org.jboss.ide.eclipse.as.wtp.core" id="consoleWriter" name="org.jboss.ide.eclipse.as.wtp.core.consoleWriter"/>
       </appinfo>
       <documentation>
-         Register a shell listener for remote launches making use of the various rse.core APIs.  
-
-This extension point is internal and is not API or available for use or consumption by others. 
+         [Enter description of this extension point.]
       </documentation>
    </annotation>
 
@@ -19,8 +17,8 @@ This extension point is internal and is not API or available for use or consumpt
          </appinfo>
       </annotation>
       <complexType>
-         <sequence minOccurs="1" maxOccurs="unbounded">
-            <element ref="shellListener"/>
+         <sequence>
+            <element ref="consoleWriter"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -49,7 +47,7 @@ This extension point is internal and is not API or available for use or consumpt
       </complexType>
    </element>
 
-   <element name="shellListener">
+   <element name="consoleWriter">
       <complexType>
          <attribute name="class" type="string" use="required">
             <annotation>
@@ -57,7 +55,7 @@ This extension point is internal and is not API or available for use or consumpt
                   
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.jboss.ide.eclipse.as.core.server.IJBASHostShellListener"/>
+                  <meta.attribute kind="java" basedOn=":org.jboss.ide.eclipse.as.core.server.IServerConsoleWriter"/>
                </appinfo>
             </annotation>
          </attribute>

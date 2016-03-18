@@ -4,6 +4,7 @@
    <extension-point id="serverSubsystem" name="org.jboss.ide.eclipse.as.wtp.core.server.behavior.serverSubsystem" schema="schema/serverSubsystem.exsd"/>
    <extension-point id="serverProfile" name="org.jboss.ide.eclipse.as.wtp.core.server.behavior.serverProfile" schema="schema/serverProfile.exsd"/>
    <extension-point id="serverBeanTypeProvider" name="serverBeanTypeProvider" schema="schema/serverBeanTypeProvider.exsd"/>
+   <extension-point id="consoleWriter" name="org.jboss.ide.eclipse.as.wtp.core.consoleWriter" schema="schema/consoleWriter.exsd"/>
    <extension
          point="org.eclipse.wst.common.modulecore.referenceResolver">
       <resolver

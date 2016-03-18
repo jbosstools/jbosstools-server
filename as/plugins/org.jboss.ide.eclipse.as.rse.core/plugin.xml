@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension-point id="shellListener" name="org.jboss.ide.eclipse.as.rse.core.shellListener" schema="schema/shellListener.exsd"/>
    <extension
          point="org.jboss.ide.eclipse.as.wtp.core.serverSubsystem">
       <subsystem

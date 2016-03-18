@@ -162,6 +162,12 @@
                type="org.eclipse.ui.views.properties.IPropertySheetPage">
          </adapter>
       </factory>
+   </extension>
+   <extension
+         point="org.jboss.ide.eclipse.as.wtp.core.consoleWriter">
+      <consoleWriter
+            class="org.jboss.ide.eclipse.as.wtp.ui.console.ServerConsoleWriter">
+      </consoleWriter>
    </extension> 
     
 </plugin>

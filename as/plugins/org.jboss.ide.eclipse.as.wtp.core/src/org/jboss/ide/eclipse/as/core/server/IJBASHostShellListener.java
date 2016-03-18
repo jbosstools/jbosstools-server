@@ -10,6 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server;
 
+@Deprecated
 public interface IJBASHostShellListener {
 	public void writeToShell(String serverId, String[] lines);
 }
