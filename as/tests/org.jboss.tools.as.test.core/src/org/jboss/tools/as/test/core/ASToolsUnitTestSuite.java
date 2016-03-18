@@ -13,6 +13,7 @@ package org.jboss.tools.as.test.core;
 import org.jboss.tools.as.test.core.catalog.CatalogMissingEntriesTest;
 import org.jboss.tools.as.test.core.catalog.CatalogValidationTest;
 import org.jboss.tools.as.test.core.classpath.ClasspathSuite;
+import org.jboss.tools.as.test.core.console.ConsoleWriterTest;
 import org.jboss.tools.as.test.core.parametized.server.ParametizedSuite;
 import org.jboss.tools.as.test.core.polling.PollThreadTest;
 import org.jboss.tools.as.test.core.portal.LaunchProjectOnJPP6Test;
@@ -36,6 +37,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	CatalogValidationTest.class,
 	UtilsSuite.class,
 	LaunchProjectOnJPP6Test.class,
+	ConsoleWriterTest.class
 })
 public class ASToolsUnitTestSuite {
 }
