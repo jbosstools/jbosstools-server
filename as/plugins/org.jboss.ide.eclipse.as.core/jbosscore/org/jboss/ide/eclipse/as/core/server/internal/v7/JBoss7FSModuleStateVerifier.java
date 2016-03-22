@@ -86,9 +86,7 @@ public class JBoss7FSModuleStateVerifier extends AbstractJBoss7ModuleStateVerifi
 	 */
 	protected IModuleDeployPathController getDeployPathController() throws CoreException {
 		if( deployPathController == null ) {
-			Map<String, Object> env = getEnvironment() == null ? new HashMap<String, Object>() : new HashMap<String, Object>(getEnvironment());
-			env.put(IModuleDeployPathController.ENV_DEPLOYMENT_OPTIONS_CONTROLLER, getDeploymentOptions());
-			deployPathController = (IModuleDeployPathController)findDependency(IModuleDeployPathController.SYSTEM_ID, getServer().getServerType().getId(), env);
+			deployPathController = (IModuleDeployPathController)findDependencyFromBehavior(IModuleDeployPathController.SYSTEM_ID);
 		}
 		return deployPathController;
 	}
