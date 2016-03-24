@@ -10,12 +10,13 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.wtp.ui.console;
 
+import java.io.IOException;
+
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
-import org.jboss.ide.eclipse.as.core.server.IJBASHostShellListener;
 import org.jboss.ide.eclipse.as.core.server.IServerConsoleWriter;
 
 /**
@@ -23,28 +24,45 @@ import org.jboss.ide.eclipse.as.core.server.IServerConsoleWriter;
  * arbitrary output can be displayed to the user
  */
 public class ServerConsoleWriter implements IServerConsoleWriter {
-	public void writeToShell(String serverId, String[] lines) {
-		MessageConsole myConsole = findConsole(serverId);
-		MessageConsoleStream out = myConsole.newMessageStream();
-		for( int i = 0; i < lines.length; i++ )
-			out.println(lines[i]);
-		
+	
+	@Override
+	public void writeToShell(final String serverId, final String[] lines) {
+		writeToShell(serverId, lines, true);
+	}
+
+	@Override
+	public void writeToShell(final String serverId, final String[] lines, final boolean activateOnWrite) {
+		final MessageConsole myConsole = findConsole(serverId);
+		try (MessageConsoleStream out = myConsole.newMessageStream()) {
+			out.setActivateOnWrite(activateOnWrite);
+			for (int i = 0; i < lines.length; i++)
+				out.println(lines[i]);
+		} catch (IOException e) {
+			org.jboss.ide.eclipse.as.wtp.ui.WTPOveridePlugin.logError(e);
+		}
+	}
+
+	/**
+	 * Finds or creates the console with the given {@code name}. If the console
+	 * is created, the console view is shown, too.
+	 * 
+	 * @param name
+	 *            the name of the console to find or created
+	 * @return the console
+	 */
+	private static synchronized MessageConsole findConsole(final String name) {
 		ConsolePlugin plugin = ConsolePlugin.getDefault();
 		IConsoleManager conMan = plugin.getConsoleManager();
+		IConsole[] existing = conMan.getConsoles();
+		for (int i = 0; i < existing.length; i++)
+			if (name.equals(existing[i].getName()))
+				return (MessageConsole) existing[i];
+		// no console found, so create a new one
+		MessageConsole myConsole = new MessageConsole(name, null);
+		conMan.addConsoles(new IConsole[] { myConsole });
+		// show the console when it is created, only.
 		conMan.showConsoleView(myConsole);
-	}
-	
-	private synchronized MessageConsole findConsole(String name) {
-	      ConsolePlugin plugin = ConsolePlugin.getDefault();
-	      IConsoleManager conMan = plugin.getConsoleManager();
-	      IConsole[] existing = conMan.getConsoles();
-	      for (int i = 0; i < existing.length; i++)
-	         if (name.equals(existing[i].getName()))
-	            return (MessageConsole) existing[i];
-	      //no console found, so create a new one
-	      MessageConsole myConsole = new MessageConsole(name, null);
-	      conMan.addConsoles(new IConsole[]{myConsole});
-	      return myConsole;
+		return myConsole;
 	}
 
 }
