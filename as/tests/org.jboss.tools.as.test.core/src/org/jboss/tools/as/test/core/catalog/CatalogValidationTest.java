@@ -81,6 +81,7 @@ public class CatalogValidationTest extends TestCase {
 		expectedErrors.put("module-1_1.xsd", 4);
 		expectedErrors.put("module-1_2.xsd", 4);
 		expectedErrors.put("module-1_3.xsd", 4);
+		expectedErrors.put("module-1_5.xsd", 4);
 	}
 	
 	private static ArrayList<String> noRootElement = new ArrayList<String>();
@@ -88,6 +89,7 @@ public class CatalogValidationTest extends TestCase {
 		// Some schema have no root elements and thus can't be generated. Maybe this is a bug? Idk. 
 		noRootElement.add("jboss-common_5_1.xsd");
 		noRootElement.add("jboss-common_6_0.xsd");
+		noRootElement.add("xml.xsd");
 	}
 	
 	@Parameters
