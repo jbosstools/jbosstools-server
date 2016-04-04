@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.wtp.core.server.publish;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.PublishServerJob;
@@ -31,13 +32,15 @@ public class FullPublishJobScheduler {
 		this.rootModules = rootModules;
 	}
 	
-	public void schedule() {
+	public Job schedule() {
 		// Make sure all modules are marked as requiring a full publish
 		for( int i = 0; i < rootModules.length; i++ ) {
 			setModuleRequiresFullPublish(rootModules[i]);
 		}
 		// Launch an incremental publish
-		new PublishServerJob(server, IServer.PUBLISH_INCREMENTAL, true).schedule();
+		Job j = new PublishServerJob(server, IServer.PUBLISH_INCREMENTAL, true);
+		j.schedule();
+		return j;
 	}
 	
 	private void setModuleRequiresFullPublish(IModule module) {
