@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.osgi.util.NLS;
@@ -54,6 +55,7 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IModuleStateController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPrimaryPublishController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishControllerDelegate;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.LocalFilesystemController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.util.PublishControllerUtil;
 import org.jboss.ide.eclipse.as.wtp.core.server.launch.AbstractStartJavaServerLaunchDelegate;
 import org.jboss.ide.eclipse.as.wtp.core.server.publish.LocalZippedModulePublishRunner;
@@ -344,10 +346,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		
 		
 		if( publishType == PublishControllerUtility.FULL_PUBLISH ) {
-			PublishModuleFullRunner runner = new PublishModuleFullRunner(getFilesystemController(), archiveDestination);
-			IModuleResource[] filtered = filter == null ? ModuleResourceUtil.getMembers(module[module.length-1]) : filter.getFilteredMembers();
-			ret = runner.fullPublish(filtered, monitor);
-			requiresRestart.put(module, true);
+			executeFullPublish(module, archiveDestination, filter, monitor);
 			msgForFailure = Messages.FullPublishFail; 
 		} else if( publishType == PublishControllerUtility.INCREMENTAL_PUBLISH) {
 			PublishModuleIncrementalRunner runner = new PublishModuleIncrementalRunner(getFilesystemController(), archiveDestination);
@@ -432,7 +431,17 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		return IServer.PUBLISH_STATE_UNKNOWN;
 	}
 	
-	private int removeModule(IModule[] module, IPath remote, IProgressMonitor monitor) throws CoreException {
+	
+	protected IStatus[] executeFullPublish(IModule[] module, IPath archiveDestination, IModulePathFilter filter, IProgressMonitor monitor) 
+			throws CoreException {
+		PublishModuleFullRunner runner = new PublishModuleFullRunner(getFilesystemController(), archiveDestination);
+		IModuleResource[] filtered = filter == null ? ModuleResourceUtil.getMembers(module[module.length-1]) : filter.getFilteredMembers();
+		IStatus[] ret = runner.fullPublish(filtered, monitor);
+		requiresRestart.put(module, true);
+		return ret;
+	}
+
+	protected int removeModule(IModule[] module, IPath remote, IProgressMonitor monitor) throws CoreException {
 		// We assume a deletion on a root module will delete its children
 		if( module.length > 1 )
 			return IServer.PUBLISH_STATE_NONE;
@@ -625,10 +634,10 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 	
 	protected void completeRemoval(IModule m) {
 		try {
-			IPath archiveDestination = getModuleDeployRoot(new IModule[]{m});
 			boolean useAS7Behavior = supportsJBoss7Markers();
 			// AS7-derived requires the .deployed markers to be removed. Other servers require no action
 			if( useAS7Behavior) {
+				IPath archiveDestination = getModuleDeployRoot(new IModule[]{m});
 				IFilesystemController controller = getFilesystemController();
 				DeploymentMarkerUtils.removeDoDeployMarker(archiveDestination, controller);
 				DeploymentMarkerUtils.removedDeployedMarker(archiveDestination, controller);

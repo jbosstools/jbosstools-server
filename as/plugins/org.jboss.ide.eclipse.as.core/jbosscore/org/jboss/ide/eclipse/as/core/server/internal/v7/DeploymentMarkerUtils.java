@@ -86,19 +86,44 @@ public class DeploymentMarkerUtils {
 	/*
 	 * New methods for use with IFilesystemController
 	 */
-	public static IStatus removedDeployFailedMarker(IPath module, IFilesystemController controller) throws CoreException {
+	
+	/**
+	 * @since 3.1
+	 */
+	public static IStatus removeDeployFailedMarker(IPath module, IFilesystemController controller) throws CoreException {
 		IPath folder = module.removeLastSegments(1);
 		IPath p = folder.append(getFailedMarkerName(module.lastSegment()));
 		return controller.deleteResource(p, new NullProgressMonitor());
 	}
+	
+	@Deprecated // Spelling error
+	public static IStatus removedDeployFailedMarker(IPath module, IFilesystemController controller) throws CoreException {
+		return removeDeployFailedMarker(module, controller);
+	}
 
+	
+	@Deprecated // Spelling error
 	public static IStatus removedDeployedMarker(IPath module, IFilesystemController controller) throws CoreException {
+		return removeDeployedMarker(module, controller);
+	}
+	
+	/**
+	 * @since 3.1
+	 */
+	public static IStatus removeDeployedMarker(IPath module, IFilesystemController controller) throws CoreException {
 		IPath folder = module.removeLastSegments(1);
 		IPath p = folder.append(getDeployedMarker(module.lastSegment()));
 		return controller.deleteResource(p, new NullProgressMonitor());
 	}
 
+	@Deprecated // spelling error
 	public static IStatus removedUndeployedMarker(IPath module, IFilesystemController controller) throws CoreException {
+		return removeUndeployedMarker(module, controller);
+	}
+	/**
+	 * @since 3.1
+	 */
+	public static IStatus removeUndeployedMarker(IPath module, IFilesystemController controller) throws CoreException {
 		IPath folder = module.removeLastSegments(1);
 		IPath p = folder.append(getUndeployedMarker(module.lastSegment()));
 		return controller.deleteResource(p, new NullProgressMonitor());
