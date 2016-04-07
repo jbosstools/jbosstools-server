@@ -1575,13 +1575,25 @@
             <requires system="module.restart.behavior"></requires>
          </dependencies>
       </subsystem>
+            <subsystem
+            system="publish"
+            id="publish.filesystem.wildfly"
+            name="WildFly Filesystem Publish Controller"
+            class="org.jboss.tools.as.core.server.controllable.subsystems.internal.WildFlyFileSystemPublishController">
+         <dependencies>
+            <requires system="filesystem"></requires>
+            <requires system="moduleDeployPath"></requires>
+            <requires system="deploymentOptions"></requires>
+            <requires system="module.restart.behavior"></requires>
+         </dependencies>
+      </subsystem>
       <subsystemMapping
             id="publish.filesystem.standard"
             mappedId="publish.filesystem.default"
             serverTypes="org.jboss.ide.eclipse.as.systemCopyServer">
       </subsystemMapping>
       <subsystemMapping
-            id="publish.filesystem.standard"
+            id="publish.filesystem.wildfly"
             mappedId="publish.filesystem.default"
             serverTypes="%ServerTypesJBoss7OrHigher">
       </subsystemMapping>
