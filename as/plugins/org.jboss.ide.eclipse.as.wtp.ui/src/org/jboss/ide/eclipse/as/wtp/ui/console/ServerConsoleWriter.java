@@ -25,21 +25,49 @@ import org.jboss.ide.eclipse.as.core.server.IServerConsoleWriter;
  */
 public class ServerConsoleWriter implements IServerConsoleWriter {
 	
+    public static String CONSOLE_TYPE = ServerConsoleWriter.class.getPackage().getName() + ".ServerConsole";
+    
+    public static String ACTIVATE_ON_WRITE_ATTRIBUTE_NAME = ServerConsoleWriter.class.getName() + ".activateOnWrite";
+    
+    private static enum ActivateOnWrite {
+        TRUE(true),
+        FALSE(false),
+        UNDEFINED(false);
+        
+        private boolean value;
+        
+        private ActivateOnWrite(boolean value) {
+            this.value = value;
+        }
+        
+        public boolean getValue() {
+            return value;
+        }
+        
+        public static ActivateOnWrite valueOf(boolean value) {
+            return value?TRUE:FALSE;
+        }
+    }
 	@Override
 	public void writeToShell(final String serverId, final String[] lines) {
-		writeToShell(serverId, lines, true);
+		writeToShell(serverId, lines, ActivateOnWrite.UNDEFINED);
 	}
 
 	@Override
 	public void writeToShell(final String serverId, final String[] lines, final boolean activateOnWrite) {
-		final MessageConsole myConsole = findConsole(serverId);
-		try (MessageConsoleStream out = myConsole.newMessageStream()) {
-			out.setActivateOnWrite(activateOnWrite);
-			for (int i = 0; i < lines.length; i++)
-				out.println(lines[i]);
-		} catch (IOException e) {
-			org.jboss.ide.eclipse.as.wtp.ui.WTPOveridePlugin.logError(e);
-		}
+	    writeToShell(serverId, lines, ActivateOnWrite.valueOf(activateOnWrite));
+	}
+	
+	private void writeToShell(final String serverId, final String[] lines, final ActivateOnWrite activateOnWrite) {
+        final MessageConsole myConsole = findConsole(serverId);
+        final boolean activateOnWriteFlag = (boolean) (activateOnWrite==ActivateOnWrite.UNDEFINED?myConsole.getAttribute(ACTIVATE_ON_WRITE_ATTRIBUTE_NAME):activateOnWrite.getValue());
+        try (MessageConsoleStream out = myConsole.newMessageStream()) {
+            out.setActivateOnWrite(activateOnWriteFlag);
+            for (int i = 0; i < lines.length; i++)
+                out.println(lines[i]);
+        } catch (IOException e) {
+            org.jboss.ide.eclipse.as.wtp.ui.WTPOveridePlugin.logError(e);
+        }
 	}
 
 	/**
@@ -58,7 +86,8 @@ public class ServerConsoleWriter implements IServerConsoleWriter {
 			if (name.equals(existing[i].getName()))
 				return (MessageConsole) existing[i];
 		// no console found, so create a new one
-		MessageConsole myConsole = new MessageConsole(name, null);
+		MessageConsole myConsole = new MessageConsole(name, CONSOLE_TYPE, null, true);
+		myConsole.setAttribute(ACTIVATE_ON_WRITE_ATTRIBUTE_NAME, true);
 		conMan.addConsoles(new IConsole[] { myConsole });
 		// show the console when it is created, only.
 		conMan.showConsoleView(myConsole);

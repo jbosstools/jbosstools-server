@@ -70,7 +70,8 @@ public class Messages extends NLS {
 	public static String hcrContinue;
 	public static String hcrShowDialog;
 	public static String hcrTerminate;
-
+	
+	public static String ShowConsoleOnOutputActionLabel;
 	
 	static {
 		// initialize resource bundle

@@ -28,6 +28,9 @@ public interface IServerConsoleWriter extends IJBASHostShellListener {
 	/**
 	 * Writes the given {@code lines} into the {@link MessageConsole} associated with the given {@code serverId}.
 	 * If the {@link MessageConsole} did not exist yet, it is created and shown.
+	 * You should prefer the other method as it is now possible for the user to toggle automatic activation
+	 * or not of the  console. Using this method will go against user choice.
+	 *  
 	 * @param serverId the id of the server associated with this console.
 	 * @param lines the lines to write in the console.
 	 * @param activateOnWrite if the view should be activated when the line are written in the console.

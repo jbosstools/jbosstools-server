@@ -128,6 +128,9 @@ public class WTPOveridePlugin extends AbstractUIPlugin {
 	}
 
 	public static final String JMX_IMG = "icons/jmeth_obj.gif";
+	
+	public static final String STDOUT_IMG = "icons/stdout.gif";
+	
 	protected BaseUISharedImages createSharedImages() {
 		return new ASWTPSharedImages(getBundle());
 	}
@@ -136,6 +139,7 @@ public class WTPOveridePlugin extends AbstractUIPlugin {
 		public ASWTPSharedImages(Bundle pluginBundle) {
 			super(pluginBundle);
 			addImage(JMX_IMG, JMX_IMG);
+			addImage(STDOUT_IMG, STDOUT_IMG);
 		}
 	}
 }
