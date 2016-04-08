@@ -168,6 +168,19 @@
       <consoleWriter
             class="org.jboss.ide.eclipse.as.wtp.ui.console.ServerConsoleWriter">
       </consoleWriter>
+   </extension>
+   <extension
+         point="org.eclipse.ui.console.consolePageParticipants">
+      <consolePageParticipant
+            class="org.jboss.ide.eclipse.as.wtp.ui.console.ServerConsolePagePaticipant"
+            id="org.jboss.ide.eclipse.as.wtp.ui.console.ServerConsolePagePaticipant">
+         <enablement>
+            <test
+                  property="org.eclipse.ui.console.consoleTypeTest"
+                  value="org.jboss.ide.eclipse.as.wtp.ui.console.ServerConsole">
+            </test>
+         </enablement>
+      </consolePageParticipant>
    </extension> 
     
 </plugin>
