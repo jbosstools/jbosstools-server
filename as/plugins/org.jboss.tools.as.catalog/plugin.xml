@@ -5,11 +5,6 @@
          point="org.eclipse.wst.xml.core.catalogContributions">
        <catalogContribution>
 <!-- DTDs -->
-			<public publicId="%p;schema"
-				uri="platform:/plugin/org.jboss.tools.as.catalog/schema/dtd/XMLSchema.dtd"/>
-			<system systemId="%p;complexType"
-				uri="platform:/plugin/org.jboss.tools.as.catalog/schema/dtd/XMLSchema.dtd"/>
-
 			<public publicId="-//Puppy Crawl//DTD Check Configuration 1.2//EN"
 				uri="platform:/plugin/org.jboss.tools.as.catalog/schema/dtd/configuration_1_2.dtd"/>
 			<system systemId="http://www.puppycrawl.com/dtds/configuration_1_2.dtd"
