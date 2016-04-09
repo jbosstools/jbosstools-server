@@ -53,7 +53,9 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
+			
+			<!-- Temporally disabling downloading from archive.apache.org to fix the build. See https://issues.jboss.org/browse/JBIDE-22147 -->
+			<!--plugin>
 				<groupId>com.googlecode.maven-download-plugin</groupId>
 				<artifactId>download-maven-plugin</artifactId>
 				<executions>
@@ -71,7 +73,7 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin-->
 		</plugins>
 
 		<pluginManagement>

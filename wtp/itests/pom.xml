@@ -21,7 +21,7 @@
           <artifactId>tycho-surefire-plugin</artifactId>
           <version>${tychoVersion}</version>
           <configuration>
-            <skip>${skipITests}</skip>
+            <skip>true</skip>
             <useUIThread>false</useUIThread>
             <useUIHarness>false</useUIHarness>
             <includes><include>**/*Test.java</include></includes>
