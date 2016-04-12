@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -48,6 +49,7 @@ import org.eclipse.wst.server.core.IModule2;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.ui.ServerUICore;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
@@ -71,6 +73,7 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 	
 	
 	protected static final String COLUMN_NAME = IJBossToolingConstants.LOCAL_DEPLOYMENT_NAME;
+	protected static final String COLUMN_ZIP = IJBossToolingConstants.LOCAL_DEPLOYMENT_ZIP;
 	protected static final String COLUMN_LOC = IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC;
 	protected static final String COLUMN_TEMP_LOC = IJBossToolingConstants.LOCAL_DEPLOYMENT_TEMP_LOC;
 	protected static final String OUTPUT_NAME = IJBossToolingConstants.LOCAL_DEPLOYMENT_OUTPUT_NAME;
@@ -174,32 +177,49 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 		viewer.setContentProvider(createViewerContentProvider());
 		viewer.setLabelProvider(createViewerLabelProvider());
 		
-		boolean showTemp = showTemporaryColumn();
-		TreeColumn moduleColumn = new TreeColumn(viewer.getTree(), SWT.NONE);
-		TreeColumn publishLocColumn = new TreeColumn(viewer.getTree(), SWT.NONE);
-		TreeColumn publishTempLocColumn = null;
-		moduleColumn.setText(Messages.EditorModule);
-		publishLocColumn.setText(Messages.EditorSetDeployLabel);
-		moduleColumn.setWidth(200);
-		publishLocColumn.setWidth(200);
+		ArrayList<String> columnIDs = new ArrayList<String>();
+		ArrayList<CellEditor> cellEditors = new ArrayList<CellEditor>();
 		
-		String[] colNames = null;
-		CellEditor[] editors = null;
-		if( !showTemp ) {
-			colNames = new String[] { COLUMN_NAME, COLUMN_LOC, COLUMN_TEMP_LOC };
-			editors = new CellEditor[] {
-					new TextCellEditor(viewer.getTree()),
-					new TextCellEditor(viewer.getTree()),
-					new TextCellEditor(viewer.getTree())};
-		} else {
+		// Module column
+		TreeColumn moduleColumn = new TreeColumn(viewer.getTree(), SWT.NONE);
+		moduleColumn.setText(Messages.EditorModule);
+		moduleColumn.setWidth(200);
+		columnIDs.add(COLUMN_NAME);
+		cellEditors.add(new TextCellEditor(viewer.getTree()));
+		
+		// Zip Column
+		boolean showZip = showZipColumn();
+		TreeColumn moduleZip = null;
+		if( showZip ) {
+			moduleZip = new TreeColumn(viewer.getTree(), SWT.NONE);
+			moduleZip.setText("Zip Module"); // TODO externalize
+			moduleZip.setWidth(100);
+			columnIDs.add(COLUMN_ZIP);
+			cellEditors.add(new CheckboxCellEditor(viewer.getTree()));
+		}
+		
+		// Publish location column
+		TreeColumn publishLocColumn = new TreeColumn(viewer.getTree(), SWT.NONE);
+		publishLocColumn.setText(Messages.EditorSetDeployLabel);
+		publishLocColumn.setWidth(200);
+		columnIDs.add(COLUMN_LOC);
+		cellEditors.add(new TextCellEditor(viewer.getTree()));
+		
+		
+		// Temporary location
+		boolean showTemp = showTemporaryColumn();
+		TreeColumn publishTempLocColumn = null;
+		if( showTemp ) {
 			publishTempLocColumn = new TreeColumn(viewer.getTree(),SWT.NONE);
 			publishTempLocColumn.setText(Messages.EditorSetTempDeployLabel);
 			publishTempLocColumn.setWidth(200);
-			colNames = new String[] { COLUMN_NAME, COLUMN_LOC};
-			editors = new CellEditor[] {
-					new TextCellEditor(viewer.getTree()),
-					new TextCellEditor(viewer.getTree())};
+			columnIDs.add(COLUMN_TEMP_LOC);
+			cellEditors.add(new TextCellEditor(viewer.getTree()));
 		}
+		
+		
+		String[] colNames = (String[]) columnIDs.toArray(new String[columnIDs.size()]);
+		CellEditor[] editors = (CellEditor[]) cellEditors.toArray(new CellEditor[cellEditors.size()]);
 
 		viewer.setColumnProperties(colNames);
 		viewer.setInput("");  //$NON-NLS-1$
@@ -209,6 +229,9 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 	}
 	
 	protected boolean showTemporaryColumn() {
+		return true;
+	}
+	protected boolean showZipColumn() {
 		return true;
 	}
 	
@@ -305,6 +328,10 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 				String ret = p.getProperty(COLUMN_TEMP_LOC);
 				return ret == null ? "" : ret; //$NON-NLS-1$
 			}
+			if( property == COLUMN_ZIP) {
+				String ret = p.getProperty(COLUMN_ZIP);
+				return Boolean.valueOf(ret);
+			}
 
 			return ""; //$NON-NLS-1$
 		}
@@ -333,6 +360,12 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 						new String[] { COLUMN_TEMP_LOC },
 						new String[] {(String) value}, 
 						Messages.EditorEditDeployLocCommand);
+				getComposite().getViewer().refresh();
+			} else if( property == COLUMN_ZIP ) {
+				getComposite().firePropertyChangeCommand(p, 
+						new String[] { COLUMN_ZIP },
+						new String[] {value.toString()},
+						"Edit Deployment Zipped"); // TODO externalize
 				getComposite().getViewer().refresh();
 			}
 		}
@@ -426,19 +459,30 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 
 		public String getColumnText(Object element, int columnIndex) {
 			if (element instanceof IModule) {
+				int moduleIndex, zipIndex, locIndex, tempLocIndex;
+				zipIndex = tempLocIndex = -1;
+				moduleIndex = 0;
+				zipIndex = showZipColumn() ? 1 : -1;
+				locIndex = (zipIndex == -1 ? moduleIndex+1 : zipIndex+1);
+				tempLocIndex = showTemporaryColumn() ? locIndex+1 : -1;
+				
 				IModule m = (IModule) element;
-				if (columnIndex == 0)
+				if (columnIndex == moduleIndex)
 					return m.getName();
-				if (columnIndex == 1) {
-					DeploymentModulePrefs modPref = preferences
-							.getOrCreatePreferences()
-							.getOrCreateModulePrefs(m);
+				
+				DeploymentModulePrefs modPref = preferences
+						.getOrCreatePreferences()
+						.getOrCreateModulePrefs(m);
+
+				if( columnIndex == zipIndex ) {
+					String ret = modPref.getProperty(COLUMN_ZIP);
+					boolean defSetting = partner.getServer().getAttribute(IDeployableServer.ZIP_DEPLOYMENTS_PREF, false);
+					return ret == null ?  new Boolean(defSetting).toString(): ret; //$NON-NLS-1$
+				}
+				if (columnIndex == locIndex) {
 					return getOutputFolderAndName(modPref, m);
 				}
-				if (columnIndex == 2) {
-					DeploymentModulePrefs modPref = preferences
-							.getOrCreatePreferences()
-							.getOrCreateModulePrefs(m);
+				if (columnIndex == tempLocIndex) {
 					String result = modPref.getProperty(COLUMN_TEMP_LOC);
 					if (result != null)
 						return result;
@@ -474,7 +518,9 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 
 	/* Subclasses can override */
 	public void propertyChange(PropertyChangeEvent evt) {
-		// Update widgets for the property change. Subclasses may override
+		if(IDeployableServer.ZIP_DEPLOYMENTS_PREF.equals(evt.getPropertyName())) {
+			viewer.refresh();
+		}
 	}
 	
 	

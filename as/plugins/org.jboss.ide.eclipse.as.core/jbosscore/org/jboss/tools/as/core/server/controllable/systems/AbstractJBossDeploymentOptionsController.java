@@ -12,15 +12,21 @@ package org.jboss.tools.as.core.server.controllable.systems;
 
 import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.DEPLOY;
 
+import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
+import org.jboss.tools.as.core.internal.modules.DeploymentPreferences;
+import org.jboss.tools.as.core.internal.modules.DeploymentPreferencesLoader;
+import org.jboss.tools.as.core.internal.modules.ModuleDeploymentPrefsUtil;
 
 /**
  * An abstract class that is exposed though not encouraged to be extended. 
@@ -29,7 +35,7 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemContro
  *
  */
 public abstract class AbstractJBossDeploymentOptionsController extends
-		AbstractSubsystemController implements IDeploymentOptionsController {
+		AbstractSubsystemController implements IDeploymentZipOptionsController {
 	
 	/*
 	 * Constants taken from IDeployableServer
@@ -41,7 +47,7 @@ public abstract class AbstractJBossDeploymentOptionsController extends
 	protected static final String DEPLOY_DIRECTORY = "org.jboss.ide.eclipse.as.core.server.deployDirectory"; //$NON-NLS-1$
 	protected static final String TEMP_DEPLOY_DIRECTORY = "org.jboss.ide.eclipse.as.core.server.tempDeployDirectory"; //$NON-NLS-1$
 	protected static final String DEPLOY_DIRECTORY_TYPE = "org.jboss.ide.eclipse.as.core.server.deployDirectoryType"; //$NON-NLS-1$
-	protected static final String ZIP_DEPLOYMENTS_PREF = "org.jboss.ide.eclipse.as.core.server.zipDeploymentsPreference"; //$NON-NLS-1$
+	protected static final String ZIP_DEPLOYMENTS_PREF = IDeployableServer.ZIP_DEPLOYMENTS_PREF;
 
 	public AbstractJBossDeploymentOptionsController() {
 		super();
@@ -183,5 +189,47 @@ public abstract class AbstractJBossDeploymentOptionsController extends
 	
 	protected JBossExtendedProperties getExtendedProperties() {
 		return (JBossExtendedProperties)getServer().loadAdapter(ServerExtendedProperties.class, null);
+	}
+	
+	
+	private ModuleDeploymentPrefsUtil createModuleDeploymentPrefsUtil() {
+		return new ModuleDeploymentPrefsUtil();
+	}
+	
+	public boolean shouldZipDeployment(IModule[] module) {
+		boolean serverPrefersZip = prefersZippedDeployments();
+		boolean forceZip = PublishUtil.deployPackaged(module, getServer());
+		boolean defaultZipOption = serverPrefersZip || forceZip;
+		if( module != null && module.length > 0 ) {
+			IServerAttributes server = getServerOrWC();
+			boolean ret = createModuleDeploymentPrefsUtil().getPrefersZipFromSettings(
+					server, module[module.length-1], defaultZipOption);
+			return ret;
+		}
+		return defaultZipOption;
+	}
+	
+	/**
+	 * Set whether to zip the given deployment
+	 * @param module
+	 * @param value A boolean representing true or false, 
+	 *  			or null to clear the setting and use server default
+	 */
+	public void setShouldZipDeployment(IModule[] module, Boolean value) {
+		setModuleDeploymentPreference(module[module.length-1], IJBossToolingConstants.LOCAL_DEPLOYMENT_ZIP, 
+				value == null ? "" : value.toString()); //$NON-NLS-1$
+	}
+	
+	private void verifyWorkingCopy() throws IllegalStateException {
+		IServerWorkingCopy wc = getWorkingCopy();
+		if( wc == null )
+			throw new IllegalStateException("This controller requires a server working-copy."); //$NON-NLS-1$
+	}
+	
+	protected void setModuleDeploymentPreference(IModule module, String key, String val) {
+		verifyWorkingCopy();
+		DeploymentPreferences prefs = DeploymentPreferencesLoader.loadPreferencesFromServer(getServerOrWC());
+		prefs.setModulePreferenceValue(module, key, val);
+		DeploymentPreferencesLoader.savePreferencesToServerWorkingCopy(getWorkingCopy(), prefs);
 	}
 }

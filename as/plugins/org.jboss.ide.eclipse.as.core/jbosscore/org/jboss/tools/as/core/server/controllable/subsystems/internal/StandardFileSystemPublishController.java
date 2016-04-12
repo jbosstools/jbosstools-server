@@ -63,6 +63,7 @@ import org.jboss.ide.eclipse.as.wtp.core.server.publish.PublishModuleFullRunner;
 import org.jboss.ide.eclipse.as.wtp.core.server.publish.PublishModuleIncrementalRunner;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 import org.jboss.tools.as.core.server.controllable.systems.IDeploymentOptionsController;
+import org.jboss.tools.as.core.server.controllable.systems.IDeploymentZipOptionsController;
 import org.jboss.tools.as.core.server.controllable.systems.IModuleDeployPathController;
 import org.jboss.tools.as.core.server.controllable.systems.IModuleRestartBehaviorController;
 import org.jboss.tools.as.core.server.controllable.util.PublishControllerUtility;
@@ -299,14 +300,15 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		 * private int handleBinaryModule(IModule[] module, IPath archiveDestination) throws CoreException
 		 */
 		boolean isBinaryObject = ServerModelUtilities.isBinaryModule(module);
-		boolean prefersZipped = prefersZipped();
+		boolean serverPrefersZipped = prefersZipped();
+
 		IPath archiveDestination = getModuleDeployRoot(module);
 		int publishType = PublishControllerUtility.getPublishType(getServer(), module, kind, deltaKind);
 
 		
 		// If we're a top-level binary module, we don't get zipped. Odds are we're already zipped, or a simple xml file
 		// If we're a child binary, we've already been zipped during the parent's pass
-		if( !isBinaryObject && prefersZipped) {
+		if( !isBinaryObject && serverPrefersZipped) {
 			return handleZippedPublish(module, publishType, archiveDestination, false, monitor);
 		}
 		
@@ -320,11 +322,10 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 			Trace.trace(Trace.STRING_FINER, "Handling a wtp 'deleted module' (aka missing/deleted /closed project). No Action Taken. Returning state=unknown "); //$NON-NLS-1$
 			return IServer.PUBLISH_STATE_UNKNOWN;
 		}
-		
-		// We'll do full publish or incremental publish now. 
-		boolean forceZip = forceZipModule(module);
+
+		boolean modulePrefersZipped = forceZipModule(module);
 		boolean forzeZipAnyParent = parentModuleIsForcedZip(module);
-		
+
 		// if we have to force-zip any of the parents, we already did zip this one as well
 		if( forzeZipAnyParent) {
 			// We can assume the parent was already published.
@@ -332,8 +333,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 			return IServer.PUBLISH_STATE_NONE;				
 		}
 
-		
-		if( !isBinaryObject && forceZip ) {
+		if( !isBinaryObject && modulePrefersZipped ) {
 			// Otherwise we need to zip this module and its children. 
 			return handleZippedPublish(module, publishType, archiveDestination, true, monitor);
 		}
@@ -570,6 +570,14 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 	 * @return
 	 */
 	protected boolean forceZipModule(IModule[] moduleTree) {
+		try {
+			IDeploymentOptionsController doc = getDeploymentOptions();
+			if( doc instanceof IDeploymentZipOptionsController) {
+				return ((IDeploymentZipOptionsController)doc).shouldZipDeployment(moduleTree);
+			}
+		} catch(CoreException ce) {
+			JBossServerCorePlugin.log(ce);
+		}
 		return PublishUtil.deployPackaged(moduleTree, getServer());
 	}
 	

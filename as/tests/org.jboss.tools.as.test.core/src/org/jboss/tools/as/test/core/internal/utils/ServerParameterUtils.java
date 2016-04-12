@@ -20,6 +20,7 @@ public class ServerParameterUtils {
 
 	public static final String ZIPPED = "zipped";
 	public static final String UNZIPPED = "unzipped";
+	public static final String ZIP_OPTION_UNSET = "zipUnset";
 	public static final String DEPLOY_META = "metadata";
 	public static final String DEPLOY_SERVER = "server";
 	public static final String DEPLOY_CUSTOM_REL = "customRelative";

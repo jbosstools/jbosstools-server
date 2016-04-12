@@ -93,9 +93,9 @@ public abstract class AbstractPublishingTest extends TestCase {
 	protected String serverTempDeployPath;
 	protected IModule primaryModule;
 	
-	public AbstractPublishingTest(String serverType, String zip, String deployLoc, String perMod) { 
+	public AbstractPublishingTest(String serverType, String zipDefault, String deployLoc, String perMod) { 
 		this.param_serverType = serverType;
-		this.param_zip = zip;
+		this.param_zip = zipDefault;
 		this.param_deployLoc = deployLoc;
 		this.param_perModOverride = perMod;
 	}
@@ -183,11 +183,24 @@ public abstract class AbstractPublishingTest extends TestCase {
 	}
 
 	public static void setCustomDeployOverride(IServerWorkingCopy wc, IModule rootModule, String outputName, String outputDir, String temporaryDir) {
+		setCustomDeployOverride(wc, rootModule, null,outputName, outputDir, temporaryDir);
+	}
+	
+	public static void setCustomDeployOverride(IServerWorkingCopy wc, IModule rootModule, Boolean zipModule, 
+			String outputName, String outputDir, String temporaryDir) {
 		DeploymentPreferences prefs = DeploymentPreferencesLoader.loadPreferencesFromServer(wc);
 		DeploymentModulePrefs modPrefs = prefs.getOrCreatePreferences().getOrCreateModulePrefs(rootModule);
 		modPrefs.setProperty(IJBossToolingConstants.LOCAL_DEPLOYMENT_TEMP_LOC, temporaryDir);
 		modPrefs.setProperty(IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC, outputDir);
 		modPrefs.setProperty(IJBossToolingConstants.LOCAL_DEPLOYMENT_OUTPUT_NAME, outputName);
+		modPrefs.setProperty(IJBossToolingConstants.LOCAL_DEPLOYMENT_ZIP, zipModule == null ? null : zipModule.toString());
+		DeploymentPreferencesLoader.savePreferencesToServerWorkingCopy(wc, prefs);
+	}
+	
+	protected void setCustomZipForModule(IServerWorkingCopy wc, IModule rootModule, Boolean zipModule) {
+		DeploymentPreferences prefs = DeploymentPreferencesLoader.loadPreferencesFromServer(wc);
+		DeploymentModulePrefs modPrefs = prefs.getOrCreatePreferences().getOrCreateModulePrefs(rootModule);
+		modPrefs.setProperty(IJBossToolingConstants.LOCAL_DEPLOYMENT_ZIP, zipModule == null ? null : zipModule.toString());
 		DeploymentPreferencesLoader.savePreferencesToServerWorkingCopy(wc, prefs);
 	}
 

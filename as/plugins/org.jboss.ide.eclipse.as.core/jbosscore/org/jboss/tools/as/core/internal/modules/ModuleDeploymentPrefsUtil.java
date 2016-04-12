@@ -207,6 +207,21 @@ public class ModuleDeploymentPrefsUtil {
 		return null;
 	}
 	
+	
+	public boolean getPrefersZipFromSettings(IServerAttributes server, IModule module, boolean defaultValue) {
+		DeploymentPreferences prefs = DeploymentPreferencesLoader.loadPreferencesFromServer(server);
+		DeploymentTypePrefs typePrefs = prefs.getOrCreatePreferences();
+		DeploymentModulePrefs modPrefs = typePrefs.getModulePrefs(module);
+		if( modPrefs != null ) {
+			String ret = modPrefs.getProperty(IJBossToolingConstants.LOCAL_DEPLOYMENT_ZIP);
+			if( ret != null && !ret.equals("")) { //$NON-NLS-1$
+				return Boolean.parseBoolean(ret);
+			}
+		}
+		return defaultValue;
+	}
+	
+	
 	/**
 	 * Get the default suffix for the last entry in this module array
 	 * @param module

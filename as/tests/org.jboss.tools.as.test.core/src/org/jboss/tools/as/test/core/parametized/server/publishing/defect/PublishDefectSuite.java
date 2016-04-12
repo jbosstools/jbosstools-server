@@ -23,7 +23,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	UnchangedJarRestartedDefectTest.class,
 	UtilInWebPathDefectTest.class,
 	NonAsciiInUtilJarPublishDefectTest.class,
-	DeployNameTest.class
+	DeployNameTest.class,
+	PerModuleZipTest.class
 })
 public class PublishDefectSuite {
 }

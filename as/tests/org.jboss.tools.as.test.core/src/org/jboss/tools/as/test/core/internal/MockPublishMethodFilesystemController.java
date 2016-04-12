@@ -90,7 +90,8 @@ public class MockPublishMethodFilesystemController extends AbstractSubsystemCont
 			throws CoreException {
 		if( !model.changed.contains(path))
 			model.changed.add(path);
-		getDelegate().makeDirectoryIfRequired(path, monitor);
+		getDelegate().makeDirectoryIfRequired(path.removeLastSegments(1), monitor);
+		getDelegate().touchResource(path, monitor);
 		return Status.OK_STATUS;
 	}
 
