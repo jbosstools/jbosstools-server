@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.dmr.ModelNode;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
@@ -133,7 +134,8 @@ public class AS7DeploymentScannerUtility {
 			return scanners;
 		
 		JBossServerCorePlugin.getDefault().getLog().log(new Status(
-				IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Unable to retrieve a list of remote deployment scanners",ie2)); //$NON-NLS-1$
+				IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+				NLS.bind("Unable to retrieve a list of remote deployment scanners for server {0}", server.getName()),ie2)); //$NON-NLS-1$
 		return null;
 	}
 	
@@ -162,7 +164,8 @@ public class AS7DeploymentScannerUtility {
 		} catch(Exception e) {
 			if( log )
 				JBossServerCorePlugin.getDefault().getLog().log(new Status(
-						IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Unable to retrieve a list of remote deployment scanners",e)); //$NON-NLS-1$
+						IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+						NLS.bind("Unable to retrieve a list of remote deployment scanners for server {0}", server.getName()),e)); //$NON-NLS-1$
 			if( rethrow) {
 				throw e;
 			}
