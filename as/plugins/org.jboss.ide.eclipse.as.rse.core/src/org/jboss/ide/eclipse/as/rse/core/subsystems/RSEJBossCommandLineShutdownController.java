@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.as.rse.core.subsystems;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.wst.server.core.IServer;
@@ -21,8 +22,8 @@ import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExt
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.core.util.ServerHomeValidationUtility;
 import org.jboss.ide.eclipse.as.rse.core.RSELaunchConfigProperties;
-import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IServerShutdownController;
 import org.jboss.tools.as.core.server.controllable.IDeployableServerBehaviorProperties;
 
@@ -31,6 +32,12 @@ public class RSEJBossCommandLineShutdownController extends RSECommandLineShutdow
 
 	// we remove scanners before stopping
 	public void stopImpl(boolean force) {
+		try {
+			new ServerHomeValidationUtility().validateServerHome(getServer(), true);
+		} catch(CoreException ce) {
+			throw new RuntimeException(ce);
+		}
+		
 		removeScanners();
 		super.stopImpl(force);
 	}

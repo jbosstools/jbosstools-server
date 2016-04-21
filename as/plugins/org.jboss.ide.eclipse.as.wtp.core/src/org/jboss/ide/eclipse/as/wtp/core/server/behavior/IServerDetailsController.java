@@ -10,6 +10,8 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.wtp.core.server.behavior;
 
+import org.jboss.ide.eclipse.as.core.server.IServerModeDetails;
+
 /**
  * This is a controller for managing different types of server details.
  * Depending on the implementation, it will respond to different keys
@@ -18,7 +20,7 @@ package org.jboss.ide.eclipse.as.wtp.core.server.behavior;
  * 
  * @since 3.0
  */
-public interface IServerDetailsController extends ISubsystemController {
+public interface IServerDetailsController extends ISubsystemController, IServerModeDetails {
 	public static final String SYSTEM_ID = "serverDetails";
 	
 

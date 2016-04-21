@@ -240,7 +240,10 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 
 	@Override
 	public void publishStart(IProgressMonitor monitor) throws CoreException {
-		validate();
+		IStatus s = validate();
+		if( s != null && !s.isOK()) {
+			throw new CoreException(s);
+		}
 	}
 
 	@Override

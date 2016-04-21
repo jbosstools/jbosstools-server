@@ -23,6 +23,7 @@ import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.RemotePath;
+import org.jboss.ide.eclipse.as.core.util.ServerHomeValidationUtility;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IFilesystemController;
@@ -44,12 +45,7 @@ public class StandardRSEJBossStartLaunchDelegate extends
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		// Verify the remote server home exists
 		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(configuration);
-		String serverHome = RSEUtils.getRSEHomeDir(beh.getServer());
-		IPath remoteHome = new RemotePath(serverHome, RSEUtils.getRemoteSystemSeparatorCharacter(beh.getServer()));
-		IFilesystemController fs = (IFilesystemController)beh.getController(IFilesystemController.SYSTEM_ID);
-		if( !fs.exists(remoteHome, monitor)) {
-			throw new CoreException(new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, "The remote server's home directory does not exist: " + serverHome));
-		}
+		new ServerHomeValidationUtility().validateServerHome(beh.getServer(), true);
 		super.beforeVMRunner(configuration, mode, launch, monitor);
 	}
 	

@@ -23,6 +23,7 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.DeploymentMarkerUtils;
+import org.jboss.ide.eclipse.as.core.util.ServerHomeValidationUtility;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.LocalFilesystemController;
 
 public class WildFlyFileSystemPublishController extends StandardFileSystemPublishController {
@@ -74,6 +75,13 @@ public class WildFlyFileSystemPublishController extends StandardFileSystemPublis
 			}
 		}
 		return true;
+	}
+	
+	
+	@Override
+	public void publishStart(IProgressMonitor monitor) throws CoreException {
+		super.publishStart(monitor);
+		new ServerHomeValidationUtility().validateServerHome(getServer(), true);
 	}
 	
 }
