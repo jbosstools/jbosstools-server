@@ -32,7 +32,7 @@ import org.eclipse.datatools.connectivity.drivers.IDriverMgmtConstants;
 import org.eclipse.datatools.connectivity.drivers.IPropertySet;
 import org.eclipse.datatools.connectivity.drivers.PropertySetImpl;
 import org.eclipse.datatools.connectivity.drivers.models.TemplateDescriptor;
-import org.eclipse.wst.server.core.IServerType;
+import org.eclipse.wst.server.core.IRuntimeType;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.tools.as.runtimes.integration.Messages;
 import org.jboss.tools.as.runtimes.integration.ServerRuntimesIntegrationActivator;
@@ -50,24 +50,24 @@ public class DriverUtility implements IRuntimeIntegrationConstants {
 	}
 	
 	
-	public static final HashMap<String,Pair> SERVER_DRIVER_LOCATION = new HashMap<String, Pair>();
+	public static final HashMap<String,Pair> RUNTIME_DRIVER_LOCATION = new HashMap<String, Pair>();
 	static {
-		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_AS_32, new Pair(HSQLDB_DRIVER_3X_4X_LOCATION, HSQL_TYPE));
-		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_AS_40, new Pair(HSQLDB_DRIVER_3X_4X_LOCATION, HSQL_TYPE));
-		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_AS_42, new Pair(HSQLDB_DRIVER_3X_4X_LOCATION, HSQL_TYPE));
-		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_AS_50, new Pair(HSQLDB_DRIVER_5X_LOCATION, HSQL_TYPE));
-		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_AS_51, new Pair(HSQLDB_DRIVER_5X_LOCATION, HSQL_TYPE));
-		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_AS_60, new Pair(HSQLDB_DRIVER_5X_LOCATION, HSQL_TYPE));
-		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_AS_70, new Pair(HSQLDB_DRIVER_7_LOCATION, H2_TYPE));
-		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_AS_71, new Pair(HSQLDB_DRIVER_7_LOCATION, H2_TYPE));
-		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_WILDFLY_80, new Pair(HSQLDB_DRIVER_72_EAP61_LOCATION, H2_TYPE));
-		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_WILDFLY_90, new Pair(HSQLDB_DRIVER_72_EAP61_LOCATION, H2_TYPE));
-		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_WILDFLY_100, new Pair(HSQLDB_DRIVER_72_EAP61_LOCATION, H2_TYPE));
-		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_EAP_43, new Pair(HSQLDB_DRIVER_3X_4X_LOCATION, HSQL_TYPE));
-		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_EAP_50, new Pair(HSQLDB_DRIVER_5X_LOCATION, HSQL_TYPE));
-		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_EAP_60, new Pair(HSQLDB_DRIVER_7_LOCATION, H2_TYPE));
-		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_EAP_61, new Pair(HSQLDB_DRIVER_72_EAP61_LOCATION, H2_TYPE));
-		SERVER_DRIVER_LOCATION.put(IJBossToolingConstants.SERVER_EAP_70, new Pair(HSQLDB_DRIVER_72_EAP61_LOCATION, H2_TYPE));
+		RUNTIME_DRIVER_LOCATION.put(IJBossToolingConstants.AS_32, new Pair(HSQLDB_DRIVER_3X_4X_LOCATION, HSQL_TYPE));
+		RUNTIME_DRIVER_LOCATION.put(IJBossToolingConstants.AS_40, new Pair(HSQLDB_DRIVER_3X_4X_LOCATION, HSQL_TYPE));
+		RUNTIME_DRIVER_LOCATION.put(IJBossToolingConstants.AS_42, new Pair(HSQLDB_DRIVER_3X_4X_LOCATION, HSQL_TYPE));
+		RUNTIME_DRIVER_LOCATION.put(IJBossToolingConstants.AS_50, new Pair(HSQLDB_DRIVER_5X_LOCATION, HSQL_TYPE));
+		RUNTIME_DRIVER_LOCATION.put(IJBossToolingConstants.AS_51, new Pair(HSQLDB_DRIVER_5X_LOCATION, HSQL_TYPE));
+		RUNTIME_DRIVER_LOCATION.put(IJBossToolingConstants.AS_60, new Pair(HSQLDB_DRIVER_5X_LOCATION, HSQL_TYPE));
+		RUNTIME_DRIVER_LOCATION.put(IJBossToolingConstants.AS_70, new Pair(HSQLDB_DRIVER_7_LOCATION, H2_TYPE));
+		RUNTIME_DRIVER_LOCATION.put(IJBossToolingConstants.AS_71, new Pair(HSQLDB_DRIVER_7_LOCATION, H2_TYPE));
+		RUNTIME_DRIVER_LOCATION.put(IJBossToolingConstants.WILDFLY_80, new Pair(HSQLDB_DRIVER_72_EAP61_LOCATION, H2_TYPE));
+		RUNTIME_DRIVER_LOCATION.put(IJBossToolingConstants.WILDFLY_90, new Pair(HSQLDB_DRIVER_72_EAP61_LOCATION, H2_TYPE));
+		RUNTIME_DRIVER_LOCATION.put(IJBossToolingConstants.WILDFLY_100, new Pair(HSQLDB_DRIVER_72_EAP61_LOCATION, H2_TYPE));
+		RUNTIME_DRIVER_LOCATION.put(IJBossToolingConstants.EAP_43, new Pair(HSQLDB_DRIVER_3X_4X_LOCATION, HSQL_TYPE));
+		RUNTIME_DRIVER_LOCATION.put(IJBossToolingConstants.EAP_50, new Pair(HSQLDB_DRIVER_5X_LOCATION, HSQL_TYPE));
+		RUNTIME_DRIVER_LOCATION.put(IJBossToolingConstants.EAP_60, new Pair(HSQLDB_DRIVER_7_LOCATION, H2_TYPE));
+		RUNTIME_DRIVER_LOCATION.put(IJBossToolingConstants.EAP_61, new Pair(HSQLDB_DRIVER_72_EAP61_LOCATION, H2_TYPE));
+		RUNTIME_DRIVER_LOCATION.put(IJBossToolingConstants.EAP_70, new Pair(HSQLDB_DRIVER_72_EAP61_LOCATION, H2_TYPE));
 		// NEW_SERVER_ADAPTER 
 	}
 
@@ -78,21 +78,21 @@ public class DriverUtility implements IRuntimeIntegrationConstants {
 	 * @throws ConnectionProfileException
 	 * @return driver instance
 	 */
-	public void createDriver(String jbossASLocation, IServerType serverType) throws DriverUtilityException {
+	public void createDriver(String jbossASLocation, IRuntimeType runtimeType) throws DriverUtilityException {
 		try {
-			createDriver2(jbossASLocation, serverType);
+			createDriver2(jbossASLocation, runtimeType);
 		} catch( ConnectionProfileException cfe ) {
 			throw new DriverUtilityException(cfe);
 		}
 	}
-	private void createDriver2(String jbossASLocation, IServerType serverType) throws ConnectionProfileException {
+	private void createDriver2(String jbossASLocation, IRuntimeType runtimeType) throws ConnectionProfileException {
 		if(ProfileManager.getInstance().getProfileByName(DEFAULT_DS) != null) {
 			// Don't create the driver a few times
 			return;
 		}
 		String driverPath;
 		try {
-			driverPath = getDriverPath(jbossASLocation, serverType);
+			driverPath = getDriverPath(jbossASLocation, runtimeType);
 		} catch (IOException e) {
 			ServerRuntimesIntegrationActivator.getDefault().getLog().log(new Status(IStatus.ERROR,
 					ServerRuntimesIntegrationActivator.PLUGIN_ID, Messages.JBossRuntimeStartup_Cannott_create_new_HSQL_DB_Driver, e));
@@ -103,12 +103,12 @@ public class DriverUtility implements IRuntimeIntegrationConstants {
 					ServerRuntimesIntegrationActivator.PLUGIN_ID, Messages.JBossRuntimeStartup_Cannot_create_new_DB_Driver));
 		}
 
-		DriverInstance driver = getDriver(serverType);
+		DriverInstance driver = getDriver(runtimeType);
 		if (driver == null) {
-			TemplateDescriptor descr = getDriverTemplateDescriptor(serverType);
-			IPropertySet instance = new PropertySetImpl(getDriverName(serverType), getDriverDefinitionId(serverType));
-			instance.setName(getDriverName(serverType));
-			instance.setID(getDriverDefinitionId(serverType));
+			TemplateDescriptor descr = getDriverTemplateDescriptor(runtimeType);
+			IPropertySet instance = new PropertySetImpl(getDriverName(runtimeType), getDriverDefinitionId(runtimeType));
+			instance.setName(getDriverName(runtimeType));
+			instance.setID(getDriverDefinitionId(runtimeType));
 			Properties props = new Properties();
 
 			IConfigurationElement[] template = descr.getProperties();
@@ -119,10 +119,10 @@ public class DriverUtility implements IRuntimeIntegrationConstants {
 				String value = prop.getAttribute("value"); //$NON-NLS-1$
 				props.setProperty(id, value == null ? "" : value); //$NON-NLS-1$
 			}
-			props.setProperty(DTP_DB_URL_PROPERTY_ID, getDriverUrl(serverType)); 
+			props.setProperty(DTP_DB_URL_PROPERTY_ID, getDriverUrl(runtimeType)); 
 			props.setProperty(IDriverMgmtConstants.PROP_DEFN_TYPE, descr.getId());
 			props.setProperty(IDriverMgmtConstants.PROP_DEFN_JARLIST, driverPath);
-			if( usesH2(serverType)) {
+			if( usesH2(runtimeType)) {
 				props.setProperty(IDBDriverDefinitionConstants.DRIVER_CLASS_PROP_ID, "org.h2.Driver");//$NON-NLS-1$
 				props.setProperty(IDBDriverDefinitionConstants.DATABASE_VENDOR_PROP_ID, "H2 driver");//$NON-NLS-1$
 				props.setProperty(IDBDriverDefinitionConstants.URL_PROP_ID, "jdbc:h2:mem");//$NON-NLS-1$
@@ -135,12 +135,12 @@ public class DriverUtility implements IRuntimeIntegrationConstants {
 			DriverManager.getInstance().addDriverInstance(instance);
 		}
 
-		driver = DriverManager.getInstance().getDriverInstanceByName(getDriverName(serverType));
+		driver = DriverManager.getInstance().getDriverInstanceByName(getDriverName(runtimeType));
 		if (driver != null && ProfileManager.getInstance().getProfileByName(DEFAULT_DS) == null) {
 			// create profile
 			Properties props = new Properties();
 			props.setProperty(ConnectionProfileConstants.PROP_DRIVER_DEFINITION_ID, 
-					getDriverDefinitionId(serverType));
+					getDriverDefinitionId(runtimeType));
 			props.setProperty(IDBConnectionProfileConstants.CONNECTION_PROPERTIES_PROP_ID, ""); //$NON-NLS-1$
 			props.setProperty(IDBDriverDefinitionConstants.DRIVER_CLASS_PROP_ID, driver.getProperty(IDBDriverDefinitionConstants.DRIVER_CLASS_PROP_ID));
 			props.setProperty(IDBDriverDefinitionConstants.DATABASE_VENDOR_PROP_ID,	driver.getProperty(IDBDriverDefinitionConstants.DATABASE_VENDOR_PROP_ID));
@@ -151,7 +151,7 @@ public class DriverUtility implements IRuntimeIntegrationConstants {
 			props.setProperty(IDBDriverDefinitionConstants.USERNAME_PROP_ID, driver.getProperty(IDBDriverDefinitionConstants.USERNAME_PROP_ID));
 			props.setProperty(IDBDriverDefinitionConstants.URL_PROP_ID, driver.getProperty(IDBDriverDefinitionConstants.URL_PROP_ID));
 
-			if( usesH2(serverType)) {
+			if( usesH2(runtimeType)) {
 				ProfileManager.getInstance().createProfile(DEFAULT_DS,	Messages.JBossRuntimeStartup_The_JBoss_AS_H2_embedded_database, H2_PROFILE_ID, props, "", false); //$NON-NLS-1$ 
 			} else {
 				ProfileManager.getInstance().createProfile(DEFAULT_DS,	Messages.JBossRuntimeStartup_The_JBoss_AS_Hypersonic_embedded_database, HSQL_PROFILE_ID, props, "", false); //$NON-NLS-1$
@@ -160,48 +160,48 @@ public class DriverUtility implements IRuntimeIntegrationConstants {
 		
 	}
 
-	protected static String getDriverUrl(IServerType serverType) {
-		if( usesH2(serverType)) {
+	protected static String getDriverUrl(IRuntimeType runtimeType) {
+		if( usesH2(runtimeType)) {
 			return "jdbc:h2:mem";//$NON-NLS-1$
 		} else {
 			return "jdbc:hsqldb:.";//$NON-NLS-1$
 		}
 	}
 
-	private static String getDriverDefinitionId(IServerType serverType) {
-		if( usesH2(serverType)) {
+	private static String getDriverDefinitionId(IRuntimeType runtimeType) {
+		if( usesH2(runtimeType)) {
 			return H2_DRIVER_DEFINITION_ID;
 		} else {
 			return HSQL_DRIVER_DEFINITION_ID;
 		}
 	}
 
-	private static String getDriverName(IServerType serverType) {
-		if( usesH2(serverType)) {
+	private static String getDriverName(IRuntimeType runtimeType) {
+		if( usesH2(runtimeType)) {
 			return H2_DRIVER_NAME;
 		} else {
 			return HSQL_DRIVER_NAME;
 		}
 	}
 
-	protected static TemplateDescriptor getDriverTemplateDescriptor(IServerType serverType) {
-		if( usesH2(serverType)) {
+	protected static TemplateDescriptor getDriverTemplateDescriptor(IRuntimeType runtimeType) {
+		if( usesH2(runtimeType)) {
 			return TemplateDescriptor.getDriverTemplateDescriptor(H2_DRIVER_TEMPLATE_ID);
 		} else {
 			return TemplateDescriptor.getDriverTemplateDescriptor(HSQL_DRIVER_TEMPLATE_ID);
 		}
 	}
 
-	protected static DriverInstance getDriver(IServerType serverType) {
-		if( usesH2(serverType)) {
+	protected static DriverInstance getDriver(IRuntimeType runtimeType) {
+		if( usesH2(runtimeType)) {
 			return DriverManager.getInstance().getDriverInstanceByName(H2_DRIVER_NAME);
 		}
 		return DriverManager.getInstance().getDriverInstanceByName(HSQL_DRIVER_NAME);
 	}
 
-	private static String getDriverPath(String jbossASLocation, IServerType serverType)
+	private static String getDriverPath(String jbossASLocation, IRuntimeType runtimeType)
 			throws IOException {
-		Pair pair = SERVER_DRIVER_LOCATION.get(serverType.getId());
+		Pair pair = RUNTIME_DRIVER_LOCATION.get(runtimeType.getId());
 		String loc = pair.loc;
 		IPath p = new Path(jbossASLocation).append(loc);
 		File f = p.toFile().getCanonicalFile();
@@ -222,9 +222,9 @@ public class DriverUtility implements IRuntimeIntegrationConstants {
 		return f.getCanonicalPath();
 	}
 
-	private static boolean usesH2(IServerType serverType) {
-		return SERVER_DRIVER_LOCATION.get(serverType.getId()) != null 
-				&& SERVER_DRIVER_LOCATION.get(serverType.getId()).type == H2_TYPE;
+	private static boolean usesH2(IRuntimeType runtimeType) {
+		return RUNTIME_DRIVER_LOCATION.get(runtimeType.getId()) != null 
+				&& RUNTIME_DRIVER_LOCATION.get(runtimeType.getId()).type == H2_TYPE;
 	}
 	
 	

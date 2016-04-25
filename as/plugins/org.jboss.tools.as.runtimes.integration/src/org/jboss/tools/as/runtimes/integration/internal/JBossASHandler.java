@@ -197,24 +197,12 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 			if (runtime != null) {
 				s = createServer(progressMonitor, runtime, serverType, name);
 			}
-			
-			if( isDtpPresent())
-				new DriverUtility().createDriver(asLocation.getAbsolutePath(), serverType);
 		} catch (CoreException e) {
 			ServerRuntimesIntegrationActivator.pluginLog().logError(Messages.JBossRuntimeStartup_Cannot_create_new_JBoss_Server,e);
-		} catch (DriverUtilityException e) {
-			ServerRuntimesIntegrationActivator.pluginLog().logError(Messages.JBossRuntimeStartup_Cannott_create_new_DTP_Connection_Profile,e);
-		}
+		} 
 		return s != null;
 	}
 
-	private static boolean isDtpPresent() {
-		String bundle1 = "org.eclipse.datatools.connectivity"; //$NON-NLS-1$
-		String bundle2 = "org.eclipse.datatools.connectivity.db.generic"; //$NON-NLS-1$
-		Bundle b1 = Platform.getBundle(bundle1);
-		Bundle b2 = Platform.getBundle(bundle2);
-		return b1 != null && b2 != null;
-	}
 	
 	/**
 	 * Creates new JBoss AS Runtime
