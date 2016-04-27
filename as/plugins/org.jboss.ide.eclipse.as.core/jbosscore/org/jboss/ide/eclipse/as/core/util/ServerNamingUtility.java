@@ -31,7 +31,7 @@ public class ServerNamingUtility {
 	
 	public static String getDefaultServerName( String base) {
 		if( ServerUtil.findServer(base) == null ) return base;
-		int i = 1;
+		int i = 2;
 		while( ServerUtil.findServer(
 				NLS.bind(Messages.serverCountName, base, i)) != null )
 			i++;
