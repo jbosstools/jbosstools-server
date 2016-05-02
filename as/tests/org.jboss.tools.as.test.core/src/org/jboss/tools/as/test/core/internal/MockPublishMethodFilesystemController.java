@@ -42,6 +42,7 @@ public class MockPublishMethodFilesystemController extends AbstractSubsystemCont
 	
 
 	private LocalFilesystemController delegate;
+	private StaticModel myModelRef = model;
 	private LocalFilesystemController getDelegate() {
 		if( delegate == null ) {
 			delegate = new LocalFilesystemController();

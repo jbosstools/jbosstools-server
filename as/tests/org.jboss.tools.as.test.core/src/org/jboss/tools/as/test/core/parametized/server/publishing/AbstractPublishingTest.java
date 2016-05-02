@@ -403,14 +403,13 @@ public abstract class AbstractPublishingTest extends TestCase {
 	 * all relative paths in list exist or do not exist (as per the exists flag)
 	 */
 	protected void verifyList(IPath root, List<IPath> list, boolean exists) {
-		File[] changed = MockPublishMethodFilesystemController.StaticModel.getChangedFiles();
 		Iterator<IPath> iterator = list.iterator();
 		ArchiveDetector detector = isZipped() ? TrueZipUtil.getJarArchiveDetector() : TrueZipUtil.getDefaultArchiveDetector();
 		while(iterator.hasNext()) {
 			de.schlichtherle.io.File f = TrueZipUtil.getFile(root.toFile(), detector);
 			IPath next = iterator.next();
 			assertTrue(next.toOSString() + " must be a folder beneath " + root.toOSString(), root.isPrefixOf(next));
-			IPath nextTrimmed = next.removeFirstSegments(root.segmentCount());
+			IPath nextTrimmed = next.removeFirstSegments(root.segmentCount()).setDevice(null);
 			de.schlichtherle.io.File toCheck = TrueZipUtil.getFile(f, nextTrimmed.toString(), TrueZipUtil.getDefaultArchiveDetector());
 			assertEquals("File " + next.toOSString() + (exists ? " should " : " should not ") + "exist", toCheck.exists(), exists);
 		}

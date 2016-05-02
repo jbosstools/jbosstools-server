@@ -21,7 +21,6 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IFilesystemController;
-import org.jboss.ide.eclipse.as.wtp.core.server.behavior.LocalFilesystemController;
 import org.jboss.ide.eclipse.as.wtp.core.server.publish.LocalZippedModulePublishRunner;
 import org.jboss.tools.as.core.server.controllable.subsystems.internal.LocalDeploymentOptionsController;
 import org.jboss.tools.as.core.server.controllable.subsystems.internal.ModuleDeployPathController;
@@ -30,6 +29,7 @@ import org.jboss.tools.as.core.server.controllable.subsystems.internal.StandardM
 import org.jboss.tools.as.core.server.controllable.systems.IDeploymentOptionsController;
 import org.jboss.tools.as.core.server.controllable.systems.IModuleDeployPathController;
 import org.jboss.tools.as.core.server.controllable.systems.IModuleRestartBehaviorController;
+import org.jboss.tools.as.test.core.internal.MockPublishMethodFilesystemController;
 
 /**
  * This is a custom publish controller that subclasses the official one.
@@ -56,7 +56,7 @@ public class CustomPublishController extends StandardFileSystemPublishController
 		return c;
 	}
 	public IFilesystemController getFilesystemController() throws CoreException {
-		IFilesystemController c = new LocalFilesystemController();
+		IFilesystemController c = new MockPublishMethodFilesystemController();
 		c.initialize(getServer(), null, getEnvironment());
 		return c;
 	}

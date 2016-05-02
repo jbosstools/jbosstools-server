@@ -11,13 +11,12 @@
 package org.jboss.tools.as.test.core.catalog;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-
-import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -25,8 +24,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
@@ -62,6 +59,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import junit.framework.TestCase;
 
 /**
  * Test that all xsd's in the catalog can create a proper
@@ -206,28 +205,36 @@ public class CatalogValidationTest extends TestCase {
 			}
 		}
 	}
-	  public ValidationReport validate(String uri, InputStream inputstream, IProject context, ValidationResult result)
-	  {
-	    XMLValidator validator = XMLValidator.getInstance();
-	    IScopeContext[] fPreferenceScopes = createPreferenceScopes(context);
-	    XMLValidationConfiguration configuration = new XMLValidationConfiguration();
-	    try
-	    {
-	      //Preferences pluginPreferences = XMLCorePlugin.getDefault().getPluginPreferences();
-	      configuration.setFeature(XMLValidationConfiguration.INDICATE_NO_GRAMMAR, 1);
-	      final IPreferencesService preferencesService = Platform.getPreferencesService();
-	      configuration.setFeature(XMLValidationConfiguration.INDICATE_NO_DOCUMENT_ELEMENT, preferencesService.getInt(XMLCorePlugin.getDefault().getBundle().getSymbolicName(), XMLCorePreferenceNames.INDICATE_NO_DOCUMENT_ELEMENT, -1, fPreferenceScopes));
-	      configuration.setFeature(XMLValidationConfiguration.USE_XINCLUDE, preferencesService.getBoolean(XMLCorePlugin.getDefault().getBundle().getSymbolicName(), XMLCorePreferenceNames.USE_XINCLUDE, false, fPreferenceScopes));
-	      configuration.setFeature(XMLValidationConfiguration.HONOUR_ALL_SCHEMA_LOCATIONS, preferencesService.getBoolean(XMLCorePlugin.getDefault().getBundle().getSymbolicName(), XMLCorePreferenceNames.HONOUR_ALL_SCHEMA_LOCATIONS, true, fPreferenceScopes));
-	    }
-	    catch(Exception e)
-	    {
-	      // TODO: Unable to set the preference. Log this problem.
-	    }
-	    
-	    XMLValidationReport valreport = validator.validate(uri, inputstream, configuration, result, new NestedValidatorContext());
-	              
-	    return valreport;
+	  public ValidationReport validate(String uri, InputStream inputstream, IProject context, ValidationResult result) {
+		  try {
+		    XMLValidator validator = XMLValidator.getInstance();
+		    IScopeContext[] fPreferenceScopes = createPreferenceScopes(context);
+		    XMLValidationConfiguration configuration = new XMLValidationConfiguration();
+		    try
+		    {
+		      //Preferences pluginPreferences = XMLCorePlugin.getDefault().getPluginPreferences();
+		      configuration.setFeature(XMLValidationConfiguration.INDICATE_NO_GRAMMAR, 1);
+		      final IPreferencesService preferencesService = Platform.getPreferencesService();
+		      configuration.setFeature(XMLValidationConfiguration.INDICATE_NO_DOCUMENT_ELEMENT, preferencesService.getInt(XMLCorePlugin.getDefault().getBundle().getSymbolicName(), XMLCorePreferenceNames.INDICATE_NO_DOCUMENT_ELEMENT, -1, fPreferenceScopes));
+		      configuration.setFeature(XMLValidationConfiguration.USE_XINCLUDE, preferencesService.getBoolean(XMLCorePlugin.getDefault().getBundle().getSymbolicName(), XMLCorePreferenceNames.USE_XINCLUDE, false, fPreferenceScopes));
+		      configuration.setFeature(XMLValidationConfiguration.HONOUR_ALL_SCHEMA_LOCATIONS, preferencesService.getBoolean(XMLCorePlugin.getDefault().getBundle().getSymbolicName(), XMLCorePreferenceNames.HONOUR_ALL_SCHEMA_LOCATIONS, true, fPreferenceScopes));
+		    }
+		    catch(Exception e)
+		    {
+		      // TODO: Unable to set the preference. Log this problem.
+		    }
+		    
+		    XMLValidationReport valreport = validator.validate(uri, inputstream, configuration, result, new NestedValidatorContext());
+		    return valreport;
+		  } finally {
+			  if( inputstream != null ) {
+				  try {
+					  inputstream.close();
+				  } catch(IOException ioe) {
+					  // ignore
+				  }
+			  }
+		  }
 	  }
 	  
 	  protected IScopeContext[] createPreferenceScopes(IProject project) {
