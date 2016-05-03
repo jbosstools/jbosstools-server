@@ -86,7 +86,11 @@ public class ModuleDeploymentPrefsUtil {
 				IJBossToolingConstants.LOCAL_DEPLOYMENT_TEMP_LOC, separator);
 		if( folder == null )
 			return null;
-		return new RemotePath(folder, separator);
+		RemotePath rp = new RemotePath(folder, separator);
+		System.out.println(rp.toString());
+		System.out.println(rp.toOSString());
+		
+		return rp;
 	}
 
 	

@@ -413,5 +413,6 @@ public abstract class AbstractPublishingTest extends TestCase {
 			de.schlichtherle.io.File toCheck = TrueZipUtil.getFile(f, nextTrimmed.toString(), TrueZipUtil.getDefaultArchiveDetector());
 			assertEquals("File " + next.toOSString() + (exists ? " should " : " should not ") + "exist", toCheck.exists(), exists);
 		}
+		TrueZipUtil.umount();
 	}	
 }

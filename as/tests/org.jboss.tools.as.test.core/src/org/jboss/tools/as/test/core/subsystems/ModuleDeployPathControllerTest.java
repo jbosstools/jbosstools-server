@@ -10,6 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.tools.as.test.core.subsystems;
 
+import java.io.File;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.CoreException;
@@ -44,6 +45,10 @@ public class ModuleDeployPathControllerTest extends TestCase {
 	
 	private static String TMP = (Platform.getOS().equals(Platform.OS_WIN32) ? new Path("C:\\home\\user") : new Path("/home/user")).append("tmp").toOSString();
 	private static String TMP2 = (Platform.getOS().equals(Platform.OS_WIN32) ? new Path("C:\\home\\user") : new Path("/home/user")).append("tmp2").toOSString();
+	private static char WIN_SEP = '\\';
+	private static char LIN_SEP = '/';
+	private static char LOCAL_SEP = Platform.getOS().equals(Platform.OS_WIN32) ? WIN_SEP : LIN_SEP;
+	
 	
 	public ModuleDeployPathControllerTest() {
 	}
@@ -108,7 +113,7 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		String tmpDir = contr.getTemporaryDeployDirectory(asArray(MockModuleUtil.createMockWebModule())).toOSString();
 		assertEquals(tmpDir, initialTmpDeployDir);
 		String depDir = contr.getDeployDirectory(asArray(MockModuleUtil.createMockWebModule())).toOSString();
-		String expected = initialDeployDir + "/" + MockModuleUtil.createMockWebModule().getName() + ".war";
+		String expected = initialDeployDir + LOCAL_SEP + MockModuleUtil.createMockWebModule().getName() + ".war";
 		assertEquals(expected, depDir);
 	}
 
@@ -123,7 +128,7 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		
 		String earWithSuffix = ear.getName() + ".ear";
 		String warWithSuffix = web.getName() + ".war";
-		String uri = "nested/inside/" + warWithSuffix;
+		String uri = "nested" + LOCAL_SEP + "inside" + LOCAL_SEP + warWithSuffix;
 		
 		((MockModule)ear).addChildModule(web, uri);
 		IModule[] webInEar = new IModule[]{ear, web};
@@ -131,8 +136,8 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		String tmpDir = contr.getTemporaryDeployDirectory(webInEar).toOSString();
 		assertEquals(tmpDir, initialTmpDeployDir);
 		String depDir = contr.getDeployDirectory(webInEar).toOSString();
-		String expected = initialDeployDir + "/" 
-				+ earWithSuffix + "/" + uri;
+		String expected = initialDeployDir + LOCAL_SEP
+				+ earWithSuffix + LOCAL_SEP + uri;
 		assertEquals(expected, depDir);
 	}
 	
@@ -148,7 +153,7 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		
 		String utilWithSuffix = util.getName() + ".jar";
 		String warWithSuffix = web.getName() + ".war";
-		String uri = "nested/inside/" + utilWithSuffix;
+		String uri = "nested" + LOCAL_SEP + "inside" + LOCAL_SEP + utilWithSuffix;
 		
 		((MockModule)web).addChildModule(util, uri);
 		IModule[] utilInWeb = new IModule[]{web, util};
@@ -156,8 +161,8 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		String tmpDir = contr.getTemporaryDeployDirectory(utilInWeb).toOSString();
 		assertEquals(tmpDir, initialTmpDeployDir);
 		String depDir = contr.getDeployDirectory(utilInWeb).toOSString();
-		String expected = initialDeployDir + "/" 
-				+ warWithSuffix + "/" + uri;
+		String expected = initialDeployDir + LOCAL_SEP
+				+ warWithSuffix + LOCAL_SEP + uri;
 		assertEquals(expected, depDir);
 	}
 	
@@ -175,8 +180,8 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		String earWithSuffix = ear.getName() + ".ear";
 		String utilWithSuffix = util.getName() + ".jar";
 		String warWithSuffix = web.getName() + ".war";
-		String uriWar = "warNest/" + warWithSuffix;
-		String uriUtil = "util/Nest/" + utilWithSuffix;
+		String uriWar = "warNest" + LOCAL_SEP + warWithSuffix;
+		String uriUtil = "util" + LOCAL_SEP + "Nest" + LOCAL_SEP + utilWithSuffix;
 		
 		
 		((MockModule)web).addChildModule(util, uriUtil);
@@ -186,8 +191,8 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		String tmpDir = contr.getTemporaryDeployDirectory(utilInWebInEar).toOSString();
 		assertEquals(tmpDir, initialTmpDeployDir);
 		String depDir = contr.getDeployDirectory(utilInWebInEar).toOSString();
-		String expected = initialDeployDir + "/" 
-				+ earWithSuffix + "/" + uriWar + "/" + uriUtil;
+		String expected = initialDeployDir + LOCAL_SEP
+				+ earWithSuffix + LOCAL_SEP + uriWar + LOCAL_SEP + uriUtil;
 		assertEquals(expected, depDir);
 	}
 	
@@ -220,7 +225,7 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		String initialTmp = "/home/user/deployTmp";
 		String propVal = "/home/user/webDeploy";
 		String expectedPrefix = "/home/user/webDeploy/";
-		setDeployPathShallow(initial, initialTmp, propVal, expectedPrefix, null);
+		setDeployPathShallow(initial, initialTmp, propVal, expectedPrefix, new Character('/'));
 	}
 
 	public void testSetDeployPathLinuxRelative() {
@@ -228,7 +233,7 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		String initialTmp = "/home/user/deployTmp";
 		String propVal = "innerForModule";
 		String expectedPrefix = "/home/user/deploy/innerForModule/";
-		setDeployPathShallow(initial, initialTmp, propVal, expectedPrefix, null);
+		setDeployPathShallow(initial, initialTmp, propVal, expectedPrefix, new Character('/'));
 	}
 
 	public void testSetDeployPathWindowsAbsolute() {
@@ -269,7 +274,7 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		String initialTmp = "/home/user/deployTmp";
 		String propVal = "/home/user/deployTmp2";
 		String expectedPrefix = "/home/user/deployTmp2";
-		setTmpDeployPathShallow(initial, initialTmp, propVal, expectedPrefix, null);
+		setTmpDeployPathShallow(initial, initialTmp, propVal, expectedPrefix, new Character('/'));
 	}
 
 	public void testSetTmpDeployPathLinuxRelative() {
@@ -277,7 +282,7 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		String initialTmp = "/home/user/deployTmp";
 		String propVal = "innerTmp";
 		String expectedPrefix = "/home/user/deployTmp/innerTmp";
-		setTmpDeployPathShallow(initial, initialTmp, propVal, expectedPrefix, null);
+		setTmpDeployPathShallow(initial, initialTmp, propVal, expectedPrefix, new Character('/'));
 	}
 
 	public void testSetTmpDeployPathWindowsAbsolute() {
@@ -319,7 +324,7 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		String initialTmpDeployDir = "/home/user/deployTmp";
 		String deployDirToSet = "/home/user/earDeploy";
 		String expectedPrefix = "/home/user/earDeploy/";
-		setDeployPathDeep(initialDeployDir, initialTmpDeployDir, deployDirToSet, expectedPrefix, null);
+		setDeployPathDeep(initialDeployDir, initialTmpDeployDir, deployDirToSet, expectedPrefix, '/');
 	}
 
 	public void testSetDeployPathLinuxRelativeDeep() {
@@ -327,7 +332,7 @@ public class ModuleDeployPathControllerTest extends TestCase {
 		String initialTmpDeployDir = "/home/user/deployTmp";
 		String deployDirToSet = "innerDeploy";
 		String expectedPrefix = "/home/user/deploy/innerDeploy/";
-		setDeployPathDeep(initialDeployDir, initialTmpDeployDir, deployDirToSet, expectedPrefix, null);
+		setDeployPathDeep(initialDeployDir, initialTmpDeployDir, deployDirToSet, expectedPrefix, '/');
 	}
 
 	public void testSetDeployPathWindowsAbsoluteDeep() {
