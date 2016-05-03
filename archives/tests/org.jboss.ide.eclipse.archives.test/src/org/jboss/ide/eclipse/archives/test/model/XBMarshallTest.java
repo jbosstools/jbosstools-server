@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XMLBinding;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XMLBinding.XbException;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbAction;
@@ -72,8 +73,10 @@ public class XBMarshallTest extends TestCase {
 			File expected = expectedOutputs.append("emptyPackages.xml").toFile();
 			String expectedContents = FileIOUtil.getFileContents(expected);
 			String asString = XMLBinding.serializePackages(packs, new NullProgressMonitor());
+			asString = asString.replaceAll("\n", "").replaceAll("\r", "");
+			expectedContents = expectedContents.replaceAll("\n", "").replaceAll("\r", "");
 			// Ignore newlines
-			assertEquals(expectedContents.replace("\n", ""), asString.replace("\n", ""));
+			assertEquals(expectedContents, asString);
 		} catch( XbException xbe ) {
 			fail(xbe.getMessage());
 		}
@@ -88,8 +91,12 @@ public class XBMarshallTest extends TestCase {
 
 			XMLBinding.marshallToFile(packs, out, new NullProgressMonitor());
 			String actualContents = FileIOUtil.getFileContents(out.toFile());
+			
 			// Ignore newlines
-			assertEquals(expectedContents.replace("\n", ""), actualContents.replace("\n", ""));
+			actualContents = actualContents.replaceAll("\n", "").replaceAll("\r", "");
+			expectedContents = expectedContents.replaceAll("\n", "").replaceAll("\r", "");
+
+			assertEquals(expectedContents, actualContents);
 		} catch( XbException xbe ) {
 			xbe.printStackTrace();
 			fail(xbe.getMessage());
