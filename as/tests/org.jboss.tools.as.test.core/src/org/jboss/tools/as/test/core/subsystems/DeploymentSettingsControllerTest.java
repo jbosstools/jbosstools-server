@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
@@ -263,8 +264,8 @@ public class DeploymentSettingsControllerTest extends TestCase {
 	public void testLocalDeployment_Metadata() throws Exception {
 		// Server is deploying to metadata deploy location, so 
 		// depdir and depdirTmp are 100% ignored
-		String depdir = "/home/user/d/deploy";
-		String depdirTmp = "/home/user/d/tmp";
+		String depdir = (Platform.getOS().equals(Platform.OS_WIN32) ? new Path("C:\\home\\user") : new Path("/home/user")).append("d").append("deploy").toOSString();
+		String depdirTmp = (Platform.getOS().equals(Platform.OS_WIN32) ? new Path("C:\\home\\user") : new Path("/home/user")).append("d").append("tmp").toOSString();
 		testLocalDeployment_Metadata_internal(depdir, depdirTmp,  IDeployableServer.DEPLOY_METADATA);
 	}
 	@Test
@@ -305,8 +306,8 @@ public class DeploymentSettingsControllerTest extends TestCase {
 	public void testLocalDeployment_Custom() throws Exception {
 		// Server is deploying to metadata deploy location, so 
 		// depdir and depdirTmp are 100% ignored
-		String depdir = "/home/user/d/deploy";
-		String depdirTmp = "/home/user/d/tmp";
+		String depdir = (Platform.getOS().equals(Platform.OS_WIN32) ? new Path("C:\\home\\user") : new Path("/home/user")).append("d").append("deploy").toOSString();
+		String depdirTmp = (Platform.getOS().equals(Platform.OS_WIN32) ? new Path("C:\\home\\user") : new Path("/home/user")).append("d").append("tmp").toOSString();
 		initServer(IDeployableServer.DEPLOY_CUSTOM, depdir, depdirTmp);
 		testLocalDeploymentServer_deployonly(depdir, depdirTmp);
 	}

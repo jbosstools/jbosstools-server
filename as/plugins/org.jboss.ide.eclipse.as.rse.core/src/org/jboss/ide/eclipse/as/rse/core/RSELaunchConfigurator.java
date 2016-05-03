@@ -89,7 +89,7 @@ public class RSELaunchConfigurator implements ILaunchConfigConfigurator {
 						IJBossRuntimeResourceConstants.ENDORSED), true);
 
 		String libPath = new Path(rseHome).append(IJBossRuntimeResourceConstants.BIN)
-				.append(IJBossRuntimeResourceConstants.NATIVE).toOSString();
+				.append(IJBossRuntimeResourceConstants.NATIVE).toString();
 		currentVMArgs = ArgsUtil.setArg(currentVMArgs, null,
 				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JAVA_LIB_PATH,
 				RSEUtils.pathToRemoteSystem(host, libPath, null), true);

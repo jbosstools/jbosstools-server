@@ -12,10 +12,10 @@ package org.jboss.tools.as.test.core.launch;
 
 import java.util.Collection;
 
-import junit.framework.TestCase;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.server.core.IModule;
@@ -47,8 +47,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import junit.framework.TestCase;
+
 @RunWith(value = Parameterized.class)
 public class DeploymentScannerAdditionsTest extends TestCase  {
+	
+	private static String ROOT = Platform.getOS().equals(Platform.OS_WIN32) ? "C:\\home\\user" : "/home/user";
+	
 	private String serverType;
 	
 	@Parameters
@@ -98,11 +103,11 @@ public class DeploymentScannerAdditionsTest extends TestCase  {
 			IServer s = ServerCreationTestUtils.createMockServerWithRuntime(serverType, serverType);
 			IServerWorkingCopy wc = s.createWorkingCopy();
 			wc.setAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, IDeployableServer.DEPLOY_CUSTOM);
-			wc.setAttribute(IDeployableServer.DEPLOY_DIRECTORY, "/home/user/test");
+			wc.setAttribute(IDeployableServer.DEPLOY_DIRECTORY, new Path(ROOT).append("test").toOSString());
 			s = wc.save(true, null);
 			String[] folders = getAdditions().getDeployLocationFolders(s);
 			assertEquals(1, folders.length);
-			assertTrue(folders[0].equals("/home/user/test"));
+			assertTrue(folders[0].equals(new Path(ROOT).append("test").toOSString()));
 		} catch(CoreException ce) {
 			fail("Unable to save changes to server");
 		}
@@ -147,12 +152,12 @@ public class DeploymentScannerAdditionsTest extends TestCase  {
 			// Change it to now make some other output folder
 			wc = s.createWorkingCopy();
 			AbstractPublishingTest.setCustomDeployOverride(wc, projMod, 
-					"newName.war", "/home/user/deploy", null);
+					"newName.war", new Path(ROOT).append("deploy").toOSString(), null);
 			s = wc.save(true,  null);
 			folders = getAdditions().getDeployLocationFolders(s);
 			assertEquals(2, folders.length);
 			assertTrue(folders[0].contains("metadata"));
-			assertTrue(folders[1].equals("/home/user/deploy"));
+			assertTrue(folders[1].equals(new Path(ROOT).append("deploy").toOSString()));
 
 		} catch(CoreException ce) {
 			fail("Unable to save changes to server");

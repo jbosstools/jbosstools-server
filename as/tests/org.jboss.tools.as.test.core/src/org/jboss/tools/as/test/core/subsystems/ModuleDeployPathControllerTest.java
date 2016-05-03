@@ -12,12 +12,11 @@ package org.jboss.tools.as.test.core.subsystems;
 
 import java.util.HashMap;
 
-import junit.framework.TestCase;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
@@ -36,10 +35,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import junit.framework.TestCase;
+
 public class ModuleDeployPathControllerTest extends TestCase {
 	private static String SYSTEM = IModuleDeployPathController.SYSTEM_ID;
 	private static String SUBSYSTEM = "moduleDeployPath.xmlprefs";
 
+	
+	private static String TMP = (Platform.getOS().equals(Platform.OS_WIN32) ? new Path("C:\\home\\user") : new Path("/home/user")).append("tmp").toOSString();
+	private static String TMP2 = (Platform.getOS().equals(Platform.OS_WIN32) ? new Path("C:\\home\\user") : new Path("/home/user")).append("tmp2").toOSString();
 	
 	public ModuleDeployPathControllerTest() {
 	}
@@ -79,21 +83,21 @@ public class ModuleDeployPathControllerTest extends TestCase {
 	// Now to test the actual system
 	@Test
 	public void testSimpleEnv() {
-		IModuleDeployPathController contr = buildEnv("/home/user/tmp", "/home/user/tmp2", null);
+		IModuleDeployPathController contr = buildEnv(TMP, TMP2, null);
 		assertTrue(contr.validate().isOK());
 
-		contr = buildEnv("/home/user/tmp", null, null);
+		contr = buildEnv(TMP, null, null);
 		assertFalse(contr.validate().isOK());
 
-		contr = buildEnv(null, "/home/user/tmp", null);
+		contr = buildEnv(null, TMP, null);
 		assertFalse(contr.validate().isOK());
 	}
 	
 
 	@Test
 	public void testGettersNoPrefs() {
-		String initialDeployDir = "/home/user/tmp";
-		String initialTmpDeployDir = "/home/user/tmp2";
+		String initialDeployDir = TMP;
+		String initialTmpDeployDir = TMP2;
 		
 		IModuleDeployPathController contr = buildEnv(initialDeployDir, initialTmpDeployDir, null);
 		assertTrue(contr.validate().isOK());
@@ -109,8 +113,8 @@ public class ModuleDeployPathControllerTest extends TestCase {
 	}
 
 	public void testGettersNoPrefsWarInEar() {
-		String initialDeployDir = "/home/user/tmp";
-		String initialTmpDeployDir = "/home/user/tmp2";
+		String initialDeployDir = TMP;
+		String initialTmpDeployDir = TMP2;
 		
 		IModuleDeployPathController contr = buildEnv(initialDeployDir, initialTmpDeployDir, null);
 		assertTrue(contr.validate().isOK());
@@ -134,8 +138,8 @@ public class ModuleDeployPathControllerTest extends TestCase {
 	
 
 	public void testGettersNoPrefsUtilInWar() {
-		String initialDeployDir = "/home/user/tmp";
-		String initialTmpDeployDir = "/home/user/tmp2";
+		String initialDeployDir = TMP;
+		String initialTmpDeployDir = TMP2;
 		
 		IModuleDeployPathController contr = buildEnv(initialDeployDir, initialTmpDeployDir, null);
 		assertTrue(contr.validate().isOK());
@@ -159,8 +163,8 @@ public class ModuleDeployPathControllerTest extends TestCase {
 	
 
 	public void testGettersNoPrefsUtilInWarInEar() {
-		String initialDeployDir = "/home/user/tmp";
-		String initialTmpDeployDir = "/home/user/tmp2";
+		String initialDeployDir = TMP;
+		String initialTmpDeployDir = TMP2;
 		
 		IModuleDeployPathController contr = buildEnv(initialDeployDir, initialTmpDeployDir, null);
 		assertTrue(contr.validate().isOK());
@@ -188,8 +192,8 @@ public class ModuleDeployPathControllerTest extends TestCase {
 	}
 	
 	public void testSettersFailWithoutWC() {
-		String initialDeployDir = "/home/user/tmp";
-		String initialTmpDeployDir = "/home/user/tmp2";
+		String initialDeployDir = TMP;
+		String initialTmpDeployDir = TMP2;
 		
 		IModuleDeployPathController contr = buildEnv(initialDeployDir, initialTmpDeployDir, null);
 		assertTrue(contr.validate().isOK());
