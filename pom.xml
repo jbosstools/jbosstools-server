@@ -24,7 +24,6 @@
 		<module>jmx</module>
 		<module>site</module>
 	</modules>
-
 	<repositories>
 		<repository>
 			<id>jbosstools-base</id>
