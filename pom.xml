@@ -14,8 +14,8 @@
 	<name>jbosstools-server</name>
 	<properties>
 		<tycho.scmUrl>scm:git:https://github.com/jbosstools/jbosstools-server.git</tycho.scmUrl>
-                <!-- timeout in seconds; 3000s = 50m -->
-                <surefire.itests.timeout>3000</surefire.itests.timeout>
+			<!-- timeout in seconds; 3000s = 50m -->
+			<surefire.itests.timeout>3000</surefire.itests.timeout>
 	</properties>
 	<modules>
 		<module>archives</module>
@@ -24,7 +24,6 @@
 		<module>jmx</module>
 		<module>site</module>
 	</modules>
-
 	<repositories>
 		<repository>
 			<id>jbosstools-base</id>
