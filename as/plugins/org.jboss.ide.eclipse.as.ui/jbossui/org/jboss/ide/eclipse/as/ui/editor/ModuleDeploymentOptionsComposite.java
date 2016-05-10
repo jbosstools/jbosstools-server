@@ -165,7 +165,6 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 		};
 		filterCombo.addModifyListener(ml);
 		filterText.addModifyListener(ml);
-		filterCombo.select(1); // select DEPLOYABLE
 		
 		return wrapper;
 	}

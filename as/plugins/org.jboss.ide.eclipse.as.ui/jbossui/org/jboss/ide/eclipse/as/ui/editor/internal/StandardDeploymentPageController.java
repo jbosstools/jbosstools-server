@@ -17,6 +17,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -42,6 +44,7 @@ import org.jboss.ide.eclipse.as.ui.editor.DeploymentPage;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentPageUIController;
 import org.jboss.ide.eclipse.as.ui.editor.ModuleDeploymentOptionsComposite;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
+import org.jboss.tools.foundation.ui.widget.WidgetVisitorUtility;
 
 /**
  * The standard page for showing deployment options 
@@ -117,13 +120,13 @@ public class StandardDeploymentPageController extends
 	 */
 	protected void updateWidgetEnablement() {
 		final boolean enabled = shouldAllowModifications();
-		if( standardOptions != null && !standardOptions.isDisposed())
-			standardOptions.setEnabled(enabled);
-		if( perModuleOptions != null && !perModuleOptions.isDisposed())
-			perModuleOptions.setEnabled(enabled);
+		if( standardOptions != null && !standardOptions.isDisposed()) {
+			new WidgetVisitorUtility().setEnablementRecursive(standardOptions, enabled);
+		}
+		if( perModuleOptions != null && !perModuleOptions.isDisposed()) {
+			new WidgetVisitorUtility().setEnablementRecursive(perModuleOptions, enabled);
+		}
 	}
-	
-
 	
 	/**
 	 * Whether or not the widgets should be editable in the server's current state
@@ -168,6 +171,10 @@ public class StandardDeploymentPageController extends
 	protected void addDeploymentLocationControls(Composite parent, Control top) {
 		FormToolkit toolkit = new FormToolkit(parent.getDisplay());
 		Label l1 = toolkit.createLabel(parent, Messages.EditorDeploymentPageWarning);
+		FontData fontData = l1.getFont().getFontData()[0];
+		Font font = new Font(parent.getDisplay(), new FontData(fontData.getName(), fontData
+		    .getHeight(), SWT.BOLD));
+		l1.setFont(font);
 		
 		FormData fd = new FormData();
 		fd.left = new FormAttachment(0, 5);
