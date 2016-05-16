@@ -40,9 +40,7 @@ public class RSECommandLineLaunchController extends AbstractSubsystemController 
 	
 	@Override
 	public IStatus canStart(String launchMode) {
-		if( !"debug".equals(launchMode))
-			return Status.OK_STATUS;
-		return Status.CANCEL_STATUS;
+		return Status.OK_STATUS;
 	}
 
 	@Override

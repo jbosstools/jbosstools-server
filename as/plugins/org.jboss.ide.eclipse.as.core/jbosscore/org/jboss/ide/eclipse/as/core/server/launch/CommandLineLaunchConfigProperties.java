@@ -24,6 +24,7 @@ public class CommandLineLaunchConfigProperties {
 	public static class KeySet {
 		protected String DEFAULT_STARTUP_COMMAND;
 		protected String STARTUP_COMMAND;
+		protected String DEBUG_STARTUP_COMMAND;
 		protected String DEFAULT_SHUTDOWN_COMMAND;
 		protected String SHUTDOWN_COMMAND;
 		protected String DETECT_STARTUP_COMMAND;
@@ -38,6 +39,7 @@ public class CommandLineLaunchConfigProperties {
 			SHUTDOWN_COMMAND = "org.jboss.ide.eclipse.as.core.launch.SHUTDOWN_COMMAND";//$NON-NLS-1$
 			DETECT_STARTUP_COMMAND = "org.jboss.ide.eclipse.as.core.launch.DETECT_STARTUP_COMMAND";//$NON-NLS-1$
 			DETECT_SHUTDOWN_COMMAND = "org.jboss.ide.eclipse.as.core.launch.DETECT_SHUTDOWN_COMMAND";//$NON-NLS-1$
+			DEBUG_STARTUP_COMMAND = null;  // not relevant
 		}
 	}
 	
@@ -89,16 +91,28 @@ public class CommandLineLaunchConfigProperties {
 	public void setStartupCommand(String startupCommand, ILaunchConfigurationWorkingCopy launchConfig) {
 		launchConfig.setAttribute(keySet.STARTUP_COMMAND, startupCommand);
 	}
-
 	public String getStartupCommand(ILaunchConfiguration launchConfig) throws CoreException {
 		return getStartupCommand(launchConfig, (String) null);
 	}
-
 	public String getStartupCommand(ILaunchConfiguration launchConfig, String defaultCommand)
 			throws CoreException {
 		return launchConfig.getAttribute(keySet.STARTUP_COMMAND, defaultCommand);
 	}
 
+	
+	
+	public void setDebugStartupCommand(String debugCommand, ILaunchConfigurationWorkingCopy launchConfig) {
+		launchConfig.setAttribute(keySet.DEBUG_STARTUP_COMMAND, debugCommand);
+	}
+	public String getDebugStartupCommand(ILaunchConfiguration launchConfig) throws CoreException {
+		return getDebugStartupCommand(launchConfig, (String)null);
+	}
+	public String getDebugStartupCommand(ILaunchConfiguration launchConfig, String defaultCommand)
+			throws CoreException {
+		return launchConfig.getAttribute(keySet.DEBUG_STARTUP_COMMAND, defaultCommand);
+	}
+
+	
 	public void setShutdownCommand(String shutdownCommand, ILaunchConfigurationWorkingCopy launchConfig) {
 		launchConfig.setAttribute(keySet.SHUTDOWN_COMMAND, shutdownCommand);
 	}

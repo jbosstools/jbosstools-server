@@ -11,6 +11,8 @@
 package org.jboss.ide.eclipse.as.ui.editor;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 
 import org.eclipse.core.runtime.CoreException;
@@ -79,16 +81,46 @@ public class PortSection extends ServerEditorSection {
 			IExtensionRegistry registry = Platform.getExtensionRegistry();
 			IConfigurationElement[] cf = registry.getConfigurationElementsFor(
 					JBossServerUIPlugin.PLUGIN_ID, "ServerEditorPortSection"); //$NON-NLS-1$
+			
+			// get a list of approved
+			ArrayList<IConfigurationElement> approved = new ArrayList<IConfigurationElement>();
 			for (int i = 0; i < cf.length; i++) {
+				String approvedTypes = cf[i].getAttribute("serverIds"); //$NON-NLS-1$
+				if( serverTypeMatches(serverTypeId, approvedTypes)) {
+					approved.add(cf[i]);
+				}
+			}
+			
+			// sort them based on weight
+			Collections.sort(approved, new Comparator<IConfigurationElement>(){
+				public int compare(IConfigurationElement o1, IConfigurationElement o2) {
+					String weight1 = o1.getAttribute("weight");
+					String weight2 = o2.getAttribute("weight");
+					weight1 = (weight1 == null ? "100" : weight1);
+					weight2 = (weight2 == null ? "100" : weight2);
+					int w1, w2;
+					try {
+						w1 = Integer.parseInt(weight1);
+					} catch( NumberFormatException nfe) {
+						w1 = 100;
+					}
+					try {
+						w2 = Integer.parseInt(weight2);
+					} catch( NumberFormatException nfe) {
+						w2 = 100;
+					}
+					return w1-w2;
+				}
+			});
+			
+			// Create the sections
+			for (int i = 0; i < approved.size(); i++) {
 				try {
-					String approvedTypes = cf[i].getAttribute("serverIds"); //$NON-NLS-1$
-					if( serverTypeMatches(serverTypeId, approvedTypes)) {
-						Object o = cf[i].createExecutableExtension("class"); //$NON-NLS-1$
+						Object o = approved.get(i).createExecutableExtension("class"); //$NON-NLS-1$
 						if (o != null && o instanceof IPortEditorExtension)
 							sectionList.add((IPortEditorExtension) o);
 						if( o != null && o instanceof IPortOffsetProvider) 
 							offsetProvider = (IPortOffsetProvider)o;
-					}
 				} catch (CoreException ce) { 
 					/* silently ignore */
 					ce.printStackTrace();

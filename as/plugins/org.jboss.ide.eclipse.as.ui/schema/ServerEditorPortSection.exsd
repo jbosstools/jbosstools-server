@@ -66,6 +66,13 @@
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="weight" type="string">
+            <annotation>
+               <documentation>
+                  An integer weight. Heavier elements sink lower in the section. Default weight is 100.
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 

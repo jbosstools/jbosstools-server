@@ -95,7 +95,14 @@
        </serverProfile>
     </extension>
     
-    
+    <extension
+         point="org.jboss.ide.eclipse.as.ui.ServerEditorPortSection">
+      <section
+      		weight="150"
+            class="org.jboss.ide.eclipse.as.rse.ui.editor.DebugPortSection"
+            serverIds="%AllJBossServerTypes">
+      </section>
+    </extension>
     
     <extension
           point="org.jboss.ide.eclipse.as.wtp.ui.ServerProfileWizardFragments">

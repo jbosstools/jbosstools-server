@@ -51,10 +51,12 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 		// Set the default startup command
 		String defaultStartup = getLaunchCommand((JBossServer)jbossServer);
 		propertyUtil.setDefaultStartupCommand(defaultStartup, launchConfig);
+		String defaultDebugStartup = getLaunchDebugCommand((JBossServer)jbossServer);
 		
 		// If we're auto-detecting, or user has not customized, use the default
 		if( detectStartupCommand || !isSet(currentStartupCmd)) {
 			propertyUtil.setStartupCommand(defaultStartup, launchConfig);
+			propertyUtil.setDebugStartupCommand(defaultDebugStartup, launchConfig);
 		}
 		
 		boolean detectShutdownCommand = propertyUtil.isDetectShutdownCommand(launchConfig, true);
@@ -153,24 +155,46 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 	}
 	
 	protected String getLaunchCommand(JBossServer jbossServer) throws CoreException {
+		String programArguments = getLaunchProgramArgs();
+		String vmArguments = getLaunchVMArgs();
+		String jar = getJar(jbossServer.getServer());
+		String command = "java " + vmArguments + " -jar " + jar + " " + IJBossRuntimeConstants.SPACE + programArguments + "&";
+		return command;
+	}
+	
+	protected String getLaunchDebugCommand(JBossServer jbossServer) throws CoreException {
+		String programArguments = getLaunchProgramArgs();
+		String vmArguments = getLaunchVMArgs();
+		String jar = getJar(jbossServer.getServer());
+		String debugPort = getDebugPort();
+		String debugArgs = "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=" + debugPort + " -Xdebug ";
+		String command = "java " + debugArgs + vmArguments + " -jar " + jar + " " + IJBossRuntimeConstants.SPACE + programArguments + "&";
+		return command;
+	}
+
+	protected boolean attachDebugger() {
+		Boolean b = jbossServer.getServer().getAttribute(RSEJbossLaunchConstants.ATTACH_DEBUGGER, true);
+		return b;
+
+	}
+	protected String getDebugPort() {
+		String dbugPort = jbossServer.getServer().getAttribute(RSEJbossLaunchConstants.DEBUG_PORT, new Integer(RSEJbossLaunchConstants.DEFAULT_DEBUG_PORT).toString());
+		return dbugPort;
+	}
+	
+	protected String getLaunchVMArgs() {
+		String vmArguments = getDefaultVMArguments(jbossServer.getServer());
+		vmArguments = getArgsOverrideExposedManagement(jbossServer.getServer(), vmArguments);
+		return vmArguments;
+	}
+	
+	protected String getLaunchProgramArgs() {
 		String programArguments = getDefaultProgramArguments(jbossServer.getServer());
 		programArguments = getArgsOverrideHost(jbossServer.getServer(), programArguments);
 		programArguments = getArgsOverrideConfigFile(jbossServer.getServer(), programArguments);
 		programArguments = getArgsOverrideBaseDir(jbossServer.getServer(), programArguments);
-		
-		String vmArguments = getDefaultVMArguments(jbossServer.getServer());
-		vmArguments = getArgsOverrideExposedManagement(jbossServer.getServer(), vmArguments);
-		
-		String jar = getJar(jbossServer.getServer());
-
-		String command = "java "
-				+ vmArguments
-				+ " -jar " + jar + " "
-				+ IJBossRuntimeConstants.SPACE + programArguments 
-				+ "&";
-		return command;
-
-	}
+		return programArguments;
+	}		
 	
 	protected String getDefaultVMArguments(IServer server) {
 		return getExtendedProperties().getDefaultLaunchArguments().getStartDefaultVMArgs();

@@ -20,6 +20,7 @@ public class RSELaunchConfigProperties extends CommandLineLaunchConfigProperties
 	private static class RSEKeySet extends KeySet {
 		public RSEKeySet() {
 			DEFAULT_STARTUP_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSEJBossStartLaunchDelegate.DEFAULT_STARTUP_COMMAND"; //$NON-NLS-1$
+			DEBUG_STARTUP_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSEJBossStartLaunchDelegate.DEBUG_STARTUP_COMMAND"; //$NON-NLS-1$
 			STARTUP_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSEJBossStartLaunchDelegate.STARTUP_COMMAND";//$NON-NLS-1$
 			DEFAULT_SHUTDOWN_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSEJBossStartLaunchDelegate.DEFAULT_SHUTDOWN_COMMAND";//$NON-NLS-1$
 			SHUTDOWN_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSEJBossStartLaunchDelegate.SHUTDOWN_COMMAND";//$NON-NLS-1$

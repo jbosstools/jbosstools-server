@@ -72,8 +72,7 @@ public class StandardRSEStartLaunchDelegate extends
 		boolean dontLaunch = LaunchCommandPreferences.isIgnoreLaunchCommand(configuration);
 		((ControllableServerBehavior)beh).setRunMode(mode);
 		if (isStarted(server)) {
-			((ControllableServerBehavior)beh).setServerStarted();
-			return false;
+			return setServerAlreadyStarted(configuration, mode, beh);
 		} else if( dontLaunch ) {
 			((ControllableServerBehavior)beh).setServerStarting();
 			pollServer(server,  IServerStatePoller.SERVER_UP);
@@ -87,6 +86,12 @@ public class StandardRSEStartLaunchDelegate extends
 		}
 		
 		return true;
+	}
+	
+	protected boolean setServerAlreadyStarted(ILaunchConfiguration configuration, String mode, 
+			IControllableServerBehavior beh) throws CoreException {
+		((ControllableServerBehavior)beh).setServerStarted();
+		return false;
 	}
 	
 	protected void beforeVMRunner(ILaunchConfiguration configuration,
