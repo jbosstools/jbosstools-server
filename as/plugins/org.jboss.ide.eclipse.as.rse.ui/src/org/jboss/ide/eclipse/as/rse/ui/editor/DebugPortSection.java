@@ -70,6 +70,10 @@ public class DebugPortSection implements IPortEditorExtension {
 						return;
 					try {
 						Integer i = Integer.parseInt(e.text);
+						if( i.intValue() == 0 ) {
+							// do not allow port 0
+							e.doit = false;
+						}
 					} catch( NumberFormatException nfe ) {
 						e.doit = false;
 					}
@@ -95,7 +99,7 @@ public class DebugPortSection implements IPortEditorExtension {
 			portText.addModifyListener(new ModifyListener() {
 				public void modifyText(ModifyEvent e) {
 					ServerWorkingCopyPropertyTextCommand command = new ServerWorkingCopyPropertyTextCommand(
-							helper.getWorkingCopy(), "Enable debugging", portText, portText.getText(), 
+							helper.getWorkingCopy(), "Change Debug Port", portText, portText.getText(), 
 							RSEJbossLaunchConstants.DEBUG_PORT, new Integer(RSEJbossLaunchConstants.DEFAULT_DEBUG_PORT).toString(), this);
 					section.execute(command);
 				}

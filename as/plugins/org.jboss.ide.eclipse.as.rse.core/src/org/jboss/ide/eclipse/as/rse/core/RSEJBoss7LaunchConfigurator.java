@@ -158,7 +158,7 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 		String programArguments = getLaunchProgramArgs();
 		String vmArguments = getLaunchVMArgs();
 		String jar = getJar(jbossServer.getServer());
-		String command = "java " + vmArguments + " -jar " + jar + " " + IJBossRuntimeConstants.SPACE + programArguments + "&";
+		String command = "java " + vmArguments + " -jar " + jar + IJBossRuntimeConstants.SPACE + programArguments + "&";
 		return command;
 	}
 	
@@ -168,7 +168,7 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 		String jar = getJar(jbossServer.getServer());
 		String debugPort = getDebugPort();
 		String debugArgs = "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=" + debugPort + " -Xdebug ";
-		String command = "java " + debugArgs + vmArguments + " -jar " + jar + " " + IJBossRuntimeConstants.SPACE + programArguments + "&";
+		String command = "java " + debugArgs + vmArguments + " -jar " + jar + IJBossRuntimeConstants.SPACE + programArguments + "&";
 		return command;
 	}
 

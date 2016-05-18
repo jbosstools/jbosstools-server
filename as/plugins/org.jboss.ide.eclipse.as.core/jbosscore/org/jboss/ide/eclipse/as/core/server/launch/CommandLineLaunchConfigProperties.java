@@ -39,7 +39,8 @@ public class CommandLineLaunchConfigProperties {
 			SHUTDOWN_COMMAND = "org.jboss.ide.eclipse.as.core.launch.SHUTDOWN_COMMAND";//$NON-NLS-1$
 			DETECT_STARTUP_COMMAND = "org.jboss.ide.eclipse.as.core.launch.DETECT_STARTUP_COMMAND";//$NON-NLS-1$
 			DETECT_SHUTDOWN_COMMAND = "org.jboss.ide.eclipse.as.core.launch.DETECT_SHUTDOWN_COMMAND";//$NON-NLS-1$
-			DEBUG_STARTUP_COMMAND = null;  // not relevant
+			// not relevant for the default (ie local) keyset. Local keyset does not store a debug command
+			DEBUG_STARTUP_COMMAND = null;  
 		}
 	}
 	

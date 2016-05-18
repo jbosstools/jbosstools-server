@@ -151,6 +151,8 @@ public class StandardRSEJBossStartLaunchDelegate extends
 		} catch(NumberFormatException nfe) {
 			port = RSEJbossLaunchConstants.DEFAULT_DEBUG_PORT;
 		}
+		if( port < 1 )
+			port = RSEJbossLaunchConstants.DEFAULT_DEBUG_PORT;
 		return port;
 	}
 	
