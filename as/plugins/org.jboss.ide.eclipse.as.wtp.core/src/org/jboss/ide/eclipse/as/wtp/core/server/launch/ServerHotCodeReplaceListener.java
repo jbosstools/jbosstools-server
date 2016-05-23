@@ -66,11 +66,20 @@ public class ServerHotCodeReplaceListener implements IJavaHotCodeReplaceListener
 	public static final int TERMINATE = 4;
 
 	private IServer server;
-
+	private ILaunch launch;
 	public ServerHotCodeReplaceListener(IServer server, ILaunch launch) {
 		this.server = server;
+		this.launch = launch;
 	}
 
+	protected IServer getServer() {
+		return server;
+	}
+	
+	protected ILaunch getLaunch() {
+		return launch;
+	}
+	
 	public void hotCodeReplaceSucceeded(IJavaDebugTarget arg0) {
 		// ignore
 	}
@@ -116,6 +125,7 @@ public class ServerHotCodeReplaceListener implements IJavaHotCodeReplaceListener
 	/**
 	 * Subclasses can override
 	 * @param target 
+	 * @param server
 	 * @param modules
 	 */
 	protected void postPublish(IJavaDebugTarget target, IModule[] modules) {

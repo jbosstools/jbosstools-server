@@ -10,35 +10,28 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.core.server.internal.launch;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
-
-import javax.management.MBeanServerConnection;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.jdt.debug.core.IJavaDebugTarget;
 import org.eclipse.jdt.debug.core.IJavaHotCodeReplaceListener;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
-import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.IUserPrompter;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
+import org.jboss.ide.eclipse.as.core.util.ClassCollectingHCRListener;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.JavaUtils;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
@@ -48,11 +41,6 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBeha
 import org.jboss.ide.eclipse.as.wtp.core.server.launch.AbstractStartJavaServerLaunchDelegate;
 import org.jboss.ide.eclipse.as.wtp.core.server.launch.ServerHotCodeReplaceListener;
 import org.jboss.tools.as.core.server.controllable.IDeployableServerBehaviorProperties;
-import org.jboss.tools.foundation.core.plugin.log.StatusFactory;
-import org.jboss.tools.jmx.core.IConnectionFacade;
-import org.jboss.tools.jmx.core.IConnectionWrapper;
-import org.jboss.tools.jmx.core.IJMXRunnable;
-import org.jboss.tools.jmx.core.JMXException;
 
 /**
  * This is a launch configuration delegate for use with local jboss servers. 
@@ -133,51 +121,10 @@ public class StandardLocalJBossStartLaunchDelegate extends
 	@Override
 	protected IJavaHotCodeReplaceListener getHotCodeReplaceListener(final IServer server, ILaunch launch) {
 		if( addCustomHotcodeReplaceLogic(server)) {
-			return new ServerHotCodeReplaceListener(server, launch) {
-				protected void postPublish(IJavaDebugTarget target, IModule[] modules) {
-					waitModulesStarted(modules);
-					removeBreakpoints(target);
-					executeJMXGarbageCollection(server, modules);
-					addBreakpoints(target);
-				}
-			};
+			return new ClassCollectingHCRListener(server, launch);
 		}
 		return null;
 	}
-	
-	protected void addBreakpoints(IJavaDebugTarget target) {
-		IBreakpoint[] breakpoints = DebugPlugin.getDefault().getBreakpointManager().getBreakpoints();
-		for (int i = 0; i < breakpoints.length; i++) {
-			target.breakpointAdded(breakpoints[i]);
-		}
-	}
 
-	protected void removeBreakpoints(IJavaDebugTarget target) {
-		IBreakpoint[] breakpoints = DebugPlugin.getDefault().getBreakpointManager().getBreakpoints();
-		for (int i = 0; i < breakpoints.length; i++) {
-			target.breakpointRemoved(breakpoints[i], null);
-		}
-	}
-
-	protected void executeJMXGarbageCollection(IServer server, IModule[] modules) {
-		IJBossServer jbs = (IJBossServer) server.loadAdapter(IJBossServer.class, null);
-		if (jbs instanceof IConnectionFacade) {
-			IConnectionWrapper wrap = ((IConnectionFacade) jbs).getJMXConnection();
-			try {
-				wrap.run(new IJMXRunnable() {
-					public void run(MBeanServerConnection connection) throws Exception {
-						final MemoryMXBean memoryBean = ManagementFactory.newPlatformMXBeanProxy(connection,
-								ManagementFactory.MEMORY_MXBEAN_NAME, MemoryMXBean.class);
-						memoryBean.gc();
-						memoryBean.gc();
-					}
-				});
-			} catch (JMXException e) {
-				JBossServerCorePlugin.log(
-						StatusFactory.errorStatus(JBossServerCorePlugin.PLUGIN_ID, 
-						"Error executing garbage collection on server after publish", e)); //$NON-NLS-1$
-			}
-		}
-	}
 
 }
