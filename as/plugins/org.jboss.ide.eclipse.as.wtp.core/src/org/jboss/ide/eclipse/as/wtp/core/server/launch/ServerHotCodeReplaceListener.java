@@ -107,7 +107,7 @@ public class ServerHotCodeReplaceListener implements IJavaHotCodeReplaceListener
 		IServer.IOperationListener listener = new IServer.IOperationListener() {
 
 			public void done(IStatus result) {
-				postPublish(target, modules);
+				postPublish(target, server, modules);
 			}
 		};
 		server.publish(IServer.PUBLISH_FULL, Collections.singletonList(modules), null, listener);
@@ -116,9 +116,10 @@ public class ServerHotCodeReplaceListener implements IJavaHotCodeReplaceListener
 	/**
 	 * Subclasses can override
 	 * @param target 
+	 * @param server
 	 * @param modules
 	 */
-	protected void postPublish(IJavaDebugTarget target, IModule[] modules) {
+	protected void postPublish(IJavaDebugTarget target, IServer server, IModule[] modules) {
 	}
 	
 	/**
