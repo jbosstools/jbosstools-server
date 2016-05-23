@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.ui.editor;
+package org.jboss.ide.eclipse.as.ui.editor.ports;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,46 +19,30 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.fieldassist.ControlDecoration;
-import org.eclipse.jface.fieldassist.FieldDecoration;
-import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
-import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.VerifyEvent;
-import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.ui.editor.ServerEditorSection;
-import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathCategory;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.ide.eclipse.as.ui.dialogs.ChangePortDialog;
-import org.jboss.ide.eclipse.as.ui.dialogs.ChangePortDialog.ChangePortDialogInfo;
 import org.jboss.tools.as.core.server.controllable.subsystems.internal.XPathsPortsController;
 import org.jboss.tools.foundation.core.expressions.ExpressionResolver;
 
@@ -161,19 +145,7 @@ public class PortSection extends ServerEditorSection {
 	}
 
 	
-	public static interface IPortOffsetProvider {
-		public int getOffset();
-	}
-	
-	public static interface IPortEditorExtension {
-		public void setServerAttributeHelper(ServerAttributeHelper helper);
-		public void setSection(PortSection section);
-		public void createControl(Composite parent);
-		public String getValue();
-		public void refresh();
-	}
-
-	public static class JNDIPortEditorExtension extends PortEditorExtension {
+	public static class JNDIPortEditorExtension extends PortEditorXPathExtension {
 		public JNDIPortEditorExtension() {
 			super(Messages.EditorJNDIPort, 
 					XPathsPortsController.JNDI_PORT_DETECT_XPATH,
@@ -185,7 +157,7 @@ public class PortSection extends ServerEditorSection {
 		}
 	}
 
-	public static class WebPortEditorExtension extends PortEditorExtension {
+	public static class WebPortEditorExtension extends PortEditorXPathExtension {
 		public WebPortEditorExtension() {
 			super(Messages.EditorWebPort, 
 					XPathsPortsController.WEB_PORT_DETECT_XPATH,
@@ -197,7 +169,17 @@ public class PortSection extends ServerEditorSection {
 		}
 	}
 
-	public static class JBoss6JMXRMIPortEditorExtension extends PortEditorExtension {
+	public static class WebPortSettingEditorExtension extends PortEditorExtension {
+		public WebPortSettingEditorExtension() {
+			super(Messages.EditorWebPort, 
+					XPathsPortsController.WEB_PORT,
+					XPathsPortsController.JBOSS_WEB_DEFAULT_PORT,
+					Messages.EditorChangeWebCommandName);
+		}
+	}
+
+	
+	public static class JBoss6JMXRMIPortEditorExtension extends PortEditorXPathExtension {
 		public JBoss6JMXRMIPortEditorExtension() {
 			super(Messages.EditorJMXRMIPort, 
 					XPathsPortsController.JMX_RMI_PORT_DETECT_XPATH,
@@ -210,7 +192,7 @@ public class PortSection extends ServerEditorSection {
 	}
 	
 
-	public static class JBoss7ManagementPortEditorExtension extends PortEditorExtension {
+	public static class JBoss7ManagementPortEditorExtension extends PortEditorXPathExtension {
 		public JBoss7ManagementPortEditorExtension() {
 			super(Messages.EditorAS7ManagementPort, 
 					XPathsPortsController.AS7_MANAGEMENT_PORT_DETECT_XPATH,
@@ -221,7 +203,7 @@ public class PortSection extends ServerEditorSection {
 					Messages.EditorChangeAS7ManagementCommandName);
 		}
 	}
-	public static class JBoss7PortOffsetEditorExtension extends PortEditorExtension implements IPortOffsetProvider {
+	public static class JBoss7PortOffsetEditorExtension extends PortEditorXPathExtension implements IPortOffsetProvider {
 		public JBoss7PortOffsetEditorExtension() {
 			super(Messages.EditorAS7PortOffset, 
 					XPathsPortsController.PORT_OFFSET_DETECT_XPATH,
@@ -248,165 +230,6 @@ public class PortSection extends ServerEditorSection {
 
 	}
 
-
-	public static abstract class PortEditorExtension implements IPortEditorExtension {
-		protected Button detect;
-		protected Text text;
-		protected Label label;
-		protected Link link;
-		protected String labelText, currentXPathKey, detectXPathKey, overrideValueKey, defaultXPath;
-		protected String currentXPath, changeValueCommandName;
-		protected ServerAttributeHelper helper;
-		protected Listener listener;
-		protected PortSection section;
-		protected int defaultValue;
-		private ControlDecoration decoration;
-		
-		public PortEditorExtension(String labelText, String currentXPathKey, 
-				String detectXPathKey, String overrideValueKey, String defaultXPath,
-				int defaultValue,
-				String changeValueCommandName) {
-			this.labelText = labelText;
-			this.currentXPathKey = currentXPathKey;
-			this.detectXPathKey = detectXPathKey;
-			this.overrideValueKey = overrideValueKey;
-			this.defaultXPath = defaultXPath;
-			this.changeValueCommandName = changeValueCommandName;
-			this.defaultValue = defaultValue;
-		}
-		public void setServerAttributeHelper(ServerAttributeHelper helper) {
-			this.helper = helper;
-		}
-		public void setSection(PortSection section) {
-			this.section = section;
-		}
-		public void createControl(Composite parent) {
-			createUI(parent);
-			initialize();
-			addListeners();
-			
-			decoration = new ControlDecoration(text,
-					SWT.LEFT | SWT.TOP);
-			FieldDecoration fieldDecoration = FieldDecorationRegistry.getDefault()
-					.getFieldDecoration(FieldDecorationRegistry.DEC_WARNING);
-			decoration.setImage(fieldDecoration.getImage());
-			validate();
-		}
-
-		protected void createUI(Composite parent) {
-			label = new Label(parent, SWT.NONE);
-			text = new Text(parent, SWT.SINGLE | SWT.BORDER);
-			detect = new Button(parent, SWT.CHECK);
-			link = new Link(parent, SWT.NONE);
-			
-			GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(label);
-			GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).minSize(80, 10).grab(true, false).applyTo(text);
-			GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.CENTER).applyTo(detect);
-			GridDataFactory.fillDefaults().align(SWT.RIGHT, SWT.CENTER).applyTo(link);
-			
-			label.setText(labelText);
-			detect.setText(Messages.EditorAutomaticallyDetectPort);
-			link.setText("<a href=\"\">" + Messages.Configure + "</a>"); //$NON-NLS-1$ //$NON-NLS-2$
-			
-			text.addVerifyListener(new VerifyListener() {
-				public void verifyText(VerifyEvent e) {
-					if( e.text == null || e.text.equals(""))
-						return;
-					try {
-						Integer i = Integer.parseInt(e.text);
-					} catch( NumberFormatException nfe ) {
-						e.doit = false;
-					}
-				}
-			});
-			
-			
-		}
-		protected void initialize() {
-			boolean shouldDetect = helper.getAttribute(detectXPathKey, true);
-			detect.setSelection(shouldDetect);
-			detect.setEnabled(defaultXPath != null);
-			link.setEnabled(shouldDetect);
-			text.setEnabled(!shouldDetect);
-			text.setEditable(!shouldDetect);
-			currentXPath = helper.getAttribute(currentXPathKey, defaultXPath);
-			if( shouldDetect ) {
-				text.setText(findPortWithDefault(helper.getServer(), new Path(currentXPath), defaultValue, discoverOffset()));
-			} else
-				text.setText(helper.getAttribute(overrideValueKey, "")); //$NON-NLS-1$
-		}
-		protected int discoverOffset() {
-			return section.getPortOffset();
-		}
-		public void refresh() {
-			initialize();
-		}
-		protected void addListeners() {
-			listener = new Listener() {
-				public void handleEvent(Event event) {
-					listenerEvent(event);
-				}
-			};
-			text.addListener(SWT.Modify, listener);
-			detect.addListener(SWT.Selection, listener);
-			link.addListener(SWT.Selection, createLinkListener());
-		}
-		protected void listenerEvent(Event event) {
-			section.execute(getCommand());
-		}
-
-		protected Listener createLinkListener() {
-			return new Listener() {
-				public void handleEvent(Event event) {
-					ChangePortDialog dialog = getDialog();
-					int result = dialog.open();
-					if( result == Dialog.OK) {
-						currentXPath = dialog.getSelection();
-						section.execute(getCommand());
-					}
-					if( dialog.isModified() ) {
-						initialize();
-						validate();
-					}
-					text.setFocus();
-				}
-			};
-		}
-		public ChangePortDialog getDialog() {
-			return new ChangePortDialog(section.getShell(), getDialogInfo());
-		}
-		public ServerCommand getCommand() {
-			return new SetPortCommand(helper.getWorkingCopy(), helper, changeValueCommandName,
-					overrideValueKey, detectXPathKey,currentXPathKey, defaultXPath, this);
-		}
-		protected ChangePortDialogInfo getDialogInfo() {
-			ChangePortDialogInfo info = new ChangePortDialogInfo();
-			info.port = labelText;
-			info.defaultValue = defaultXPath;
-			info.server = helper.getWorkingCopy().getOriginal();
-			info.currentXPath = currentXPath;
-			return info;
-		}
-		public String getValue() {
-			return text.getText();
-		}
-		public void validate() {
-			decoration.hide();
-			String v = null;
-			String errorText;
-			if( detect.getSelection()) {
-				v = findPort(helper.getServer(), new Path(defaultXPath));
-				errorText = "This port cannot be automatically located. A default value is being displayed";
-			} else {
-				v = text.getText();
-				errorText = "The empty string is not a valid port.";
-			}
-			if( "".equals(v)) {
-				decoration.setDescriptionText(errorText);
-				decoration.show();
-			}
-		}
-	}
 
 	protected void createUI(Composite parent) {
 		FormToolkit toolkit = new FormToolkit(parent.getDisplay());
@@ -457,84 +280,6 @@ public class PortSection extends ServerEditorSection {
 			}
 		}
 		return (String[]) list.toArray(new String[list.size()]);
-	}
-
-	public static class SetPortCommand extends ServerCommand {
-		ServerAttributeHelper helper;
-		String textAttribute, overrideAttribute, overridePathAttribute;
-		String preText, prePath, defaultPath;
-		boolean preOverride;
-		Text text;
-		Button button;
-		Listener listener;
-		String xpath;
-		Link link;
-		PortSection pSection;
-		int defVal;
-		PortEditorExtension ext;
-		public SetPortCommand(IServerWorkingCopy server, ServerAttributeHelper helper, String name,
-				String textAttribute, String overrideAttribute, String overridePathAttribute,
-				String pathDefault, PortEditorExtension ext) { //Text text, Button button, String xpath, Listener listener) {
-			super(server, name);
-			this.helper = helper;
-			this.textAttribute = textAttribute;
-			this.overrideAttribute = overrideAttribute;
-			this.overridePathAttribute = overridePathAttribute;
-			this.defaultPath = pathDefault;
-			this.text = ext.text;
-			this.button = ext.detect;
-			this.listener = ext.listener;
-			this.xpath = ext.currentXPath;
-			this.link = ext.link;
-			this.pSection = ext.section;
-			this.defVal = ext.defaultValue;
-			this.ext = ext;
-		}
-
-		public void execute() {
-			preText = helper.getAttribute(textAttribute, (String)null);
-			if( preText == null )
-				preText = text.getText();
-			prePath = helper.getAttribute(overridePathAttribute, (String)defaultPath);
-			preOverride = helper.getAttribute(overrideAttribute, true);
-			helper.setAttribute(textAttribute, text.getText());
-			helper.setAttribute(overrideAttribute, button.getSelection());
-			link.setEnabled(button.getSelection());
-			helper.setAttribute(overridePathAttribute, xpath);
-
-			text.setEnabled(!button.getSelection());
-			text.setEditable(!button.getSelection());
-			if( button.getSelection() ) {
-				text.removeListener(SWT.Modify, listener);
-				text.setText(findPortWithDefault(helper.getServer(), new Path(xpath), this.defVal, ext.discoverOffset()));
-				text.addListener(SWT.Modify, listener);
-			}
-			validate();
-		}
-
-		public void undo() {
-			// set new values
-			helper.setAttribute(textAttribute, preText);
-			helper.setAttribute(overrideAttribute, preOverride);
-			link.setEnabled(preOverride);
-			helper.setAttribute(overridePathAttribute, prePath);
-			
-			// update ui
-			text.removeListener(SWT.Modify, listener);
-			button.removeListener(SWT.Selection, listener);
-
-			button.setSelection(preOverride);
-			text.setText(preText == null ? "" : preText); //$NON-NLS-1$
-			text.setEnabled(!preOverride);
-			text.setEditable(!preOverride);
-			button.addListener(SWT.Selection, listener);
-			text.addListener(SWT.Modify, listener);
-			validate();
-		}
-		
-		private void validate() {
-			ext.validate();
-		}
 	}
 
 	protected static String findPortWithDefault(IServer server, IPath path, int defaultValue) {

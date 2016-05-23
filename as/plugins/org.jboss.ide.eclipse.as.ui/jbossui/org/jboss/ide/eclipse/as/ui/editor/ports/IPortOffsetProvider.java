@@ -7,12 +7,9 @@
  * 
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
- ******************************************************************************/
-package org.jboss.ide.eclipse.as.rse.core;
+ ******************************************************************************/ 
+package org.jboss.ide.eclipse.as.ui.editor.ports;
 
-public interface RSEJbossLaunchConstants {
-	public static final String ATTACH_DEBUGGER = "org.jboss.ide.eclipse.as.rse.core.ATTACH_DEBUGGER";
-	public static final String DEBUG_PORT = "org.jboss.ide.eclipse.as.rse.core.DEBUG_PORT";
-	public static final int DEFAULT_DEBUG_PORT = 8788;
-	
+public interface IPortOffsetProvider {
+	public int getOffset();
 }

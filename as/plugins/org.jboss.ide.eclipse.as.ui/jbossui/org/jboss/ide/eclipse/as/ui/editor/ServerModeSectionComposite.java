@@ -10,7 +10,6 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.ui.editor;
 
-import java.awt.Color;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -55,6 +54,7 @@ import org.jboss.ide.eclipse.as.ui.editor.DeploymentTypeUIUtil.ServerEditorUICal
 import org.jboss.ide.eclipse.as.ui.wizards.ServerProfileWizardFragment;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
+import org.jboss.ide.eclipse.as.wtp.ui.editor.ServerWorkingCopyPropertyButtonCommand;
 import org.jboss.ide.eclipse.as.wtp.ui.util.FormDataUtility;
 
 /**
@@ -114,7 +114,7 @@ public class ServerModeSectionComposite extends Composite {
 			executeShellScripts.setSelection(LaunchCommandPreferences.isIgnoreLaunchCommand(callback.getServer()));
 			executeShellScripts.addSelectionListener(new SelectionListener(){
 				public void widgetSelected(SelectionEvent e) {
-					executeShellToggled();
+					executeShellToggled(this);
 				}
 				public void widgetDefaultSelected(SelectionEvent e) {
 				}
@@ -130,7 +130,7 @@ public class ServerModeSectionComposite extends Composite {
 			listenOnAllHosts.setSelection(LaunchCommandPreferences.listensOnAllHosts(callback.getServer()));
 			listenOnAllHosts.addSelectionListener(new SelectionListener(){
 				public void widgetSelected(SelectionEvent e) {
-					listenOnAllHostsToggled();
+					listenOnAllHostsToggled(this);
 				}
 				public void widgetDefaultSelected(SelectionEvent e) {
 				}}
@@ -146,7 +146,7 @@ public class ServerModeSectionComposite extends Composite {
 			exposeManagement.setSelection(LaunchCommandPreferences.exposesManagement(callback.getServer()));
 			exposeManagement.addSelectionListener(new SelectionListener(){
 				public void widgetSelected(SelectionEvent e) {
-					exposeManagementToggled();
+					exposeManagementToggled(this);
 				}
 				public void widgetDefaultSelected(SelectionEvent e) {
 				}}
@@ -177,13 +177,6 @@ public class ServerModeSectionComposite extends Composite {
 	    preferencePageBook.setLayoutData(fd);
 	    
 		updateProfilePagebook();
-	}
-	
-	// Set the 'ignore launch' boolean on the server wc
-	protected void executeShellToggled() {
-		callback.execute(new ChangeServerPropertyCommand(
-				callback.getServer(), IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS,
-				new Boolean(executeShellScripts.getSelection()).toString(), Messages.EditorDoNotLaunchCommand));
 	}
 	
 	protected String getCurrentProfileId() {
@@ -296,19 +289,22 @@ public class ServerModeSectionComposite extends Composite {
 		return props;
 	}
 	
+	// Set the 'ignore launch' boolean on the server wc
+	protected void executeShellToggled(SelectionListener listener) {
+		callback.execute(new ServerWorkingCopyPropertyButtonCommand(callback.getServer(), 
+						 Messages.EditorDoNotLaunchCommand, executeShellScripts, executeShellScripts.getSelection(), IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, listener));
+	}
 	
 	// Set the listen on all hosts boolean on the server wc
-	protected void listenOnAllHostsToggled() {
-		callback.execute(new ChangeServerPropertyCommand(
-				callback.getServer(), IJBossToolingConstants.LISTEN_ALL_HOSTS, 
-				new Boolean(listenOnAllHosts.getSelection()).toString(), Messages.EditorListenOnAllHostsCommand));
+	protected void listenOnAllHostsToggled(SelectionListener listener) {
+		callback.execute(new ServerWorkingCopyPropertyButtonCommand(callback.getServer(), 
+				 Messages.EditorListenOnAllHostsCommand, listenOnAllHosts, listenOnAllHosts.getSelection(), IJBossToolingConstants.LISTEN_ALL_HOSTS, listener));
 	}
 
 	// Set the expose management boolean on the server wc
-	protected void exposeManagementToggled() {
-		callback.execute(new ChangeServerPropertyCommand(
-				callback.getServer(), IJBossToolingConstants.EXPOSE_MANAGEMENT_SERVICE, 
-				new Boolean(exposeManagement.getSelection()).toString(), Messages.EditorExposeManagementCommand));
+	protected void exposeManagementToggled(SelectionListener listener) {
+		callback.execute(new ServerWorkingCopyPropertyButtonCommand(callback.getServer(), 
+				 Messages.EditorExposeManagementCommand, exposeManagement, exposeManagement.getSelection(), IJBossToolingConstants.EXPOSE_MANAGEMENT_SERVICE, listener));
 	}
 
 	/* An internal wrapper class to help with instantiating the local / rse widgets */

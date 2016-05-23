@@ -23,8 +23,10 @@ import java.util.stream.Stream;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
@@ -34,9 +36,17 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerListener;
+import org.eclipse.wst.server.core.ServerEvent;
+import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
+import org.jboss.tools.foundation.core.plugin.log.StatusFactory;
 
 public class RemoteDebugUtils {
+	public static final String ATTACH_DEBUGGER = "org.jboss.ide.eclipse.as.core.server.launch.DebugLaunchConstants.ATTACH_DEBUGGER"; //$NON-NLS-1$
+	public static final String DEBUG_PORT = "org.jboss.ide.eclipse.as.core.server.launch.DebugLaunchConstants.DEBUG_PORT"; //$NON-NLS-1$
+	public static final int DEFAULT_DEBUG_PORT = 8787;
+
 	private ILaunchManager launchManager;
 	public static RemoteDebugUtils get() {
 		return get(DebugPlugin.getDefault().getLaunchManager());
@@ -70,13 +80,13 @@ public class RemoteDebugUtils {
 		return workingCopy;
 	}
 	
-	public void setupRemoteDebuggerLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IProject project, int debugPort) throws CoreException {
+	public void setupRemoteDebuggerLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IProject project, int debugPort, String host) throws CoreException {
 		String portString = String.valueOf(debugPort);
 	    workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_ALLOW_TERMINATE, false);
 		workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_CONNECTOR, IJavaLaunchConfigurationConstants.ID_SOCKET_ATTACH_VM_CONNECTOR);
 		Map<String, String> connectMap = new HashMap<>(2);
 		connectMap.put("port", portString); //$NON-NLS-1$
-		connectMap.put("hostname", "localhost"); //$NON-NLS-1$ //$NON-NLS-2$
+		connectMap.put("hostname", host); //$NON-NLS-1$ //$NON-NLS-2$
 		workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CONNECT_MAP, connectMap);
 		if(project != null) { 
 		   workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, project.getName());
@@ -126,5 +136,85 @@ public class RemoteDebugUtils {
 
 	private Stream<ILaunch> getLaunches() {
 		return Stream.of(launchManager.getLaunches());
+	}
+	
+
+	public IServerListener createAttachDebuggerListener() {
+		return new IServerListener() {
+			public void serverChanged(ServerEvent event) {
+				if( UnitedServerListener.serverSwitchesToState(event, IServer.STATE_STARTED)) {
+					event.getServer().removeServerListener(this);
+					IServer s = event.getServer();
+					int debugPort = getDebugPort(s);
+					try {
+						attachRemoteDebugger(event.getServer(), debugPort, new NullProgressMonitor());
+					} catch(CoreException ce) {
+						ASWTPToolsPlugin.pluginLog().logError(ce);
+					}
+				} else if( UnitedServerListener.serverSwitchesToState(event, IServer.STATE_STOPPED)) {
+					event.getServer().removeServerListener(this);
+				}
+			}
+		};
+	}
+	
+	protected int getDebugPort(IServer server) {
+		String debugPort = server.getAttribute(DEBUG_PORT, Integer.toString(DEFAULT_DEBUG_PORT));
+		int port = -1;
+		try {
+			port = Integer.parseInt(debugPort);
+		} catch(NumberFormatException nfe) {
+			port = DEFAULT_DEBUG_PORT;
+		}
+		if( port < 1 )
+			port = DEFAULT_DEBUG_PORT;
+		return port;
+	}
+
+	public ILaunch attachRemoteDebugger(IServer server, IProgressMonitor monitor) 
+			throws CoreException {
+		return attachRemoteDebugger(server, getDebugPort(server), monitor);
+	}
+
+	public ILaunch attachRemoteDebugger(IServer server, int localDebugPort, IProgressMonitor monitor) 
+			throws CoreException {
+		monitor.subTask("Attaching remote debugger");
+		ILaunch ret = null;
+		RemoteDebugUtils debugUtils = RemoteDebugUtils.get();
+		ILaunchConfiguration debuggerLaunchConfig = debugUtils.getRemoteDebuggerLaunchConfiguration(server);
+		ILaunchConfigurationWorkingCopy workingCopy;
+		if (debuggerLaunchConfig == null) {
+			workingCopy = debugUtils.createRemoteDebuggerLaunchConfiguration(server);
+		} else {
+			if (debugUtils.isRunning(debuggerLaunchConfig, localDebugPort)) {
+				return null;
+			}
+			workingCopy = debuggerLaunchConfig.getWorkingCopy();
+		}
+				
+		debugUtils.setupRemoteDebuggerLaunchConfiguration(workingCopy, null, localDebugPort, server.getHost());
+		debuggerLaunchConfig = workingCopy.doSave();
+		boolean launched = false;
+		try {
+			ret = debuggerLaunchConfig.launch("debug", new NullProgressMonitor());
+			launched = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		if (!launched){
+			throw toCoreException("Unable to start a remote debugger to localhost:"+localDebugPort);
+		}
+		
+	    monitor.worked(10);
+	    return ret;
+	}
+
+	private CoreException toCoreException(String msg, Exception e) {
+		return new CoreException(StatusFactory.errorStatus(ASWTPToolsPlugin.PLUGIN_ID, msg, e));
+	}
+	
+	private CoreException toCoreException(String msg) {
+		return toCoreException(msg, null);
 	}
 }

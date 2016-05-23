@@ -29,6 +29,7 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.wtp.core.debug.RemoteDebugUtils;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerTCPIPMonitorUtil;
 
 /**
@@ -173,12 +174,12 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 	}
 
 	protected boolean attachDebugger() {
-		Boolean b = jbossServer.getServer().getAttribute(RSEJbossLaunchConstants.ATTACH_DEBUGGER, true);
+		Boolean b = jbossServer.getServer().getAttribute(RemoteDebugUtils.ATTACH_DEBUGGER, true);
 		return b;
 
 	}
 	protected String getDebugPort() {
-		String dbugPort = jbossServer.getServer().getAttribute(RSEJbossLaunchConstants.DEBUG_PORT, new Integer(RSEJbossLaunchConstants.DEFAULT_DEBUG_PORT).toString());
+		String dbugPort = jbossServer.getServer().getAttribute(RemoteDebugUtils.DEBUG_PORT, new Integer(RemoteDebugUtils.DEFAULT_DEBUG_PORT).toString());
 		return dbugPort;
 	}
 	

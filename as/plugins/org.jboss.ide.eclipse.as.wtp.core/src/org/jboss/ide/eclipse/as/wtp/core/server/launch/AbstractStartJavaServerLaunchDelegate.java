@@ -32,6 +32,7 @@ import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
 import org.jboss.ide.eclipse.as.wtp.core.Messages;
 import org.jboss.ide.eclipse.as.wtp.core.Trace;
+import org.jboss.ide.eclipse.as.wtp.core.debug.RemoteDebugUtils;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 
@@ -108,6 +109,13 @@ public abstract class AbstractStartJavaServerLaunchDelegate extends AbstractJava
 			Trace.trace(Trace.STRING_FINEST, "Server is marked as ignore Launch. Marking as started."); //$NON-NLS-1$
 			((ControllableServerBehavior)jbsBehavior).setRunMode(mode);
 			((ControllableServerBehavior)jbsBehavior).setServerStarting();
+			boolean attachDebugger = server.getAttribute(RemoteDebugUtils.ATTACH_DEBUGGER, true);
+			if( "debug".equals(mode) && attachDebugger) {
+				// add a listener which will run the debugger once server is started
+				IServerListener listener = createAttachDebuggerListener();
+				server.addServerListener(listener);
+			}
+			
 			initiatePolling(server);
 			return false;
 		}
@@ -266,4 +274,13 @@ public abstract class AbstractStartJavaServerLaunchDelegate extends AbstractJava
 		return added;
 	}
 
+	
+	
+	/*
+	 * Attaching remote debugger
+	 */
+
+	private IServerListener createAttachDebuggerListener() {
+		return RemoteDebugUtils.get().createAttachDebuggerListener();
+	}
 }
