@@ -23,6 +23,6 @@ Require-Bundle: org.eclipse.ui;bundle-version="3.7.0",
  org.eclipse.core.filesystem;bundle-version="1.4.100",
  org.jboss.tools.jmx.jvmmonitor.ui;bundle-version="1.7.0"
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: JBoss by Red Hat
 Export-Package: org.jboss.ide.eclipse.as.jmx.integration;x-friends:="org.jboss.tools.as.test.core"

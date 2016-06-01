@@ -13,7 +13,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.jboss.tools.runtime.core;bundle-version="2.1.0",
  org.jboss.ide.eclipse.as.wtp.core;bundle-version="3.0.0"
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: %BundleVendor
 Bundle-Localization: plugin
 Export-Package: org.jboss.tools.wtp.runtimes.tomcat.internal.detection;x-friends:="org.jboss.tools.wtp.runtimes.tomcat.tests"
