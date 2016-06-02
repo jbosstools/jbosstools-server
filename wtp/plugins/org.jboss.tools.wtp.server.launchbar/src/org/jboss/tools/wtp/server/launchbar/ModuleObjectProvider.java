@@ -38,7 +38,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.launchbar.core.ILaunchBarManager;
 import org.eclipse.launchbar.core.ILaunchObjectProvider;
-import org.eclipse.launchbar.ui.internal.Activator;
+import org.eclipse.launchbar.ui.controls.internal.Activator;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
@@ -321,7 +321,7 @@ public class ModuleObjectProvider implements ILaunchObjectProvider,
 	@Override
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 		// DO nothing if launchbar is disabled
-		IPreferenceStore store = new ScopedPreferenceStore(InstanceScope.INSTANCE, "org.eclipse.launchbar.ui");
+		IPreferenceStore store = new ScopedPreferenceStore(InstanceScope.INSTANCE, Activator.PLUGIN_ID);
 		boolean enabled = store.getBoolean(Activator.PREF_ENABLE_LAUNCHBAR);
 		if( !enabled ) {
 			return;
