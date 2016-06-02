@@ -60,6 +60,9 @@ public class ModuleLaunchConfigurationProvider implements ILaunchConfigurationPr
 	@Override
 	public ILaunchConfiguration getLaunchConfiguration(ILaunchDescriptor descriptor, ILaunchTarget target)
 			throws CoreException {
+		if( target == null )
+			return null;
+		
 		ILaunchConfigurationType type = getLaunchConfigurationType(descriptor, target);
 		String descriptorName = descriptor.getName();
 		String validName = getValidLaunchConfigurationName(descriptorName);
@@ -125,7 +128,10 @@ public class ModuleLaunchConfigurationProvider implements ILaunchConfigurationPr
 
 	public boolean launchDescriptorMatches(ILaunchDescriptor descriptor, ILaunchConfiguration configuration,
 			ILaunchTarget target) throws CoreException {
-		return getLaunchConfiguration(descriptor, target).equals(configuration);
+		ILaunchConfiguration lc = getLaunchConfiguration(descriptor, target);
+		if( lc != null )
+			return lc.equals(configuration);
+		return false;
 	}
 
 }
