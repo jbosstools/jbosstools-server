@@ -237,6 +237,9 @@ public class ServerLogView extends ViewPart implements IServerLogListener, ISele
 	}
 	
 	public void setServer(IServer server) {
+		if( this.server == server ) {
+			return;
+		}
 		if( this.server != null )
 			ServerLogger.getDefault().removeListener(this.server, this);
 		this.server = server;
@@ -244,12 +247,17 @@ public class ServerLogView extends ViewPart implements IServerLogListener, ISele
 		setLogFile(ServerLogger.getDefault().getServerLogFile(server));
 	}
 	
+	@Override
 	public void dispose() {
 		ISelectionService service = (ISelectionService) getSite().getService(ISelectionService.class);
 		service.removeSelectionListener(this);
+		if( this.server != null ) {
+			ServerLogger.getDefault().removeListener(this.server, this);
+			this.server = null;
+		}
 		super.dispose();
 	}
-	
+
 	protected void setLogFile(File file) {
 		fInputFile = file;
 		fDirectory = fInputFile == null ? null : fInputFile.getParent();
