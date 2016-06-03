@@ -18,6 +18,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.IRuntimePathProvider;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.cache.internal.ModuleSlot;
@@ -45,7 +47,7 @@ public abstract class AbstractModuleSlotUtil {
 	
 	protected IFile[] locateFiles(IProject p, final String fileName) throws CoreException {
 		final ArrayList<IFile> ret = new ArrayList<IFile>();
-		if( p != null ) {
+		if( p != null && p.isAccessible()) {
 			p.accept(new IResourceVisitor(){
 				public boolean visit(IResource resource) throws CoreException {
 					if( resource.getName().toLowerCase().equals(fileName)) {
@@ -174,7 +176,9 @@ public abstract class AbstractModuleSlotUtil {
 			try {
 				cacheRelevantFiles(p);
 			} catch(CoreException ce) {
-				ClasspathCorePlugin.getDefault().getLog().log(ce.getStatus());
+				IStatus o = ce.getStatus();
+				IStatus stat2 = new Status(o.getSeverity(), o.getPlugin(), o.getMessage(), ce);
+				ClasspathCorePlugin.getDefault().getLog().log(stat2);
 			}
 		}
 		IFile[] all = getCachedFiles(p);
