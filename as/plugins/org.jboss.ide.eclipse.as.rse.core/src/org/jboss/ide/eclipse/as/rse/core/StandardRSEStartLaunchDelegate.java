@@ -74,9 +74,7 @@ public class StandardRSEStartLaunchDelegate extends
 		if (isStarted(server)) {
 			return setServerAlreadyStarted(configuration, mode, beh);
 		} else if( dontLaunch ) {
-			((ControllableServerBehavior)beh).setServerStarting();
-			pollServer(server,  IServerStatePoller.SERVER_UP);
-			return false;
+			return externallyManagedPollForStarted(server, (ControllableServerBehavior)beh, mode);
 		}
 		
 		String currentHost = server.getAttribute(RSEUtils.RSE_SERVER_HOST, (String)null);
@@ -84,8 +82,13 @@ public class StandardRSEStartLaunchDelegate extends
 			throw new CoreException(new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, 
 					"Host \"" + currentHost + "\" not found. Host may have been deleted or RSE model may not be completely loaded"));
 		}
-		
 		return true;
+	}
+	
+	protected boolean externallyManagedPollForStarted(IServer server, ControllableServerBehavior beh, String mode) {
+		((ControllableServerBehavior)beh).setServerStarting();
+		pollServer(server,  IServerStatePoller.SERVER_UP);
+		return false;
 	}
 	
 	protected boolean setServerAlreadyStarted(ILaunchConfiguration configuration, String mode, 

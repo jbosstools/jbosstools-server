@@ -194,16 +194,17 @@ public class RemoteDebugUtils {
 				
 		debugUtils.setupRemoteDebuggerLaunchConfiguration(workingCopy, null, localDebugPort, server.getHost());
 		debuggerLaunchConfig = workingCopy.doSave();
+		Exception eSaved = null;
 		boolean launched = false;
 		try {
 			ret = debuggerLaunchConfig.launch("debug", new NullProgressMonitor());
 			launched = true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			eSaved = e;
 		}
 		
 		if (!launched){
-			throw toCoreException("Unable to start a remote debugger to localhost:"+localDebugPort);
+			throw toCoreException("Unable to start a remote debugger to " + server.getHost() + ":"+localDebugPort, eSaved);
 		}
 		
 	    monitor.worked(10);

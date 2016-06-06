@@ -96,10 +96,20 @@ public class StandardRSEJBossStartLaunchDelegate extends
 	}
 	
 	@Override
+	protected boolean externallyManagedPollForStarted(IServer server, ControllableServerBehavior beh, String mode) {
+		((ControllableServerBehavior)beh).setServerStarting();
+		attachDebugListenerAndLaunchPoller(server, mode);
+		return false;
+	}
+	
+	@Override
 	protected void afterVMRunner(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		// Initiate Polling!
 		IServer s = ServerUtil.getServer(configuration);
+		attachDebugListenerAndLaunchPoller(s, mode);
+	}
+	
+	private void attachDebugListenerAndLaunchPoller(IServer s, String mode) {
 		boolean attachDebugger = s.getAttribute(RemoteDebugUtils.ATTACH_DEBUGGER, true);
 		if( "debug".equals(mode) && attachDebugger) {
 			// add a listener which will run the debugger once server is started
@@ -139,6 +149,10 @@ public class StandardRSEJBossStartLaunchDelegate extends
 	
 	protected void connectDebugger(ILaunchConfiguration configuration, String mode, 
 			IControllableServerBehavior beh) throws CoreException {
-		RemoteDebugUtils.get().attachRemoteDebugger(beh.getServer(), new NullProgressMonitor());
+		connectDebugger(beh.getServer());
+	}
+	
+	private void connectDebugger(IServer server) throws CoreException {
+		RemoteDebugUtils.get().attachRemoteDebugger(server, new NullProgressMonitor());
 	}
 }
