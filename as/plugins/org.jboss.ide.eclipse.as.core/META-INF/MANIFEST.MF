@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name.0
 Bundle-SymbolicName: org.jboss.ide.eclipse.as.core;singleton:=true
-Bundle-Version: 3.2.0.qualifier
+Bundle-Version: 3.2.1.qualifier
 Bundle-Activator: org.jboss.ide.eclipse.as.core.JBossServerCorePlugin
 Bundle-Localization: plugin
 Require-Bundle: org.apache.ant;bundle-version="1.7.1",
@@ -28,7 +28,7 @@ Require-Bundle: org.apache.ant;bundle-version="1.7.1",
  org.eclipse.datatools.connectivity.db.generic;bundle-version="1.0.1";resolution:=optional,
  org.jboss.ide.eclipse.as.wtp.core;bundle-version="[3.0.0,4.0.0)";visibility:=reexport,
  org.jboss.ide.eclipse.as.management.core;bundle-version="[3.0.0,4.0.0)",
- org.jboss.ide.eclipse.as.dmr;bundle-version="[3.0,4.0.0)",
+ org.jboss.ide.eclipse.as.dmr;bundle-version="[3.0.0,4.0.0)",
  org.jboss.tools.runtime.core;bundle-version="2.0.0",
  org.jboss.ide.eclipse.archives.core;bundle-version="3.5.0",
  org.jboss.tools.foundation.core;bundle-version="1.1.0",
