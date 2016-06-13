@@ -178,7 +178,9 @@ public class LocalFilesystemController extends AbstractSubsystemController imple
 
 	private void throwOnErrorStatus(File file, IStatus status) throws CoreException {
 		if (!status.isOK()) {
-			MultiStatus status2 = new MultiStatus(ASWTPToolsPlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL, NLS.bind(Messages.errorDeleting, file.toString()), null);
+			String msg = NLS.bind(Messages.errorDeleting, file.toString());
+			Throwable t = (status.getException() == null ? new Exception(msg) : status.getException());
+			MultiStatus status2 = new MultiStatus(ASWTPToolsPlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL, msg, t);
 			status2.add(status);
 			throw new CoreException(status2);
 		}
@@ -252,8 +254,9 @@ public class LocalFilesystemController extends AbstractSubsystemController imple
 			results = deleteDirectory(absolutePath.toFile(), monitor);
 		} else {
 			if( !file.delete()) {
+				String msg = NLS.bind(Messages.errorDeleting, absolutePath.toFile().getAbsolutePath());
 				IStatus s = new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, 
-						NLS.bind(Messages.errorDeleting, absolutePath.toFile().getAbsolutePath()), null);
+						msg, new Exception(msg));
 				results = s;
 			}
 		}
@@ -286,7 +289,9 @@ public class LocalFilesystemController extends AbstractSubsystemController imple
 				File current = files[i];
 				if (current.isFile()) {
 					if (!current.delete()) {
-						status.add(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, NLS.bind(Messages.errorDeleting, files[i].getAbsolutePath()), null));
+						String msg = NLS.bind(Messages.errorDeleting, files[i].getAbsolutePath());
+						status.add(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, 
+								msg, new Exception(msg)));
 						deleteCurrent = false;
 					}
 					monitor.worked(10);
@@ -300,19 +305,21 @@ public class LocalFilesystemController extends AbstractSubsystemController imple
 					}
 				}
 			}
-			if (deleteCurrent && !dir.delete())
+			if (deleteCurrent && !dir.delete()) {
+				String msg = NLS.bind(Messages.errorDeleting, dir.getAbsolutePath()); 
 				status.add(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, 
-						NLS.bind(Messages.errorDeleting, dir.getAbsolutePath()), null));
+						msg, new Exception(msg)));
+			}
 			monitor.done();
 		} catch (Exception e) {
 			//Trace.trace(Trace.SEVERE, "Error deleting directory " + dir.getAbsolutePath(), e);
-			status.add(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, e.getLocalizedMessage(), null));
+			status.add(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, e.getLocalizedMessage(), e));
 		}
 		if( status.size() > 0 ) {
+			String msg = NLS.bind(Messages.errorDeleting, dir.getAbsolutePath());
 			IStatus[] arr =(IStatus[]) status.toArray(new IStatus[status.size()]);
 			return new MultiStatus(ASWTPToolsPlugin.PLUGIN_ID,  
-					IEventCodes.JST_PUB_FAIL, arr, 
-					NLS.bind(Messages.errorDeleting, dir.getAbsolutePath()), null);
+					IEventCodes.JST_PUB_FAIL, arr, msg, new Exception(msg));
 		}
 		return Status.OK_STATUS;
 	}

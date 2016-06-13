@@ -26,6 +26,7 @@ import org.eclipse.wst.server.core.internal.Messages;
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
+import org.jboss.ide.eclipse.as.wtp.core.Trace;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.util.IEventCodes;
 import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
@@ -101,8 +102,11 @@ public final class PublishModuleIncrementalRunner {
 	public IStatus[] publish(IModuleResourceDelta[] delta, IProgressMonitor monitor) throws CoreException {
 		if (delta == null)
 			return EMPTY_STATUS;
-		
+		Trace.trace(Trace.STRING_FINER, "      Executing incremental publish on module."); //$NON-NLS-1$
+
 		int count = ModuleResourceUtil.countChanges(delta);
+		Trace.trace(Trace.STRING_FINER, "      Resources to be copied: " + count); //$NON-NLS-1$
+
 		monitor = ProgressMonitorUtil.getMonitorFor(monitor);
 		monitor.beginTask("Incremental Publish", count * 100);
 		List<IStatus> status = new ArrayList<IStatus>(2);
@@ -136,22 +140,25 @@ public final class PublishModuleIncrementalRunner {
 		IModuleResource resource = delta.getModuleResource();
 		int kind2 = delta.getKind();
 		IPath absolutePath = root.append(resource.getModuleRelativePath()).append(resource.getName());
-		
+
 		// Handle the case of a file
 		if (resource instanceof IModuleFile) {
 			IModuleFile file = (IModuleFile) resource;
 			File ioFile = ModuleResourceUtil.getFile(file);
 
 			if (kind2 == IModuleResourceDelta.REMOVED) {
+				Trace.trace(Trace.STRING_FINER, "      Removing resource: " + absolutePath); //$NON-NLS-1$
 				IStatus stat = fsController.deleteResource(absolutePath, monitor);
 				if( stat != null )
 					status.add( stat);
 			} else if( kind2 != IModuleResourceDelta.NO_CHANGE){
+				Trace.trace(Trace.STRING_FINER, "      Creating directory resource: " + absolutePath.removeLastSegments(1)); //$NON-NLS-1$
 				IStatus s1 = fsController.makeDirectoryIfRequired(absolutePath.removeLastSegments(1), new SubProgressMonitor(monitor, 10));
 				if( s1 != null )
 					status.add( s1);
 				if( monitor.isCanceled())
 					return CANCEL_STATUS_ARR;
+				Trace.trace(Trace.STRING_FINER, "      Copying resource: " + absolutePath); //$NON-NLS-1$
 				IStatus s2 = fsController.copyFile(ioFile, absolutePath, new SubProgressMonitor(monitor, 90));
 				if( s2 != null )
 					status.add( s2);
@@ -161,6 +168,7 @@ public final class PublishModuleIncrementalRunner {
 		
 		// Handle the case of an added folder
 		if (kind2 == IModuleResourceDelta.ADDED) {
+			Trace.trace(Trace.STRING_FINER, "      Creating directory resource: " + absolutePath); //$NON-NLS-1$
 			IStatus stat = fsController.makeDirectoryIfRequired(absolutePath, monitor);
 			if( stat != null )
 				status.add( stat);
@@ -184,8 +192,10 @@ public final class PublishModuleIncrementalRunner {
 		if (kind2 == IModuleResourceDelta.REMOVED) {
 			IStatus stat = fsController.deleteResource(absolutePath, monitor);
 			if( stat != null && !stat.isOK()) {
+				String msg = NLS.bind(Messages.errorDeleting, absolutePath);
+				Throwable t = (stat.getException() == null ? new Exception(msg) : stat.getException());
 				status.add(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, 
-						NLS.bind(Messages.errorDeleting, absolutePath), stat.getException()));
+						msg, t));
 			}
 		}
 		

@@ -241,6 +241,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 
 	@Override
 	public void publishStart(IProgressMonitor monitor) throws CoreException {
+		Trace.trace(Trace.STRING_FINER, "publishStart called on server " + getServer().getName()); //$NON-NLS-1$
 		IStatus s = validate();
 		if( s != null && !s.isOK()) {
 			throw new CoreException(s);
@@ -249,6 +250,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 
 	@Override
 	public void publishFinish(IProgressMonitor monitor) throws CoreException {
+		Trace.trace(Trace.STRING_FINER, "publishFinish called on server " + getServer().getName()); //$NON-NLS-1$
 		validate();
 		IServer s = getServer();
 		// handle markers / touch xml files depending on server version
@@ -264,6 +266,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		// update the wtp model with live module state from the server
 		IModuleStateController c = getModuleStateController();
 		if( c != null && getServer().getServerState() == IServer.STATE_STARTED) {
+			Trace.trace(Trace.STRING_FINER, "launching job to update module state for server " + getServer().getName()); //$NON-NLS-1$
 			new UpdateModuleStateJob( c, getServer(), true, 15000).schedule(5000);
 		}
 	}
@@ -280,17 +283,30 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
         return IServer.PUBLISH_STATE_INCREMENTAL;
 	}
 
+	private String moduleToString(IModule[] mod) {
+		StringBuffer sb = new StringBuffer();
+		for( int i = 0; i < mod.length; i++ ) {
+			sb.append(mod[i].getName());
+			if( i < mod.length) 
+				sb.append(",   "); //$NON-NLS-1$
+		}
+		return sb.toString();
+	}
 	
 	@Override
 	public int publishModule(int kind,
 			int deltaKind, IModule[] module, IProgressMonitor monitor)
 			throws CoreException {
+		Trace.trace(Trace.STRING_FINER, NLS.bind("publishModule called on server {0} with kind={1}, deltaKind={2}, module of size {3}: {4}",  //$NON-NLS-1$
+				new Object[]{getServer().getName(), new Integer(kind), new Integer(deltaKind), new Integer(module.length), moduleToString(module)})); 
+
 		monitor = monitor == null ? new NullProgressMonitor() : monitor; // nullsafe
 		validate();
 		
 		// first see if we need to delegate to another custom publisher, such as bpel / osgi
 		IPublishControllerDelegate delegate = PublishControllerUtility.findDelegatePublishController(getServer(),module, true);
 		if( delegate != null ) {
+			Trace.trace(Trace.STRING_FINER, "   Publish delegate for module type " + module[module.length-1].getModuleType().getName()); //$NON-NLS-1$
 			return delegate.publishModule(kind, deltaKind, module, monitor);
 		}
 		
@@ -300,26 +316,33 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		 * private int handleBinaryModule(IModule[] module, IPath archiveDestination) throws CoreException
 		 */
 		boolean isBinaryObject = ServerModelUtilities.isBinaryModule(module);
+		Trace.trace(Trace.STRING_FINER, "   Module " + module[module.length-1].getName() + " is binary? " + isBinaryObject); //$NON-NLS-1$ //$NON-NLS-2$
+
 		boolean serverPrefersZipped = prefersZipped();
+		Trace.trace(Trace.STRING_FINER, "   Server " + getServer().getName() + " prefers zipped deployment? " + serverPrefersZipped); //$NON-NLS-1$ //$NON-NLS-2$
 
 		IPath archiveDestination = getModuleDeployRoot(module);
+		Trace.trace(Trace.STRING_FINER, "   Archive destination: " + archiveDestination.toString()); //$NON-NLS-1$
+
 		int publishType = PublishControllerUtility.getPublishType(getServer(), module, kind, deltaKind);
 
 		
 		// If we're a top-level binary module, we don't get zipped. Odds are we're already zipped, or a simple xml file
 		// If we're a child binary, we've already been zipped during the parent's pass
 		if( !isBinaryObject && serverPrefersZipped) {
+			Trace.trace(Trace.STRING_FINER, "   Executing zipped deployment"); //$NON-NLS-1$
 			return handleZippedPublish(module, publishType, archiveDestination, false, monitor);
 		}
 		
 		// Handle removals of modules
 		if( publishType == PublishControllerUtility.REMOVE_PUBLISH){
+			Trace.trace(Trace.STRING_FINER, "   Removing module: " + module[module.length-1].getName()); //$NON-NLS-1$
 			return removeModule(module, archiveDestination, monitor);
 		}
 		
 		// Skip any wtp-deleted-module for a full or incremental publish
 		if( ServerModelUtilities.isAnyDeleted(module) ) {
-			Trace.trace(Trace.STRING_FINER, "Handling a wtp 'deleted module' (aka missing/deleted /closed project). No Action Taken. Returning state=unknown "); //$NON-NLS-1$
+			Trace.trace(Trace.STRING_FINER, "   Module or parent module is a wtp 'deleted module' (aka missing/deleted /closed project). No Action Taken. Returning state=unknown "); //$NON-NLS-1$
 			return IServer.PUBLISH_STATE_UNKNOWN;
 		}
 
@@ -330,11 +353,13 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		if( forzeZipAnyParent) {
 			// We can assume the parent was already published.
 			// In the future, we may wish to check the parent's publish state and simply use that one as well
+			Trace.trace(Trace.STRING_FINER, "   Parent module already published and zipped. Ignoring this call"); //$NON-NLS-1$
 			return IServer.PUBLISH_STATE_NONE;				
 		}
 
 		if( !isBinaryObject && modulePrefersZipped ) {
 			// Otherwise we need to zip this module and its children. 
+			Trace.trace(Trace.STRING_FINER, "   Non-Binary module setting prefers zipped deployment."); //$NON-NLS-1$
 			return handleZippedPublish(module, publishType, archiveDestination, true, monitor);
 		}
 		
@@ -344,14 +369,17 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 
 		if( isBinaryObject ) {
 			// Remove situation has been handled
+			Trace.trace(Trace.STRING_FINER, "   Publishing binary module."); //$NON-NLS-1$
 			return handlePublishBinaryModule(module, archiveDestination, publishType);
  		}
 		
 		
 		if( publishType == PublishControllerUtility.FULL_PUBLISH ) {
+			Trace.trace(Trace.STRING_FINER, "   Executing full publish on module."); //$NON-NLS-1$
 			executeFullPublish(module, archiveDestination, filter, monitor);
 			msgForFailure = Messages.FullPublishFail; 
 		} else if( publishType == PublishControllerUtility.INCREMENTAL_PUBLISH) {
+			Trace.trace(Trace.STRING_FINER, "   Executing incremental publish on module."); //$NON-NLS-1$
 			PublishModuleIncrementalRunner runner = new PublishModuleIncrementalRunner(getFilesystemController(), archiveDestination);
 			IModuleResourceDelta[] cleanDelta = filter != null ? filter.getFilteredDelta(getDeltaForModule(module)) : getDeltaForModule(module);
 			IModuleRestartBehaviorController restartController = getModuleRestartBehaviorController();

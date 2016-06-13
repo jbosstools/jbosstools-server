@@ -24,6 +24,7 @@ import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
+import org.jboss.ide.eclipse.as.wtp.core.Trace;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.util.ProgressMonitorUtil;
@@ -96,23 +97,28 @@ public final class PublishModuleFullRunner {
 	 * @since 2.3
 	 */
 	public IStatus[] fullPublish(IModuleResource[] resources, IProgressMonitor monitor) throws CoreException  {
-		
+		Trace.trace(Trace.STRING_FINER, "      Executing full publish"); //$NON-NLS-1$
+
 		// Initiate the progress monitor stuff
 		// A full count is gotten early because otherwise
 		// the progress monitor will slow down the deeper in a tree it goes
 		int count = ModuleResourceUtil.countMembers(resources, true);
+		Trace.trace(Trace.STRING_FINER, "      Items to handle: " + count); //$NON-NLS-1$
 		monitor = ProgressMonitorUtil.getMonitorFor(monitor);
 		monitor.beginTask("Publishing " + count + " resources", //$NON-NLS-1$ //$NON-NLS-2$ 
 				(100 * (count)) + 200);
 		
 		if( monitor.isCanceled())
 			return CANCEL_STATUS_ARR;
+		
+		Trace.trace(Trace.STRING_FINER, "      Deleting root directory: " + rootDirectory); //$NON-NLS-1$
 		fsController.deleteResource(rootDirectory, ProgressMonitorUtil.getSubMon(monitor, 100));
 		
 		if( monitor.isCanceled())
 			return CANCEL_STATUS_ARR;
 		
 		// Create the remote folder where we'll be copying files to
+		Trace.trace(Trace.STRING_FINER, "      Creating folder: " + rootDirectory); //$NON-NLS-1$
 		IStatus s = fsController.makeDirectoryIfRequired(rootDirectory,
 				ProgressMonitorUtil.getSubMon(monitor, 100)); 
 		
@@ -150,6 +156,8 @@ public final class PublishModuleFullRunner {
 	// Use the fscontroller to make required directories, or copy relevent files
 	// Recursively iterate folders
 	private IStatus[] handleSingleResource(IModuleResource resource, IPath path, IProgressMonitor monitor) throws CoreException {
+		Trace.trace(Trace.STRING_FINER, "      Copying Resource: " + path); //$NON-NLS-1$
+
 		String name = resource.getName();
 		IPath rel = resource.getModuleRelativePath();
 		IPath absoluteRemote = path.append(rel).append(name);
@@ -158,11 +166,12 @@ public final class PublishModuleFullRunner {
 		List<IStatus> status = new ArrayList<IStatus>(2);
 		if (resource instanceof IModuleFolder) {
 			IModuleResource[] children = ((IModuleFolder) resource).members();
-			if( children.length == 0 )
+			if( children.length == 0 ) {
 				// Ensure the empty remote folder is still created
+				Trace.trace(Trace.STRING_FINER, "      Creating folder: " + path); //$NON-NLS-1$
 				fsController.makeDirectoryIfRequired(absoluteRemote, 
 						ProgressMonitorUtil.getSubMon(monitor, 100));
-			else {
+			} else {
 				// Re-traverse this new folder
 				IStatus[] stat = traverseResources(children, path, monitor);
 				addArrayToList(status, stat);
@@ -170,12 +179,14 @@ public final class PublishModuleFullRunner {
 		} else {
 			// Ensure the directory is created.  This should already be true,
 			// so we weight it only 10 in the progmon
+			Trace.trace(Trace.STRING_FINER, "      Ensuring folder already created: " + absoluteRemote.removeLastSegments(1)); //$NON-NLS-1$
 			IStatus stats = fsController.makeDirectoryIfRequired(absoluteRemote.removeLastSegments(1), 
 					ProgressMonitorUtil.getSubMon(monitor, 10));
 			status.add( stats);
 			
 			// Then copy the file
 			File file = ModuleResourceUtil.getFile(((IModuleFile)resource));
+			Trace.trace(Trace.STRING_FINER, "      Copying file: " + absoluteRemote); //$NON-NLS-1$
 			status.add(fsController.copyFile(file, absoluteRemote, 
 					ProgressMonitorUtil.getSubMon(monitor, 90)));
 		}

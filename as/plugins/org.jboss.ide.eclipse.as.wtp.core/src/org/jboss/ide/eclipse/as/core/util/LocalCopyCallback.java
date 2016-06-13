@@ -179,7 +179,9 @@ public class LocalCopyCallback implements IPublishCopyCallbackHandler {
 
 	private void throwOnErrorStatus(File file, IStatus status) throws CoreException {
 		if (!status.isOK()) {
-			MultiStatus status2 = new MultiStatus(ServerPlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL, NLS.bind(Messages.errorDeleting, file.toString()), null);
+			String msg = NLS.bind(Messages.errorDeleting, file.toString());
+			Throwable t = (status.getException() == null ? new Exception(msg) : status.getException());
+			MultiStatus status2 = new MultiStatus(ServerPlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL, msg, t);
 			status2.add(status);
 			throw new CoreException(status2);
 		}
@@ -244,7 +246,8 @@ public class LocalCopyCallback implements IPublishCopyCallbackHandler {
 			results = deleteDirectory(resource.toFile(), monitor);
 		} else {
 			if( !file.delete()) {
-				IStatus s = new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, NLS.bind(Messages.errorDeleting, resource.toFile().getAbsolutePath()), null);
+				String msg = NLS.bind(Messages.errorDeleting, resource.toFile().getAbsolutePath());
+				IStatus s = new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, msg, new Exception(msg));
 				results = new IStatus[]{s};
 			}
 		}
@@ -277,7 +280,8 @@ public class LocalCopyCallback implements IPublishCopyCallbackHandler {
 				File current = files[i];
 				if (current.isFile()) {
 					if (!current.delete()) {
-						status.add(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, NLS.bind(Messages.errorDeleting, files[i].getAbsolutePath()), null));
+						String msg = NLS.bind(Messages.errorDeleting, files[i].getAbsolutePath());
+						status.add(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, msg, new Exception(msg)));
 						deleteCurrent = false;
 					}
 					monitor.worked(10);
@@ -291,8 +295,10 @@ public class LocalCopyCallback implements IPublishCopyCallbackHandler {
 					}
 				}
 			}
-			if (deleteCurrent && !dir.delete())
-				status.add(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, NLS.bind(Messages.errorDeleting, dir.getAbsolutePath()), null));
+			if (deleteCurrent && !dir.delete()) {
+				String msg = NLS.bind(Messages.errorDeleting, dir.getAbsolutePath());
+				status.add(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, msg, new Exception(msg)));
+			}
 			monitor.done();
 		} catch (Exception e) {
 			//Trace.trace(Trace.SEVERE, "Error deleting directory " + dir.getAbsolutePath(), e);

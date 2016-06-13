@@ -164,7 +164,8 @@ public final class PublishCopyUtil {
 			IPath path2 = path.append(resource.getModuleRelativePath()).append(resource.getName());
 			IStatus[] stat = handler.deleteResource(path2, monitor);
 			if( stat.length > 0 && !stat[0].isOK()) {
-				status.add(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, NLS.bind(Messages.errorDeleting, path2), null));
+				status.add(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, 
+						NLS.bind(Messages.errorDeleting, path2), stat[0].getException()));
 			}
 		}
 		
