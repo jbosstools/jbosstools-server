@@ -17,6 +17,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
 	AllSubsystemResolutionTest.class,
+	DeploymentOptionsSubsystemResolutionTest.class,
 	BrowseBehaviorSubsystemResolutionTest.class,
 	ExploreBehaviorSubsystemResolutionTest.class,
 	PublishSubsystemResolutionTest.class,

@@ -26,6 +26,8 @@ import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
+import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.DeploymentMarkerUtils;
 import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
 import org.jboss.tools.as.core.server.controllable.subsystems.internal.StandardFileSystemPublishController;
@@ -157,9 +159,15 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 		
 		String utilDepDir = controller.getDeployPathController().getDeployDirectory(module).toOSString();
 		if( !testIsZip()) {
-			// we're not testing in zip mode, so utilDepDir should exist and should be a forced zip file
+			ServerExtendedProperties props = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
+			assertNotNull(props);
+			boolean allowExplodedUtil = props.allowExplodedModulesInWarLibs();
+
+			// we're not testing in zip mode, so utilDepDir should exist 
 			assertTrue(new Path(utilDepDir).toFile().exists());
-			assertTrue(new Path(utilDepDir).toFile().isFile());
+			
+			// and should be a forced zip file only if we're not allowing exploded utility jars
+			assertEquals(!allowExplodedUtil, new Path(utilDepDir).toFile().isFile());
 			verifyListRelativePath(new Path(utilDepDir), Arrays.asList(new IPath[]{new Path("Main.class")}), true);
 		} else {
 			// Our util is inside a zipped war. Verify that exists
@@ -280,10 +288,15 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 	}
 	
 	private void utilInWebInEarRemovals_verifyUtil(String utilDepDir, String earDepDir, boolean shouldExist) {
+		ServerExtendedProperties props = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
+		assertNotNull(props);
+		boolean allowExplodedUtil = props.allowExplodedModulesInWarLibs();
 		if( !testIsZip()) {
-			// we're not testing in zip mode, so utilDepDir should exist and should be a forced zip file
+			// we're not testing in zip mode, so utilDepDir should exist 
 			assertEquals(shouldExist, new Path(utilDepDir).toFile().exists());
-			assertEquals(shouldExist, new Path(utilDepDir).toFile().isFile());
+			// and should be a forced zip file only if we don't allow exploded util jars
+			boolean shouldBeFile = !allowExplodedUtil && shouldExist;
+			assertEquals(shouldBeFile, new Path(utilDepDir).toFile().isFile());
 			verifyListRelativePath(new Path(utilDepDir), Arrays.asList(new IPath[]{new Path("Main.class")}), shouldExist);
 		} else {
 			// Our util is inside a zipped war inside a zipped ear. Verify that exists

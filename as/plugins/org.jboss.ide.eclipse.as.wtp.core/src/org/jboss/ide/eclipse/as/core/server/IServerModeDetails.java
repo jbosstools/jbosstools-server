@@ -96,6 +96,14 @@ public interface IServerModeDetails {
 	public static final String PROP_SERVER_TMP_DEPLOYMENTS_FOLDER_ABS = "PROP_SERVER_TMP_DEPLOYMENTS_FOLDER_ABSOLUTE";
 
 	
+	/**
+	 * Get the separator character to use for this server
+	 * This property would be much more relevant on the filesystem controller, 
+	 * but it is not convenient to change that API without breaking clients. 
+	 * 
+	 * The return should be a string of length 1, representing 1 character
+	 */
+	public static final String SEPARATOR_CHAR = "SEPARATOR_CHAR";
 	
 	/**
 	 * Retrieve the server-mode-relative value for the given property

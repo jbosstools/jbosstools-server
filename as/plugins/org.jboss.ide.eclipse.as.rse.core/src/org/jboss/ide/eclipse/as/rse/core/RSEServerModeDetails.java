@@ -34,6 +34,10 @@ public class RSEServerModeDetails extends AbstractSubsystemController implements
 
 	@Override
 	public String getProperty(String prop) {
+		if( SEPARATOR_CHAR.equals(prop)) {
+			return Character.toString(RSEUtils.getRemoteSystemSeparatorCharacter(getServerOrWC()));
+		}
+
 		char sep = RSEUtils.getRemoteSystemSeparatorCharacter(getServerOrWC());
 		if( PROP_SERVER_HOME.equals(prop)) {
 			return RSEUtils.getRSEHomeDir(getServerOrWC());

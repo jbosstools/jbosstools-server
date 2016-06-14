@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2014 Red Hat, Inc. 
+ * Copyright (c) 2016 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -24,7 +24,6 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBeha
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IFilesystemController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IServerDetailsController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ISubsystemController;
-import org.jboss.tools.as.core.server.controllable.systems.IDeploymentOptionsController;
 
 public class ServerHomeValidationUtility {
 	private ISubsystemController findDependencyFromBehavior(IServer server, String system) throws CoreException {
@@ -49,8 +48,7 @@ public class ServerHomeValidationUtility {
 
 		IFilesystemController fs = (IFilesystemController)findDependencyFromBehavior(server, IFilesystemController.SYSTEM_ID);
 		IServerDetailsController det = (IServerDetailsController)findDependencyFromBehavior(server, IServerDetailsController.SYSTEM_ID);
-		IDeploymentOptionsController opts = (IDeploymentOptionsController)findDependencyFromBehavior(server, IDeploymentOptionsController.SYSTEM_ID);
-		IStatus s = validateServerHome(server, det, opts, fs);
+		IStatus s = validateServerHome(server, det, fs);
 		if( alwaysThrow && !s.isOK()) {
 			throw new CoreException(s);
 		}
@@ -58,14 +56,19 @@ public class ServerHomeValidationUtility {
 	}
 	
 	public IStatus validateServerHome(IServer server, IServerDetailsController details, 
-			IDeploymentOptionsController options, IFilesystemController fs) throws CoreException {
+			IFilesystemController fs) throws CoreException {
 		if( details != null ) {
 			String serverHome = details.getProperty(IServerDetailsController.PROP_SERVER_HOME);
-			if( serverHome.isEmpty()) {
+			if( serverHome == null || serverHome.isEmpty()) {
 				return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
 						NLS.bind("The home directory for \"{0}\" cannot be empty.", server.getName())); //$NON-NLS-1$
 			}
-			IPath remoteHome = new RemotePath(serverHome, options.getPathSeparatorCharacter());
+			String sep2 = details.getProperty(IServerDetailsController.SEPARATOR_CHAR);
+			if( sep2 == null || sep2.length() != 1 ) {
+				return (new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+						NLS.bind("The separator character for \"{0}\" is invalid: " + sep2, server.getName()))); //$NON-NLS-1$
+			}
+			IPath remoteHome = new RemotePath(serverHome, sep2.charAt(0));
 			if( !fs.exists(remoteHome, new NullProgressMonitor())) {
 				return (new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
 						NLS.bind("The home directory for \"{0}\" does not exist: " + serverHome, server.getName()))); //$NON-NLS-1$

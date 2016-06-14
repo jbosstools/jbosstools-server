@@ -21,7 +21,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	ExpressionResolverUtilTest.class,
 	UnitedServerListenerTest.class,
 	RSEUtilsTest.class,
-	VersionStringUtilTest.class
+	VersionStringUtilTest.class,
+	ServerHomeValidationUtilityTest.class
 })
 public class UtilsSuite {
 }
