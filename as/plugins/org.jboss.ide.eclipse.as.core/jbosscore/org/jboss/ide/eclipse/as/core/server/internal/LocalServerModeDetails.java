@@ -10,6 +10,8 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
+import java.io.File;
+
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IRuntime;
@@ -47,6 +49,10 @@ public class LocalServerModeDetails extends AbstractSubsystemController implemen
 	
 	@Override
 	public String getProperty(String prop) {
+		if( SEPARATOR_CHAR.equals(prop)) {
+			return Character.toString(File.separatorChar);
+		}
+		
 		IRuntime rt = getServerOrWC().getRuntime();
 		if( PROP_SERVER_HOME.equals(prop)) {
 			return rt == null ? null : rt.getLocation().toOSString();
