@@ -20,6 +20,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.IServerType;
 import org.jboss.ide.eclipse.as.core.Trace;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.DeployOnlyExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.EclipseServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossAS6ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossAS710ExtendedProperties;
@@ -112,6 +113,10 @@ public class ExtendedServerPropertiesAdapterFactory implements IAdapterFactory, 
 			
 			if(typeId.startsWith("org.eclipse.jst.server")) { //$NON-NLS-1$
 				return new EclipseServerExtendedProperties(adaptable);
+			}
+			
+			if( typeId.equals(DEPLOY_ONLY_SERVER)) {
+				return new DeployOnlyExtendedProperties(adaptable);
 			}
 			
 			// Last ditch, allows other server types to adapt also

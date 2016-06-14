@@ -25,6 +25,7 @@ import org.eclipse.jst.j2ee.project.WebUtilities;
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerPort;
 import org.eclipse.wst.server.core.model.ServerDelegate;
@@ -41,6 +42,7 @@ import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerTCPIPMonitorUtil;
+import org.jboss.tools.as.core.server.controllable.subsystems.internal.XPathsPortsController;
 import org.jboss.tools.as.core.server.controllable.systems.IModuleDeployPathController;
 
 public class DeployableServer extends ServerDelegate implements IDeployableServer, IMultiModuleURLProvider {
@@ -193,8 +195,27 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 		return false;
 	}
 	
+	/*
+	 * This method is only added because I cannot change the visibility of 
+	 * getWebPort since there exist many subclasses, and the method 
+	 * has been protected for a very long time.
+	 */
+	public int getPublicWebPort() {
+		return getWebPort();
+	}
+	
 	protected int getWebPort() {
-		return 80;
+		int ret = new XPathsPortsController() {
+			@Override
+			public IServer getServer() {
+				return DeployableServer.this.getServer();
+			}
+			@Override
+			protected boolean automaticallyDetect(String attributeKey, String detectKey) {
+				return false;
+			}
+		}.findPort(XPathsPortsController.KEY_WEB, XPathsPortsController.JBOSS_WEB_DEFAULT_PORT);
+		return ret;
 	}
 	public URL getModuleRootURL(IModule module) {
 		return getModuleRootURL(module, getServer().getHost(), getWebPort(), null);

@@ -65,8 +65,12 @@ public class XPathsPortsController extends AbstractSubsystemController implement
 		return 0;
 	}
 	
+	protected boolean automaticallyDetect(String attributeKey, String detectKey) {
+		return getServer().getAttribute(detectKey, true);
+	}
+	
 	protected int findPort(String attributeKey, String detectKey, String xpathKey, String defaultXPath, int defaultValue) {
-		boolean detect = getServer().getAttribute(detectKey, true);
+		boolean detect = automaticallyDetect(attributeKey, detectKey);
 		String result = null;
 		if( !detect ) {
 			result = getServer().getAttribute(attributeKey, (String)null);
