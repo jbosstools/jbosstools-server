@@ -326,14 +326,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 
 		int publishType = PublishControllerUtility.getPublishType(getServer(), module, kind, deltaKind);
 
-		
-		// If we're a top-level binary module, we don't get zipped. Odds are we're already zipped, or a simple xml file
-		// If we're a child binary, we've already been zipped during the parent's pass
-		if( !isBinaryObject && serverPrefersZipped) {
-			Trace.trace(Trace.STRING_FINER, "   Executing zipped deployment"); //$NON-NLS-1$
-			return handleZippedPublish(module, publishType, archiveDestination, false, monitor);
-		}
-		
+
 		// Handle removals of modules
 		if( publishType == PublishControllerUtility.REMOVE_PUBLISH){
 			Trace.trace(Trace.STRING_FINER, "   Removing module: " + module[module.length-1].getName()); //$NON-NLS-1$

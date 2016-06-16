@@ -209,16 +209,41 @@ public abstract class AbstractJBossDeploymentOptionsController extends
 		return defaultZipOption;
 	}
 	
+	public static int ZIP_DEFAULT = 0;
+	public static int ZIP_YES = 1;
+	public static int ZIP_NO = 2;
+	
+	
 	/**
-	 * Set whether to zip the given deployment
+	 * Set whether to zip the given deployment. This method appears to be unused. 
+	 * 
 	 * @param module
 	 * @param value A boolean representing true or false, 
 	 *  			or null to clear the setting and use server default
+	 *  @deprecated please use the integer constants instead
 	 */
 	public void setShouldZipDeployment(IModule[] module, Boolean value) {
+		if( value == null ) {
+			setShouldZipDeployment(module, ZIP_DEFAULT);
+		} else if( value.booleanValue()) {
+			setShouldZipDeployment(module, ZIP_YES);
+		} else {
+			setShouldZipDeployment(module, ZIP_NO);
+		}
+	}
+	
+	
+	/**
+	 * Set whether to zip the given deployment. 
+	 * 
+	 * @param module
+	 * @param value An integer representing default server behavior, zip, or don't zip 
+	 */
+	public void setShouldZipDeployment(IModule[] module, Integer value) {
 		setModuleDeploymentPreference(module[module.length-1], IJBossToolingConstants.LOCAL_DEPLOYMENT_ZIP, 
 				value == null ? "" : value.toString()); //$NON-NLS-1$
 	}
+
 	
 	private void verifyWorkingCopy() throws IllegalStateException {
 		IServerWorkingCopy wc = getWorkingCopy();

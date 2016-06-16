@@ -19,6 +19,7 @@ import org.eclipse.wst.server.core.IServerAttributes;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.RemotePath;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
+import org.jboss.tools.as.core.server.controllable.systems.AbstractJBossDeploymentOptionsController;
 
 /**
  * Several utility methods for modules related to deployment preferences
@@ -215,7 +216,15 @@ public class ModuleDeploymentPrefsUtil {
 		if( modPrefs != null ) {
 			String ret = modPrefs.getProperty(IJBossToolingConstants.LOCAL_DEPLOYMENT_ZIP);
 			if( ret != null && !ret.equals("")) { //$NON-NLS-1$
-				return Boolean.parseBoolean(ret);
+				int ret2 = -1;
+				try {
+					ret2 = Integer.parseInt(ret);
+					if( ret2 == AbstractJBossDeploymentOptionsController.ZIP_DEFAULT)
+						return defaultValue;
+					return ret2 == AbstractJBossDeploymentOptionsController.ZIP_YES ? true : false;
+				} catch(NumberFormatException nfe) {
+					return Boolean.parseBoolean(ret);
+				}
 			}
 		}
 		return defaultValue;

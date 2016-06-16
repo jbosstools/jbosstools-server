@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
+import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -57,6 +58,7 @@ import org.jboss.ide.eclipse.as.ui.editor.internal.ChangeModuleDeploymentPropert
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.tools.as.core.internal.modules.DeploymentModulePrefs;
 import org.jboss.tools.as.core.internal.modules.DeploymentPreferences;
+import org.jboss.tools.as.core.server.controllable.systems.AbstractJBossDeploymentOptionsController;
 
 /**
  * 
@@ -78,6 +80,9 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 	protected static final String COLUMN_TEMP_LOC = IJBossToolingConstants.LOCAL_DEPLOYMENT_TEMP_LOC;
 	protected static final String OUTPUT_NAME = IJBossToolingConstants.LOCAL_DEPLOYMENT_OUTPUT_NAME;
 	protected static final String MAIN = ServerProfileModel.DEFAULT_SERVER_PROFILE;
+	
+	
+	private static String[] ZIP_STRINGS = new String[]{"Default","Yes","No"};
 	
 	private DeploymentPreferences preferences;
 	private TreeViewer viewer;
@@ -194,7 +199,7 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 			moduleZip.setText("Zip Module"); // TODO externalize
 			moduleZip.setWidth(100);
 			columnIDs.add(COLUMN_ZIP);
-			cellEditors.add(new CheckboxCellEditor(viewer.getTree()));
+			cellEditors.add(new ComboBoxCellEditor(viewer.getTree(), ZIP_STRINGS, SWT.READ_ONLY));
 		}
 		
 		// Publish location column
@@ -329,7 +334,11 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 			}
 			if( property == COLUMN_ZIP) {
 				String ret = p.getProperty(COLUMN_ZIP);
-				return Boolean.valueOf(ret);
+				try {
+					return Integer.valueOf(ret);
+				} catch(NumberFormatException nfe) {
+				}
+				return AbstractJBossDeploymentOptionsController.ZIP_DEFAULT;
 			}
 
 			return ""; //$NON-NLS-1$
@@ -475,8 +484,16 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 
 				if( columnIndex == zipIndex ) {
 					String ret = modPref.getProperty(COLUMN_ZIP);
-					boolean defSetting = partner.getServer().getAttribute(IDeployableServer.ZIP_DEPLOYMENTS_PREF, false);
-					return ret == null ?  new Boolean(defSetting).toString(): ret; //$NON-NLS-1$
+					int retInd = 0;
+					if( ret != null ) {
+						try {
+							retInd = Integer.parseInt(ret);
+						} catch(NumberFormatException nfe) {
+						}
+					}
+					if( retInd > 2 || retInd < 0) 
+						retInd = 0;
+					return ZIP_STRINGS[retInd];
 				}
 				if (columnIndex == locIndex) {
 					return getOutputFolderAndName(modPref, m);
