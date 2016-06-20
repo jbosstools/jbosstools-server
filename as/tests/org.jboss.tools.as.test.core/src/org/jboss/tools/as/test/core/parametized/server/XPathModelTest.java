@@ -15,6 +15,10 @@ import java.util.Collection;
 
 import junit.framework.TestCase;
 
+import org.eclipse.core.internal.jobs.JobManager;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.IJobChangeListener;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -66,20 +70,54 @@ public class XPathModelTest extends TestCase {
 		}
 	}
 	
+	private class TestListener implements IJobChangeListener {
+		private Job xpathJob = null;
+		public void aboutToRun(IJobChangeEvent event) {
+		}
+		public void awake(IJobChangeEvent event) {
+		}
+		public void done(IJobChangeEvent event) {
+		}
+		public void running(IJobChangeEvent event) {
+		}
+		public void scheduled(IJobChangeEvent event) {
+			Job sched = event.getJob();
+			if( sched.getName().equals("Add Server XPath Details")) {
+				xpathJob = sched;
+			}
+		}
+		public void sleeping(IJobChangeEvent event) {
+		}
+		public Job getJob() {
+			return xpathJob;
+		}
+	}
+	
 	@Test
 	public void serverTestImpl() {
 		serverCount++;
+		TestListener listener = new TestListener();
+		Job.getJobManager().addJobChangeListener(listener);
+		
+		System.out.println("creating server for type " + serverType);
 		IServer server = ServerCreationTestUtils.createMockServerWithRuntime(serverType, "server" + serverCount);
+		System.out.println("Expecting server created and xpath model created");
 		File xpathFile = JBossServerCorePlugin.getServerStateLocation(server).append(IJBossToolingConstants.XPATH_FILE_NAME).toFile();
-		int i = 0;
-		boolean found = false;
-		while(!found && i < 10) {
-			i++;
-			JobUtils.waitForIdle(500);
-			found = xpathFile.exists();
-		} 
-		if( !found)
+		
+		Job j = listener.getJob();
+		try {
+			j.join();
+		} catch(InterruptedException ie) {
+			// ignore
+		}
+		Job.getJobManager().removeJobChangeListener(listener);
+		
+		boolean found = xpathFile.exists();
+
+		if( !found) {
+			System.out.println("The XPath File has not been created for servertype=" + serverType + ". Xpaths will be lost on workspace restart");
 			fail("The XPath File has not been created for servertype=" + serverType + ". Xpaths will be lost on workspace restart");
+		}
 	}
 
 }
