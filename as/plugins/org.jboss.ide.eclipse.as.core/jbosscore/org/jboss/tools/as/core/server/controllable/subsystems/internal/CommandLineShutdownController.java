@@ -26,6 +26,7 @@ import org.jboss.ide.eclipse.as.core.server.launch.CommandLineLaunchConfigProper
 import org.jboss.ide.eclipse.as.core.server.launch.LocalCommandLineRunner;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.ThreadUtils;
+import org.jboss.ide.eclipse.as.wtp.core.debug.RemoteDebugUtils;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
 import org.jboss.tools.as.core.server.controllable.IDeployableServerBehaviorProperties;
@@ -43,7 +44,11 @@ public class CommandLineShutdownController extends AbstractSubsystemController i
 	public void stop(boolean force) {
 		
 		boolean ignoreLaunch = LaunchCommandPreferences.isIgnoreLaunchCommand(getServer());
-		
+		try {
+			RemoteDebugUtils.get().terminateRemoteDebugger(getServer());
+		} catch(CoreException ce) {
+			JBossServerCorePlugin.getDefault().getLog().log(ce.getStatus());
+		}
 		if( ignoreLaunch ) {
 			((ControllableServerBehavior)getControllableBehavior()).setServerStopping();
 			((ControllableServerBehavior)getControllableBehavior()).setServerStopped();
