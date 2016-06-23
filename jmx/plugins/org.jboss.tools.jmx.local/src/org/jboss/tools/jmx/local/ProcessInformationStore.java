@@ -82,20 +82,11 @@ public class ProcessInformationStore {
 	private Map<Integer, String> loadProcessStore(IProgressMonitor monitor) {
 
 		Map<Integer, String> tmp = new HashMap<Integer, String>();
-		String javaHome = System.getProperty("java.home");
-		IPath jHomePath = new Path(javaHome);
-		File jHome = jHomePath.toFile();
-		File jps = null;
-		if( jHome.getName().equalsIgnoreCase("jre")) {
-			jps = jHomePath.removeLastSegments(1).append("bin").append("jps").toFile();
-		}
-		if( jps == null || !jps.exists()) {
-			jps = jHomePath.append("bin").append("jps").toFile();
-		}
+		String jpsPath = findJPSPath();
 		BufferedReader br = null;
 		try {
 			String[] cmd = new String[] {
-					jps.getAbsolutePath(),
+					jpsPath,
 					"-v"
 			};
 
@@ -132,6 +123,28 @@ public class ProcessInformationStore {
 			}
 		}
 		return null;
+	}
+
+	private String findJPSPath() {
+		String javaHome = System.getProperty("java.home");
+		IPath jHomePath = new Path(javaHome);
+		File jHome = jHomePath.toFile();
+		File jps = null;
+		if( jHome.getName().equalsIgnoreCase("jre")) {
+			jps = jHomePath.removeLastSegments(1).append("bin").append(getJPSName()).toFile();
+		}
+		if( jps == null || !jps.exists()) {
+			jps = jHomePath.append("bin").append(getJPSName()).toFile();
+		}
+		return jps.getAbsolutePath();
+	}
+
+	private String getJPSName() {
+		if(System.getProperty("os.name").startsWith("Win")){
+			return "jps.exe";
+		} else {
+			return "jps";
+		}
 	}
 	
 	public void refreshProcessInformationStoreAsync() {
