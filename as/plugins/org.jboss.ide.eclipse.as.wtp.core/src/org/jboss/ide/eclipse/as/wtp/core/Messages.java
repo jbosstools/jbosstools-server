@@ -133,6 +133,10 @@ public class Messages extends NLS {
 
 	public static String UsageEventTypeServerIDLabelDescription;
 	
+	public static String RunOnMessage;
+	public static String DebugOnMessage;
+	public static String ProfileOnMessage;
+	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}
