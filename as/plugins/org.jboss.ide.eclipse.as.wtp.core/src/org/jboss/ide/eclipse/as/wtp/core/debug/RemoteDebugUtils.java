@@ -37,8 +37,6 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerListener;
-import org.eclipse.wst.server.core.ServerEvent;
-import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
 import org.jboss.tools.foundation.core.plugin.log.StatusFactory;
 
@@ -138,24 +136,12 @@ public class RemoteDebugUtils {
 		return Stream.of(launchManager.getLaunches());
 	}
 	
-
 	public IServerListener createAttachDebuggerListener() {
-		return new IServerListener() {
-			public void serverChanged(ServerEvent event) {
-				if( UnitedServerListener.serverSwitchesToState(event, IServer.STATE_STARTED)) {
-					event.getServer().removeServerListener(this);
-					IServer s = event.getServer();
-					int debugPort = getDebugPort(s);
-					try {
-						attachRemoteDebugger(event.getServer(), debugPort, new NullProgressMonitor());
-					} catch(CoreException ce) {
-						ASWTPToolsPlugin.pluginLog().logError(ce);
-					}
-				} else if( UnitedServerListener.serverSwitchesToState(event, IServer.STATE_STOPPED)) {
-					event.getServer().removeServerListener(this);
-				}
-			}
-		};
+		return createAttachDebuggerListener(true);
+	}
+	
+	public IServerListener createAttachDebuggerListener(boolean register) {
+		return new AttachDebuggerServerListener(register);
 	}
 	
 	protected int getDebugPort(IServer server) {
@@ -176,8 +162,15 @@ public class RemoteDebugUtils {
 		return attachRemoteDebugger(server, getDebugPort(server), monitor);
 	}
 
+	
 	public ILaunch attachRemoteDebugger(IServer server, int localDebugPort, IProgressMonitor monitor) 
 			throws CoreException {
+		return attachRemoteDebugger(server,  localDebugPort, true, monitor);
+	}
+	
+	public ILaunch attachRemoteDebugger(IServer server, int localDebugPort, boolean register, IProgressMonitor monitor) 
+			throws CoreException {
+
 		monitor.subTask("Attaching remote debugger");
 		ILaunch ret = null;
 		RemoteDebugUtils debugUtils = RemoteDebugUtils.get();
@@ -197,7 +190,11 @@ public class RemoteDebugUtils {
 		Exception eSaved = null;
 		boolean launched = false;
 		try {
-			ret = debuggerLaunchConfig.launch("debug", new NullProgressMonitor());
+			if( register )
+				ret = debuggerLaunchConfig.launch("debug", new NullProgressMonitor());
+			else {
+				ret = debuggerLaunchConfig.launch("debug", monitor, false, false);
+			}
 			launched = true;
 		} catch (Exception e) {
 			eSaved = e;

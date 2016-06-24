@@ -13,17 +13,19 @@ package org.jboss.ide.eclipse.as.rse.core;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.model.IDebugTarget;
+import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.IServerListener;
+import org.eclipse.wst.server.core.ServerEvent;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerHomeValidationUtility;
+import org.jboss.ide.eclipse.as.wtp.core.debug.AttachDebuggerServerListener;
 import org.jboss.ide.eclipse.as.wtp.core.debug.RemoteDebugUtils;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
@@ -65,6 +67,7 @@ public class StandardRSEJBossStartLaunchDelegate extends
 			launchRun(configuration, mode, launch, monitor);
 		}
 	}
+	
 	protected void launchRun(ILaunchConfiguration configuration,
 			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		// Pull the already-generated command from the launch config and run it
@@ -77,6 +80,7 @@ public class StandardRSEJBossStartLaunchDelegate extends
 			}
 			throw new CoreException(new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, "Unable to start server: command to run is empty", null));
 		}
+		addDummyProcess(server, launch, command, "Launching " + server.getName());
 		executeRemoteCommand(command, server);
 	}
 
@@ -92,35 +96,56 @@ public class StandardRSEJBossStartLaunchDelegate extends
 			}
 			throw new CoreException(new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, "Unable to start server: command to run is empty", null));
 		}
+		addDummyProcess(server, launch, command, "Debugging " + server.getName());
 		executeRemoteCommand(command, server);
 	}
 	
 	@Override
-	protected boolean externallyManagedPollForStarted(IServer server, ControllableServerBehavior beh, String mode) {
+	protected void externallyManagedPollForStarted(IServer server, IControllableServerBehavior beh, String mode, ILaunch launch) {
 		((ControllableServerBehavior)beh).setServerStarting();
-		attachDebugListenerAndLaunchPoller(server, mode);
-		return false;
+		attachDebugListenerAndLaunchPoller(server, mode, null);
 	}
 	
 	@Override
 	protected void afterVMRunner(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		IServer s = ServerUtil.getServer(configuration);
-		attachDebugListenerAndLaunchPoller(s, mode);
+		attachDebugListenerAndLaunchPoller(s, mode, launch);
 	}
 	
-	private void attachDebugListenerAndLaunchPoller(IServer s, String mode) {
+	private void attachDebugListenerAndLaunchPoller(IServer s, String mode, ILaunch launch) {
 		boolean attachDebugger = s.getAttribute(RemoteDebugUtils.ATTACH_DEBUGGER, true);
 		if( "debug".equals(mode) && attachDebugger) {
 			// add a listener which will run the debugger once server is started
-			IServerListener listener = createAttachDebuggerListener();
+			AttachDebuggerServerListener listener = createAttachDebuggerListener(launch);
 			s.addServerListener(listener);
 		}
 		pollServer(s, IServerStatePoller.SERVER_UP);
 	}
 	
-	private IServerListener createAttachDebuggerListener() {
-		return RemoteDebugUtils.get().createAttachDebuggerListener();
+	private AttachDebuggerServerListener createAttachDebuggerListener(final ILaunch rseLaunch) {
+		boolean register = (rseLaunch == null);
+		return new AttachDebuggerServerListener(register) {
+			protected void serverStarted(ServerEvent event) {
+				super.serverStarted(event);
+				ILaunch debuggerLaunch = getLaunch();
+				if( debuggerLaunch != null && !shouldRegisterDebuggerLaunch()) {
+					// If we're not registering the debugger launch as its own standalone entity, 
+					// We're gonna register all debug targets and processes
+					// from the debugger launch, with our rse launch instead. 
+					
+					IProcess[] processes = debuggerLaunch.getProcesses();
+					for( int i = 0; i < processes.length; i++ ) {
+						rseLaunch.addProcess(processes[i]);
+					}
+					
+					IDebugTarget[] delegateTargets = debuggerLaunch.getDebugTargets();
+					for( int i = 0; i < delegateTargets.length; i++ ) {
+						rseLaunch.addDebugTarget(delegateTargets[i]);
+					}
+				}
+			}
+		};
 	}
 	
 	
@@ -140,19 +165,17 @@ public class StandardRSEJBossStartLaunchDelegate extends
 		PollThreadUtils.pollServer(server, expectedState);
 	}
 	
-	protected boolean setServerAlreadyStarted(ILaunchConfiguration configuration, String mode, 
-			IControllableServerBehavior beh) throws CoreException {
-		boolean ret = super.setServerAlreadyStarted(configuration, mode, beh);
-		connectDebugger(configuration, mode, beh);
-		return ret;
-	}
-	
-	protected void connectDebugger(ILaunchConfiguration configuration, String mode, 
-			IControllableServerBehavior beh) throws CoreException {
-		connectDebugger(beh.getServer());
-	}
-	
-	private void connectDebugger(IServer server) throws CoreException {
-		RemoteDebugUtils.get().attachRemoteDebugger(server, new NullProgressMonitor());
+	protected void setServerAlreadyStarted(ILaunchConfiguration configuration, String mode, 
+			IControllableServerBehavior beh, IServer server, ILaunch launch, String command) throws CoreException {
+		
+		addDummyProcess(server, launch, command, "Launching " + server.getName());
+		boolean attachDebugger = server.getAttribute(RemoteDebugUtils.ATTACH_DEBUGGER, true);
+		if( "debug".equals(mode) && attachDebugger) {
+			// add a listener which will run the debugger once server is started
+			AttachDebuggerServerListener listener = createAttachDebuggerListener(launch);
+			server.addServerListener(listener);
+		}
+
+		((ControllableServerBehavior)beh).setServerStarted();
 	}
 }

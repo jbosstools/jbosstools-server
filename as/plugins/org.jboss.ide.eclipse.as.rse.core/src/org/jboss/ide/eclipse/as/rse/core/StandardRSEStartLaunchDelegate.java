@@ -19,6 +19,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.model.IDebugTarget;
+import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.jdt.launching.AbstractJavaLaunchConfigurationDelegate;
 import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
 import org.eclipse.rse.services.shells.IHostOutput;
@@ -26,14 +28,18 @@ import org.eclipse.rse.services.shells.IHostShell;
 import org.eclipse.rse.services.shells.IHostShellChangeEvent;
 import org.eclipse.rse.services.shells.IHostShellOutputListener;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.ServerEvent;
 import org.eclipse.wst.server.core.ServerUtil;
+import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.launch.CommandLineLaunchConfigProperties;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
+import org.jboss.ide.eclipse.as.wtp.core.server.launch.ServerProcess;
 import org.jboss.tools.as.core.server.controllable.IDeployableServerBehaviorProperties;
 
 /**
@@ -55,9 +61,18 @@ public class StandardRSEStartLaunchDelegate extends
 	@Override
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		if( LaunchCommandPreferences.isIgnoreLaunchCommand(configuration)) {
+		IServer server = ServerUtil.getServer(configuration);
+		final IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(configuration);
+		boolean skipLaunch = LaunchCommandPreferences.isIgnoreLaunchCommand(configuration);
+		
+		if (isStarted(server)) {
+			setServerAlreadyStarted(configuration, mode, beh, server, launch, null);
+			return;
+		} else if( skipLaunch ) {
+			externallyManagedPollForStarted(server, beh, mode, launch);
 			return;
 		}
+
 		beforeVMRunner(configuration, mode, launch, monitor);
 		actualLaunch(configuration, mode, launch, monitor);
 		afterVMRunner(configuration, mode, launch, monitor);
@@ -69,33 +84,34 @@ public class StandardRSEStartLaunchDelegate extends
 			String mode, IProgressMonitor monitor) throws CoreException {
 		IServer server = ServerUtil.getServer(configuration);
 		final IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(configuration);
-		boolean dontLaunch = LaunchCommandPreferences.isIgnoreLaunchCommand(configuration);
+		boolean skipLaunch = LaunchCommandPreferences.isIgnoreLaunchCommand(configuration);
 		((ControllableServerBehavior)beh).setRunMode(mode);
-		if (isStarted(server)) {
-			return setServerAlreadyStarted(configuration, mode, beh);
-		} else if( dontLaunch ) {
-			return externallyManagedPollForStarted(server, (ControllableServerBehavior)beh, mode);
-		}
 		
-		String currentHost = server.getAttribute(RSEUtils.RSE_SERVER_HOST, (String)null);
-		if( currentHost == null || RSEFrameworkUtils.findHost(currentHost) == null ) {
-			throw new CoreException(new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, 
-					"Host \"" + currentHost + "\" not found. Host may have been deleted or RSE model may not be completely loaded"));
+		if( !isStarted(server) && !skipLaunch ) {
+			String currentHost = server.getAttribute(RSEUtils.RSE_SERVER_HOST, (String)null);
+			if( currentHost == null || RSEFrameworkUtils.findHost(currentHost) == null ) {
+				throw new CoreException(new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, 
+						"Host \"" + currentHost + "\" not found. Host may have been deleted or RSE model may not be completely loaded"));
+			}
 		}
 		return true;
 	}
 	
-	protected boolean externallyManagedPollForStarted(IServer server, ControllableServerBehavior beh, String mode) {
+	protected void externallyManagedPollForStarted(IServer server, IControllableServerBehavior beh, String mode, ILaunch launch) {
 		((ControllableServerBehavior)beh).setServerStarting();
+		String label = mode + " " + server.getName();
+		addDummyProcess(server, launch, null, label);
 		pollServer(server,  IServerStatePoller.SERVER_UP);
-		return false;
 	}
 	
-	protected boolean setServerAlreadyStarted(ILaunchConfiguration configuration, String mode, 
-			IControllableServerBehavior beh) throws CoreException {
+	protected void setServerAlreadyStarted(ILaunchConfiguration configuration, String mode, 
+			IControllableServerBehavior beh, IServer server, ILaunch launch, String command) throws CoreException {
+		((ControllableServerBehavior)beh).setServerStarting();
+		String label = mode + " " + server.getName();
+		addDummyProcess(server, launch, command, label);
 		((ControllableServerBehavior)beh).setServerStarted();
-		return false;
 	}
+	
 	
 	protected void beforeVMRunner(ILaunchConfiguration configuration,
 			String mode, ILaunch launch, IProgressMonitor monitor)
@@ -120,8 +136,64 @@ public class StandardRSEStartLaunchDelegate extends
 			}
 			throw new CoreException(new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, "Unable to start server: command to run is empty", null));
 		}
+		addDummyProcess(server, launch, command, "Running " + server.getName());
 		executeRemoteCommand(command, server);
 	}
+	
+	protected void addDummyProcess(IServer server, ILaunch launch, String command, String name) {
+		RSEServerDummyProcess dp = new RSEServerDummyProcess(server, launch, name);
+		dp.setAttribute(IProcess.ATTR_CMDLINE, command);
+		launch.addProcess(dp);
+	}
+	
+	protected static class RSEServerDummyProcess extends ServerProcess {
+		public RSEServerDummyProcess(IServer server, ILaunch launch, String label) {
+			super(launch, server, label);
+		}
+		
+		@Override
+		public void serverChanged(ServerEvent event) {
+			super.serverChanged(event);
+			if( UnitedServerListener.serverSwitchesToState(event, IServer.STATE_STOPPED)) {
+				ILaunch l = getLaunch();
+				if( l != null ) {
+					try {
+						ILaunchConfiguration lc = l.getLaunchConfiguration();
+						boolean skipLaunch = LaunchCommandPreferences.isIgnoreLaunchCommand(lc);
+						// If we didn't launch the server, then we can't have expected the shutdown
+						// to have cleaned up the debugger
+						if( skipLaunch ) {
+							IDebugTarget dt = l.getDebugTarget();
+							if( dt.canDisconnect()) {
+								dt.disconnect();
+								fireTerminateEvent();
+							}
+						}
+					} catch(CoreException ce) {
+						// ignore
+					}
+				}
+			}
+		}
+		@Override
+		public boolean canTerminate() {
+			return getProcessId() != null;
+		}
+		
+		private String getProcessId() {
+			return (String)getControllableBehavior().getSharedData(IDeployableServerBehaviorProperties.PROCESS_ID);
+		}
+		
+		private IControllableServerBehavior getControllableBehavior() {
+			if( server != null ) {
+				ServerBehaviourDelegate del = (ServerBehaviourDelegate)server.loadAdapter(ServerBehaviourDelegate.class, null);
+				if( del instanceof ControllableServerBehavior)
+					return (IControllableServerBehavior)del;
+			}
+			return null;
+		}
+	}
+	
 	
 	protected void afterVMRunner(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
