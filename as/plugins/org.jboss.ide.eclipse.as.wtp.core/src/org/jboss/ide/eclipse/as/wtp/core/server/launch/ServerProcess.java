@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.wtp.core.server.launch;
 
+import java.util.HashMap;
+
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
@@ -17,10 +19,10 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamsProxy;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerListener;
 import org.eclipse.wst.server.core.ServerEvent;
+import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.wtp.core.Messages;
 
 /**
@@ -36,18 +38,27 @@ import org.jboss.ide.eclipse.as.wtp.core.Messages;
 public class ServerProcess implements IProcess, IServerListener {
     protected ILaunch launch;
     protected IServer server;
-    private   String  type;
+    private   String  label;
+	protected HashMap<String, String> attributes;
 
-    public ServerProcess(ILaunch launch, IServer server, String type) {
+    public ServerProcess(ILaunch launch, IServer server ) {
+    	this(launch, server, getDefaultLaunchLabel(launch.getLaunchMode()));
+    }
+    public ServerProcess(ILaunch launch, IServer server, String label) {
         this.launch = launch;
         this.server = server;
+        this.label = label;
+		this.attributes = new HashMap<String,String>(5);
         server.addServerListener(this, ServerEvent.SERVER_CHANGE | ServerEvent.STATE_CHANGE);
-        this.type = type;
     }
-    
-    public ServerProcess(ILaunch launch, IServer server) {
-        this(launch, server, Messages.server);
-    }
+
+	public String getAttribute(String arg0) {
+		return attributes.get(arg0);
+	}
+	
+	public void setAttribute(String arg0, String arg1) {
+		attributes.put(arg0,arg1);
+	}
 
     /**
      * Fires a creation event.
@@ -75,24 +86,25 @@ public class ServerProcess implements IProcess, IServerListener {
         fireEvent(new DebugEvent(this, DebugEvent.TERMINATE));
     }
 
-    @Override
-    public String getAttribute(String key) {
-        return null;
-    }
-
+	/**
+	 * Fires a change event.
+	 */
+	protected void fireChangeEvent() {
+		fireEvent(new DebugEvent(this, DebugEvent.CHANGE));
+	}
+	
     @Override
     public int getExitValue() throws DebugException {
         return 0;
     }
 
-    /**
+    /*
      * Return the pattern used to generate the label.
      * 
      * @return the string pattern
      */
-    protected String getPattern() {
+    private static String getDefaultLaunchLabel(String mode) {
         String pattern = Messages.RunOnMessage;
-        String mode = getLaunch().getLaunchMode();
         if (ILaunchManager.PROFILE_MODE.equals(mode)) {
             pattern = Messages.ProfileOnMessage;
         } else if (ILaunchManager.DEBUG_MODE.equals(mode)) {
@@ -103,7 +115,7 @@ public class ServerProcess implements IProcess, IServerListener {
     
     @Override
     public String getLabel() {
-        return NLS.bind(getPattern(), type);
+        return label;
     }
 
     @Override
@@ -114,10 +126,6 @@ public class ServerProcess implements IProcess, IServerListener {
     @Override
     public IStreamsProxy getStreamsProxy() {
         return null;
-    }
-
-    @Override
-    public void setAttribute(String key, String value) {
     }
 
     @Override
@@ -142,12 +150,11 @@ public class ServerProcess implements IProcess, IServerListener {
 
     @Override
     public void serverChanged(ServerEvent event) {
-        if (event.getState() == IServer.STATE_STARTED) {
+		if( UnitedServerListener.serverSwitchesToState(event, IServer.STATE_STARTED)) {
             fireCreationEvent();
-        } else if (event.getState() == IServer.STATE_STOPPED) {
+		} else 	if( UnitedServerListener.serverSwitchesToState(event, IServer.STATE_STOPPED)) {
             fireTerminateEvent();
             server.removeServerListener(this);
-        }
-        
+		}
     }
 }
