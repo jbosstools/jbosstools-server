@@ -66,7 +66,7 @@ public class OpenMBeanSelectionDialog extends SelectionStatusDialog {
         Composite area = (Composite) super.createDialogArea(parent);
 
         final FilteredTree filter = new FilteredTree(area, SWT.MULTI
-                | SWT.H_SCROLL | SWT.V_SCROLL, new PatternFilter());
+                | SWT.H_SCROLL | SWT.V_SCROLL, new PatternFilter(), true);
 
         viewer = filter.getViewer();
         viewer.setContentProvider(new ContentProvider());
