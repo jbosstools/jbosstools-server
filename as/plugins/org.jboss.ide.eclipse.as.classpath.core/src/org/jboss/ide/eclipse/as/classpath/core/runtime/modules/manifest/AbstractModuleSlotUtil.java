@@ -123,14 +123,15 @@ public abstract class AbstractModuleSlotUtil {
 		for( int i = 0; i < files.length; i++ ) {
 			IFile f = files[i];
 			if( !isCacheOutdated(f)) {
-				all.addAll(Arrays.asList(fetchCachedModuleSlots(f)));
+				ModuleSlot[] prevCached = fetchCachedModuleSlots(f);
+				all.addAll(Arrays.asList(prevCached));
+			} else {
+				// don't use the cache
+				// read the file to get a list of modules
+				ModuleSlot[] forFile = calculateModuleSlots(files[i]);
+				cacheModuleSlots(f, forFile);
+				all.addAll(Arrays.asList(forFile));
 			}
-
-			// don't use the cache
-			// read the file to get a list of modules
-			ModuleSlot[] forFile = calculateModuleSlots(files[i]);
-			cacheModuleSlots(f, forFile);
-			all.addAll(Arrays.asList(forFile));
 		}
 		return (ModuleSlot[]) all.toArray(new ModuleSlot[all.size()]);
 	}

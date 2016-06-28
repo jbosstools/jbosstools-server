@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.classpath.core.runtime.cache.internal;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -98,6 +99,10 @@ public class ModuleSlotCache {
 	
 	public boolean isOutdated(IFile file) {
 		Object o = lastUpdated.get(file);
+		File f = file.getLocation().toFile();
+		if( !f.exists() && o != null ) {
+			return true;
+		}
 		if( o == null || !(o instanceof Long) || ((Long)o).longValue() < file.getLocation().toFile().lastModified()) {
 			return true;
 		}

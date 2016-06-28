@@ -10,15 +10,18 @@
  ******************************************************************************/
 package org.jboss.tools.as.test.core.classpath.modules;
 
-import java.io.ByteArrayInputStream;
-
-import junit.framework.TestCase;
+import java.io.File;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.WorkspaceJob;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
@@ -30,10 +33,12 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.IRuntimePathProvider;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.cache.internal.ModuleSlotCache;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.internal.ProjectRuntimeClasspathProvider;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.path.internal.LayeredProductPathProvider;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.tools.as.test.core.ASMatrixTests;
+import org.jboss.tools.as.test.core.internal.utils.IOUtil;
 import org.jboss.tools.as.test.core.internal.utils.ResourceUtils;
 import org.jboss.tools.as.test.core.internal.utils.wtp.CreateProjectOperationsUtility;
 import org.jboss.tools.as.test.core.internal.utils.wtp.JavaEEFacetConstants;
@@ -41,7 +46,10 @@ import org.jboss.tools.as.test.core.internal.utils.wtp.OperationTestCase;
 import org.jboss.tools.test.util.JobUtils;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
+
+import junit.framework.TestCase;
 
 public class JBossModulesClasspathTest  extends TestCase {
 
@@ -54,6 +62,12 @@ public class JBossModulesClasspathTest  extends TestCase {
 	public static void tearDownClass() {
 		ValidationFramework.getDefault().suspendAllValidation(false);
 	}
+	
+	@Before
+	public void setup() throws Exception {
+		ASMatrixTests.getDefault().cleanup();
+	}
+	
 	@After
 	public void tearDown() throws Exception {
 		ASMatrixTests.getDefault().cleanup();
@@ -77,12 +91,7 @@ public class JBossModulesClasspathTest  extends TestCase {
 		// Ensure no results
 		ProjectRuntimeClasspathProvider provider = new ProjectRuntimeClasspathProvider();
 		IClasspathEntry[] entries = provider.resolveClasspathContainer(p, rt);
-		if( entries.length != 0 ) {
-			System.out.println("Debugging failing test:  ");
-			System.out.println("content kind: " + entries[0].getContentKind());
-			System.out.println("entry kind: " + entries[0].getEntryKind());
-			System.out.println("path: " + entries[0].getPath());
-		}
+		displayEntries(entries);
 		assertEquals(entries.length,0);
 		
 		// add a path provider, verify 1 result
@@ -162,12 +171,29 @@ public class JBossModulesClasspathTest  extends TestCase {
 	}
 	
 	private void setContentsAndWaitForPropagation(IFile file, String contents) throws Exception {
-		if( file.exists()) {
-			file.setContents(new ByteArrayInputStream(contents.getBytes()), IResource.FORCE, new NullProgressMonitor());
-		} else {
-			file.create(new ByteArrayInputStream(contents.getBytes()), true, new NullProgressMonitor());
-		}
+		final IProject p = file.getProject();
+		File f = file.getLocation().toFile();
+		
+		System.out.println("Setting contents for file: " + file.getLocation().toOSString());
+		System.out.println("Current time for file:  " + file.getLocation().toFile().lastModified());
+		System.out.println(System.currentTimeMillis());
+		System.out.println("Exists? " + file.exists());
+		System.out.println("ToFile.exists? " + file.getLocation().toFile().exists());
+		System.out.println("Is outdated pre-write? " + ModuleSlotCache.getInstance().isOutdated(file));
+		
+		IOUtil.setContents(f, contents);
+		Job j = new WorkspaceJob("Refresh") {
+			@Override
+			public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
+				p.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+				return Status.OK_STATUS;
+			}
+		};
+		j.schedule();
+		j.join();
+		System.out.println("Is outdated post-write? " + ModuleSlotCache.getInstance().isOutdated(file));
 		JobUtils.waitForIdle(1500);
+		System.out.println("Is outdated post-idle? " + ModuleSlotCache.getInstance().isOutdated(file));
 	}
 	
 	/**
@@ -216,12 +242,7 @@ public class JBossModulesClasspathTest  extends TestCase {
 
 		provider = new ProjectRuntimeClasspathProvider();
 		entries = provider.resolveClasspathContainer(p, rt);
-		if( entries.length != 0 ) {
-			System.out.println("Debugging failing test:  ");
-			System.out.println("content kind: " + entries[0].getContentKind());
-			System.out.println("entry kind: " + entries[0].getEntryKind());
-			System.out.println("path: " + entries[0].getPath());
-		}
+		displayEntries(entries);
 		assertEquals(entries.length,0);
 
 		
@@ -229,8 +250,9 @@ public class JBossModulesClasspathTest  extends TestCase {
 		IPath modules = rt.getLocation().append("modules");
 		IPath base = modules.append("system").append("layers").append("base");
 		MockJBossModulesUtil.duplicateToSlot(base, "org.jboss.as.server", "1.0");
+		
 		// We have to re-set the contents or the cache won't know to update
-		contents = "Dependencies: org.jboss.as.server:1.0\n";
+		contents = "Dependencies:   org.jboss.as.server:1.0\n";
 		setContentsAndWaitForPropagation(manifest, contents);
 
 		provider = new ProjectRuntimeClasspathProvider();
@@ -241,6 +263,16 @@ public class JBossModulesClasspathTest  extends TestCase {
 	}
 	
 
+	private void displayEntries(IClasspathEntry[] entries) {
+		System.out.println("\nDisplaying classpath entries");
+		for( int i = 0; i < entries.length; i++ ) {
+			System.out.println("   content kind: " + entries[i].getContentKind());
+			System.out.println("   entry kind: " + entries[i].getEntryKind());
+			System.out.println("   path: " + entries[i].getPath());
+			System.out.println();
+		}
+	}
+	
 	protected IProject createSingleProject(IDataModel dm, String name) throws Exception {
 		OperationTestCase.runAndVerify(dm);
 		IProject p = ResourceUtils.findProject(name);

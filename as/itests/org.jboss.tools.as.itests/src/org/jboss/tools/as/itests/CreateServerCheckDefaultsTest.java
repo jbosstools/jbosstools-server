@@ -123,44 +123,6 @@ public class CreateServerCheckDefaultsTest extends TestCase {
 	}
 	
 	@Test
-	public void testXPathsAdded() {
-		JobUtils.waitForIdle();
-		IServer s = server;
-		XPathCategory[] cats = XPathModel.getDefault().getCategories(s);
-		String typeId = server.getServerType().getId();
-		if( typeId.equals(IJBossToolingConstants.DEPLOY_ONLY_SERVER)) {
-			assertTrue("Deploy-only Servers should have no default xpaths.", cats == null || cats.length == 0);
-			return;
-		}
-		assertFalse("Server has no xpath categories automatically added", cats == null || cats.length == 0);
-		assertNotNull("Server has no 'ports' xpath category. ", XPathModel.getDefault().getCategory(s, XPathModel.PORTS_CATEGORY_NAME));
-		File xpathFile = JBossServerCorePlugin.getServerStateLocation(s).append(IJBossToolingConstants.XPATH_FILE_NAME).toFile();
-		try {
-			assertTrue("The XPath File has not been created. Xpaths will be lost on workspace restart. " + xpathFile.getAbsolutePath(), xpathFile.exists());
-		} catch( Error t) {
-			t.printStackTrace();
-			throw t;
-		}
-		
-		// Take this chance to test some xpath model
-		// Can maybe be moved out to their own test
-		assertNull(XPathModel.getDefault().getQuery(null, null));
-		assertNull(XPathModel.getDefault().getQuery(s, null));
-		assertNull(XPathModel.getDefault().getQuery(s, new Path(XPathModel.PORTS_CATEGORY_NAME)));
-		XPathCategory cat = XPathModel.getDefault().getCategory(s, XPathModel.PORTS_CATEGORY_NAME);
-		XPathQuery[] qs = cat.getQueries();
-		assertFalse(qs == null || qs.length == 0);
-		String name = qs[0].getName();
-		assertNotNull(name);
-		XPathQuery q = XPathModel.getDefault().getQuery(s, new Path(XPathModel.PORTS_CATEGORY_NAME).append(name));
-		assertNotNull(q);
-		q = XPathModel.getDefault().getQuery(s, new Path("GaRbAgE").append(name));
-		assertNull(q);
-		assertTrue(XPathModel.getDefault().containsCategory(s, XPathModel.PORTS_CATEGORY_NAME));
-		assertFalse(XPathModel.getDefault().containsCategory(s, "GaRbAgE"));
-	}
-	
-	@Test
 	public void testDefaultFilesetsAdded() {
 		Fileset[] fs = FilesetUtil.loadFilesets(server);
 		String typeId = server.getServerType().getId();

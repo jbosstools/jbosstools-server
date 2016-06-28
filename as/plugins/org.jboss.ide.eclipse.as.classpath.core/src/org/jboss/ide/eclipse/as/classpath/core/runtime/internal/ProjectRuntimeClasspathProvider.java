@@ -110,25 +110,26 @@ public class ProjectRuntimeClasspathProvider
 	 * @return
 	 */
 	private IClasspathEntry[] jbossModulesImplementation(IProject project, IRuntime runtime) {
-		// check outdated
+		// check outdated slots
 		boolean manifestsChanged = new ModuleSlotManifestUtil().isCacheOutdated(project); 
-		// TODO fix impl of next line
 		boolean deploymentStructureChanged = new DeploymentStructureUtil().isCacheOutdated(project);
 		boolean defaultsPerRuntimeChanged = (RuntimeClasspathCache.getInstance().getEntries(runtime) == null ? true : false);
+
 		IClasspathEntry[] entries = ProjectRuntimeClasspathCache.getInstance().getEntries(project, runtime);
 		if( manifestsChanged || defaultsPerRuntimeChanged || deploymentStructureChanged ||  entries == null) {
-			// load new, add to cache
+			// check the changed manifests
 			ModulesManifestEntryContainer cpc = new ModulesManifestEntryContainer(runtime, project);
 			IRuntimePathProvider[] fromManifest = cpc.getRuntimePathProviders();
 			
-			// TODO fix impl of next line
+			// check deployment-structure xml files
 			DeploymentStructureEntryContainer depStructureContainer = new DeploymentStructureEntryContainer(runtime, project);
 			IRuntimePathProvider[] fromStructure = depStructureContainer.getRuntimePathProviders();
 			
-			
+			// check default modules for the project's runtime
 			IRuntimePathProvider[] fromRuntimeDefaults = CustomRuntimeClasspathModel.getInstance().getEntries(runtime.getRuntimeType());
 			IRuntimePathProvider[] merged = jbossModulesMerge(jbossModulesMerge(fromManifest, fromRuntimeDefaults), fromStructure);
-			
+
+			// Merge it all together
 			IPath[] allPaths = PathProviderResolutionUtil.getAllPaths(runtime, merged);
 			IClasspathEntry[] runtimeClasspath = PathProviderResolutionUtil.getClasspathEntriesForResolvedPaths(allPaths);
 			
