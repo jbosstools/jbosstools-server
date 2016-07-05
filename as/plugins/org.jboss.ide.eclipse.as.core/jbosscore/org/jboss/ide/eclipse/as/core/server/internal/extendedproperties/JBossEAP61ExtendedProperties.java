@@ -11,6 +11,8 @@
 package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.jdt.internal.launching.environments.EnvironmentsManager;
+import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
 
 public class JBossEAP61ExtendedProperties extends JBossEAP60ExtendedProperties {
@@ -28,6 +30,10 @@ public class JBossEAP61ExtendedProperties extends JBossEAP60ExtendedProperties {
 		return new JBoss72Eap61DefaultLaunchArguments(runtime);
 	}
 	
+	public IExecutionEnvironment getDefaultExecutionEnvironment() {
+		return EnvironmentsManager.getDefault().getEnvironment("JavaSE-1.7"); //$NON-NLS-1$
+	}
+
 	@Override
 	public boolean allowExplodedModulesInWarLibs() {
 		return true;
