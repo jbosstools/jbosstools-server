@@ -82,6 +82,11 @@ import org.jboss.ide.eclipse.as.core.server.IServerLogListener;
 import org.jboss.ide.eclipse.as.core.util.IEventCodes;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 
+/**
+ * This class is marked for deletion. There is no alternative. 
+ * Please use the official error log. 
+ */
+@Deprecated
 public class ServerLogView extends ViewPart implements IServerLogListener, ISelectionListener {
 	public static final String VIEW_ID = "org.jboss.ide.eclipse.as.ui.view.serverLogView"; //$NON-NLS-1$
 	public final static byte MESSAGE = 0x0;

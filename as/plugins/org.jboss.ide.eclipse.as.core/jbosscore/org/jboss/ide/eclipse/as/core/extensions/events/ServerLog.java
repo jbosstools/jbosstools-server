@@ -17,6 +17,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.osgi.framework.log.FrameworkLogEntry;
 
+/**
+ * This class is marked for deletion. There is no alternative. 
+ * Please use the official error log. 
+ */
+@Deprecated
 public class ServerLog extends DeprecatedEclipseLog {
 	private ArrayList<IStatus> log;
 	public ServerLog(File file) {

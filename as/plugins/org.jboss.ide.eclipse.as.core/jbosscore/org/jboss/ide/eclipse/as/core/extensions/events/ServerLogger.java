@@ -25,6 +25,11 @@ import org.jboss.ide.eclipse.as.core.server.IServerLogListener;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.osgi.service.prefs.BackingStoreException;
 
+/**
+ * This class is marked for deletion. There is no alternative. 
+ * Please use the official error log. 
+ */
+@Deprecated
 public class ServerLogger {
 	private static final String RELOG_ERROR_PREF_KEY = "package org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger.RELOG_ERROR_PREF_KEY"; //$NON-NLS-1$
 	private static ServerLogger instance;

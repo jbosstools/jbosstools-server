@@ -18,6 +18,11 @@ import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 
+/**
+ * This class is marked for deletion. There is no alternative. 
+ * Please use the official error log. 
+ */
+@Deprecated
 public abstract class AbstractEntry extends PlatformObject implements IWorkbenchAdapter {
 
 	/**

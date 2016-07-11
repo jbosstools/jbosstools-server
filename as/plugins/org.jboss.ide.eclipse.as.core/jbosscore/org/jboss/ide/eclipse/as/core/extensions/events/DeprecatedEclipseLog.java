@@ -20,6 +20,11 @@ import org.eclipse.osgi.framework.log.FrameworkLogEntry;
 import org.eclipse.osgi.framework.util.SecureAction;
 import org.osgi.framework.*;
 
+/**
+ * This class is marked for deletion. There is no alternative. 
+ * Please use the official error log. 
+ */
+@Deprecated
 public class DeprecatedEclipseLog implements FrameworkLog {
 	private static final String PASSWORD = "-password"; //$NON-NLS-1$	
 	/** The session tag */

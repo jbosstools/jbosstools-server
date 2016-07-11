@@ -28,6 +28,11 @@ import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.views.ServerLogView.EventCategory;
 
+/**
+ * This class is marked for deletion. There is no alternative. 
+ * Please use the official error log. 
+ */
+@Deprecated
 public class LogLabelProvider extends LabelProvider implements ITableLabelProvider {
 	public Image getImage(Object element) {
 		if( element instanceof EventCategory ) {

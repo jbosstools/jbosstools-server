@@ -22,6 +22,11 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.internal.views.log.Messages;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 
+/**
+ * This class is marked for deletion. There is no alternative. 
+ * Please use the official error log. 
+ */
+@Deprecated
 public class LogEntry extends AbstractEntry {
 
 	public static final String F_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS"; //$NON-NLS-1$

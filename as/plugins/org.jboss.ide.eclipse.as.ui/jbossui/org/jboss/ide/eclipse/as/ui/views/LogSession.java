@@ -17,6 +17,11 @@ import java.util.Date;
 
 import org.eclipse.ui.internal.views.log.Messages;
 
+/**
+ * This class is marked for deletion. There is no alternative. 
+ * Please use the official error log. 
+ */
+@Deprecated
 public class LogSession extends Group {
 	private String sessionData;
 	private Date date;

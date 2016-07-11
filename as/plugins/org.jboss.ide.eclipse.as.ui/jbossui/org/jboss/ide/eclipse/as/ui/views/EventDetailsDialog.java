@@ -39,7 +39,11 @@ import org.eclipse.ui.internal.views.log.Messages;
  * Event information is split in three sections: details, stack trace and session. Details
  * contain event date, message and severity. Stack trace is displayed if an exception is bound
  * to event. Stack trace entries can be filtered.
+ * 
+ * This class is marked for deletion. There is no alternative. 
+ * Please use the official error log. 
  */
+@Deprecated
 public class EventDetailsDialog extends TrayDialog {
 
 	private AbstractEntry entry;

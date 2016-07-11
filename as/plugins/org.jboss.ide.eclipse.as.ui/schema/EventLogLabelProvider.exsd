@@ -1,21 +1,26 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.jboss.ide.eclipse.as.ui">
+<schema targetNamespace="org.jboss.ide.eclipse.as.ui" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appInfo>
          <meta.schema plugin="org.jboss.ide.eclipse.as.ui" id="EventLogLabelProvider" name="org.jboss.ide.as.ui.eventLogLabelProvider"/>
       </appInfo>
       <documentation>
-         [Enter description of this extension point.]
+         THIS EXTENSION POINT IS DEPRECATED. DO NOT USE IT
+
       </documentation>
    </annotation>
 
    <element name="extension">
+      <annotation>
+         <appInfo>
+            <meta.element />
+         </appInfo>
+      </annotation>
       <complexType>
-      	<sequence>
-      	 	<element ref="labelProvider" minOccurs="0" maxOccurs="unbounded"/>
-      	 </sequence>
-      	
+         <sequence>
+            <element ref="labelProvider" minOccurs="0" maxOccurs="unbounded"/>
+         </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
                <documentation>
@@ -94,13 +99,5 @@
       </documentation>
    </annotation>
 
-   <annotation>
-      <appInfo>
-         <meta.section type="copyright"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
 
 </schema>

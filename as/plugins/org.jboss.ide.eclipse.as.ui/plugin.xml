@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
+
+   <!-- Deprecated extension point -->
    <extension-point id="EventLogLabelProvider" name="org.jboss.ide.as.ui.eventLogLabelProvider" schema="schema/EventLogLabelProvider.exsd"/>
+   <!-- Deprecated extension point -->
    <extension-point id="EventLogMajorType" name="org.jboss.ide.eclipse.as.ui.eventLogMajorType" schema="schema/EventLogMajorType.exsd"/>
+   
+   
    <extension-point id="ServerEditorPortSection" name="org.jboss.ide.as.ui.editor.portSection" schema="schema/ServerEditorPortSection.exsd"/>
    <extension-point id="DeployMethodUI" name="org.jboss.ide.as.ui.deployMethodUI" schema="schema/DeployMethodUI.exsd"/>
 
@@ -126,6 +131,10 @@
                class="org.jboss.ide.eclipse.as.ui.wizards.JBInitialSelectionProvider"
                id="org.jboss.ide.eclipse.as.ui.jboss40SelectionProvider"/>
       </extension>
+      
+      
+      
+      <!-- Deprecated, to be removed soon -->
       <extension
             point="org.jboss.ide.eclipse.as.ui.EventLogLabelProvider">
          <labelProvider class="org.jboss.ide.eclipse.as.ui.views.server.providers.events.PollingLabelProvider"/>
@@ -143,6 +152,9 @@
                name="Publish Events"
                typeId="org.jboss.ide.eclipse.as.core.publishers.Events.MajorType"/>
       </extension>
+      
+      
+      
     <extension
           point="org.eclipse.wst.server.ui.editorPages">
        <page
@@ -155,15 +167,6 @@
 
       <extension
          point="org.eclipse.wst.server.ui.editorPageSections">
-         <!--
-      <section
-            class="org.jboss.ide.eclipse.as.ui.editor.DeploySection"
-            id="org.jboss.ide.eclipse.as.ui.editor.deployServer.deployDir"
-            insertionId="org.eclipse.wst.server.editor.overview.left"
-            order="10"
-            typeIds="org.jboss.ide.eclipse.as.systemCopyServer, org.jboss.ide.eclipse.as.32, org.jboss.ide.eclipse.as.40, org.jboss.ide.eclipse.as.42, org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.eap.43,org.jboss.ide.eclipse.as.eap.50"/>
-      -->
-      
       <section
             class="org.jboss.ide.eclipse.as.ui.editor.DeploymentScannerSection"
             id="org.jboss.ide.eclipse.as.ui.editor.deploymentScanners"
@@ -297,8 +300,7 @@
 
 
 
-<!-- Provisional stuff to be contributed to Webtools -->
-
+   <!-- Deprecated, to be deleted -->
    <extension point="org.eclipse.ui.views"> 
       <view
             category="org.eclipse.wst.server.ui"
@@ -407,15 +409,6 @@
                       value="org.eclipse.wst.server.ui.internal.view.servers.ModuleServer">
                 </instanceof>
              </or>
-       </enablement>
-    </actionProvider>
-    <actionProvider
-          class="org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerLogActionProvider"
-          id="org.jboss.ide.eclipse.as.ui.extensions.serverLog">
-       <enablement>
-          <instanceof
-                value="org.eclipse.wst.server.core.IServer">
-          </instanceof>
        </enablement>
     </actionProvider>
 	</extension>

@@ -24,6 +24,11 @@ import java.util.List;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.internal.views.log.TailInputStream;
 
+/**
+ * This class is marked for deletion. There is no alternative. 
+ * Please use the official error log. 
+ */
+@Deprecated
 public class LogReader {
 	private static final int SESSION_STATE = 10;
 	public static final long MAX_FILE_LENGTH = 1024 * 1024;

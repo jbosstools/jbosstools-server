@@ -12,7 +12,11 @@ package org.jboss.ide.eclipse.as.ui.views;
 
 import java.io.PrintWriter;
 
-
+/**
+ * This class is marked for deletion. There is no alternative. 
+ * Please use the official error log. 
+ */
+@Deprecated
 public class Group extends AbstractEntry {
 
 	private String name;

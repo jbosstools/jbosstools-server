@@ -182,13 +182,16 @@ public final class PublishModuleFullRunner {
 			Trace.trace(Trace.STRING_FINER, "      Ensuring folder already created: " + absoluteRemote.removeLastSegments(1)); //$NON-NLS-1$
 			IStatus stats = fsController.makeDirectoryIfRequired(absoluteRemote.removeLastSegments(1), 
 					ProgressMonitorUtil.getSubMon(monitor, 10));
-			status.add( stats);
+			if( stats != null )
+				status.add( stats);
 			
 			// Then copy the file
 			File file = ModuleResourceUtil.getFile(((IModuleFile)resource));
 			Trace.trace(Trace.STRING_FINER, "      Copying file: " + absoluteRemote); //$NON-NLS-1$
-			status.add(fsController.copyFile(file, absoluteRemote, 
-					ProgressMonitorUtil.getSubMon(monitor, 90)));
+			IStatus stats2 = fsController.copyFile(file, absoluteRemote, 
+					ProgressMonitorUtil.getSubMon(monitor, 90)); 
+			if( stats2 != null )
+				status.add(stats2);
 		}
 		return status.toArray(new IStatus[status.size()]);
 	}

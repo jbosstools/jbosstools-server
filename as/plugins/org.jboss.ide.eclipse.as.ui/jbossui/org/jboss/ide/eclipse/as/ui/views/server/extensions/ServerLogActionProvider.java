@@ -27,6 +27,11 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.views.ServerLogView;
 
+/**
+ * This class is marked for deletion. There is no alternative. 
+ * Please use the official error log. 
+ */
+@Deprecated
 public class ServerLogActionProvider extends CommonActionProvider {
 	private ICommonActionExtensionSite actionSite;
 	private ShowInServerLogAction showInServerLogAction;
