@@ -326,7 +326,7 @@ public class ServerCreationTestUtils extends Assert {
 		createAS7xProductStructure(loc, true, serverJar, null, null);
 		IPath productDir = loc.append("modules/system/layers/base/org/jboss/as/product/wildfly-full/dir/META-INF/");
 		productDir.toFile().mkdirs();
-		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 10.0.0.Beta2\n";
+		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 10.0.0.Final\n";
 		try {
 			IOUtil.setContents(new File(productDir.toFile(), "manifest.mf"), manString);
 		} catch(IOException ioe) {
