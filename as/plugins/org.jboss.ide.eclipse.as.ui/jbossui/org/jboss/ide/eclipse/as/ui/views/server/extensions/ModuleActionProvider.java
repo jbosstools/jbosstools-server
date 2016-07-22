@@ -41,7 +41,7 @@ import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
 public class ModuleActionProvider extends CommonActionProvider {
-	private Action deleteModuleAction, fullPublishModuleAction, incrementalPublishModuleAction;
+	private Action fullPublishModuleAction, incrementalPublishModuleAction;
 	private ModuleServer[] selection;
 
 	private ICommonActionExtensionSite actionSite;
@@ -78,10 +78,6 @@ public class ModuleActionProvider extends CommonActionProvider {
 			}
 			menu.insertBefore(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR, incrementalPublishModuleAction);
 			menu.insertBefore(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR, fullPublishModuleAction);
-			if( selection.size() > 1 ) {
-				deleteModuleAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_DELETE);
-				menu.insertBefore(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR, deleteModuleAction);
-			}
 		}
 	}
 	
@@ -98,15 +94,6 @@ public class ModuleActionProvider extends CommonActionProvider {
 	
 	
 	protected void createActions() {
-		deleteModuleAction = new Action() {
-			public void run() {
-				deleteModule();
-			}
-		};
-		deleteModuleAction.setText(Messages.DeleteModuleText);
-		deleteModuleAction.setDescription(Messages.DeleteModuleDescription);
-		deleteModuleAction.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.UNPUBLISH_IMAGE));
-
 		fullPublishModuleAction = new Action() {
 			public void run() {
 				actionPublish(IServer.PUBLISH_STATE_FULL);
