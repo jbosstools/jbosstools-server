@@ -13,19 +13,16 @@ package org.jboss.tools.jmx.ui.internal.views.navigator;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.dialogs.FilteredTree;
+import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.navigator.CommonNavigator;
-import org.eclipse.ui.navigator.LinkHelperService;
+import org.eclipse.ui.navigator.CommonViewer;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
-import org.jboss.tools.jmx.ui.Messages;
 import org.jboss.tools.jmx.ui.internal.actions.NewConnectionAction;
 
 /**
@@ -33,9 +30,6 @@ import org.jboss.tools.jmx.ui.internal.actions.NewConnectionAction;
  */
 public class JMXNavigator extends CommonNavigator implements ITabbedPropertySheetPageContributor {
 	public static final String VIEW_ID = "org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorer"; //$NON-NLS-1$
-	private Text filterText;
-	private QueryContribution query;
-	
 	public JMXNavigator() {
 		super();
 	}
@@ -44,47 +38,20 @@ public class JMXNavigator extends CommonNavigator implements ITabbedPropertyShee
 	}
 	public void createPartControl(Composite aParent) {
 		fillActionBars();
-		Composite newParent = new Composite(aParent, SWT.NONE);
-		newParent.setLayout(new FormLayout());
-		super.createPartControl(newParent);
-		filterText = new Text(newParent, SWT.SINGLE | SWT.BORDER );
-		
-		// layout the two objects
-		FormData fd = new FormData();
-		fd.left = new FormAttachment(0,5);
-		fd.right = new FormAttachment(100,-5);
-		fd.top = new FormAttachment(0,5);
-		filterText.setLayoutData(fd);
-		
-		fd = new FormData();
-		fd.left = new FormAttachment(0,0);
-		fd.right = new FormAttachment(100,0);
-		fd.top = new FormAttachment(filterText, 5);
-		fd.bottom = new FormAttachment(100,0);
-		getCommonViewer().getTree().setLayoutData(fd);
-		
-		filterText.setToolTipText(Messages.TypeInAFilter); 
-		filterText.setText(Messages.TypeInAFilter);
-		
-		Display.getDefault().asyncExec(new Runnable() { 
-			public void run() {
-				query = new QueryContribution(JMXNavigator.this);
+		super.createPartControl(aParent);
+	}
+
+	protected CommonViewer createCommonViewerObject(Composite aParent) {
+		FilteredTree ft = new FilteredTree(aParent, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.SINGLE, 
+				new PatternFilter(), true) {
+			protected TreeViewer doCreateTreeViewer(Composite parent, int style) {
+				return new CommonViewer(getViewSite().getId(), parent,style);
 			}
-		});
+		};
+		return (CommonViewer)ft.getViewer();
 	}
-
-	public Text getFilterText() {
-		return filterText;
-	}
-	
-	public synchronized LinkHelperService getLinkHelperService() {
-		return super.getLinkHelperService();
-	}
-
 	
 	public void fillActionBars() {
-//		queryContribution = new QueryContribution(this);
-//	    getViewSite().getActionBars().getToolBarManager().add(queryContribution);
 	    getViewSite().getActionBars().getToolBarManager().add(new NewConnectionAction());
 	    getViewSite().getActionBars().getToolBarManager().add(new Separator());
 	    getViewSite().getActionBars().updateActionBars();
