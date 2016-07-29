@@ -20,6 +20,7 @@ import org.eclipse.ui.dialogs.FilteredTree;
 import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
+import org.eclipse.ui.navigator.LinkHelperService;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
@@ -55,6 +56,10 @@ public class JMXNavigator extends CommonNavigator implements ITabbedPropertyShee
 	    getViewSite().getActionBars().getToolBarManager().add(new NewConnectionAction());
 	    getViewSite().getActionBars().getToolBarManager().add(new Separator());
 	    getViewSite().getActionBars().updateActionBars();
+	}
+	
+	public synchronized LinkHelperService getLinkHelperService() {
+		return super.getLinkHelperService();
 	}
 	
     public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
