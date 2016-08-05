@@ -152,13 +152,6 @@
             </or>
          </enablement>
       </actionProvider>
-      <commonFilter
-            activeByDefault="true"
-            class="org.jboss.tools.jmx.ui.internal.views.navigator.QueryContribution$QueryFilter"
-            description="A filter which uses the text box provided in the view"
-            id="org.jboss.tools.jmx.ui.internal.views.navigator.queryFilter"
-            name="Query Filter">
-      </commonFilter>
    </extension>
    <extension
          point="org.eclipse.ui.editors">
