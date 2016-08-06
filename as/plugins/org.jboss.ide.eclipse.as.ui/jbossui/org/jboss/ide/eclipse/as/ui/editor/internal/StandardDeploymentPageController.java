@@ -125,6 +125,7 @@ public class StandardDeploymentPageController extends
 		}
 		if( perModuleOptions != null && !perModuleOptions.isDisposed()) {
 			new WidgetVisitorUtility().setEnablementRecursive(perModuleOptions, enabled);
+			perModuleOptions.refreshViewer();
 		}
 	}
 	

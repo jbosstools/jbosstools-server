@@ -271,7 +271,7 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 		return BY_MODNAME.equals(comboItem);
 	}
 	
-	private void refreshViewer() {
+	public void refreshViewer() {
 		refreshPossibleModules();
 		viewer.setInput("");  //$NON-NLS-1$
 	}
@@ -424,9 +424,10 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 			return mods;
 		if( filterCombo.getItem(filterCombo.getSelectionIndex()).equals(ALL))
 			return mods;
-		if( filterCombo.getItem(filterCombo.getSelectionIndex()).equals(DEPLOYED))
-			return partner.getServer().getModules();
-		else {
+		if( filterCombo.getItem(filterCombo.getSelectionIndex()).equals(DEPLOYED)) {
+			Object[] ret2 = partner.getHelper().getServer().getModules();
+			return ret2;
+		} else {
 			ArrayList<IModule> result = new ArrayList<IModule>();
 			if( filterCombo.getItem(filterCombo.getSelectionIndex()).equals(DEPLOYABLE)) {
 				for( int i = 0; i < mods.length; i++) {
