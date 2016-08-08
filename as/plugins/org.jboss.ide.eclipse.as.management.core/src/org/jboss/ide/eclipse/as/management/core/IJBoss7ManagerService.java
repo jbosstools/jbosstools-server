@@ -27,11 +27,15 @@ public interface IJBoss7ManagerService {
 	// I believe this is unused
 	@Deprecated public static final String AS_VERSION_720 = AS_VERSION_71x; //$NON-NLS-1$
 
-	// Primary wf service version
+	// legacy wf service version, redirects to wf9 service
 	public static final String WILDFLY_VERSION_800 = "8.0.0"; //$NON-NLS-1$
 
+	// Used for wf 9 / 10 currently, and currently consists of jars from wf10
 	public static final String WILDFLY_VERSION_900 = "9.0.0"; //$NON-NLS-1$
 
+	// Used for eap 6.1+
+	public static final String EAP_VERSION_61PLUS = "eap.6.1.x"; //$NON-NLS-1$
+	
 	
 	/**
 	 * This is a list of all service versions that have been publicly
@@ -44,7 +48,8 @@ public interface IJBoss7ManagerService {
 			AS_VERSION_700,
 			AS_VERSION_71x,
 			WILDFLY_VERSION_800,
-			WILDFLY_VERSION_900
+			WILDFLY_VERSION_900,
+			EAP_VERSION_61PLUS
 	};
 	
 	

@@ -87,6 +87,7 @@
 	<plugin id="org.jboss.ide.eclipse.as.management.core" download-size="0" install-size="0" version="0.0.0" unpack="false" />
         <plugin id="org.jboss.ide.eclipse.as.management.as7" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 	<plugin id="org.jboss.ide.eclipse.as.management.wildfly9" download-size="0" install-size="0" version="0.0.0" unpack="false" />
+        <plugin id="org.jboss.ide.eclipse.as.management.eap61plus" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 	<plugin id="org.jboss.ide.eclipse.as.ui" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 	<plugin id="org.jboss.ide.eclipse.as.classpath.core" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 	<plugin id="org.jboss.ide.eclipse.as.classpath.ui" download-size="0" install-size="0" version="0.0.0" unpack="false" />

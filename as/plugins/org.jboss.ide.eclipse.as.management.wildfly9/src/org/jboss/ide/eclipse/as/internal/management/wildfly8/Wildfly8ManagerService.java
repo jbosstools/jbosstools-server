@@ -11,7 +11,6 @@
 package org.jboss.ide.eclipse.as.internal.management.wildfly8;
 
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
-import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
 import org.jboss.ide.eclipse.as.management.core.service.DelegatingManagerService;
 
 /**
