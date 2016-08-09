@@ -16,11 +16,9 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.wst.server.core.IModuleArtifact;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
-import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.ui.actions.INodeActionDelegate;
@@ -72,7 +70,7 @@ public class PublishAction implements INodeActionDelegate {
 
 	protected String showSelectServersDialog(IArchive node) {
 		ArchivePublishWizard wiz = new ArchivePublishWizard(node);
-		int result = new WizardDialog(new Shell(), wiz).open();
+		int result = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), wiz).open();
 		if( result == Window.OK) {
 			return wiz.getServers();
 		}
