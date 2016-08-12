@@ -16,4 +16,11 @@
        		preferenceId="org.eclipse.wst.server.ui.runtime.preferencePage"
        		priority="100"/>
 	</extension>
+ <extension
+       point="org.jboss.tools.runtime.core.runtimeDetectionResolutionProvider">
+    <resolutionProvider
+          class="org.jboss.tools.as.runtimes.integration.internal.MissingJREProblemResolutionProvider"
+          weight="10">
+    </resolutionProvider>
+ </extension>
 </plugin>

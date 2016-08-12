@@ -10,20 +10,7 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.ui.wizards;
 
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
-import org.eclipse.wst.server.core.TaskModel;
-import org.jboss.ide.eclipse.as.ui.IPreferenceKeys;
-import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
-import org.jboss.ide.eclipse.as.ui.wizards.composite.JBossRuntimeHomeComposite;
-import org.jboss.ide.eclipse.as.ui.wizards.composite.JBossJREComposite;
-import org.jboss.ide.eclipse.as.wtp.ui.composites.AbstractJREComposite;
 import org.jboss.ide.eclipse.as.wtp.ui.wizard.RuntimeWizardFragment;
-import org.osgi.service.prefs.BackingStoreException;
 
 /**
  * @author Stryker

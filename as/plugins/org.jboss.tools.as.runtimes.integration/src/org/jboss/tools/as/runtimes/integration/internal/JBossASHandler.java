@@ -18,9 +18,12 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jdt.launching.IVMInstall;
+import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
@@ -31,14 +34,18 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBean;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
+import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.ServerNamingUtility;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IServerProfileInitializer;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
+import org.jboss.ide.eclipse.as.wtp.core.util.VMInstallUtil;
 import org.jboss.tools.as.runtimes.integration.Messages;
 import org.jboss.tools.as.runtimes.integration.ServerRuntimesIntegrationActivator;
-import org.jboss.tools.as.runtimes.integration.internal.DriverUtility.DriverUtilityException;
 import org.jboss.tools.runtime.core.model.AbstractRuntimeDetectorDelegate;
 import org.jboss.tools.runtime.core.model.RuntimeDefinition;
+import org.jboss.tools.runtime.core.model.RuntimeDetectionProblem;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 
@@ -49,6 +56,9 @@ import org.osgi.framework.BundleException;
 public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements IRuntimeIntegrationConstants {
 	
 	private static String[] hasIncludedRuntimes = new String[] {SOA_P, EAP, EPP, EWP, SOA_P_STD};
+	private static final String SERVER_BEAN_PROP = "SERVER_BEAN_PROP";
+	
+	
 	static {
 		// See also JBIDE-12603 (fileset not added for first runtime)
 		Bundle bundle = Platform.getBundle("org.jboss.ide.eclipse.archives.webtools"); //$NON-NLS-1$
@@ -292,10 +302,74 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 			RuntimeDefinition runtimeDefinition = createDefinition(serverBean.getName(),
 					serverBean.getVersion(), serverBean.getUnderlyingTypeId(), new File(serverBean.getLocation()));
 			calculateIncludedRuntimeDefinition(runtimeDefinition, monitor);
+			runtimeDefinition.setProperty(SERVER_BEAN_PROP, serverBean);
+			calculateProblems(runtimeDefinition);
 			return runtimeDefinition;
 		}
 		return null;
 	}
+	
+	@Override
+	public void calculateProblems(RuntimeDefinition def) {
+		ServerBean sb = (ServerBean)def.getProperty(SERVER_BEAN_PROP);
+		String serverType = sb.getServerAdapterTypeId();
+		IServerType stt = ServerCore.findServerType(serverType);
+		IRuntimeType rtt = stt.getRuntimeType();
+		IExecutionEnvironment minExecEnv = getMinimumExecutionEnvironment(rtt);
+		IExecutionEnvironment maxExecEnv = getMaximumExecutionEnvironment(rtt);
+		
+		IVMInstall[] validJRE = getValidJREs(minExecEnv,maxExecEnv);
+		if( validJRE.length == 0 ) {
+			
+			String min, max;
+			min = max = null;
+			if( minExecEnv != null && minExecEnv instanceof IExecutionEnvironment) {
+				min = ((IExecutionEnvironment)minExecEnv).getId();
+			}
+			if( maxExecEnv != null && maxExecEnv instanceof IExecutionEnvironment) {
+				max = ((IExecutionEnvironment)maxExecEnv).getId();
+			}
+			String desc = null;
+			if( min == null && max == null ) {
+				// no idea wtf to do 
+				desc = "This runtime requires a JRE be made available in the workspace, but no JRE was found.";
+			} else if( min == null ) {
+				desc = "This runtime requires a JRE with maximum version " + max + " be made available in the workspace, but no such JRE was found.";
+			} else if( max == null ) {
+				desc = "This runtime requires a JRE with minimum version " + min + " be made available in the workspace, but no such JRE was found.";
+			} else {
+				desc = "This runtime requires a JRE with minimum version " + min + " and maximum version " + max + " be made available in the workspace, but no such JRE was found.";
+			}
+			
+			RuntimeDetectionProblem p = createDetectionProblem("No valid JRE available", desc, IStatus.ERROR, MissingJREProblemResolutionProvider.MISSING_JRE_CODE);
+			p.setProperty(MissingJREProblemResolutionProvider.MIN_EXEC_ENV, minExecEnv);
+			p.setProperty(MissingJREProblemResolutionProvider.MAX_EXEC_ENV, maxExecEnv);
+			
+			def.setProblems(new RuntimeDetectionProblem[] { p });
+		} else {
+			def.setProblems(new RuntimeDetectionProblem[0]);
+		}
+	}
+	
+	private IVMInstall[] getValidJREs(IExecutionEnvironment minimum, IExecutionEnvironment maximum) {
+		return VMInstallUtil.getValidJREs(minimum, maximum);
+	}
+	private IExecutionEnvironment getMinimumExecutionEnvironment(IRuntimeType rtType) {
+		ServerExtendedProperties sep = new ExtendedServerPropertiesAdapterFactory().getExtendedProperties(rtType);
+		if( sep instanceof JBossExtendedProperties) {
+			return ((JBossExtendedProperties)sep).getMinimumExecutionEnvironment();
+		}
+		return null;
+	}
+	
+	private IExecutionEnvironment getMaximumExecutionEnvironment(IRuntimeType rtType) {
+		ServerExtendedProperties sep = new ExtendedServerPropertiesAdapterFactory().getExtendedProperties(rtType);
+		if( sep instanceof JBossExtendedProperties) {
+			return ((JBossExtendedProperties)sep).getMaximumExecutionEnvironment();
+		}
+		return null;
+	}
+
 	
 	
 	private void calculateIncludedRuntimeDefinition(
