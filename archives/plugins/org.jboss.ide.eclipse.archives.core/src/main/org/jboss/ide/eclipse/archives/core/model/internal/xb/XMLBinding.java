@@ -378,7 +378,7 @@ public class XMLBinding {
 	private static void unmarshallLibFilesets(XbPackageNodeWithProperties node, IMemento[] fs) {
 		for( int i = 0; i < fs.length; i++ ) {
 			XbLibFileSet fileset = new XbLibFileSet();
-			String id = fs[i].getString("id"); //$NON-NLS-1$
+			String id = fs[i].getString("name"); //$NON-NLS-1$
 			fileset.setId(id);
 			node.addChild(fileset);
 		}

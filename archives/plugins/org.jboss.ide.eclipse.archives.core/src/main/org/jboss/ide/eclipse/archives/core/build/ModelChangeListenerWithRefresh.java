@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.archives.core.build;
 
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -51,6 +52,17 @@ public class ModelChangeListenerWithRefresh extends ModelChangeListener {
 		
 		Job j = new WorkspaceJob(ArchivesCoreMessages.UpdatingModelJob) {
 			public IStatus runInWorkspace(IProgressMonitor monitor) {
+				IArchiveNode post = (delta2 == null ? null : delta2.getPostNode());
+				if( post != null ) {
+					IPath path = delta2.getPostNode().getModelRootNode().getDescriptor();
+					IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(path);
+					for( int i = 0; i < files.length; i++ ) {
+						try {
+							files[i].refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+						} catch( CoreException ce ) {}
+					}
+				}
+				
 				try {
 					ModelChangeListenerWithRefresh.super.executeAndLog(delta2);
 				} catch(FullBuildRequiredException fbre) {

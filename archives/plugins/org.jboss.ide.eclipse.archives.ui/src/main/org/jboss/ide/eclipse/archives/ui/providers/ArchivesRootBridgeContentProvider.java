@@ -11,8 +11,10 @@
 package org.jboss.ide.eclipse.archives.ui.providers;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.widgets.Display;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
@@ -94,6 +96,21 @@ public class ArchivesRootBridgeContentProvider
 					viewer.refresh();
 				}
 			});
+		} else {
+			if( delta.getPostNode() != null ) {
+				String projName = delta.getPostNode().getProjectName();
+				if( projName != null ) {
+					IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(projName);
+					final WrappedProject wp = new WrappedProject(p, WrappedProject.CATEGORY);
+					if( viewer instanceof TreeViewer) {
+						Display.getDefault().asyncExec(new Runnable() { 
+							public void run() {
+								((TreeViewer)viewer).refresh(wp);
+							}
+						});
+					}
+				}
+			}
 		}
 	}
 }

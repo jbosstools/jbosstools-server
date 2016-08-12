@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.archives.jdt.integration.ui;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -29,6 +30,7 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.wizard.WizardPage;
@@ -56,10 +58,9 @@ public class LibFilesetInfoWizardPage extends WizardPage {
 	private String projectName, id;
 	private Composite mainComposite;
 	private TreeViewer viewer;
-	private ArrayList elements;
+	private ArrayList<CPUserLibraryElement> elements;
 	public LibFilesetInfoWizardPage (Shell parent, IArchiveLibFileSet fileset, IArchiveNode parentNode) {
 		super(ArchivesUIMessages.LibFilesetInfoWizardPage_new_title, ArchivesUIMessages.LibFilesetInfoWizardPage_new_title, null);
-
 		if (fileset == null) {
 			setTitle(ArchivesUIMessages.LibFilesetInfoWizardPage_new_title);
 			setMessage(ArchivesUIMessages.LibFilesetInfoWizardPage_new_message);
@@ -82,6 +83,15 @@ public class LibFilesetInfoWizardPage extends WizardPage {
 		viewer.setLabelProvider(new CPListLabelProvider());
 		elements= getElementList(createPlaceholderProject());
 		viewer.setInput(new Object());
+		
+		String id = fileset == null ? null : fileset.getId();
+		if( id != null ) {
+			CPUserLibraryElement e = findElement(id, elements);
+			if( e != null ) {
+				viewer.setSelection(new StructuredSelection(new Object[]{e}));
+			}
+		}
+		
 		addListener();
 		setControl(mainComposite);
 	}
@@ -135,10 +145,22 @@ public class LibFilesetInfoWizardPage extends WizardPage {
 		};
 	}
 	
+	private CPUserLibraryElement findElement(String name, ArrayList<CPUserLibraryElement> elements) {
+		Iterator<CPUserLibraryElement> it = elements.iterator();
+		CPUserLibraryElement e = null;
+		while(it.hasNext()) {
+			e = it.next();
+			if( name.equals(e.getName())) {
+				return e;
+			}
+		}
+		return null;
+	}
 	
-	protected ArrayList getElementList(IJavaProject fDummyProject) {
+	
+	protected ArrayList<CPUserLibraryElement> getElementList(IJavaProject fDummyProject) {
 		String[] names= JavaCore.getUserLibraryNames();
-		ArrayList elements = new ArrayList();
+		ArrayList<CPUserLibraryElement> elements = new ArrayList<CPUserLibraryElement>();
 		for (int i= 0; i < names.length; i++) {
 			IPath path= new Path(JavaCore.USER_LIBRARY_CONTAINER_ID).append(names[i]);
 			try {
