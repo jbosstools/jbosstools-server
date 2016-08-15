@@ -191,6 +191,15 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 		ClassLoader currentLoader = Thread.currentThread()
 				.getContextClassLoader();
 		ClassLoader newLoader = getProvider2().getClassloaderRepository().getClassLoader(s);
+		
+		if( newLoader == null ) {
+			getProvider2().getClassloaderRepository().removeConcerned(s, r);
+			throw new JMXException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+					"No JMX Client jars were found to communicate with server " + s.getName() + ". Assigning a local runtime to your server will allow client jars to be found."));
+
+		}
+		
+		
 		Thread.currentThread().setContextClassLoader(newLoader);
 		MBeanServerConnection connection = null;
 		try {

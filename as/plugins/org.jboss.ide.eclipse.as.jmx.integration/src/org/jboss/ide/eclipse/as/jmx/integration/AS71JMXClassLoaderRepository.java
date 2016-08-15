@@ -22,13 +22,15 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 public class AS71JMXClassLoaderRepository extends JMXClassLoaderRepository {
 	protected URLClassLoader createClassLoader(IServer s) throws MalformedURLException {
 		IRuntime rt = s.getRuntime();
-		IPath loc = rt.getLocation();
-		IPath clientJar = findClientJar(loc);
-		if( clientJar != null ) {
-			URL url = clientJar.toFile().toURI().toURL();
-			URLClassLoader loader = new URLClassLoader(new URL[] { url, }, 
-					Thread.currentThread().getContextClassLoader());
-			return loader;
+		if( rt != null ) {
+			IPath loc = rt.getLocation();
+			IPath clientJar = findClientJar(loc);
+			if( clientJar != null ) {
+				URL url = clientJar.toFile().toURI().toURL();
+				URLClassLoader loader = new URLClassLoader(new URL[] { url, }, 
+						Thread.currentThread().getContextClassLoader());
+				return loader;
+			}
 		}
 		return null;
 	}

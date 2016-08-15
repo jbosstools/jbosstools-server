@@ -110,13 +110,16 @@ public class JMXClassLoaderRepository {
 
 	protected URLClassLoader createClassLoader(IServer s) throws MalformedURLException {
 		IRuntime rt = s.getRuntime();
-		IPath loc = rt.getLocation();
-		URL url = loc.append(IJBossRuntimeResourceConstants.CLIENT)
-				.append(IJBossRuntimeResourceConstants.JBOSSALL_CLIENT_JAR)
-				.toFile().toURI().toURL();
-		URLClassLoader loader = new URLClassLoader(new URL[] { url, }, 
-				Thread.currentThread().getContextClassLoader());
-		return loader;
+		if( rt != null ) {
+			IPath loc = rt.getLocation();
+			URL url = loc.append(IJBossRuntimeResourceConstants.CLIENT)
+					.append(IJBossRuntimeResourceConstants.JBOSSALL_CLIENT_JAR)
+					.toFile().toURI().toURL();
+			URLClassLoader loader = new URLClassLoader(new URL[] { url, }, 
+					Thread.currentThread().getContextClassLoader());
+			return loader;
+		}
+		return null;
 	}
 	
 	/**
