@@ -90,14 +90,15 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 
 	
 	private IServerWorkingCopy lastWC;
+	private FormToolkit tk = null;
 	
 	public JBossDeploymentOptionsComposite(Composite parent, StandardDeploymentPageController page) {
 		super(parent, SWT.NONE);
 		this.controller = page;
 		setLayout(new GridLayout(1,true));
+		this.tk = page.getFormToolkit(parent);
 		createDefaultComposite(this);
 	}
-
 	protected String openBrowseDialog(String original) {
 		IControllableServerBehavior csb = JBossServerBehaviorUtils.getControllableBehavior(lastWC);
 		IBrowseBehavior beh = null;
@@ -174,6 +175,7 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 	 * Subclasses may override to change text strings
 	 */
 	protected Section createSection(FormToolkit toolkit, Composite parent) {
+		tk.adapt(parent);
 		Section section = toolkit.createSection(parent,
 				ExpandableComposite.TWISTIE | ExpandableComposite.EXPANDED
 						| ExpandableComposite.TITLE_BAR);
@@ -204,14 +206,15 @@ public class JBossDeploymentOptionsComposite extends Composite implements Proper
 		lastWC = getPage().getServer();
 		lastWC.addPropertyChangeListener(this);
 
-		FormToolkit toolkit = new FormToolkit(parent.getDisplay());
-		Section section = createSection(toolkit, parent);
-		Composite composite = toolkit.createComposite(section);
+		
+		Section section = createSection(tk, parent);
+		Composite composite = tk.createComposite(section);
 		composite.setLayout(new FormLayout());
+		tk.adapt(section);
+		
+		createDefaultCompositeContents(tk, composite);
 
-		createDefaultCompositeContents(toolkit, composite);
-
-		toolkit.paintBordersFor(composite);
+		//tk.paintBordersFor(composite);
 		section.setClient(composite);
 		getPage().getSaveStatus();
 		updateWidgets();

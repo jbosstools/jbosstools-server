@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.ISharedImages;
@@ -124,7 +125,8 @@ public class StandardDeploymentPageController extends
 			new WidgetVisitorUtility().setEnablementRecursive(standardOptions, enabled);
 		}
 		if( perModuleOptions != null && !perModuleOptions.isDisposed()) {
-			new WidgetVisitorUtility().setEnablementRecursive(perModuleOptions, enabled);
+			Control[] ignored = perModuleOptions.getEnablementImmuneWidgets();
+			new WidgetVisitorUtility().setEnablementRecursive(perModuleOptions, enabled, ignored);
 			perModuleOptions.refreshViewer();
 		}
 	}

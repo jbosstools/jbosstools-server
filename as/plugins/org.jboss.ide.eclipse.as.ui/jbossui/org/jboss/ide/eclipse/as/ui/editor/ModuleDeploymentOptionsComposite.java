@@ -19,7 +19,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -39,6 +38,7 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
@@ -88,6 +88,7 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 	private TreeViewer viewer;
 	private Combo filterCombo; 
 	private Text filterText;
+	private Link refreshLink;
 	private DeploymentPage partner;
 	
 	private IServerWorkingCopy lastWC;
@@ -134,10 +135,12 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 		
 		Composite wrapper = new Composite(root, SWT.NONE);
 		wrapper.setLayout(new FormLayout());
+		tk.adapt(wrapper);
+
 		
-		Link link = new Link(wrapper, SWT.DEFAULT);
-		link.setText("<a>" + Messages.EditorRefreshViewer + "</a>"); //$NON-NLS-1$ //$NON-NLS-2$
-		link.addSelectionListener(new SelectionListener() {
+		refreshLink = new Link(wrapper, SWT.DEFAULT);
+		refreshLink.setText("<a>" + Messages.EditorRefreshViewer + "</a>"); //$NON-NLS-1$ //$NON-NLS-2$
+		refreshLink.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
 				refreshViewer();
 			}
@@ -146,7 +149,7 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 		});
 		
 		FormData linkData = UIUtil.createFormData2(null, 0, 100,-10, 0,5,null,0);
-		link.setLayoutData(linkData);
+		refreshLink.setLayoutData(linkData);
 
 		// Newer stuff
 		Label comboLabel = new Label(wrapper, SWT.NULL);
@@ -157,7 +160,7 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 		
 		filterText = new Text(wrapper, SWT.SINGLE |SWT.BORDER);
 		
-		comboLabel.setLayoutData(UIUtil.createFormData2(null,0,100,-8,link,5,null,0));
+		comboLabel.setLayoutData(UIUtil.createFormData2(null,0,100,-8,refreshLink,5,null,0));
 		filterCombo.setLayoutData(UIUtil.createFormData2(null,0,100,-3,comboLabel,5,null,0));
 		filterText.setLayoutData(UIUtil.createFormData2(null,0,100,-3,filterCombo,5,100,-5));
 		
@@ -569,5 +572,8 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 	public IStatus[] validate() {
 		return new IStatus[0];
 	}
-
+	
+	public Control[] getEnablementImmuneWidgets() {
+		return new Control[]{filterCombo, filterText, refreshLink};
+	}
 }
