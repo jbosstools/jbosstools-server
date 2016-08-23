@@ -298,7 +298,7 @@ public class JBossASHandler extends AbstractRuntimeDetectorDelegate implements I
 		ServerBeanLoader loader = new ServerBeanLoader(root);
 		ServerBean serverBean = loader.getServerBean();
 		
-		if (serverBean.getBeanType() != null && !JBossServerType.UNKNOWN.equals(serverBean.getBeanType())) {
+		if (serverBean.getBeanType() != null && Arrays.asList(JBossServerType.KNOWN_TYPES).contains(serverBean.getBeanType())) {
 			RuntimeDefinition runtimeDefinition = createDefinition(serverBean.getName(),
 					serverBean.getVersion(), serverBean.getUnderlyingTypeId(), new File(serverBean.getLocation()));
 			calculateIncludedRuntimeDefinition(runtimeDefinition, monitor);
