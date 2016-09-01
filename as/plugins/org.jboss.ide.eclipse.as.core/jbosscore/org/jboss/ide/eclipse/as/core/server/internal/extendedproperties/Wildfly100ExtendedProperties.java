@@ -21,7 +21,7 @@ public class Wildfly100ExtendedProperties extends Wildfly90ExtendedProperties {
 	}
 	@Override
 	public String getRuntimeTypeVersionString() {
-		return "10.0"; //$NON-NLS-1$
+		return "10.x"; //$NON-NLS-1$
 	}
 	
 	@Override
