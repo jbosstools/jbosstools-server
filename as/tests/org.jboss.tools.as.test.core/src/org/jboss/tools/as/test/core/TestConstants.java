@@ -29,6 +29,7 @@ public class TestConstants {
 	public static final String JBOSS_AS_81_HOME = System.getProperty("jbosstools.test.jboss.home.8.1", "C:\\apps\\jboss\\jboss-wildfly-8.1.0.GA\\");
 	public static final String JBOSS_AS_90_HOME = System.getProperty("jbosstools.test.jboss.home.9.0", "C:\\apps\\jboss\\jboss-wildfly-9.0.0.GA\\");
 	public static final String JBOSS_WF_100_HOME = System.getProperty("jbosstools.test.jboss.home.10.0", "C:\\apps\\jboss\\jboss-wildfly-10.0.0.GA\\");
+	public static final String JBOSS_WF_101_HOME = System.getProperty("jbosstools.test.jboss.home.10.1", "C:\\apps\\jboss\\jboss-wildfly-10.1.0.GA\\");
 	public static final String JBOSS_EAP_43_HOME = System.getProperty("jbosstools.test.jboss.home.eap.4.3", "C:\\apps\\jboss\\jboss-eap-4.3.0.GA\\");
 	public static final String JBOSS_EAP_50_HOME = System.getProperty("jbosstools.test.jboss.home.eap.5.0", "C:\\apps\\jboss\\jboss-eap-5.0.0.GA\\");
 	public static final String JBOSS_EAP_60_HOME = System.getProperty("jbosstools.test.jboss.home.eap.6.0", "C:\\apps\\jboss\\jboss-eap-6.0.0.GA\\");

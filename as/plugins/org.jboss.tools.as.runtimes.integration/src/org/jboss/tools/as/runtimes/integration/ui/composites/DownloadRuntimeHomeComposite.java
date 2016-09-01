@@ -137,8 +137,7 @@ public class DownloadRuntimeHomeComposite extends RuntimeHomeComposite {
 									protected IStatus run( IProgressMonitor monitor) {
 										Display.getDefault().asyncExec(new Runnable() {
 											public void run() {
-												homeDirText.setText(newHomeDir);
-												getWizardHandle().update();
+												postDownloadRuntimeUpdateWizard(newHomeDir);
 											}
 										});
 										return Status.OK_STATUS;
@@ -156,6 +155,10 @@ public class DownloadRuntimeHomeComposite extends RuntimeHomeComposite {
 		}
 	}
 
+	protected void postDownloadRuntimeUpdateWizard(String newHomeDir) {
+		homeDirText.setText(newHomeDir);
+		getWizardHandle().update();
+	}
 	private void fireInitialWidgetUpdates() {
 		new Job("Update Download Runtimes Hyperlink") {
 			protected IStatus run(IProgressMonitor monitor) {

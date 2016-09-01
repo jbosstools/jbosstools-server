@@ -26,7 +26,6 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -43,11 +42,9 @@ import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.IServerAttributes;
-import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -364,18 +361,7 @@ public class JBossRuntimeWizardFragment extends RuntimeWizardFragment {
 	}
 	
 	protected String getHomeVersionWarning() {
-		String homeDir = homeDirComposite.getHomeDirectory();
-		File loc = new File(homeDir);
-		String serverId = new ServerBeanLoader(loc).getServerAdapterId();
-		String rtId = serverId == null ? null : RuntimeUtils.getRuntimeTypeId(ServerCore.findServerType(serverId));
-		IRuntime adapterRt = getRuntimeFromTaskModel();
-		String adapterRuntimeId = adapterRt.getRuntimeType().getId();
-		if( !adapterRuntimeId.equals(rtId)) {
-			return NLS.bind(Messages.rwf_homeIncorrectVersionError, 
-					adapterRt.getRuntimeType().getVersion(), 
-					getVersionString(loc));
-		}
-		return null;
+		return super.getHomeVersionWarning();
 	}
 	
 	protected void saveDetailsInRuntime(IRuntimeWorkingCopy wc) {
