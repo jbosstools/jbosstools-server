@@ -109,7 +109,33 @@
 
 <!-- XSD -->
 		<uri name="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/oasis-200401-wss-wssecurity-utility-1.0.xsd"/>
+		<uri name="http://java.sun.com/xml/ns/j2ee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/application_1_4.xsd"/>
+		<uri name="http://java.sun.com/xml/ns/j2ee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/ejb-jar_2_1.xsd"/>
+		<uri name="http://java.sun.com/xml/ns/j2ee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/j2ee_1_4.xsd"/>
+		<uri name="http://java.sun.com/xml/ns/j2ee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/j2ee_jaxrpc_mapping_1_1.xsd"/>
+		<uri name="http://java.sun.com/xml/ns/j2ee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/j2ee_web_services_1_1.xsd"/>
+		<uri name="http://java.sun.com/xml/ns/j2ee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/j2ee_web_services_client_1_1.xsd"/>
+		<uri name="http://java.sun.com/xml/ns/j2ee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jsp_2_0.xsd"/>
+		<uri name="http://java.sun.com/xml/ns/j2ee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/web-app_2_4.xsd"/>
+		<uri name="http://java.sun.com/xml/ns/j2ee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/web-jsptaglibrary_2_0.xsd"/>
+		<uri name="http://java.sun.com/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/ejb-jar_3_0.xsd"/>
+		<uri name="http://java.sun.com/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/ejb-jar_3_1.xsd"/>
+		<uri name="http://java.sun.com/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/javaee_web_services_1_2.xsd"/>
+		<uri name="http://java.sun.com/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/javaee_web_services_1_3.xsd"/>
+		<uri name="http://java.sun.com/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/javaee_web_services_client_1_2.xsd"/>
+		<uri name="http://java.sun.com/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/javaee_web_services_client_1_3.xsd"/>
 		<uri name="http://java.sun.com/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb3-spec-2_0.xsd"/>
+		<uri name="http://java.sun.com/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jsp_2_1.xsd"/>
+		<uri name="http://java.sun.com/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jsp_2_2.xsd"/>
+		<uri name="http://java.sun.com/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/web-app_2_5.xsd"/>
+		<uri name="http://java.sun.com/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/web-app_3_0.xsd"/>
+		<uri name="http://java.sun.com/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/web-common_3_0.xsd"/>
+		<uri name="http://java.sun.com/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/web-facesconfig_1_2.xsd"/>
+		<uri name="http://java.sun.com/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/web-fragment_3_0.xsd"/>
+		<uri name="http://java.sun.com/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/web-jsptaglibrary_2_1.xsd"/>
+		<uri name="http://java.sun.com/xml/ns/persistence" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/persistence_1_0.xsd"/>
+		<uri name="http://java.sun.com/xml/ns/persistence" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/persistence_2_0.xsd"/>
+		<uri name="http://java.sun.com/xml/ns/persistence/orm" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/orm_1_0.xsd"/>
 		<uri name="http://jboss.org/schema/arquillian" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/arquillian_1_0.xsd"/>
 		<uri name="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/assembly-1.1.2.xsd"/>
 		<uri name="http://www.jboss.com/ws-security/config" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ws-security_1_0.xsd"/>
@@ -135,6 +161,16 @@
 		<uri name="http://www.w3.org/2000/09/xmldsig#" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/xmldsig-core-schema.xsd"/>
 		<uri name="http://www.w3.org/2005/08/addressing" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/ws-addr.xsd"/>
 		<uri name="http://www.w3.org/XML/1998/namespace" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/xml.xsd"/>
+		<uri name="http://xmlns.jcp.org/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/ejb-jar_3_2.xsd"/>
+		<uri name="http://xmlns.jcp.org/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/javaee_web_services_1_4.xsd"/>
+		<uri name="http://xmlns.jcp.org/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/javaee_web_services_client_1_4.xsd"/>
+		<uri name="http://xmlns.jcp.org/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jsp_2_3.xsd"/>
+		<uri name="http://xmlns.jcp.org/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/web-app_3_1.xsd"/>
+		<uri name="http://xmlns.jcp.org/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/web-common_3_1.xsd"/>
+		<uri name="http://xmlns.jcp.org/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/web-facelettaglibrary_2_2.xsd"/>
+		<uri name="http://xmlns.jcp.org/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/web-facesconfig_2_2.xsd"/>
+		<uri name="http://xmlns.jcp.org/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/web-fragment_3_1.xsd"/>
+		<uri name="http://xmlns.jcp.org/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/web-partialresponse_2_2.xsd"/>
 		<uri name="urn:clustering:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb-clustering_1_0.xsd"/>
 		<uri name="urn:clustering:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb-clustering_1_1.xsd"/>
 		<uri name="urn:container-interceptors:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb-container-interceptors_1_0.xsd"/>
@@ -165,11 +201,14 @@
 		<uri name="urn:jboss:domain:1.5" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-config_1_5.xsd"/>
 		<uri name="urn:jboss:domain:1.6" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-config_1_6.xsd"/>
 		<uri name="urn:jboss:domain:1.7" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-config_1_7.xsd"/>
+		<uri name="urn:jboss:domain:1.8" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-config_1_8.xsd"/>
 		<uri name="urn:jboss:domain:2.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-config_2_0.xsd"/>
 		<uri name="urn:jboss:domain:2.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-config_2_1.xsd"/>
 		<uri name="urn:jboss:domain:2.2" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-config_2_2.xsd"/>
 		<uri name="urn:jboss:domain:3.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-config_3_0.xsd"/>
 		<uri name="urn:jboss:domain:4.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-config_4_0.xsd"/>
+		<uri name="urn:jboss:domain:4.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-config_4_1.xsd"/>
+		<uri name="urn:jboss:domain:4.2" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-config_4_2.xsd"/>
 		<uri name="urn:jboss:domain:batch-jberet:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-batch-jberet_1_0.xsd"/>
 		<uri name="urn:jboss:domain:batch:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-batch_1_0.xsd"/>
 		<uri name="urn:jboss:domain:bean-validation:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-bean-validation_1_0.xsd"/>
@@ -315,6 +354,7 @@
 		<uri name="urn:jboss:domain:undertow:1.2" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-undertow_1_2.xsd"/>
 		<uri name="urn:jboss:domain:undertow:2.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-undertow_2_0.xsd"/>
 		<uri name="urn:jboss:domain:undertow:3.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-undertow_3_0.xsd"/>
+		<uri name="urn:jboss:domain:undertow:3.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-undertow_3_1.xsd"/>
 		<uri name="urn:jboss:domain:web:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-web_1_0.xsd"/>
 		<uri name="urn:jboss:domain:web:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-web_1_1.xsd"/>
 		<uri name="urn:jboss:domain:web:1.2" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-web_1_2.xsd"/>
@@ -363,6 +403,6 @@
 		<uri name="urn:security-role" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb-security-role_1_0.xsd"/>
 		<uri name="urn:security:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb-security_1_1.xsd"/>
 		<uri name="urn:trans-timeout" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/trans-timeout-1_0.xsd"/>
-	</catalogContribution>
+       </catalogContribution>
    </extension>
 </plugin>
