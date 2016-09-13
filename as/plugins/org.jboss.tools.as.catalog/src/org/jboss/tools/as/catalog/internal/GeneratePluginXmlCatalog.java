@@ -18,13 +18,44 @@ public class GeneratePluginXmlCatalog {
 	private static ArrayList<XSDObject> xsdObjs  = new ArrayList<XSDObject>();
 	private static ArrayList<DTDObject> dtObjs = new ArrayList<DTDObject>();
 	
+	private static final String PLUGIN_ROOT_DIR = "plugin.root.dir";
+	private static final String MODE = "output.mode";
+	private static final String MODE_DEBUG = "showErrors";
+	private static final String MODE_GENERATE = "generateCatalog";
+	
+	
+	
 	public static void main(String[] args) {
-		System.out.println("<!-- DTDs -->");
-		runDTDs();
-		System.out.println("\n\n<!-- XSD -->");
-		runXSDs();
+		String mode = System.getProperty(MODE);
+		if( mode == null )
+			mode = MODE_GENERATE;
 		
-		runXSDErrors();
+		if( mode.equals(MODE_GENERATE)) {
+			System.out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+			System.out.println("<?eclipse version=\"3.2\"?>");
+			System.out.println("<plugin>");
+			System.out.println("   <extension");
+			System.out.println("         point=\"org.eclipse.wst.xml.core.catalogContributions\">");
+			System.out.println("       <catalogContribution>");
+			
+			System.out.println("<!-- DTDs -->");
+			runDTDs(true);
+			
+			System.out.println("\n\n<!-- XSD -->");
+			runXSDs(true);
+			
+			System.out.println("       </catalogContribution>");
+			System.out.println("   </extension>");
+			System.out.println("</plugin>");
+		} else if( mode.equals(MODE_DEBUG)){
+			runDTDs(false);
+			runXSDs(false);
+			runXSDErrors();
+		} else {
+			System.out.println("Usage: java -Dplugin.root.dir=/path/to/jbosstools-server/as/plugins/org.jboss.tools.as.catalog org.\\");
+			System.out.println("       -Doutput.mode=[generateCatalog | showErrors]");
+			System.out.println("       jboss.tools.as.catalog.internal.GeneratePluginXmlCatalog ");
+		}
 	}
 	
 	private static void runXSDErrors() {
@@ -57,8 +88,13 @@ public class GeneratePluginXmlCatalog {
 		}
 	}
 	
-	private static void runXSDs() {
-		File root = new File(new File("").getAbsolutePath());
+	private static void runXSDs(boolean printEntries) {
+		String rootdir = System.getProperty(PLUGIN_ROOT_DIR);
+		if( rootdir == null ) {
+			rootdir = "";
+		}
+		
+		File root = new File(new File(rootdir).getAbsolutePath());
 		File schemas = new File(root, "schema");
 		File xsd = new File(schemas, "xsd");
 		List<File> all = Arrays.asList(xsd.listFiles());
@@ -85,11 +121,14 @@ public class GeneratePluginXmlCatalog {
 				return o1.getName().compareTo(o2.getName());
 			}
 		});
-		Iterator<XSDObject> dtdIt = xsdObjs.iterator();
-		while(dtdIt.hasNext()) {
-			XSDObject o = dtdIt.next();
-			if( o.valid ) {
-				System.out.println(o.toString());
+		
+		if( printEntries ) {
+			Iterator<XSDObject> dtdIt = xsdObjs.iterator();
+			while(dtdIt.hasNext()) {
+				XSDObject o = dtdIt.next();
+				if( o.valid ) {
+					System.out.println(o.toString());
+				}
 			}
 		}
 	}
@@ -150,8 +189,13 @@ public class GeneratePluginXmlCatalog {
 		}
 	}
 	
-	private static void runDTDs() {
-		File root = new File(new File("").getAbsolutePath());
+	private static void runDTDs(boolean printEntry) {
+		String rootdir = System.getProperty(PLUGIN_ROOT_DIR);
+		if( rootdir == null ) {
+			rootdir = "";
+		}
+
+		File root = new File(new File(rootdir).getAbsolutePath());
 		File schemas = new File(root, "schema");
 		File dtd = new File(schemas, "dtd");
 		File[] dtdFiles = dtd.listFiles();
@@ -170,13 +214,14 @@ public class GeneratePluginXmlCatalog {
 		}
 		
 		
-		
-		// Now iterate through 
-		Iterator<DTDObject> dtdIt = dtObjs.iterator();
-		while(dtdIt.hasNext()) {
-			DTDObject o = dtdIt.next();
-			if( o.isValid ) {
-				System.out.println(o.toString());
+		if( printEntry ) {
+			// Now iterate through 
+			Iterator<DTDObject> dtdIt = dtObjs.iterator();
+			while(dtdIt.hasNext()) {
+				DTDObject o = dtdIt.next();
+				if( o.isValid ) {
+					System.out.println(o.toString());
+				}
 			}
 		}
 	}
