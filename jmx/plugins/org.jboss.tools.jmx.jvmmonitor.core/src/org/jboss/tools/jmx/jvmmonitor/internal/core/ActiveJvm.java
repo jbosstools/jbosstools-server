@@ -457,6 +457,11 @@ public class ActiveJvm extends AbstractJvm implements IActiveJvm {
         try {
             if (url != null) {
                 jmxUrl = new JMXServiceURL(url);
+            } else {
+            	// url is null
+                throw new JvmCoreException(IStatus.ERROR, NLS.bind(
+                        Messages.getJmxServiceUrlForPidFailedMsg, pid), null);
+
             }
         } catch (MalformedURLException e) {
             throw new JvmCoreException(IStatus.ERROR, NLS.bind(

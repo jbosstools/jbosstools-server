@@ -120,8 +120,7 @@ public class JvmConnectionWrapper implements IConnectionWrapper,
 			try {
 				activeJvm.connect(updatePeriod);
 			} catch (JvmCoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Unable to connect to jvm", e));
 			}
 			fireConnectionChanged();
 		}

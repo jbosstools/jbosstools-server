@@ -78,6 +78,10 @@ public class MBeanServer extends AbstractMBeanServer implements IMBeanServer {
             }
             throw new JvmCoreException(IStatus.INFO,
                     Messages.connectToMBeanServerFailedMsg, e);
+        } catch(NullPointerException npe) {
+        	npe.printStackTrace();
+            throw new JvmCoreException(IStatus.INFO,
+                    Messages.connectToMBeanServerFailedMsg, npe);
         }
     }
 
