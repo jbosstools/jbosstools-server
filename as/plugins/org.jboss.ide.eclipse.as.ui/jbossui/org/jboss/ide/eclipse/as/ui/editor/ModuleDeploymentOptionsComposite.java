@@ -13,6 +13,8 @@ package org.jboss.ide.eclipse.as.ui.editor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -36,6 +38,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -71,7 +74,6 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 	protected static final String ALL = Messages.EditorDeploymentPageFilterAll;
 	protected static final String DEPLOYABLE = Messages.EditorDeploymentPageFilterDeployable;
 	protected static final String DEPLOYED = Messages.EditorDeploymentPageFilterDeployed;
-	protected static final String BY_MODNAME = Messages.EditorDeploymentPageFilterModuleName;
 	
 	
 	protected static final String COLUMN_NAME = IJBossToolingConstants.LOCAL_DEPLOYMENT_NAME;
@@ -88,7 +90,7 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 	private TreeViewer viewer;
 	private Combo filterCombo; 
 	private Text filterText;
-	private Link refreshLink;
+	private Button refreshLink;
 	private DeploymentPage partner;
 	
 	private IServerWorkingCopy lastWC;
@@ -117,17 +119,20 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 		setLayout(new FormLayout());
 
 		tk.adapt(root);
-		viewer = createTreeViewer(root);
 		Composite filterComposite = createFilterComposite(root);
+		viewer = createTreeViewer(root);
 		
-		FormData treeData = UIUtil.createFormData2(0, 5, filterComposite,-5, 0,5,100,-5);
-		viewer.getTree().setLayoutData(treeData);
-
-		if( filterComposite != null ) {
-			FormData filterData = UIUtil.createFormData2(null, 0, 100,-5, 0,5,100,-5);
+		if( filterComposite == null ) {
+			FormData treeData = UIUtil.createFormData2(0, 5, null,-5, 0,5,100,-5);
+			viewer.getTree().setLayoutData(treeData);
+		} else {
+			FormData filterData = UIUtil.createFormData2(0, 5, viewer.getTree(),-5, 0,5,100,-5);
+			filterData.height = 45;	
 			filterComposite.setLayoutData(filterData);
+			
+			FormData treeData = UIUtil.createFormData2(filterComposite, 5, 100,-5, 0,5,100,-5);
+			viewer.getTree().setLayoutData(treeData);
 		}
-		
 		return root;
 	}
 	
@@ -138,18 +143,9 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 		tk.adapt(wrapper);
 
 		
-		refreshLink = new Link(wrapper, SWT.DEFAULT);
-		refreshLink.setText("<a>" + Messages.EditorRefreshViewer + "</a>"); //$NON-NLS-1$ //$NON-NLS-2$
-		refreshLink.addSelectionListener(new SelectionListener() {
-			public void widgetSelected(SelectionEvent e) {
-				refreshViewer();
-			}
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
+		refreshLink = new Button(wrapper, SWT.PUSH);
+		refreshLink.setText(Messages.EditorRefreshViewer);
 		
-		FormData linkData = UIUtil.createFormData2(null, 0, 100,-10, 0,5,null,0);
-		refreshLink.setLayoutData(linkData);
 
 		// Newer stuff
 		Label comboLabel = new Label(wrapper, SWT.NULL);
@@ -160,10 +156,18 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 		
 		filterText = new Text(wrapper, SWT.SINGLE |SWT.BORDER);
 		
-		comboLabel.setLayoutData(UIUtil.createFormData2(null,0,100,-8,refreshLink,5,null,0));
-		filterCombo.setLayoutData(UIUtil.createFormData2(null,0,100,-3,comboLabel,5,null,0));
-		filterText.setLayoutData(UIUtil.createFormData2(null,0,100,-3,filterCombo,5,100,-5));
 		
+		// Organize widgets
+		
+		comboLabel.setLayoutData(UIUtil.createFormData2(null,0,100,-9,0,5,null,0));
+		FormData comboData = UIUtil.createFormData2(null,0,100,-5,comboLabel,5,null,0);
+		filterCombo.setLayoutData(comboData);
+		filterText.setLayoutData(UIUtil.createFormData2(0,3,100,-2,filterCombo,5,70,-5));
+		FormData linkData = UIUtil.createFormData2(null, 0, 100,-5, null,0,100,-5);
+		refreshLink.setLayoutData(linkData);
+
+		
+		// Add the listeners
 		ModifyListener ml =new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				refreshPossibleModules();
@@ -173,6 +177,14 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 		};
 		filterCombo.addModifyListener(ml);
 		filterText.addModifyListener(ml);
+		
+		refreshLink.addSelectionListener(new SelectionListener() {
+			public void widgetSelected(SelectionEvent e) {
+				refreshViewer();
+			}
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
 		
 		return wrapper;
 	}
@@ -257,7 +269,7 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 	 * Extenders can override this to provide additional filter types
 	 */
 	protected String[] getViewerFilterTypes() {
-		return new String[]{ALL, DEPLOYABLE, DEPLOYED, BY_MODNAME};
+		return new String[]{ALL, DEPLOYABLE, DEPLOYED};
 	}
 	
 	public void resetFilterTextState() {
@@ -267,11 +279,10 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 	}
 	
 	/*
-	 * Subclasses with custom filter types may override this method.
-	 * Any filter mechanism which makes use of the text field should return true here
+	 * By default all mechanisms can be filtered now
 	 */
 	protected boolean usesViewerFilterText(String comboItem) {
-		return BY_MODNAME.equals(comboItem);
+		return true;
 	}
 	
 	public void refreshViewer() {
@@ -425,37 +436,42 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 		IModule[] mods = getPossibleModules();
 		if( filterCombo == null )
 			return mods;
-		if( filterCombo.getItem(filterCombo.getSelectionIndex()).equals(ALL))
-			return mods;
-		if( filterCombo.getItem(filterCombo.getSelectionIndex()).equals(DEPLOYED)) {
-			Object[] ret2 = partner.getHelper().getServer().getModules();
-			return ret2;
-		} else {
+		String item = filterCombo.getItem(filterCombo.getSelectionIndex()); 
+		if( item.equals(DEPLOYED)) {
+			mods = partner.getHelper().getServer().getModules();
+		} else if( item.equals(DEPLOYABLE)) {
 			ArrayList<IModule> result = new ArrayList<IModule>();
-			if( filterCombo.getItem(filterCombo.getSelectionIndex()).equals(DEPLOYABLE)) {
-				for( int i = 0; i < mods.length; i++) {
-					try {
-						IModule[] parent = partner.getServer().getRootModules(mods[i], new NullProgressMonitor());
-						if( parent.length == 1 && parent[0] == mods[i]) {
-							result.add(mods[i]);
-						}
-					} catch(CoreException ce) {
-						// getRootModules only throws CE if modules cannot be modified.
-						// If they cannot be modified, they will not get added to result list.
-						// No logging is needed
-					}
-				}
-			}
-			if( filterCombo.getItem(filterCombo.getSelectionIndex()).equals(BY_MODNAME)) {
-				String txt = filterText.getText();
-				for( int i = 0; i < mods.length; i++) {
-					if( mods[i].getName().contains(txt)) {
+			for( int i = 0; i < mods.length; i++) {
+				try {
+					IModule[] parent = partner.getServer().getRootModules(mods[i], new NullProgressMonitor());
+					if( parent.length == 1 && parent[0] == mods[i]) {
 						result.add(mods[i]);
 					}
+				} catch(CoreException ce) {
+					// getRootModules only throws CE if modules cannot be modified.
+					// If they cannot be modified, they will not get added to result list.
+					// No logging is needed
 				}
 			}
-			return result.toArray(new IModule[result.size()]);
+			mods = (IModule[]) result.toArray(new IModule[result.size()]);
 		}
+		
+		// Now apply filters
+		if( filterText != null ) {
+			String txt = filterText.getText();
+			if( !txt.isEmpty()) {
+				ArrayList<IModule> collector = new ArrayList(Arrays.asList(mods));
+				Iterator<IModule> it = collector.iterator();
+				while(it.hasNext()) {
+					IModule t = it.next();
+					if( !t.getName().toLowerCase().contains(txt.toLowerCase())) {
+						it.remove();
+					}
+				}
+				return collector.toArray(new IModule[collector.size()]);
+			}
+		}
+		return mods;
 	}
 	
 	private class ModulePageLabelProvider implements ITableLabelProvider {
