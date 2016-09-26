@@ -44,33 +44,6 @@
 				class="org.jboss.ide.eclipse.as.ui.mbeans.editors.AdaptorFactoryProviderForServiceXML"/>
    </extension>
 
-      <extension
-            point="org.jboss.ide.eclipse.as.ui.mbeans.ServiceXMLQuickFixProvider">
-         <QuickFixProvider class="org.jboss.ide.eclipse.as.ui.mbeans.editors.proposals.internal.ConvertNodeToXPathDialogProvider"/>
-      </extension>
-      <extension
-            point="org.jboss.ide.eclipse.as.ui.mbeans.ServiceXMLOutlineMenuProvider">
-         <MenuProvider class="org.jboss.ide.eclipse.as.ui.mbeans.editors.proposals.internal.ConvertNodeToXPathDialogOutlineMenuItemProvider"/>
-      </extension>
-   
-      <extension
-         point="org.eclipse.ui.newWizards">
-      <category
-            id="org.jboss.ide.eclipse.as.ui.MBeanComponentsCategory"
-            name="SAR / MBean Components"/>
-      <wizard
-            category="org.jboss.ide.eclipse.as.ui.MBeanComponentsCategory"
-            class="org.jboss.ide.eclipse.as.ui.mbeans.wizards.NewMBeanWizard"
-            icon="$nl$/icons/mbean16.gif"
-            id="org.jboss.ide.eclipse.as.ui.MBeanComponents"
-            name="MBean Stubs"
-            project="false">
-		<description>
-            	Create an MBean Stubs
-        </description>
-      </wizard>          
-   </extension>
-   
    
    <!-- 
     SAR support
