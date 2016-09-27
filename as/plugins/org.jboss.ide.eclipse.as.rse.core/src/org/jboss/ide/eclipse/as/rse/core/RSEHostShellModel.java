@@ -78,27 +78,38 @@ public class RSEHostShellModel {
 				startupShell = null;
 			}
 		}
+		
+		
 		public IHostShell createStartupShell( 
 				String initialWorkingDirectory, String command, 
-				String[] environment, IProgressMonitor monitor) 
+				String[] environment,IProgressMonitor monitor) 
 					throws CoreException, SystemMessageException {
+			IHostShellOutputListener listener = new IHostShellOutputListener() {
+				public void shellOutputChanged(IHostShellChangeEvent event) {
+					IHostOutput[] lines = event.getLines();
+					String[] lines2 = new String[lines.length];
+					for(int i = 0; i < lines.length; i++ ) {
+						lines2[i] = lines[i].getString();
+					}
+					writeToConsole(lines2);
+				}
+			};
+			return createStartupShell(initialWorkingDirectory, command, environment, listener, monitor);
+		}
+		
+		public IHostShell createStartupShell( 
+				String initialWorkingDirectory, String command, 
+				String[] environment,  IHostShellOutputListener listener, IProgressMonitor monitor) 
+					throws CoreException, SystemMessageException {
+			this.listener = listener;
 			resetStartupShell();
 			IServer s = ServerCore.findServer(serverId);
 			IShellService service = findShellService(s);			
 			try {
 				IHostShell hs = service.launchShell(initialWorkingDirectory, environment, new NullProgressMonitor());
-				listener = new IHostShellOutputListener() {
-					public void shellOutputChanged(IHostShellChangeEvent event) {
-						IHostOutput[] lines = event.getLines();
-						String[] lines2 = new String[lines.length];
-						for(int i = 0; i < lines.length; i++ ) {
-							lines2[i] = lines[i].getString();
-						}
-						writeToConsole(lines2);
-					}
-				};
 				startupShell = hs;
-				startupShell.addOutputListener(listener);
+				if( listener != null ) 
+					startupShell.addOutputListener(listener);
 				hs.writeToShell(command);
 				return hs;
 			} catch(SystemMessageException sme) {

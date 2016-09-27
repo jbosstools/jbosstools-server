@@ -80,8 +80,8 @@ public class StandardRSEJBossStartLaunchDelegate extends
 			}
 			throw new CoreException(new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, "Unable to start server: command to run is empty", null));
 		}
-		addDummyProcess(server, launch, command, "Launching " + server.getName());
-		executeRemoteCommand(command, server);
+		RSEServerDummyProcess dp = addDummyProcess(server, launch, command, "Launching " + server.getName());
+		executeRemoteCommand(command, server, dp);
 	}
 
 	protected void launchDebug(ILaunchConfiguration configuration,
@@ -96,8 +96,8 @@ public class StandardRSEJBossStartLaunchDelegate extends
 			}
 			throw new CoreException(new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, "Unable to start server: command to run is empty", null));
 		}
-		addDummyProcess(server, launch, command, "Debugging " + server.getName());
-		executeRemoteCommand(command, server);
+		RSEServerDummyProcess dp = addDummyProcess(server, launch, command, "Debugging " + server.getName());
+		executeRemoteCommand(command, server, dp);
 	}
 	
 	@Override

@@ -40,6 +40,7 @@ public class ServerProcess implements IProcess, IServerListener {
     protected IServer server;
     private   String  label;
 	protected HashMap<String, String> attributes;
+	protected boolean complete = false;
 
     public ServerProcess(ILaunch launch, IServer server ) {
     	this(launch, server, getDefaultLaunchLabel(launch.getLaunchMode()));
@@ -135,12 +136,12 @@ public class ServerProcess implements IProcess, IServerListener {
 
     @Override
     public boolean canTerminate() {
-        return server.getServerState() == IServer.STATE_STARTED;
+        return !complete && server.getServerState() == IServer.STATE_STARTED;
     }
 
     @Override
     public boolean isTerminated() {
-        return server.getServerState() == IServer.STATE_STOPPED;
+        return complete && server.getServerState() == IServer.STATE_STOPPED;
     }
 
     @Override
@@ -152,8 +153,9 @@ public class ServerProcess implements IProcess, IServerListener {
     public void serverChanged(ServerEvent event) {
 		if( UnitedServerListener.serverSwitchesToState(event, IServer.STATE_STARTED)) {
             fireCreationEvent();
-		} else 	if( UnitedServerListener.serverSwitchesToState(event, IServer.STATE_STOPPED)) {
+		} else if( UnitedServerListener.serverSwitchesToState(event, IServer.STATE_STOPPED)) {
             fireTerminateEvent();
+            complete = true;
             server.removeServerListener(this);
 		}
     }

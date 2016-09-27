@@ -19,7 +19,6 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.jdt.launching.AbstractJavaLaunchConfigurationDelegate;
 import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
@@ -28,18 +27,14 @@ import org.eclipse.rse.services.shells.IHostShell;
 import org.eclipse.rse.services.shells.IHostShellChangeEvent;
 import org.eclipse.rse.services.shells.IHostShellOutputListener;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.ServerEvent;
 import org.eclipse.wst.server.core.ServerUtil;
-import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
-import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.launch.CommandLineLaunchConfigProperties;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
-import org.jboss.ide.eclipse.as.wtp.core.server.launch.ServerProcess;
 import org.jboss.tools.as.core.server.controllable.IDeployableServerBehaviorProperties;
 
 /**
@@ -136,64 +131,16 @@ public class StandardRSEStartLaunchDelegate extends
 			}
 			throw new CoreException(new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, "Unable to start server: command to run is empty", null));
 		}
-		addDummyProcess(server, launch, command, "Running " + server.getName());
-		executeRemoteCommand(command, server);
+		RSEServerDummyProcess dp = addDummyProcess(server, launch, command, "Running " + server.getName());
+		executeRemoteCommand(command, server, dp);
 	}
 	
-	protected void addDummyProcess(IServer server, ILaunch launch, String command, String name) {
+	protected RSEServerDummyProcess addDummyProcess(IServer server, ILaunch launch, String command, String name) {
 		RSEServerDummyProcess dp = new RSEServerDummyProcess(server, launch, name);
 		dp.setAttribute(IProcess.ATTR_CMDLINE, command);
 		launch.addProcess(dp);
+		return dp;
 	}
-	
-	protected static class RSEServerDummyProcess extends ServerProcess {
-		public RSEServerDummyProcess(IServer server, ILaunch launch, String label) {
-			super(launch, server, label);
-		}
-		
-		@Override
-		public void serverChanged(ServerEvent event) {
-			super.serverChanged(event);
-			if( UnitedServerListener.serverSwitchesToState(event, IServer.STATE_STOPPED)) {
-				ILaunch l = getLaunch();
-				if( l != null ) {
-					try {
-						ILaunchConfiguration lc = l.getLaunchConfiguration();
-						boolean skipLaunch = LaunchCommandPreferences.isIgnoreLaunchCommand(lc);
-						// If we didn't launch the server, then we can't have expected the shutdown
-						// to have cleaned up the debugger
-						if( skipLaunch ) {
-							IDebugTarget dt = l.getDebugTarget();
-							if( dt.canDisconnect()) {
-								dt.disconnect();
-								fireTerminateEvent();
-							}
-						}
-					} catch(CoreException ce) {
-						// ignore
-					}
-				}
-			}
-		}
-		@Override
-		public boolean canTerminate() {
-			return getProcessId() != null;
-		}
-		
-		private String getProcessId() {
-			return (String)getControllableBehavior().getSharedData(IDeployableServerBehaviorProperties.PROCESS_ID);
-		}
-		
-		private IControllableServerBehavior getControllableBehavior() {
-			if( server != null ) {
-				ServerBehaviourDelegate del = (ServerBehaviourDelegate)server.loadAdapter(ServerBehaviourDelegate.class, null);
-				if( del instanceof ControllableServerBehavior)
-					return (IControllableServerBehavior)del;
-			}
-			return null;
-		}
-	}
-	
 	
 	protected void afterVMRunner(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
@@ -220,13 +167,25 @@ public class StandardRSEStartLaunchDelegate extends
 	/*
 	 * The following is for executing commands on the remote system
 	 */
-	protected void executeRemoteCommand(String command, IServer server)
+	protected void executeRemoteCommand(String command, IServer server, final RSEServerDummyProcess dp)
 			throws CoreException {
+		IHostShellOutputListener sysoutOutListener = new IHostShellOutputListener() {
+			public void shellOutputChanged(IHostShellChangeEvent event) {
+				IHostOutput[] lines = event.getLines();
+				String[] lines2 = new String[lines.length];
+				for(int i = 0; i < lines.length; i++ ) {
+					lines2[i] = lines[i].getString();
+				}
+				dp.appendToSysout(lines2);
+			}
+		};
+		
+		
 		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(server);
 		try {
 			ServerShellModel model = RSEHostShellModel.getInstance().getModel(server);
-			IHostShell shell = model.createStartupShell("/", command, new String[] {}, new NullProgressMonitor());
-			addShellOutputListener(shell, beh);
+			IHostShell shell = model.createStartupShell("/", command, new String[] {}, sysoutOutListener, new NullProgressMonitor());
+			addShellOutputListener(shell, beh, dp);
 			String getPidCommand = "echo \"" + ECHO_KEY_DISCOVER_PID + DELIMETER + server.getId() + DELIMETER + "\"$!";
 			shell.writeToShell(getPidCommand);
 		} catch (SystemMessageException sme) {
@@ -239,7 +198,7 @@ public class StandardRSEStartLaunchDelegate extends
 	}
 	
 	private void addShellOutputListener(final IHostShell shell, 
-			final IControllableServerBehavior behavior) {
+			final IControllableServerBehavior behavior, RSEServerDummyProcess dp) {
 		if( shell == null ) 
 			return; // No listener needed for a null shell. 
 		IHostShellOutputListener listener = null;
@@ -268,6 +227,7 @@ public class StandardRSEStartLaunchDelegate extends
 						}
 					}
 					if( s.startsWith(ECHO_KEY_PID_TERMD)) {
+						dp.processComplete();
 						((ControllableServerBehavior)behavior).setServerStopped();
 					}
 				}
