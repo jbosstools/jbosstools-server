@@ -13,7 +13,6 @@ package org.jboss.ide.eclipse.as.core.server.internal;
 import java.io.File;
 
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.internal.Server;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;

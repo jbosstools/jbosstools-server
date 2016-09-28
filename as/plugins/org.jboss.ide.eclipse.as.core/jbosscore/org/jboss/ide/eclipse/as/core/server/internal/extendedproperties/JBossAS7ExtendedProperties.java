@@ -18,28 +18,24 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.jdt.internal.launching.environments.EnvironmentsManager;
+import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
 import org.jboss.ide.eclipse.as.core.server.IDeploymentScannerModifier;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7DeploymentScannerAdditions;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.IJBossManagerServiceProvider;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
-import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 
 public class JBossAS7ExtendedProperties extends JBossExtendedProperties implements IJBossManagerServiceProvider {
 	public JBossAS7ExtendedProperties(IAdaptable obj) {
@@ -125,7 +121,7 @@ public class JBossAS7ExtendedProperties extends JBossExtendedProperties implemen
 		return FILE_STRUCTURE_CONFIG_DEPLOYMENTS;
 	}
 	public IExecutionEnvironment getDefaultExecutionEnvironment() {
-		return EnvironmentsManager.getDefault().getEnvironment("JavaSE-1.6"); //$NON-NLS-1$
+		return JavaRuntime.getExecutionEnvironmentsManager().getEnvironment("JavaSE-1.6"); //$NON-NLS-1$
 	}
 	
 	/**

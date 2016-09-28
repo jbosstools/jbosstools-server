@@ -11,7 +11,7 @@
 package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.jdt.internal.launching.environments.EnvironmentsManager;
+import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
@@ -39,7 +39,7 @@ public class Wildfly80ExtendedProperties extends JBossAS710ExtendedProperties {
 	
 	@Override
 	public IExecutionEnvironment getDefaultExecutionEnvironment() {
-		return EnvironmentsManager.getDefault().getEnvironment("JavaSE-1.7"); //$NON-NLS-1$
+		return JavaRuntime.getExecutionEnvironmentsManager().getEnvironment("JavaSE-1.7"); //$NON-NLS-1$
 	}
 	
 	@Override

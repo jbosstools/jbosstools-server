@@ -11,12 +11,10 @@
 package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.jdt.internal.launching.environments.EnvironmentsManager;
+import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
-import org.eclipse.wst.server.core.IRuntimeType;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.internal.JBoss6ModuleStateVerifier;
-import org.jboss.ide.eclipse.as.core.util.IConstants;
 
 public class JBossEAP5ExtendedProperties extends JBossExtendedProperties {
 
@@ -33,7 +31,7 @@ public class JBossEAP5ExtendedProperties extends JBossExtendedProperties {
 	}
 	
 	public IExecutionEnvironment getDefaultExecutionEnvironment() {
-		return EnvironmentsManager.getDefault().getEnvironment("JavaSE-1.6"); //$NON-NLS-1$
+		return JavaRuntime.getExecutionEnvironmentsManager().getEnvironment("JavaSE-1.6"); //$NON-NLS-1$
 	}
 
 	

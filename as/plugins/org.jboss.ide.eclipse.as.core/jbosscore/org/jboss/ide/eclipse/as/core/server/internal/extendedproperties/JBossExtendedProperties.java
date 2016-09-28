@@ -11,13 +11,12 @@
 package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
 import java.io.File;
-import java.text.MessageFormat;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jdt.internal.launching.environments.EnvironmentsManager;
+import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.osgi.util.NLS;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
@@ -206,7 +205,7 @@ public class JBossExtendedProperties extends ServerExtendedProperties {
 	 */
 	public IExecutionEnvironment getDefaultExecutionEnvironment() {
 		// NEW_SERVER_ADAPTER  Subclasses override this
-		return EnvironmentsManager.getDefault().getEnvironment("J2SE-1.4"); //$NON-NLS-1$
+		return JavaRuntime.getExecutionEnvironmentsManager().getEnvironment("J2SE-1.4"); //$NON-NLS-1$
 	}
 	
 	public IExecutionEnvironment getMinimumExecutionEnvironment() {

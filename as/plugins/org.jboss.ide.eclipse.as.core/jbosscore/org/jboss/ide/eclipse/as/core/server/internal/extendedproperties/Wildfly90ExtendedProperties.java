@@ -11,10 +11,8 @@
 package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.jdt.internal.launching.environments.EnvironmentsManager;
+import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
-import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
-import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 
 public class Wildfly90ExtendedProperties extends Wildfly80ExtendedProperties {
 	public Wildfly90ExtendedProperties(IAdaptable obj) {
@@ -27,6 +25,6 @@ public class Wildfly90ExtendedProperties extends Wildfly80ExtendedProperties {
 	
 	@Override
 	public IExecutionEnvironment getDefaultExecutionEnvironment() {
-		return EnvironmentsManager.getDefault().getEnvironment("JavaSE-1.8"); //$NON-NLS-1$
+		return JavaRuntime.getExecutionEnvironmentsManager().getEnvironment("JavaSE-1.8"); //$NON-NLS-1$
 	}
 }

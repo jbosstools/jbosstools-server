@@ -16,7 +16,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IServerModeDetails;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 
 public class JBoss70DefaultLaunchArguments extends JBossDefaultLaunchArguments {
@@ -68,16 +67,13 @@ public class JBoss70DefaultLaunchArguments extends JBossDefaultLaunchArguments {
 	protected String getJBossJavaFlags() {
 		IPath serverHome = getServerHome();
 
-		// don't like typing that big constants interface over and over; its ugly
-		IJBossRuntimeResourceConstants c = new IJBossRuntimeResourceConstants() {};
-		
 		IServerModeDetails det = (IServerModeDetails)Platform.getAdapterManager().getAdapter(server, IServerModeDetails.class);
 		String basedir = det.getProperty(IServerModeDetails.PROP_SERVER_BASE_DIR_ABS);
 		
 		IPath base = new Path(basedir);
 		// TODO this can be changed to the config folder, if such a feature is added
-		IPath bootLog = base.append(c.FOLDER_LOG).append(c.AS7_BOOT_LOG);
-		IPath logConfig = base.append(c.CONFIGURATION).append(c.LOGGING_PROPERTIES);
+		IPath bootLog = base.append(IJBossRuntimeResourceConstants.FOLDER_LOG).append(IJBossRuntimeResourceConstants.AS7_BOOT_LOG);
+		IPath logConfig = base.append(IJBossRuntimeResourceConstants.CONFIGURATION).append(IJBossRuntimeResourceConstants.LOGGING_PROPERTIES);
 
 		String ret = 
 			"-Djava.awt.headless=true" + //$NON-NLS-1$

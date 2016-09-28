@@ -11,7 +11,6 @@
 package org.jboss.ide.eclipse.as.core.server.internal;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jdt.internal.launching.environments.EnvironmentsManager;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
@@ -111,14 +110,10 @@ public abstract class AbstractLocalJBossServerRuntime extends RuntimeDelegate im
 		return VMInstallUtil.getValidJREs(minimum, maximum);
 	}
 	
-	private IExecutionEnvironment[] findSuperEnvironments(IExecutionEnvironment minimum) {
-		return VMInstallUtil.findSuperEnvironments(minimum);
-	}
-	
 	public IExecutionEnvironment getExecutionEnvironment() {
 		String id = getAttribute(PROPERTY_EXECUTION_ENVIRONMENT, (String)null);
 		return id == null ? getDefaultExecutionEnvironment(getRuntime().getRuntimeType()) : 
-			EnvironmentsManager.getDefault().getEnvironment(id);
+			JavaRuntime.getExecutionEnvironmentsManager().getEnvironment(id);
 	}
 	
 	/**
@@ -132,7 +127,7 @@ public abstract class AbstractLocalJBossServerRuntime extends RuntimeDelegate im
 		if( sep instanceof JBossExtendedProperties) {
 			return ((JBossExtendedProperties)sep).getDefaultExecutionEnvironment();
 		}
-		return EnvironmentsManager.getDefault().getEnvironment("J2SE-1.4"); //$NON-NLS-1$
+		return JavaRuntime.getExecutionEnvironmentsManager().getEnvironment("J2SE-1.4"); //$NON-NLS-1$
 	}
 
 	/**

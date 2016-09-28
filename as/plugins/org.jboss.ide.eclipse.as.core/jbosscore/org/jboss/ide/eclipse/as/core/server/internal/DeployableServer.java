@@ -42,6 +42,7 @@ import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerTCPIPMonitorUtil;
+import org.jboss.tools.as.core.server.controllable.subsystems.internal.StandardModuleRestartBehaviorController;
 import org.jboss.tools.as.core.server.controllable.subsystems.internal.XPathsPortsController;
 import org.jboss.tools.as.core.server.controllable.systems.IModuleDeployPathController;
 
@@ -151,7 +152,7 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	}
 	
 	public void setRestartFilePattern(String filepattern) {
-		setAttribute(ORG_JBOSS_TOOLS_AS_RESTART_FILE_PATTERN, filepattern);
+		setAttribute(StandardModuleRestartBehaviorController.PROPERTY_RESTART_FILE_PATTERN, filepattern);
 	}
 	
 	public Pattern getRestartFilePattern() {
@@ -160,7 +161,7 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	
 	private Pattern getCompiledRestartPattern() {
 		// ensure it's set properly from the saved attribute
-		String currentPattern = getAttribute(ORG_JBOSS_TOOLS_AS_RESTART_FILE_PATTERN, (String)null);
+		String currentPattern = getAttribute(StandardModuleRestartBehaviorController.PROPERTY_RESTART_FILE_PATTERN, (String)null);
 		try {
 			return currentPattern == null ? defaultFilePattern :  
 				Pattern.compile(currentPattern, Pattern.CASE_INSENSITIVE);
