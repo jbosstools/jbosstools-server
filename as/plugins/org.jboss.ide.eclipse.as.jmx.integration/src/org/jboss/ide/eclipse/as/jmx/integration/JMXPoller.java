@@ -25,7 +25,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.ExtensionManager.IServerJMXRunnable;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
@@ -74,7 +73,18 @@ public class JMXPoller implements IServerStatePoller2 {
 		launchJMXPoller();
 	}
 
-	private static class JMXPollerRunnable implements IJMXRunnable,IServerJMXRunnable {
+
+	protected JMXPollerModel createModel() {
+		return new JMXPollerModel();
+	}
+	protected IJMXRunnable createJMXRunnable() {
+		return new JMXPollerRunnable();
+	}
+	protected int getStateFromRunnable(IJMXRunnable runnable) {
+		return ((JMXPollerRunnable)runnable).result ? STATE_STARTED : STATE_TRANSITION;
+	}
+	
+	private static class JMXPollerRunnable implements IJMXRunnable {
 		private boolean result;
 		public void run(MBeanServerConnection connection) throws Exception {
 			Object attInfo = connection.getAttribute(
@@ -84,38 +94,38 @@ public class JMXPoller implements IServerStatePoller2 {
 		}
 	}
 	
-	private class PollerRunnable implements Runnable {
+	protected class PollerRunnable implements Runnable {
 		public void run() {
-			JBossServerJMXRunner runner2 = new JBossServerJMXRunner();
-			runner2.beginTransaction(server, this);
+			JMXPollerModel model = createModel();
+			model.beginTransaction(server, this);
 
-			JMXPollerRunnable runnable = new JMXPollerRunnable();
-			JMXSafeRunner runner = new JMXSafeRunner(server);
+			IJMXRunnable runnable = createJMXRunnable();
 			while( !done && !canceled) {
 				CoreException coreCe = null;
 				try {
-					runner.run(runnable);
-					started = runnable.result ? STATE_STARTED : STATE_TRANSITION;
+					model.run(server, runnable);
+					started = getStateFromRunnable(runnable);
 				} catch(CoreException ce) {
 					coreCe = ce;
 				} 
 				if( expectedState == IServerStatePoller.SERVER_UP)
-					handleStartupLogging(coreCe, runner);
+					handleStartupLogging(coreCe, model);
 				else
-					handleShutdownLogging(coreCe, runner);
+					handleShutdownLogging(coreCe, model);
 
 				done = (started == STATE_STARTED && expectedState == IServerStatePoller.SERVER_UP)
 						|| (started == STATE_STOPPED && expectedState == IServerStatePoller.SERVER_DOWN);
 				try { 
-					Thread.sleep(500);} 
-				catch (InterruptedException e) {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
 					// Intentionally ignore
 				}
 			}
-			runner2.endTransaction(server, this);
+			model.endTransaction(server, this);
 		}
 		
-		private void handleCredentialRequest(Throwable t, JMXSafeRunner runner) {
+		
+		protected void handleCredentialRequest(Throwable t, JMXPollerModel runner) {
 			synchronized(this) {
 				if( !waitingForCredentials ) {
 					waitingForCredentials = true;
@@ -142,7 +152,7 @@ public class JMXPoller implements IServerStatePoller2 {
 				}
 			}
 		}
-		protected void handleShutdownLogging(Throwable t, final JMXSafeRunner runner) {
+		protected void handleShutdownLogging(Throwable t, final JMXPollerModel runner) {
 			if( t == null || t.getCause() == null )
 				return;
 			
@@ -177,7 +187,7 @@ public class JMXPoller implements IServerStatePoller2 {
 			}
 		}
 		
-		protected void handleStartupLogging(Throwable t, final JMXSafeRunner runner) {
+		protected void handleStartupLogging(Throwable t, final JMXPollerModel runner) {
 			if( t == null && expectedState == IServerStatePoller.SERVER_UP && !startingFound ) {
 				// Log that the server is still starting up (once)
 				startingFound = true;
@@ -224,7 +234,6 @@ public class JMXPoller implements IServerStatePoller2 {
 			}
 		}
 	}
-
 	
 	private void launchJMXPoller() {
 		PollerRunnable run = new PollerRunnable();
@@ -307,13 +316,13 @@ public class JMXPoller implements IServerStatePoller2 {
 	}
 
 	public IStatus getCurrentStateSynchronous(IServer server) {
-		JBossServerJMXRunner runner = new JBossServerJMXRunner();
-		runner.beginTransaction(server, this);
-		JMXPollerRunnable runnable2 = new JMXPollerRunnable();
+		JMXPollerModel model = createModel();
+		model.beginTransaction(server, this);
+		IJMXRunnable runnable2 = createJMXRunnable();
 
 		try {
-			runner.run(server, runnable2);
-			int started2 = runnable2.result ? STATE_STARTED : STATE_TRANSITION;
+			model.run(server, runnable2);
+			int started2 = getStateFromRunnable(runnable2);
 			if( started2 == STATE_STARTED ) {
 				Status s = new Status(IStatus.OK, Activator.PLUGIN_ID, 
 						"JMX Poller found a running server on " + server.getHost());
@@ -322,7 +331,7 @@ public class JMXPoller implements IServerStatePoller2 {
 		} catch(CoreException ce) {
 			// No need to return the specifics of the exception. Just note we could not connect. 
 		} finally {
-			runner.endTransaction(server, this);
+			model.endTransaction(server, this);
 		}
 		Status s = new Status(IStatus.INFO, Activator.PLUGIN_ID, 
 				"JMX Poller did not find a running server on " + server.getHost());

@@ -16,8 +16,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.management.MBeanServerConnection;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -30,6 +28,7 @@ import org.jboss.ide.eclipse.as.core.server.IProvideCredentials;
 import org.jboss.ide.eclipse.as.core.server.IServerProvider;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePollerType;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
+import org.jboss.tools.jmx.core.IJMXRunnable;
 
 /**
  * Manages the extensions for this plugin
@@ -200,13 +199,12 @@ public class ExtensionManager {
 	}
 	
 	
-	// API extension
-	public static interface IServerJMXRunnable {
-		public void run(MBeanServerConnection connection) throws Exception;
+	@Deprecated
+	public static interface IServerJMXRunnable extends IJMXRunnable {
 	}
 	
 	public static interface IServerJMXRunner {
-		public void run(IServer server, IServerJMXRunnable runnable) throws CoreException;
+		public void run(IServer server, IJMXRunnable runnable) throws CoreException;
 		public void beginTransaction(IServer server, Object lock);
 		public void endTransaction(IServer server, Object lock);
 	}

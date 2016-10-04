@@ -16,14 +16,13 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.ExtensionManager.IServerJMXRunnable;
 import org.jboss.ide.eclipse.as.core.ExtensionManager.IServerJMXRunner;
 import org.jboss.tools.jmx.core.IJMXRunnable;
 import org.jboss.tools.jmx.core.JMXException;
 
 public class JBossServerJMXRunner implements IServerJMXRunner {
 
-	public void run(IServer server, final IServerJMXRunnable runnable) throws CoreException {
+	public void run(IServer server, final IJMXRunnable runnable) throws CoreException {
 		IJMXRunnable runnable2 = new IJMXRunnable() {
 			public void run(MBeanServerConnection connection) throws Exception {
 				runnable.run(connection);

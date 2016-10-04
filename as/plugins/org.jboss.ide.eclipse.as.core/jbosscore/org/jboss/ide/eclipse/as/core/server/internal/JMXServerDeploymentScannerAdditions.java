@@ -23,7 +23,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
-import org.jboss.ide.eclipse.as.core.ExtensionManager.IServerJMXRunnable;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.Trace;
@@ -32,6 +31,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerEx
 import org.jboss.ide.eclipse.as.core.util.IEventCodes;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
+import org.jboss.tools.jmx.core.IJMXRunnable;
 
 public class JMXServerDeploymentScannerAdditions extends AbstractDeploymentScannerAdditions {
 	public JMXServerDeploymentScannerAdditions() {
@@ -53,7 +53,7 @@ public class JMXServerDeploymentScannerAdditions extends AbstractDeploymentScann
 
 	protected void ensureScannersAdded(final IServer server, final String[] folders) {
 		ExtensionManager.getDefault().getJMXRunner().beginTransaction(server, this);
-		IServerJMXRunnable r = new IServerJMXRunnable() {
+		IJMXRunnable r = new IJMXRunnable() {
 			public void run(MBeanServerConnection connection) throws Exception {
 				ensureDeployLocationAdded(server, connection, folders);
 			}
@@ -164,7 +164,7 @@ public class JMXServerDeploymentScannerAdditions extends AbstractDeploymentScann
 		return new Job("Suspend Deployment Scanner") { //$NON-NLS-1$
 			protected IStatus run(final IProgressMonitor monitor) {
 				ExtensionManager.getDefault().getJMXRunner().beginTransaction(server, this);
-				IServerJMXRunnable r = new IServerJMXRunnable() {
+				IJMXRunnable r = new IJMXRunnable() {
 					public void run(MBeanServerConnection connection) throws Exception {
 						suspendDeployment(server, connection, monitor);
 					}
@@ -184,7 +184,7 @@ public class JMXServerDeploymentScannerAdditions extends AbstractDeploymentScann
 	public Job getResumeScannerJob(final IServer server) {
 		return new Job("Suspend Deployment Scanner") { //$NON-NLS-1$
 			protected IStatus run(final IProgressMonitor monitor) {
-				IServerJMXRunnable r = new IServerJMXRunnable() {
+				IJMXRunnable r = new IJMXRunnable() {
 					public void run(MBeanServerConnection connection) throws Exception {
 						resumeDeployment(server, connection, monitor);
 					}

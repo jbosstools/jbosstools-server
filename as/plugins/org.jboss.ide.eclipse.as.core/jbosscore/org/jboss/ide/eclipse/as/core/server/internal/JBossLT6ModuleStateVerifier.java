@@ -26,7 +26,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
-import org.jboss.ide.eclipse.as.core.ExtensionManager.IServerJMXRunnable;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
@@ -40,6 +39,7 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IModuleStateController;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 import org.jboss.tools.as.core.server.controllable.systems.IDeploymentOptionsController;
 import org.jboss.tools.as.core.server.controllable.systems.IModuleDeployPathController;
+import org.jboss.tools.jmx.core.IJMXRunnable;
 
 /**
  * An implementation of the {@link IModuleStateController}.
@@ -121,7 +121,7 @@ public class JBossLT6ModuleStateVerifier extends AbstractSubsystemController imp
 			final IProgressMonitor monitor) {
 		final boolean[] result = new boolean[1];
 		result[0] = false;
-		IServerJMXRunnable r = new IServerJMXRunnable() {
+		IJMXRunnable r = new IJMXRunnable() {
 			public void run(MBeanServerConnection connection) throws Exception {
 				result[0] = checkDeploymentStarted(server, module, connection, monitor);
 			}
@@ -171,7 +171,7 @@ public class JBossLT6ModuleStateVerifier extends AbstractSubsystemController imp
 	}
 	
 	protected void waitJMX(final IServer server, final IModule[] module) {
-		IServerJMXRunnable r = new IServerJMXRunnable() {
+		IJMXRunnable r = new IJMXRunnable() {
 			public void run(MBeanServerConnection connection) throws Exception {
 				jmxWaitForDeploymentStarted(server, module, connection, null);
 			}

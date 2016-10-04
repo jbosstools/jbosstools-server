@@ -47,15 +47,13 @@ public class PollThreadUtils {
 	 * @return
 	 */
 	public static String getPollerId(boolean expectedState, IServer server) {
-		IJBossServer s = ServerConverter.getJBossServer(server);
-		ServerAttributeHelper helper = s.getAttributeHelper();
 		String key = expectedState == IServerStatePoller.SERVER_UP ?
 				IJBossToolingConstants.STARTUP_POLLER_KEY
 				: IJBossToolingConstants.SHUTDOWN_POLLER_KEY;
 		String defaultPoller = expectedState == IServerStatePoller.SERVER_UP ?
 				IJBossToolingConstants.DEFAULT_STARTUP_POLLER
 				: IJBossToolingConstants.DEFAULT_SHUTDOWN_POLLER;
-		String pollerId = helper.getAttribute(key, defaultPoller);
+		String pollerId = server.getAttribute(key, defaultPoller);
 		return pollerId;
 	}
 
