@@ -472,7 +472,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		boolean error = results != null && !results.isOK();
 		if( error) {
 			MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_REMOVE_FAIL, 
-					"Unable to delete module", null); //$NON-NLS-1$
+					NLS.bind(Messages.DeleteModuleFail, module[module.length-1]), results.getException());
 			ms.add(results);
 			results = ms;
 			Trace.trace(Trace.STRING_FINER, "Failed to delete deployment resource: " + remote.toOSString()); //$NON-NLS-1$
