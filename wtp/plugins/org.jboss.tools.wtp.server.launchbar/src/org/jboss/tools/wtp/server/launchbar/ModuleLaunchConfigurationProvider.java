@@ -44,7 +44,7 @@ public class ModuleLaunchConfigurationProvider implements ILaunchConfigurationPr
 	
 	@Override
 	public boolean supports(ILaunchDescriptor descriptor, ILaunchTarget target) throws CoreException {
-		if( target.getTypeId().equals(Activator.TARGET_TYPE_ID)) {
+		if( target != null && Activator.TARGET_TYPE_ID.equals(target.getTypeId())) {
 			return true;
 		}
 		return false;
