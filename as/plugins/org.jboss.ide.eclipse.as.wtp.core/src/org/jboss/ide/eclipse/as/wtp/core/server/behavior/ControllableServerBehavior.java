@@ -217,6 +217,9 @@ public class ControllableServerBehavior extends ServerBehaviourDelegate implemen
 	}
 	
 	protected void setModulesStopped(IModule[] parent, IModule[] children) {
+		if( children == null )
+			return;
+		
 		for( int i = 0; i < children.length; i++ ) {
 			IModule[] combined = combine(parent, children[i]);
 			setModuleState(combined, IServer.STATE_UNKNOWN);
