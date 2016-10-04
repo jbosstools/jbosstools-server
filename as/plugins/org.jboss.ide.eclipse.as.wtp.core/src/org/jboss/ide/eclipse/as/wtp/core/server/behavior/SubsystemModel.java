@@ -120,6 +120,9 @@ public class SubsystemModel {
 		public SubsystemType getSubsystem() {
 			return subsystemModel.get(subsystemId);
 		}
+		public String toString() {
+			return ("SubsystemMapping[servertype=" + serverTypeId + ",subsystemid=" + subsystemId + ",mappedId=" + mappedId + "]");
+		}
 	}
 	
 	
@@ -256,7 +259,15 @@ public class SubsystemModel {
 			SubsystemMapping tmp = null;
 			while(i.hasNext()) {
 				tmp = i.next();
-				if( !tmp.getSubsystem().getSystem().equals(system)) {
+				if( tmp == null ) {
+					// should never happen
+					ASWTPToolsPlugin.pluginLog().logWarning("Null item in subsystem map for serverType=" + serverType + " and system=" + system);
+				} else if( tmp.getSubsystem() == null ) {
+					// should never happen
+					ASWTPToolsPlugin.pluginLog().logWarning("Invalid item in subsystem map for serverType=" + serverType + " and system=" + system + ": " + tmp.toString());
+				} else if( tmp.getSubsystem().getSystem() == null ) {
+					ASWTPToolsPlugin.pluginLog().logWarning("Invalid item in subsystem map for serverType=" + serverType + " and system=" + system + ": " + tmp.toString());
+				} else if( !tmp.getSubsystem().getSystem().equals(system)) {
 					i.remove();
 				}
 			}
