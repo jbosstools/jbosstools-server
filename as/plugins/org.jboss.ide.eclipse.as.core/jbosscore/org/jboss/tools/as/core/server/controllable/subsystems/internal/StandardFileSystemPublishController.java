@@ -281,9 +281,15 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
         return IServer.PUBLISH_STATE_INCREMENTAL;
 	}
 
-	private String moduleToString(IModule[] mod) {
+	private String moduleToString(IModule[] mod) throws CoreException {
 		StringBuffer sb = new StringBuffer();
 		for( int i = 0; i < mod.length; i++ ) {
+			if( mod[i] == null ) {
+				Status s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+						"Server " + getServer().getName() + " has been asked to publish a null module: " //$NON-NLS-1$//$NON-NLS-2$ 
+								+ sb.append((String)null).toString()); 
+				throw new CoreException(s);
+			}
 			sb.append(mod[i].getName());
 			if( i < mod.length) 
 				sb.append(",   "); //$NON-NLS-1$
