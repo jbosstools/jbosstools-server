@@ -93,11 +93,13 @@ public class LocalJBoss7ServerRuntime extends LocalJBossServerRuntime implements
 		Path p = new Path(bd);
 		if( p.isAbsolute() )
 			return p.toFile().getAbsolutePath();
+		if( getRuntime() == null || getRuntime().getLocation() == null ) {
+			return IJBossRuntimeResourceConstants.AS7_STANDALONE;
+		}
 		if( getRuntime().getLocation().equals(new Path(""))) //$NON-NLS-1$
 			return IJBossRuntimeResourceConstants.AS7_STANDALONE;
 		return getRuntime().getLocation().append(p).toFile().getAbsolutePath();
 	}
-	
 	
 	public String getRawBaseDirectory() {
 		return 	getAttribute(BASE_DIRECTORY, IJBossRuntimeResourceConstants.AS7_STANDALONE);
