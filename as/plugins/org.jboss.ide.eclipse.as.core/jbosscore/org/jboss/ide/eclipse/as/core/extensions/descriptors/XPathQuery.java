@@ -19,6 +19,7 @@ import org.dom4j.Document;
 import org.dom4j.Node;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jaxen.JaxenException;
 import org.jaxen.SimpleNamespaceContext;
@@ -108,14 +109,18 @@ public class XPathQuery implements Serializable {
 	}
 	
 	private void setEffectiveBaseDir() {
+		IRuntime rt = server == null ? null : server.getRuntime();
 		String dir1 = baseDir == null ? null : baseDir;
 		String dir2 = getReplacedString(dir1);
 		IPath dir = dir2 == null ? null : new Path(dir2);
-		if( dir == null && category != null) {
-			dir = getCategory().getServer().getRuntime().getLocation();
+		if( category != null && rt != null ) {
+			if( dir == null ) {
+				dir = rt.getLocation();
+			}
+			if( dir != null && !dir.isAbsolute() && rt.getLocation() != null)
+				dir = rt.getLocation().append(dir);
 		}
-		if( dir != null && !dir.isAbsolute() && category != null)
-			dir = getCategory().getServer().getRuntime().getLocation().append(dir);
+		
 		effectiveBaseDir = dir == null ? null : dir.toString();
 	}
 	
