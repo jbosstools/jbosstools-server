@@ -134,7 +134,7 @@ public class ConfigNameResolver implements IDynamicVariableResolver {
 
 	private String handleServerHome(String variable, String argument) {
 		IRuntime rt = findServerRuntime(argument);
-		IPath loc = rt.getLocation();
+		IPath loc = rt == null ? null : rt.getLocation();
 		return loc == null ? null : loc.toOSString();
 	}
 	
