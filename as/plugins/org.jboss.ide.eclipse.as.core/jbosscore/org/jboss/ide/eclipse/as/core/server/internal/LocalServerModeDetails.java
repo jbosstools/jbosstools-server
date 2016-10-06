@@ -55,7 +55,7 @@ public class LocalServerModeDetails extends AbstractSubsystemController implemen
 		
 		IRuntime rt = getServerOrWC().getRuntime();
 		if( PROP_SERVER_HOME.equals(prop)) {
-			return rt == null ? null : rt.getLocation().toOSString();
+			return rt == null ? null : rt.getLocation() == null ? null : rt.getLocation().toOSString();
 		}
 		IJBossServerRuntime jbrt = RuntimeUtils.getJBossServerRuntime(rt);
 		if( PROP_SERVER_BASE_DIR_ABS.equals(prop)) {
