@@ -6,6 +6,8 @@
  *******************************************************************************/
 package org.jboss.tools.jmx.jvmmonitor.internal.ui.views;
 
+import java.util.List;
+
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.jboss.tools.jmx.jvmmonitor.core.IHost;
@@ -51,9 +53,11 @@ public class JvmTreeContentProvider implements ITreeContentProvider {
     @Override
     public boolean hasChildren(Object element) {
         if (element instanceof IHost) {
-            return ((IHost) element).getJvms().size() > 0;
+        	List<IJvm> jvms =  ((IHost) element).getJvms();
+            return jvms != null && jvms.size() > 0;
         } else if (element instanceof IJvm) {
-            return ((IJvm) element).getShapshots().size() > 0;
+        	List<ISnapshot>  snaps = ((IJvm) element).getShapshots();
+            return snaps != null && snaps.size() > 0;
         }
         return false;
     }
