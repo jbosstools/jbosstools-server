@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
+import org.jboss.ide.eclipse.as.core.ExtensionManager.IServerJMXRunner;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
@@ -126,13 +127,20 @@ public class JBossLT6ModuleStateVerifier extends AbstractSubsystemController imp
 				result[0] = checkDeploymentStarted(server, module, connection, monitor);
 			}
 		};
+		
+		IServerJMXRunner runner = ExtensionManager.getDefault().getJMXRunner();
+		if( runner == null ) {
+			IStatus status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, 0, "No JMX Runner found", null); //$NON-NLS-1$
+			ServerLogger.getDefault().log(server, status);
+			return IServer.STATE_UNKNOWN;
+		}
 		try {
-			ExtensionManager.getDefault().getJMXRunner().run(server, r);
+			runner.run(server, r);
 		} catch( CoreException jmxe ) {
-			IStatus status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.RESUME_DEPLOYMENT_SCANNER, Messages.JMXResumeScannerError, jmxe);
+			IStatus status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, 0, Messages.JMXResumeScannerError, jmxe);
 			ServerLogger.getDefault().log(server, status);
 		} finally {
-			ExtensionManager.getDefault().getJMXRunner().endTransaction(server, this);
+			runner.endTransaction(server, this);
 		}
 		// Leaving the jboss < 6 impl old and basic because I don't 
 		// have the time to really dig into what else the jboss app server
