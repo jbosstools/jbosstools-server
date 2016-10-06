@@ -145,9 +145,10 @@ public class ServerHotCodeReplaceListener implements IJavaHotCodeReplaceListener
 						.getController(IControllableServerBehavior.SYSTEM_MODULES);
 				if (verifier != null) {
 					// we can verify the remote state, so go do it, so
-					// go
-					// wait for
-					// the module to be deployed
+					// go wait for the module to be deployed
+					
+					// TODO:  'modules' is an array of top-level modules, not a single module tree. 
+					// Do we need to perform a for-loop here?
 					verifier.waitModuleStarted(server, modules, 20000);
 				}
 			} catch (CoreException e) {

@@ -100,6 +100,9 @@ public abstract class AbstractJBoss7ModuleStateVerifier extends AbstractSubsyste
 	
 
 	public void waitModuleStarted(IServer server, IModule[] module, IProgressMonitor monitor) {
+		if( module.length == 0 || module[0] == null)
+			return;
+		
 		try {
 			String deploymentName = getDeploymentName(server, module[0]);
 			boolean waitedOnce = false;
