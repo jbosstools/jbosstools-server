@@ -135,6 +135,7 @@ public class JBossLT6ModuleStateVerifier extends AbstractSubsystemController imp
 			return IServer.STATE_UNKNOWN;
 		}
 		try {
+			runner.beginTransaction(server, this);
 			runner.run(server, r);
 		} catch( CoreException jmxe ) {
 			IStatus status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, 0, Messages.JMXResumeScannerError, jmxe);
@@ -184,13 +185,23 @@ public class JBossLT6ModuleStateVerifier extends AbstractSubsystemController imp
 				jmxWaitForDeploymentStarted(server, module, connection, null);
 			}
 		};
+		
+
+		IServerJMXRunner runner = ExtensionManager.getDefault().getJMXRunner();
+		if( runner == null ) {
+			IStatus status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, 0, "No JMX Runner found", null); //$NON-NLS-1$
+			ServerLogger.getDefault().log(server, status);
+			return;
+		}
+		
 		try {
-			ExtensionManager.getDefault().getJMXRunner().run(server, r);
+			runner.beginTransaction(server, this);
+			runner.run(server, r);
 		} catch( CoreException jmxe ) {
 			IStatus status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.RESUME_DEPLOYMENT_SCANNER, Messages.JMXResumeScannerError, jmxe);
 			ServerLogger.getDefault().log(server, status);
 		} finally {
-			ExtensionManager.getDefault().getJMXRunner().endTransaction(server, this);
+			runner.endTransaction(server, this);
 		}
 	}
 
