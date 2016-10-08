@@ -10,9 +10,12 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
+import java.net.URL;
+
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
@@ -134,6 +137,15 @@ public class ServerExtendedProperties {
 	
 	public boolean allowExplodedModulesInEars() {
 		return true;
+	}
+
+	/**
+	 * @param module the IModule to analyze
+	 * @return the root module for the given module. By default, it returns <code>null</code>.
+	 * This method is meant to be overridden. 
+	 */
+	public URL getModuleRootURL(IModule module) {
+		return null;
 	}
 
 }
