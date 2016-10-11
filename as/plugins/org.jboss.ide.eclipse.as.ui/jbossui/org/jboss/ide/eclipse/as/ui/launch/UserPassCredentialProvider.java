@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
@@ -77,7 +78,7 @@ public class UserPassCredentialProvider implements IProvideCredentials {
 		Display.getDefault().syncExec(new Runnable() { 
 			public void run() {
 				RequiredCredentialsDialog d = new RequiredCredentialsDialog(
-						new Shell(), initialUser, initialPass);
+						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), initialUser, initialPass);
 				if( d.open() == Window.OK) {
 					if( d.getNeverAskAgain() ) {
 						// persist this setting 
