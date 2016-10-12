@@ -55,14 +55,17 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	}
 	
 	public void setDefaults(IProgressMonitor monitor) {
-		IRuntime rt = getServer().getRuntime();
-		if( rt != null ) {
-			getServerWorkingCopy().setName(ServerNamingUtility.getDefaultServerName(rt));
-		} else {
-			getServerWorkingCopy().setName(ServerNamingUtility.getNextShortServerName(getServer().getServerType()));
-		}
+		// on setDefaults, set both defaults and updates / overrides
 		setAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, true);
 		getServerWorkingCopy().setHost("localhost"); //$NON-NLS-1$
+		IRuntime rt = getServer().getRuntime();
+		String name = rt != null ?  ServerNamingUtility.getDefaultServerName(rt) : ServerNamingUtility.getNextShortServerName(getServer().getServerType());
+		getServerWorkingCopy().setName(name);
+	}
+	
+	public void newServerDetailsChanged(IProgressMonitor monitor) {
+		// Change only what's necessary to respond to a change of the server host or runtime during new server wizard
+		// We change nothing in this case
 	}
 	
 	public void importRuntimeConfiguration(IRuntime runtime, IProgressMonitor monitor) throws CoreException {

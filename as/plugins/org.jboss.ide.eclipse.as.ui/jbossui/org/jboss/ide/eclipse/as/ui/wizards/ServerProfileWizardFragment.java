@@ -750,15 +750,12 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		System.out.println(evt);
 		if( evt.getPropertyName().equals(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS)) {
 			Boolean newVal = (Boolean)evt.getNewValue();
 			if( !newVal.equals(executeShellScripts.getSelection()))
 				executeShellScripts.setSelection(newVal);
-			System.out.println(newVal);
 		}
 		if( evt.getPropertyName().equals("runtime-id")) {
-			Object val = evt.getNewValue();
 			runtimeComboChanged();
 		}
 		updateErrorMessage();
