@@ -10,12 +10,15 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.archives.ui.actions;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IActionDelegate;
 import org.eclipse.ui.PlatformUI;
+import org.jboss.ide.eclipse.archives.ui.PackagesUIPlugin;
 import org.jboss.ide.eclipse.archives.ui.wizards.NewJARWizard;
 
 /**
@@ -31,7 +34,7 @@ public class NewJARAction implements IActionDelegate {
 			WizardDialog dialog = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), wizard);
 			dialog.open();
 		} catch( Exception e ) {
-			// TODO
+			PackagesUIPlugin.getDefault().getLog().log(new Status(IStatus.ERROR, PackagesUIPlugin.PLUGIN_ID, e.getMessage(), e));
 		}
 	}
 

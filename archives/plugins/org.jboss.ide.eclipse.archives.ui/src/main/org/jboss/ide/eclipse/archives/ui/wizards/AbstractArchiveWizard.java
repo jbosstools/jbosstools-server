@@ -26,6 +26,7 @@ import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.navigator.CommonViewer;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModelException;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
@@ -127,24 +128,32 @@ public abstract class AbstractArchiveWizard extends WizardWithNotification imple
 		}
 		return performed;
 	}
+	
+	/*
+	 * This method is of dubious utility, and I'm not sure why it's even being requested here.  
+	 */
+	private IStructuredSelection getArchivesViewSelection() {
+		ProjectArchivesCommonView view = ProjectArchivesCommonView.getInstance();
+		if( view != null ) {
+			CommonViewer cv = view.getCommonViewer();
+			if( cv != null ) {
+				ISelection sel = cv.getSelection();
+				return sel instanceof IStructuredSelection ? ((IStructuredSelection)sel) : null;
+			}
+		}
+		return null;
+	}
 
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		if (selection == null) {
-			ISelection sel = ProjectArchivesCommonView.getInstance().getCommonViewer().getSelection();
-			if ( !(sel instanceof IStructuredSelection)) {
-				return;
-			}
-			selection = (IStructuredSelection) sel;
-		}
+		IStructuredSelection fromArchivesView = getArchivesViewSelection();
+		selection = selection == null ? fromArchivesView : selection;
 		init(selection);
 
-		if (initialDestinationPath == null) {
-			ISelection sel = ProjectArchivesCommonView.getInstance().getCommonViewer().getSelection();
-			if ( !(sel instanceof IStructuredSelection)) {
-				return;
-			}
-			selection = (IStructuredSelection) sel;
-			init(selection);
+		// No initial dest or node set?  I guess? 
+		if (initialDestinationPath == null && initialDestinationNode == null) {
+			selection = fromArchivesView;
+			if( selection != null )
+				init(selection);
 		}
 		setNeedsProgressMonitor(true);
 	}
