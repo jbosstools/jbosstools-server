@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.ui.wizards;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
@@ -34,11 +35,15 @@ import org.osgi.service.prefs.BackingStoreException;
  *
  */
 public class JBInitialSelectionProvider extends InitialSelectionProvider implements IServerLifecycleListener, IRuntimeLifecycleListener {
-	private static String LAST_SERVER_CREATED_KEY = "org.jboss.ide.eclipse.as.ui.wizards.LAST_SERVER_CREATED"; //$NON-NLS-1$
-	private static String LAST_RUNTIME_CREATED_KEY = "org.jboss.ide.eclipse.as.ui.wizards.LAST_RUNTIME_CREATED"; //$NON-NLS-1$
-	private static String DEFAULT_INITIAL_SERVER_TYPE = "DEFAULT_SERVER_TYPE"; //$NON-NLS-1$
-	private static String DEFAULT_INITIAL_RUNTIME_TYPE = "DEFAULT_RUNTIME_TYPE"; //$NON-NLS-1$
+	private static final String LAST_SERVER_CREATED_KEY = "org.jboss.ide.eclipse.as.ui.wizards.LAST_SERVER_CREATED"; //$NON-NLS-1$
+	private static final String LAST_RUNTIME_CREATED_KEY = "org.jboss.ide.eclipse.as.ui.wizards.LAST_RUNTIME_CREATED"; //$NON-NLS-1$
+	private static final String LAST_SERVER_TYPE_CREATED_KEY = "org.jboss.ide.eclipse.as.ui.wizards.LAST_SERVER_TYPE_CREATED"; //$NON-NLS-1$
+	private static final String LAST_RUNTIME_TYPE_CREATED_KEY = "org.jboss.ide.eclipse.as.ui.wizards.LAST_RUNTIME_TYPE_CREATED"; //$NON-NLS-1$
 	
+	
+	private static final String DEFAULT_INITIAL_SERVER_TYPE = "DEFAULT_SERVER_TYPE"; //$NON-NLS-1$
+	private static final String DEFAULT_INITIAL_RUNTIME_TYPE = "DEFAULT_RUNTIME_TYPE"; //$NON-NLS-1$
+
 	private static final String LATEST_JBT_SERVER = IJBossToolingConstants.SERVER_WILDFLY_80;
 	private static final String LATEST_JBT_RUNTIME = IJBossToolingConstants.WILDFLY_80;
 	
@@ -58,15 +63,24 @@ public class JBInitialSelectionProvider extends InitialSelectionProvider impleme
 		return ServerCore.findRuntimeType(newestJBoss);
 	}
 	
-
 	@Override
 	public IRuntimeType getInitialSelection(IRuntimeType[] runtimeTypes) {
-		return (IRuntimeType)getInitialSelection(runtimeTypes, LAST_RUNTIME_CREATED_KEY, true, getDefaultRuntimeType());
+		return (IRuntimeType)getInitialSelection(runtimeTypes, LAST_RUNTIME_TYPE_CREATED_KEY, true, getDefaultRuntimeType());
 	}
 	
 	@Override
+	public IServer getInitialSelection(IServer[] servers) {
+		IEclipsePreferences prefs =  InstanceScope.INSTANCE.getNode(JBossServerUIPlugin.PLUGIN_ID);
+		String last = prefs.get(LAST_SERVER_CREATED_KEY, null);
+		IServer lastServer = last == null ? null : ServerCore.findServer(last);
+		List<IServer> all = Arrays.asList(servers);
+		return lastServer == null ? null : all.contains(lastServer) ? lastServer : null;
+	}
+	
+
+	@Override
 	public IServerType getInitialSelection(IServerType[] serverTypes) {
-		return (IServerType)getInitialSelection(serverTypes, LAST_SERVER_CREATED_KEY, true, getDefaultServerType());
+		return (IServerType)getInitialSelection(serverTypes, LAST_SERVER_TYPE_CREATED_KEY, true, getDefaultServerType());
 	}
 	
 	private Object getInitialSelection(Object[] types, String lastKey, boolean isServer, Object defaultType) {
@@ -79,13 +93,9 @@ public class JBInitialSelectionProvider extends InitialSelectionProvider impleme
 		
 		Object lastObject = null;
 		if( isServer ) {
-			// Find the last server type
-			IServer lastServer = last == null ? null : ServerCore.findServer(last);
-			lastObject = lastServer == null ? null : lastServer.getServerType();
+			lastObject = (last == null ? null : ServerCore.findServerType(last));
 		} else {
-			// Find the last runtime type
-			IRuntime lastRuntime = last == null ? null : ServerCore.findRuntime(last);
-			lastObject = lastRuntime == null ? null : lastRuntime.getRuntimeType();
+			lastObject = (last == null ? null : ServerCore.findRuntimeType(last));
 		}
 		
 		if( lastObject != null && typesList.contains(lastObject))
@@ -111,10 +121,12 @@ public class JBInitialSelectionProvider extends InitialSelectionProvider impleme
 	
 	public void serverAdded(IServer server) {
 		store( server == null ? null : server.getId(), LAST_SERVER_CREATED_KEY);
+		store( server == null ? null : server.getServerType().getId(), LAST_SERVER_TYPE_CREATED_KEY);
 	}
 	
 	public void runtimeAdded(IRuntime runtime) {
 		store( runtime == null ? null : runtime.getId(), LAST_RUNTIME_CREATED_KEY);
+		store( runtime == null ? null : runtime.getRuntimeType().getId(), LAST_RUNTIME_TYPE_CREATED_KEY);
 	}
 	
 	public void serverChanged(IServer server) {

@@ -11,6 +11,8 @@
 package org.jboss.ide.eclipse.as.ui.wizards;
 
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -70,7 +72,7 @@ import org.jboss.ide.eclipse.as.wtp.ui.util.FormDataUtility;
  * 
  *
  */
-public class ServerProfileWizardFragment extends WizardFragment implements ICompletable {
+public class ServerProfileWizardFragment extends WizardFragment implements ICompletable, PropertyChangeListener {
 	
 	/**
 	 * Task model id for an IRuntime that is contributed by *our* fragment and not the wtp fragments
@@ -171,6 +173,11 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		this.handle = handle;
 		IRuntime initialRuntime = getRuntimeFromTaskModel();
 		IServerModeUICallback cb = getOrCreateCallback();
+		
+		
+		IServerWorkingCopy swc = (IServerWorkingCopy)getTaskModel().getObject(TaskModel.TASK_SERVER);
+		swc.addPropertyChangeListener(this);
+		
 		
 		// make modifications to parent
 		setPageDetails(handle);
@@ -510,7 +517,12 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 	}
 	
 	// Fire the delayed setting of the runtime
+	private boolean updatingRuntime = false;
 	private void fireSetRuntimeCommand(IServerWorkingCopy server, final IRuntime rt) {
+		if( updatingRuntime ) {
+			return;
+		}
+		updatingRuntime = true;
 		IServerModeUICallback o = (IServerModeUICallback)getTaskModel().getObject(WORKING_COPY_CALLBACK);
 		o.execute(new ServerCommand(server, "Set Runtime"){
 			public void execute() {
@@ -519,6 +531,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 			public void undo() {
 			}
 		});
+		updatingRuntime = false;
 	}
 	
 	
@@ -734,4 +747,20 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 			}
 		}
 	};
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		System.out.println(evt);
+		if( evt.getPropertyName().equals(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS)) {
+			Boolean newVal = (Boolean)evt.getNewValue();
+			if( !newVal.equals(executeShellScripts.getSelection()))
+				executeShellScripts.setSelection(newVal);
+			System.out.println(newVal);
+		}
+		if( evt.getPropertyName().equals("runtime-id")) {
+			Object val = evt.getNewValue();
+			runtimeComboChanged();
+		}
+		updateErrorMessage();
+	}
 }
