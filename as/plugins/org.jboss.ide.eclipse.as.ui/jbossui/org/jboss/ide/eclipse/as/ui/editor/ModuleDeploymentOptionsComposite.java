@@ -127,10 +127,9 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 			viewer.getTree().setLayoutData(treeData);
 		} else {
 			FormData filterData = UIUtil.createFormData2(0, 5, viewer.getTree(),-5, 0,5,100,-5);
-			filterData.height = 45;	
 			filterComposite.setLayoutData(filterData);
 			
-			FormData treeData = UIUtil.createFormData2(filterComposite, 5, 100,-5, 0,5,100,-5);
+			FormData treeData = UIUtil.createFormData2(filterComposite, 10, 100,-5, 0,5,100,-5);
 			viewer.getTree().setLayoutData(treeData);
 		}
 		return root;
