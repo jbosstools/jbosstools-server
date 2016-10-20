@@ -16,6 +16,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 	</modules>
 
 	<properties>
+                <enforceFailOnUIDependencyInCore>false</enforceFailOnUIDependencyInCore>
 		<jbosstools.test.jboss.home.3.2>${requirementsDirectory}/jboss-3.2.8.SP1</jbosstools.test.jboss.home.3.2>
 		<jbosstools.test.jboss.home.4.0>${requirementsDirectory}/jboss-4.0.5.GA</jbosstools.test.jboss.home.4.0>
 		<jbosstools.test.jboss.home.4.2>${requirementsDirectory}/jboss-4.2.3.GA</jbosstools.test.jboss.home.4.2> 
