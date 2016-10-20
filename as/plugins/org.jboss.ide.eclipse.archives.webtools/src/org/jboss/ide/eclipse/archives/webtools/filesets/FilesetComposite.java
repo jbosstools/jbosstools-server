@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.archives.ui.util.composites.FilesetPreviewComposite;
 import org.jboss.ide.eclipse.archives.webtools.Messages;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.path.internal.Fileset;
 
 public class FilesetComposite extends Composite {
 	

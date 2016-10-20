@@ -24,6 +24,7 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.path.internal.Fileset;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.tools.as.wst.server.ui.xpl.ServerToolTip;

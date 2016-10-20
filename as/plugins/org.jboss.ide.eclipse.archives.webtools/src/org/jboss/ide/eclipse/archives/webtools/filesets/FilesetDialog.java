@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.archives.webtools.Messages;
 import org.jboss.ide.eclipse.archives.webtools.filesets.FilesetComposite.IFilesetCompositeErrorDisplay;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.path.internal.Fileset;
 
 public class FilesetDialog extends TitleAreaDialog implements IFilesetCompositeErrorDisplay {
 	protected Fileset fileset;

@@ -25,6 +25,7 @@ import org.jboss.ide.eclipse.archives.webtools.IntegrationPlugin;
 import org.jboss.ide.eclipse.archives.webtools.filesets.FilesetContentProvider.FolderWrapper;
 import org.jboss.ide.eclipse.archives.webtools.filesets.FilesetContentProvider.PathWrapper;
 import org.jboss.ide.eclipse.archives.webtools.filesets.FilesetContentProvider.ServerWrapper;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.path.internal.Fileset;
 
 public class FilesetLabelProvider extends LabelProvider {
 

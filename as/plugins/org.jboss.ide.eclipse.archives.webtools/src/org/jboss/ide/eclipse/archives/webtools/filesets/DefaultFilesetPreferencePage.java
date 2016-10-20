@@ -21,6 +21,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.jboss.ide.eclipse.archives.webtools.Messages;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.path.internal.Fileset;
 import org.jboss.ide.eclipse.as.ui.preferences.ServerTypePreferencePage;
 
 public class DefaultFilesetPreferencePage extends ServerTypePreferencePage {

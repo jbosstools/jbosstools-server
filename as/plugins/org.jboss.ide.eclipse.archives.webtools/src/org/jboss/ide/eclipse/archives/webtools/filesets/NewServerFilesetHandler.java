@@ -25,6 +25,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.archives.webtools.IntegrationPlugin;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.path.internal.Fileset;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 
 public class NewServerFilesetHandler extends UnitedServerListener {

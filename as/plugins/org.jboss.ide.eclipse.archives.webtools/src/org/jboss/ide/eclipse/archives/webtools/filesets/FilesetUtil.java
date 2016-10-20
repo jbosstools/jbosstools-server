@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.archives.webtools.IntegrationPlugin;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.path.internal.Fileset;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.util.IMemento;
 import org.jboss.ide.eclipse.as.core.util.XMLMemento;

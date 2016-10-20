@@ -10,24 +10,14 @@
  ******************************************************************************/
 package org.jboss.tools.as.itests;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.MalformedInputException;
 import java.util.Collection;
 
-import junit.framework.TestCase;
-
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.archives.webtools.filesets.Fileset;
 import org.jboss.ide.eclipse.archives.webtools.filesets.FilesetUtil;
-import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathCategory;
-import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
-import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.path.internal.Fileset;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
@@ -37,13 +27,14 @@ import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
 import org.jboss.tools.as.test.core.parametized.server.ServerParameterUtils;
-import org.jboss.tools.test.util.JobUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import junit.framework.TestCase;
 
 /**
  * This class will test properties of a default created server and runtime 

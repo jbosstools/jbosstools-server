@@ -12,7 +12,6 @@ package org.jboss.ide.eclipse.as.classpath.core.runtime.path.internal;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.jboss.ide.eclipse.archives.webtools.filesets.Fileset;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.IRuntimePathProvider;
 import org.jboss.tools.foundation.core.expressions.IVariableResolver;
 import org.jboss.tools.foundation.core.xml.XMLMemento;

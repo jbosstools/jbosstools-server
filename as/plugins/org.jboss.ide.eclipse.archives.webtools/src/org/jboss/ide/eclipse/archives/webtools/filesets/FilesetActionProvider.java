@@ -49,6 +49,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.archives.webtools.Messages;
 import org.jboss.ide.eclipse.archives.webtools.filesets.FilesetContentProvider.PathWrapper;
 import org.jboss.ide.eclipse.archives.webtools.filesets.FilesetContentProvider.ServerWrapper;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.path.internal.Fileset;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
