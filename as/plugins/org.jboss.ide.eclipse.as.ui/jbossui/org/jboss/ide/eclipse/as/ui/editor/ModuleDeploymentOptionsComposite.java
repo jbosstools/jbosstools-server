@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
@@ -38,6 +39,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -138,32 +140,42 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 	protected Composite createFilterComposite(Composite root) {
 		
 		Composite wrapper = new Composite(root, SWT.NONE);
-		wrapper.setLayout(new FormLayout());
+		wrapper.setLayout(new GridLayout(20, true));
 		tk.adapt(wrapper);
 
+		Composite wrapper1 = new Composite(wrapper, SWT.NONE);
+		wrapper1.setLayout(new GridLayout(3, true));
+		tk.adapt(wrapper1);
 		
-		refreshLink = new Button(wrapper, SWT.PUSH);
-		refreshLink.setText(Messages.EditorRefreshViewer);
 		
-
 		// Newer stuff
-		Label comboLabel = new Label(wrapper, SWT.NULL);
+		Label comboLabel = new Label(wrapper1, SWT.NULL);
 		comboLabel.setText(Messages.EditorDeploymentPageFilterBy);
-		filterCombo = new Combo(wrapper, SWT.READ_ONLY);
+		filterCombo = new Combo(wrapper1, SWT.READ_ONLY);
 		filterCombo.setItems(getViewerFilterTypes());
 		filterCombo.select(0);
 		
 		filterText = new Text(wrapper, SWT.SINGLE |SWT.BORDER);
 		
+		refreshLink = new Button(wrapper, SWT.PUSH);
+		refreshLink.setText(Messages.EditorRefreshViewer);
 		
+
+
 		// Organize widgets
+		comboLabel.setLayoutData(  GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).span( 1, 1).grab(true, false).create());
+		filterCombo.setLayoutData( GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).span( 2, 1).grab(true, false).create());
 		
-		comboLabel.setLayoutData(UIUtil.createFormData2(null,0,100,-9,0,5,null,0));
-		FormData comboData = UIUtil.createFormData2(null,0,100,-5,comboLabel,5,null,0);
-		filterCombo.setLayoutData(comboData);
-		filterText.setLayoutData(UIUtil.createFormData2(0,3,100,-2,filterCombo,5,70,-5));
-		FormData linkData = UIUtil.createFormData2(null, 0, 100,-5, null,0,100,-5);
-		refreshLink.setLayoutData(linkData);
+		wrapper1.setLayoutData(    GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).span( 5, 1).grab(true, false).create());
+		filterText.setLayoutData(  GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).span(12, 1).grab(true, false).create());
+		refreshLink.setLayoutData( GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).span( 3, 1).grab(true, false).create());
+		
+//		comboLabel.setLayoutData(UIUtil.createFormData2(null,0,100,-9,0,5,null,0));
+//		FormData comboData = UIUtil.createFormData2(null,0,100,-5,comboLabel,5,null,0);
+//		filterCombo.setLayoutData(comboData);
+//		filterText.setLayoutData(UIUtil.createFormData2(0,3,100,-2,filterCombo,5,70,-5));
+//		FormData linkData = UIUtil.createFormData2(null, 0, 100,-5, null,0,100,-5);
+//		refreshLink.setLayoutData(linkData);
 
 		
 		// Add the listeners
