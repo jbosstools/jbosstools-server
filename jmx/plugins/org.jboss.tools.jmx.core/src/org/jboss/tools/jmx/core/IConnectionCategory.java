@@ -31,10 +31,6 @@ public interface IConnectionCategory {
 	public static final String PROCESS_CATEGORY = "IConnectionCategory.process";
 
 	
-//	public static final String DEFINED_CATEGORY = "User-Defined Connections";
-//	public static final String SERVER_CATEGORY = "Server Connections";
-//	public static final String PROCESS_CATEGORY = "Local Processes";
-	
 	/**
 	 * Get a string category ID 
 	 * @return

@@ -126,41 +126,62 @@ public class OperationDetails extends AbstractFormPart implements IDetailsPage {
         }
         // composite for method signature [ return type | method button | ( |
         // Composite(1..n parameters) | ) ]
-        Composite c = toolkit.createComposite(container, SWT.NONE);
-        c.setLayout(new GridLayout(5, false));
+        Composite operationComposite = toolkit.createComposite(container, SWT.BORDER);
+        GridLayout gl = new GridLayout(5, false);
+        gl.verticalSpacing = 10;
+        operationComposite.setLayout(gl);
+        
         // return type
-        Label returnTypeLabel = toolkit.createLabel(c,
-                opInfo.getReturnType() != null ? StringUtils.toString(opInfo
-                        .getReturnType()) : "void"); //$NON-NLS-1$
+        String returnString = opInfo.getReturnType() != null ? StringUtils.toString(opInfo.getReturnType()) : "void"; //$NON-NLS-1$
+        Label returnTypeLabel = toolkit.createLabel(operationComposite,returnString);
         returnTypeLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER,
                 false, false));
         // method name
-        InvokeOperationButton invocationButton = new InvokeOperationButton(c,
+        InvokeOperationButton invocationButton = new InvokeOperationButton(operationComposite,
                 SWT.PUSH);
-        Label leftParenthesis = toolkit.createLabel(c, "("); //$NON-NLS-1$
-        leftParenthesis.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER,
-                false, false));
+        Label leftParenthesis = toolkit.createLabel(operationComposite, "("); //$NON-NLS-1$
+        GridData leftParenData = new GridData(SWT.BEGINNING, SWT.CENTER, false, false);
+        leftParenData.horizontalSpan = 3;
+        leftParenthesis.setLayoutData(leftParenData);
 
-        // parameters
+        
+        
+        
+        
+        /*
+         * Parameters
+         *    Each paramter gets its own line, 5 columns
+         *    Column 1 is buffer (indentation)
+         *    Column 2 is Text for inputting value
+         *    Column 3 is param name
+         *    Column 4 and Column 5 are description
+         */
         final MBeanParameterInfo[] params = opInfo.getSignature();
         Text[] textParams = null;
         if (params.length > 0) {
-            Composite paramsComposite = toolkit.createComposite(c, SWT.NONE);
-            paramsComposite.setLayout(new GridLayout(1, false));
-            paramsComposite.setLayoutData(new GridData(SWT.BEGINNING, SWT.BOTTOM,
-                    false, false));
             textParams = new Text[params.length];
             for (int j = 0; j < params.length; j++) {
+            	Label buffer = new Label(operationComposite, SWT.NONE);
                 MBeanParameterInfo param = params[j];
-                textParams[j] = new Text(paramsComposite, SWT.SINGLE
-                        | SWT.BORDER);
+                textParams[j] = new Text(operationComposite, SWT.SINGLE | SWT.BORDER);
                 textParams[j].setText(StringUtils.toString(param.getType()));
-                textParams[j].setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM,
-                        true, true));
+                GridData textData = new GridData(SWT.LEFT, SWT.TOP,true, true);
+                textData.minimumWidth = 100;
+                textParams[j].setLayoutData(textData);
+                
+                Label name = new Label(operationComposite,SWT.NONE);
+                name.setText(params[j].getName() == null ? "" : params[j].getName()); //$NON-NLS-1$
+                name.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true));
+                
+                Label paramDesc = new Label(operationComposite, SWT.WRAP);
+                paramDesc.setText(params[j].getDescription() == null ? "" : params[j].getDescription()); //$NON-NLS-1$
+                GridData gd = new GridData(SWT.FILL, SWT.BOTTOM, false, true);
+                gd.horizontalSpan = 2;
+                gd.widthHint = 250;
+                paramDesc.setLayoutData(gd);;
             }
-            paramsComposite.pack();
         }
-        Label rightParenthesis = toolkit.createLabel(c, ")"); //$NON-NLS-1$
+        Label rightParenthesis = toolkit.createLabel(operationComposite, ")"); //$NON-NLS-1$
         rightParenthesis.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER,
                 false, false));
 
