@@ -15,6 +15,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 
 import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
 
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
@@ -70,10 +71,8 @@ public final class ClassCollectingHCRListener extends ServerHotCodeReplaceListen
 				}
 				wrap.run(new IJMXRunnable() {
 					public void run(MBeanServerConnection connection) throws Exception {
-						final MemoryMXBean memoryBean = ManagementFactory.newPlatformMXBeanProxy(connection,
-								ManagementFactory.MEMORY_MXBEAN_NAME, MemoryMXBean.class);
-						memoryBean.gc();
-						memoryBean.gc();
+						Object ret = connection.invoke(new ObjectName(ManagementFactory.MEMORY_MXBEAN_NAME), "gc", new Object[0], new String[0]); //$NON-NLS-1$
+						Object ret2 = connection.invoke(new ObjectName(ManagementFactory.MEMORY_MXBEAN_NAME), "gc", new Object[0], new String[0]); //$NON-NLS-1$
 					}
 				});
 			} catch (JMXException | IOException e) {

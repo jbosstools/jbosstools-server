@@ -52,17 +52,19 @@ public class NodeUtils {
 			public void run(MBeanServerConnection connection) throws Exception {
 		        monitor.beginTask(JMXCoreMessages.LoadMBeans, 1000);
 				Set beanInfo = connection.queryNames(new ObjectName("*:*"), null); //$NON-NLS-1$
-				monitor.worked(100);
-				SubProgressMonitor subMon = new SubProgressMonitor(monitor, 900);
-				subMon.beginTask(JMXCoreMessages.InspectMBeans, beanInfo.size() * 100);
 		        _root[0] = NodeBuilder.createRoot(connectionWrapper);
-		        Iterator iter = beanInfo.iterator();
-		        while (iter.hasNext()) {
-		            ObjectName on = (ObjectName) iter.next();
-		            NodeBuilder.addToTree(_root[0].getMBeansNode(), on, connection);
-		        	subMon.worked(100);
-		        }
-		        subMon.done();
+				monitor.worked(100);
+				if( beanInfo != null ) {
+					SubProgressMonitor subMon = new SubProgressMonitor(monitor, 900);
+					subMon.beginTask(JMXCoreMessages.InspectMBeans, beanInfo.size() * 100);
+			        Iterator iter = beanInfo.iterator();
+			        while (iter.hasNext() && !monitor.isCanceled()) {
+			            ObjectName on = (ObjectName) iter.next();
+			            NodeBuilder.addToTree(_root[0].getMBeansNode(), on, connection);
+			        	subMon.worked(100);
+			        }
+			        subMon.done();
+				}
 		        monitor.done();
 			}
     	});

@@ -40,6 +40,7 @@ import org.jboss.tools.jmx.core.tree.Root;
 import org.jboss.tools.jmx.ui.Messages;
 import org.jboss.tools.jmx.ui.Refreshable;
 import org.jboss.tools.jmx.ui.internal.JMXImages;
+import org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorerContentProvider.ProviderCategory;
 
 
 /**
@@ -84,6 +85,8 @@ public class RefreshAction extends Action implements IWorkbenchWindowActionDeleg
 			Refreshable refreshable = (Refreshable) onode;
 			refreshable.refresh();
 			refreshViewer(onode);
+		} else if( onode instanceof ProviderCategory) {
+			viewer.refresh(onode, true);
 		}
 		else {
 			

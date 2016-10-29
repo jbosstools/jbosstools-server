@@ -48,6 +48,7 @@ import org.jboss.tools.jmx.ui.internal.actions.MBeanServerConnectAction;
 import org.jboss.tools.jmx.ui.internal.actions.MBeanServerDisconnectAction;
 import org.jboss.tools.jmx.ui.internal.actions.NewConnectionAction;
 import org.jboss.tools.jmx.ui.internal.actions.RefreshAction;
+import org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorerContentProvider.ProviderCategory;
 
 
 /**
@@ -106,7 +107,7 @@ public class ActionProvider extends CommonActionProvider {
 			//menu.add(new Separator());
 		}
 
-		if (firstSelection == null || firstSelection instanceof Root || firstSelection instanceof IConnectionWrapper) {
+		if (firstSelection == null || firstSelection instanceof Root || firstSelection instanceof IConnectionWrapper || firstSelection instanceof ProviderCategory) {
 			menu.add(newConnectionAction);
 			//menu.add(new Separator());
 		}

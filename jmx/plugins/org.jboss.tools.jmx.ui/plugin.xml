@@ -144,6 +144,9 @@
                      value="org.jboss.tools.jmx.core.IConnectionWrapper">
                </instanceof>
                <instanceof
+                     value="org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorerContentProvider$ProviderCategory">
+               </instanceof>
+               <instanceof
                      value="org.jboss.tools.jmx.core.tree.Node">
                </instanceof>
                <instanceof

@@ -46,7 +46,9 @@ public class UnitedServerListenerManager implements
 	}
 	
 	protected CopyOnWriteArrayList<UnitedServerListener> list;
-	private boolean isInitialized = false;
+	private boolean delegatesInitialized = false;
+	
+	
 	private UnitedServerListenerManager() {
 		list = new CopyOnWriteArrayList<UnitedServerListener>();
 		
@@ -72,17 +74,11 @@ public class UnitedServerListenerManager implements
 		// Make unsynchronized calls into WTP to register this class as a listener
 		// If any bundles get loaded because of these calls, even if in new threads, 
 		// execution can still flow into this class's synchronized methods
+		IServer[] allServers = ServerCore.getServers();
 		ServerCore.addServerLifecycleListener(UnitedServerListenerManager.this);
 		ServerCore.addRuntimeLifecycleListener(UnitedServerListenerManager.this);
-		IServer[] allServers = ServerCore.getServers();
 		for( int i = 0; i < allServers.length; i++ ) {
-			// Workaround line for eclipse bug 437351
-			allServers[i].removeServerListener(new UnitedServerListener());
-			// Workaround line for eclipse bug 437351
-			allServers[i].removePublishListener(new UnitedServerListener());
-			
-			allServers[i].addServerListener(UnitedServerListenerManager.this);
-			allServers[i].addPublishListener(UnitedServerListenerManager.this);
+			protectAddManagerAsListeners(allServers[i]);
 		}
 		initializeCurrentListeners();
 	}
@@ -100,19 +96,18 @@ public class UnitedServerListenerManager implements
 	}
 
 
-	private synchronized boolean isInitialized() {
-		return isInitialized;
+	private synchronized boolean isDelegatesInitialized() {
+		return delegatesInitialized;
 	}
 	
-	private synchronized void setInitialized(boolean val) {
-		isInitialized = val;
+	private synchronized void setDelegatesInitialized(boolean val) {
+		delegatesInitialized = val;
 	}
-	
 	public void addListener(UnitedServerListener listener) {
 		boolean requiresInit = false;
 		synchronized(this) {
 			if( !list.contains(listener)) {
-				requiresInit = isInitialized();
+				requiresInit = isDelegatesInitialized();
 				list.add(listener);
 			}
 		}
@@ -130,7 +125,7 @@ public class UnitedServerListenerManager implements
 			// Set isInitialized to true now instead of later. 
 			// If somehow any init calls load bundles or add new listeners, 
 			// the addListener method will need to initialize the new listeners
-			setInitialized(true);
+			setDelegatesInitialized(true);
 		}
 		while( it.hasNext() ) {
 			initializeListener(it.next());
@@ -153,6 +148,14 @@ public class UnitedServerListenerManager implements
 	}
 	
 	
+	private synchronized void protectAddManagerAsListeners(IServer server) {
+		server.removeServerListener(this);
+		server.removePublishListener(this);
+		server.addServerListener(this);
+		server.addPublishListener(this);
+	}
+	
+	
 	/*
 	 * Below are all methods for the various WTP server listener interfaces,
 	 * which we forward directly to all listeners registered in this class's list
@@ -163,8 +166,7 @@ public class UnitedServerListenerManager implements
 	 */
 
 	public void serverAdded(IServer server) {
-		server.addServerListener(this);
-		server.addPublishListener(this);
+		protectAddManagerAsListeners(server);
 		for (UnitedServerListener working : list) {
 			if( working.canHandleServer(server))
 				working.serverAdded(server);

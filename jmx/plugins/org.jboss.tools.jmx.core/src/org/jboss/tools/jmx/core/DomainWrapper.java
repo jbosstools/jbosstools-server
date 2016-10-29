@@ -19,6 +19,8 @@
 
 package org.jboss.tools.jmx.core;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -53,15 +55,18 @@ public class DomainWrapper {
     public MBeanInfoWrapper[] getMBeanInfos() {
         try {
             Set set = mbsc.queryNames(getPattern(), null);
-            MBeanInfoWrapper[] instances = new MBeanInfoWrapper[set.size()];
-            int i = 0;
+            ArrayList<MBeanInfoWrapper> ret = new ArrayList<MBeanInfoWrapper>();
             for (Iterator iter = set.iterator(); iter.hasNext();) {
                 ObjectName on = (ObjectName) iter.next();
-                MBeanInfo info = mbsc.getMBeanInfo(on);
-                instances[i] = new MBeanInfoWrapper(on, info, mbsc, null);
-                i++;
+                MBeanInfo info = null;
+                try {
+                	info = mbsc.getMBeanInfo(on);
+                    ret.add(new MBeanInfoWrapper(on, info, mbsc, null));
+                } catch(IOException ioe) {
+                	// silently ignore
+                }
             }
-            return instances;
+            return (MBeanInfoWrapper[]) ret.toArray(new MBeanInfoWrapper[ret.size()]);
         } catch (Exception e) {
             e.printStackTrace();
             return new MBeanInfoWrapper[0];

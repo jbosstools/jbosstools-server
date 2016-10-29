@@ -10,6 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.jmx.integration;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,69 +44,111 @@ public abstract class AbstractJBossJMXConnectionProvider extends AbstractConnect
 	
 	private UnitedServerListener createUnitedListener() {
 		UnitedServerListener listener = new UnitedServerListener() {
+			public boolean canHandleServer(IServer server) {
+				return true;
+			}
+
+			// server state or publish event
 			public void serverChanged(ServerEvent event) {
 				if( belongsHere(event.getServer())) {
-					getConnections();
+					init();
+					boolean switchToStarted = serverSwitchesToState(event, IServer.STATE_STARTED);
+					boolean switchToStopped = serverSwitchesToState(event, IServer.STATE_STOPPED);
+					
 					IConnectionWrapper con = idToConnection.get(event.getServer().getId());
-					if( con != null ) {
-						if( serverSwitchesToState(event, IServer.STATE_STARTED)) {
+					if( switchToStarted ) {
+						if( con == null && getConnectionPersistenceBehavior() == ON_START) {
+							// We don't have a connection yet, but this server is started, so lets create AND register the connection
+							serverAdded(event.getServer());
+						} else if( con != null ) {
+							// Connection already created it. Let's just register it
 							fireAdded(con);
-						} else if( serverSwitchesToState(event, IServer.STATE_STOPPED)) {
-							fireRemoved(con);
+						}
+					} else if( switchToStopped ) {
+						try {
+							if( con.isConnected()) {
+								con.disconnect();
+							}
+						} catch (IOException e) {
+						}
+						if( getConnectionPersistenceBehavior() == ON_START) {
+							serverRemoved(event.getServer());
+						} else {
+							if( con != null ) {
+								fireRemoved(con);
+							}
 						}
 					}
 				}
 			}
 
-			public void serverAdded(IServer server) {
+			// Detail in server has changed (ie a property / attribute)
+			public void serverChanged(IServer server) {
 				if( belongsHere(server)) {
-					getConnections();
-					if( !idToConnection.containsKey(server.getId())) {
+					init();
+					Object o = idToConnection.get(server.getId());
+					if( o == null && getConnectionPersistenceBehavior() == ON_SERVER_ADD_REMOVE) {
+						// A jmx con. should have been registered earlier, but it was missed somehow
 						IConnectionWrapper connection = createConnection(server);
 						idToConnection.put(server.getId(), connection);
 						if( connection != null && server.getServerState() == IServer.STATE_STARTED )
-							fireAdded(idToConnection.get(server.getId()));
+							fireAdded(connection);
 					}
+				}
+			}
+			
+			public void serverAdded(IServer server) {
+				if( belongsHere(server)) {
+					init();
+					IConnectionWrapper con = idToConnection.get(server.getId());
+					if( con != null ) {
+						serverRemoved(server);
+					}
+					if(getConnectionPersistenceBehavior() == ON_SERVER_ADD_REMOVE || server.getServerState() == IServer.STATE_STARTED ) {
+						IConnectionWrapper connection = createConnection(server);
+						idToConnection.put(server.getId(), connection);
+						if( connection != null && server.getServerState() == IServer.STATE_STARTED ) {
+							fireAdded(connection);
+						}
+					} 
 				}
 			}
 
-			public void serverChanged(IServer server) {
-				if( belongsHere(server)) {
-					getConnections();
-					Object o = idToConnection.get(server.getId());
-					if( o == null ) {
-						IConnectionWrapper connection = createConnection(server);
-						idToConnection.put(server.getId(), connection);
-						if( connection != null && server.getServerState() == IServer.STATE_STARTED )
-							fireAdded(idToConnection.get(server.getId()));
-					}
-				}
-			}
 
 			public void serverRemoved(IServer server) {
 				if( belongsHere(server)) {
-					IConnectionWrapper connection;
-					if( idToConnection != null ) {
-						connection = idToConnection.get(server.getId());
-						if( connection != null ) {
-							idToConnection.remove(server.getId());
-							fireRemoved(connection);
-						}
-					} else {
-						// hasn't been initialized yet
-						getConnections();
-						
-						// but now its missing from the collection, so make one up
-						IConnectionWrapper dummy = createConnection(server);
-						
-						// Make sure we don't fire a removal for a connection that doesn't exist
-						if( dummy != null )
-							fireRemoved(dummy);
+					init();
+					IConnectionWrapper connection = idToConnection.get(server.getId());
+					if( connection != null ) {
+						idToConnection.remove(server.getId());
+						fireRemoved(connection);
 					}
+				}
+			}
+			
+
+			protected void init() {
+				if( idToConnection == null ) {
+					getConnections();
 				}
 			}
 		};
 		return listener;
+	}
+	
+	
+	protected static final boolean ON_SERVER_ADD_REMOVE = false;
+	protected static final boolean ON_START = true;
+	
+	/**
+	 * Should we make a new connection each time the server starts?
+	 * This is an internal cache issue only. 
+	 * The viewer will still only show connections for servers that are started no matter what
+	 * 
+	 * @return true if new connection, false if re-use old object
+	 */
+	protected boolean getConnectionPersistenceBehavior() {
+		return ON_SERVER_ADD_REMOVE;
 	}
 	
 	protected abstract boolean belongsHere(IServer server);
@@ -126,11 +169,13 @@ public abstract class AbstractJBossJMXConnectionProvider extends AbstractConnect
 			idToConnection = new HashMap<String, IConnectionWrapper>();
 			IServer[] allServers = ServerCore.getServers();
 			IConnectionWrapper c;
-			for( int i = 0; i < allServers.length; i++ ) {
-				if( belongsHere(allServers[i])) {
-					c = createConnection(allServers[i]);
-					if( c != null ) 
-						idToConnection.put(allServers[i].getId(), c);
+			if( getConnectionPersistenceBehavior() == ON_SERVER_ADD_REMOVE ) {
+				for( int i = 0; i < allServers.length; i++ ) {
+					if( belongsHere(allServers[i])) {
+						c = createConnection(allServers[i]);
+						if( c != null ) 
+							idToConnection.put(allServers[i].getId(), c);
+					}
 				}
 			}
 		} 

@@ -7,6 +7,8 @@
  *******************************************************************************/
 package org.jboss.tools.jmx.core.tree;
 
+import java.io.IOException;
+
 import javax.management.MBeanInfo;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
@@ -34,15 +36,26 @@ public class ObjectNameNode extends PropertyNode {
     	final ObjectName on2 = on;
     	try {
         	if( mbsc != null ) {
-        		MBeanInfo mbi = mbsc.getMBeanInfo(on2);
+        		MBeanInfo mbi = null;
+        		try {
+        			mbi = mbsc.getMBeanInfo(on2);
+        		} catch(IOException ioe) {
+        			// Ignore
+        		}
         		if( mbi != null ) {
         			array[0] = new MBeanInfoWrapper(on2, mbi, mbsc, ObjectNameNode.this);
         		}
         	} else {
 		    	connectionWrapper.run(new IJMXRunnable() {
 		    		public void run(MBeanServerConnection mbsc) throws Exception {
-		    			MBeanInfo mbi = mbsc.getMBeanInfo(on2);
-		    			if( mbi != null ) {
+		        		MBeanInfo mbi = null;
+		        		try {
+		        			mbi = mbsc.getMBeanInfo(on2);
+		        		} catch(IOException ioe) {
+		        			// Ignore
+		        		}
+
+		        		if( mbi != null ) {
 		    				array[0] = new MBeanInfoWrapper(on2, mbi, mbsc, ObjectNameNode.this);
 		    			}
 		    		}

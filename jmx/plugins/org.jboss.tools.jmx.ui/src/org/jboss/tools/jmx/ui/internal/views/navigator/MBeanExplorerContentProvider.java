@@ -67,7 +67,6 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
     	ExtensionManager.addConnectionProviderListener(this);
     	loading = new HashMap<IConnectionWrapper, DelayProxy>();
     }
-
     public void inputChanged(Viewer v, Object oldInput, Object newInput) {
     	this.viewer = v;
     }
@@ -92,7 +91,7 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 
     private ProviderCategory[] categories;
     
-    static class ProviderCategory {
+    public static class ProviderCategory {
     	private String id;
     	public ProviderCategory(String id) {
     		this.id = id;
@@ -293,9 +292,13 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				if( viewer != null && !viewer.getControl().isDisposed()) {
-					if(isJMXView())
-						((TreeViewer)viewer).add(parent, connection);
-					else
+					if(isJMXView()) {
+						if( parent instanceof ProviderCategory) {
+							((TreeViewer)viewer).refresh(parent, true);
+						} else {
+							((TreeViewer)viewer).add(parent, connection);
+						}
+					} else
 						viewer.refresh();
 				}
 			}
