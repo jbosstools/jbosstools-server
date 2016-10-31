@@ -79,6 +79,8 @@ public abstract class AbstractTabularControlFactory
 			public void keyPressed(KeyEvent e) {
                 if(((e.stateMask & SWT.CTRL) == SWT.CTRL) && (e.keyCode == 'c')) {
                 	copyPressed(table2);
+                } else if(((e.stateMask & SWT.COMMAND) == SWT.COMMAND) && (e.keyCode == 'c')) {
+                	copyPressed(table2);
                 }
 			}
 		});
