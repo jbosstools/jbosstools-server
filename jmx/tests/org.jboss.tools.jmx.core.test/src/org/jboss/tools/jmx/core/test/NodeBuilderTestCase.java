@@ -32,6 +32,7 @@ public class NodeBuilderTestCase extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         mockConn = new MockConnectionWrapper();
+        connection = new MockMBeanConnection();
     }
 
     @Override
