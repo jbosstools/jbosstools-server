@@ -18,6 +18,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jdt.launching.IVMInstall;
+import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerType;
@@ -228,7 +230,17 @@ public class ServerCreationTestUtils extends Assert {
 		}
 		return null;
 	}
-	
+
+	public static IServer createServerWithRuntime(String serverType, String name, File f, IVMInstall vmi) throws CoreException {
+		if( f != null ) {
+			IServerType type = ServerCore.findServerType(serverType);
+			if( ServerUtil.isJBoss7(type)) {
+				return createJBoss7IServer(type, f.getAbsolutePath(), name, vmi);
+			}
+			return createServer(serverType, f.getAbsolutePath(), "default", name, vmi);
+		}
+		return null;
+	}
 	private static IPath createAS6AndBelowMockServerDirectory(String name, String twiddleJar, String configurationName )  {
 		IPath loc = mockedServers.append(name);
 		try {
@@ -483,13 +495,17 @@ public class ServerCreationTestUtils extends Assert {
 	
 	private static IServer createServer(String serverType,
 			String location, String configuration, String name) throws CoreException {
-		IRuntime runtime = RuntimeUtils.createRuntime(serverRuntimeMap.get(serverType), location, configuration);
+		return createServer(serverType, location, configuration, name, JavaRuntime.getDefaultVMInstall());
+	}
+	
+	private static IServer createServer(String serverType,
+			String location, String configuration, String name, IVMInstall vmi) throws CoreException {
+		IRuntime runtime = RuntimeUtils.createRuntime(serverRuntimeMap.get(serverType), location, configuration, vmi);
 		IServerType serverType2 = ServerCore.findServerType(serverType);
 		IServerWorkingCopy swc = ServerCreationUtils.createServerWorkingCopy(runtime, serverType2, name, "local");
 		swc.setAttribute(Server.PROP_AUTO_PUBLISH_SETTING, Server.AUTO_PUBLISH_DISABLE);
 		return swc.save(true, new NullProgressMonitor());
 	}
-
 	private static IServer createDeployOnlyServer(String deployLocation, String tempDeployLocation) throws CoreException {
 		return createDeployOnlyServer(deployLocation, tempDeployLocation, "testRuntime", "testServer");
 	}
@@ -501,14 +517,17 @@ public class ServerCreationTestUtils extends Assert {
 	}
 	
 	private static IServer createJBoss7IServer(IServerType serverType, String rtLoc, String name) throws CoreException {
-		IRuntime runtime = RuntimeUtils.createRuntime(serverType.getRuntimeType().getId(), rtLoc, null);
+		return createJBoss7IServer(serverType, rtLoc, name, JavaRuntime.getDefaultVMInstall());
+	}
+	
+	private static IServer createJBoss7IServer(IServerType serverType, String rtLoc, String name, IVMInstall vmi) throws CoreException {
+		IRuntime runtime = RuntimeUtils.createRuntime(serverType.getRuntimeType().getId(), rtLoc, null, vmi);
 		IServerWorkingCopy swc = ServerCreationUtils.createServerWorkingCopy(runtime, serverType, name, "local");
 		swc.setServerConfiguration(null);
 		swc.setAttribute(Server.PROP_AUTO_PUBLISH_SETTING, Server.AUTO_PUBLISH_DISABLE);
 		IServer server = swc.save(true, null);
 		return server;
 	}
-
 	public static IPath getRandomAbsoluteFolder() {
 		return getBaseDir().append(getRandomString());
 	}

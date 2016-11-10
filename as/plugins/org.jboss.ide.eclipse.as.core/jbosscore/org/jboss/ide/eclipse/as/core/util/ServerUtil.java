@@ -154,9 +154,12 @@ public class ServerUtil {
 			return false;
 		return type.getId().equals(IJBossToolingConstants.SERVER_AS_70)
 				 || type.getId().equals(IJBossToolingConstants.SERVER_AS_71)
+				 || type.getId().equals(IJBossToolingConstants.SERVER_WILDFLY_80)
+				 || type.getId().equals(IJBossToolingConstants.SERVER_WILDFLY_90)
+				 || type.getId().equals(IJBossToolingConstants.SERVER_WILDFLY_100)
 				 || type.getId().equals(IJBossToolingConstants.SERVER_EAP_60)
 				 || type.getId().equals(IJBossToolingConstants.SERVER_EAP_61)
-				 || type.getId().equals(IJBossToolingConstants.SERVER_WILDFLY_80);
+				 || type.getId().equals(IJBossToolingConstants.SERVER_EAP_70);
 	}
 	
 	private static boolean isJBoss7Style(IServer server) {

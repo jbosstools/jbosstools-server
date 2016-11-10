@@ -80,6 +80,7 @@ public class RuntimeUtils {
 		return createRuntime(runtimeTypeId, runtimeTypeId, homeDir, config, install);
 	}
 	
+	@SuppressWarnings("restriction")
 	public static IRuntime createRuntime(String runtimeTypeId, String name, String homeDir,
 			String config, IVMInstall install) throws CoreException {
 
@@ -89,11 +90,15 @@ public class RuntimeUtils {
 				new NullProgressMonitor());
 		runtimeWC.setName(name);
 		runtimeWC.setLocation(new Path(homeDir));
-		((RuntimeWorkingCopy) runtimeWC).setAttribute(
-				IJBossServerRuntime.PROPERTY_VM_ID, install.getId());
-		((RuntimeWorkingCopy) runtimeWC).setAttribute(
-				IJBossServerRuntime.PROPERTY_VM_TYPE_ID, install
-						.getVMInstallType().getId());
+		
+		if( install != null ) {
+			((RuntimeWorkingCopy) runtimeWC).setAttribute(
+					IJBossServerRuntime.PROPERTY_VM_ID, install.getId());
+			((RuntimeWorkingCopy) runtimeWC).setAttribute(
+					IJBossServerRuntime.PROPERTY_VM_TYPE_ID, install
+							.getVMInstallType().getId());
+		}
+		
 		((RuntimeWorkingCopy) runtimeWC).setAttribute(
 				IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, config);
 
