@@ -18,17 +18,23 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerEvent;
 import org.eclipse.wst.server.core.ServerUtil;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerHomeValidationUtility;
+import org.jboss.ide.eclipse.as.rse.core.subsystems.RSEDeploymentOptionsController;
 import org.jboss.ide.eclipse.as.wtp.core.debug.AttachDebuggerServerListener;
 import org.jboss.ide.eclipse.as.wtp.core.debug.RemoteDebugUtils;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
+import org.jboss.tools.as.core.server.controllable.systems.IDeploymentOptionsController;
 
 /**
  * This is a launch configuration delegate for use with rse jboss servers. 
@@ -59,6 +65,9 @@ public class StandardRSEJBossStartLaunchDelegate extends
 		IServer server = ServerUtil.getServer(configuration);
 		boolean attachDebugger = server.getAttribute(RemoteDebugUtils.ATTACH_DEBUGGER, true);
 
+		
+		logPotentialConfigErrors(server);
+		
 		if("debug".equals(mode) && detectStartupCommand && attachDebugger) { 
 			// Only manipulate the args and attach debugger if they're 
 			// using automatic detection of cmd AND have selected to attach the debugger
@@ -177,5 +186,29 @@ public class StandardRSEJBossStartLaunchDelegate extends
 		}
 
 		((ControllableServerBehavior)beh).setServerStarted();
+	}
+	
+	// There's no API for some of this stuff, so... this kinda sucks
+	protected void logPotentialConfigErrors(IServer server) {
+		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(server);
+		try {
+			IDeploymentOptionsController c = (IDeploymentOptionsController)beh.getController(IDeploymentOptionsController.SYSTEM_ID);
+			if( c instanceof RSEDeploymentOptionsController) {
+				String depType = ((RSEDeploymentOptionsController)c).getCurrentDeploymentLocationType();
+				String profile = ServerProfileModel.getProfile(server);
+				if( "rse".equals(profile) && depType != null && !IDeployableServer.DEPLOY_SERVER.equals(depType)) {
+					// We have the rse+fs profile, and deploying to a non-standard location
+					// Check deployment scanners flags
+					boolean depFlag = server.getAttribute(IJBossToolingConstants.PROPERTY_ADD_DEPLOYMENT_SCANNERS, true);
+					// Check expose mgmt flag
+					boolean exposePort = server.getAttribute(IJBossToolingConstants.EXPOSE_MANAGEMENT_SERVICE, false);
+					if( !depFlag || !exposePort) {
+						RSECorePlugin.pluginLog().logWarning(NLS.bind(Messages.configErrorNonStandardDeploy,  server.getName()));
+					}
+				}
+			}
+		} catch(CoreException ce) {
+			// Ignore
+		}
 	}
 }

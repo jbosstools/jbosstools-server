@@ -19,6 +19,7 @@ import org.eclipse.rse.subsystems.files.core.model.RemoteFileUtility;
 import org.eclipse.rse.subsystems.files.core.subsystems.IRemoteFile;
 import org.eclipse.rse.subsystems.files.core.subsystems.IRemoteFileSubSystem;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.server.core.IServerAttributes;
 import org.jboss.ide.eclipse.as.rse.core.RSEFrameworkUtils;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
@@ -28,8 +29,9 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemContro
 public class RSEBrowseBehavior extends AbstractSubsystemController implements IBrowseBehavior {
 	public String openBrowseDialog(IServerAttributes server, String original) {
 		String current = server.getAttribute(RSEUtils.RSE_SERVER_HOST, (String)null);
+		Shell s1 = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 		IHost h = RSEFrameworkUtils.findHost(current);
-		return browseClicked(new Shell(), h);
+		return browseClicked(s1, h);
 	}
 	
 

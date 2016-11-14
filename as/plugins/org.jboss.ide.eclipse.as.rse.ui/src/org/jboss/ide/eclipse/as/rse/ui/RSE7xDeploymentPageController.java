@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
@@ -46,8 +47,9 @@ public class RSE7xDeploymentPageController extends NoTempDeploymentPageControlle
 						canAddScanners = false;
 					}
 					if( !canAddScanners ) {
-						ret.add(new Status(IStatus.WARNING, RSEUIPlugin.PLUGIN_ID, 
-								"Your server is not currently set up to configure non-standard deploy folders. Please ensure that both \"Expose your management port\" and \"Add missing deployment scanners\" on the Overview page are checked."));
+						ret.add(new Status(IStatus.WARNING, RSEUIPlugin.PLUGIN_ID,  NLS.bind(
+								org.jboss.ide.eclipse.as.rse.core.Messages.configErrorNonStandardDeploy, 
+								getPage().getServer().getName())));
 					}
 				}
 				return (IStatus[]) ret.toArray(new IStatus[ret.size()]);
