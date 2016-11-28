@@ -59,7 +59,8 @@ public class AS7ManagementServiceStartupShutdownTest extends Assert {
 		Object o = ((ServiceTracker)service).getService();
 		assertNotNull(o);
 
-		if( !homeDir.equals(util.getHomeDir())) {
+		String hd2 = util.getHomeDir();
+		if( !homeDir.equals(hd2)) {
 			util.dispose();
 			util.setHomeDir(homeDir);
 			util.start(true);

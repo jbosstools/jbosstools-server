@@ -5,7 +5,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -62,7 +65,7 @@ public class StartupUtility extends Assert {
 		if (Platform.getOS().equals(Platform.OS_WIN32)) {
 			scriptName = "standalone.bat";
 			IPath script = bin.append(scriptName);
-			fail("These tests cannot run on windows currently");
+			cmd = script.toFile().getAbsolutePath();
 		} else {
 			scriptName = "standalone.sh";
 			IPath script = bin.append(scriptName);
@@ -70,10 +73,10 @@ public class StartupUtility extends Assert {
 			cmd = script.toFile().getAbsolutePath();
 		}
 
-		List<String> envp = new ArrayList<String>();
-		envp.add("JAVA_HOME=" + getJavaHome(rtType, homeDir));
+		HashMap<String, String> map = new HashMap<String,String>();
+		map.put("JAVA_HOME", getJavaHome(rtType, homeDir));
 		
-		String[] envList = (String[]) envp.toArray(new String[envp.size()]);
+		String[] envList = convertEnvironment(map);
 		Process p = null;
 		try {
 			p = Runtime.getRuntime().exec(cmd, envList);
@@ -84,6 +87,36 @@ public class StartupUtility extends Assert {
 		System.out.println("Somehow launch completed without returning a process");
 		return null;
 	}
+	
+
+	/*
+	 * Convert a string/string hashmap into an array of string environment
+	 * variables as required by java.lang.Runtime This will super-impose the
+	 * provided environment variables ON TOP OF the existing environment in
+	 * eclipse, as users may not know *all* environment variables that need to
+	 * be set, or to do so may be tedious.
+	 */
+	public static String[] convertEnvironment(Map<String, String> env) {
+		if (env == null || env.size() == 0)
+			return null;
+
+		// Create a new map based on pre-existing environment of Eclipse
+		Map<String, String> original = new HashMap<>(System.getenv());
+
+		// Add additions or changes to environment on top of existing
+		original.putAll(env);
+
+		// Convert the combined map into a form that can be used to launch process
+		ArrayList<String> ret = new ArrayList<>();
+		Iterator<String> it = original.keySet().iterator();
+		String working = null;
+		while (it.hasNext()) {
+			working = it.next();
+			ret.add(working + "=" + original.get(working)); //$NON-NLS-1$
+		}
+		return ret.toArray(new String[ret.size()]);
+	}
+	
 	
 	private static String getJavaHome(String rtType, String serverHome) {
 		// We have some with java8 requirements. 
