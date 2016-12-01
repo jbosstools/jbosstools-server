@@ -232,6 +232,25 @@ public class LocalZippedModulePublishRunner extends ModuleResourceUtil {
 		return (IStatus[]) results.toArray(new IStatus[results.size()]);
 	}
 
+	
+	private de.schlichtherle.io.File getFile(IModule[] tree) {
+
+		IPath tail = getRootModuleRelativePath(tree);
+		IPath tailLocation = tail.removeLastSegments(1);
+
+		de.schlichtherle.io.File root = TrueZipUtil.getFile(destinationArchive, TrueZipUtil.getJarArchiveDetector());
+		for( int i = 1; i < tree.length; i++ ) {
+			String relative = ServerModelUtilities.getModuleParentRelativePath(tree, i);
+			IPath relativePath = new Path(relative);
+			String[] segments = relativePath.segments();
+			for( int j = 0; j < segments.length - 1; j++ ) {
+				root = TrueZipUtil.getFile(root, segments[j], TrueZipUtil.getNullArchiveDetector());
+			}
+			root = TrueZipUtil.getFile(root, segments[segments.length-1], TrueZipUtil.getJarArchiveDetector());
+		}
+		return root;
+	}
+	
 	/**
 	 * A binary module is one in which the contents of the module should be published directly.
 	 * For example, given a SingleFileDeployable module with 1 resource (some-ds.xml) which is acting
@@ -247,15 +266,29 @@ public class LocalZippedModulePublishRunner extends ModuleResourceUtil {
 	 * @return
 	 */
 	private IStatus[] fullBinaryPublish(IModule[] parent, IModule last, IProgressMonitor monitor) {
+
+		de.schlichtherle.io.File root  = getFile(combine(parent, last));
 		ArrayList<IStatus> results = new ArrayList<IStatus>();
 		try {
-			IPath tail = getRootModuleRelativePath(combine(parent, last));
-			IPath tailLocation = tail.removeLastSegments(1);
-			java.io.File root = TrueZipUtil.getFile(destinationArchive.append(tailLocation), TrueZipUtil.getJarArchiveDetector());
+			
 			IModuleResource[] resources = getResources(last, new NullProgressMonitor());
 			int total = countMembers(resources, true);
 			monitor.beginTask("Copying Resources", total*100);
-			results.addAll(Arrays.asList(copy(root, resources, monitor)));
+			
+			
+			if( total != 1 || (total == 1 && !(resources[0] instanceof IModuleFile))) {
+				// This shouldn't happen, so we'll just copy them as they are named :( 
+				results.addAll(Arrays.asList(copy(root, resources, monitor)));
+			} else if( total == 1 ) {
+				IModuleResource r1 = resources[0];
+				IModuleFile mf = (IModuleFile)r1;
+				java.io.File source = getFile(mf);
+				if( source != null ) {
+					boolean b = TrueZipUtil.archiveCopyAllTo(source, TrueZipUtil.getNullArchiveDetector(), root);
+					if( !b )
+						results.add(generateCopyFailStatus(source, root));
+				}
+			}
 			monitor.done();
 			TrueZipUtil.umount();
 			return (IStatus[]) results.toArray(new IStatus[results.size()]);

@@ -77,7 +77,7 @@ public class CustomPublishController extends StandardFileSystemPublishController
 	
 	// Exposed only for unit tests to override
 	// The methods here typically ask a server for its actual publish information, 
-	//and since I'm not testing server.publish() but rather on a controller instance dirrectly,
+	//and since I'm not testing server.publish() but rather on a controller instance directly,
 	//the server has no knowledge of the module, and I must mock this a bit. 
 	@Override
 	public LocalZippedModulePublishRunner createZippedRunner(IModule m, IPath p) {

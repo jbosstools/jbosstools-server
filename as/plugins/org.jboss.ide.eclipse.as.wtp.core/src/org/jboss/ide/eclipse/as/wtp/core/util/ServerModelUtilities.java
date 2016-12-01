@@ -47,25 +47,36 @@ public class ServerModelUtilities {
 	 * @return
 	 */
 	public static IPath getRootModuleRelativePath(IServerAttributes server, IModule[] moduleTree) {
-		String modName, name, uri, suffixedName;
+		return getRootModuleRelativePath(moduleTree);
+	}
+	
+	private static IPath getRootModuleRelativePath(IModule[] moduleTree) {
 		IPath working = null;
 		for( int i = 1; i < moduleTree.length; i++ ) {
-			modName = null;
-			// Check if there's a deploy-name property
-			if (moduleTree[i] instanceof IModule2) {
-				modName = ((IModule2)moduleTree[i]).getProperty(IModule2.PROP_DEPLOY_NAME);
-			}
-			// Otherwise use the module's name
-			if( modName == null ) {
-				modName = moduleTree[i].getName();
-			}
-			name = new RemotePath(modName).lastSegment();
-			suffixedName = name + getDefaultSuffixForModule(moduleTree[i]);
-			uri = ModuleResourceUtil.getParentRelativeURI(moduleTree, i, suffixedName);
-			working = (working == null ? new Path(uri) : working.append(uri));
+			String rel = getModuleParentRelativePath(moduleTree, i);
+			working = (working == null ? new Path(rel) : working.append(rel));
 		}
 		return working;
 	}
+	
+	public static String getModuleParentRelativePath(IModule[] moduleTree, int i) {
+		String modName, name, uri, suffixedName;
+		modName = null;
+		// Check if there's a deploy-name property
+		if (moduleTree[i] instanceof IModule2) {
+			modName = ((IModule2)moduleTree[i]).getProperty(IModule2.PROP_DEPLOY_NAME);
+		}
+		// Otherwise use the module's name
+		if( modName == null ) {
+			modName = moduleTree[i].getName();
+		}
+		name = new RemotePath(modName).lastSegment();
+		String suffix = getDefaultSuffixForModule(moduleTree[i]);
+		suffixedName = name + (name.endsWith(suffix) ? "" : suffix);
+		uri = ModuleResourceUtil.getParentRelativeURI(moduleTree, i, suffixedName);
+		return uri;
+	}
+	
 	
 	public static IModule[] getParentModules(IServer server, IModule module) {
 		// get all supported modules

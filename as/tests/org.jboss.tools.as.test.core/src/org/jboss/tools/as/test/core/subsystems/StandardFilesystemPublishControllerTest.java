@@ -175,6 +175,51 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 			verifyListRelativePath(new Path(webDepDir), Arrays.asList(new IPath[]{utilRelToWeb.append("Main.class")}), true);
 		}
 	}
+	
+	
+	
+	@Test
+	public void testJBIDE_22878UtilInWebMockModule() throws Exception {  
+		module = createDifferentURIBinaryUtilInWebMockModule("simple-ejb-1.5.0.jar", "simple-ejb.jar");
+		((MockModule)module[0]).setExists(true);
+		((MockModule)module[0]).setExternal(true);
+		((MockModule)module[0]).setBinary(false);
+		((MockModule)module[1]).setExists(true);
+		((MockModule)module[1]).setExternal(true);
+		((MockModule)module[1]).setBinary(true);
+		
+		CustomPublishController controller = new CustomPublishController();
+		controller.initialize(server, null, null);
+		
+		
+		// Now publish module[0]  and []{module[0],module[1]} 
+		int result = controller.publishModule(IServer.PUBLISH_INCREMENTAL, ServerBehaviourDelegate.ADDED, new IModule[]{module[0]}, null);
+		assertEquals(result, IServer.PUBLISH_STATE_NONE);
+		int resultUtil = controller.publishModule(IServer.PUBLISH_INCREMENTAL, ServerBehaviourDelegate.ADDED, module, null);
+		assertEquals(resultUtil, IServer.PUBLISH_STATE_NONE);
+		
+		String webDepDir = controller.getDeployPathController().getDeployDirectory(new IModule[]{module[0]}).toOSString();
+		assertTrue(new Path(webDepDir).toFile().exists());
+		assertEquals(testIsZip(), new Path(webDepDir).toFile().isFile());
+		verifyListRelativePath(new Path(webDepDir), Arrays.asList(new IPath[]{new Path("index.html")}), true);
+		
+		String utilDepDir = controller.getDeployPathController().getDeployDirectory(module).toOSString();
+		if( !testIsZip()) {
+			ServerExtendedProperties props = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
+			assertNotNull(props);
+
+			// we're not testing in zip mode, so utilDepDir should exist 
+			assertTrue(new Path(utilDepDir).toFile().exists());
+			
+			// This is a binary module being tested, so should always be a file
+			assertEquals(true, new Path(utilDepDir).toFile().isFile());
+		} else {
+			// Our util is inside a zipped war. Verify that exists
+			IPath utilRelToWeb = new Path(utilDepDir).removeFirstSegments(new Path(webDepDir).segmentCount());
+			verifyListRelativePath(new Path(webDepDir), Arrays.asList(new IPath[]{utilRelToWeb}), true);
+		}
+	}
+	
 
 	@Test
 	public void testUtilInWebInEarMockModule() throws Exception { 
@@ -452,6 +497,34 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 		util.setMembers(utilResources);
 		return utilInWeb;
 	}
+	
+	
+	private MockModule[] createDifferentURIBinaryUtilInWebMockModule(
+			String utilFileName, String utilNestedName) throws Exception {
+		IPath underlying = setUnderlyingVersion(1);
+		MockModule web = MockModuleUtil.createMockWebModule();
+		MockModule util = MockModuleUtil.createMockUtilModule();
+		util.setBinary(true);
+		
+		String utilWithSuffix = utilNestedName;
+		String warWithSuffix = web.getName() + ".war";
+		String uri = "nested/inside/" + utilWithSuffix;
+		
+		web.addChildModule(util, uri);
+		MockModule[] utilInWeb = new MockModule[]{web, util};
+		
+		// Create a custom mock project structure
+		IPath[] webLeafs = new IPath[]{new Path("index.html")};
+		IPath[] utilLeafs = new IPath[]{new Path(utilFileName)};
+		
+		IModuleResource[] webResources = MockModuleUtil.createMockResources(webLeafs, new IPath[0], underlying.toFile());
+		IModuleResource[] utilResources = MockModuleUtil.createMockResources(utilLeafs, new IPath[0], underlying.toFile());
+		
+		web.setMembers(webResources);
+		util.setMembers(utilResources);
+		return utilInWeb;
+	}
+	
 
 	
 	private MockModule[] createUtilInWebInEarMockModule() throws Exception {
