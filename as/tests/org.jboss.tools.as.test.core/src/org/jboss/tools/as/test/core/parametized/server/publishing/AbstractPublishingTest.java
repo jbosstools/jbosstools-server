@@ -424,7 +424,7 @@ public abstract class AbstractPublishingTest extends TestCase {
 			assertTrue(next.toOSString() + " must be a folder beneath " + root.toOSString(), root.isPrefixOf(next));
 			IPath nextTrimmed = next.removeFirstSegments(root.segmentCount()).setDevice(null);
 			de.schlichtherle.io.File toCheck = TrueZipUtil.getFile(f, nextTrimmed.toString(), TrueZipUtil.getDefaultArchiveDetector());
-			assertEquals("File " + next.toOSString() + (exists ? " should " : " should not ") + "exist", toCheck.exists(), exists);
+			assertEquals("File " + next.toOSString() + (exists ? " should " : " should not ") + "exist",exists, toCheck.exists());
 		}
 		TrueZipUtil.umount();
 	}	
