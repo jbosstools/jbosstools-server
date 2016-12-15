@@ -95,10 +95,13 @@ public class RSEFilesystemController extends AbstractSubsystemController impleme
 	public IStatus makeDirectoryIfRequired(final IPath absolutePath,
 			final IProgressMonitor monitor) throws CoreException {
 		monitor.beginTask("Make directory " + absolutePath.toOSString(), 100); //$NON-NLS-1$
+		
+		if(createdFolders.contains(absolutePath)) 
+			return Status.OK_STATUS;
+		if(exists(absolutePath, monitor))
+			return Status.OK_STATUS;
 		if( absolutePath.segmentCount() > 0 )
 			makeDirectoryIfRequired(absolutePath.removeLastSegments(1), ProgressMonitorUtil.submon(monitor, 70));
-		if( createdFolders.contains(absolutePath)) 
-			return Status.OK_STATUS;
 
 		NamedRunnableWithProgress run = new NamedRunnableWithProgress("Create Remote Directory: " + absolutePath.toString()) {
 			public Object run(IProgressMonitor monitor) throws CoreException,
