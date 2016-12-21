@@ -15,7 +15,7 @@ import org.jboss.reddeer.common.wait.WaitUntil;
 import org.jboss.reddeer.common.wait.WaitWhile;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
+ 
 /**
  * Checks if project archive support can be enabled/disabled on 
  * some project

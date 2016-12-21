@@ -8,59 +8,69 @@
  * Contributors:
  * Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.archives.ui.test.reddeer.uimodel;
+package org.jboss.tools.archives.reddeer.archives.ui;
 
-import org.jboss.reddeer.core.condition.JobIsRunning;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.jboss.reddeer.swt.api.Table;
 import org.jboss.reddeer.swt.condition.ShellIsAvailable;
+import org.jboss.reddeer.core.condition.JobIsRunning;
 import org.jboss.reddeer.swt.impl.button.PushButton;
 import org.jboss.reddeer.swt.impl.button.RadioButton;
 import org.jboss.reddeer.swt.impl.shell.DefaultShell;
+import org.jboss.reddeer.swt.impl.table.DefaultTable;
 import org.jboss.reddeer.swt.impl.text.LabeledText;
 import org.jboss.reddeer.common.wait.WaitWhile;
 
 /**
- * Base dialog class for EditArchiveDialog and NewJarDialog
+ * Dialog for creating or modifying fileset
  * 
  * @author jjankovi
  *
  */
-public abstract class ArchiveDialogBase extends DefaultShell {
+public class FilesetDialog extends DefaultShell {
 
-	public ArchiveDialogBase(String dialogTitle) {
-		super(dialogTitle);
+	private static final String DIALOG_TITLE = "Fileset Wizard";
+	
+	public FilesetDialog() {
+		super(DIALOG_TITLE);
 	}
 	
-	public ArchiveDialogBase setArchiveName(String archiveName) {
-		String newArchiveName = archiveName.contains(".jar")?
-				archiveName:archiveName + ".jar";
-		new LabeledText("Archive name:").setText(newArchiveName);
+	public FilesetDialog setFlatten(boolean set) {
+		if (set) {
+			new RadioButton(2).click();
+		} else {
+			new RadioButton(3).click();
+		}
 		return this;
 	}
 	
-	public ArchiveDialogBase setDestination(String location) {
-		new LabeledText("Destination:").setText("");
-		new LabeledText("Destination:").setText(location);
+	public FilesetDialog setIncludes(String pattern) {
+		new LabeledText("Includes:").setText(pattern);
 		return this;
 	}
 	
-	public ArchiveDialogBase setFileSystemRelative() {
-		new RadioButton("Filesystem Relative").click();
+	public String getIncludes() {
+		return new LabeledText("Includes:").getText();
+	}
+	
+	public FilesetDialog setExcludes(String pattern) {
+		new LabeledText("Excludes:").setText(pattern);
 		return this;
 	}
 	
-	public ArchiveDialogBase setWorkspaceRelative() {
-		new RadioButton("Workspace Relative").click();
-		return this;
+	public String getExcludes() {
+		return new LabeledText("Excludes:").getText();
 	}
 	
-	public ArchiveDialogBase setZipStandardArchiveType() {
-		new RadioButton("Standard archive using zip compression").click();
-		return this;
-	}
-	
-	public ArchiveDialogBase setNoCompressionArchiveType() {
-		new RadioButton("Exploded archive resulting in a folder (no compression)").click();
-		return this;
+	public List<String> getPreview() {
+		List<String> preview = new ArrayList<String>();
+		Table table = new DefaultTable();
+		for (int i = 0; i < table.rowCount(); i++) {
+			preview.add(table.getItem(i).getText(0));
+		}
+		return preview;
 	}
 	
 	public void cancel() {
@@ -73,5 +83,5 @@ public abstract class ArchiveDialogBase extends DefaultShell {
 		new WaitWhile(new ShellIsAvailable(this));
 		new WaitWhile(new JobIsRunning());
 	}
-
+	
 }

@@ -8,18 +8,17 @@
  * Contributors:
  * Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.archives.ui.test.reddeer.uimodel;
+package org.jboss.tools.archives.reddeer.archives.ui;
 
 /**
- * Dialog for editing archive
  * 
  * @author jjankovi
  *
  */
-public class EditArchiveDialog extends ArchiveDialogBase {
+public class NewJarDialog extends ArchiveDialogBase {
 
-	public EditArchiveDialog() {
-		super("Edit Archive");
+	public NewJarDialog() {
+		super("New JAR");
 	}
 	
 }

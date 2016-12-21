@@ -8,7 +8,7 @@
  * Contributors:
  * Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.archives.ui.test.reddeer.uimodel;
+package org.jboss.tools.archives.reddeer.archives.ui;
 
 import org.jboss.reddeer.common.wait.WaitWhile;
 import org.jboss.reddeer.core.condition.JobIsRunning;
@@ -16,7 +16,7 @@ import org.jboss.reddeer.eclipse.jdt.ui.ProjectExplorer;
 import org.jboss.reddeer.swt.api.TreeItem;
 import org.jboss.reddeer.swt.impl.menu.ContextMenu;
 import org.jboss.reddeer.swt.impl.tree.DefaultTreeItem;
-import org.jboss.tools.archives.ui.test.reddeer.component.Archive;
+import org.jboss.tools.archives.reddeer.component.Archive;
 /**
  * Simulates Project Archives explorer which is maintaned in
  * Project Explorer view

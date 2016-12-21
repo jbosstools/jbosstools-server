@@ -22,7 +22,7 @@ import org.jboss.reddeer.swt.impl.menu.ContextMenu;
 import org.jboss.reddeer.swt.impl.shell.DefaultShell;
 import org.jboss.reddeer.swt.impl.tree.DefaultTreeItem;
 import org.jboss.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
-import org.jboss.tools.archives.ui.test.reddeer.uimodel.MainPreferencePage;
+import org.jboss.tools.archives.reddeer.archives.ui.MainPreferencePage;
 import org.junit.Test;
 
 /**

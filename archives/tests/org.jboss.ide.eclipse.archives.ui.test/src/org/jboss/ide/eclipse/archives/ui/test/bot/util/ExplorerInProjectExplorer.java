@@ -11,7 +11,7 @@
 package org.jboss.ide.eclipse.archives.ui.test.bot.util;
 
 import org.jboss.reddeer.common.condition.AbstractWaitCondition;
-import org.jboss.tools.archives.ui.test.reddeer.uimodel.ProjectArchivesExplorer;
+import org.jboss.tools.archives.reddeer.archives.ui.ProjectArchivesExplorer;
 
 /**
  * Checks if project with given name has project archives support

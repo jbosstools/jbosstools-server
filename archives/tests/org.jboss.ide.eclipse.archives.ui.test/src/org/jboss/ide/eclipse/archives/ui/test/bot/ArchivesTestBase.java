@@ -28,9 +28,9 @@ import org.jboss.reddeer.requirements.cleanworkspace.CleanWorkspaceRequirement.C
 import org.jboss.reddeer.requirements.openperspective.OpenPerspectiveRequirement.OpenPerspective;
 import org.jboss.reddeer.swt.impl.menu.ContextMenu;
 import org.jboss.reddeer.workbench.impl.shell.WorkbenchShell;
-import org.jboss.tools.archives.ui.test.reddeer.uimodel.NewJarDialog;
-import org.jboss.tools.archives.ui.test.reddeer.uimodel.ProjectArchivesExplorer;
-import org.jboss.tools.archives.ui.test.reddeer.uimodel.ProjectArchivesView;
+import org.jboss.tools.archives.reddeer.archives.ui.NewJarDialog;
+import org.jboss.tools.archives.reddeer.archives.ui.ProjectArchivesExplorer;
+import org.jboss.tools.archives.reddeer.archives.ui.ProjectArchivesView;
 import org.junit.BeforeClass;
 
 /**

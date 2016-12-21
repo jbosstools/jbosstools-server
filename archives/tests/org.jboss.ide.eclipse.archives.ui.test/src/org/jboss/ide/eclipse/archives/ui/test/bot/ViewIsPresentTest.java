@@ -12,7 +12,7 @@ package org.jboss.ide.eclipse.archives.ui.test.bot;
 
 import static org.junit.Assert.assertTrue;
 
-import org.jboss.tools.archives.ui.test.reddeer.uimodel.ProjectArchivesView;
+import org.jboss.tools.archives.reddeer.archives.ui.ProjectArchivesView;
 import org.junit.Test;
 
 /**

@@ -10,8 +10,8 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.archives.ui.test.bot;
 
-import org.jboss.tools.archives.ui.test.reddeer.uimodel.NewJarDialog;
-import org.jboss.tools.archives.ui.test.reddeer.uimodel.ProjectArchivesExplorer;
+import org.jboss.tools.archives.reddeer.archives.ui.NewJarDialog;
+import org.jboss.tools.archives.reddeer.archives.ui.ProjectArchivesExplorer;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

@@ -8,7 +8,7 @@
  * Contributors:
  * Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.archives.ui.test.reddeer.component;
+package org.jboss.tools.archives.reddeer.component;
 
 import org.jboss.reddeer.common.exception.RedDeerException;
 import org.jboss.reddeer.common.wait.WaitWhile;
@@ -19,7 +19,7 @@ import org.jboss.reddeer.swt.condition.ShellIsAvailable;
 import org.jboss.reddeer.swt.impl.button.PushButton;
 import org.jboss.reddeer.swt.impl.menu.ContextMenu;
 import org.jboss.reddeer.swt.impl.shell.DefaultShell;
-import org.jboss.tools.archives.ui.test.reddeer.jdt.LibFilesetDialog;
+import org.jboss.tools.archives.reddeer.archives.jdt.integration.LibFilesetDialog;
 
 /**
  * User library fileset retrieved from Project Archives view/explorer

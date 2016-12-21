@@ -21,8 +21,8 @@ import org.jboss.reddeer.swt.impl.shell.DefaultShell;
 import org.jboss.reddeer.swt.impl.text.DefaultText;
 import org.jboss.reddeer.swt.impl.tree.DefaultTree;
 import org.jboss.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
-import org.jboss.tools.archives.ui.test.reddeer.component.Archive;
-import org.jboss.tools.archives.ui.test.reddeer.uimodel.ProjectArchivesExplorer;
+import org.jboss.tools.archives.reddeer.archives.ui.ProjectArchivesExplorer;
+import org.jboss.tools.archives.reddeer.component.Archive;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

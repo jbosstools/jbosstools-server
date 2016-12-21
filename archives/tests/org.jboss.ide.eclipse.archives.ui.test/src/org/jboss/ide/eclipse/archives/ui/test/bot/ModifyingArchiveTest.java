@@ -14,8 +14,8 @@ import org.jboss.reddeer.common.wait.WaitUntil;
 import org.jboss.reddeer.common.wait.WaitWhile;
 import org.jboss.reddeer.swt.condition.TreeContainsItem;
 import org.jboss.reddeer.swt.impl.tree.DefaultTree;
-import org.jboss.tools.archives.ui.test.reddeer.uimodel.EditArchiveDialog;
-import org.jboss.tools.archives.ui.test.reddeer.uimodel.ProjectArchivesExplorer;
+import org.jboss.tools.archives.reddeer.archives.ui.EditArchiveDialog;
+import org.jboss.tools.archives.reddeer.archives.ui.ProjectArchivesExplorer;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

@@ -8,12 +8,8 @@
  * Contributors:
  * Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.archives.ui.test.reddeer.component;
+package org.jboss.tools.archives.reddeer.component;
 
-import org.eclipse.swt.SWT;
-import org.jboss.reddeer.common.wait.WaitUntil;
-import org.jboss.reddeer.common.wait.WaitWhile;
-import org.jboss.reddeer.core.condition.JobIsRunning;
 import org.jboss.reddeer.swt.api.Shell;
 import org.jboss.reddeer.swt.api.TreeItem;
 import org.jboss.reddeer.swt.condition.ShellIsAvailable;
@@ -23,13 +19,18 @@ import org.jboss.reddeer.swt.impl.menu.ContextMenu;
 import org.jboss.reddeer.swt.impl.shell.DefaultShell;
 import org.jboss.reddeer.swt.impl.tree.DefaultTree;
 import org.jboss.reddeer.swt.keyboard.KeyboardFactory;
-import org.jboss.tools.archives.ui.test.reddeer.jdt.LibFilesetDialog;
-import org.jboss.tools.archives.ui.test.reddeer.uimodel.ArchivePublishDialog;
-import org.jboss.tools.archives.ui.test.reddeer.uimodel.EditArchiveDialog;
-import org.jboss.tools.archives.ui.test.reddeer.uimodel.FilesetDialog;
-import org.jboss.tools.archives.ui.test.reddeer.uimodel.NewFolderDialog;
-import org.jboss.tools.archives.ui.test.reddeer.uimodel.NewJarDialog;
-import org.jboss.tools.archives.ui.test.reddeer.uimodel.ProjectArchivesExplorer;
+import org.eclipse.swt.SWT;
+import org.jboss.reddeer.common.wait.WaitUntil;
+import org.jboss.reddeer.common.wait.WaitWhile;
+import org.jboss.reddeer.core.condition.JobIsRunning;
+import org.jboss.reddeer.eclipse.jdt.ui.ProjectExplorer;
+import org.jboss.tools.archives.reddeer.archives.jdt.integration.LibFilesetDialog;
+import org.jboss.tools.archives.reddeer.archives.ui.ArchivePublishDialog;
+import org.jboss.tools.archives.reddeer.archives.ui.EditArchiveDialog;
+import org.jboss.tools.archives.reddeer.archives.ui.FilesetDialog;
+import org.jboss.tools.archives.reddeer.archives.ui.NewFolderDialog;
+import org.jboss.tools.archives.reddeer.archives.ui.NewJarDialog;
+import org.jboss.tools.archives.reddeer.archives.ui.ProjectArchivesExplorer;
 
 /**
  * Archive retrieved from Project Archives view/explorer

@@ -17,7 +17,7 @@ import org.jboss.reddeer.eclipse.ui.console.ConsoleView;
 import org.jboss.reddeer.eclipse.ui.views.log.LogView;
 import org.jboss.reddeer.eclipse.wst.server.ui.view.ServersView;
 import org.jboss.reddeer.workbench.api.View;
-import org.jboss.tools.archives.ui.test.reddeer.uimodel.ProjectArchivesView;
+import org.jboss.tools.archives.reddeer.archives.ui.ProjectArchivesView;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

@@ -8,7 +8,7 @@
  * Contributors:
  * Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.archives.ui.test.reddeer.uimodel;
+package org.jboss.tools.archives.reddeer.archives.ui;
 
 import org.jboss.reddeer.swt.impl.button.CheckBox;
 import org.jboss.reddeer.jface.preference.PreferencePage;

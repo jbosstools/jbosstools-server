@@ -8,44 +8,30 @@
  * Contributors:
  * Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.archives.ui.test.reddeer.jdt;
+package org.jboss.tools.archives.reddeer.archives.ui;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.jboss.reddeer.swt.api.TreeItem;
-import org.jboss.reddeer.swt.condition.ShellIsAvailable;
 import org.jboss.reddeer.core.condition.JobIsRunning;
+import org.jboss.reddeer.swt.condition.ShellIsAvailable;
 import org.jboss.reddeer.swt.impl.button.PushButton;
 import org.jboss.reddeer.swt.impl.shell.DefaultShell;
-import org.jboss.reddeer.swt.impl.tree.DefaultTree;
-import org.jboss.reddeer.swt.impl.tree.DefaultTreeItem;
+import org.jboss.reddeer.swt.impl.text.DefaultText;
 import org.jboss.reddeer.common.wait.WaitWhile;
 
 /**
- * Dialog for creating or modifying User library fileset
- * 
+ * Dialog for creating or modifying a folder
  * @author jjankovi
  *
  */
-public class LibFilesetDialog extends DefaultShell {
+public class NewFolderDialog extends DefaultShell {
 
-	private static final String DIALOG_TITLE = "User Library Fileset Wizard";
+	private static final String DIALOG_TITLE = "Create a folder";
 	
-	public LibFilesetDialog() {
+	public NewFolderDialog() {
 		super(DIALOG_TITLE);
 	}
 
-	public List<String> getUserLibraries() {
-		List<String> userLibraries = new ArrayList<String>();
-		for (TreeItem ti : new DefaultTree().getItems()) {
-			userLibraries.add(ti.getText());
-		}
-		return userLibraries;
-	}
-	
-	public LibFilesetDialog selectUserLibrary(String library) {
-		new DefaultTreeItem(library).select();
+	public NewFolderDialog setNameOfFolder(String fileName) {
+		new DefaultText().setText(fileName);
 		return this;
 	}
 	
@@ -54,8 +40,8 @@ public class LibFilesetDialog extends DefaultShell {
 		new WaitWhile(new ShellIsAvailable(this));
 	}
 	
-	public void finish() {
-		new PushButton("Finish").click();
+	public void ok() {
+		new PushButton("OK").click();
 		new WaitWhile(new ShellIsAvailable(this));
 		new WaitWhile(new JobIsRunning());
 	}

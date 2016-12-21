@@ -8,15 +8,15 @@
  * Contributors:
  * Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.archives.ui.test.reddeer.component;
+package org.jboss.tools.archives.reddeer.component;
 
 import org.jboss.reddeer.swt.api.TreeItem;
 import org.jboss.reddeer.core.condition.JobIsRunning;
 import org.jboss.reddeer.swt.impl.menu.ContextMenu;
-import org.jboss.tools.archives.ui.test.reddeer.uimodel.NewJarDialog;
 import org.jboss.reddeer.common.exception.RedDeerException;
 import org.jboss.reddeer.common.logging.Logger;
 import org.jboss.reddeer.common.wait.WaitWhile;
+import org.jboss.tools.archives.reddeer.archives.ui.NewJarDialog;
 
 /**
  * Archive Project accessible via Project Archives view
