@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.AbstractBuildListener;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
@@ -53,7 +54,8 @@ public class ArchivesUIBuildListener extends AbstractBuildListener {
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
 					ErrorDialog ed = new ErrorDialogWithPreference(
-							new Shell(), ArchivesUIMessages.BuildError, 
+							PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+							ArchivesUIMessages.BuildError, 
 							NLS.bind(ArchivesUIMessages.BuildError2, node == null ? node : node.toString()), 
 							ms, IStatus.ERROR );
 					ed.open();

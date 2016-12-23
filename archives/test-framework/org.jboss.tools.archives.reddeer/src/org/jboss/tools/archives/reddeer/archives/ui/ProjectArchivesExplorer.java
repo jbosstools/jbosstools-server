@@ -16,6 +16,7 @@ import org.jboss.reddeer.eclipse.jdt.ui.ProjectExplorer;
 import org.jboss.reddeer.swt.api.TreeItem;
 import org.jboss.reddeer.swt.impl.menu.ContextMenu;
 import org.jboss.reddeer.swt.impl.tree.DefaultTreeItem;
+import org.jboss.tools.archives.reddeer.archives.ui.NewJarDialog;
 import org.jboss.tools.archives.reddeer.component.Archive;
 /**
  * Simulates Project Archives explorer which is maintaned in
