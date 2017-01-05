@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.jboss.tools.as</groupId>
+		<artifactId>itests</artifactId>
+		<version>3.2.3-SNAPSHOT</version>
+	</parent>
+	<groupId>org.jboss.tools.as.itests</groupId>
+	<artifactId>org.jboss.tools.as.ui.bot.itests</artifactId>
+	<packaging>eclipse-test-plugin</packaging>
+
+	<properties>
+		<reddeer.config>${project.build.directory}/../resources</reddeer.config>
+		<surefire.timeout>7200</surefire.timeout>
+		<productProperties></productProperties>
+		<systemProperties>-Drd.config=${reddeer.config} -Djbosstools.test.jre.6=${jbosstools.test.jre.6} -Djbosstools.test.jre.7=${jbosstools.test.jre.7} -Djbosstools.test.jre.8=${jbosstools.test.jre.8} -Djboss.org.username=${jboss.org.username} -Djboss.org.password=${jboss.org.password}</systemProperties>
+		<suiteClass>org.jboss.tools.as.ui.bot.itests.AllTestsSuite</suiteClass>
+	</properties>
+
+
+    <build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-surefire-plugin</artifactId>
+				<configuration>
+					<useUIThread>false</useUIThread>
+					<appArgLine>-pluginCustomization ${basedir}/../pluginCustomization.ini</appArgLine>
+					<systemProperties>
+						<org.eclipse.update.reconcile>false</org.eclipse.update.reconcile>
+						<!-- JBDS-4077 this should be passed in from Jenkins or commandline -->
+						<tpc.version>${TARGET_PLATFORM_VERSION_MAX}</tpc.version>
+					</systemProperties>
+					<explodedBundles>
+						<bundle>org.mozilla.xulrunner.cocoa.macosx</bundle>
+						<bundle>org.mozilla.xulrunner.gtk.linux.x86</bundle>
+						<bundle>org.mozilla.xulrunner.gtk.linux.x86_64</bundle>
+						<bundle>org.mozilla.xulrunner.win32.win32.x86</bundle>
+					</explodedBundles>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.googlecode.maven-download-plugin</groupId>
+				<artifactId>download-maven-plugin</artifactId>
+				<configuration>
+					<skip>${skipTests}</skip>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

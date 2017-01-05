@@ -19,8 +19,10 @@
    </license>
 
 
-	<plugin id="org.jboss.tools.jmx.core.test" download-size="0" install-size="0" version="0.0.0" />
-	<plugin id="org.jboss.tools.as.management.itests" download-size="0" install-size="0" version="0.0.0" unpack="false" />
+   	<plugin id="org.jboss.tools.jmx.core.test" download-size="0" install-size="0" version="0.0.0" />
+	<plugin id="org.jboss.ide.eclipse.as.reddeer" download-size="0" install-size="0" version="0.0.0" />
 	<plugin id="org.jboss.tools.as.test.core" download-size="0" install-size="0" version="0.0.0" />
 	<plugin id="org.jboss.tools.as.itests" download-size="0" install-size="0" version="0.0.0" />
+	<plugin id="org.jboss.tools.as.management.itests" download-size="0" install-size="0" version="0.0.0" unpack="false" />
+	<plugin id="org.jboss.tools.as.ui.bot.itests" download-size="0" install-size="0" version="0.0.0" />
 </feature>

@@ -3,20 +3,15 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.jboss.tools</groupId>
-		<artifactId>server.all</artifactId>
-		<version>4.4.2-SNAPSHOT</version>
+		<artifactId>as</artifactId>
+		<version>3.2.3-SNAPSHOT</version>
 	</parent>
-	<groupId>org.jboss.tools</groupId>
-	<artifactId>as</artifactId>
-	<name>as.all</name>
-	<version>3.2.3-SNAPSHOT</version>
+	<groupId>org.jboss.tools.as</groupId>
+	<artifactId>test-framework</artifactId>
+	<name>as.test-framework</name>
 	<packaging>pom</packaging>
 	<modules>
-		<module>plugins</module>
-		<module>test-framework</module>
-		<module>tests</module>
-		<module>itests</module>
-		<module>features</module>
+		 <module>org.jboss.ide.eclipse.as.reddeer</module> 
 	</modules>
 </project>
 	
