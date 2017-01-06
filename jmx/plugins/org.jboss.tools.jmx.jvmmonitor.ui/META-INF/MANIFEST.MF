@@ -19,7 +19,7 @@ Require-Bundle: org.eclipse.ui.views.properties.tabbed,
  org.jboss.tools.jmx.jvmmonitor.tools;bundle-version="1.6.0",
  org.jboss.tools.common.jdt.debug;bundle-version="3.7.0"
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.jboss.tools.jmx.jvmmonitor.internal.ui;x-friends:="org.jboss.tools.jmx.jvmmonitor.ui.tests",
  org.jboss.tools.jmx.jvmmonitor.internal.ui.actions;x-friends:="org.jboss.tools.jmx.jvmmonitor.ui.tests",
  org.jboss.tools.jmx.jvmmonitor.internal.ui.editors;x-friends:="org.jboss.tools.jmx.jvmmonitor.ui.tests",
