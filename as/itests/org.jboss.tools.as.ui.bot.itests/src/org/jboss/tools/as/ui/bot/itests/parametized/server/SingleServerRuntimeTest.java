@@ -37,29 +37,7 @@ import org.junit.runners.MethodSorters;
  *   1) -Djbosstools.test.jre.6={java6home}
  *   2) -Djbosstools.test.jre.7={java7home}
  *   3) -Djbosstools.test.jre.8={java8home}
- *   4) -Djboss.org.username={yourusername}
- *   5) -Djboss.org.password={hunter2}
- *   6) -Druntimes.suite.scope={smoke | latestMajors | allFree | all}
- *   
- *  Items 4 and 5 are optional and only necessary if testing runtimes that 
- *  require $0 subscription. 
- *  
- *  This test no longer needs to download any runtimes in advance. It will download them all via UI.
- *  
- *  There are 3 primary tests here:
- *    1) acquireAndDetect	(download the runtime via ui and make sure it appears)
- *    2) detect				(use the just-downloaded fs-location and use runtime detection)
- *    3) operate			(import via rt-detection and start/stop it)
- *    
- *  JRE requirement is no longer necessary. We simply make sure to add a JRE
- *  for java 6, 7, and 8 in advance, and check to make sure that the given server
- *  starts without the user needing to customize or change the jre at all. 
- *  
- *  Adding new runtimes to the test is as easy as modifying 
- *  ServerRuntimeUIConstants. You should:
- *    1) Declare a constant representing the UI string to download a given runtime
- *    2) Add that constant to the various arrays it should belong to (free, smoke, etc)
- *    3) Add a line to the initialize() method representing the various expected dl-rt values
+ *   4) -Djbosstools.test.single.runtime.location=/path/to/some/wf/or/eap/unzipped/loc
  */
 
 

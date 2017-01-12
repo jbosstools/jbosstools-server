@@ -48,4 +48,41 @@
 			</plugin>
 		</plugins>
 	</build>
+	<profiles>
+		<profile>
+			<id>eap7x-compatibility</id>
+			<activation>
+				<property>
+					<name>test.profile</name>
+					<value>eap7x-compatibility</value>
+				</property>
+			</activation>
+			<properties>
+				<test.class>org.jboss.tools.as.ui.bot.itests.parametized.server.SingleServerRuntimeTest</test.class>
+				<reddeer.config>${reddeer.product.config}</reddeer.config>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.googlecode.maven-download-plugin</groupId>
+						<artifactId>download-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>install-eap-7.x</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>wget</goal>
+								</goals>
+								<configuration>
+									<url>${jbosstools.test.jboss-eap-7.x.url}</url>
+									<md5>${jbosstools.test.jboss-eap-7.x.md5}</md5>
+									<unpack>true</unpack>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
