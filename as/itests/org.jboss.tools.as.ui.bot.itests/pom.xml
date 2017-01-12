@@ -14,8 +14,6 @@
 	<properties>
 		<reddeer.config>${project.build.directory}/../resources</reddeer.config>
 		<surefire.timeout>7200</surefire.timeout>
-		<productProperties></productProperties>
-		<systemProperties>-Drd.config=${reddeer.config} -Djbosstools.test.jre.6=${jbosstools.test.jre.6} -Djbosstools.test.jre.7=${jbosstools.test.jre.7} -Djbosstools.test.jre.8=${jbosstools.test.jre.8} -Djboss.org.username=${jboss.org.username} -Djboss.org.password=${jboss.org.password}</systemProperties>
 		<suiteClass>org.jboss.tools.as.ui.bot.itests.AllTestsSuite</suiteClass>
 	</properties>
 
