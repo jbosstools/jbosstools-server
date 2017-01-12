@@ -31,6 +31,16 @@ import org.jboss.tools.as.ui.bot.itests.reddeer.ui.SearchingForRuntimesDialog;
  */
 public class DetectRuntimeTemplate extends RuntimeDetectionUtility {
 	
+	public static List<Runtime> detectRuntime(String path) {
+		assertTrue("Path " + path + " doesn't exists", new File(path).exists());
+		SearchingForRuntimesDialog searchingForRuntimesDialog = addPath(path);
+		
+		List<Runtime> runtimes = searchingForRuntimesDialog.getRuntimes();
+		searchingForRuntimesDialog.ok();
+		runtimeDetectionPage.ok();
+		return runtimes;
+	}
+	
 	public static List<Runtime> detectRuntime(String path, List<Runtime> expected) {
 		assertTrue("Path " + path + " doesn't exists", new File(path).exists());
 		SearchingForRuntimesDialog searchingForRuntimesDialog = addPath(path);
