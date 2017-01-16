@@ -34,9 +34,6 @@ import org.junit.runners.MethodSorters;
  * This test is trying to optimize and clean up the huge number of tests that were here. 
  * 
  * Pre-reqs:
- *   1) -Djbosstools.test.jre.6={java6home}
- *   2) -Djbosstools.test.jre.7={java7home}
- *   3) -Djbosstools.test.jre.8={java8home}
  *   4) -Djbosstools.test.single.runtime.location=/path/to/some/wf/or/eap/unzipped/loc
  */
 
@@ -45,52 +42,6 @@ import org.junit.runners.MethodSorters;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)//first acquireAndDetect, then detect, then operate
 @DisableSecureStorage
 public class SingleServerRuntimeTest {
-
-    @BeforeClass
-    public static void addJREs() {
-    	String jre6 =  System.getProperty("jbosstools.test.jre.6");
-    	String jre7 =  System.getProperty("jbosstools.test.jre.7");
-    	String jre8 =  System.getProperty("jbosstools.test.jre.8");
-    	if( jre6 == null || jre6.isEmpty() || !(new File(jre6)).exists()) {
-    		throw new RuntimeException("Expected requirement JRE-6 is not set, is empty, or does not exist. Please set via system property -Djbosstools.test.jre.6");
-    	}
-    	if( jre7 == null || jre7.isEmpty() || !(new File(jre7)).exists()) {
-    		throw new RuntimeException("Expected requirement JRE-7 is not set, is empty, or does not exist. Please set via system property -Djbosstools.test.jre.7");
-    	}
-    	if( jre8 == null || jre8.isEmpty() || !(new File(jre8)).exists()) {
-    		throw new RuntimeException("Expected requirement JRE-8 is not set, is empty, or does not exist. Please set via system property -Djbosstools.test.jre.8");
-    	}
-    	addJRE("JRE6",jre6);
-    	addJRE("JRE7",jre7);
-    	addJRE("JRE8",jre8);
-    }
-    
-    @AfterClass
-    public static void removeJREs() {
-    	removeJRE("JRE6");
-    	removeJRE("JRE7");
-    	removeJRE("JRE8");
-    }
-    
-    public static void removeJRE(String name) {
-		JREsPreferencePage page = new JREsPreferencePage();
-		WorkbenchPreferenceDialog dialog = new WorkbenchPreferenceDialog();
-		dialog.open();
-		dialog.select(page);
-		page.deleteJRE(name);
-		dialog.ok();
-    }
-    
-    private static void addJRE(String name, String path) {
-		JREsPreferencePage page = new JREsPreferencePage();
-		WorkbenchPreferenceDialog dialog = new WorkbenchPreferenceDialog();
-		dialog.open();
-		dialog.select(page);
-		page.addJRE(path, name);
-		dialog.ok();
-    }
-
-
 
     private String location;
     private String serverName;
