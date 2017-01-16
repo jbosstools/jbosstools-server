@@ -17,6 +17,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
@@ -126,7 +127,7 @@ public abstract class AbstractServerActionDelegate implements IWorkbenchWindowAc
 					ISelectionChangedListener listener) {
 			}
 			public ISelection getSelection() {
-				return null;
+				return new StructuredSelection();
 			}
 			public void removeSelectionChangedListener(
 					ISelectionChangedListener listener) {
