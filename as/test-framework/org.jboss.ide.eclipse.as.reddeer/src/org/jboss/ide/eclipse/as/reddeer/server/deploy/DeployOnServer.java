@@ -291,18 +291,24 @@ public class DeployOnServer {
 	 * 
 	 * @param browserPage
 	 */
-	private static void evaluateBrowserPage(String browserPage){
+	private static void evaluateBrowserPage(String browserPage) {
 		ConsoleView consoleView = new ConsoleView();
 		consoleView.open();
-		assertFalse("Browser contains text 'Status 404'\n Console output:\n" + consoleView.getConsoleText(),
+		assertFalse(
+				"Browser contains text 'Status 404'\n Console output:\n" + consoleView.getConsoleText()
+						+ System.getProperty("line.separator") + "Browser contents:" + browserPage,
 				browserPage.contains("Status 404") || browserPage.contains("404 - Not Found"));
 		assertFalse(
-				"Browser contains text 'Error processing request'\n Console output:\n" + consoleView.getConsoleText(),
+				"Browser contains text 'Error processing request'\n Console output:\n" + consoleView.getConsoleText()
+						+ System.getProperty("line.separator") + "Browser contents:" + browserPage,
 				browserPage.contains("Error processing request"));
-		assertFalse("Browser contains text 'Forbidden'\n Console output:\n" + consoleView.getConsoleText(),
+		assertFalse(
+				"Browser contains text 'Forbidden'\n Console output:\n" + consoleView.getConsoleText()
+						+ System.getProperty("line.separator") + "Browser contents:" + browserPage,
 				browserPage.contains("Forbidden"));
-		
+
 	}
+
 
 	/**
 	 * 
