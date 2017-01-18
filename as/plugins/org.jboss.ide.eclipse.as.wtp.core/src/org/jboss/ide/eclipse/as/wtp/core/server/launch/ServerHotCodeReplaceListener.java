@@ -80,6 +80,10 @@ public class ServerHotCodeReplaceListener implements IJavaHotCodeReplaceListener
 		return launch;
 	}
 	
+	protected void setLaunch(ILaunch lau) {
+		this.launch = lau;
+	}
+	
 	public void hotCodeReplaceSucceeded(IJavaDebugTarget arg0) {
 		// ignore
 	}

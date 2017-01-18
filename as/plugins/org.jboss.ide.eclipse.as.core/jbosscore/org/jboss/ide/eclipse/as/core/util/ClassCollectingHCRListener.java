@@ -12,7 +12,6 @@ package org.jboss.ide.eclipse.as.core.util;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
@@ -31,7 +30,7 @@ import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.IJMXRunnable;
 import org.jboss.tools.jmx.core.JMXException;
 
-public final class ClassCollectingHCRListener extends ServerHotCodeReplaceListener {
+public class ClassCollectingHCRListener extends ServerHotCodeReplaceListener {
 
 	public ClassCollectingHCRListener(IServer server, ILaunch launch) {
 		super(server, launch);
@@ -61,7 +60,7 @@ public final class ClassCollectingHCRListener extends ServerHotCodeReplaceListen
 		}
 	}
 
-	private void executeJMXGarbageCollection(IServer server, IModule[] modules) {
+	protected void executeJMXGarbageCollection(IServer server, IModule[] modules) {
 		IConnectionFacade jbs = (IConnectionFacade) server.loadAdapter(IConnectionFacade.class, null);
 		if (jbs instanceof IConnectionFacade) {
 			IConnectionWrapper wrap = ((IConnectionFacade) jbs).getJMXConnection();
