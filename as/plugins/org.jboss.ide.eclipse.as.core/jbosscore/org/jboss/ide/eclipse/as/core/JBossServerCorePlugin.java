@@ -71,19 +71,25 @@ public class JBossServerCorePlugin extends Plugin  {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		UnitedServerListenerManager.getDefault();
-		UnitedServerListenerManager.getDefault().addListener(XPathModel.getDefault());
-		UnitedServerListenerManager.getDefault().addListener(ServerListener.getDefault());
 		
-		// It's unsafe to use FacetedProjectFramework in start method in the same thread. If may cause a deadlock. See https://issues.jboss.org/browse/JBIDE-9802
-		Job job = new Job("Adding JBoss4xEarFacetInstallListener") { //$NON-NLS-1$
+		/*
+		 * The listeners being added here cannot be added in start(etc) method directly.
+		 * This plugin may be 'started' in the context of other threads having locked
+		 * server objects or waiting for this plugin to 'start'. Adding any listeners
+		 * that may require this bundle being completely started will cause a deadlock. 
+		 */
+		Job job = new Job("JBossServerCorePlugin Delayed Listeners") { //$NON-NLS-1$
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				// Start the array of models that need to be started
+				UnitedServerListenerManager.getDefault().addListener(XPathModel.getDefault());
+				UnitedServerListenerManager.getDefault().addListener(ServerListener.getDefault());
+
 				FacetedProjectFramework.addListener(JBoss4xEarFacetInstallListener.getDefault(), IFacetedProjectEvent.Type.POST_INSTALL);
 				return Status.OK_STATUS;
 			}
 		};
-		job.schedule(4000);
+		job.schedule(1000);
 
 		// register the debug options listener
 		final Hashtable<String, String> props = new Hashtable<String, String>(4);
