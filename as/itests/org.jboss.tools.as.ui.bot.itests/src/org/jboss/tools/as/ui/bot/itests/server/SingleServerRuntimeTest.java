@@ -1,4 +1,4 @@
-package org.jboss.tools.as.ui.bot.itests.parametized.server;
+package org.jboss.tools.as.ui.bot.itests.server;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -10,19 +10,17 @@ import org.eclipse.ui.PlatformUI;
 import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServer;
 import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServerView;
 import org.jboss.reddeer.core.util.Display;
-import org.jboss.reddeer.eclipse.jdt.ui.preferences.JREsPreferencePage;
 import org.jboss.reddeer.eclipse.wst.server.ui.view.Server;
 import org.jboss.reddeer.junit.runner.RedDeerSuite;
-import org.jboss.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
 import org.jboss.tools.as.ui.bot.itests.Activator;
 import org.jboss.tools.as.ui.bot.itests.download.RuntimeDownloadTestUtility;
+import org.jboss.tools.as.ui.bot.itests.parametized.server.ServerRuntimeUIConstants;
 import org.jboss.tools.as.ui.bot.itests.reddeer.util.DeployJSPProjectTemplate;
 import org.jboss.tools.as.ui.bot.itests.reddeer.util.DetectRuntimeTemplate;
 import org.jboss.tools.as.ui.bot.itests.reddeer.util.DisableSecureStorageRequirement.DisableSecureStorage;
 import org.jboss.tools.as.ui.bot.itests.reddeer.util.OperateServerTemplate;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +32,7 @@ import org.junit.runners.MethodSorters;
  * This test is trying to optimize and clean up the huge number of tests that were here. 
  * 
  * Pre-reqs:
- *   4) -Djbosstools.test.single.runtime.location=/path/to/some/wf/or/eap/unzipped/loc
+ *   1) -Djbosstools.test.single.runtime.location=/path/to/some/wf/or/eap/unzipped/loc
  */
 
 

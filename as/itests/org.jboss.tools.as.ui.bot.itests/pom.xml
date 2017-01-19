@@ -28,7 +28,7 @@
 				</property>
 			</activation>
 			<properties>
-				<test.class>org.jboss.tools.as.ui.bot.itests.parametized.server.SingleServerRuntimeTest</test.class>
+				<test.class>org.jboss.tools.as.ui.bot.itests.EAPTestsSuite</test.class>
 				<additionalProperties>-Djbosstools.test.single.runtime.location=${requirementsDirectory}/jboss-eap-7.0</additionalProperties>
 			</properties>
 			<build>
