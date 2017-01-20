@@ -9,6 +9,7 @@
 	</parent>
 	<groupId>org.jboss.tools</groupId>
 	<artifactId>server.site</artifactId>
+	<version>4.4.3-SNAPSHOT</version>
 	<packaging>eclipse-repository</packaging>
 
 	<properties>
