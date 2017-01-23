@@ -16,6 +16,22 @@
 		<suiteClass>org.jboss.tools.as.ui.bot.itests.AllTestsSuite</suiteClass>
 	</properties>
 
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-surefire-plugin</artifactId>
+				<configuration>
+					<useUIThread>false</useUIThread>
+					<testSuite>org.jboss.tools.as.ui.bot.itests.AllTestsSuite</testSuite>
+					<testClass>${suiteClass}</testClass>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+
 	<!-- This profile requires two parameters: jbosstools.test.jboss-eap-7.x.url 
 		and jbosstools.test.jboss-eap-7.x.md5 -->
 	<profiles>
