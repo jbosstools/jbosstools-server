@@ -76,16 +76,17 @@ public class ExploreUtils {
 			exploreFileCommand = "cmd /C start explorer /select,\"" //$NON-NLS-1$
 					+ PATH + "\""; //$NON-NLS-1$
 		} else if (Platform.OS_LINUX.equals(Platform.getOS())) {
-			
+			exploreFolderCommand = ""; //$NON-NLS-1$
 			if (new File("/usr/bin/nautilus").exists()) { //$NON-NLS-1$
 				exploreFolderCommandArray = new String[3];
 				exploreFolderCommandArray[0]="/usr/bin/nautilus"; //$NON-NLS-1$
 				exploreFolderCommandArray[1]="--no-desktop"; //$NON-NLS-1$
-				exploreFolderCommand = ""; //$NON-NLS-1$
 			} else if (new File("/usr/bin/konqueror").exists()) { //$NON-NLS-1$
 				exploreFolderCommandArray = new String[2];
 				exploreFolderCommandArray[0]="/usr/bin/konqueror"; //$NON-NLS-1$
-				exploreFolderCommand = ""; //$NON-NLS-1$
+			} else if( new File("/usr/bin/xdg-open").exists()) {
+				exploreFolderCommandArray = new String[2];
+				exploreFolderCommandArray[0]="/usr/bin/xdg-open"; //$NON-NLS-1$
 			}
 			exploreFileCommand = exploreFolderCommand;
 		}
