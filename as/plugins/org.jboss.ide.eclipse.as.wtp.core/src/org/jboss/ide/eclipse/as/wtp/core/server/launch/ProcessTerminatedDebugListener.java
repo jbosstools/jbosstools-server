@@ -70,8 +70,14 @@ public abstract class ProcessTerminatedDebugListener implements IDebugEventSetLi
 			// TODO handle next stop requires force stuff
 		}
 		
-		if( server.getServerState() != IServer.STATE_STOPPED) {
-			((ControllableServerBehavior)getServerBehavior(server)).setServerStopped();
+		synchronized(server) {
+			sharedProcess = (IProcess)beh.getSharedData(AbstractStartJavaServerLaunchDelegate.PROCESS);
+			if( sharedProcess != null && !sharedProcess.equals(myProcess)) {
+				return;
+			}
+			if( server.getServerState() != IServer.STATE_STOPPED) {
+				((ControllableServerBehavior)getServerBehavior(server)).setServerStopped();
+			}
 		}
 	}
 	
