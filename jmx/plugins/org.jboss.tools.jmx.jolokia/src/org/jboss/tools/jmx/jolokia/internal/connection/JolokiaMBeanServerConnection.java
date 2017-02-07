@@ -44,6 +44,7 @@ import org.jolokia.client.request.J4pExecResponse;
 import org.jolokia.client.request.J4pListRequest;
 import org.jolokia.client.request.J4pListResponse;
 import org.jolokia.client.request.J4pReadRequest;
+import org.jolokia.client.request.J4pReadResponse;
 import org.jolokia.client.request.J4pResponse;
 import org.jolokia.client.request.J4pSearchRequest;
 import org.jolokia.client.request.J4pSearchResponse;
@@ -212,19 +213,25 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 		AttributeList al = new AttributeList();
 		J4pReadRequest req = null;
 		req = new J4pReadRequest(name, attributes);
-		List<J4pResponse<J4pReadRequest>> resp = null;
+		Object resp2 = null;
 		try {
-			resp = j4pClient.execute(req);  // TODO type??? GET or POST,  API missing?
+			resp2 = j4pClient.execute(req); // TODO type??? GET or POST,  API missing?
 		} catch (J4pException e) {
 			throw new IOException(e);
 		}
-		if( resp != null ) {
-			Iterator<J4pResponse<J4pReadRequest>> c = resp.iterator();
-			while(c.hasNext()) {
-				J4pResponse<J4pReadRequest> r2 = c.next();
-				Object v = r2.getValue();
-				al.add(v);
-			}
+		if( resp2 != null ) {
+//			if( resp2 instanceof List) {
+				List<J4pResponse<J4pReadRequest>> resp = (List<J4pResponse<J4pReadRequest>>)resp2;
+				Iterator<J4pResponse<J4pReadRequest>> c = resp.iterator();
+				while(c.hasNext()) {
+					J4pResponse<J4pReadRequest> r2 = c.next();
+					Object v = r2.getValue();
+					al.add(v);
+				}
+//			} else if( resp2 instanceof J4pReadResponse){
+//				Object o22 = ((J4pReadResponse)(resp2)).getValue();
+//				al.add(o22);
+//			}
 		}
 		return al;
 	}
