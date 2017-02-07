@@ -220,7 +220,7 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 			throw new IOException(e);
 		}
 		if( resp2 != null ) {
-//			if( resp2 instanceof List) {
+			if( resp2 instanceof List) {
 				List<J4pResponse<J4pReadRequest>> resp = (List<J4pResponse<J4pReadRequest>>)resp2;
 				Iterator<J4pResponse<J4pReadRequest>> c = resp.iterator();
 				while(c.hasNext()) {
@@ -228,10 +228,10 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 					Object v = r2.getValue();
 					al.add(v);
 				}
-//			} else if( resp2 instanceof J4pReadResponse){
-//				Object o22 = ((J4pReadResponse)(resp2)).getValue();
-//				al.add(o22);
-//			}
+			} else if( resp2 instanceof J4pReadResponse){
+				Object o22 = ((J4pReadResponse)(resp2)).getValue();
+				al.add(o22);
+			}
 		}
 		return al;
 	}
