@@ -23,7 +23,7 @@ import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.Directo
  */
 public class EventManager {
 	
-	private void emptyUselessMethod() {
+	private static void emptyUselessMethod() {
 		
 	}
 
