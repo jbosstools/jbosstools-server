@@ -33,7 +33,9 @@
 
 
 	<!-- This profile requires two parameters: jbosstools.test.jboss-eap-7.x.url 
-		and jbosstools.test.jboss-eap-7.x.md5 -->
+		and jbosstools.test.jboss-eap-7.x.md5;
+	 	activate using the test.profile property so that the parent pom does
+		not download all runtimes -->
 	<profiles>
 		<profile>
 			<id>eap7x-compatibility</id>
@@ -45,7 +47,8 @@
 			</activation>
 			<properties>
 				<test.class>org.jboss.tools.as.ui.bot.itests.EAPTestsSuite</test.class>
-				<additionalProperties>-Djbosstools.test.single.runtime.location=${requirementsDirectory}/jboss-eap-7.0</additionalProperties>
+				<jbosstools.test.jboss-eap-7.x.home>jboss-eap-7.1</jbosstools.test.jboss-eap-7.x.home>
+				<additionalProperties>-Djbosstools.test.single.runtime.location=${requirementsDirectory}/${jbosstools.test.jboss-eap-7.x.home}</additionalProperties>
 			</properties>
 			<build>
 				<plugins>
