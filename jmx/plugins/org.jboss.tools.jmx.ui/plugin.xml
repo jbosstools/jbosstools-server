@@ -327,9 +327,9 @@
             icon="icons/full/obj16/write_obj.gif"
             id="org.jboss.tools.jmx.core.providers.DefaultConnectionProvider"
             name="%DefaultJMXConnectionProvider.name">
-         <wizardPage
+         <wizardFragment
                class="org.jboss.tools.jmx.ui.internal.wizards.DefaultConnectionWizardPage">
-         </wizardPage>
+         </wizardFragment>
       </providerUI>
       
       

@@ -26,7 +26,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.Window;
-import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -38,11 +37,12 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.jboss.tools.foundation.ui.util.FormDataUtility;
+import org.jboss.tools.foundation.ui.xpl.taskwizard.IWizardHandle;
+import org.jboss.tools.foundation.ui.xpl.taskwizard.WizardFragment;
 import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
@@ -50,7 +50,7 @@ import org.jboss.tools.jmx.jolokia.JolokiaConnectionWrapper;
 import org.jboss.tools.jmx.jolokia.internal.JolokiaConnectionProvider;
 import org.jboss.tools.jmx.ui.IEditableConnectionWizardPage;
 
-public class JolokiaConnectionWizardPage extends WizardPage implements IEditableConnectionWizardPage {
+public class JolokiaConnectionWizardPage extends WizardFragment implements IEditableConnectionWizardPage {
 	// Used on add headers dialog
 	private static final String KEY_LABEL = "Header key: ";
 	private static final String VAL_LABEL = "Header value: ";
@@ -65,9 +65,10 @@ public class JolokiaConnectionWizardPage extends WizardPage implements IEditable
 	private Button addHeaderBtn, removeHeaderBtn, ignoreSSLErrorBtn;
 	private Button getBtn, postBtn;
 	private HashMap<String, String> headers;
-
+	private IWizardHandle handle;
+	
+	
 	public JolokiaConnectionWizardPage() {
-		super("Jolokia JMX Connection");
 		if (initial == null) {
 			headers = new HashMap<String, String>();
 		} else {
@@ -75,20 +76,38 @@ public class JolokiaConnectionWizardPage extends WizardPage implements IEditable
 		}
 	}
 
+	@Override
+	public boolean hasComposite() {
+		return true;
+	}
+
+	/**
+	 * Creates the composite associated with this fragment.
+	 * This method is only called when hasComposite() returns true.
+	 * 
+	 * @param parent a parent composite
+	 * @param handle a wizard handle
+	 * @return the created composite
+	 */
+	@Override
+	public Composite createComposite(Composite parent, IWizardHandle handle) {
+		this.handle = handle;
+		getPage().setTitle("Jolokia JMX Connection");
+		return createControl(parent);
+	}
 
 	private void preCreateControl() {
 		if (initial == null)
-			setTitle("New Jolokia JMX Connection");
+			getPage().setTitle("New Jolokia JMX Connection");
 		else
-			setTitle("Edit Jolokia JMX Connection");
-		setImageDescriptor(JolokiaSharedImages.getDefault().descriptor(JolokiaSharedImages.JOLOKIA_BAN));
-		setPageComplete(false);
+			getPage().setTitle("Edit Jolokia JMX Connection");
+		getPage().setImageDescriptor(JolokiaSharedImages.getDefault().descriptor(JolokiaSharedImages.JOLOKIA_BAN));
+		setComplete(false);
 	}
 
-	@Override
-	public void createControl(Composite parent) {
+	public Composite createControl(Composite parent) {
 		preCreateControl();
-		Control c = fillControl(parent);
+		Composite c = fillControl(parent);
 		
 		
 		if( initial != null ) {
@@ -110,8 +129,7 @@ public class JolokiaConnectionWizardPage extends WizardPage implements IEditable
 		getBtn.setSelection(!post);
 		
 		addListeners();
-
-		setControl(c);
+		return c;
 	}
 
 	private void addListeners() {
@@ -165,7 +183,7 @@ public class JolokiaConnectionWizardPage extends WizardPage implements IEditable
 	}
 
 	private void addHeaderPressed() {
-		MultipleInputDialog dialog= new MultipleInputDialog(getShell(), DebugPreferencesMessages.SimpleVariablePreferencePage_13); 
+		MultipleInputDialog dialog= new MultipleInputDialog(addHeaderBtn.getShell(), DebugPreferencesMessages.SimpleVariablePreferencePage_13); 
 		dialog.addTextField(KEY_LABEL, "", false);
 		dialog.addTextField(VAL_LABEL, "", false);
 		if (dialog.open() == Window.OK) {
@@ -189,7 +207,7 @@ public class JolokiaConnectionWizardPage extends WizardPage implements IEditable
 		}
 	}
 
-	public Control fillControl(Composite parent) {
+	public Composite fillControl(Composite parent) {
 		Composite c = new Composite(parent, SWT.NONE);
 		c.setLayout(new FillLayout());
 
@@ -249,10 +267,6 @@ public class JolokiaConnectionWizardPage extends WizardPage implements IEditable
 		removeHeaderBtn = new Button(main, SWT.PUSH);
 		addHeaderBtn.setText("Add Header...");
 		removeHeaderBtn.setText("Remove Header");
-
-		if( initial != null ) {
-			nameText.setEnabled(false);
-		}
 		
 		Label requestTypeLabel = new Label(main, SWT.NONE);
 		requestTypeLabel.setText("Request Type: ");
@@ -294,45 +308,36 @@ public class JolokiaConnectionWizardPage extends WizardPage implements IEditable
 		JolokiaConnectionProvider provider = (JolokiaConnectionProvider) ExtensionManager.getProvider(JolokiaConnectionProvider.PROVIDER_ID);
 		IConnectionWrapper inUse = provider.findConnection(nameText.getText());
 		if( inUse != null && inUse != initial) {
-			setErrorMessage("Connection name already in use.");
-			setPageComplete(false);
+			handle.setMessage("Connection name already in use.", IWizardHandle.ERROR);
+			setComplete(false);
 			return;
 		} 
 		
-		if( name == null || name.isEmpty() || url == null || url.isEmpty()) {
-			setErrorMessage(null);
-			setPageComplete(false);
+		if( isEmpty(name)|| isEmpty(url) || isEmpty(getOrPost)) {
+			handle.setMessage(null,  IWizardHandle.NONE);
+			setComplete(false);
 			return;
 		}
 		
-		if( getOrPost == null ) {
-			setErrorMessage(null);
-			setPageComplete(false);
-			return;
-		}
-		
-		setMessage(null);
-		setPageComplete(true);
+		handle.setMessage(null,  IWizardHandle.NONE);
+		setComplete(true);
+		handle.update();
 	}
 	
+	private boolean isEmpty(String s) {
+		return s == null || s.isEmpty();
+	}
 
 	@Override
 	public IConnectionWrapper getConnection() throws CoreException {
-		if( initial == null ) {
-			HashMap<String,Object> map = new HashMap<String,Object>();
-			map.put(JolokiaConnectionWrapper.ID, name);
-			map.put(JolokiaConnectionWrapper.URL, url);
-			map.put(JolokiaConnectionWrapper.HEADERS, headers);
-			map.put(JolokiaConnectionWrapper.IGNORE_SSL_ERRORS, ignoreSSL);
-			map.put(JolokiaConnectionWrapper.GET_OR_POST, getOrPost);
-			IConnectionProvider provider = ExtensionManager.getProvider(JolokiaConnectionProvider.PROVIDER_ID);
-			return provider.createConnection(map);
-		}
-		initial.setUrl(url);
-		initial.setHeaders(headers);
-		initial.setIgnoreSSLErrors(ignoreSSL);
-		initial.setType(getOrPost);
-		return initial;
+		Map<String,Object> map = new HashMap<>();
+		map.put(JolokiaConnectionWrapper.ID, name);
+		map.put(JolokiaConnectionWrapper.URL, url);
+		map.put(JolokiaConnectionWrapper.HEADERS, headers);
+		map.put(JolokiaConnectionWrapper.IGNORE_SSL_ERRORS, ignoreSSL);
+		map.put(JolokiaConnectionWrapper.GET_OR_POST, getOrPost);
+		IConnectionProvider provider = ExtensionManager.getProvider(JolokiaConnectionProvider.PROVIDER_ID);
+		return provider.createConnection(map);
 	}
 	
 	@Override

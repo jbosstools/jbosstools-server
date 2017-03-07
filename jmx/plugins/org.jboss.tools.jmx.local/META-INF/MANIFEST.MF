@@ -16,7 +16,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.navigator;bundle-version="3.5.400",
  org.jboss.tools.common.jdt.debug;bundle-version="3.7.0"
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.jboss.tools.jmx.local,
  org.jboss.tools.jmx.local.ui
 Bundle-ActivationPolicy: lazy

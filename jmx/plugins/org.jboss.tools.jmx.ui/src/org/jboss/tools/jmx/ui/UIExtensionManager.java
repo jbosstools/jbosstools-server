@@ -11,7 +11,6 @@
 package org.jboss.tools.jmx.ui;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.CoreException;
@@ -25,10 +24,10 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.jboss.tools.foundation.ui.xpl.taskwizard.WizardFragment;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 
 /**
@@ -83,7 +82,7 @@ public class UIExtensionManager {
 		boolean editable;
 		IConfigurationElement labelProviderElement;
 		ILabelProvider labelProvider;
-		IConfigurationElement[] wizardPages;
+		IConfigurationElement rootFragment;
 		ImageDescriptor imageDescriptor;
 		public ConnectionProviderUI(IConfigurationElement element) {
 			super(element);
@@ -91,14 +90,20 @@ public class UIExtensionManager {
 			IConfigurationElement[] children = element.getChildren();
 			ArrayList<IConfigurationElement> wizardPageList = new ArrayList<IConfigurationElement>();
 			labelProviderElement = null;
+			
+			boolean multipleFragments = false;
 			for( int i = 0; i < children.length; i++ ) {
-				if( children[i].getName().equals("wizardPage")) { //$NON-NLS-1$
-					wizardPageList.add(children[i]);
-				} else if( children[i].getName().equals("connectionLabelProvider")) { //$NON-NLS-1$
+				if( "wizardFragment".equals(children[i].getName())) { //$NON-NLS-1$
+					if( rootFragment != null && !multipleFragments) {
+						String msg = "providerUI " + element.getAttribute("id") + " in contributor " + element.getContributor().getName() + " declares more than 1 wizard fragment"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+						JMXUIActivator.log(IStatus.WARNING, msg, null);
+						multipleFragments = true; // prevent double logging
+					}
+					rootFragment = children[i];
+				} else if( "connectionLabelProvider".equals(children[i].getName())) { //$NON-NLS-1$
 					labelProviderElement = children[i];
 				}
 			}
-			wizardPages = (IConfigurationElement[]) wizardPageList.toArray(new IConfigurationElement[wizardPageList.size()]);
 		}
 		
 		public void dispose() {
@@ -147,17 +152,16 @@ public class UIExtensionManager {
 		public boolean isEditable() {
 			return editable;
 		}
-		public ConnectionWizardPage[] createPages() {
-			ArrayList<ConnectionWizardPage> list = new ArrayList<ConnectionWizardPage>();
-			for( int i = 0; i < wizardPages.length; i++ ) {
-				try {
-					ConnectionWizardPage wp = (ConnectionWizardPage)wizardPages[i].createExecutableExtension(CLASS);
-					list.add(wp);
-				} catch( CoreException ce ) {
-					JMXUIActivator.log(ce.getStatus());
+		public WizardFragment createFragments() {
+			try {
+				Object o = rootFragment.createExecutableExtension(CLASS);
+				if(o instanceof WizardFragment) {
+					return (WizardFragment)o;
 				}
+			} catch( CoreException ce ) {
+				JMXUIActivator.log(ce.getStatus());
 			}
-			return list.toArray(new ConnectionWizardPage[list.size()]);
+			return null;
 		}
 	}
 
@@ -226,16 +230,6 @@ public class UIExtensionManager {
 			}
 		}
 		connectionCategoryUIElements = map;
-	}
-
-	public static IWizardPage[] getNewConnectionWizardPages(String typeName) {
-		ConnectionProviderUI ui = connectionUIElements.get(typeName);
-		if( ui != null ) {
-			IWizardPage[] pages = ui.createPages();
-			if( pages != null )
-				return pages;
-		}
-		return new IWizardPage[]{};
 	}
 
 	private static IExtension[] findExtension(String extensionId) {
