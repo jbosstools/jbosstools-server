@@ -15,13 +15,12 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.jboss.tools.jmx.ui.Messages;
 import org.jboss.tools.jmx.ui.internal.JMXImages;
-import org.jboss.tools.jmx.ui.internal.wizards.NewConnectionWizard;
+import org.jboss.tools.jmx.ui.internal.wizards.NewConnectionTaskWizard;
 
 /**
  * Create a new connection
@@ -35,7 +34,7 @@ public class NewConnectionAction extends Action {
 	public void run() {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				IWizard wizard = new NewConnectionWizard();
+				IWizard wizard = new NewConnectionTaskWizard();
 				IWorkbench wb = PlatformUI.getWorkbench();
 				IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
 				WizardDialog d = new WizardDialog(win.getShell(), wizard);

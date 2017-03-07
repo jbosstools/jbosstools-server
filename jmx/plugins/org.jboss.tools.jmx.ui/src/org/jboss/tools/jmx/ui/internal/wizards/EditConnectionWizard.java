@@ -10,49 +10,63 @@
  ******************************************************************************/ 
 package org.jboss.tools.jmx.ui.internal.wizards;
 
+import java.util.List;
+
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.jboss.tools.foundation.ui.xpl.taskwizard.TaskWizard;
+import org.jboss.tools.foundation.ui.xpl.taskwizard.WizardFragment;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.ui.ConnectionWizardPage;
 import org.jboss.tools.jmx.ui.IEditableConnectionWizardPage;
+import org.jboss.tools.jmx.ui.JMXUIActivator;
 import org.jboss.tools.jmx.ui.Messages;
 import org.jboss.tools.jmx.ui.UIExtensionManager;
 import org.jboss.tools.jmx.ui.UIExtensionManager.ConnectionProviderUI;
 
-public class EditConnectionWizard extends Wizard {
-	private IConnectionWrapper connection;
+public class EditConnectionWizard extends TaskWizard {
+	
 	public EditConnectionWizard(IConnectionWrapper connection) {
-		super();
-		this.connection = connection;
+		super(Messages.EditConnectionWizardTitle, new EditConnectionFragment(connection));
 	}
-	public String getWindowTitle() {
-		return Messages.EditConnectionWizardTitle;
-	}
-
-	public void addPages() {
-		ConnectionProviderUI ui = UIExtensionManager.getConnectionProviderUI(connection.getProvider().getId());
-		ConnectionWizardPage[] pages = ui.createPages();
-		for( int j = 0; j < pages.length; j++ )
-			if( pages[j] instanceof IEditableConnectionWizardPage) {
-				((IEditableConnectionWizardPage)pages[j]).setInitialConnection(connection);
-				addPage(pages[j]);
-			}
-	}
-
-	@Override
-	public boolean performFinish() {
-		try {
-			IConnectionWrapper xinda = ((ConnectionWizardPage)getPages()[0]).getConnection();
-			if( xinda == connection)
-				connection.getProvider().connectionChanged(connection);
-			else {
-				connection.getProvider().removeConnection(connection);
-				connection.getProvider().addConnection(xinda);
-			}
-			return true;
-		} catch( CoreException ce) {
+	
+	private static class EditConnectionFragment extends WizardFragment {
+		private IConnectionWrapper con;
+		private IEditableConnectionWizardPage rootPage;
+		
+		public EditConnectionFragment(IConnectionWrapper connection) {
+			this.con = connection;
 		}
-		return false;
+		protected void createChildFragments(List<WizardFragment> list) {
+			ConnectionProviderUI ui = UIExtensionManager.getConnectionProviderUI(con.getProvider().getId());
+			WizardFragment root = ui.createFragments();
+			if( root instanceof IEditableConnectionWizardPage) {
+				((IEditableConnectionWizardPage)root).setInitialConnection(con);
+				list.add(root);
+				rootPage = (IEditableConnectionWizardPage)root;
+			}
+		}
+		
+
+		@Override
+		public void performFinish(IProgressMonitor mon) {
+			try {
+				IConnectionWrapper xinda = ((ConnectionWizardPage)rootPage).getConnection();
+				if( xinda == con)
+					con.getProvider().connectionChanged(con);
+				else {
+					con.getProvider().removeConnection(con);
+					con.getProvider().addConnection(xinda);
+				}
+			} catch( CoreException ce) {
+				JMXUIActivator.getDefault().getLog().log(
+						new Status(IStatus.ERROR, JMXUIActivator.PLUGIN_ID, 
+								"Error editing JMX connection", ce)); //$NON-NLS-1$
+			}
+		}
 	}
+
 
 }

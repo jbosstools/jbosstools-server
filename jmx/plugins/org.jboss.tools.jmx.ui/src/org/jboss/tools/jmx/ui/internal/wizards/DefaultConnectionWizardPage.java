@@ -13,9 +13,13 @@ package org.jboss.tools.jmx.ui.internal.wizards;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -26,10 +30,13 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
+import org.jboss.tools.foundation.ui.xpl.taskwizard.IWizardHandle;
+import org.jboss.tools.foundation.ui.xpl.taskwizard.WizardFragment;
 import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
@@ -38,13 +45,11 @@ import org.jboss.tools.jmx.core.providers.DefaultConnectionWrapper;
 import org.jboss.tools.jmx.ui.IEditableConnectionWizardPage;
 import org.jboss.tools.jmx.ui.Messages;
 
-
 /**
  * The connection page for the default wizard implementation.
  */
-public class DefaultConnectionWizardPage extends WizardPage implements
-	IEditableConnectionWizardPage {
-	
+public class DefaultConnectionWizardPage extends WizardFragment implements IEditableConnectionWizardPage {
+
 	private static final String _BLANK_ = ""; //$NON-NLS-1$
 	private static final String SIMPLE_PREFIX = "service:jmx:rmi:///jndi/rmi://"; //$NON-NLS-1$
 	private static final String SIMPLE_SUFFIX = "/jmxrmi"; //$NON-NLS-1$
@@ -55,24 +60,75 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 	private Text advancedNameText, advancedUserNameText, advancedPasswordText;
 	private String name, url, userName, password;
 	private DefaultConnectionWrapper initialConnection;
+	private IWizardHandle handle;
+
+	public DefaultConnectionWizardPage() {
+		// 0-arg constructor for extension point instantiation
+	}
+
+	@Override
+	public boolean hasComposite() {
+		return true;
+	}
+
+	/**
+	 * Creates the composite associated with this fragment. This method is only
+	 * called when hasComposite() returns true.
+	 * 
+	 * @param parent
+	 *            a parent composite
+	 * @param handle
+	 *            a wizard handle
+	 * @return the created composite
+	 */
+	@Override
+	public Composite createComposite(Composite parent, IWizardHandle handle) {
+		this.handle = handle;
+		if (initialConnection == null) {
+			getPage().setTitle(Messages.NewConnectionWizard_CreateNewConnection);
+			getPage().setDescription(Messages.DefaultConnectionWizardPage_Description);
+		} else {
+			getPage().setTitle(Messages.EditConnectionWizardTitle);
+		}
+		return createControl(parent);
+	}
+
+	private Composite createControl(Composite parent) {
+		Composite c = new Composite(parent, SWT.NONE);
+		c.setLayout(new FillLayout());
+		folder = new TabFolder(c, SWT.TOP);
+		simpleItem = new TabItem(folder, SWT.NONE);
+		simpleItem.setText(Messages.DefaultConnectionWizardPage_Simple);
+		simpleItem.setControl(createSimpleConnectionPage(folder));
+
+		advancedItem = new TabItem(folder, SWT.NONE);
+		advancedItem.setText(Messages.DefaultConnectionWizardPage_Advanced);
+		advancedItem.setControl(createAdvancedConnectionPage(folder));
+
+		addListeners();
+		validate();
+		return c;
+	}
+
 	public void setInitialConnection(IConnectionWrapper wrapper) {
-		this.initialConnection = (DefaultConnectionWrapper)wrapper;
+		this.initialConnection = (DefaultConnectionWrapper) wrapper;
 	}
 
 	private void addListeners() {
 		ModifyListener listener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				validate();
+				validateJob();
 			}
 		};
 		SelectionListener tabListener = new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				widgetSelected(e);
 			}
+
 			public void widgetSelected(SelectionEvent e) {
 				TabItem[] tabs = folder.getSelection();
 
-				if( tabs[0] == simpleItem ) {
+				if (tabs[0] == simpleItem) {
 					nameText.setText(advancedNameText.getText());
 					userNameText.setText(advancedUserNameText.getText());
 					passwordText.setText(advancedPasswordText.getText());
@@ -93,28 +149,6 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 		advancedUserNameText.addModifyListener(listener);
 		advancedPasswordText.addModifyListener(listener);
 		folder.addSelectionListener(tabListener);
-	}
-	public DefaultConnectionWizardPage() {
-		super(_BLANK_);
-		setTitle(Messages.NewConnectionWizard_CreateNewConnection);
-		setDescription(Messages.DefaultConnectionWizardPage_Description);
-	}
-
-	public void createControl(Composite parent) {
-		Composite c = new Composite(parent, SWT.NONE);
-		c.setLayout(new FillLayout());
-		folder = new TabFolder(c, SWT.TOP);
-		simpleItem = new TabItem(folder, SWT.NONE);
-		simpleItem.setText(Messages.DefaultConnectionWizardPage_Simple);
-		simpleItem.setControl(createSimpleConnectionPage(folder));
-
-		advancedItem = new TabItem(folder, SWT.NONE);
-		advancedItem.setText(Messages.DefaultConnectionWizardPage_Advanced);
-		advancedItem.setControl(createAdvancedConnectionPage(folder));
-		setControl(c);
-
-		addListeners();
-		validate();
 	}
 
 	private Control createSimpleConnectionPage(Composite parent) {
@@ -179,7 +213,7 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 		data.grabExcessHorizontalSpace = true;
 		passwordText.setLayoutData(data);
 
-		if( initialConnection == null ) {
+		if (initialConnection == null) {
 			nameText.setText(getNextName());
 			hostText.setText("localhost"); //$NON-NLS-1$
 			portText.setText("3000"); //$NON-NLS-1$
@@ -190,9 +224,10 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 			userNameText.setText(initialConnection.getDescriptor().getUserName());
 			passwordText.setText(initialConnection.getDescriptor().getPassword());
 			String url = initialConnection.getDescriptor().getURL();
-			if( url.startsWith(SIMPLE_PREFIX)) {
+			if (url.startsWith(SIMPLE_PREFIX)) {
 				String host = url.substring(SIMPLE_PREFIX.length(), url.indexOf(":", SIMPLE_PREFIX.length())); //$NON-NLS-1$
-				String port = url.substring(url.indexOf(":", SIMPLE_PREFIX.length())+1, url.indexOf("/", SIMPLE_PREFIX.length()));//$NON-NLS-1$//$NON-NLS-2$
+				String port = url.substring(url.indexOf(":", SIMPLE_PREFIX.length()) + 1, //$NON-NLS-1$
+						url.indexOf("/", SIMPLE_PREFIX.length()));//$NON-NLS-1$
 				hostText.setText(host);
 				portText.setText(port);
 			}
@@ -244,14 +279,13 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 		label.setText(Messages.DefaultConnectionWizardPage_Password);
 
 		// 6 user name text entry
-		advancedPasswordText = new Text(fieldComposite, SWT.BORDER
-				| SWT.PASSWORD);
+		advancedPasswordText = new Text(fieldComposite, SWT.BORDER | SWT.PASSWORD);
 		advancedPasswordText.setText(_BLANK_);
 		data = new GridData(GridData.FILL_HORIZONTAL);
 		data.grabExcessHorizontalSpace = true;
 		advancedPasswordText.setLayoutData(data);
 
-		if( initialConnection == null ) {
+		if (initialConnection == null) {
 			urlText.setText("service:jmx:rmi:"); //$NON-NLS-1$
 			advancedUserNameText.setText(_BLANK_);
 			advancedPasswordText.setText(_BLANK_);
@@ -266,17 +300,40 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 	protected String getNextName() {
 		String name;
 		int count = 1;
-		if( nameTaken( Messages.DefaultConnectionWizardPage_Default_Name )) {
+		if (nameTaken(Messages.DefaultConnectionWizardPage_Default_Name)) {
 			do {
 				name = Messages.DefaultConnectionWizardPage_Default_Name + " " + count++; //$NON-NLS-1$
-			} while( nameTaken(name));
+			} while (nameTaken(name));
 			return name;
 		} else
 			return Messages.DefaultConnectionWizardPage_Default_Name;
 	}
 
+	private Job validateJob;
+
+	protected void validateJob() {
+		if (validateJob != null) {
+			validateJob.cancel();
+		}
+		setComplete(false);
+		handle.update();
+		validateJob = new Job("Validate JMX Connection Wizard") { //$NON-NLS-1$
+			protected IStatus run(IProgressMonitor monitor) {
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						validate();
+					}
+				});
+				return Status.OK_STATUS;
+			}
+		};
+
+		validateJob.setSystem(true);
+		validateJob.schedule(750);
+	}
+
 	protected void validate() {
-		// TODO Validation
 		if (folder.getSelectionIndex() == 0) {
 			name = nameText.getText();
 			userName = userNameText.getText();
@@ -320,14 +377,14 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 		}
 
 		// now validate name
-		if( name == null || nameTaken(name)) {
+		if (name == null || nameTaken(name)) {
 			showError(Messages.DefaultConnectionWizardPage_Name_In_Use);
 			return;
 		}
 
 		try {
 			getConnection();
-		} catch( CoreException ce ) {
+		} catch (CoreException ce) {
 			showError(ce.getMessage());
 			return;
 		}
@@ -336,31 +393,25 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 	}
 
 	protected void clearMessage() {
-		setErrorMessage(null);
-		setPageComplete(true);
-		if( getContainer().getCurrentPage() != null ) {
-			getContainer().updateMessage();
-			getContainer().updateButtons();
-		}
+		handle.setMessage(null, IWizardHandle.NONE);
+		setComplete(true);
+		handle.update();
 	}
 
 	protected void showError(String message) {
-		setErrorMessage(message);
-		setPageComplete(false);
-		if( getContainer().getCurrentPage() != null ) {
-			getContainer().updateMessage();
-			getContainer().updateButtons();
-		}
+		handle.setMessage(message, IWizardHandle.ERROR);
+		setComplete(false);
+		handle.update();
 	}
 
 	protected boolean nameTaken(String s) {
 		IConnectionProvider provider = ExtensionManager.getProvider(DefaultConnectionProvider.PROVIDER_ID);
-		if(initialConnection != null && s != null && s.equals(provider.getName(initialConnection))) {
+		if (initialConnection != null && s != null && s.equals(provider.getName(initialConnection))) {
 			return false;
 		}
 		IConnectionWrapper[] connections = provider.getConnections();
-		for( int i = 0; i < connections.length; i++ ) {
-			if( provider.getName(connections[i]).equals(s)) {
+		for (int i = 0; i < connections.length; i++) {
+			if (provider.getName(connections[i]).equals(s)) {
 				return true;
 			}
 		}
@@ -380,20 +431,13 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 	}
 
 	public IConnectionWrapper getConnection() throws CoreException {
-		if( initialConnection == null ) {
-			HashMap<String,String> map = new HashMap<String,String>();
-			map.put(DefaultConnectionProvider.ID, name);
-			map.put(DefaultConnectionProvider.URL, url);
-			map.put(DefaultConnectionProvider.USERNAME, userName);
-			map.put(DefaultConnectionProvider.PASSWORD, password);
-			IConnectionProvider provider = ExtensionManager.getProvider(DefaultConnectionProvider.PROVIDER_ID);
-	
-			return provider.createConnection(map);
-		}
-		initialConnection.getDescriptor().setId(name);
-		initialConnection.getDescriptor().setUrl(url);
-		initialConnection.getDescriptor().setUserName(userName);
-		initialConnection.getDescriptor().setPassword(password);
-		return initialConnection;
+		Map<String,String> map = new HashMap<>();
+		map.put(DefaultConnectionProvider.ID, name);
+		map.put(DefaultConnectionProvider.URL, url);
+		map.put(DefaultConnectionProvider.USERNAME, userName);
+		map.put(DefaultConnectionProvider.PASSWORD, password);
+		IConnectionProvider provider = ExtensionManager.getProvider(DefaultConnectionProvider.PROVIDER_ID);
+
+		return provider.createConnection(map);
 	}
 }

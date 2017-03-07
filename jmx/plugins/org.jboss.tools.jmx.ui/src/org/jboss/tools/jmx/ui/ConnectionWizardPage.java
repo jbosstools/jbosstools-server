@@ -12,13 +12,12 @@ package org.jboss.tools.jmx.ui;
 
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jface.wizard.IWizardPage;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 
 /**
  * A page for a connection type's wizard creation
  */
-public interface ConnectionWizardPage extends IWizardPage {
+public interface ConnectionWizardPage {
 	/*
 	 * Called during the wizard.performFinish() command
 	 * to retrieve the completed / created connection

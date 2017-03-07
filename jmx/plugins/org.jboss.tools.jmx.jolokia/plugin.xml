@@ -18,9 +18,9 @@
          <connectionLabelProvider
                class="org.jboss.tools.jmx.jolokia.internal.ui.JolokiaConnectionLabelProvider">
          </connectionLabelProvider>
-         <wizardPage
+         <wizardFragment
                class="org.jboss.tools.jmx.jolokia.internal.ui.JolokiaConnectionWizardPage">
-         </wizardPage>
+         </wizardFragment>
       </providerUI>
    </extension>
 </plugin>
