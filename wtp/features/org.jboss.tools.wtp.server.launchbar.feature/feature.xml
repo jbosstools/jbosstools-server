@@ -2,7 +2,7 @@
 <feature
       id="org.jboss.tools.wtp.server.launchbar.feature"
       label="%featureName"
-      version="1.3.103.qualifier"
+      version="1.3.110.qualifier"
       provider-name="%providerName"
       license-feature="org.jboss.tools.foundation.license.feature"
       license-feature-version="0.0.0"
