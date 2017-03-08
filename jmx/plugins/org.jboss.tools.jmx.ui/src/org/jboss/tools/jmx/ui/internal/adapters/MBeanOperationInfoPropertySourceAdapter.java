@@ -14,7 +14,6 @@ import java.util.List;
 import javax.management.MBeanOperationInfo;
 import javax.management.MBeanParameterInfo;
 
-
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.PropertyDescriptor;

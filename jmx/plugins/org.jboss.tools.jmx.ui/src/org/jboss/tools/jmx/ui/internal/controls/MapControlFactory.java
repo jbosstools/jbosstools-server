@@ -19,12 +19,11 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.jboss.tools.jmx.ui.Messages;
-import org.jboss.tools.jmx.ui.internal.StringUtils;
+import org.jboss.tools.jmx.core.util.StringUtils;
 
 public class MapControlFactory extends AbstractTabularControlFactory {
 
 	@Override
-	@SuppressWarnings("unchecked")
 	protected void fillTable(final Table table, final Object value) {
         TableColumn keyColumn = new TableColumn(table, SWT.NONE);
         keyColumn.setText(Messages.key);

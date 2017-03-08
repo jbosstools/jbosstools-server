@@ -61,7 +61,7 @@ public class ConnectDebuggerAction extends Action {
 				}
 				
 				ILaunchConfiguration config = RemoteDebugActivator.createOrGetDefaultLaunchConfiguration(
-						new Integer(con.getDebugPort()).toString(), 
+						Integer.toString(con.getDebugPort()),
 						con.getDebugHost(), jp, (IJavaProject[]) javaProjects.toArray(new IJavaProject[javaProjects.size()]));
 				DebugUITools.launch(config, ILaunchManager.DEBUG_MODE);
 			} catch(CoreException ce) {
@@ -69,7 +69,7 @@ public class ConnectDebuggerAction extends Action {
 			}
 		} else {
 			// We have a null main class, it might be suspended
-			RemoteDebugUIActivator.getDefault().openLaunchDebuggerDialog();
+			RemoteDebugUIActivator.openLaunchDebuggerDialog();
 		}
 	}
 	

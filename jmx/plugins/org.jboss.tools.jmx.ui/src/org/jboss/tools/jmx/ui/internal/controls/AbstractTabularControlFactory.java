@@ -18,7 +18,6 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Decorations;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
@@ -29,7 +28,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.jboss.tools.jmx.ui.extensions.IAttributeControlFactory;
 import org.jboss.tools.jmx.ui.extensions.IWritableAttributeHandler;
-import org.jboss.tools.jmx.ui.internal.StringUtils;
+import org.jboss.tools.jmx.core.util.StringUtils;
 
 public abstract class AbstractTabularControlFactory 
 		implements IAttributeControlFactory {

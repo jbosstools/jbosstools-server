@@ -32,7 +32,7 @@ import org.jboss.tools.jmx.core.MBeanInfoWrapper;
 import org.jboss.tools.jmx.core.MBeanOperationInfoWrapper;
 import org.jboss.tools.jmx.ui.Messages;
 import org.jboss.tools.jmx.ui.internal.JMXImages;
-import org.jboss.tools.jmx.ui.internal.StringUtils;
+import org.jboss.tools.jmx.core.util.StringUtils;
 
 public class MBeanOperationsTable {
 

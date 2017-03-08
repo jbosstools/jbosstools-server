@@ -174,14 +174,6 @@
             visible="false"
             id="org.jboss.tools.jmx.ui.MBeanActionSet">
            <action
-               id="openMBean"
-               class="org.jboss.tools.jmx.ui.internal.actions.OpenMBeanAction"
-               definitionId="org.jboss.tools.jmx.ui.navigate.open.mbean"
-               label="%OpenMBeanAction.label"
-               menubarPath="navigate/open.ext2"
-               tooltip="%OpenMBeanAction.tooltip">
-         </action>
-           <action
                  class="org.jboss.tools.jmx.ui.internal.actions.RefreshAction"
                  definitionId="org.jboss.tools.jmx.ui.navigate.refresh"
                  id="refresh"
@@ -312,9 +304,7 @@
             location="BOTTOM_RIGHT"
             state="true">
          <enablement>
-            <or>
-               <objectClass name="org.jboss.tools.jmx.core.IConnectionWrapper"/>
-            </or>
+             <objectClass name="org.jboss.tools.jmx.core.IConnectionWrapper"/>
          </enablement>
       </decorator>
    </extension>
