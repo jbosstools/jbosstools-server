@@ -57,7 +57,7 @@ public class UIExtensionManager {
 			if( imageDescriptor == null ) {
 				IStatus s = new Status(IStatus.WARNING, JMXUIActivator.PLUGIN_ID, 
 						NLS.bind(Messages.JMXUIImageDescriptorNotFound, icon, pluginName));
-				JMXUIActivator.getDefault().log(s);
+				JMXUIActivator.log(s);
 			}
 		}
 		public String getId() {
