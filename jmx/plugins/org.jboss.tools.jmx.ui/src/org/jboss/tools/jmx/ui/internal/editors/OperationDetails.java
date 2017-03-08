@@ -42,7 +42,7 @@ import org.jboss.tools.jmx.core.MBeanOperationInfoWrapper;
 import org.jboss.tools.jmx.ui.JMXUIActivator;
 import org.jboss.tools.jmx.ui.Messages;
 import org.jboss.tools.jmx.ui.internal.MBeanUtils;
-import org.jboss.tools.jmx.ui.internal.StringUtils;
+import org.jboss.tools.jmx.core.util.StringUtils;
 import org.jboss.tools.jmx.ui.internal.dialogs.OperationInvocationResultDialog;
 
 public class OperationDetails extends AbstractFormPart implements IDetailsPage {
@@ -161,7 +161,7 @@ public class OperationDetails extends AbstractFormPart implements IDetailsPage {
         if (params.length > 0) {
             textParams = new Text[params.length];
             for (int j = 0; j < params.length; j++) {
-            	Label buffer = new Label(operationComposite, SWT.NONE);
+            	new Label(operationComposite, SWT.NONE);
                 MBeanParameterInfo param = params[j];
                 textParams[j] = new Text(operationComposite, SWT.SINGLE | SWT.BORDER);
                 textParams[j].setText(StringUtils.toString(param.getType()));
@@ -178,7 +178,7 @@ public class OperationDetails extends AbstractFormPart implements IDetailsPage {
                 GridData gd = new GridData(SWT.FILL, SWT.BOTTOM, false, true);
                 gd.horizontalSpan = 2;
                 gd.widthHint = 250;
-                paramDesc.setLayoutData(gd);;
+                paramDesc.setLayoutData(gd);
             }
         }
         Label rightParenthesis = toolkit.createLabel(operationComposite, ")"); //$NON-NLS-1$

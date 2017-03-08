@@ -21,12 +21,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.jboss.tools.jmx.ui.internal.StringUtils;
+import org.jboss.tools.jmx.core.util.StringUtils;
 
 public class TabularDataControlFactory extends AbstractTabularControlFactory {
 
 	@Override
-	@SuppressWarnings("unchecked")
 	protected void fillTable(final Table table, final Object value) {
 		TabularData data = (TabularData) value;
 		

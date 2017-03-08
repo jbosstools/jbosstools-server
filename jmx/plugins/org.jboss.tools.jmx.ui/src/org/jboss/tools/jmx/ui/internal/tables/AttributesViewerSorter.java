@@ -20,7 +20,7 @@ class AttributesViewerSorter extends ViewerSorter {
     int direction, index;
 
     protected AttributesViewerSorter(int direction, int index) {
-        this.direction = (direction == SWT.UP ? -1 : 1);
+        this.direction = direction == SWT.UP ? -1 : 1;
         this.index = index;
     }
 

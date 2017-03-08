@@ -48,7 +48,7 @@ import org.jboss.tools.jmx.ui.JMXUIActivator;
 import org.jboss.tools.jmx.ui.Messages;
 import org.jboss.tools.jmx.ui.extensions.IWritableAttributeHandler;
 import org.jboss.tools.jmx.ui.internal.JMXImages;
-import org.jboss.tools.jmx.ui.internal.StringUtils;
+import org.jboss.tools.jmx.core.util.StringUtils;
 import org.jboss.tools.jmx.ui.internal.controls.AttributeControlFactory;
 
 public class AttributeDetails extends AbstractFormPart implements IDetailsPage {
