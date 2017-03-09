@@ -22,6 +22,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	UnchangedUtilRestartedDefectTest.class,
 	UnchangedJarRestartedDefectTest.class,
 	UtilInWebPathDefectTest.class,
+	IncrementalAfterFullPublishDefectTest.class,
 	NonAsciiInUtilJarPublishDefectTest.class,
 	DeployNameTest.class,
 	PerModuleZipTest.class
