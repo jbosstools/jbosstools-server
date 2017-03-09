@@ -28,6 +28,7 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.internal.IModuleVisitor;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
@@ -458,9 +459,17 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		return IServer.PUBLISH_STATE_UNKNOWN;
 	}
 	
-	
 	protected IStatus[] executeFullPublish(IModule[] module, IPath archiveDestination, IModulePathFilter filter, IProgressMonitor monitor) 
 			throws CoreException {
+		// Mark this module and all child modules as requiring a full publish
+		Server s = (Server)getServer();
+		ArrayList<IModule[]> kids = ServerModelUtilities.getDeepChildren(getServer(), module);
+		Iterator<IModule[]> it = kids.iterator();
+		while(it.hasNext()) {
+			s.setModulePublishState(it.next(), IServer.PUBLISH_STATE_FULL);
+		}
+		
+		
 		PublishModuleFullRunner runner = new PublishModuleFullRunner(getFilesystemController(), archiveDestination);
 		IModuleResource[] filtered = filter == null ? ModuleResourceUtil.getMembers(module[module.length-1]) : filter.getFilteredMembers();
 		IStatus[] ret = runner.fullPublish(filtered, monitor);
