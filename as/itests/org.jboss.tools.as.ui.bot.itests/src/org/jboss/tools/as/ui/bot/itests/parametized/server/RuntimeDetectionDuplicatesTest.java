@@ -17,6 +17,7 @@ import org.jboss.tools.as.ui.bot.itests.parametized.CleanEnvironmentUtils;
 import org.jboss.tools.as.ui.bot.itests.parametized.MatrixUtils;
 import org.jboss.tools.as.ui.bot.itests.reddeer.ui.SearchingForRuntimesDialog;
 import org.jboss.tools.as.ui.bot.itests.reddeer.util.RuntimeDetectionUtility;
+import org.jboss.tools.as.ui.bot.itests.reddeer.util.DisableSecureStorageRequirement.DisableSecureStorage;
 import org.jboss.tools.common.util.FileUtil;
 import org.junit.After;
 import org.junit.Test;
@@ -28,6 +29,7 @@ import junit.framework.TestCase;
 
 @RunWith(RedDeerSuite.class)
 @UseParametersRunnerFactory(ParameterizedRequirementsRunnerFactory.class)
+@DisableSecureStorage
 public class RuntimeDetectionDuplicatesTest extends TestCase {
 
     @Parameters
