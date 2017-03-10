@@ -12,6 +12,7 @@ import org.jboss.reddeer.common.wait.WaitWhile;
 import org.jboss.reddeer.core.condition.JobIsRunning;
 import org.jboss.reddeer.junit.internal.runner.ParameterizedRequirementsRunnerFactory;
 import org.jboss.reddeer.junit.runner.RedDeerSuite;
+import org.jboss.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
 import org.jboss.tools.as.ui.bot.itests.Activator;
 import org.jboss.tools.as.ui.bot.itests.parametized.CleanEnvironmentUtils;
 import org.jboss.tools.as.ui.bot.itests.parametized.MatrixUtils;
@@ -88,6 +89,8 @@ public class RuntimeDetectionDuplicatesTest extends TestCase {
 		searchingForRuntimesDialog = RuntimeDetectionUtility.searchFirstPath();
 		searchingForRuntimesDialog.hideAlreadyCreatedRuntimes();
 		assertFoundRuntimesNumber(searchingForRuntimesDialog, 0);
+		
+		new WorkbenchPreferenceDialog().ok();
 	}
 
 	@After
