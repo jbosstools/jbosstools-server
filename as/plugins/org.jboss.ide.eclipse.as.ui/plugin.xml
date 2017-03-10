@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
-
-	<!-- Deprecated extension point -->
-	<extension-point id="EventLogLabelProvider"
-		name="org.jboss.ide.as.ui.eventLogLabelProvider" schema="schema/EventLogLabelProvider.exsd" />
-	<!-- Deprecated extension point -->
-	<extension-point id="EventLogMajorType"
-		name="org.jboss.ide.eclipse.as.ui.eventLogMajorType" schema="schema/EventLogMajorType.exsd" />
-
-
 	<extension-point id="ServerEditorPortSection"
 		name="org.jboss.ide.as.ui.editor.portSection" schema="schema/ServerEditorPortSection.exsd" />
 	<extension-point id="DeployMethodUI"
@@ -125,25 +116,6 @@
 			class="org.jboss.ide.eclipse.as.ui.wizards.JBInitialSelectionProvider"
 			id="org.jboss.ide.eclipse.as.ui.jboss40SelectionProvider" />
 	</extension>
-
-
-
-	<!-- Deprecated, to be removed soon -->
-	<extension point="org.jboss.ide.eclipse.as.ui.EventLogLabelProvider">
-		<labelProvider
-			class="org.jboss.ide.eclipse.as.ui.views.server.providers.events.PollingLabelProvider" />
-		<labelProvider
-			class="org.jboss.ide.eclipse.as.ui.views.server.providers.events.PackagesPublishLabelProvider" />
-	</extension>
-	<extension point="org.jboss.ide.eclipse.as.ui.EventLogMajorType">
-		<MajorType name="Build Events"
-			typeId="org.jboss.ide.eclipse.as.core.model.Packages" />
-		<MajorType name="Startup / Shutdown Events"
-			typeId="org.jboss.ide.eclipse.as.core.runtime.server.polling.MajorType" />
-		<MajorType name="Publish Events"
-			typeId="org.jboss.ide.eclipse.as.core.publishers.Events.MajorType" />
-	</extension>
-
 
 
 	<extension point="org.eclipse.wst.server.ui.editorPages">
@@ -293,14 +265,6 @@
 
 
 
-	<!-- Deprecated, to be deleted -->
-	<extension point="org.eclipse.ui.views">
-		<view category="org.eclipse.wst.server.ui" class="org.jboss.ide.eclipse.as.ui.views.ServerLogView"
-			icon="$nl$/icons/console.gif" id="org.jboss.ide.eclipse.as.ui.view.serverLogView"
-			name="%ViewName_ServerLog" restorable="true">
-		</view>
-	</extension>
-
 	<!-- Extensions to new Server View -->
 	<extension point="org.eclipse.ui.navigator.navigatorContent">
 		<navigatorContent activeByDefault="true"
@@ -405,7 +369,6 @@
 		<viewerActionBinding viewerId="org.eclipse.wst.server.ui.ServersView">
 			<includes>
 				<actionExtension pattern="org.jboss.ide.eclipse.as.ui.extensions.modules" />
-				<actionExtension pattern="org.jboss.ide.eclipse.as.ui.extensions.serverLog" />
 				<actionExtension
 					pattern="org.jboss.tools.as.wst.server.ui.ServersView.ExploreActionProvider" />
 				<actionExtension
