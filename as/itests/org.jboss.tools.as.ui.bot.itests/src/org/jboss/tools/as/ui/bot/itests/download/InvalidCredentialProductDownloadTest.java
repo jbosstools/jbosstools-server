@@ -11,6 +11,7 @@ import org.jboss.reddeer.swt.impl.button.CancelButton;
 import org.jboss.reddeer.swt.impl.progressbar.DefaultProgressBar;
 import org.jboss.reddeer.swt.impl.shell.DefaultShell;
 import org.jboss.reddeer.swt.impl.text.DefaultText;
+import org.jboss.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
 import org.jboss.tools.as.ui.bot.itests.reddeer.util.DisableSecureStorageRequirement.DisableSecureStorage;
 import org.junit.Test;
 
@@ -43,7 +44,7 @@ public class InvalidCredentialProductDownloadTest {
 		
 		new DefaultShell("Download Runtimes");
 		new CancelButton().click();
-		new CancelButton().click();
+		new WorkbenchPreferenceDialog().ok();
 	}
 	
 
