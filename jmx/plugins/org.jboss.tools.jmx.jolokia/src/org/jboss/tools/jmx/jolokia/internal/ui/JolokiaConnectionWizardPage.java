@@ -207,18 +207,8 @@ public class JolokiaConnectionWizardPage extends WizardFragment implements IEdit
 	 * A custom multiple input dialog where we optionally disable the 'key' field on edit
 	 */
 	private class CustomMultipleInputDialog extends MultipleInputDialog {
-		private boolean disableKey;
-		public CustomMultipleInputDialog(Shell shell, String title, boolean disableKeyField) {
+		public CustomMultipleInputDialog(Shell shell, String title) {
 			super(shell, title);
-			this.disableKey = disableKeyField;
-		}
-		
-		@Override
-		protected void createTextField(String labelText, String initialValue, boolean allowEmpty) {
-			// Disable editing the key. 
-			super.createTextField(labelText, initialValue, allowEmpty);
-			if( disableKey)
-				controlList.get(0).setEnabled(false);
 		}
 		
 		@Override
@@ -230,14 +220,14 @@ public class JolokiaConnectionWizardPage extends WizardFragment implements IEdit
 	private void openHeaderDialog(final boolean editing, String keyInitial, String valInitial) {
 		String title = (editing ? "Edit Header" : "Add Header");
 		
-		CustomMultipleInputDialog dialog= new CustomMultipleInputDialog(addHeaderBtn.getShell(), 
-				title, editing);
+		CustomMultipleInputDialog dialog= new CustomMultipleInputDialog(addHeaderBtn.getShell(), title);
 		dialog.addTextField(KEY_LABEL, keyInitial, false);
 		dialog.addTextField(VAL_LABEL, valInitial, false);
 		if (dialog.open() == Window.OK) {
 			String k = dialog.getStringValue(KEY_LABEL).trim();
 			String v = dialog.getStringValue(VAL_LABEL).trim();
 			if( !k.isEmpty() && !v.isEmpty()) {
+				headers.remove(keyInitial);
 				headers.put(k,v);
 				viewer.refresh();
 				validate();
