@@ -31,6 +31,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -38,6 +39,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.jboss.tools.foundation.ui.util.FormDataUtility;
@@ -62,7 +64,7 @@ public class JolokiaConnectionWizardPage extends WizardFragment implements IEdit
 	private boolean ignoreSSL;
 	private TableViewer viewer;
 	private Table table;
-	private Button addHeaderBtn, removeHeaderBtn, ignoreSSLErrorBtn;
+	private Button addHeaderBtn, removeHeaderBtn, editHeaderBtn, ignoreSSLErrorBtn;
 	private Button getBtn, postBtn;
 	private HashMap<String, String> headers;
 	private IWizardHandle handle;
@@ -139,6 +141,12 @@ public class JolokiaConnectionWizardPage extends WizardFragment implements IEdit
 				addHeaderPressed();
 			}
 		});
+		editHeaderBtn.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				editHeaderPressed();
+			}
+		});
 		removeHeaderBtn.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -183,9 +191,49 @@ public class JolokiaConnectionWizardPage extends WizardFragment implements IEdit
 	}
 
 	private void addHeaderPressed() {
-		MultipleInputDialog dialog= new MultipleInputDialog(addHeaderBtn.getShell(), DebugPreferencesMessages.SimpleVariablePreferencePage_13); 
-		dialog.addTextField(KEY_LABEL, "", false);
-		dialog.addTextField(VAL_LABEL, "", false);
+		openHeaderDialog(false, "", "");
+	}
+
+	private void editHeaderPressed() {
+		IStructuredSelection sel = (IStructuredSelection)viewer.getSelection();
+		if( sel != null && sel.getFirstElement() != null) {
+			String kInitial = (String)sel.getFirstElement();
+			String vInitial = headers.get(kInitial);
+			openHeaderDialog(true, kInitial, vInitial);
+		}
+	}
+	
+	/*
+	 * A custom multiple input dialog where we optionally disable the 'key' field on edit
+	 */
+	private class CustomMultipleInputDialog extends MultipleInputDialog {
+		private boolean disableKey;
+		public CustomMultipleInputDialog(Shell shell, String title, boolean disableKeyField) {
+			super(shell, title);
+			this.disableKey = disableKeyField;
+		}
+		
+		@Override
+		protected void createTextField(String labelText, String initialValue, boolean allowEmpty) {
+			// Disable editing the key. 
+			super.createTextField(labelText, initialValue, allowEmpty);
+			if( disableKey)
+				controlList.get(0).setEnabled(false);
+		}
+		
+		@Override
+        protected Point getInitialSize() {
+                return new Point(400, 200);
+        }
+	}
+	
+	private void openHeaderDialog(final boolean editing, String keyInitial, String valInitial) {
+		String title = (editing ? "Edit Header" : "Add Header");
+		
+		CustomMultipleInputDialog dialog= new CustomMultipleInputDialog(addHeaderBtn.getShell(), 
+				title, editing);
+		dialog.addTextField(KEY_LABEL, keyInitial, false);
+		dialog.addTextField(VAL_LABEL, valInitial, false);
 		if (dialog.open() == Window.OK) {
 			String k = dialog.getStringValue(KEY_LABEL).trim();
 			String v = dialog.getStringValue(VAL_LABEL).trim();
@@ -197,6 +245,7 @@ public class JolokiaConnectionWizardPage extends WizardFragment implements IEdit
 		}
 
 	}
+	
 	private void removeHeaderPressed() {
 		IStructuredSelection sel = (IStructuredSelection)viewer.getSelection();
 		if( sel != null ) {
@@ -264,9 +313,11 @@ public class JolokiaConnectionWizardPage extends WizardFragment implements IEdit
 		viewer.setInput(headers);
 		
 		addHeaderBtn = new Button(main, SWT.PUSH);
+		editHeaderBtn = new Button(main, SWT.PUSH);
 		removeHeaderBtn = new Button(main, SWT.PUSH);
 		addHeaderBtn.setText("Add Header...");
 		removeHeaderBtn.setText("Remove Header");
+		editHeaderBtn.setText("Edit Header");
 		
 		Label requestTypeLabel = new Label(main, SWT.NONE);
 		requestTypeLabel.setText("Request Type: ");
@@ -293,7 +344,8 @@ public class JolokiaConnectionWizardPage extends WizardFragment implements IEdit
 		fd2.height = 100;
 		table.setLayoutData(fd2);
 		addHeaderBtn.setLayoutData(fdu.createFormData(primary, 10, null, 0, table, 5, 100, -5));
-		removeHeaderBtn.setLayoutData(fdu.createFormData(addHeaderBtn, 5, null, 0, table, 5, 100, -5));
+		editHeaderBtn.setLayoutData(fdu.createFormData(addHeaderBtn, 5, null, 0, table, 5, 100, -5));
+		removeHeaderBtn.setLayoutData(fdu.createFormData(editHeaderBtn, 5, null, 0, table, 5, 100, -5));
 		
 		/* Radio group */
 		requestTypeLabel.setLayoutData(fdu.createFormData(null, 0, ignoreSSLErrorBtn, -5, 0, 5, null, 0));
