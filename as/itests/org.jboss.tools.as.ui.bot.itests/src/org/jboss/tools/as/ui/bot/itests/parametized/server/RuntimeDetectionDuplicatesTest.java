@@ -33,7 +33,8 @@ public class RuntimeDetectionDuplicatesTest extends TestCase {
 
     @Parameters
     public static Collection<Object[]> data(){
-    	return MatrixUtils.toMatrix(new Object[][]{PomServerConstants.getJBossHomeFlags()});
+    	String[] homes = PomServerConstants.getJBossHomeFlags();
+    	return MatrixUtils.toMatrix(new Object[][]{homes});
     }
     
 
@@ -50,14 +51,9 @@ public class RuntimeDetectionDuplicatesTest extends TestCase {
 		System.out.println("flag: " + serverHomeFlag);
 		String home = System.getProperty(serverHomeFlag);
 		System.out.println("sysprop has value: " + home);
-		try {
-			Thread.sleep(3500);
-		} catch(InterruptedException ie) {
-			
-		}
 		assertNotNull(home);
-		assertTrue(new File(home).exists());
-		assertTrue(new File(home).isDirectory());
+		assertTrue(home + " should exist", new File(home).exists());
+		assertTrue(home + " should be a directory", new File(home).isDirectory());
 		
 		
 		// So we have a valid folder here. Let's make 2 copies

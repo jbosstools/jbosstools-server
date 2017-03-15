@@ -33,6 +33,10 @@ public interface IJBoss7ManagerService {
 	// Used for wf 9 / 10 currently, and currently consists of jars from wf10
 	public static final String WILDFLY_VERSION_900 = "9.0.0"; //$NON-NLS-1$
 
+	// Used for wf 11, jars from wf11
+	public static final String WILDFLY_VERSION_110 = "11.0.0"; //$NON-NLS-1$
+
+	
 	// Used for eap 6.1+
 	public static final String EAP_VERSION_61PLUS = "eap.6.1.x"; //$NON-NLS-1$
 	

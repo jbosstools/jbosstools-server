@@ -63,6 +63,7 @@ public class EJB3SupportVerifierTest extends TestCase {
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_80, true);
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_90, true);
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_100, true);
+		expected.put(IJBossToolingConstants.SERVER_WILDFLY_110, true);
 		expected.put(IJBossToolingConstants.SERVER_EAP_43, true);
 		expected.put(IJBossToolingConstants.SERVER_EAP_50, true);
 		expected.put(IJBossToolingConstants.SERVER_EAP_60, true);

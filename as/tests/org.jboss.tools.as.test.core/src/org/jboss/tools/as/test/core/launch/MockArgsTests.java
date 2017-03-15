@@ -20,6 +20,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
@@ -129,10 +130,23 @@ public class MockArgsTests extends TestCase  {
 			}
 			try {
 				loops++;
-				Thread.sleep(100);
+				runEventLoop(100);
 			} catch(Exception e){}
 		}
 		return null;
+	}
+	
+	private void runEventLoop(long ms) {
+		long cur = System.currentTimeMillis();
+		long dest = cur + ms;
+		Display d = Display.getCurrent();
+		while(System.currentTimeMillis() < dest && d != null && !d.isDisposed()) {
+			if (!Display.getCurrent().readAndDispatch()) {
+				try {
+					Thread.sleep(10);
+				} catch(InterruptedException ie) {}
+			}
+		}
 	}
 	
 	protected String runAndGetCommand(final IServer server) {

@@ -123,10 +123,11 @@ public class AS7DeploymentScannerUtility {
 			try {
 				scanners = getDeploymentScanners(server, all, false, true);
 			} catch(Exception e) {
+				ie2 = e;
 				try {
 					Thread.sleep(sleep);
 				} catch(InterruptedException ie) {
-					ie2 = ie;
+					// Ignore
 				}
 			}
 		}
