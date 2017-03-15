@@ -5,7 +5,7 @@
 		name="org.jboss.ide.as.ui.editor.portSection" schema="schema/ServerEditorPortSection.exsd" />
 	<extension-point id="DeployMethodUI"
 		name="org.jboss.ide.as.ui.deployMethodUI" schema="schema/DeployMethodUI.exsd" />
-
+ 
 	<extension point="org.eclipse.wst.server.ui.serverImages">
 		<image typeIds="%CommunityIconTypes" icon="$nl$/icons/jboss.png"
 			id="org.jboss.ide.eclipse.as.ui.jbossIcon" />
@@ -469,6 +469,8 @@
 						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.wildfly.90">
 						</test>
 						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.wildfly.100">
+						</test>
+						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.wildfly.110">
 						</test>
 						<!-- NEW_SERVER_ADAPTER -->
 					</or>

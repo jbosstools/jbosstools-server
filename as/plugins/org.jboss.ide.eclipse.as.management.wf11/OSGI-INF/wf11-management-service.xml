@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" 
+		enabled="true" immediate="false" 
+		name="org.jboss.ide.eclipse.as.management.wf11.service">
+   <implementation class="org.jboss.ide.eclipse.as.internal.management.wf11.WildFly11ManagerService"/>
+   <service>
+      <provide interface="org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService"/>
+   </service>
+   <property name="as.version" type="String" value="11.0.0"/>
+</scr:component>
