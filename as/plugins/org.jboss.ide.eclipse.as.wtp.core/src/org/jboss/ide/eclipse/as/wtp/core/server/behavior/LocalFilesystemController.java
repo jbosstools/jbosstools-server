@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -271,9 +272,17 @@ public class LocalFilesystemController extends AbstractSubsystemController imple
 	 *    reporting and cancellation are not desired
 	 * @return a possibly-empty array of error and warning status
 	 */
-	private IStatus deleteDirectory(File dir, IProgressMonitor monitor) {
+	private IStatus deleteDirectory(File dir, IProgressMonitor monitor) throws CoreException{
 		if (!dir.exists() || !dir.isDirectory())
-			return  new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, NLS.bind(Messages.errorNotADirectory, dir.getAbsolutePath()), null);
+			return new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, NLS.bind(Messages.errorNotADirectory, dir.getAbsolutePath()), null);
+		
+		
+		// JBIDE-22578 - nobody can replicate, but an entire workspace is being deleted
+		// This is a temporary workaround, and hopefully will at least get us a stacktrace. 
+		File workspaceFile = ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile();
+		if( dir.equals(workspaceFile)) {
+			throw new CoreException(new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, "Attempt to delete workspace prevented", new Exception("Attempt to delete workspace prevented")));
+		}
 		
 		List<IStatus> status = new ArrayList<IStatus>(2);
 		
