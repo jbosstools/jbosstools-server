@@ -14,6 +14,7 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>org.jboss.tools.jmx.core.test</module>
+		<module>org.jboss.tools.jmx.jolokia.test</module>
 		<module>org.jboss.tools.jmx.ui.test</module>
 	</modules>
 </project>

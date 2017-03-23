@@ -11,6 +11,7 @@
 package org.jboss.tools.jmx.jolokia.internal.connection;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -74,14 +75,10 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 
 	@Override
 	public String[] getDomains() throws IOException {
-		HashSet<String> result = new HashSet<String>();
 		try {
 			 Set<ObjectName> on = queryNames(new ObjectName("*:*"), null);
-			 Iterator<ObjectName> it = on.iterator();
-			 while(it.hasNext()) {
-				 result.add(it.next().getDomain());
-			 }
-			 return (String[]) result.toArray(new String[result.size()]);
+			 return on.stream()
+					 .map(ObjectName::getDomain) .toArray(String[]::new);
 		} catch (MalformedObjectNameException e) {
 			throw new IOException(e); // Should never happen
 		}
@@ -99,9 +96,8 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 	@Override
 	public MBeanInfo getMBeanInfo(ObjectName name)
 			throws InstanceNotFoundException, IntrospectionException, ReflectionException, IOException {
-		J4pListRequest request;
 		try {
-			request = new J4pListRequest(name);
+			J4pListRequest request = new J4pListRequest(name);
 			J4pListResponse resp = j4pClient.execute(request, type);
 			JSONObject o = resp.getValue();
 			return new JolokiaMBeanUtility().createMBeanInfoFromSingletonList(o);
@@ -112,7 +108,7 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 	
 	@Override
 	public boolean isRegistered(ObjectName name) throws IOException {
-		return queryNames(name, null).size() > 0;
+		return !queryNames(name, null).isEmpty();
 	}
 
 
@@ -130,7 +126,7 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 			 * Behind CDK, GET works, but will still fail on the same unescaped characters
 			 */
 			J4pSearchResponse resp = j4pClient.execute(request, type);
-			HashSet<ObjectName> toFilter = new HashSet<ObjectName>(resp.getObjectNames());
+			HashSet<ObjectName> toFilter = new HashSet<>(resp.getObjectNames());
 			
 			// TODO filter using query
 			
@@ -163,7 +159,7 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 				Object o = r.asJSONObject().get("status");
 				if( o == null ) {
 					// We don't know what happened
-				} else if( !o.equals(new Long(200))) {
+				} else if( !o.equals(Long.valueOf(200))) {
 					throw new IOException("Failed to update attribute " + attribute.getName() + " on object " + name.getCanonicalName());
 				}
 			}
@@ -201,7 +197,7 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 	public Object getAttribute(ObjectName name, String attribute) throws MBeanException, AttributeNotFoundException,
 			InstanceNotFoundException, ReflectionException, IOException {
 		AttributeList l = getAttributes(name, new String[]{attribute});
-		if( l.size() > 0 ) {
+		if( !l.isEmpty() ) {
 			return l.get(0);
 		}
 		return null;
@@ -242,11 +238,9 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 	public Object invoke(ObjectName name, String operationName, Object[] params, String[] signature)
 			throws InstanceNotFoundException, MBeanException, ReflectionException, IOException {
 		J4pExecRequest req = new J4pExecRequest(name, operationName, params);
-		J4pExecResponse resp;
 		try {
-			resp = j4pClient.execute(req);
-			Object response = resp.getValue();
-			return response;
+			J4pExecResponse resp = j4pClient.execute(req);
+			return resp.getValue();
 		} catch (J4pException e) {
 			throw new IOException(e);
 		}
@@ -274,7 +268,7 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 	@Override
 	public Set<ObjectInstance> queryMBeans(ObjectName name, QueryExp query) throws IOException {
 		// TODO Auto-generated method stub
-		return null;
+		return Collections.emptySet();
 	}
 	
 	
@@ -315,7 +309,7 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 
 	@Override
 	public ObjectInstance createMBean(String className, ObjectName name, Object[] params, String[] signature)
-			throws ReflectionException, InstanceAlreadyExistsException, MBeanRegistrationException, MBeanException,
+			throws ReflectionException, InstanceAlreadyExistsException, MBeanException,
 			NotCompliantMBeanException, IOException {
 		// TODO Auto-generated method stub
 		return null;
@@ -323,7 +317,7 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 
 	@Override
 	public ObjectInstance createMBean(String className, ObjectName name, ObjectName loaderName, Object[] params,
-			String[] signature) throws ReflectionException, InstanceAlreadyExistsException, MBeanRegistrationException,
+			String[] signature) throws ReflectionException, InstanceAlreadyExistsException,
 			MBeanException, NotCompliantMBeanException, InstanceNotFoundException, IOException {
 		// TODO Auto-generated method stub
 		return null;

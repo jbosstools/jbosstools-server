@@ -17,6 +17,7 @@ import org.jboss.tools.jmx.jolokia.JolokiaConnectionWrapper;
 
 public class JolokiaConnectionLabelProvider extends LabelProvider implements ILabelProvider {
 	
+	@Override
 	public Image getImage(Object element) {
 		Image ret = null;
 		if( element instanceof JolokiaConnectionWrapper) {
