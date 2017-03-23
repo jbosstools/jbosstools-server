@@ -27,5 +27,7 @@ Bundle-ClassPath: .,
  lib/jolokia-client-java-1.3.5.jar,
  lib/json-simple-1.1.1.jar
 Export-Package: org.jboss.tools.jmx.jolokia,
+ org.jboss.tools.jmx.jolokia.internal.connection;x-friends:="org.jboss.tools.jmx.jolokia.test",
  org.jolokia.client,
- org.jolokia.client.request
+ org.jolokia.client.request,
+ org.json.simple;x-friends:="org.jboss.tools.jmx.jolokia.test"

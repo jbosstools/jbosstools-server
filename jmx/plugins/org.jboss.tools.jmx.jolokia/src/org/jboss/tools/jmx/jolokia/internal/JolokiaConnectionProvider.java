@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
@@ -60,10 +61,11 @@ public class JolokiaConnectionProvider extends AbstractConnectionProvider
 			loadConnections();
 		}
 		if( connections != null ) {
-			ArrayList<IConnectionWrapper> result = new ArrayList<IConnectionWrapper>();
+			List<IConnectionWrapper> result = new ArrayList<>();
 			result.addAll(connections.values());
 			// Sort based on name
 			Collections.sort(result, new Comparator<IConnectionWrapper>(){
+				@Override
 				public int compare(IConnectionWrapper o1, IConnectionWrapper o2) {
 					String name1 = getName(o1);
 					String name2 = getName(o2);
@@ -87,7 +89,7 @@ public class JolokiaConnectionProvider extends AbstractConnectionProvider
 		String type = (String)map.get(JolokiaConnectionWrapper.GET_OR_POST);
 		Boolean ignoreSSLError = (Boolean)map.get(JolokiaConnectionWrapper.IGNORE_SSL_ERRORS);
 		Map<String, String> headers = (Map<String,String>)map.get(JolokiaConnectionWrapper.HEADERS);
-		con.setId(id);;
+		con.setId(id);
 		con.setUrl(url);
 		con.setHeaders(headers);
 		con.setIgnoreSSLErrors(ignoreSSLError);
@@ -161,18 +163,18 @@ public class JolokiaConnectionProvider extends AbstractConnectionProvider
 	private synchronized void loadConnections() {
 		if( connections == null ) {
 			// TODO load from some model
-			connections = new HashMap<String, JolokiaConnectionWrapper>();
+			connections = new HashMap<>();
 			IPath p = Activator.getDefault().getStateLocation().append(XML_FILE_NAME);
 			if( p.toFile().exists()) {
 				try {
 					XMLMemento mem = XMLMemento.createReadRoot(new FileInputStream(p.toFile()));
-					IMemento[] connections = mem.getChildren(XML_CONNECTION);
-					for( int i = 0; i < connections.length; i++ ) {
-						String id = connections[i].getString(XML_ID);
-						String url = connections[i].getString(XML_URL);
-						boolean ignoreSSL = connections[i].getBoolean(XML_IGNORE_SSL_ERR);
-						IMemento headers = connections[i].getChild(XML_HEADERS);
-						HashMap<String, String> headerMap = new HashMap<String, String>();
+					IMemento[] mementoConnections = mem.getChildren(XML_CONNECTION);
+					for( int i = 0; i < mementoConnections.length; i++ ) {
+						String id = mementoConnections[i].getString(XML_ID);
+						String url = mementoConnections[i].getString(XML_URL);
+						boolean ignoreSSL = mementoConnections[i].getBoolean(XML_IGNORE_SSL_ERR);
+						IMemento headers = mementoConnections[i].getChild(XML_HEADERS);
+						HashMap<String, String> headerMap = new HashMap<>();
 						if( headers != null) {
 							IMemento[] individualHeaders = headers.getChildren(XML_HEADER);
 							for( int j = 0; j < individualHeaders.length; j++ ) {
@@ -183,7 +185,7 @@ public class JolokiaConnectionProvider extends AbstractConnectionProvider
 						}						
 						
 						// Pass details to creation method
-						HashMap toCreate = new HashMap();
+						Map<String, Object> toCreate = new HashMap<>();
 						toCreate.put(JolokiaConnectionWrapper.ID, id);
 						toCreate.put(JolokiaConnectionWrapper.URL, url);
 						toCreate.put(JolokiaConnectionWrapper.IGNORE_SSL_ERRORS, ignoreSSL);

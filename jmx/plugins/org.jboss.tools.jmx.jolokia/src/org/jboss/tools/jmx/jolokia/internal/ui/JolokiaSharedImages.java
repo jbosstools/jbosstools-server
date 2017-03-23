@@ -13,7 +13,6 @@ package org.jboss.tools.jmx.jolokia.internal.ui;
 import org.eclipse.swt.graphics.Image;
 import org.jboss.tools.foundation.ui.plugin.BaseUISharedImages;
 import org.jboss.tools.jmx.jolokia.internal.Activator;
-import org.jboss.tools.jmx.ui.JMXUIActivator;
 import org.osgi.framework.Bundle;
 
 public class JolokiaSharedImages extends BaseUISharedImages {
