@@ -36,6 +36,7 @@ public class Messages extends NLS {
 	public static String STOP_FAILED_MESSAGE;
 	public static String FORCE_TERMINATED;
 	public static String TERMINATED;
+	public static String TERMINATED_PREMATURE;
 	public static String FORCE_TERMINATE_FAILED;
 	
 	public static String ServerStarting;
