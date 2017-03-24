@@ -128,6 +128,7 @@ public class LocalLegacyShutdownController extends AbstractSubsystemController
 			((ControllableServerBehavior)getControllableBehavior()).setServerStopping();
 			IStatus result = gracefullStop();
 			if (!result.isOK()) {
+				JBossServerCorePlugin.getDefault().getLog().log(result);
 				setNextStopRequiresForce(true);
 				((ControllableServerBehavior)getControllableBehavior()).setServerStarted();
 			}

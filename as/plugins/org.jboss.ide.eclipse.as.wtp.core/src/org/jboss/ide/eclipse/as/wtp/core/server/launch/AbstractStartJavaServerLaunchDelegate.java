@@ -176,9 +176,9 @@ public abstract class AbstractStartJavaServerLaunchDelegate extends AbstractJava
 			ProcessTerminatedDebugListener debug = new ProcessTerminatedDebugListener(ServerUtil.getServer(configuration), processes[0]) { 
 				protected void handleEarlyTermination() {
 					cancelPolling(server);
-					IStatus status = new Status(IStatus.INFO,
-							ASWTPToolsPlugin.PLUGIN_ID, IEventCodes.BEHAVIOR_PROCESS_TERMINATED, 
-							Messages.TERMINATED, null);
+					int sev = (server.getServerState() == IServer.STATE_STARTING ? IStatus.ERROR : IStatus.INFO);
+					IStatus status = new Status(sev, ASWTPToolsPlugin.PLUGIN_ID, IEventCodes.BEHAVIOR_PROCESS_TERMINATED, 
+							Messages.TERMINATED_PREMATURE, null);
 					logStatus(server, status);
 				}
 			};
