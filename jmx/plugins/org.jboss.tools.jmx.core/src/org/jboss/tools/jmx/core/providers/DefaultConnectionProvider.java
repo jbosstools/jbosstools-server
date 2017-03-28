@@ -59,6 +59,7 @@ public class DefaultConnectionProvider extends AbstractConnectionProvider
 	public static final String CONNECTION = "connection";  //$NON-NLS-1$
 	public static final String CONNECTIONS = "connections";  //$NON-NLS-1$
 	public static final String STORE_FILE = "defaultConnections.xml"; //$NON-NLS-1$
+	private Map<String, DefaultConnectionWrapper> connections;
 
 	public DefaultConnectionProvider() {
 		// I think it's inappropriate to automatically start
@@ -66,15 +67,18 @@ public class DefaultConnectionProvider extends AbstractConnectionProvider
 		// the server will experience errors for no good reason. 
 		//addListener(new AutomaticStarter());    
 	}
-
+	
+	@Override
 	public String getId() {
 		return PROVIDER_ID;
 	}
 
+	@Override
 	public boolean canCreate() {
 		return true;
 	}
-
+	
+	@Override
 	public boolean canDelete(IConnectionWrapper wrapper) {
 		return wrapper instanceof DefaultConnectionWrapper;
 	}
@@ -82,7 +86,8 @@ public class DefaultConnectionProvider extends AbstractConnectionProvider
 	public boolean canEdit(IConnectionWrapper wrapper) {
 		return wrapper instanceof DefaultConnectionWrapper;
 	}
-
+	
+	@Override
 	public DefaultConnectionWrapper createConnection(Map map) throws CoreException {
 		String id = (String)map.get(ID);
 		String url = (String)map.get(URL);
@@ -96,18 +101,18 @@ public class DefaultConnectionProvider extends AbstractConnectionProvider
 			throw new CoreException(new Status(IStatus.ERROR, JMXActivator.PLUGIN_ID, murle.getLocalizedMessage(), murle));
 		}
 	}
-
-	private HashMap<String, DefaultConnectionWrapper> connections;
+	
+	@Override
 	public IConnectionWrapper[] getConnections() {
-		if( connections == null )
-			loadConnections();
+		ensureConnectionIsInitialized();
 		return connections.values().toArray(new IConnectionWrapper[connections.values().size()]);
 	}
-
+	
+	@Override
 	public void addConnection(IConnectionWrapper connection) {
 		if( connection instanceof DefaultConnectionWrapper ) {
-			MBeanServerConnectionDescriptor descriptor =
-				((DefaultConnectionWrapper)connection).getDescriptor();
+			MBeanServerConnectionDescriptor descriptor = ((DefaultConnectionWrapper)connection).getDescriptor();
+			ensureConnectionIsInitialized();
 			connections.put(descriptor.getID(), (DefaultConnectionWrapper)connection);
 			try {
 				save();
@@ -128,11 +133,13 @@ public class DefaultConnectionProvider extends AbstractConnectionProvider
 		return null;
 	}
 	
+	@Override
 	public void removeConnection(IConnectionWrapper connection) {
 		if( connection instanceof DefaultConnectionWrapper ) {
 			MBeanServerConnectionDescriptor descriptor =
 				((DefaultConnectionWrapper)connection).getDescriptor();
 			if (descriptor != null) {
+				ensureConnectionIsInitialized();
 				connections.remove(descriptor.getID());
 			}
 			try {
@@ -145,6 +152,13 @@ public class DefaultConnectionProvider extends AbstractConnectionProvider
 		}
 	}
 
+	private void ensureConnectionIsInitialized() {
+		if( connections == null ) {
+			loadConnections();
+		}
+	}
+
+	@Override
 	public void connectionChanged(IConnectionWrapper connection) {
 		if( connection instanceof DefaultConnectionWrapper ) {
 			try {
@@ -159,7 +173,7 @@ public class DefaultConnectionProvider extends AbstractConnectionProvider
 
 	protected void loadConnections() {
 		String filename = JMXActivator.getDefault().getStateLocation().append(STORE_FILE).toOSString();
-		HashMap<String, DefaultConnectionWrapper> map = new HashMap<String, DefaultConnectionWrapper>();
+		Map<String, DefaultConnectionWrapper> map = new HashMap<>();
 		if( new File(filename).exists()) {
 			try {
 				IMemento root = XMLMemento.loadMemento(filename);
@@ -189,7 +203,7 @@ public class DefaultConnectionProvider extends AbstractConnectionProvider
 
 	protected void save() throws IOException {
 		String filename = JMXActivator.getDefault().getStateLocation().append(STORE_FILE).toOSString();
-		List<String> keys = new ArrayList<String>();
+		List<String> keys = new ArrayList<>();
 		keys.addAll(connections.keySet());
 		Collections.sort(keys);
 		DefaultConnectionWrapper wrapper;
@@ -212,6 +226,7 @@ public class DefaultConnectionProvider extends AbstractConnectionProvider
 		root.saveToFile(filename);
 	}
 
+	@Override
 	public String getName(IConnectionWrapper wrapper) {
 		if( wrapper instanceof DefaultConnectionWrapper ) {
 			MBeanServerConnectionDescriptor desc =
