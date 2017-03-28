@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.jboss.ide.eclipse.as.management.core.IAS7ManagementDetails;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
+import org.jboss.ide.eclipse.as.management.core.IncrementalDeploymentManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.management.core.service.DelegatingDetails;
 import org.jboss.ide.eclipse.as.management.core.service.DelegatingManagerService;
@@ -60,5 +61,9 @@ public class JBoss71xManagerService extends DelegatingManagerService {
 			File file, boolean add, IProgressMonitor monitor) throws JBoss7ManangerException {
 		IAS7ManagementDetails details2 = getLargeTimeoutDetails(details, file);
 		return getDelegateService().deploySync(details2, deploymentName, file, add, monitor);
+	}
+	@Override
+	public boolean supportsIncrementalDeployment() {
+		return this instanceof IncrementalDeploymentManagerService;
 	}
 }
