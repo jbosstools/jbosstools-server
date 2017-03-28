@@ -25,11 +25,23 @@ import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants
 import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.SERVER_STATE;
 import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.SHUTDOWN;
 
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.ExecutionException;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
 
@@ -41,17 +53,24 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.sasl.RealmCallback;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.osgi.util.NLS;
 import org.jboss.as.controller.client.ModelControllerClient;
+import org.jboss.as.controller.client.ModelControllerClientConfiguration;
+import org.jboss.as.controller.client.helpers.domain.DeploymentActionResult;
 import org.jboss.as.controller.client.helpers.standalone.DeploymentAction;
+import org.jboss.as.controller.client.helpers.standalone.DeploymentPlan;
 import org.jboss.as.controller.client.helpers.standalone.DeploymentPlanBuilder;
+import org.jboss.as.controller.client.helpers.standalone.InitialDeploymentPlanBuilder;
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentManager;
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentPlanResult;
 import org.jboss.dmr.ModelNode;
+import org.jboss.dmr.ModelType;
 import org.jboss.ide.eclipse.as.management.core.IAS7ManagementDetails;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7DeploymentResult;
+import org.jboss.ide.eclipse.as.management.core.IncrementalManagementModel;
 import org.jboss.ide.eclipse.as.management.core.JBoss7DeploymentState;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
@@ -78,11 +97,18 @@ public class WildFly11Manager {
 			Object timeout = details.getProperty(IAS7ManagementDetails.PROPERTY_TIMEOUT);
 			int timeout2 = !(timeout instanceof Integer) ? DEFAULT_REQUEST_TIMEOUT : 
 							((Integer)timeout).intValue();
-			this.client = ModelControllerClient.Factory.create(
-					details.getHost(), details.getManagementPort(),
-					getCallbackHandler(), null, timeout2);
+			
+			ModelControllerClientConfiguration.Builder b = 
+					new ModelControllerClientConfiguration.Builder()
+					.setHostName(details.getHost())
+					.setPort(details.getManagementPort())
+					.setHandler(getCallbackHandler())
+					.setConnectionTimeout(timeout2)
+					.setSaslOptions(Collections.emptyMap());
+			ModelControllerClientConfiguration config = b.build();
+			this.client = ModelControllerClient.Factory.create(config);
 			this.manager = ServerDeploymentManager.Factory.create(client);
-		} catch(UnknownHostException uhe) {
+		} catch(RuntimeException uhe) {
 			throw new JBoss7ManangerException(uhe);
 		}
 	}
@@ -112,13 +138,18 @@ public class WildFly11Manager {
                     String defaultText = rcb.getDefaultText();
                     rcb.setText(defaultText); // For now just use the realm suggested.
 	            }
-                if (current instanceof NameCallback) {
+	            if (current instanceof NameCallback) {
                     nameCB = (NameCallback) current;
                 } else if (current instanceof PasswordCallback) {
                     passCB = (PasswordCallback) current;
                 } else if (current instanceof CredentialCallback) {
                     credCB = (CredentialCallback) current;
                 }
+            }
+            
+            if( nameCB instanceof OptionalNameCallback) {
+                ((NameCallback) callbacks[0]).setName("anonymous JBossTools user");
+            	return;
             }
             
             String passPrompt = (passCB == null ? "Password" : passCB.getPrompt());
@@ -160,14 +191,9 @@ public class WildFly11Manager {
 	
 	private void waitFor(DeploymentOperationResult result, String task, IProgressMonitor monitor) throws JBoss7ManangerException {
 		SubMonitor progress = SubMonitor.convert(monitor);
+		progress.beginTask("Waiting for task to complete: " + task, IProgressMonitor.UNKNOWN);
 		while(!monitor.isCanceled() && !result.isDone()) {
-            // Regardless of the amount of progress reported so far,
-            // use 0.01% of the space remaining in the monitor to process the next node.
-            progress.setWorkRemaining(1000);
-            IProgressMonitor tmp = progress.newChild(1);
-            tmp.beginTask("Waiting for task to complete: " + task, 1);
-            tmp.worked(1);
-            tmp.done();
+            progress.worked(1);
 			try {
 				Thread.sleep(100);
 			} catch(InterruptedException ie) {
@@ -182,11 +208,12 @@ public class WildFly11Manager {
 		monitor.done();
 	}
 
-	public IJBoss7DeploymentResult deploySync(String name, File file, boolean add, IProgressMonitor monitor)
+	public IJBoss7DeploymentResult deploySync(String name, File file, 
+			boolean add, String[] explodedPaths, IProgressMonitor monitor)
 			throws JBoss7ManangerException {
 		String task = "Deploy via management: " + name;
 		monitor.beginTask(task, 100);
-		DeploymentOperationResult result = (DeploymentOperationResult)deploy(name, file, add);
+		DeploymentOperationResult result = (DeploymentOperationResult)deploy(name, file, explodedPaths, add);
 		monitor.worked(5);
 		waitFor(result, task, new SubProgressMonitor(monitor, 95));
 		monitor.done();
@@ -196,10 +223,11 @@ public class WildFly11Manager {
 	public IJBoss7DeploymentResult undeploy(String name, boolean removeFile) throws JBoss7ManangerException {
 		try {
 			DeploymentPlanBuilder builder = manager.newDeploymentPlan();
-			if( removeFile )
+			if( removeFile ) {
 				builder = builder.undeploy(name).andRemoveUndeployed();
-			else 
+			} else { 
 				builder = builder.undeploy(name);
+			}
 			return new DeploymentOperationResult(builder.getLastAction(), manager.execute(builder.build()));
 		} catch (Exception e) {
 			throw new JBoss7ManangerException(e);
@@ -223,7 +251,7 @@ public class WildFly11Manager {
 	 * @throws JBoss7ManangerException
 	 */
 	public IJBoss7DeploymentResult deploy(File file) throws JBoss7ManangerException {
-		return deploy(file.getName(), file, true);
+		return deploy(file.getName(), file, new String[] {file.getName()}, true);
 	}
 
 	public IJBoss7DeploymentResult add(String name, File file) throws JBoss7ManangerException {
@@ -233,13 +261,72 @@ public class WildFly11Manager {
 			throw new JBoss7ManangerException(e);
 		}
 	}
-
-	public IJBoss7DeploymentResult deploy(String name, File file, boolean add) throws JBoss7ManangerException {
+	
+	private ArrayList<String> getZippedPathsForDeployment(String deploymentName) {
+		ModelNode request = new ModelNode();
+		request.get(OP).set("browse-content");
+		request.get(ADDRESS).add(DEPLOYMENT, deploymentName);
+		request.get("archive").set(true);
+		ModelNode result = null;
 		try {
-			if( add )
-				return execute(manager.newDeploymentPlan().add(name, file).andDeploy());
-			else
-				return execute(manager.newDeploymentPlan().deploy(name));
+			result = execute(request);
+		} catch( JBoss7ManangerException j7me ) {
+			// Ignore
+		}
+		
+		ArrayList<String> zipped = null;
+		if(result.getType() == ModelType.LIST) {
+			zipped = new ArrayList<String>();
+			for(ModelNode content : result.asList()) {
+				if(content.hasDefined("path")) {
+					ModelNode path = content.get("path");
+					String pathStr = path == null ? null : path.asString();
+					zipped.add(pathStr);
+				}
+			}
+		} else if( result.getType() == ModelType.UNDEFINED) {
+			zipped = new ArrayList<String>();
+		}
+		return zipped;
+	}
+	
+	public void explode(String deploymentName, String[] paths) throws JBoss7ManangerException {
+		if( paths.length == 0 )
+			return;
+		
+		ArrayList<String> zipped = getZippedPathsForDeployment(deploymentName);
+		try {
+	        DeploymentPlanBuilder b = manager.newDeploymentPlan()
+	                .undeploy(deploymentName);
+	        for( int i = 0; i < paths.length; i++ ) {
+	        	if( zipped == null || (zipped.contains(paths[i]))) {
+	        		b = b.explodeDeploymentContent(deploymentName, paths[i]);
+	        	}
+	        }
+	        
+	        b = b.deploy(deploymentName);
+	        DeploymentOperationResult dor = new DeploymentOperationResult(b.getLastAction(), manager.execute(b.build()));
+	        waitFor(dor, "Deploying Module " + deploymentName, new NullProgressMonitor());
+		} catch(Exception e) {
+			throw new JBoss7ManangerException(e);
+		}
+    }	
+
+	public IJBoss7DeploymentResult deploy(String name, File file, String[] explodedPaths, boolean add) throws JBoss7ManangerException {
+		try {
+			DeploymentPlanBuilder b = manager.newDeploymentPlan();
+			if( add ) {
+				b = b.add(name, file);
+			}
+			
+			for( int i = 0; i < explodedPaths.length; i++ ) {
+				if (name.equals(explodedPaths[i])) {
+					b = b.explodeDeployment(explodedPaths[i]);
+				} else {
+					b.explodeDeploymentContent(name, explodedPaths[i]);
+				}
+			}
+			return execute(b.deploy(name));
 		} catch (IOException e) {
 			throw new JBoss7ManangerException(e);
 		}
@@ -417,7 +504,8 @@ public class WildFly11Manager {
 	private IJBoss7DeploymentResult execute(DeploymentPlanBuilder builder) throws JBoss7ManangerException {
 		try {
 			DeploymentAction action = builder.getLastAction();
-			Future<ServerDeploymentPlanResult> planResult = manager.execute(builder.build());
+			DeploymentPlan plan = builder.build();
+			Future<ServerDeploymentPlanResult> planResult = manager.execute(plan);
 			return new DeploymentOperationResult(action, planResult);
 		} catch (Exception e) {
 			throw new JBoss7ManangerException(e);
@@ -455,5 +543,70 @@ public class WildFly11Manager {
         return deploymentNames;
     }
 
+    
+	public IJBoss7DeploymentResult incrementalPublish(
+			IAS7ManagementDetails details, String deploymentName, 
+			IncrementalManagementModel model,
+			boolean redeploy, IProgressMonitor monitor) throws JBoss7ManangerException {
+		
+		// First we need to explode child modules
+		String[] children = model.getChildrenToExplode(deploymentName);
+		
+		explode(deploymentName, children);
+		
+		
+		
+		DeploymentPlanBuilder b = manager.newDeploymentPlan();
+		try {
+			String[] deployments = model.getDeploymentIds();
+			for (String deployment : deployments) {
+				Map<String, String> changed = model.getChanged(deployment);
+				List<String> removed = model.getRemoved(deployment);
+				if( changed.size() > 0 || removed.size() > 0)
+					b = addChanges(deployment, changed, removed, b);
+			}
+			
+			if( redeploy) {
+				b = b.redeploy(deploymentName);
+			}
+			
+			DeploymentAction action = b.getLastAction();
+			DeploymentPlan plan = b.build();
+			Future<ServerDeploymentPlanResult> future = manager.execute(plan);
+			DeploymentOperationResult res = new DeploymentOperationResult(action, future, DEFAULT_REQUEST_TIMEOUT, TimeUnit.MILLISECONDS);
+			waitFor(res, "Incremental Deployment", new SubProgressMonitor(monitor, 95));
+			return res;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new JBoss7ManangerException(e);
+		}
+	}
+	
+	private DeploymentPlanBuilder addChanges(String deploymentName, 
+			Map<String, String> changedContent, 
+			List<String> removedContent,
+			DeploymentPlanBuilder bd) throws IOException {
 
+		Map<String, InputStream> addStreams = new HashMap<>();
+		Iterator<String> changedIt = changedContent.keySet().iterator();
+		ArrayList<String> failedChanges = new ArrayList<String>();
+		while(changedIt.hasNext()) {
+			String k = changedIt.next();
+			String v = changedContent.get(k);
+			try {
+				addStreams.put(k, new FileInputStream(new File(v)));
+			} catch (FileNotFoundException e) {
+				failedChanges.add(k);
+			}
+		}
+		
+		if( addStreams.size() > 0 ) {
+			bd = bd.addContentToDeployment(deploymentName, addStreams);
+		}
+		if( removedContent.size() > 0 ) {
+			bd = bd.removeContenFromDeployment(deploymentName, removedContent); 
+		}
+		return bd;
+	}
 }

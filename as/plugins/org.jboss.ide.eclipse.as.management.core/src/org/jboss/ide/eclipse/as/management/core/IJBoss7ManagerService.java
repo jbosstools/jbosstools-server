@@ -211,5 +211,12 @@ public interface IJBoss7ManagerService {
      */
 	public String execute(IAS7ManagementDetails details, String request) throws JBoss7ManangerException;
 
+	
+	/**
+	 * Return whether this manager supports incremental deployment
+	 * @return
+	 */
+	public boolean supportsIncrementalDeployment();
+	
 	public void dispose();
 }

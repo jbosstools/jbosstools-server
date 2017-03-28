@@ -10,14 +10,21 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.wtp.core.server.behavior.util;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.internal.Server;
+import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ControllerEnvironment;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishControllerDelegate;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ISubsystemController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.SubsystemModel;
+import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
 public class PublishControllerUtil {
 	/**
@@ -115,5 +122,65 @@ public class PublishControllerUtil {
 		return null; 
 	}
 
+	
+	public static boolean structureChanged(IServer server, IModule root) {
+		ArrayList<IModule[]> deepModules = ServerModelUtilities.getDeepChildren(server, new IModule[] { root } );
+		deepModules.add(new IModule[] {root}); 
+		List<Integer> allDelta = computeDelta(server, deepModules);
+		Iterator<Integer> it = allDelta.iterator();
+		while(it.hasNext()) {
+			int i = it.next();
+			if( i == ServerBehaviourDelegate.ADDED || i == ServerBehaviourDelegate.REMOVED) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
+
+	/*
+	 * Following methods are taken from ServerBehaviourDelegate
+	 */
+
+	private static List<Integer> computeDelta(IServer server, final List<IModule[]> moduleList) {
+
+		final List<Integer> deltaKindList = new ArrayList<Integer>();
+		final Iterator<IModule[]> iterator = moduleList.iterator();
+		while (iterator.hasNext()) {
+			IModule[] module = iterator.next();
+			if (hasBeenPublished(server, module)) {
+				IModule m = module[module.length - 1];
+				if ((m.getProject() != null && !m.getProject().isAccessible())
+						|| getPublishedResourceDelta(server, module).length == 0) {
+					deltaKindList.add(new Integer(ServerBehaviourDelegate.NO_CHANGE));
+				}
+				else {
+					deltaKindList.add(new Integer(ServerBehaviourDelegate.CHANGED));
+				}
+			}
+			else {
+				deltaKindList.add(new Integer(ServerBehaviourDelegate.ADDED));
+			}
+		}
+		addRemovedModules(server, moduleList, null);
+		while (deltaKindList.size() < moduleList.size()) {
+			deltaKindList.add(new Integer(ServerBehaviourDelegate.REMOVED));
+		}
+		return deltaKindList;
+	}
+	
+	protected static boolean hasBeenPublished(IServer server, IModule[] module) {
+		return ((Server)server).getServerPublishInfo().hasModulePublishInfo(module);
+	}
+	
+	protected static IModuleResourceDelta[] getPublishedResourceDelta(IServer server, IModule[] module) {
+		return ((Server)server).getPublishedResourceDelta(module);
+	}
+	
+	protected static void addRemovedModules(IServer server, List<IModule[]> moduleList, List<Integer> kindList) {
+		((Server)server).getServerPublishInfo().addRemovedModules(moduleList);
+	}
+	
 
 }

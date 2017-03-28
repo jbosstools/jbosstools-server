@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.internal.management.wf11;
 
 import java.text.MessageFormat;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
@@ -33,6 +34,8 @@ public class DeploymentOperationResult implements IJBoss7DeploymentResult {
 	
 	private Future<ServerDeploymentPlanResult> planResult;
 	private DeploymentAction action;
+	private long timeout;
+	private TimeUnit unit;
 
 	DeploymentOperationResult(DeploymentAction action, Future<ServerDeploymentPlanResult> planResult) {
 		Assert.isNotNull(action);
@@ -40,6 +43,13 @@ public class DeploymentOperationResult implements IJBoss7DeploymentResult {
 		Assert.isNotNull(planResult);
 		this.planResult = planResult;
 	}
+	DeploymentOperationResult(DeploymentAction action, Future<ServerDeploymentPlanResult> planResult, long timeout, TimeUnit unit) {
+		this(action, planResult);
+		this.timeout = timeout;
+		this.unit = unit;
+	}
+	
+	
 
 	/*
 	 * (non-Javadoc)
@@ -48,7 +58,11 @@ public class DeploymentOperationResult implements IJBoss7DeploymentResult {
 	@Override
 	public IStatus getStatus() throws JBoss7ManangerException {
 		try {
-			ServerDeploymentActionResult actionResult = planResult.get().getDeploymentActionResult(action.getId());
+			ServerDeploymentActionResult actionResult = null;
+			if( unit == null )
+				actionResult = planResult.get().getDeploymentActionResult(action.getId());
+			else
+				actionResult = planResult.get(timeout, unit).getDeploymentActionResult(action.getId());
 			return createStatus(action.getDeploymentUnitUniqueName(), action.getType().name(), actionResult);
 		} catch (Exception e) {
 			throw new JBoss7ManangerException(e);

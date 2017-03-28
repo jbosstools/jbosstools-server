@@ -11,12 +11,16 @@
 package org.jboss.ide.eclipse.as.internal.management.wf11;
 
 import java.io.File;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.jboss.dmr.ModelNode;
 import org.jboss.ide.eclipse.as.management.core.IAS7ManagementDetails;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
+import org.jboss.ide.eclipse.as.management.core.IncrementalDeploymentManagerService;
+import org.jboss.ide.eclipse.as.management.core.IncrementalManagementModel;
 import org.jboss.ide.eclipse.as.management.core.JBoss7DeploymentState;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
@@ -24,7 +28,7 @@ import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
 /**
  * @author Rob Stryker
  */
-public class WildFly11ManagerService implements IJBoss7ManagerService {
+public class WildFly11ManagerService implements IJBoss7ManagerService, IncrementalDeploymentManagerService {
 
 	public void init() throws JBoss7ManangerException {
 	}
@@ -83,7 +87,7 @@ public class WildFly11ManagerService implements IJBoss7ManagerService {
 			File file, boolean add, IProgressMonitor monitor) throws JBoss7ManangerException {
 		WildFly11Manager manager = new WildFly11Manager(details);
 		try {
-			IJBoss7DeploymentResult result = manager.deploy(deploymentName, file, add);
+			IJBoss7DeploymentResult result = manager.deploy(deploymentName, file, new String[] {deploymentName}, add);
 			return result;
 		} finally {
 			manager.dispose();
@@ -106,14 +110,23 @@ public class WildFly11ManagerService implements IJBoss7ManagerService {
 
 	public IJBoss7DeploymentResult deploySync(IAS7ManagementDetails details, String deploymentName,
 			File file, boolean add, IProgressMonitor monitor) throws JBoss7ManangerException {
+		return deploySync(details, deploymentName, file, add, new String[] {deploymentName}, monitor);
+	}
+	
+
+
+	@Override
+	public IJBoss7DeploymentResult deploySync(IAS7ManagementDetails details, String deploymentName, File file,
+			boolean add, String[] explodePaths, IProgressMonitor monitor) throws JBoss7ManangerException {
 		WildFly11Manager manager = new WildFly11Manager(details);
 		try {
-			IJBoss7DeploymentResult result = manager.deploySync(deploymentName, file, add, monitor);
+			IJBoss7DeploymentResult result = manager.deploySync(deploymentName, file, add, explodePaths, monitor);
 			return result;
 		} finally {
 			manager.dispose();
 		}
 	}
+	
 
 	public IJBoss7DeploymentResult undeploySync(IAS7ManagementDetails details, String deploymentName,
 			boolean removeFile, IProgressMonitor monitor) throws JBoss7ManangerException {
@@ -176,6 +189,25 @@ public class WildFly11ManagerService implements IJBoss7ManagerService {
 
     @Override
 	public void dispose() {
+	}
+
+	@Override
+	public IJBoss7DeploymentResult incrementalPublish(
+			IAS7ManagementDetails details, String deploymentName, 
+			IncrementalManagementModel model,
+			boolean redeploy, IProgressMonitor monitor) throws JBoss7ManangerException {
+		WildFly11Manager manager = new WildFly11Manager(details);
+		try {
+			IJBoss7DeploymentResult ret = manager.incrementalPublish(details, deploymentName, model, redeploy, monitor);
+			return ret;
+		} finally {
+			manager.dispose();
+		}
+	}
+
+	@Override
+	public boolean supportsIncrementalDeployment() {
+		return this instanceof IncrementalDeploymentManagerService;
 	}
 
 }
