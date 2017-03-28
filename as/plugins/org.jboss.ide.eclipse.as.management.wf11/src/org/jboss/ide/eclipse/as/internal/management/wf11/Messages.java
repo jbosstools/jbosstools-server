@@ -22,7 +22,7 @@ public class Messages extends NLS {
 	public static String OperationOnUnitRolledBack;
 	public static String OperationNotExecConfigRequiresRestart;
 	static {
-		NLS.initializeMessages("org.jboss.ide.eclipse.as.internal.management.wildfly11.Messages", //$NON-NLS-1$ 
+		NLS.initializeMessages("org.jboss.ide.eclipse.as.internal.management.wf11.Messages", //$NON-NLS-1$ 
 				Messages.class);
 	}
 

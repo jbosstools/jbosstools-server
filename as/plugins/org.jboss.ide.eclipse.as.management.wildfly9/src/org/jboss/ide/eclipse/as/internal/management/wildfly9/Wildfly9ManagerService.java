@@ -17,6 +17,7 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.ide.eclipse.as.management.core.IAS7ManagementDetails;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
+import org.jboss.ide.eclipse.as.management.core.IncrementalDeploymentManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7DeploymentState;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
@@ -176,6 +177,11 @@ public class Wildfly9ManagerService implements IJBoss7ManagerService {
 
     @Override
 	public void dispose() {
+	}
+
+	@Override
+	public boolean supportsIncrementalDeployment() {
+		return this instanceof IncrementalDeploymentManagerService;
 	}
 
 }

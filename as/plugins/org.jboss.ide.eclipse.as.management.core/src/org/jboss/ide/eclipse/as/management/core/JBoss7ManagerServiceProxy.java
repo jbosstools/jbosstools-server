@@ -22,7 +22,7 @@ import org.osgi.util.tracker.ServiceTracker;
  * @author André Dietisheim
  */
 public class JBoss7ManagerServiceProxy extends ServiceTracker<IJBoss7ManagerService, IJBoss7ManagerService>
-		implements IJBoss7ManagerService {
+		implements IJBoss7ManagerService, IncrementalDeploymentManagerService {
 
 	private String serviceVersion;
 	public JBoss7ManagerServiceProxy(BundleContext context, String serviceVersion) throws InvalidSyntaxException {
@@ -118,6 +118,32 @@ public class JBoss7ManagerServiceProxy extends ServiceTracker<IJBoss7ManagerServ
 			IAS7ManagementDetails details, String deploymentName, File file,
 			IProgressMonitor monitor) throws JBoss7ManangerException {
 		return checkedGetService().replaceDeployment(details, deploymentName, file, monitor);
+	}
+
+	@Override
+	public boolean supportsIncrementalDeployment() {
+		return checkedGetService().supportsIncrementalDeployment();
+	}
+
+	@Override
+	public IJBoss7DeploymentResult incrementalPublish(IAS7ManagementDetails details, String deploymentName,
+			IncrementalManagementModel model, boolean redeploy, IProgressMonitor monitor)
+			throws JBoss7ManangerException {
+		IJBoss7ManagerService serv = checkedGetService();
+		if( serv instanceof IncrementalDeploymentManagerService) {
+			return ((IncrementalDeploymentManagerService)serv).incrementalPublish(details, deploymentName, model, redeploy, monitor);
+		}
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public IJBoss7DeploymentResult deploySync(IAS7ManagementDetails details, String deploymentName, File file,
+			boolean add, String[] explodePaths, IProgressMonitor monitor) throws JBoss7ManangerException {
+		IJBoss7ManagerService serv = checkedGetService();
+		if( serv instanceof IncrementalDeploymentManagerService) {
+			return ((IncrementalDeploymentManagerService)serv).deploySync(details, deploymentName, file, add, explodePaths, monitor);
+		}
+		throw new UnsupportedOperationException();
 	}
 
 }

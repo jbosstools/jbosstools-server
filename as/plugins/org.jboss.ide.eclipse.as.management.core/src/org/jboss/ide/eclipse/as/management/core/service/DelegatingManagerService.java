@@ -19,6 +19,7 @@ import org.jboss.ide.eclipse.as.management.core.AS7ManagementActivator;
 import org.jboss.ide.eclipse.as.management.core.IAS7ManagementDetails;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
+import org.jboss.ide.eclipse.as.management.core.IncrementalDeploymentManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7DeploymentState;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
@@ -147,5 +148,9 @@ public abstract class DelegatingManagerService implements IJBoss7ManagerService 
 			}
 			throw ex;
 		}
+	}
+	@Override
+	public boolean supportsIncrementalDeployment() {
+		return getDelegateService() instanceof IncrementalDeploymentManagerService;
 	}
 }

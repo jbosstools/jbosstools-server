@@ -12,6 +12,10 @@ package org.jboss.tools.as.core.server.controllable.subsystems.internal;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -20,14 +24,16 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.Server;
+import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleResource;
+import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
-import org.jboss.ide.eclipse.as.core.modules.ResourceModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilterProvider;
 import org.jboss.ide.eclipse.as.core.server.internal.UpdateModuleStateJob;
@@ -39,21 +45,25 @@ import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.util.ProgressMonitorUtil;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
+import org.jboss.ide.eclipse.as.management.core.IncrementalDeploymentManagerService;
+import org.jboss.ide.eclipse.as.management.core.IncrementalManagementModel;
 import org.jboss.ide.eclipse.as.management.core.JBoss7DeploymentState;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerUtil;
+import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
+import org.jboss.ide.eclipse.as.wtp.core.modules.filter.patterns.ComponentModuleInclusionFilterUtility;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IModuleStateController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPrimaryPublishController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishControllerDelegate;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.util.PublishControllerUtil;
 import org.jboss.ide.eclipse.as.wtp.core.server.launch.AbstractStartJavaServerLaunchDelegate;
 import org.jboss.ide.eclipse.as.wtp.core.server.publish.LocalZippedModulePublishRunner;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 import org.jboss.tools.as.core.server.controllable.internal.DeployableServerBehavior;
 import org.jboss.tools.as.core.server.controllable.systems.IModuleDeployPathController;
-import org.jboss.tools.as.core.server.controllable.util.PublishControllerUtility;
 
 public class ManagementPublishController extends AbstractSubsystemController
 		implements IPublishController, IPrimaryPublishController {
@@ -84,7 +94,7 @@ public class ManagementPublishController extends AbstractSubsystemController
 	 */
 	private IModuleDeployPathController moduleDeployPathController;
 	
-	private IJBoss7ManagerService getService() {
+	private IJBoss7ManagerService getService() throws JBoss7ManangerException {
 		if( service == null ) {
 			this.service = JBoss7ManagerUtil.getService(getServer());
 			this.managementDetails = new AS7ManagementDetails(getServer());
@@ -215,31 +225,49 @@ public class ManagementPublishController extends AbstractSubsystemController
 			// Do nothing, server is stopped
 			return getServer().getModulePublishState(module);
 		}
-		
-		if( module.length > 1 ) {
-			return IServer.PUBLISH_STATE_NONE;
-		}
+
 		((Server)getServer()).setModuleState(module, IServer.STATE_UNKNOWN);
 		
 		// first see if we need to delegate to another custom publisher, such as bpel / osgi
-		IPublishControllerDelegate delegate = PublishControllerUtility.findDelegatePublishController(getServer(), module, true);
+		// These publishers will need to handle incremental on their own, if they have the ability
+		IPublishControllerDelegate delegate = PublishControllerUtil.findDelegatePublishController(getServer(), module, true);
 		if( delegate != null ) {
 			return delegate.publishModule(kind, deltaKind, module, monitor);
 		}
 
+		// Management publisher will only publish on root module request 
+		// but will handle all modules. It will ignore all child modules publish requests
+		if( module.length > 1 ) {
+			return IServer.PUBLISH_STATE_NONE;
+		}
 		
-		int publishType = PublishControllerUtility.getPublishType(getServer(), module, kind, deltaKind);
-		if( publishType == PublishControllerUtility.NO_PUBLISH) {
-			// Do nothing, no publish is requested
-			return getServer().getModulePublishState(module);
+		int publishType = PublishControllerUtil.getPublishType(getServer(), module, kind, deltaKind);
+		boolean structureChanged = PublishControllerUtil.structureChanged(getServer(), module[0]);
+		if( structureChanged ) {
+			// If the structure changed, we need a full publish. Can't go adding child modules willy-nilly!
+			// TODO: maybe not necessary? 
+			publishType = PublishControllerUtil.FULL_PUBLISH;
+		}
+		
+//		if( publishType == PublishControllerUtil.NO_PUBLISH) {
+//			// Do nothing, no publish is requested
+//			return getServer().getModulePublishState(module);
+//		}
+		
+		if( publishType == PublishControllerUtil.INCREMENTAL_PUBLISH || publishType == PublishControllerUtil.NO_PUBLISH) {
+			// We should try an incremental publish here. The publishType flag doesn't 
+			// know about child modules at all, which may have changed. 
+			if( shouldMinimizeRedeployments()) {
+				// Do nothing... we are minimizing redeployments at the moment
+				return getServer().getModulePublishState(module);
+			}
+			if( getService().supportsIncrementalDeployment()) {
+				return incrementalPublish(module[0], monitor);
+			}
 		}
 
-		if( publishType == PublishControllerUtility.INCREMENTAL_PUBLISH && shouldMinimizeRedeployments()) {
-			// Do nothing... we are minimizing redeployments at the moment
-			return getServer().getModulePublishState(module);
-		}
-
-		if( publishType == PublishControllerUtility.REMOVE_PUBLISH) {
+		
+		if( publishType == PublishControllerUtil.REMOVE_PUBLISH) {
 			return removeModule(module, monitor);
 		}
 		
@@ -247,51 +275,46 @@ public class ManagementPublishController extends AbstractSubsystemController
 		monitor.setTaskName("Publishing " + module[0].getName()); //$NON-NLS-1$
 		
 		boolean isBinaryObject = ServerModelUtilities.isBinaryModule(module);
-		File[] toTransfer = null;
-		if( !isBinaryObject ) {
-			monitor.setTaskName("Zipping module: " + module[0].getName()); //$NON-NLS-1$
-			IProgressMonitor submon = ProgressMonitorUtil.submon(monitor, 200);
-			File file = zipLocally(module[0], publishType, submon);
-			toTransfer = new File[]{file};
-			submon.done();
-		} else {
-			IModuleResource[] resources = ModuleResourceUtil.getMembers(module[0]);
-			// How to handle binary modules?? 
-			// Single file deployable is easy if its just the 1 file,
-			// but when its a folder, not sure what to do here yet
-			ArrayList<File> fileList = new ArrayList<File>(resources.length);
-			for( int i = 0; i < resources.length; i++ ) {
-				File f = (File)resources[i].getAdapter(File.class);
-				if( f != null ) {
-					fileList.add(f);
-				}
-			}
-			toTransfer = (File[]) fileList.toArray(new File[fileList.size()]);
-			monitor.worked(200);
+		IModuleResource[] resources = ModuleResourceUtil.getMembers(module[0]);
+		if( isBinaryObject && resources.length > 1 ) {
+			return multiResourceBinaryFullPublish();
 		}
 		
+		
+		File toTransfer = getFullPublishFilesToTransfer(module, monitor);
+		
 		if( toTransfer != null ) {
+			String tName = toTransfer.getName();
 			MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL, "Deployment of module " + module[0].getName() + " has failed", null);  //$NON-NLS-1$//$NON-NLS-2$
 			IProgressMonitor transferMonitor = ProgressMonitorUtil.submon(monitor, 800);
-			transferMonitor.beginTask("Transfering " + module[0].getName(), 100*toTransfer.length); //$NON-NLS-1$
-			for( int i = 0; i < toTransfer.length; i++ ) {
-
-				// Maybe name will be customized in UI? 
-				JBoss7DeploymentState state = getService().getDeploymentState(managementDetails, toTransfer[i].getName());
-				if( state != JBoss7DeploymentState.NOT_FOUND) {
-					monitor.setTaskName("Undeploying: " + toTransfer[i].getName()); //$NON-NLS-1$
-					IJBoss7DeploymentResult removeResult = getService().undeploySync(managementDetails, toTransfer[i].getName(), true,  ProgressMonitorUtil.submon(transferMonitor, 5));
-					ms.add(removeResult.getStatus());
-				} else {
-					transferMonitor.worked(5);
-				}
-				
-				monitor.setTaskName("Transfering: " + toTransfer[i].getName()); //$NON-NLS-1$
-				IJBoss7DeploymentResult result = getService().deploySync(managementDetails, toTransfer[i].getName(), toTransfer[i], 
-						true, ProgressMonitorUtil.submon(transferMonitor, 95));
-				IStatus s = result.getStatus();
-				ms.add(s);
+			transferMonitor.beginTask("Transfering " + tName, 100); //$NON-NLS-1$
+			
+			// Maybe name will be customized in UI? 
+			JBoss7DeploymentState state = getService().getDeploymentState(managementDetails, toTransfer.getName());
+			if( state != JBoss7DeploymentState.NOT_FOUND) {
+				monitor.setTaskName("Undeploying: " + tName); //$NON-NLS-1$
+				IJBoss7DeploymentResult removeResult = getService().undeploySync(managementDetails, tName, true,  ProgressMonitorUtil.submon(transferMonitor, 5));
+				ms.add(removeResult.getStatus());
+			} else {
+				transferMonitor.worked(5);
 			}
+			
+			monitor.setTaskName("Transfering: " + tName); //$NON-NLS-1$
+			IJBoss7ManagerService serv = getService();
+			IJBoss7DeploymentResult result = null;
+			if( serv.supportsIncrementalDeployment()) {
+				IncrementalDeploymentManagerService serv2 = (IncrementalDeploymentManagerService)serv;
+				String[] explodePaths = (isBinaryObject ? new String[] {} : getExplodePaths(module));
+				result = serv2.deploySync(managementDetails, tName, toTransfer, 
+						true, explodePaths, ProgressMonitorUtil.submon(transferMonitor, 95));
+			} else {
+				result = getService().deploySync(managementDetails, tName, toTransfer, 
+						true, ProgressMonitorUtil.submon(transferMonitor, 95));
+			}
+			
+			IStatus s = result.getStatus();
+			ms.add(s);
+			
 			if( ms.isOK()) {
 				return IServer.PUBLISH_STATE_NONE;
 			}
@@ -299,12 +322,57 @@ public class ManagementPublishController extends AbstractSubsystemController
 			transferMonitor.done();
 			return IServer.PUBLISH_STATE_FULL;
 		} else {
-			// TODO error?
+			IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Error deploying via management api: No file to deploy: " + module[module.length-1].getName()); //$NON-NLS-1$
+			JBossServerCorePlugin.getDefault().getLog().log(s);
 		}
-		
-		// TODO Auto-generated method stub
-		return 0;
+		return IServer.PUBLISH_STATE_UNKNOWN;
 	}
+
+	
+	private File getFullPublishFilesToTransfer(IModule[] module, IProgressMonitor monitor) throws CoreException {
+		monitor.setTaskName("Zipping module: " + module[0].getName()); //$NON-NLS-1$
+		IProgressMonitor submon = ProgressMonitorUtil.submon(monitor, 200);
+		File file = zipLocally(module[0], PublishControllerUtil.FULL_PUBLISH, submon);
+		return file;
+	}
+	
+	private int multiResourceBinaryFullPublish() throws CoreException {
+//		IModuleResource[] resources = ModuleResourceUtil.getMembers(module[0]);
+//		// How to handle binary modules?? 
+//		// Single file deployable is easy if its just the 1 file,
+//		// but when its a folder, not sure what to do here yet
+//		ArrayList<File> fileList = new ArrayList<File>(resources.length);
+//		for( int i = 0; i < resources.length; i++ ) {
+//			File f = (File)resources[i].getAdapter(File.class);
+//			if( f != null ) {
+//				fileList.add(f);
+//			}
+//		}
+//		toTransfer = (File[]) fileList.toArray(new File[fileList.size()]);
+//		monitor.worked(200);
+		return unsupported("Unsupported publish of multi-resource binary module over management"); //$NON-NLS-1$
+	}
+	
+	private int unsupported(String s) throws CoreException {
+		throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, s));
+	}
+	
+	private String[] getExplodePaths(IModule[] module) throws CoreException {
+		String rootModName = getDeploymentOutputName(getServer(), module[0]);
+		ArrayList<String> toExplode = new ArrayList<String>();
+		toExplode.add(rootModName);
+		
+		
+//		ArrayList<IModule[]> deepModules = ServerModelUtilities.getDeepChildren(getServer(), module);
+//		Iterator<IModule[]> deepIt = deepModules.iterator();
+//		while(deepIt.hasNext()) {
+//			IModule[] m = deepIt.next();
+//			IPath rel = ServerModelUtilities.getRootModuleRelativePath(getServer(), m);
+//			toExplode.add(new Path(rootModName).append(rel).toString());
+//		}
+		return (String[]) toExplode.toArray(new String[toExplode.size()]);
+	}
+	
 
 	private String getDeploymentOutputName(IServer server, IModule module) throws CoreException {
 		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(server);
@@ -335,9 +403,9 @@ public class ManagementPublishController extends AbstractSubsystemController
 		LocalZippedModulePublishRunner runner = createZippedRunner(module, tmpArchive); 
 
 		IStatus result = null;
-		if( publishType == PublishControllerUtility.FULL_PUBLISH) {
+		if( publishType == PublishControllerUtil.FULL_PUBLISH) {
 			result = runner.fullPublishModule(ProgressMonitorUtil.submon(monitor, 100));
-		} else if( publishType == PublishControllerUtility.INCREMENTAL_PUBLISH) {
+		} else if( publishType == PublishControllerUtil.INCREMENTAL_PUBLISH) {
 			result = runner.incrementalPublishModule(ProgressMonitorUtil.submon(monitor, 100));
 		}
 		monitor.done();
@@ -360,7 +428,7 @@ public class ManagementPublishController extends AbstractSubsystemController
 	private IModulePathFilterProvider getModulePathFilterProvider() {
 		return new IModulePathFilterProvider() {
 			public IModulePathFilter getFilter(IServer server, IModule[] module) {
-				return ResourceModuleResourceUtil.findDefaultModuleFilter(module[module.length-1]);
+				return ComponentModuleInclusionFilterUtility.findDefaultModuleFilter(module[module.length-1]);
 			}
 		};
 	}
@@ -405,4 +473,134 @@ public class ManagementPublishController extends AbstractSubsystemController
         	return IServer.PUBLISH_STATE_NONE;
         return IServer.PUBLISH_STATE_INCREMENTAL;
 	}
+	
+	private static final IStatus CANCEL_STATUS = new Status(IStatus.CANCEL, "ASWTPToolsPlugin.PLUGIN_ID", "Publish Canceled"); //$NON-NLS-1$ //$NON-NLS-2$
+	private static final IStatus[] CANCEL_STATUS_ARR = new IStatus[]{CANCEL_STATUS};
+
+	protected int incrementalPublish(IModule module, IProgressMonitor monitor) throws CoreException {
+		IncrementalDeploymentManagerService service = (IncrementalDeploymentManagerService)getService();
+		return new IncrementalManagementPublishRunner().incrementalPublish(module, service, monitor);
+	}
+	
+	//Exposed only for tests to override
+	protected IModuleResourceDelta[] getDeltaForModule(IModule[] module) {
+		IModuleResourceDelta[] deltas = ((Server)getServer()).getPublishedResourceDelta(module);
+		return deltas;
+	}
+	
+	
+	private class IncrementalManagementPublishRunner {
+		
+		private class ManagementDouble {
+			Map<String, String> changedContent;
+			List<String> removedContent;
+			public ManagementDouble() {
+				changedContent = new HashMap<String, String>();
+				removedContent = new ArrayList<String>();
+			}
+			public void addChangedContent(String relativePath, String absoluteLocalPath) {
+				changedContent.put(relativePath, absoluteLocalPath);
+			}
+			public void addRemovedContent(String relativePath) {
+				if( !removedContent.contains(relativePath)) {
+					removedContent.add(relativePath);
+				}
+			}
+		}
+		
+		public int incrementalPublish(IModule module, IncrementalDeploymentManagerService service, IProgressMonitor monitor) throws CoreException {
+			// module may be any size > 0 
+			monitor.beginTask("Incremental Publish", 200); //$NON-NLS-1$
+			
+			String rootName = getDeploymentOutputName(getServer(), module);
+			
+			
+			IModule[] asArr = new IModule[] {module};
+			IModuleResourceDelta[] delta = getDeltaForModule(asArr);
+			ManagementDouble dub = traverseDelta(delta, new SubProgressMonitor(monitor, 100));
+			IncrementalManagementModel model = new IncrementalManagementModel();
+			model.setDeploymentChanges(rootName, dub.changedContent, dub.removedContent);
+			
+			ArrayList<IModule[]> deepModules = ServerModelUtilities.getDeepChildren(getServer(), asArr);
+			Iterator<IModule[]> it = deepModules.iterator();
+			String relative;
+			IPath rel;
+			while(it.hasNext()) {
+				IModule[] m2 = it.next();
+				delta = getDeltaForModule(m2);
+				dub = traverseDelta(delta, new SubProgressMonitor(monitor, 100));
+				
+				rel = ServerModelUtilities.getRootModuleRelativePath(getServer(), m2);
+				relative = rel.removeTrailingSeparator().toString();
+				model.addSubDeploymentChanges(rootName, relative, dub.changedContent, dub.removedContent);
+			}
+			
+			IJBoss7DeploymentResult result = service.incrementalPublish(managementDetails, rootName, model, 
+					true, new SubProgressMonitor(monitor, 100));
+			IStatus s = result.getStatus();
+			if( !s.isOK()) {
+				ServerLogger.getDefault().log(getServer(), s);
+				return IServer.PUBLISH_STATE_FULL;
+			}
+			return IServer.PUBLISH_STATE_NONE;
+		}
+		
+
+		private ManagementDouble traverseDelta(IModuleResourceDelta[] delta, IProgressMonitor monitor) throws CoreException {
+			ManagementDouble ret = new ManagementDouble();
+			for( int i = 0; i < delta.length; i++ ) {
+				traverseDelta(delta[i], ret, monitor);
+			}
+			return ret;
+		}
+		
+		private void traverseDelta(IModuleResourceDelta delta, ManagementDouble ret, IProgressMonitor monitor) throws CoreException {
+			if( monitor.isCanceled())
+				return;
+
+			IModuleResource resource = delta.getModuleResource();
+			int kind2 = delta.getKind();
+			IPath absolutePath = resource.getModuleRelativePath().append(resource.getName());
+
+			// Handle the case of a file
+			if (resource instanceof IModuleFile) {
+				IModuleFile file = (IModuleFile) resource;
+				File ioFile = ModuleResourceUtil.getFile(file);
+				if (kind2 == IModuleResourceDelta.REMOVED) {
+					ret.addRemovedContent(absolutePath.toString());
+				} else if( kind2 != IModuleResourceDelta.NO_CHANGE){
+					ret.addChangedContent(absolutePath.toString(), ioFile.getAbsolutePath());
+				}
+			}
+			
+			// Handle the case of an added folder
+//			if (kind2 == IModuleResourceDelta.ADDED) {
+//				//Trace.trace(Trace.STRING_FINER, "      Creating directory resource: " + absolutePath); //$NON-NLS-1$
+//				IStatus stat = fsController.makeDirectoryIfRequired(absolutePath, monitor);
+//				if( stat != null )
+//					status.add( stat);
+//			}
+			
+			// Handle all child deltas. 
+			// For added folders, handling children occurs after creating the folder.
+			// For removed folders, handling children occurs before removing the folder
+			// For NO_CHANGE folders, we traverse the children. API is unclear whether children will have changes.
+			// For CHANGED folders we traverse the children.
+			IModuleResourceDelta[] childDeltas = delta.getAffectedChildren();
+			int size = childDeltas == null ? 0 : childDeltas.length;
+			for (int i = 0; i < size; i++) {
+				if( monitor.isCanceled())
+					return;
+				traverseDelta(childDeltas[i], ret, monitor);
+			}
+			
+			// Handle the case where a folder is removed
+			if (kind2 == IModuleResourceDelta.REMOVED) {
+				ret.addRemovedContent(absolutePath.toString());
+			}
+			
+			return;
+		}
+	}
+	
 }
