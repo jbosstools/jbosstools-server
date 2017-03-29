@@ -11,6 +11,7 @@
 package org.jboss.tools.jmx.ui.internal.actions;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -52,11 +53,12 @@ public class ConnectDebuggerAction extends Action {
 		if( mainClass != null ) {
 			IJavaProject jp = findProjectForMain(mainClass);
 			try {
-				ArrayList<IJavaProject> javaProjects = new ArrayList<IJavaProject>();
+				List<IJavaProject> javaProjects = new ArrayList<>();
 				IProject[] all = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 				for( int i = 0; i < all.length; i++ ) {
-					if ((jp == null || !all[i].equals(jp.getProject())) && all[i].hasNature(JavaCore.NATURE_ID)) {
-						javaProjects.add(JavaCore.create(all[i]));
+					IProject currentProject = all[i];
+					if ((jp == null || !currentProject.equals(jp.getProject())) && currentProject.isAccessible() && currentProject.hasNature(JavaCore.NATURE_ID)) {
+						javaProjects.add(JavaCore.create(currentProject));
 					}
 				}
 				
