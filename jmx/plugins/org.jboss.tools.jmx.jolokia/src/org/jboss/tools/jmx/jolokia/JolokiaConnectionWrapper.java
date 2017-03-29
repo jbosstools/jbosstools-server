@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
@@ -148,24 +150,19 @@ public class JolokiaConnectionWrapper implements IConnectionWrapper, IAdaptable 
 		CustomClientBuilder jb = new CustomClientBuilder() {
 			@Override
 			public void clientBuilderAdditions(HttpClientBuilder builder) {
-				HashSet<Header> defaultHeaders = new HashSet<Header>();
-				Iterator<String> ks = headers.keySet().iterator();
-				while(ks.hasNext()) {
-					String k = ks.next();
-					String v = headers.get(k);
-	                defaultHeaders.add(new BasicHeader(k,v));
-				}
+				Set<Header> defaultHeaders = headers.entrySet().stream()
+						.map(entry -> new BasicHeader(entry.getKey(),entry.getValue()))
+						.collect(Collectors.toSet());
 				builder.setDefaultHeaders(defaultHeaders);
 			}
 			
-
+			@Override
 		    protected SSLConnectionSocketFactory createDefaultSSLConnectionSocketFactory() {
 		    	if( ignoreSSLErrors) {
 		            try {
 						final SSLContext sslcontext = SSLContext.getInstance( "TLS");
 				        sslcontext.init(null, new TrustManager[]{ new AcceptAllTrustManager()},null);
-				        SSLConnectionSocketFactory sslsf = new JolokiaSSLConnectionSocketFactory(sslcontext, new NoopHostnameVerifier());
-						return sslsf;
+				        return new JolokiaSSLConnectionSocketFactory(sslcontext, new NoopHostnameVerifier());
 					} catch (NoSuchAlgorithmException e1) {
 						Activator.pluginLog().logWarning(e1);
 					} catch (KeyManagementException e) {
@@ -178,8 +175,7 @@ public class JolokiaConnectionWrapper implements IConnectionWrapper, IAdaptable 
 		    }
 		};
 		jb.url(url);
-		J4pClient j4pClient = jb.build();
-		return j4pClient;
+		return jb.build();
 	}
 	
 	
@@ -333,6 +329,7 @@ public class JolokiaConnectionWrapper implements IConnectionWrapper, IAdaptable 
 		connected = b;
 	}
 
+	@Override
 	public void run(IJMXRunnable runnable) throws JMXException {
 		try {
 			runnable.run(getConnection());
@@ -347,7 +344,8 @@ public class JolokiaConnectionWrapper implements IConnectionWrapper, IAdaptable 
 	public void run(IJMXRunnable runnable, HashMap<String, String> prefs) throws JMXException {
 		run(runnable);
 	}
-
+	
+	@Override
 	public boolean canControl() {
 		return true;
 	}
@@ -356,7 +354,8 @@ public class JolokiaConnectionWrapper implements IConnectionWrapper, IAdaptable 
 		AbstractConnectionProvider provider = (AbstractConnectionProvider) getProvider();
 		provider.fireChanged(this);
 	}
-
+	
+	@Override
 	public IConnectionProvider getProvider() {
 		return ExtensionManager.getProvider(JolokiaConnectionProvider.PROVIDER_ID);
 	}
@@ -375,6 +374,7 @@ public class JolokiaConnectionWrapper implements IConnectionWrapper, IAdaptable 
 	// UI Integration with properties page
 	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
 		ITabbedPropertySheetPageContributor contributor = new ITabbedPropertySheetPageContributor() {
+			@Override
 			public String getContributorId() {
 				return "org.jboss.tools.jmx.jvmmonitor.ui.JvmExplorer";
 			}

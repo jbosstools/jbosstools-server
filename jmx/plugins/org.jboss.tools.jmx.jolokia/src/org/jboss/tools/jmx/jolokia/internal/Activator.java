@@ -20,7 +20,7 @@ import org.osgi.framework.BundleContext;
 
 
 public class Activator extends BaseUIPlugin {
-	public static String PLUGIN_ID = "org.jboss.tools.jmx.jolokia";
+	public static final String PLUGIN_ID = "org.jboss.tools.jmx.jolokia";
 	
 	private static Activator plugin;
 
@@ -47,6 +47,7 @@ public class Activator extends BaseUIPlugin {
 	/**
 	 * Create your shared images instance. Clients are expected to override this
 	 */
+	@Override
 	protected BaseUISharedImages createSharedImages() {
 		return new JolokiaSharedImages(getBundle());
 	}

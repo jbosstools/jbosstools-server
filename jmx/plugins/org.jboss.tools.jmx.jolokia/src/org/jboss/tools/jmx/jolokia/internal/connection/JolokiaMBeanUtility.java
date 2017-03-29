@@ -13,6 +13,7 @@ package org.jboss.tools.jmx.jolokia.internal.connection;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import javax.management.MBeanAttributeInfo;
@@ -26,32 +27,25 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class JolokiaMBeanUtility {
+	
 	public MBeanAttributeInfo[] getAttributeInfos(JSONObject obj) {
-		ArrayList<MBeanAttributeInfo> collector = new ArrayList<MBeanAttributeInfo>();
-		Set entries = obj.keySet();
-		Iterator i = entries.iterator();
-		while(i.hasNext()) {
-			String attrName = (String)i.next();
-			JSONObject v = (JSONObject)obj.get(attrName);
-			boolean writable = (Boolean)v.get("rw");
-			String type = (String)v.get("type");
-			String desc = (String)v.get("desc");
-			MBeanAttributeInfo info = new MBeanAttributeInfo(attrName, type, desc, writable, writable, false);
-			collector.add(info);
-		}
-		
-		collector.sort(new Comparator<MBeanAttributeInfo>() {
-			@Override
-			public int compare(MBeanAttributeInfo o1, MBeanAttributeInfo o2) {
-				return o1.getName().compareTo(o2.getName());
-			}
-		});
-		
-		
-		return (MBeanAttributeInfo[]) collector.toArray(new MBeanAttributeInfo[collector.size()]);
+		return ((Set<Map.Entry<String, JSONObject>>)obj.entrySet()).stream()
+				.map(entry ->
+				{
+					JSONObject value = entry.getValue();
+					return new MBeanAttributeInfo(entry.getKey(),
+							(String)value.get("type"),
+							(String)value.get("desc"),
+							(boolean)value.get("rw"),
+							(boolean)value.get("rw"),
+							false);
+				})
+				.sorted(Comparator.comparing(MBeanAttributeInfo::getName))
+				.toArray(MBeanAttributeInfo[]::new);
 	}
+	
 	public MBeanOperationInfo[] getOperationInfos(JSONObject obj) {
-		ArrayList<MBeanOperationInfo> collector = new ArrayList<MBeanOperationInfo>();
+		ArrayList<MBeanOperationInfo> collector = new ArrayList<>();
 		Set entries = obj.keySet();
 		Iterator i = entries.iterator();
 		while(i.hasNext()) {
@@ -62,7 +56,7 @@ public class JolokiaMBeanUtility {
 			int impact = MBeanOperationInfo.UNKNOWN;
 			JSONArray args = (JSONArray)v.get("args");
 			Iterator argsIt = args.iterator();
-			ArrayList<MBeanParameterInfo> params = new ArrayList<MBeanParameterInfo>();
+			ArrayList<MBeanParameterInfo> params = new ArrayList<>();
 			while(argsIt.hasNext()) {
 				JSONObject argsKey = (JSONObject)argsIt.next();
 				String argName = (String)argsKey.get("name");
@@ -71,17 +65,12 @@ public class JolokiaMBeanUtility {
 				MBeanParameterInfo paramInfo = new MBeanParameterInfo(argName, argType, argDesc);
 				params.add(paramInfo);
 			}
-			MBeanParameterInfo[] paramsArr = (MBeanParameterInfo[]) params.toArray(new MBeanParameterInfo[params.size()]);
+			MBeanParameterInfo[] paramsArr = params.toArray(new MBeanParameterInfo[params.size()]);
 			MBeanOperationInfo opInfo = new MBeanOperationInfo(opName, desc, paramsArr, ret, impact);
 			collector.add(opInfo);
 		}
-		collector.sort(new Comparator<MBeanOperationInfo>() {
-			@Override
-			public int compare(MBeanOperationInfo o1, MBeanOperationInfo o2) {
-				return o1.getName().compareTo(o2.getName());
-			}
-		});
-		return (MBeanOperationInfo[]) collector.toArray(new MBeanOperationInfo[collector.size()]);
+		collector.sort(Comparator.comparing(MBeanOperationInfo::getName));
+		return collector.toArray(new MBeanOperationInfo[collector.size()]);
 	}
 	
 	
