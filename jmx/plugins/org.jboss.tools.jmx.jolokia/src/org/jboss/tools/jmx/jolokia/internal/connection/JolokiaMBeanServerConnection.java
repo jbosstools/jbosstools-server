@@ -11,11 +11,12 @@
 package org.jboss.tools.jmx.jolokia.internal.connection;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.StringJoiner;
+import java.util.stream.Stream;
 
 import javax.management.Attribute;
 import javax.management.AttributeList;
@@ -38,6 +39,7 @@ import javax.management.ObjectName;
 import javax.management.QueryExp;
 import javax.management.ReflectionException;
 
+import org.jboss.tools.jmx.jolokia.internal.Activator;
 import org.jolokia.client.J4pClient;
 import org.jolokia.client.exception.J4pException;
 import org.jolokia.client.request.J4pExecRequest;
@@ -50,6 +52,7 @@ import org.jolokia.client.request.J4pResponse;
 import org.jolokia.client.request.J4pSearchRequest;
 import org.jolokia.client.request.J4pSearchResponse;
 import org.jolokia.client.request.J4pWriteRequest;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
@@ -78,7 +81,8 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 		try {
 			 Set<ObjectName> on = queryNames(new ObjectName("*:*"), null);
 			 return on.stream()
-					 .map(ObjectName::getDomain) .toArray(String[]::new);
+					 .map(ObjectName::getDomain)
+					 .toArray(String[]::new);
 		} catch (MalformedObjectNameException e) {
 			throw new IOException(e); // Should never happen
 		}
@@ -131,9 +135,7 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 			// TODO filter using query
 			
 			return toFilter;
-		} catch (MalformedObjectNameException e) {
-			throw new IOException(e);
-		} catch (J4pException e) {
+		} catch (MalformedObjectNameException | J4pException e) {
 			throw new IOException(e);
 		}
 	}
@@ -178,15 +180,8 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 			try {
 				setAttribute(name, a);
 				result.add(a);
-			} catch (AttributeNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvalidAttributeValueException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (MBeanException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (AttributeNotFoundException | InvalidAttributeValueException | MBeanException e) {
+				Activator.pluginLog().logError(e);
 			}
 		}
 		return result;
@@ -207,8 +202,7 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 	public AttributeList getAttributes(ObjectName name, String[] attributes)
 			throws InstanceNotFoundException, ReflectionException, IOException {
 		AttributeList al = new AttributeList();
-		J4pReadRequest req = null;
-		req = new J4pReadRequest(name, attributes);
+		J4pReadRequest req = new J4pReadRequest(name, attributes);
 		Object resp2 = null;
 		try {
 			resp2 = j4pClient.execute(req); // TODO type??? GET or POST,  API missing?
@@ -237,7 +231,8 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 	@Override
 	public Object invoke(ObjectName name, String operationName, Object[] params, String[] signature)
 			throws InstanceNotFoundException, MBeanException, ReflectionException, IOException {
-		J4pExecRequest req = new J4pExecRequest(name, operationName, params);
+		String operationNameWithSignature = createOperationNameWithSignature(operationName, signature);
+		J4pExecRequest req = createJ4pExecRequest(name, params, operationNameWithSignature);
 		try {
 			J4pExecResponse resp = j4pClient.execute(req);
 			return resp.getValue();
@@ -246,39 +241,86 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 		}
 	}
 
+	private J4pExecRequest createJ4pExecRequest(ObjectName name, Object[] params, String operationNameWithSignature) {
+		if(params == null || params.length == 0){
+			return new J4pExecRequest(name, operationNameWithSignature);
+		} else {
+			return new J4pExecRequest(name, operationNameWithSignature, params);
+		}
+	}
 
-	
-	
-	/*
-	 * The following methods are *CURRENTLY* unsupported due to missing classname in json response. 
-	 */
-	
+	private String createOperationNameWithSignature(String operationName, String[] signature) {
+		StringJoiner stringJoiner = new StringJoiner(",", "(", ")");
+		Stream.of(signature).forEach(stringJoiner::add);
+		return operationName + stringJoiner.toString();
+	}
 
 	@Override
 	public ObjectInstance getObjectInstance(ObjectName name) throws InstanceNotFoundException, IOException {
-		// TODO Auto-generated method stub
-		return null;
+		return createObjectInstance(name);
 	}
 
 	@Override
-	public boolean isInstanceOf(ObjectName name, String className) throws InstanceNotFoundException, IOException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	@Override
 	public Set<ObjectInstance> queryMBeans(ObjectName name, QueryExp query) throws IOException {
-		// TODO Auto-generated method stub
-		return Collections.emptySet();
+		Set<ObjectInstance> res = new HashSet<>();
+		try {
+			J4pSearchRequest req = new J4pSearchRequest(name.getCanonicalName());
+			J4pResponse<J4pSearchRequest> j4pResponse = j4pClient.execute(req);
+			Object value = j4pResponse.getValue();
+			if(value instanceof JSONArray){
+				for (Object mbean : (JSONArray)value) {
+					if(mbean instanceof String){
+						res.add(createObjectInstance((String)mbean));
+					}
+				}
+			}
+		} catch (MalformedObjectNameException | J4pException e) {
+			Activator.pluginLog().logError(e);
+		}
+		return res;
+	}
+
+	private ObjectInstance createObjectInstance(String mbean) throws MalformedObjectNameException {
+		ObjectName objectName = new ObjectName(mbean);
+		return createObjectInstance(objectName);
+	}
+
+	private ObjectInstance createObjectInstance(ObjectName objectName) {
+		String classname = retrieveClassName(objectName);
+		return new ObjectInstance(objectName, classname);
+	}
+
+	private String retrieveClassName(ObjectName objectName) {
+		J4pListRequest listAttributes = new J4pListRequest(objectName.getDomain()+"/"+objectName.getCanonicalKeyPropertyListString()+"/class");
+		try {
+			J4pResponse<J4pListRequest> listAttributesResponse = j4pClient.execute(listAttributes);
+			return listAttributesResponse.getValue();
+		} catch (J4pException e) {
+			// TODO : can we avoid to catch an exception? How to know if the class attribute need to be called or not?
+		}
+		return "";
 	}
 	
 	
+	@Override
+	public boolean isInstanceOf(ObjectName name, String className) throws InstanceNotFoundException, IOException {
+		String mBeanClass = retrieveClassName(name);
+		if(className != null && className.equals(mBeanClass)){
+			return true;
+		}
+		try {
+			return Class.forName(mBeanClass).isInstance(Class.forName(className));
+		} catch (ClassNotFoundException e) {
+			return false;
+		}
+	}	
 	
 	/*
 	 * Unsupported operations are below.  
 	 * At this time I have no intention on implementing these operations, 
 	 * though contributions are welcome. 
 	 */
-	
+
 	
 	
 	/* Add / Remove mbeans */
@@ -293,7 +335,7 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 	
 	@Override
 	public ObjectInstance createMBean(String className, ObjectName name)
-			throws ReflectionException, InstanceAlreadyExistsException, MBeanRegistrationException, MBeanException,
+			throws ReflectionException, InstanceAlreadyExistsException, MBeanException,
 			NotCompliantMBeanException, IOException {
 		// TODO Auto-generated method stub
 		return null;
@@ -301,7 +343,7 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 
 	@Override
 	public ObjectInstance createMBean(String className, ObjectName name, ObjectName loaderName)
-			throws ReflectionException, InstanceAlreadyExistsException, MBeanRegistrationException, MBeanException,
+			throws ReflectionException, InstanceAlreadyExistsException, MBeanException,
 			NotCompliantMBeanException, InstanceNotFoundException, IOException {
 		// TODO Auto-generated method stub
 		return null;
