@@ -13,6 +13,12 @@
 	<properties>
 		<coverage.filter>org.jboss.tools.jmx.jolokia*</coverage.filter>
 		<emma.instrument.bundles>org.jboss.tools.jmx.jolokia</emma.instrument.bundles>
+        <jolokia.server.version>1.3.6-SNAPSHOT</jolokia.server.version>
+        <jolokia.client.version>1.3.6-SNAPSHOT</jolokia.client.version>
+        <json.simple.version>1.1.1</json.simple.version>
+        <httpcomponents.version>4.5.2</httpcomponents.version>
+        <httpcore.version>4.4.5</httpcore.version>
+        <logging.version>1.1.1</logging.version>
 	</properties>
 	<build>
 		<plugins>
@@ -25,6 +31,87 @@
 					</explodedBundles>
 				</configuration>
 			</plugin>
+            <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>get-libs</id>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <phase>generate-resources</phase>
+          </execution>
+        </executions>
+        <configuration>
+          <skip>false</skip>
+          <artifactItems>
+            <artifactItem>
+              <groupId>org.jolokia</groupId>
+              <artifactId>jolokia-client-java</artifactId>
+              <version>${jolokia.client.version}</version>
+            </artifactItem>
+            <artifactItem>
+              <groupId>org.jolokia</groupId>
+              <artifactId>jolokia-jsr160</artifactId>
+              <version>${jolokia.server.version}</version>
+            </artifactItem>
+            <artifactItem>
+              <groupId>org.jolokia</groupId>
+              <artifactId>jolokia-jmx</artifactId>
+              <version>${jolokia.server.version}</version>
+            </artifactItem>
+            <artifactItem>
+              <groupId>org.jolokia</groupId>
+              <artifactId>jolokia-core</artifactId>
+              <version>${jolokia.server.version}</version>
+            </artifactItem>
+            <artifactItem>
+              <groupId>com.googlecode.json-simple</groupId>
+              <artifactId>json-simple</artifactId>
+              <version>${json.simple.version}</version>
+            </artifactItem>
+
+
+            <artifactItem>
+              <groupId>org.apache.httpcomponents</groupId>
+              <artifactId>httpclient</artifactId>
+              <version>${httpcomponents.version}</version>
+            </artifactItem>
+            <artifactItem>
+              <groupId>org.apache.httpcomponents</groupId>
+              <artifactId>httpcore</artifactId>
+              <version>${httpcore.version}</version>
+            </artifactItem>
+            
+            
+            <artifactItem>
+              <groupId>commons-logging</groupId>
+              <artifactId>commons-logging</artifactId>
+              <version>${logging.version}</version>
+            </artifactItem>
+          </artifactItems>
+          <skip>false</skip>
+          <outputDirectory>${basedir}/lib/</outputDirectory>
+        </configuration>
+      </plugin>
+
+
+      <plugin>
+        <!-- make sure lib dir is removed after clean to avoid "dirty" build -->
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>2.5</version>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>${basedir}/lib</directory>
+              <includes>
+                <include>*.jar</include>
+              </includes>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
 		</plugins>
 	</build>
 </project>
