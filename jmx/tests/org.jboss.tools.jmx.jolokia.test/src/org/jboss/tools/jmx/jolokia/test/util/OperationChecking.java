@@ -97,6 +97,7 @@ public class OperationChecking implements OperationCheckingMBean,MBeanRegistrati
     }
 
     @Override
+    @SuppressWarnings("squid:S2447")
     public Boolean booleanArguments(boolean arg1, Boolean arg2) {
         if (arg2 == null) {
             return null;
