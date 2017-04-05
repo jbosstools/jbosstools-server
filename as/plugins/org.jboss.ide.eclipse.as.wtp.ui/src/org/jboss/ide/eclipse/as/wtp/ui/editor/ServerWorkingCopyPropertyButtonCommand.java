@@ -49,35 +49,37 @@ public class ServerWorkingCopyPropertyButtonCommand extends ServerCommand {
 			this.oldVal = wc.getAttribute(attributeKey, defaultval); 
 	}
 	
+	@Override
 	public void execute() {
 		if( key != null )
 			wc.setAttribute(key, newVal);
 		postOp(POST_EXECUTE);
 	}
 	
+	@Override
 	public void undo() {
-		if( listener != null )
-			button.removeSelectionListener(listener);
-		if( key != null )
-			wc.setAttribute(key, oldVal);
-		if( button != null && !button.isDisposed())
-			button.setSelection(oldVal);
-		if( listener != null )
-			button.addSelectionListener(listener);
+		toggle(oldVal);
 		postOp(POST_UNDO);
 	}
+	
+	@Override
 	public IStatus redo(IProgressMonitor monitor, IAdaptable adapt) {
+		toggle(newVal);
+		return Status.OK_STATUS;
+	}
+	
+	private void toggle(boolean val) {
 		if( listener != null )
 			button.removeSelectionListener(listener);
 		if( key != null )
-			wc.setAttribute(key, newVal);
+			wc.setAttribute(key, val);
 		if( button != null && !button.isDisposed())
-			button.setSelection(newVal);
+			button.setSelection(val);
 		if( listener != null )
 			button.addSelectionListener(listener);
 		postOp(POST_REDO);
-		return Status.OK_STATUS;
 	}
+	
 	protected void postOp(int type) {
 		// Do Nothing
 	}

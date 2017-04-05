@@ -10,6 +10,8 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.wtp.ui.editor;
 
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.events.ModifyListener;
@@ -49,7 +51,7 @@ public class ServerWorkingCopyPropertyTextCommand extends ServerCommand {
 		this.defaultDisplay = defaultDisplay == null ? "" : defaultDisplay;//$NON-NLS-1$
 	}
 
-	
+	@Override
 	public void execute() {
 		if( newVal.equals(defaultDisplay) || newVal.equals("")) { //$NON-NLS-1$
 			wc.setAttribute(key, (String)null);
@@ -59,27 +61,26 @@ public class ServerWorkingCopyPropertyTextCommand extends ServerCommand {
 		postOp(POST_EXECUTE);
 	}
 	
+	@Override
 	public void undo() {
-		if( listener != null )
-			text.removeModifyListener(listener);
-		wc.setAttribute(key, oldVal);
-		if( text != null && !text.isDisposed())
-			text.setText(oldVal == null ? defaultDisplay : oldVal);
-		if( listener != null )
-			text.addModifyListener(listener);
-		postOp(POST_UNDO);
+		toggle(oldVal, oldVal == null ? defaultDisplay : oldVal);
 	}
 
-	public IStatus redo() {
+	@Override
+	public IStatus redo(IProgressMonitor monitor, IAdaptable adapt) {
+		toggle(newVal, newVal);
+		return Status.OK_STATUS;
+	}
+	
+	private void toggle(String val, String display) {
 		if( listener != null )
 			text.removeModifyListener(listener);
-		wc.setAttribute(key, newVal);
+		wc.setAttribute(key, val);
 		if( text != null && !text.isDisposed())
-			text.setText(newVal);
+			text.setText(val);
 		if( listener != null )
 			text.addModifyListener(listener);
 		postOp(POST_REDO);
-		return Status.OK_STATUS;
 	}
 	protected void postOp(int type) {
 		// Do Nothing

@@ -49,31 +49,33 @@ public class ServerWorkingCopyPropertyCommand extends ServerCommand {
 			this.oldVal = wc.getAttribute(attributeKey, defaultVal);
 	}
 	
+	@Override
 	public void execute() {
 		wc.setAttribute(key, newVal);
 		postOp(POST_EXECUTE);
 	}
 	
+	@Override
 	public void undo() {
-		if( listener != null )
-			text.removeModifyListener(listener);
-		wc.setAttribute(key, oldVal);
-		if( text != null && !text.isDisposed())
-			text.setText(oldVal);
-		if( listener != null )
-			text.addModifyListener(listener);
+		toggle(oldVal);
 		postOp(POST_UNDO);
 	}
+
+	@Override
 	public IStatus redo(IProgressMonitor monitor, IAdaptable adapt) {
+		toggle(newVal);
+		return Status.OK_STATUS;
+	}
+	
+	private void toggle(String val) {
 		if( listener != null )
 			text.removeModifyListener(listener);
-		wc.setAttribute(key, newVal);
+		wc.setAttribute(key, val);
 		if( text != null && !text.isDisposed())
-			text.setText(newVal);
+			text.setText(val);
 		if( listener != null )
 			text.addModifyListener(listener);
 		postOp(POST_REDO);
-		return Status.OK_STATUS;
 	}
 	
 	protected void postOp(int type) {
