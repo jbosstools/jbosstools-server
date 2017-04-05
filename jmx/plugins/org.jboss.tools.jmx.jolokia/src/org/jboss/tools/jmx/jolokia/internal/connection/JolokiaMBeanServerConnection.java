@@ -11,9 +11,11 @@
 package org.jboss.tools.jmx.jolokia.internal.connection;
 
 import java.io.IOException;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Stream;
@@ -46,6 +48,7 @@ import org.jolokia.client.request.J4pExecRequest;
 import org.jolokia.client.request.J4pExecResponse;
 import org.jolokia.client.request.J4pListRequest;
 import org.jolokia.client.request.J4pListResponse;
+import org.jolokia.client.request.J4pQueryParameter;
 import org.jolokia.client.request.J4pReadRequest;
 import org.jolokia.client.request.J4pReadResponse;
 import org.jolokia.client.request.J4pResponse;
@@ -118,10 +121,10 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 
 	@Override
 	public Set<ObjectName> queryNames(ObjectName name, QueryExp query) throws IOException {
-		
-		J4pSearchRequest request;
 		try {
-			request = new J4pSearchRequest(name.getCanonicalName());
+			J4pSearchRequest request = new J4pSearchRequest(name.getCanonicalName());
+			Map<J4pQueryParameter,String> processingOptions = new EnumMap<>(J4pQueryParameter.class);
+			processingOptions.put(J4pQueryParameter.CANONICAL_NAMING, Boolean.FALSE.toString());
 			/*
 			 * Due to UNDERTOW-879  GET doesn't work because undertow refuses 
 			 * to escape certain characters, so must use POST
@@ -129,21 +132,14 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 			 * However, POST does not work behind CDK (oddly enough). 
 			 * Behind CDK, GET works, but will still fail on the same unescaped characters
 			 */
-			J4pSearchResponse resp = j4pClient.execute(request, type);
+			J4pSearchResponse resp = j4pClient.execute(request, type, processingOptions);
 			HashSet<ObjectName> toFilter = new HashSet<>(resp.getObjectNames());
-			
-			// TODO filter using query
 			
 			return toFilter;
 		} catch (MalformedObjectNameException | J4pException e) {
 			throw new IOException(e);
 		}
 	}
-
-	
-	
-	
-	
 	
 	/*  Get / set attributes */
 	
