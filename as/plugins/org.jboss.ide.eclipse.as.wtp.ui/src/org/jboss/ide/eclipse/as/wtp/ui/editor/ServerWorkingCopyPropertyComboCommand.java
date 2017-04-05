@@ -10,8 +10,11 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.wtp.ui.editor;
 
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Combo;
@@ -56,34 +59,55 @@ public class ServerWorkingCopyPropertyComboCommand extends ServerCommand {
 			this.oldVal = wc.getAttribute(attributeKey, ""); //$NON-NLS-1$
 	}
 	
+	@Override
 	public void execute() {
 		wc.setAttribute(key, newVal);
 		postOp(POST_EXECUTE);
 	}
 	
-	public void undo() {
-		if( modlistener != null )
-			combo.removeModifyListener(modlistener);
-		if( selListener != null )
-			combo.removeSelectionListener(selListener);
+	private void addListeners() {
+		if( combo != null && !combo.isDisposed()) {
+			if( modlistener != null )
+				combo.addModifyListener(modlistener);
+			if( selListener != null )
+				combo.addSelectionListener(selListener);
+		}
+	}
 
+	private void removeListeners() {
+		if( combo != null && !combo.isDisposed()) {
+			if( modlistener != null )
+				combo.removeModifyListener(modlistener);
+			if( selListener != null )
+				combo.removeSelectionListener(selListener);
+		}
+	}
+
+	@Override
+	public void undo() {
+		removeListeners();
 		wc.setAttribute(key, oldVal);
 		if( combo != null && !combo.isDisposed()) {
-			String oldValAsText = getStringForValue(oldVal);
-			int toSel = getItemIndex(oldValAsText);
-			if( toSel != -1 ) {
-				combo.select(toSel);
+			select(oldVal);
+		}
+		addListeners();
+		postOp(POST_UNDO);
+	}
+
+	private void select(String val) {
+		String oldValAsText = getStringForValue(oldVal);
+		int toSel = getItemIndex(oldValAsText);
+		if( toSel != -1 ) {
+			combo.select(toSel);
+		} else {
+			if( (combo.getStyle() & SWT.READ_ONLY) > 0) {
+				combo.deselectAll();
 			} else {
 				combo.setText(oldValAsText);
 			}
 		}
-		if( modlistener != null )
-			combo.addModifyListener(modlistener);
-		if( selListener != null )
-			combo.addSelectionListener(selListener);
-		postOp(POST_UNDO);
 	}
-
+	
 	protected int getItemIndex(String text) {
 		String[] items = combo.getItems();
 		for( int i = 0; i < items.length; i++ ) {
@@ -93,28 +117,18 @@ public class ServerWorkingCopyPropertyComboCommand extends ServerCommand {
 		return -1;
 	}
 	
-	public IStatus redo() {
-		if( modlistener != null )
-			combo.removeModifyListener(modlistener);
-		if( selListener != null )
-			combo.removeSelectionListener(selListener);
+	@Override
+	public IStatus redo(IProgressMonitor monitor, IAdaptable adapt) {
+		removeListeners();
 		wc.setAttribute(key, newVal);
 		if( combo != null && !combo.isDisposed()) {
-			String newValAsText = getStringForValue(newVal);
-			int toSel = getItemIndex(newValAsText);
-			if( toSel != -1 ) {
-				combo.select(toSel);
-			} else {
-				combo.setText(newValAsText);
-			}
+			select(newVal);
 		}
-		if( modlistener != null )
-			combo.addModifyListener(modlistener);
-		if( selListener != null )
-			combo.addSelectionListener(selListener);
+		addListeners();
 		postOp(POST_REDO);
 		return Status.OK_STATUS;
 	}
+
 	protected void postOp(int type) {
 		// Do Nothing
 	}
