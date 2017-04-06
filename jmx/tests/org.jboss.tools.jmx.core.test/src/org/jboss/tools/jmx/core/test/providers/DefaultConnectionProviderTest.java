@@ -17,7 +17,9 @@ import org.jboss.tools.jmx.core.providers.DefaultConnectionWrapper;
 import org.jboss.tools.jmx.core.providers.MBeanServerConnectionDescriptor;
 import org.junit.Test;
 
-public class DefaultConnectionProviderTest {
+import junit.framework.TestCase;
+
+public class DefaultConnectionProviderTest extends TestCase {
 
 	@Test
 	public void testAddConnection() throws Exception {
