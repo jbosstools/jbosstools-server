@@ -10,9 +10,16 @@
  ******************************************************************************/
 package org.jboss.tools.jmx.jolokia.test.util;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.HashLoginService;
@@ -22,6 +29,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.security.Constraint;
 import org.eclipse.jetty.util.security.Password;
+import org.jboss.tools.jmx.jolokia.test.JolokiaTestPlugin;
 import org.jolokia.client.BasicAuthenticator;
 import org.jolokia.client.J4pClient;
 import org.jolokia.http.AgentServlet;
@@ -73,7 +81,15 @@ public class JolokiaTestEnvironmentSetup {
 		}
 	}
 	
-    private static SecurityHandler createSecurityHandler() {
+    private static SecurityHandler createSecurityHandler() throws Exception {
+    	IPath p = JolokiaTestPlugin.getDefault().getStateLocation().append("jolokiasecurity.txt");
+    	if( !p.toFile().exists()) {
+    		Path path = Paths.get(p.toOSString());
+    		try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+    		    writer.write(JOLOKIA + ": " + JOLOKIA + "," + JOLOKIA); // user: pass,role
+    		} 
+    	}
+    	
         Constraint constraint = new Constraint();
         constraint.setName(Constraint.__BASIC_AUTH);
 		constraint.setRoles(new String[]{JOLOKIA});
@@ -84,8 +100,7 @@ public class JolokiaTestEnvironmentSetup {
         cm.setPathSpec("/*");
 
         ConstraintSecurityHandler securityHandler = new ConstraintSecurityHandler();
-        HashLoginService loginService = new HashLoginService("Jolokia");
-        loginService.putUser(JOLOKIA,new Password(JOLOKIA),new String[]{JOLOKIA});
+        HashLoginService loginService = new HashLoginService("Jolokia", p.toOSString());
         securityHandler.setLoginService(loginService);
         securityHandler.setConstraintMappings(new ConstraintMapping[]{cm});
         return securityHandler;
