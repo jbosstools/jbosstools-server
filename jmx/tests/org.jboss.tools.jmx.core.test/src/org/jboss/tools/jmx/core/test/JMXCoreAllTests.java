@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.jboss.tools.jmx.core.test;
 
+import org.jboss.tools.jmx.core.test.providers.DefaultConnectionProviderTest;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -24,11 +26,12 @@ public class JMXCoreAllTests extends TestSuite {
 		// temp disable -
 		// Failed to retrieve RMIServer stub: javax.naming.ServiceUnavailableException
 		// [Root exception is java.rmi.ConnectException: Connection refused to host: localhost
-		//addTest(new TestSuite(DefaultProviderTest.class));
+		addTest(new TestSuite(DefaultProviderTest.class));
 		addTest(new TestSuite(NodeBuilderTestCase.class));
 		addTestSuite(JMXExceptionTest.class);
 		addTestSuite(ImpactTest.class);
 		addTestSuite(ErrorRootTest.class);
+		addTestSuite(DefaultConnectionProviderTest.class);
 
 	}
 }

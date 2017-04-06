@@ -13,11 +13,14 @@ package org.jboss.tools.jmx.core.test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -34,14 +37,17 @@ import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
+import org.eclipse.swt.widgets.Display;
 import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.providers.DefaultConnectionProvider;
 import org.jboss.tools.jmx.core.test.util.TestProjectProvider;
 import org.jboss.tools.jmx.core.tree.DomainNode;
+import org.jboss.tools.jmx.core.tree.MBeansNode;
 import org.jboss.tools.jmx.core.tree.Node;
 import org.jboss.tools.jmx.core.tree.Root;
+import org.jboss.tools.test.util.JobUtils;
 
 public class DefaultProviderTest extends TestCase {
 	protected void setUp() throws Exception {
@@ -91,30 +97,54 @@ public class DefaultProviderTest extends TestCase {
 				null, true);
 		project = projectProvider.getProject();
 		project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-		//pleacuJobUtils.waitForIdle();
+		JobUtils.waitForIdle(500, 60000);
 		
-		ILaunchConfigurationWorkingCopy wc = createLaunch();
-		ILaunch launch = wc.launch("run", new NullProgressMonitor());
-
-
-		/* */
-		IProcess p = launch.getProcesses()[0];
-		p.getStreamsProxy().getErrorStreamMonitor().addListener(new IStreamListener() {
-			public void streamAppended(String text, IStreamMonitor monitor) {
-				System.out.println("[error] " + text);
-			} 
-		});
-		p.getStreamsProxy().getOutputStreamMonitor().addListener(new IStreamListener() {
-			public void streamAppended(String text, IStreamMonitor monitor) {
-				System.out.println("[out] " + text);
-			} 
-		});
+		final ILaunchConfigurationWorkingCopy wc = createLaunch();
+		final ILaunch[] launch = new ILaunch[1];
 		
-		 /* */
-		try {
-			Thread.sleep(10000);
-		} catch(InterruptedException ie) {}
+		final CountDownLatch latch = new CountDownLatch(1);
+		final Exception[] e = new Exception[1];
+		Thread t = new Thread() {
+			public void run() {
+				System.out.println("Launching the mbean server");
+				try {
+					launch[0] = wc.launch("run", new NullProgressMonitor());
+				} catch(CoreException ce) {
+					System.out.println("MBean server launch failed");
+					ce.printStackTrace();
+					e[0] = ce;
+					latch.countDown();
+					return;
+				}
+				
+				System.out.println("Launch succeeded");
+				IProcess p = launch[0].getProcesses()[0];
+				p.getStreamsProxy().getErrorStreamMonitor().addListener(new IStreamListener() {
+					public void streamAppended(String text, IStreamMonitor monitor) {
+						System.out.println("[error] " + text);
+						latch.countDown();
+					} 
+				});
+				p.getStreamsProxy().getOutputStreamMonitor().addListener(new IStreamListener() {
+					public void streamAppended(String text, IStreamMonitor monitor) {
+						System.out.println("[out] " + text);
+						latch.countDown();
+					} 
+				});
+			}
+		};
+		t.start();
 		
+		// Have to run the event loop, because it seems launching a launch config requires ui synchronization
+		long complete = System.currentTimeMillis() + 60000;
+		Display d = Display.getDefault();
+		while( !d.isDisposed() && System.currentTimeMillis() < complete && latch.getCount() > 0) {
+			 if (!d.readAndDispatch ())
+		            d.sleep ();
+		}
+		
+		assertTrue(latch.getCount() < 1);
+		assertNull(e[0]);
 		
 		try {
 			IConnectionProvider defProvider =
@@ -139,6 +169,11 @@ public class DefaultProviderTest extends TestCase {
 			Node[] children = root.getChildren();
 			assertTrue("children were null", children != null);
 			assertTrue("children length was less than 1", children.length >= 0);
+			assertTrue("Mbeans node found", children[0] instanceof MBeansNode);
+			
+			children = children[0].getChildren();
+			assertTrue("children were null", children != null);
+			assertTrue("children length was less than 1", children.length >= 0);
 			
 			boolean found = false;
 			for( int i = 0; i < children.length; i++ )
@@ -148,7 +183,8 @@ public class DefaultProviderTest extends TestCase {
 			assertTrue("Domain \"com.example\" not found", found);
 		} finally {
  			projectProvider.dispose();
-			launch.terminate();
+ 			if( launch[0] != null )
+ 				launch[0].terminate();
 		}
 	}
 
