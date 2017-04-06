@@ -17,7 +17,11 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	JolokiaMBeanUtilityTest.class
+	JolokiaMBeanUtilityTest.class,
+	JolokiaMBeanServerConnectionGetDomainsTest.class,
+	JolokiaMBeanServerConnectionInvocationTest.class,
+	JolokiaMBeanServerConnectionMBeanInfoTest.class,
+	JolokiaMBeanServerConnectionQueryMBeansTest.class
 })
 public class JolokiaTestSuite {
 }
