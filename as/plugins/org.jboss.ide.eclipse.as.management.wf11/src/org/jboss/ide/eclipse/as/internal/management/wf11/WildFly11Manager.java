@@ -57,6 +57,7 @@ import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
 import org.wildfly.security.auth.callback.CallbackUtil;
 import org.wildfly.security.auth.callback.CredentialCallback;
+import org.wildfly.security.auth.callback.OptionalNameCallback;
 import org.wildfly.security.credential.PasswordCredential;
 import org.wildfly.security.password.interfaces.ClearPassword;
 import org.wildfly.security.password.interfaces.DigestPassword;
@@ -94,8 +95,10 @@ public class WildFly11Manager {
 		private String realm;
 		public void handle(Callback[] callbacks) throws IOException,
 				UnsupportedCallbackException {
-            if (callbacks.length == 1 && callbacks[0] instanceof NameCallback) {
-                ((NameCallback) callbacks[0]).setName("anonymous JBossTools user");
+            if (callbacks.length == 2 &&
+            		( callbacks[0] instanceof RealmCallback || callbacks[1] instanceof RealmCallback)
+            		&& (callbacks[0] instanceof OptionalNameCallback || callbacks[1] instanceof OptionalNameCallback)) {
+            	// No credentials need to be set... 
                 return;
             }
 
