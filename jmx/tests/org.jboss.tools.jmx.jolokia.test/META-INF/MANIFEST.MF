@@ -19,7 +19,8 @@ Require-Bundle: org.junit;bundle-version="[4.12.0,5.0.0)",
  org.eclipse.jetty.http;bundle-version="9.3.9",
  javax.servlet;bundle-version="3.1.0",
  org.apache.commons.io;bundle-version="2.2.0",
- org.apache.commons.codec;bundle-version="1.6.0"
+ org.apache.commons.codec;bundle-version="1.6.0",
+ org.eclipse.jetty.security
 Bundle-ClassPath: .,
  lib/jolokia-core-1.3.6.jar,
  lib/jolokia-jsr160-1.3.6.jar,
