@@ -23,6 +23,7 @@
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
 				<configuration>
+					<appArgLine>-pluginCustomization ${basedir}/pluginCustomization.ini</appArgLine>
 					<useUIThread>false</useUIThread>
 					<testSuite>org.jboss.tools.as.ui.bot.itests.AllTestsSuite</testSuite>
 					<testClass>${suiteClass}</testClass>
