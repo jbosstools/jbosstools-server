@@ -15,13 +15,17 @@ import javax.management.ObjectName;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.IJMXRunnable;
 import org.jboss.tools.jmx.core.JMXCoreMessages;
 import org.jboss.tools.jmx.core.JMXException;
 
 public class NodeUtils {
+	
+	private NodeUtils() {
+		/* Util class */
+	}
 
     public static ObjectNameNode findObjectNameNode(Node node,
             ObjectName objectName) {
@@ -44,30 +48,28 @@ public class NodeUtils {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     public static Root createObjectNameTree(final IConnectionWrapper connectionWrapper, final IProgressMonitor monitor)
             throws JMXException {
-    	final Root[] _root = new Root[1];
+    	final Root[] roots = new Root[1];
     	connectionWrapper.run(new IJMXRunnable() {
+    		@Override
 			public void run(MBeanServerConnection connection) throws Exception {
 		        monitor.beginTask(JMXCoreMessages.LoadMBeans, 1000);
-				Set beanInfo = connection.queryNames(new ObjectName("*:*"), null); //$NON-NLS-1$
-		        _root[0] = NodeBuilder.createRoot(connectionWrapper);
+				Set<ObjectName> beanInfo = connection.queryNames(new ObjectName("*:*"), null); //$NON-NLS-1$
+		        roots[0] = NodeBuilder.createRoot(connectionWrapper);
 				monitor.worked(100);
 				if( beanInfo != null ) {
-					SubProgressMonitor subMon = new SubProgressMonitor(monitor, 900);
-					subMon.beginTask(JMXCoreMessages.InspectMBeans, beanInfo.size() * 100);
-			        Iterator iter = beanInfo.iterator();
+					SubMonitor subMon = SubMonitor.convert(monitor, JMXCoreMessages.InspectMBeans, beanInfo.size());
+			        Iterator<ObjectName> iter = beanInfo.iterator();
 			        while (iter.hasNext() && !monitor.isCanceled()) {
-			            ObjectName on = (ObjectName) iter.next();
-			            NodeBuilder.addToTree(_root[0].getMBeansNode(), on, connection);
-			        	subMon.worked(100);
+			            ObjectName on = iter.next();
+			            NodeBuilder.addToTree(roots[0].getMBeansNode(), on, connection);
+			        	subMon.worked(1);
 			        }
-			        subMon.done();
 				}
 		        monitor.done();
 			}
     	});
-        return _root[0];
+        return roots[0];
     }
 }
