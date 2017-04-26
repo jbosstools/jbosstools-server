@@ -57,7 +57,6 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	public void setDefaults(IProgressMonitor monitor) {
 		// on setDefaults, set both defaults and updates / overrides
 		setAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, true);
-		getServerWorkingCopy().setHost("localhost"); //$NON-NLS-1$
 		IRuntime rt = getServer().getRuntime();
 		String name = rt != null ?  ServerNamingUtility.getDefaultServerName(rt) : ServerNamingUtility.getNextShortServerName(getServer().getServerType());
 		getServerWorkingCopy().setName(name);
