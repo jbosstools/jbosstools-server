@@ -17,4 +17,9 @@
 		<module>tests</module>
 		<module>features</module>
 	</modules>
+
+	<properties>
+		<!-- https://issues.jboss.org/browse/JBIDE-23869 -->
+		<enforceExcludePatternExtras>|jolokia.client.version|jolokia.server.version</enforceExcludePatternExtras>
+	</properties>
 </project>
