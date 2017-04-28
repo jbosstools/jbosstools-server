@@ -21,8 +21,8 @@
 
 	  <jboss.threads.version>2.2.1.Final</jboss.threads.version>
 
-      <wildfly.controller.version>3.0.0.Beta16-SNAPSHOT</wildfly.controller.version>
-      <wildfly.protocol.version>3.0.0.Beta16-SNAPSHOT</wildfly.protocol.version>
+      <wildfly.controller.version>3.0.0.Beta16</wildfly.controller.version>
+      <wildfly.protocol.version>3.0.0.Beta16</wildfly.protocol.version>
 
 	  <xnio.api.version>3.5.0.Beta4</xnio.api.version>
 	  <xnio.nio.version>3.5.0.Beta4</xnio.nio.version>
