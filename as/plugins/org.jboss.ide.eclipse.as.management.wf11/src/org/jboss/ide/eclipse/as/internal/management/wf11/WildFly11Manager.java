@@ -103,6 +103,7 @@ public class WildFly11Manager {
 					.setHostName(details.getHost())
 					.setPort(details.getManagementPort())
 					.setHandler(getCallbackHandler())
+					.setProtocol("http-remoting")
 					.setConnectionTimeout(timeout2)
 					.setSaslOptions(Collections.emptyMap());
 			ModelControllerClientConfiguration config = b.build();
