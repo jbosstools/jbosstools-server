@@ -25,16 +25,11 @@ import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants
 import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.SERVER_STATE;
 import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.SHUTDOWN;
 
-
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.ExecutionException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
@@ -59,11 +55,9 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.osgi.util.NLS;
 import org.jboss.as.controller.client.ModelControllerClient;
 import org.jboss.as.controller.client.ModelControllerClientConfiguration;
-import org.jboss.as.controller.client.helpers.domain.DeploymentActionResult;
 import org.jboss.as.controller.client.helpers.standalone.DeploymentAction;
 import org.jboss.as.controller.client.helpers.standalone.DeploymentPlan;
 import org.jboss.as.controller.client.helpers.standalone.DeploymentPlanBuilder;
-import org.jboss.as.controller.client.helpers.standalone.InitialDeploymentPlanBuilder;
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentManager;
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentPlanResult;
 import org.jboss.dmr.ModelNode;
@@ -97,12 +91,12 @@ public class WildFly11Manager {
 			Object timeout = details.getProperty(IAS7ManagementDetails.PROPERTY_TIMEOUT);
 			int timeout2 = !(timeout instanceof Integer) ? DEFAULT_REQUEST_TIMEOUT : 
 							((Integer)timeout).intValue();
-			
 			ModelControllerClientConfiguration.Builder b = 
 					new ModelControllerClientConfiguration.Builder()
 					.setHostName(details.getHost())
 					.setPort(details.getManagementPort())
 					.setHandler(getCallbackHandler())
+					.setProtocol("http-remoting")
 					.setConnectionTimeout(timeout2)
 					.setSaslOptions(Collections.emptyMap());
 			ModelControllerClientConfiguration config = b.build();

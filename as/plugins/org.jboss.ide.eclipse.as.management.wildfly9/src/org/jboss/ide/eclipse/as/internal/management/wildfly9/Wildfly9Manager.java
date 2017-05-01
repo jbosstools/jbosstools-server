@@ -27,7 +27,6 @@ import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants
 
 import java.io.File;
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -45,6 +44,7 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.osgi.util.NLS;
 import org.jboss.as.controller.client.ModelControllerClient;
+import org.jboss.as.controller.client.ModelControllerClientConfiguration;
 import org.jboss.as.controller.client.helpers.standalone.DeploymentAction;
 import org.jboss.as.controller.client.helpers.standalone.DeploymentPlanBuilder;
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentManager;
@@ -71,11 +71,19 @@ public class Wildfly9Manager {
 			Object timeout = details.getProperty(IAS7ManagementDetails.PROPERTY_TIMEOUT);
 			int timeout2 = !(timeout instanceof Integer) ? DEFAULT_REQUEST_TIMEOUT : 
 							((Integer)timeout).intValue();
-			this.client = ModelControllerClient.Factory.create(
-					details.getHost(), details.getManagementPort(),
-					getCallbackHandler(), null, timeout2);
+			
+			ModelControllerClientConfiguration config = new ModelControllerClientConfiguration.Builder()
+					.setConnectionTimeout(timeout2)
+					.setHandler(getCallbackHandler())
+					.setHostName(details.getHost())
+					.setProtocol("http-remoting")
+					.setPort(details.getManagementPort())
+					.setSslContext(null)
+					.build();
+			
+			this.client = ModelControllerClient.Factory.create(config);
 			this.manager = ServerDeploymentManager.Factory.create(client);
-		} catch(UnknownHostException uhe) {
+		} catch(RuntimeException uhe) {
 			throw new JBoss7ManangerException(uhe);
 		}
 	}
