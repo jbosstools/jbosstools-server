@@ -66,10 +66,10 @@ public class PublishControllerUtil {
 	/**
 	 * Given the various flags, return which of the following options 
 	 * our publishers should perform:
-	 *    1) A full publish
-	 *    2) A removed publish (remove the module)
-	 *    3) An incremental publish, or
-	 *    4) No publish at all. 
+	 *    0) No publish at all. 
+	 *    1) An incremental publish, or
+	 *    2) A full publish
+	 *    3) A removed publish (remove the module)
 	 * @param module
 	 * @param kind
 	 * @param deltaKind
@@ -126,6 +126,18 @@ public class PublishControllerUtil {
 	public static boolean structureChanged(IServer server, IModule root) {
 		ArrayList<IModule[]> deepModules = ServerModelUtilities.getDeepChildren(server, new IModule[] { root } );
 		deepModules.add(new IModule[] {root}); 
+		
+		// We only want to add child modules that have been deleted... not ANY deleted modules
+		addRemovedModules(server, deepModules, null);
+		Iterator<IModule[]> it2 = deepModules.iterator();
+		while(it2.hasNext()) {
+			IModule[] tmp = it2.next();
+			if( tmp == null || tmp.length == 0 || !tmp[0].equals(root)) {
+				it2.remove();
+			}
+		}
+		
+		// Now the list should be only of modules that begin with root
 		List<Integer> allDelta = computeDelta(server, deepModules);
 		Iterator<Integer> it = allDelta.iterator();
 		while(it.hasNext()) {
@@ -140,11 +152,15 @@ public class PublishControllerUtil {
 	
 
 	/*
-	 * Following methods are taken from ServerBehaviourDelegate
+	 * This will compute the delta for ONLY those modules in the list.
+	 * It will NOT add deltas for missing children that have been removed
 	 */
 
 	private static List<Integer> computeDelta(IServer server, final List<IModule[]> moduleList) {
-
+		return computeDelta(server, moduleList, false);
+	}
+	
+	private static List<Integer> computeDelta(IServer server, final List<IModule[]> moduleList, boolean includeRemoved) {
 		final List<Integer> deltaKindList = new ArrayList<Integer>();
 		final Iterator<IModule[]> iterator = moduleList.iterator();
 		while (iterator.hasNext()) {
@@ -163,9 +179,12 @@ public class PublishControllerUtil {
 				deltaKindList.add(new Integer(ServerBehaviourDelegate.ADDED));
 			}
 		}
-		addRemovedModules(server, moduleList, null);
-		while (deltaKindList.size() < moduleList.size()) {
-			deltaKindList.add(new Integer(ServerBehaviourDelegate.REMOVED));
+		
+		if( includeRemoved ) {
+			addRemovedModules(server, moduleList, null);
+			while (deltaKindList.size() < moduleList.size()) {
+				deltaKindList.add(new Integer(ServerBehaviourDelegate.REMOVED));
+			}
 		}
 		return deltaKindList;
 	}
