@@ -242,17 +242,13 @@ public class ManagementPublishController extends AbstractSubsystemController
 		}
 		
 		int publishType = PublishControllerUtil.getPublishType(getServer(), module, kind, deltaKind);
-		boolean structureChanged = PublishControllerUtil.structureChanged(getServer(), module[0]);
-		if( structureChanged ) {
-			// If the structure changed, we need a full publish. Can't go adding child modules willy-nilly!
-			// TODO: maybe not necessary? 
-			publishType = PublishControllerUtil.FULL_PUBLISH;
+		if( publishType != PublishControllerUtil.REMOVE_PUBLISH) {
+			boolean structureChanged = PublishControllerUtil.structureChanged(getServer(), module[0]);
+			if( structureChanged ) {
+				// If the structure changed, we need a full publish. Can't go adding / removing child modules willy-nilly!
+				publishType = PublishControllerUtil.FULL_PUBLISH;
+			}
 		}
-		
-//		if( publishType == PublishControllerUtil.NO_PUBLISH) {
-//			// Do nothing, no publish is requested
-//			return getServer().getModulePublishState(module);
-//		}
 		
 		if( publishType == PublishControllerUtil.INCREMENTAL_PUBLISH || publishType == PublishControllerUtil.NO_PUBLISH) {
 			// We should try an incremental publish here. The publishType flag doesn't 
