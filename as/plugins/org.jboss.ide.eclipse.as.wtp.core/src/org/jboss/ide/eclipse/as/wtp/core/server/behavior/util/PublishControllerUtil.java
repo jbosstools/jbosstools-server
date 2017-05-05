@@ -93,7 +93,31 @@ public class PublishControllerUtil {
 		} 
 		return NO_PUBLISH;
 	}
+
 	
+	public static int getDeepPublishType(IServer server, IModule root, int kind, int deltaKind) {
+		// check root module first
+		int publishType = PublishControllerUtil.getPublishType(server, new IModule[] {root}, kind, deltaKind);
+		if( publishType == PublishControllerUtil.REMOVE_PUBLISH) {
+			return REMOVE_PUBLISH;
+		}
+		
+		List<IModule[]> deepModules = getAllModulesFromRoot(server, root);
+		List<Integer> allDelta = computeDelta(server, deepModules);
+		if( structureChanged(server, root, deepModules, allDelta)) {
+			return FULL_PUBLISH;
+		}
+		
+		Iterator<IModule[]> modIt = deepModules.iterator();
+		Iterator<Integer> deltIt = allDelta.iterator();
+		while(modIt.hasNext()) {
+			IModule[] tmp = modIt.next();
+			int type2 = getPublishType(server, tmp, kind, deltIt.next());
+			if( type2 > publishType )
+				publishType = type2;
+		}
+		return publishType;
+	}
 	/**
 	 * If this is a bpel or osgi or some other strange publisher, 
 	 * allow the delegate to handle the publish. 
@@ -122,8 +146,7 @@ public class PublishControllerUtil {
 		return null; 
 	}
 
-	
-	public static boolean structureChanged(IServer server, IModule root) {
+	private static List<IModule[]> getAllModulesFromRoot(IServer server, IModule root) {
 		ArrayList<IModule[]> deepModules = ServerModelUtilities.getDeepChildren(server, new IModule[] { root } );
 		deepModules.add(new IModule[] {root}); 
 		
@@ -136,9 +159,16 @@ public class PublishControllerUtil {
 				it2.remove();
 			}
 		}
-		
-		// Now the list should be only of modules that begin with root
+		return deepModules;
+	}
+	
+	public static boolean structureChanged(IServer server, IModule root) {
+		List<IModule[]> deepModules = getAllModulesFromRoot(server, root);
 		List<Integer> allDelta = computeDelta(server, deepModules);
+		return structureChanged(server, root, deepModules, allDelta);
+	}
+	private static boolean structureChanged(IServer server, IModule root, List<IModule[]> deepModules, List<Integer> allDelta) {
+		// Now the list should be only of modules that begin with root
 		Iterator<Integer> it = allDelta.iterator();
 		while(it.hasNext()) {
 			int i = it.next();
