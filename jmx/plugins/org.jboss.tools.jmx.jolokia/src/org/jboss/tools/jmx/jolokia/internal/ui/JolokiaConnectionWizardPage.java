@@ -22,7 +22,9 @@ import org.eclipse.debug.internal.ui.preferences.DebugPreferencesMessages;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.Window;
@@ -135,6 +137,15 @@ public class JolokiaConnectionWizardPage extends WizardFragment implements IEdit
 	}
 
 	private void addListeners() {
+		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
+				IStructuredSelection sel = viewer.getStructuredSelection();
+				boolean enabled = sel.size() > 0;
+				removeHeaderBtn.setEnabled(enabled);
+				editHeaderBtn.setEnabled(enabled);
+			}
+		});
 		addHeaderBtn.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -308,6 +319,10 @@ public class JolokiaConnectionWizardPage extends WizardFragment implements IEdit
 		addHeaderBtn.setText("Add Header...");
 		removeHeaderBtn.setText("Remove Header");
 		editHeaderBtn.setText("Edit Header");
+
+		removeHeaderBtn.setEnabled(false);
+		editHeaderBtn.setEnabled(false);
+		
 		
 		Label requestTypeLabel = new Label(main, SWT.NONE);
 		requestTypeLabel.setText("Request Type: ");
