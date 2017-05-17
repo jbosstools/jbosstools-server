@@ -54,16 +54,6 @@ public class OperationChecking implements OperationCheckingMBean,MBeanRegistrati
     }
 
     @Override
-    public void throwCheckedException() throws Exception {
-        throw new Exception("Inner exception");
-    }
-
-    @Override
-    public void throwRuntimeException() {
-        throw new IllegalArgumentException("Illegal Argument", new IllegalStateException("Illegal State"));
-    }
-
-    @Override
     public boolean nullArgumentCheck(String arg1,Object arg2) {
         return arg1 == null && arg2 == null;
     }
@@ -174,14 +164,6 @@ public class OperationChecking implements OperationCheckingMBean,MBeanRegistrati
     @Override
     public void postDeregister() {
     	/* Do nothing */
-    }
-
-    @Override
-    public int sleep(int seconds) throws InterruptedException {
-        synchronized(this) {
-            this.wait(seconds * 1000L);
-        }
-        return seconds;
     }
 
     @Override

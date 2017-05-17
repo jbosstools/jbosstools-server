@@ -11,6 +11,7 @@
 package org.jboss.tools.jmx.jolokia.test.util;
 
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -42,13 +43,13 @@ public class JolokiaTestEnvironmentSetup {
 	public static final  String JOLOKIA_IT_DOMAIN = "jolokia.it";
 	private static final String JOLOKIA = "jolokia";
 	private static Server jettyServer;
-	private static String j4pUrl;
 	protected static J4pClient j4pClient;
 	private static Set<ObjectName> registeredMBeans = new HashSet<>();
 	
 	@BeforeClass
 	public static void start() throws Exception{
 		String testUrl = System.getProperty("j4p.url");
+		String j4pUrl;
 		if (testUrl == null) {
 
 			int port = EnvTestUtil.getFreePort();
@@ -84,7 +85,7 @@ public class JolokiaTestEnvironmentSetup {
 		}
 	}
 	
-    private static SecurityHandler createSecurityHandler() throws Exception {
+    private static SecurityHandler createSecurityHandler() throws IOException {
     	IPath p = JolokiaTestPlugin.getDefault().getStateLocation().append("jolokiasecurity.txt");
     	if( !p.toFile().exists()) {
     		Path path = Paths.get(p.toOSString());

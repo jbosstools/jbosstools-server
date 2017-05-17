@@ -33,10 +33,6 @@ public interface OperationCheckingMBean {
 
     int fetchNumber(String arg);
 
-    public void throwCheckedException() throws Exception;
-
-    public void throwRuntimeException();
-
     int overloadedMethod();
 
     int overloadedMethod(String arg);
@@ -49,7 +45,7 @@ public interface OperationCheckingMBean {
 
     boolean emptyStringArgumentCheck(String arg1);
 
-    String arrayArguments(String args[], String extra);
+    String arrayArguments(String[] args, String extra);
 
     Object objectArrayArg(Object[] args);
 
@@ -62,8 +58,6 @@ public interface OperationCheckingMBean {
     int intArguments(int arg1, Integer arg2);
 
     double doubleArguments(double arg1, Double arg2);
-
-    public int sleep(int seconds) throws InterruptedException;
 
     public String echo(String pEcho);
 
