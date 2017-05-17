@@ -1,5 +1,3 @@
-package org.jboss.tools.jmx.jolokia.test.util;
-
 /*
  * Copyright 2009-2013 Roland Huss
  *
@@ -15,6 +13,7 @@ package org.jboss.tools.jmx.jolokia.test.util;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.jboss.tools.jmx.jolokia.test.util;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -75,7 +74,7 @@ public class OperationChecking implements OperationCheckingMBean,MBeanRegistrati
     }
 
     @Override
-    public String arrayArguments(String args[], String extra) {
+    public String arrayArguments(String[] args, String extra) {
         return args[0];
     }
 
@@ -180,7 +179,7 @@ public class OperationChecking implements OperationCheckingMBean,MBeanRegistrati
     @Override
     public int sleep(int seconds) throws InterruptedException {
         synchronized(this) {
-            this.wait(seconds * 1000);
+            this.wait(seconds * 1000L);
         }
         return seconds;
     }

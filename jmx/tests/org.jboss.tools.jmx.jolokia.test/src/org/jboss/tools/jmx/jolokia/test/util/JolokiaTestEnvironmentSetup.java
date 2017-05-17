@@ -11,10 +11,11 @@
 package org.jboss.tools.jmx.jolokia.test.util;
 
 import java.io.BufferedWriter;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -28,7 +29,6 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.security.Constraint;
-import org.eclipse.jetty.util.security.Password;
 import org.jboss.tools.jmx.jolokia.test.JolokiaTestPlugin;
 import org.jolokia.client.BasicAuthenticator;
 import org.jolokia.client.J4pClient;
@@ -44,7 +44,7 @@ public class JolokiaTestEnvironmentSetup {
 	private static Server jettyServer;
 	private static String j4pUrl;
 	protected static J4pClient j4pClient;
-	private static ObjectName registeredMBean = null;
+	private static Set<ObjectName> registeredMBeans = new HashSet<>();
 	
 	@BeforeClass
 	public static void start() throws Exception{
@@ -63,7 +63,8 @@ public class JolokiaTestEnvironmentSetup {
 			j4pUrl = "http://localhost:" + port + "/j4p";
 
 			MBeanServer mBeanServer = JolokiaMBeanServerUtil.getJolokiaMBeanServer();
-			registeredMBean = mBeanServer.registerMBean(new OperationChecking(JOLOKIA_IT_DOMAIN), new ObjectName(JOLOKIA_IT_DOMAIN+":type=operation")).getObjectName();
+			registeredMBeans.add(mBeanServer.registerMBean(new OperationChecking(JOLOKIA_IT_DOMAIN), new ObjectName(JOLOKIA_IT_DOMAIN+":type=operation")).getObjectName());
+			registeredMBeans.add(mBeanServer.registerMBean(new AttributeChecking(JOLOKIA_IT_DOMAIN), new ObjectName(JOLOKIA_IT_DOMAIN+":type=attributetest")).getObjectName());
 		} else {
 			j4pUrl = testUrl;
 		}
@@ -72,9 +73,11 @@ public class JolokiaTestEnvironmentSetup {
 	
 	@AfterClass
 	public static void stop() throws Exception{
-		if(registeredMBean != null){
-			JolokiaMBeanServerUtil.getJolokiaMBeanServer().unregisterMBean(registeredMBean);
-			registeredMBean = null;
+		if(!registeredMBeans.isEmpty()){
+			for (ObjectName registeredMBean : registeredMBeans) {
+				JolokiaMBeanServerUtil.getJolokiaMBeanServer().unregisterMBean(registeredMBean);
+			}
+			registeredMBeans.clear();
 		}
 		if (jettyServer != null) {
 			jettyServer.stop();

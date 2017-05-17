@@ -21,7 +21,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	JolokiaMBeanServerConnectionGetDomainsTest.class,
 	JolokiaMBeanServerConnectionInvocationTest.class,
 	JolokiaMBeanServerConnectionMBeanInfoTest.class,
-	JolokiaMBeanServerConnectionQueryMBeansTest.class
+	JolokiaMBeanServerConnectionQueryMBeansTest.class,
+	JolokiaMBeanServerConnectionGetSetAttributeTest.class
 })
 public class JolokiaTestSuite {
 }

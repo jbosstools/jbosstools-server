@@ -11,6 +11,7 @@
 package org.jboss.tools.jmx.jolokia.internal.connection;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -150,16 +151,12 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 			MBeanException, ReflectionException, IOException {
 		J4pWriteRequest req = new J4pWriteRequest(name, attribute.getName(), attribute.getValue());
 		try {
-			List<J4pResponse<J4pWriteRequest>> c = j4pClient.execute(req);  // TODO type??? GET or POST,  API missing?
-			Iterator<J4pResponse<J4pWriteRequest>> it = c.iterator();
-			while(it.hasNext()) {
-				J4pResponse<J4pWriteRequest> r = it.next();
-				Object o = r.asJSONObject().get("status");
-				if( o == null ) {
-					// We don't know what happened
-				} else if( !o.equals(Long.valueOf(200))) {
-					throw new IOException("Failed to update attribute " + attribute.getName() + " on object " + name.getCanonicalName());
-				}
+			J4pResponse<J4pWriteRequest> r = j4pClient.execute(req);  // TODO type??? GET or POST,  API missing?
+			Object o = r.asJSONObject().get("status");
+			if( o == null ) {
+				// We don't know what happened
+			} else if( !o.equals(Long.valueOf(200))) {
+				throw new IOException("Failed to update attribute " + attribute.getName() + " on object " + name.getCanonicalName());
 			}
 		} catch (J4pException e) {
 			throw new IOException(e);
@@ -170,19 +167,16 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 	public AttributeList setAttributes(ObjectName name, AttributeList attributes)
 			throws InstanceNotFoundException, ReflectionException, IOException {
 		AttributeList result = new AttributeList();
-		Iterator<Attribute> i = attributes.asList().iterator();
-		while(i.hasNext()) {
-			Attribute a = i.next();
+		for (Attribute attribute : attributes.asList()) {
 			try {
-				setAttribute(name, a);
-				result.add(a);
+				setAttribute(name, attribute);
+				result.add(attribute);
 			} catch (AttributeNotFoundException | InvalidAttributeValueException | MBeanException e) {
 				Activator.pluginLog().logError(e);
 			}
 		}
 		return result;
 	}
-
 
 	@Override
 	public Object getAttribute(ObjectName name, String attribute) throws MBeanException, AttributeNotFoundException,
@@ -199,29 +193,40 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 			throws InstanceNotFoundException, ReflectionException, IOException {
 		AttributeList al = new AttributeList();
 		J4pReadRequest req = new J4pReadRequest(name, attributes);
-		Object resp2 = null;
+		Object response = null;
 		try {
-			resp2 = j4pClient.execute(req); // TODO type??? GET or POST,  API missing?
+			response = j4pClient.execute(req); // TODO type??? GET or POST,  API missing?
 		} catch (J4pException e) {
 			throw new IOException(e);
 		}
-		if( resp2 != null ) {
-			if( resp2 instanceof List) {
-				List<J4pResponse<J4pReadRequest>> resp = (List<J4pResponse<J4pReadRequest>>)resp2;
+		if( response != null ) {
+			if( response instanceof List) {
+				List<J4pResponse<J4pReadRequest>> resp = (List<J4pResponse<J4pReadRequest>>)response;
 				Iterator<J4pResponse<J4pReadRequest>> c = resp.iterator();
 				while(c.hasNext()) {
-					J4pResponse<J4pReadRequest> r2 = c.next();
-					Object v = r2.getValue();
-					al.add(v);
+					al.addAll(extractAttributesFromResponse(c.next()));
 				}
-			} else if( resp2 instanceof J4pReadResponse){
-				Object o22 = ((J4pReadResponse)(resp2)).getValue();
-				al.add(o22);
+			} else if( response instanceof J4pReadResponse){
+				al.addAll(extractAttributesFromResponse((J4pReadResponse) response));
 			}
 		}
 		return al;
 	}
 
+	private List<Object> extractAttributesFromResponse(J4pResponse<?> response) {
+		List<Object> extractedAttributes = new ArrayList<>();
+		Object o22 = response.getValue();
+		if(o22 instanceof JSONObject){
+			Set<Map.Entry<String, Object>> entrySet = ((JSONObject)o22).entrySet();
+			for (Map.Entry<String, Object> entry : entrySet) {
+				extractedAttributes.add(new Attribute(entry.getKey(), entry.getValue()));
+			}
+		} else {
+			// Keep old behavior in case something else than JSonObject is returned
+			extractedAttributes.add(o22);
+		}
+		return extractedAttributes;
+	}
 	
 	/* Operation Invocations */
 	@Override

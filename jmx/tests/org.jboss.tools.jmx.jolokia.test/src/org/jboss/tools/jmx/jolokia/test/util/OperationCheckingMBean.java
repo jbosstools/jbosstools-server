@@ -1,5 +1,3 @@
-package org.jboss.tools.jmx.jolokia.test.util;
-
 /*
  * Copyright 2009-2013 Roland Huss
  *
@@ -15,6 +13,7 @@ package org.jboss.tools.jmx.jolokia.test.util;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.jboss.tools.jmx.jolokia.test.util;
 
 import java.math.BigDecimal;
 import java.util.List;
