@@ -84,7 +84,9 @@ public class ModulesManifestEntryContainerInitializer extends
 		}
 		
 		public IRuntimePathProvider[] getRuntimePathProviders() {
+			System.out.println("Inside getRuntimePathProviders");
 			ModuleSlot[] all = new ModuleSlotManifestUtil().getAllModuleSlots(p);
+			System.out.println("List of slits has length " + (all == null ? 0 : all.length));
 			IRuntimePathProvider[] sets = ModuleSlotManifestUtil.moduleSlotsAsProviders(all);
 			return sets;
 		}

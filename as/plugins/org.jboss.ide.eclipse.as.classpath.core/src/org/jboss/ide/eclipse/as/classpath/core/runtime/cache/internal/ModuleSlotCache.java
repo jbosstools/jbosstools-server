@@ -98,15 +98,19 @@ public class ModuleSlotCache {
 	}
 	
 	public boolean isOutdated(IFile file) {
+		boolean ret = false;
 		Object o = lastUpdated.get(file);
 		File f = file.getLocation().toFile();
 		if( !f.exists() && o != null ) {
-			return true;
+			ret = true;
+		} else {
+			if( o == null || !(o instanceof Long) || ((Long)o).longValue() < file.getLocation().toFile().lastModified()) {
+				ret = true;
+			} else {
+				ret = false;
+			}
 		}
-		if( o == null || !(o instanceof Long) || ((Long)o).longValue() < file.getLocation().toFile().lastModified()) {
-			return true;
-		}
-		return false;
+		return ret;
 	}	
 	
 	public void cacheRuntimeModuleSlots(IRuntime runtime, ModuleSlot[] all) {

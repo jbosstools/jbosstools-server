@@ -94,6 +94,7 @@ public abstract class AbstractModuleSlotUtil {
 
 	public boolean isCacheOutdated(IProject p) {
 		IFile[] all = getRelevantFiles(p);
+		System.out.println("   list of relevent files is " + (all == null ? 0 : all.length) + " long");
 		if( all != null ) {
 			return isCacheOutdated(all);
 		}
@@ -102,12 +103,14 @@ public abstract class AbstractModuleSlotUtil {
 	
 	protected IFile[] getRelevantFiles(IProject p) {
 		if( !isInitialized(p) ) {
+			System.out.println("   is not initialized in getRelevantFiles, locating relevant files");
 			try {
 				cacheFiles(p, locateRelevantFiles(p));
 			} catch(CoreException ce) {
 				return new IFile[0];
 			}
 		}
+		System.out.println("   is initialized in getRelevantFiles, using cache");
 		return getCachedFiles(p);
 	}
 	
@@ -116,19 +119,24 @@ public abstract class AbstractModuleSlotUtil {
 	}
 	
 	public ModuleSlot[] getAllModuleSlots(IProject p, IFile[] files) {
+		System.out.println("   getting slots for " + files.length + " files");
 		ArrayList<ModuleSlot> all = new ArrayList<ModuleSlot>();
 		if( files == null )
 			return new ModuleSlot[0];
 		
 		for( int i = 0; i < files.length; i++ ) {
 			IFile f = files[i];
+			System.out.println("   Checking if file " + f.getLocation().toOSString() + " is outdated");
 			if( !isCacheOutdated(f)) {
+				System.out.println("      no its not");
 				ModuleSlot[] prevCached = fetchCachedModuleSlots(f);
 				all.addAll(Arrays.asList(prevCached));
 			} else {
+				System.out.println("      yes it is");
 				// don't use the cache
 				// read the file to get a list of modules
 				ModuleSlot[] forFile = calculateModuleSlots(files[i]);
+				System.out.println("      located new slots: " + forFile.length);
 				cacheModuleSlots(f, forFile);
 				all.addAll(Arrays.asList(forFile));
 			}
