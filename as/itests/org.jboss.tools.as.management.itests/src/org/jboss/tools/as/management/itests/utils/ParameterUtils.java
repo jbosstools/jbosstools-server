@@ -71,6 +71,7 @@ public class ParameterUtils {
 		paths.add(JBOSS_WILDFLY_90_HOME);
 		paths.add(JBOSS_WILDFLY_100_HOME);
 		paths.add(JBOSS_WILDFLY_101_HOME);
+		paths.add(JBOSS_WILDFLY_110_HOME);
 		if( !skipReqs ) {
 			paths.add(JBOSS_EAP_60_HOME);
 			paths.add(JBOSS_EAP_61_HOME);
@@ -78,6 +79,18 @@ public class ParameterUtils {
 			paths.add(JBOSS_EAP_63_HOME);
 			paths.add(JBOSS_EAP_70_HOME);
 		}
+		// NEW_SERVER_ADAPTER
+		return paths.toArray(new String[paths.size()]);
+	}
+	
+	public static Object[] getIncrementalMgmtDeploymentHomes() {
+		boolean skipReqs = skipPrivateRequirements();
+		ArrayList<String> paths = new ArrayList<String>();
+		paths.add(JBOSS_WILDFLY_110_HOME);
+		if( !skipReqs ) {
+			//paths.add(JBOSS_EAP_71_HOME);
+		}
+		// NEW_SERVER_ADAPTER
 		return paths.toArray(new String[paths.size()]);
 	}
 }

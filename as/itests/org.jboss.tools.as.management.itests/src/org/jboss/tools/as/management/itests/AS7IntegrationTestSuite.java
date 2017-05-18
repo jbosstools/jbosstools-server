@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.tools.as.management.itests;
 
+import org.jboss.tools.as.management.itests.incremental.IncrementalManagerDeployTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -22,7 +23,8 @@ import org.junit.runners.Suite;
 	AS7ManagementServicePreReqTest.class,
 	AS7ManagementServiceStartupShutdownTest.class,
 	AS7ManagerIntegrationTest.class,
-	JBossManagementServiceTest.class
+	JBossManagementServiceTest.class,
+	IncrementalManagerDeployTest.class
 })
 public class AS7IntegrationTestSuite {
 

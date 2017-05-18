@@ -62,6 +62,9 @@ public class AS7ManagerTestUtils {
 	}
 
 	public static File getWarFile(String name) throws URISyntaxException, IOException {
+		return getBundleFile(name);
+	}
+	public static File getBundleFile(String name) throws URISyntaxException, IOException {
 		Bundle bundle = Platform.getBundle(Activator.BUNDLE_ID);
 		URL entryUrl = bundle.getEntry(WAR_FOLDER + name);
 		return new File(FileLocator.resolve(entryUrl).toURI());
