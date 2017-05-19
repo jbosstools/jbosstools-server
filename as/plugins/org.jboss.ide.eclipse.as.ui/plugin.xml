@@ -454,24 +454,16 @@
 					<instanceof value="org.eclipse.wst.server.core.IServer">
 					</instanceof>
 					<or>
-						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.70">
-						</test>
-						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.71">
-						</test>
-						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.eap.60">
-						</test>
-						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.eap.61">
-						</test>
-						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.eap.70">
-						</test>
-						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.wildfly.80">
-						</test>
-						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.wildfly.90">
-						</test>
-						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.wildfly.100">
-						</test>
-						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.wildfly.110">
-						</test>
+						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.70"></test>
+						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.71"></test>
+						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.eap.60"></test>
+						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.eap.61"></test>
+						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.eap.70"></test>
+						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.eap.71"></test>
+						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.wildfly.80"></test>
+						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.wildfly.90"></test>
+						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.wildfly.100"></test>
+						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.wildfly.110"></test>
 						<!-- NEW_SERVER_ADAPTER -->
 					</or>
 				</and>

@@ -45,22 +45,22 @@ public class DefaultClasspathModelLoader implements IJBossToolingConstants, IJBo
 	public InternalRuntimeClasspathModel getDefaultRuntimeClasspathModel(IRuntimeType type) {
 		IRuntimePathProvider[] providers = null;
 		String rtID = type.getId();
-		if(AS_32.equals(rtID)) 
-			providers =  getDefaultAS3Entries();
-		if(AS_40.equals(rtID)) 
-			providers =  getDefaultAS40Entries();
-		if(AS_42.equals(rtID)) 
-			providers =  getDefaultAS40Entries();
-		if(AS_50.equals(rtID)) 
-			providers =  getDefaultAS50Entries();
-		if(EAP_43.equals(rtID))
-			providers =  getDefaultEAP43Entries();
-		if(AS_51.equals(rtID)) 
-			providers =  getDefaultAS50Entries();
-		if(AS_60.equals(rtID)) 
-			providers =  getDefaultAS60Entries();
-		if(EAP_50.equals(rtID))
-			providers =  getDefaultAS50Entries();
+		switch(rtID) {
+			case AS_32: 
+				providers =  getDefaultAS3Entries(); break;
+			case AS_40:
+			case AS_42:
+				providers =  getDefaultAS40Entries(); break;
+			case AS_50:
+			case AS_51:
+			case EAP_50:
+				providers =  getDefaultAS50Entries(); break;
+			case EAP_43:
+				providers =  getDefaultEAP43Entries(); break;
+			case AS_60:
+				providers =  getDefaultAS60Entries(); break;
+		}
+
 
 		if( providers != null ) {
 			InternalRuntimeClasspathModel model = new InternalRuntimeClasspathModel();

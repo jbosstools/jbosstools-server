@@ -149,9 +149,6 @@ public class ServerBeanLoader {
 	/*
 	 * Legacy code Lives Here... beware!
 	 */
-	
-
-	// NEW_SERVER_ADAPTER
 	@Deprecated
 	public static JBossServerType[] typesInOrder = JBossServerType.KNOWN_TYPES;
 	

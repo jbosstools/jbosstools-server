@@ -34,6 +34,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,6 +54,7 @@ import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.sasl.RealmCallback;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
@@ -103,7 +106,7 @@ public class WildFly11Manager {
 					.setHostName(details.getHost())
 					.setPort(details.getManagementPort())
 					.setHandler(getCallbackHandler())
-					.setProtocol("http-remoting")
+					.setProtocol(details.getProtocol())
 					.setConnectionTimeout(timeout2)
 					.setSaslOptions(Collections.emptyMap());
 			ModelControllerClientConfiguration config = b.build();
@@ -120,47 +123,67 @@ public class WildFly11Manager {
 	
 	protected class ToolsWF11CallbackHandler implements CallbackHandler {
 		private String realm;
+		
+		protected RealmCallback getRealmCallback(Callback[] cbs) {
+			for( int i = 0; i < cbs.length; i++ ) {
+				if( cbs[i] instanceof RealmCallback)
+					return (RealmCallback)cbs[i];
+			}
+			return null;
+		}
+		protected NameCallback getNameCallback(Callback[] cbs) {
+			for( int i = 0; i < cbs.length; i++ ) {
+				if( cbs[i] instanceof NameCallback)
+					return (NameCallback)cbs[i];
+			}
+			return null;
+		}
+		protected CredentialCallback getCredentialCallback(Callback[] cbs) {
+			for( int i = 0; i < cbs.length; i++ ) {
+				if( cbs[i] instanceof CredentialCallback)
+					return (CredentialCallback)cbs[i];
+			}
+			return null;
+		}
+		protected PasswordCallback getPasswordCallback(Callback[] cbs) {
+			for( int i = 0; i < cbs.length; i++ ) {
+				if( cbs[i] instanceof PasswordCallback)
+					return (PasswordCallback)cbs[i];
+			}
+			return null;
+		}
+		
 		public void handle(Callback[] callbacks) throws IOException,
 				UnsupportedCallbackException {
-            if (callbacks.length == 2 &&
-            		( callbacks[0] instanceof RealmCallback || callbacks[1] instanceof RealmCallback)
-            		&& (callbacks[0] instanceof OptionalNameCallback || callbacks[1] instanceof OptionalNameCallback)) {
+			RealmCallback rcb = getRealmCallback(callbacks);
+			if( rcb != null ) {
+            	realm = rcb.getPrompt();
+                String defaultText = rcb.getDefaultText();
+                rcb.setText(defaultText); // For now just use the realm suggested.
+			}
+			
+			NameCallback ncb = getNameCallback(callbacks);
+			if( ncb instanceof OptionalNameCallback) {
             	// No credentials need to be set... 
-                return;
-            }
-
-            NameCallback nameCB = null;
-            PasswordCallback passCB = null;
-            CredentialCallback credCB = null;
-            for (Callback current : callbacks) {
-	            if (current instanceof RealmCallback) {
-	            	RealmCallback rcb = (RealmCallback) current;
-	            	realm = rcb.getPrompt();
-                    String defaultText = rcb.getDefaultText();
-                    rcb.setText(defaultText); // For now just use the realm suggested.
-	            }
-	            if (current instanceof NameCallback) {
-                    nameCB = (NameCallback) current;
-                } else if (current instanceof PasswordCallback) {
-                    passCB = (PasswordCallback) current;
-                } else if (current instanceof CredentialCallback) {
-                    credCB = (CredentialCallback) current;
-                }
-            }
+				return;
+			}
+			
+            PasswordCallback passCB = getPasswordCallback(callbacks);
+            CredentialCallback credCB = getCredentialCallback(callbacks);
             
-            if( nameCB instanceof OptionalNameCallback) {
+            if( ncb instanceof OptionalNameCallback) {
                 ((NameCallback) callbacks[0]).setName("anonymous JBossTools user");
             	return;
             }
             
             String passPrompt = (passCB == null ? "Password" : passCB.getPrompt());
             
-            String[] results = details.handleCallbacks(new String[] { nameCB.getPrompt(), passPrompt});
+            String[] results = details.handleCallbacks(new String[] { ncb.getPrompt(), passPrompt});
             if( results != null && results.length >= 2 ) {
             	String u = results[0];
             	String p = results[1];
             	
-	            nameCB.setName(results[0]);
+            	ncb.setName(results[0]);
 	            if( passCB != null ) {
                     passCB.setPassword(p.toCharArray());
 	            } else if( credCB != null ) {

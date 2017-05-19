@@ -69,6 +69,7 @@ public class DriverUtility implements IRuntimeIntegrationConstants {
 		RUNTIME_DRIVER_LOCATION.put(IJBossToolingConstants.EAP_60, new Pair(HSQLDB_DRIVER_7_LOCATION, H2_TYPE));
 		RUNTIME_DRIVER_LOCATION.put(IJBossToolingConstants.EAP_61, new Pair(HSQLDB_DRIVER_72_EAP61_LOCATION, H2_TYPE));
 		RUNTIME_DRIVER_LOCATION.put(IJBossToolingConstants.EAP_70, new Pair(HSQLDB_DRIVER_72_EAP61_LOCATION, H2_TYPE));
+		RUNTIME_DRIVER_LOCATION.put(IJBossToolingConstants.EAP_71, new Pair(HSQLDB_DRIVER_72_EAP61_LOCATION, H2_TYPE));
 		// NEW_SERVER_ADAPTER 
 	}
 

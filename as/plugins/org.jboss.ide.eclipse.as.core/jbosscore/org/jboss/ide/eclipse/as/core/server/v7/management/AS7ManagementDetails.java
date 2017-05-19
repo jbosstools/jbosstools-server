@@ -21,6 +21,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.IServerProvider;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.management.core.IAS7ManagementDetails;
@@ -58,7 +59,19 @@ public class AS7ManagementDetails implements IServerProvider, IAS7ManagementDeta
 		return IJBoss7ManagerService.MGMT_PORT;
 	}
 	
+	public String getProtocol() {
+		if( IJBossToolingConstants.SERVER_AS_71.equals(getServerType())) {
+			return null;
+		}
+		if( IJBossToolingConstants.SERVER_EAP_60.equals(getServerType())) {
+			return null;
+		}
+		return "http-remoting";  //$NON-NLS-1$
+	}
 	
+	protected String getServerType() {
+		return server.getServerType().getId();
+	}
 	
 	public String getManagementUsername() {
 		return null;

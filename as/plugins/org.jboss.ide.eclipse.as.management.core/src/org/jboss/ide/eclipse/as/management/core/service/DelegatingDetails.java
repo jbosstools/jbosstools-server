@@ -63,4 +63,9 @@ public class DelegatingDetails implements IAS7ManagementDetails {
 		}
 		return delegate.getProperty(key);
 	}
+
+	@Override
+	public String getProtocol() {
+		return delegate.getProtocol();
+	}
 }

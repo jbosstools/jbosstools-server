@@ -327,7 +327,10 @@ public class IncrementalManagerDeployTest extends AssertUtility {
             throw e;
         }
     }
-	public static IAS7ManagementDetails createManagementDetails() {
-		return new MockAS7ManagementDetails(AS7ManagerTestUtils.LOCALHOST, util.getPort());
+	public IAS7ManagementDetails createManagementDetails() {
+		return createManagementDetails(homeDir);
+	}
+	public static IAS7ManagementDetails createManagementDetails(String homeDir) {
+		return new MockAS7ManagementDetails(AS7ManagerTestUtils.LOCALHOST, util.getPort(), homeDir);
 	}
 }

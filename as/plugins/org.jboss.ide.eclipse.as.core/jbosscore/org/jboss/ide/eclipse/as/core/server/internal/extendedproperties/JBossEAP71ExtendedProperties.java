@@ -14,14 +14,15 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
+import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 
-public class JBossEAP70ExtendedProperties extends Wildfly90ExtendedProperties {
-	public JBossEAP70ExtendedProperties(IAdaptable obj) {
+public class JBossEAP71ExtendedProperties extends Wildfly90ExtendedProperties {
+	public JBossEAP71ExtendedProperties(IAdaptable obj) {
 		super(obj);
 	}
 	@Override
 	public String getRuntimeTypeVersionString() {
-		return "7.0"; //$NON-NLS-1$
+		return "7.x"; //$NON-NLS-1$
 	}
 	
 	@Override
@@ -29,11 +30,15 @@ public class JBossEAP70ExtendedProperties extends Wildfly90ExtendedProperties {
 		return JavaRuntime.getExecutionEnvironmentsManager().getEnvironment("JavaSE-1.8"); //$NON-NLS-1$
 	}
 	
-
+	@Override
+	public String getManagerServiceId() {
+		return IJBoss7ManagerService.WILDFLY_VERSION_110;
+	}
+	
 	@Override
 	public IDefaultLaunchArguments getDefaultLaunchArguments() {
 		if( server != null)
-			return new JBossEAP70DefaultLaunchArguments(server);
-		return new JBossEAP70DefaultLaunchArguments(runtime);
+			return new Wildfly100DefaultLaunchArguments(server);
+		return new Wildfly100DefaultLaunchArguments(runtime);
 	}
 }

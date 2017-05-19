@@ -259,6 +259,7 @@ public class StartupUtility extends Assert {
 			long startTime = System.currentTimeMillis();
 			long endTime = startTime + (1000*60);
 			while( state != JBoss7ServerState.RUNNING && System.currentTimeMillis() < endTime) {
+				System.out.println("    in while loop, waiting for app server to start");
 				boolean alive = process.isAlive();
 				if( !alive ) {
 					System.out.println("Output:\n" + out);
@@ -282,9 +283,11 @@ public class StartupUtility extends Assert {
 				service.dispose();
 			if( ex != null ) {
 				if( p != null)
-					p.destroy();
-				if( ex != null )
+					p.destroyForcibly();
+				if( ex != null ) {
+					ex.printStackTrace();
 					fail("Could not correctly discover if server has started: " + homeDir + ": " + ex.getMessage());
+				}
 			}
 		}
 	}
@@ -314,7 +317,7 @@ public class StartupUtility extends Assert {
 	}
 
 	protected IAS7ManagementDetails createConnectionDetails() {
-		return new MockAS7ManagementDetails(AS7ManagerTestUtils.LOCALHOST, getPort());
+		return new MockAS7ManagementDetails(AS7ManagerTestUtils.LOCALHOST, getPort(), homeDir);
 	}
 	
 }

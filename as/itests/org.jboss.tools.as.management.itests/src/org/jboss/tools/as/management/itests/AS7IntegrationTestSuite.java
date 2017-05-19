@@ -20,10 +20,10 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	AS7ManagementServiceResolutionTest.class,
+	JBossManagementServiceTest.class,
 	AS7ManagementServicePreReqTest.class,
 	AS7ManagementServiceStartupShutdownTest.class,
 	AS7ManagerIntegrationTest.class,
-	JBossManagementServiceTest.class,
 	IncrementalManagerDeployTest.class
 })
 public class AS7IntegrationTestSuite {

@@ -40,6 +40,7 @@ public interface IJBoss7ManagerService {
 	// Used for eap 6.1+
 	public static final String EAP_VERSION_61PLUS = "eap.6.1.x"; //$NON-NLS-1$
 	
+	// NEW_SERVER_ADAPTER above
 	
 	/**
 	 * This is a list of all service versions that have been publicly
@@ -53,9 +54,10 @@ public interface IJBoss7ManagerService {
 			AS_VERSION_71x,
 			WILDFLY_VERSION_800,
 			WILDFLY_VERSION_900,
+			WILDFLY_VERSION_110,
 			EAP_VERSION_61PLUS
 	};
-	
+	// NEW_SERVER_ADAPTER above
 	
 	
 	

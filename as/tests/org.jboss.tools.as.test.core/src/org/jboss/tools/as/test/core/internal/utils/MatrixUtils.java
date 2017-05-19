@@ -14,9 +14,13 @@ import java.util.ArrayList;
 
 public class MatrixUtils {
 	public static Object[] createPath(Object[][] blocks, int[] vals) {
+		if( blocks.length == 0 )
+			return new Object[0];
+		
 		Object[] ret = new Object[blocks.length];
 		for( int i = 0; i < blocks.length; i++ ) {
-			ret[i] = blocks[i][vals[i]];
+			if( blocks[i].length > 0 )
+				ret[i] = blocks[i][vals[i]];
 		}
 		return ret;
 	}

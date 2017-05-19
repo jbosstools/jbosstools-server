@@ -191,8 +191,12 @@ public class AS7ManagerIntegrationTest extends AssertUtility {
 		assertEquals(JBoss7ServerState.RUNNING, service.getServerState(createManagementDetails()));
 	}
 	
-	public static IAS7ManagementDetails createManagementDetails() {
-		return new MockAS7ManagementDetails(AS7ManagerTestUtils.LOCALHOST, util.getPort());
+	protected IAS7ManagementDetails createManagementDetails() {
+		return createManagementDetails(homeDir);
+	}
+	
+	public static IAS7ManagementDetails createManagementDetails(String homeDir) {
+		return new MockAS7ManagementDetails(AS7ManagerTestUtils.LOCALHOST, util.getPort(), homeDir);
 	}
 	
 }

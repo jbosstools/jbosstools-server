@@ -10,16 +10,23 @@
  ******************************************************************************/ 
 package org.jboss.tools.as.test.core.launch;
 
+import java.io.File;
 import java.util.Collection;
 
 import junit.framework.TestCase;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.variables.VariablesPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
+import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
@@ -53,35 +60,27 @@ public class MockArgsTests extends TestCase  {
 	public void tearDown() throws Exception {
 		ASMatrixTests.cleanup();
 	}
-	
-	// This will actually try to launch a process, but against a mock server
-	// A process will return (or should) but the process would terminate immediately, 
-	// letting us inspect it's arguments
-	protected IServer runAndVerifyArgs() {
+	protected IServer checkDefaultArgs() throws CoreException {
 		IServer server = ServerCreationTestUtils.createMockServerWithRuntime(serverType, serverType);
 		IServer fixed = setMockDetails(server);
 		
-		IProcess p = runAndGetProcess(server);
-		assertNotNull("Process must not be null", p);
-		String command =  (p == null ? null : p.getAttribute(IProcess.ATTR_CMDLINE));
-
-		assertFalse("No args found from process for server type " + server.getServerType().getId(), 
-				command == null || command.trim().length() == 0);
+		ILaunchConfiguration lc = server.getLaunchConfiguration(true, new NullProgressMonitor());
+		String progArgs = getProgramArguments(lc);
+		String vmArgs = getVMArguments(lc);
 		
 		try {
 			JBossExtendedProperties props = (JBossExtendedProperties)server.loadAdapter(JBossExtendedProperties.class, new NullProgressMonitor());
 			String defaultArgs = props.getDefaultLaunchArguments().getStartDefaultProgramArgs().replace("\"", "");
-			String defaultVMArgs = props.getDefaultLaunchArguments().getStartDefaultProgramArgs().replace("\"", "");
-			String safeQuotes = command.replace("\"", "").replaceAll("[ ]+", " ");
+			String defaultVMArgs = props.getDefaultLaunchArguments().getStartDefaultVMArgs().replace("\"", "");
 			defaultArgs = defaultArgs.trim().replaceAll("[ ]+", " ");
-			assertTrue(safeQuotes + " should contain " + defaultArgs, safeQuotes.contains(defaultArgs));
-			
-			// This is done bc the only difference here will be in the "program name" argument, 
-			// which gets the runtime name or server name. In this case, it's the runtime name, since
-			// the API being used is deprecated and does not have reference to a server
 			defaultVMArgs = defaultVMArgs.replace(server.getRuntime().getRuntimeType().getId(), serverType);
 			defaultVMArgs = defaultVMArgs.trim().replaceAll("[ ]+", " ");
-			assertTrue(safeQuotes.contains(defaultVMArgs));
+			
+			String safeQuotesArgs = progArgs.replace("\"", "").replaceAll("[ ]+", " ");
+			String safeQuotesVM = vmArgs.replace("\"", "").replaceAll("[ ]+", " ");
+			
+			assertTrue(safeQuotesArgs + " should contain " + defaultArgs, safeQuotesArgs.contains(defaultArgs));
+			assertTrue(safeQuotesVM.contains(defaultVMArgs));
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -90,8 +89,8 @@ public class MockArgsTests extends TestCase  {
 
 	@Test
 	public void testRemoveCriticalVMArgs() {
-		IServer server = runAndVerifyArgs();
 		try {
+			IServer server = checkDefaultArgs();
 			ILaunchConfiguration config = server.getLaunchConfiguration(true, new NullProgressMonitor());
 			ILaunchConfigurationWorkingCopy wc = config.getWorkingCopy();
 			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, "hello");
@@ -166,4 +165,72 @@ public class MockArgsTests extends TestCase  {
 		}
 		return null;
 	}
+	
+	
+	
+	
+
+	public String getProgramArguments(ILaunchConfiguration configuration)
+			throws CoreException {
+		String arguments = configuration.getAttribute(
+				IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, ""); //$NON-NLS-1$
+		return VariablesPlugin.getDefault().getStringVariableManager()
+				.performStringSubstitution(arguments);
+	}
+	public String[] getJavaLibraryPath(ILaunchConfiguration configuration) throws CoreException {
+		IJavaProject project = getJavaProject(configuration);
+		if (project != null) {
+			String[] paths = JavaRuntime.computeJavaLibraryPath(project, true);
+			if (paths.length > 0) {
+				return paths;
+			}
+		}
+		return null;
+	}
+	public IJavaProject getJavaProject(ILaunchConfiguration configuration)
+			throws CoreException {
+		String projectName = getJavaProjectName(configuration);
+		if (projectName != null) {
+			projectName = projectName.trim();
+			if (projectName.length() > 0) {
+				IProject project = ResourcesPlugin.getWorkspace().getRoot()
+						.getProject(projectName);
+				IJavaProject javaProject = JavaCore.create(project);
+				if (javaProject != null && javaProject.exists()) {
+					return javaProject;
+				}
+			}
+		}
+		return null;
+	}
+	public String getJavaProjectName(ILaunchConfiguration configuration)
+			throws CoreException {
+		return configuration.getAttribute(
+				IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME,
+				(String) null);
+	}
+
+	public String getVMArguments(ILaunchConfiguration configuration) throws CoreException {
+		String arguments = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, ""); //$NON-NLS-1$
+		String args = VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(arguments);
+		int libraryPath = args.indexOf("-Djava.library.path"); //$NON-NLS-1$
+		if (libraryPath < 0) {
+			// if a library path is already specified, do not override
+			String[] javaLibraryPath = getJavaLibraryPath(configuration);
+			if (javaLibraryPath != null && javaLibraryPath.length > 0) {
+				StringBuffer path = new StringBuffer(args);
+				path.append(" -Djava.library.path="); //$NON-NLS-1$
+				path.append("\""); //$NON-NLS-1$
+				for (int i = 0; i < javaLibraryPath.length; i++) {
+					if (i > 0) {
+						path.append(File.pathSeparatorChar);
+					}
+					path.append(javaLibraryPath[i]);
+				}
+				path.append("\""); //$NON-NLS-1$
+				args = path.toString();
+			}
+		}
+		return args;
+	}	
 }

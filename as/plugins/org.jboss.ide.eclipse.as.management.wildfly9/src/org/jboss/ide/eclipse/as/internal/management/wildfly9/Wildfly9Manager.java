@@ -76,7 +76,7 @@ public class Wildfly9Manager {
 		        .setConnectionTimeout(timeout2)
 		        .setHandler(getCallbackHandler())
 		        .setHostName(details.getHost())
-		        .setProtocol("http-remoting")
+		        .setProtocol(details.getProtocol())
 		        .setPort(details.getManagementPort())
 		        .setSslContext(null)
 		        .build();

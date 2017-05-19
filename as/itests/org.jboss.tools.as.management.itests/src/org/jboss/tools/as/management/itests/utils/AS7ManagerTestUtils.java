@@ -28,6 +28,8 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.server.core.IRuntimeType;
+import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
 import org.jboss.ide.eclipse.as.management.core.IAS7ManagementDetails;
@@ -38,6 +40,7 @@ import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 import org.jboss.tools.as.management.itests.Activator;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
+import static org.mockito.Mockito.*;
 
 /**
  * @author André Dietisheim
@@ -167,17 +170,25 @@ public class AS7ManagerTestUtils {
 		}
 	}
 	
-	public static IAS7ManagementDetails createStandardDetails() {
-		return new MockAS7ManagementDetails(LOCALHOST, MGMT_PORT);
-	}
-	
 	public static class MockAS7ManagementDetails extends AS7ManagementDetails {
 		private String host;
 		private int port;
-		public MockAS7ManagementDetails(String host, int port) {
-			super(null);
+		public MockAS7ManagementDetails(String host, int port, String serverHome) {
+			this(host, port, mockServer(serverHome));
+		}
+		public MockAS7ManagementDetails(String host, int port, IServer server) {
+			super(server);
 			this.host = host;
 			this.port = port;
+		}
+		public static IServer mockServer(String serverHome) {
+			String serverType = ParameterUtils.getServerType(serverHome);
+			IServerType st = mock(IServerType.class);
+			when(st.getId()).thenReturn(serverType);
+			
+			IServer s = mock(IServer.class);
+			when(s.getServerType()).thenReturn(st);
+			return s;
 		}
 		public String getHost() {
 			return host;
@@ -199,6 +210,8 @@ public class AS7ManagerTestUtils {
 		forceStart("org.jboss.ide.eclipse.as.core");
 		forceStart("org.jboss.ide.eclipse.as.management.as7");
 		forceStart("org.jboss.ide.eclipse.as.management.wildfly9");
+		forceStart("org.jboss.ide.eclipse.as.management.wf11");
+		forceStart("org.jboss.ide.eclipse.as.management.eap61plus");
 		IJBossManagerServiceProvider serviceProvider = (IJBossManagerServiceProvider)Platform.getAdapterManager().getAdapter(runtimeType, IJBossManagerServiceProvider.class);
 		if( serviceProvider != null ) {
 			return serviceProvider.getManagerService();

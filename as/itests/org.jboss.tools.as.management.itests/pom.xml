@@ -21,6 +21,21 @@
 							<artifactId>org.jboss.ide.eclipse.as.management.as7</artifactId>
 							<version>0.0.0</version>
 						</dependency>
+						<dependency>
+							<type>eclipse-plugin</type>
+							<artifactId>org.jboss.ide.eclipse.as.management.wildfly9</artifactId>
+							<version>0.0.0</version>
+						</dependency>
+						<dependency>
+							<type>eclipse-plugin</type>
+							<artifactId>org.jboss.ide.eclipse.as.management.wf11</artifactId>
+							<version>0.0.0</version>
+						</dependency>
+						<dependency>
+							<type>eclipse-plugin</type>
+							<artifactId>org.jboss.ide.eclipse.as.management.eap61plus</artifactId>
+							<version>0.0.0</version>
+						</dependency>
 					</dependencies>
 				</configuration>
 			</plugin>

@@ -31,6 +31,9 @@ public class JBossManagementServiceTest {
 
 	private static final String DS_BUNDLEID = "org.eclipse.equinox.ds";
 	private static final String AS7MANAGER_PLUGINID = "org.jboss.ide.eclipse.as.management.as7";
+	private static final String WF9MANAGER_PLUGINID = "org.jboss.ide.eclipse.as.management.wildfly9";
+	private static final String WF11MANAGER_PLUGINID = "org.jboss.ide.eclipse.as.management.wf11";
+	private static final String EAP61MANAGER_PLUGINID = "org.jboss.ide.eclipse.as.management.eap61plus";
 
 	@Before
 	public void setUp() throws UnknownHostException {
@@ -43,7 +46,11 @@ public class JBossManagementServiceTest {
 	@Test
 	public void serviceIsReachable() throws BundleException {
 		ensureDSIsRunning();
-		ensureServiceBundleIsRunning();
+		ensureServiceBundleIsRunning(AS7MANAGER_PLUGINID);
+		ensureServiceBundleIsRunning(WF9MANAGER_PLUGINID);
+		ensureServiceBundleIsRunning(WF11MANAGER_PLUGINID);
+		ensureServiceBundleIsRunning(EAP61MANAGER_PLUGINID);
+		
 		BundleContext context = Activator.getContext();
 		ServiceReference<IJBoss7ManagerService> reference =
 				context.getServiceReference(IJBoss7ManagerService.class);
@@ -52,11 +59,11 @@ public class JBossManagementServiceTest {
 		assertNotNull(service);
 	}
 
-	private void ensureServiceBundleIsRunning() throws BundleException {
+	private void ensureServiceBundleIsRunning(String bid) throws BundleException {
 		BundleContext context = Activator.getContext();
 		assertNotNull("bundle of this test is not active", context);
-		Bundle bundle = getBundle(AS7MANAGER_PLUGINID);
-		assertNotNull(AS7MANAGER_PLUGINID + " not installed", bundle);
+		Bundle bundle = getBundle(bid);
+		assertNotNull(bid + " not installed", bundle);
 		startBundle(bundle);
 	}
 

@@ -60,6 +60,12 @@ public interface IAS7ManagementDetails {
 	public IServer getServer();
 	
 	/**
+	 * Get the protocol for remoting
+	 * @return
+	 */
+	public String getProtocol();
+	
+	/**
 	 * Get a property value
 	 * @return
 	 */

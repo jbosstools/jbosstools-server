@@ -126,39 +126,39 @@ public class EJB3ClasspathContainer implements IClasspathContainer, IJBossServer
 	   if( jbossServer != null ) {
 		   try {
 		      String id = jbossServer.getServer().getServerType().getRuntimeType().getId();
-		      if( id.equals(AS_40)) ret = get40Jars(homePath, configPath);
-		      else if( id.equals(AS_42)) 
-		    	  ret = get42Jars(homePath, configPath);
-		      else if( id.equals(AS_50)) 
-		    	  ret = get50Jars(homePath, configPath, true, true);
-		      else if( id.equals(AS_51)) 
-		    	  ret = get51Jars(homePath, configPath);
-		      else if( id.equals(EAP_43)) 
-		    	  ret = get42Jars(homePath, configPath);
-		      else if( id.equals(AS_60)) 
-		    	  ret = get60Jars(homePath, configPath);
-		      else if( id.equals(EAP_50)) 
-		    	  ret = get50Jars(homePath, configPath, false, false);
-		      else if( id.equals(AS_70)) 
-		    	  ret = get70Jars(homePath);
-		      else if( id.equals(AS_71)) 
-		    	  ret = get70Jars(homePath);
-		      else if( id.equals(WILDFLY_80)) 
-		    	  ret = getEap61Jars(homePath);
-		      else if( id.equals(WILDFLY_90)) 
-		    	  ret = getEap61Jars(homePath);
-		      else if( id.equals(WILDFLY_100)) 
-		    	  ret = getEap61Jars(homePath);
-		      else if( id.equals(WILDFLY_110)) 
-		    	  ret = getEap61Jars(homePath);
-		      else if( id.equals(EAP_50)) 
-		    	  ret = get70Jars(homePath);
-		      else if( id.equals(EAP_60)) 
-		    	  ret = get70Jars(homePath);
-		      else if( id.equals(EAP_61)) 
-		    	  ret = getEap61Jars(homePath);
-		      else if( id.equals(EAP_70)) 
-		    	  ret = getEap61Jars(homePath);
+		      switch(id) {
+			      case AS_40:
+			    	  ret = get40Jars(homePath, configPath); break;
+			      case AS_42:
+			      case EAP_43: 
+			    	  ret = get42Jars(homePath, configPath); break;
+			      case AS_50:
+			    	  ret = get50Jars(homePath, configPath, true, true); break;
+			      case EAP_50: 
+			    	  ret = get50Jars(homePath, configPath, false, false);break;
+			      case AS_51: 
+			    	  ret = get51Jars(homePath, configPath); break;
+			      case AS_60: 
+			    	  ret = get60Jars(homePath, configPath);break;
+			      case AS_70: 
+			      case AS_71: 
+			    	  ret = get70Jars(homePath); break;
+			      case WILDFLY_80: 
+			      case WILDFLY_90: 
+			      case WILDFLY_100: 
+			      case WILDFLY_110: 
+			      case EAP_60: 
+			    	  ret = get70Jars(homePath); break;
+			      case EAP_61: 
+			      case EAP_70: 
+			      case EAP_71: 
+			    	  ret = getEap61Jars(homePath); break;
+			      default:
+			    	  break;
+		      }
+ 
+		    	  
+
 		      // NEW_SERVER_ADAPTER
 		   } catch( FileNotFoundException fnfe ) {}
 	   }
