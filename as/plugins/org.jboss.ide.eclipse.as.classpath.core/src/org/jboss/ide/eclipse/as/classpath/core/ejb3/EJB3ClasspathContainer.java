@@ -143,12 +143,12 @@ public class EJB3ClasspathContainer implements IClasspathContainer, IJBossServer
 			      case AS_70: 
 			      case AS_71: 
 			    	  ret = get70Jars(homePath); break;
+			      case EAP_60: 
+			    	  ret = get70Jars(homePath); break;
 			      case WILDFLY_80: 
 			      case WILDFLY_90: 
 			      case WILDFLY_100: 
 			      case WILDFLY_110: 
-			      case EAP_60: 
-			    	  ret = get70Jars(homePath); break;
 			      case EAP_61: 
 			      case EAP_70: 
 			      case EAP_71: 
