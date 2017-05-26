@@ -48,6 +48,10 @@ public class MatrixUtils {
     	int[] depthCount = new int[depth];
     	for( int i = 0; i < depth; i++ ) {
     		depthCount[i] = 0;
+    		if( blocks[i] == null || blocks[i].length == 0) { 
+    			// Abort, one of our options is a choice of 0
+    			return paths;
+    		}
     	}
     	boolean done = false;
     	while(!done ) {
