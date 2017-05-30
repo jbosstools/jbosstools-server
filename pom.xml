@@ -15,6 +15,7 @@
 	<properties>
                 <enforceFailOnUIDependencyInCore>true</enforceFailOnUIDependencyInCore>
 		<tycho.scmUrl>scm:git:https://github.com/jbosstools/jbosstools-server.git</tycho.scmUrl>
+		<sonar.test.inclusions>**/*Test.*,**/test/**/*</sonar.test.inclusions>
 		<!-- timeout in seconds; 3000s = 50m -->
 		<surefire.itests.timeout>3000</surefire.itests.timeout>
 	</properties>

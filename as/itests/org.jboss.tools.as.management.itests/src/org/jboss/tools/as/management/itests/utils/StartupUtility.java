@@ -26,6 +26,7 @@ import org.jboss.ide.eclipse.as.management.core.IAS7ManagementDetails;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
+import org.jboss.tools.as.management.itests.VerifyJREFlagsTest;
 import org.jboss.tools.as.management.itests.utils.AS7ManagerTestUtils.MockAS7ManagementDetails;
 
 import junit.framework.Assert;
@@ -33,10 +34,6 @@ import junit.framework.Assert;
 public class StartupUtility extends Assert {
 	private static final String JRE7_SYSPROP = "jbosstools.test.jre.7";
 	private static final String JRE8_SYSPROP = "jbosstools.test.jre.8";
-
-	private static boolean isJava7() {
-		return (System.getProperty("java.version").startsWith("1.7."));
-	}
 
 	private static IExecutionEnvironment getRequiredExecEnv(String runtimeType) {
 		IRuntimeType type = ServerCore.findRuntimeType(runtimeType);
@@ -131,6 +128,7 @@ public class StartupUtility extends Assert {
 	}
 	
 	private static String getJavaHome(String serverHome, String sysprop, String javaVersion) {
+		System.out.println("Getting java version for server: " + serverHome);
 		String java = System.getProperty(sysprop);
 		if( java == null ) {
 			fail("Launching " + serverHome + " requires a " + javaVersion + ", which has not been provided via the " + sysprop + " system property");
@@ -140,6 +138,12 @@ public class StartupUtility extends Assert {
 			fail("Java Home " + java + " provided by the " + sysprop + " system property does not exist.");
 		}
 
+		if( sysprop.equals(JRE7_SYSPROP)) {
+			new VerifyJREFlagsTest().testJava7HomeSet();
+		} else if( sysprop.equals(JRE8_SYSPROP)) {
+			new VerifyJREFlagsTest().testJava8HomeSet();
+		}
+		
 		return java;
 	}
 	
@@ -287,6 +291,8 @@ public class StartupUtility extends Assert {
 				if( ex != null ) {
 					ex.printStackTrace();
 					fail("Could not correctly discover if server has started: " + homeDir + ": " + ex.getMessage());
+					System.out.println("Output:\n" + out);
+					System.out.println("Errors:\n" + err);
 				}
 			}
 		}
