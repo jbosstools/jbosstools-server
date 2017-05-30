@@ -873,7 +873,7 @@
             class="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManagerServicePoller"
             id="org.jboss.ide.eclipse.as.core.server.Wildfly8ManagerServicePoller"
             name="Management Service"
-            serverTypes="%ServerTypesWildfly"
+            serverTypes="%ServerTypesWildflyAndEAPUnion"
             supportsShutdown="true"
             supportsStartup="true">
        </serverPoller>
