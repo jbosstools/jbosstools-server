@@ -10,7 +10,10 @@
  ******************************************************************************/ 
 package org.jboss.tools.as.core.server.controllable.profile.internal;
 
+import java.util.Arrays;
+
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
@@ -41,11 +44,21 @@ public class LocalManagementProfileInitializer implements
 		if( sep != null ) {
 			boolean as7Style = sep.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS; 
 			if( as7Style ) {
-				return server.getServerType().getId().equals(IJBossToolingConstants.SERVER_WILDFLY_80) 
-						? JBoss7ManagerServicePoller.WILDFLY_POLLER_ID : JBoss7ManagerServicePoller.POLLER_ID;
+				return getPollerType(server.getServerType());
 			}
 			
 		}
 		return WebPortPoller.WEB_POLLER_ID;
 	}
+	
+	private static String getPollerType(IServerType type) {
+		String[] serverTypesJBoss7 = new String[] {"org.jboss.ide.eclipse.as.70", //$NON-NLS-1$
+				"org.jboss.ide.eclipse.as.71", //$NON-NLS-1$
+				"org.jboss.ide.eclipse.as.eap.60","org.jboss.ide.eclipse.as.eap.61"}; //$NON-NLS-1$ //$NON-NLS-2$
+		if( Arrays.asList(serverTypesJBoss7).contains(type.getId())) {
+			return JBoss7ManagerServicePoller.POLLER_ID;
+		}
+		return JBoss7ManagerServicePoller.WILDFLY_POLLER_ID;
+	}
+	
 }

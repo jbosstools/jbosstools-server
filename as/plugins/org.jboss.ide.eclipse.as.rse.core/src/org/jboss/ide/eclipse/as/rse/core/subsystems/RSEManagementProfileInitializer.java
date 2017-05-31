@@ -10,7 +10,10 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.rse.core.subsystems;
 
+import java.util.Arrays;
+
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
@@ -34,12 +37,20 @@ public class RSEManagementProfileInitializer implements IServerProfileInitialize
 			// and so we don't add deployment scanners for filesystem paths. 
 			wc.setAttribute(IJBossToolingConstants.PROPERTY_ADD_DEPLOYMENT_SCANNERS, false);
 			wc.setAttribute(IJBossToolingConstants.PROPERTY_REMOVE_DEPLOYMENT_SCANNERS, false);
-			
-			pollId = wc.getServerType().getId().equals(IJBossToolingConstants.SERVER_WILDFLY_80) 
-					? JBoss7ManagerServicePoller.WILDFLY_POLLER_ID : JBoss7ManagerServicePoller.POLLER_ID;
+			pollId = getPollerType(wc.getServerType());
 		} 
 		wc.setAttribute(IJBossToolingConstants.STARTUP_POLLER_KEY, pollId);
 		wc.setAttribute(IJBossToolingConstants.SHUTDOWN_POLLER_KEY, pollId);
+	}
+	
+	private String getPollerType(IServerType type) {
+		String[] serverTypesJBoss7 = new String[] {"org.jboss.ide.eclipse.as.70",
+				"org.jboss.ide.eclipse.as.71",
+				"org.jboss.ide.eclipse.as.eap.60","org.jboss.ide.eclipse.as.eap.61"};
+		if( Arrays.asList(serverTypesJBoss7).contains(type.getId())) {
+			return JBoss7ManagerServicePoller.POLLER_ID;
+		}
+		return JBoss7ManagerServicePoller.WILDFLY_POLLER_ID;
 	}
 	
 	private static boolean isJBoss7Style(IServerWorkingCopy server) {
