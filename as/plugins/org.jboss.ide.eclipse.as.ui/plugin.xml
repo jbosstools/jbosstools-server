@@ -24,25 +24,33 @@
 	</extension>
 
 	<extension point="org.eclipse.wst.server.ui.wizardFragments">
+	
+		<!-- 
+				NEW_SERVER_ADAPTER 
+				Add the server and runtime wizard fragments (if applicable) 
+				for the new server adapter below
+		-->
+
+		<!-- Runtime wizard fragments -->
 		<fragment
 			class="org.jboss.ide.eclipse.as.ui.wizards.JBossRuntimeWizardFragment"
-			typeIds="%RuntimeTypesJBoss6OrLower" id="org.jboss.ide.eclipse.as.ui.JBossRuntimeWizardFragment" />
-		<!-- New impl of server wizard - test -->
+			id="org.jboss.ide.eclipse.as.ui.JBossRuntimeWizardFragment" 
+			typeIds="%RuntimeTypesJBoss6OrLower" />
 		<fragment
 			class="org.jboss.ide.eclipse.as.ui.wizards.JBoss7RuntimeWizardFragment"
 			id="org.jboss.ide.eclipse.as.ui.jboss7RuntimeWizardFragment"
-			typeIds="org.jboss.ide.eclipse.as.runtime.70,org.jboss.ide.eclipse.as.runtime.71,org.jboss.ide.eclipse.as.runtime.eap.60" />
-		<fragment
-			class="org.jboss.ide.eclipse.as.ui.wizards.JBoss7RuntimeWizardFragment"
-			id="org.jboss.ide.eclipse.as.ui.jboss72Eap61RuntimeWizardFragment"
-			typeIds="org.jboss.ide.eclipse.as.runtime.eap.61" />
+			typeIds="%RuntimeTypesJBoss7" />
 		<fragment
 			class="org.jboss.ide.eclipse.as.ui.wizards.JBoss7RuntimeWizardFragment"
 			id="org.jboss.ide.eclipse.as.ui.Wildfly80RuntimeWizardFragment"
 			typeIds="%RuntimeTypesWildfly" />
 		<fragment
 			class="org.jboss.ide.eclipse.as.ui.wizards.JBoss7RuntimeWizardFragment"
-			id="org.jboss.ide.eclipse.as.ui.EAP70RuntimeWizardFragment" typeIds="org.jboss.ide.eclipse.as.runtime.eap.70" />
+			id="org.jboss.ide.eclipse.as.ui.EAP70RuntimeWizardFragment" 
+			typeIds="%RuntimeTypesWildflyEAP" />
+			
+			
+		<!-- Server wizard fragments -->
 		<fragment
 			class="org.jboss.ide.eclipse.as.ui.wizards.LegacyServerProfileWizardFragment"
 			id="org.jboss.ide.eclipse.as.ui.wizards.LegacyServerProfileWizardFragment"
@@ -52,8 +60,7 @@
 			id="org.jboss.ide.eclipse.as.ui.wizards.LayeredProductServerWizardFragment"
 			typeIds="%ServerTypesJBoss7OrHigher" />
 
-		<!-- NEW_SERVER_ADAPTER Add the wizard fragment (if applicable) for the 
-			new server adapter above this line -->
+		<!-- Deploy only server --> 
 		<fragment
 			class="org.jboss.ide.eclipse.as.ui.wizards.ServerWithoutRuntimeProfileWizardFragment"
 			id="org.jboss.ide.eclipse.as.ui.strippedServerProfileWizardFragment"

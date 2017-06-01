@@ -20,6 +20,7 @@ import org.jboss.tools.as.test.core.portal.LaunchProjectOnJPP6Test;
 import org.jboss.tools.as.test.core.runtime.RuntimeSuite;
 import org.jboss.tools.as.test.core.runtimedetect.RuntimeDetectionTest;
 import org.jboss.tools.as.test.core.subsystems.SubsystemSuite;
+import org.jboss.tools.as.test.core.ui.ServerRuntimeFragmentTest;
 import org.jboss.tools.as.test.core.utiltests.UtilsSuite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -37,7 +38,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	CatalogValidationTest.class,
 	UtilsSuite.class,
 	LaunchProjectOnJPP6Test.class,
-	ConsoleWriterTest.class
+	ConsoleWriterTest.class,
+	ServerRuntimeFragmentTest.class
 })
 public class ASToolsUnitTestSuite {
 }
