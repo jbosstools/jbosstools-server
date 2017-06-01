@@ -251,7 +251,7 @@
 		</section>
 		<section
 			class="org.jboss.ide.eclipse.as.ui.editor.ports.PortSection$JBoss7ManagementPortEditorExtension"
-			serverIds="%ServerTypesWildfly">
+			serverIds="%ServerTypesWildflyAndEAPUnion">
 		</section>
 
 		<section weight="150"
