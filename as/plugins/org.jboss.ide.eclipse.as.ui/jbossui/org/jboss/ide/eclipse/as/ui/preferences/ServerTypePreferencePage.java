@@ -106,8 +106,10 @@ public abstract class ServerTypePreferencePage extends PreferencePage implements
 			combo.setItems(getComboItems());
 			
 			viewer = new TreeViewer(this);
-			viewer.getTree().setLayoutData(createFormData(
-					combo,5,100,-5,0,5,80,0));
+			
+			FormData viewerData = createFormData(combo,5,100,-5,0,5,80,0);
+			viewerData.height = 400;
+			viewer.getTree().setLayoutData(viewerData);
 			viewer.setLabelProvider(getLabelProvider());
 			viewer.setContentProvider(getContentProvider());
 			viewer.addSelectionChangedListener(new ISelectionChangedListener() {

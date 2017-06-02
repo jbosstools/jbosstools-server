@@ -49,6 +49,8 @@ import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.ServerCore;
+import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
+import org.eclipse.wst.server.ui.internal.viewers.InitialSelectionProvider;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.IRuntimePathProvider;
@@ -164,11 +166,18 @@ public class CustomClasspathPreferencePage extends ServerTypePreferencePage {
 		}
 		protected void initializeSelection() {
 			IEclipsePreferences prefs = new InstanceScope().getNode(JBossServerUIPlugin.PLUGIN_ID);
-			String last =prefs.get(LAST_SELECTED_RUNTIME_TYPE, null);
-			if( last == null )
-				super.initializeSelection();
-			else {
-				IRuntimeType[] types = getRuntimeTypes();
+			String last = prefs.get(LAST_SELECTED_RUNTIME_TYPE, null);
+			IRuntimeType[] types = getRuntimeTypes();
+			if( last == null ) {
+				InitialSelectionProvider initial = ServerUIPlugin.getInitialSelectionProvider();
+				IRuntimeType rtt = initial.getInitialSelection(types);
+				int ind = combo.indexOf(rtt.getName());
+				if( ind != -1 ) {
+					combo.select(ind);
+				} else {
+					super.initializeSelection();
+				}
+			} else {
 				for( int i = 0; i < types.length; i++ ) {
 					if( types[i].getId().equals(last)) {
 						combo.select(i);

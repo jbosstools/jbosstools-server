@@ -44,8 +44,9 @@ public class JBInitialSelectionProvider extends InitialSelectionProvider impleme
 	private static final String DEFAULT_INITIAL_SERVER_TYPE = "DEFAULT_SERVER_TYPE"; //$NON-NLS-1$
 	private static final String DEFAULT_INITIAL_RUNTIME_TYPE = "DEFAULT_RUNTIME_TYPE"; //$NON-NLS-1$
 
-	private static final String LATEST_JBT_SERVER = IJBossToolingConstants.SERVER_WILDFLY_80;
-	private static final String LATEST_JBT_RUNTIME = IJBossToolingConstants.WILDFLY_80;
+	// NEW_SERVER_ADAPTER - Do the newest defaults need to be set? 
+	private static final String LATEST_JBT_SERVER = IJBossToolingConstants.SERVER_WILDFLY_100;
+	private static final String LATEST_JBT_RUNTIME = IJBossToolingConstants.WILDFLY_100;
 	
 	public JBInitialSelectionProvider() {
 	}

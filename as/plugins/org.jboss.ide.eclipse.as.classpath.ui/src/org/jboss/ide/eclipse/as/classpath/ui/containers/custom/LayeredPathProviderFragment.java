@@ -88,22 +88,24 @@ public class LayeredPathProviderFragment extends WizardFragment {
 		slotText = new Text(c, SWT.SINGLE | SWT.BORDER);
 		slotText.setText("main");
 
-		final ControlDecoration moduleDecoration = new ControlDecoration(moduleText, SWT.TOP | SWT.LEAD);
-		final ControlDecoration slotDecoration = new ControlDecoration(slotText, SWT.TOP | SWT.LEAD);
-		FieldDecorationRegistry registry = FieldDecorationRegistry.getDefault();
-		FieldDecoration fd = registry.getFieldDecoration(FieldDecorationRegistry.DEC_CONTENT_PROPOSAL);
-		moduleDecoration.setImage(fd.getImage());
-		moduleDecoration.setDescriptionText(fd.getDescription());
-		slotDecoration.setImage(fd.getImage());
-		slotDecoration.setDescriptionText(fd.getDescription());
-
-		
-		
 		GridData gd = new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
 		gd.widthHint = 200;
 		moduleText.setLayoutData(gd);
 		slotText.setLayoutData(gd);
 		
+		// Add decorators and auto-completion if a runtime exists
+		boolean hasRuntimes = runtimesExist();
+		if( hasRuntimes ) {
+			addAutocompleteDecorators();
+		}
+		
+		addListeners(hasRuntimes);
+		LayeredPathProviderFragment.this.handle.update();
+		return c;
+	}
+	
+	private void addListeners(boolean hasRuntimes) {
+
 		ModifyListener ml = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				moduleId = (moduleText == null ? null : moduleText.getText());
@@ -121,26 +123,51 @@ public class LayeredPathProviderFragment extends WizardFragment {
 		};
 		slotText.addModifyListener(slotml);
 		
-
-		setAutoCompletionSlot(slotText, null);
-		setAutoCompletionModule(moduleText, null);
-        slotText.addKeyListener( new KeyAdapter() {
-            public void keyReleased(KeyEvent ke) {
-                //Method for autocompletion
-                setAutoCompletionSlot(slotText, slotText.getText());
-            }
-        });
-
-        moduleText.addKeyListener( new KeyAdapter() {
-            public void keyReleased(KeyEvent ke) {
-                //Method for autocompletion
-                setAutoCompletionModule(moduleText, moduleText.getText());
-            }
-        });
-
-		LayeredPathProviderFragment.this.handle.update();
-		return c;
+		if( hasRuntimes ) {
+			setAutoCompletionSlot(slotText, null);
+			setAutoCompletionModule(moduleText, null);
+	        slotText.addKeyListener( new KeyAdapter() {
+	            public void keyReleased(KeyEvent ke) {
+	                //Method for autocompletion
+	                setAutoCompletionSlot(slotText, slotText.getText());
+	            }
+	        });
+	
+	        moduleText.addKeyListener( new KeyAdapter() {
+	            public void keyReleased(KeyEvent ke) {
+	                //Method for autocompletion
+	                setAutoCompletionModule(moduleText, moduleText.getText());
+	            }
+	        });
+		}
 	}
+	
+	private boolean runtimesExist() {
+		IRuntimeType rtt = (IRuntimeType)getTaskModel().getObject(RuntimeClasspathProviderWizard.RUNTIME_TYPE);
+		String rtType = (rtt == null ? null : rtt.getId());
+		if( rtType != null ) {
+			IRuntime[] all = ServerCore.getRuntimes();
+			for( int i = 0; i < all.length; i++ ) {
+				if( all[i].getRuntimeType().equals(rtt)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	private void addAutocompleteDecorators() {
+
+		final ControlDecoration moduleDecoration = new ControlDecoration(moduleText, SWT.TOP | SWT.LEAD);
+		final ControlDecoration slotDecoration = new ControlDecoration(slotText, SWT.TOP | SWT.LEAD);
+		FieldDecorationRegistry registry = FieldDecorationRegistry.getDefault();
+		FieldDecoration fd = registry.getFieldDecoration(FieldDecorationRegistry.DEC_CONTENT_PROPOSAL);
+		moduleDecoration.setImage(fd.getImage());
+		moduleDecoration.setDescriptionText(fd.getDescription());
+		slotDecoration.setImage(fd.getImage());
+		slotDecoration.setDescriptionText(fd.getDescription());
+	}
+	
 	
 	private AvailableModuleSlotsModel model;
 	private String[] getModuleProposals( String text ) {
@@ -199,6 +226,7 @@ public class LayeredPathProviderFragment extends WizardFragment {
             ContentProposalAdapter adapter = null;
             SimpleContentProposalProvider scp = new SimpleContentProposalProvider( possible );
             scp.setProposals(possible);
+            scp.setFiltering(true);
             KeyStroke ks = KeyStroke.getInstance(KEY_PRESS);
             adapter = new ContentProposalAdapter(text, new TextContentAdapter(),
                     scp,ks,null);
@@ -207,8 +235,7 @@ public class LayeredPathProviderFragment extends WizardFragment {
             e.printStackTrace();
         }
     }
-	
-
+    
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
 		LayeredProductPathProvider prov = new LayeredProductPathProvider(moduleId, slot); //$NON-NLS-1$
 		getTaskModel().putObject(RuntimeClasspathProviderWizard.CREATED_PATH_PROVIDER, prov);
