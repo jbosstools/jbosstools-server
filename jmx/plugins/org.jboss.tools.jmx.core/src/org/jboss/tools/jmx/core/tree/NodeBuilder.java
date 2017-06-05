@@ -74,19 +74,16 @@ public class NodeBuilder {
 
     static Node buildObjectNameNode(Node parent, String key, String value,
             ObjectName on) {
-	return buildObjectNameNode(parent, key, value, on, null);
+    	return buildObjectNameNode(parent, key, value, on, null);
     }
 
     static Node buildObjectNameNode(Node parent, String key, String value,
             ObjectName on, MBeanServerConnection mbsc) {
-    	ObjectNameNode n = new ObjectNameNode(parent, key, value, on, mbsc);
-    	if( n.getMbeanInfoWrapper() == null ) {
-    		return null;
-    	}
         if (parent != null) {
-            return parent.addChild(n);
+        	ObjectNameNode n = new ObjectNameNode(parent, key, value, on, mbsc);
+        	return parent.addChild(n);
         }
-        return n;
+        return null;
     }
 
 }

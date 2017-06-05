@@ -41,6 +41,7 @@ import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionProviderListener;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.MBeanFeatureInfoWrapper;
+import org.jboss.tools.jmx.core.MBeanInfoWrapper;
 import org.jboss.tools.jmx.core.tree.ErrorRoot;
 import org.jboss.tools.jmx.core.tree.Node;
 import org.jboss.tools.jmx.core.tree.ObjectNameNode;
@@ -55,17 +56,19 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
         IStructuredContentProvider, ITreeContentProvider {
 	
 	public static class DelayProxy {
-		public IConnectionWrapper wrapper;
-		public DelayProxy(IConnectionWrapper wrapper) {
-			this.wrapper = wrapper;
+		public Object wrapped;
+		public DelayProxy(Object wrapped) {
+			this.wrapped = wrapped;
 		}
 	}
 	
 	private Viewer viewer;
 	private HashMap<IConnectionWrapper, DelayProxy> loading;
+	private HashMap<ObjectNameNode, DelayProxy> loadingObjectNameNode;
     public MBeanExplorerContentProvider() {
     	ExtensionManager.addConnectionProviderListener(this);
     	loading = new HashMap<IConnectionWrapper, DelayProxy>();
+    	loadingObjectNameNode = new HashMap<ObjectNameNode, DelayProxy>();
     }
     public void inputChanged(Viewer v, Object oldInput, Object newInput) {
     	this.viewer = v;
@@ -167,7 +170,10 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 		}
         if (parent instanceof ObjectNameNode) {
             ObjectNameNode node = (ObjectNameNode) parent;
-            return node.getMbeanInfoWrapper().getMBeanFeatureInfos();
+            if( node.isLoaded()) {
+            	node.getMbeanInfoWrapper().getMBeanFeatureInfos();
+            }
+            return loadAndGetMbeanInfoWrapper(node);
         }
         if( parent instanceof ErrorRoot ) {
         	return new Object[0];
@@ -184,6 +190,10 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 		
 		if( w.getRoot() != null ) 
 			return getChildren(w.getRoot());
+
+		if( loading.containsKey(((IConnectionWrapper)parent))) {
+			return new Object[] { loading.get((IConnectionWrapper)parent)};
+		}
 		
 		// Must load the model
 		Job job = new Job(Messages.LoadingJMXNodes) {
@@ -195,35 +205,64 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 				} finally {
 					loading.remove(w);
 				}
-				Display.getDefault().asyncExec(new Runnable() { 
-					public void run() {
-						if( viewer instanceof StructuredViewer) 
-							((StructuredViewer)viewer).refresh(parent);
-						else
-							viewer.refresh();
-						
-						TreePath[] treePaths = RefreshActionState.getDefault().getExpansion(w);
-						ISelection sel = RefreshActionState.getDefault().getSelection(w);
-						if( treePaths != null )
-							((TreeViewer)viewer).setExpandedTreePaths(treePaths);
-						if( sel != null ) 
-							((TreeViewer)viewer).setSelection(sel);
-						
-					}
-				});
+				asyncRefresh(w,  parent);
 				return Status.OK_STATUS;
 			}
 
 		};
 		
-		if( loading.containsKey(((IConnectionWrapper)parent))) {
-			return new Object[] { loading.get((IConnectionWrapper)parent)};
-		}
 		DelayProxy p = new DelayProxy(w);
 		loading.put(w, p);
 		job.schedule();
 		return new Object[] { p };
     }
+    
+    private void asyncRefresh(final IConnectionWrapper w, final Object parent) {
+		Display.getDefault().asyncExec(new Runnable() { 
+			public void run() {
+				if( viewer instanceof StructuredViewer) 
+					((StructuredViewer)viewer).refresh(parent);
+				else
+					viewer.refresh();
+				
+				TreePath[] treePaths = RefreshActionState.getDefault().getExpansion(w);
+				ISelection sel = RefreshActionState.getDefault().getSelection(w);
+				if( treePaths != null )
+					((TreeViewer)viewer).setExpandedTreePaths(treePaths);
+				if( sel != null ) 
+					((TreeViewer)viewer).setSelection(sel);
+				
+			}
+		});
+
+    }
+    
+    protected synchronized Object[] loadAndGetMbeanInfoWrapper(final ObjectNameNode parent) {
+    	if( parent.isLoaded())
+    		return parent.getMbeanInfoWrapper().getMBeanFeatureInfos();
+    	
+		if( loadingObjectNameNode.containsKey((parent))) {
+			return new Object[] { loadingObjectNameNode.get(parent)};
+		}
+
+		// Must load the model
+		Job job = new Job(Messages.LoadingJMXNodes) {
+			protected IStatus run(IProgressMonitor monitor) {
+				try {
+					parent.getMbeanInfoWrapper();
+				} finally {
+					loadingObjectNameNode.remove(parent);
+				}
+				asyncRefresh(parent.getRoot().getConnection(),  parent);
+				return Status.OK_STATUS;
+			}
+		};
+		
+		DelayProxy p = new DelayProxy(parent);
+		loadingObjectNameNode.put(parent, p);
+		job.schedule();
+		return new Object[] { p };
+    }    
 
     public boolean hasChildren(Object parent) {
     	if( parent instanceof ProviderCategory || parent instanceof IConnectionProvider ) {
@@ -232,7 +271,9 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
     	
         if (parent instanceof ObjectNameNode) {
             ObjectNameNode node = (ObjectNameNode) parent;
-            return (node.getMbeanInfoWrapper().getMBeanFeatureInfos().length > 0);
+            if( node.isLoaded())
+            	return (node.getMbeanInfoWrapper().getMBeanFeatureInfos().length > 0);
+            return true;
         }
         if (parent instanceof Node) {
             Node node = (Node) parent;

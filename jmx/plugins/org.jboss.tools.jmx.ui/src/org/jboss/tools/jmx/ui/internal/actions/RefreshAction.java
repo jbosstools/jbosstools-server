@@ -32,6 +32,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 import org.jboss.tools.jmx.core.ExtensionManager;
+import org.jboss.tools.jmx.core.IAsyncRefreshable;
+import org.jboss.tools.jmx.core.IAsyncRefreshable.ICallback;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.JMXActivator;
 import org.jboss.tools.jmx.core.JMXCoreMessages;
@@ -85,6 +87,13 @@ public class RefreshAction extends Action implements IWorkbenchWindowActionDeleg
 			Refreshable refreshable = (Refreshable) onode;
 			refreshable.refresh();
 			refreshViewer(onode);
+		} else if( onode instanceof IAsyncRefreshable ) {
+			final IAsyncRefreshable n = (IAsyncRefreshable)onode;
+			n.refresh(new ICallback() {
+				public void refreshComplete() {
+					fireRefreshAsync(n);
+				}
+			});
 		} else if( onode instanceof ProviderCategory) {
 			viewer.refresh(onode, true);
 		}
@@ -127,7 +136,7 @@ public class RefreshAction extends Action implements IWorkbenchWindowActionDeleg
 		}
 	}  // refreshObjectNode
 
-	private void fireRefreshAsync(final IConnectionWrapper wrapper) {
+	private void fireRefreshAsync(final Object wrapper) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				refreshViewer(wrapper);
