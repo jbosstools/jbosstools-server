@@ -15,6 +15,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -254,11 +255,15 @@ public class LocalFilesystemController extends AbstractSubsystemController imple
 		if( file.isDirectory()) {
 			results = deleteDirectory(absolutePath.toFile(), monitor);
 		} else {
-			if( !file.delete()) {
-				String msg = NLS.bind(Messages.errorDeleting, absolutePath.toFile().getAbsolutePath());
-				IStatus s = new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, 
-						msg, new Exception(msg));
-				results = s;
+			if( !file.delete() && file.exists()) {
+				// attempt to fix JBIDE-24541. At least it will allow us to know
+				// more information about the reason of the deletion failure
+				try {
+					Files.deleteIfExists(file.toPath());
+				} catch(IOException e) {
+					String msg = NLS.bind(Messages.errorDeleting, absolutePath.toFile().getAbsolutePath());
+					results = new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, msg, e);
+				}
 			}
 		}
 		return results == null ? Status.OK_STATUS : results;
