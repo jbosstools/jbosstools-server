@@ -34,6 +34,7 @@ import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
+import org.jboss.ide.eclipse.as.core.modules.ResourceModuleResourceUtil;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilterProvider;
 import org.jboss.ide.eclipse.as.core.server.internal.UpdateModuleStateJob;
@@ -64,6 +65,7 @@ import org.jboss.ide.eclipse.as.wtp.core.server.publish.LocalZippedModulePublish
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 import org.jboss.tools.as.core.server.controllable.internal.DeployableServerBehavior;
 import org.jboss.tools.as.core.server.controllable.systems.IModuleDeployPathController;
+import org.jboss.tools.as.core.server.controllable.systems.IModuleRestartBehaviorController;
 
 public class ManagementPublishController extends AbstractSubsystemController
 		implements IPublishController, IPrimaryPublishController {
@@ -78,6 +80,23 @@ public class ManagementPublishController extends AbstractSubsystemController
 	 */
 	private AS7ManagementDetails managementDetails;
 
+	
+	/*
+	 * An optional dependency.
+	 * The IModuleRestartBehaviorController helps us determine
+	 * when a module requires a restart.
+	 * 
+	 * The current impl in jbt is based on
+	 * whether any of the changed files match a restart regex
+	 */
+	private IModuleRestartBehaviorController restartController;
+	
+	/*
+	 * A flag so that we can ignore a failure to load and not
+	 * try continuously to load a missing optional controller
+	 */
+	private boolean restartControllerLoadFailed = false;
+	
 	/*
 	 * An optional dependency for verifying or modifying the deploy state of a module
 	 */
@@ -249,10 +268,6 @@ public class ManagementPublishController extends AbstractSubsystemController
 		if( publishType == PublishControllerUtil.INCREMENTAL_PUBLISH ) {
 			// We should try an incremental publish here. The publishType flag doesn't 
 			// know about child modules at all, which may have changed. 
-			if( shouldMinimizeRedeployments()) {
-				// Do nothing... we are minimizing redeployments at the moment
-				return getServer().getModulePublishState(module);
-			}
 			if( getService().supportsIncrementalDeployment()) {
 				return incrementalPublish(module[0], monitor);
 			}
@@ -353,15 +368,6 @@ public class ManagementPublishController extends AbstractSubsystemController
 		String rootModName = getDeploymentOutputName(getServer(), module[0]);
 		ArrayList<String> toExplode = new ArrayList<String>();
 		toExplode.add(rootModName);
-		
-		
-//		ArrayList<IModule[]> deepModules = ServerModelUtilities.getDeepChildren(getServer(), module);
-//		Iterator<IModule[]> deepIt = deepModules.iterator();
-//		while(deepIt.hasNext()) {
-//			IModule[] m = deepIt.next();
-//			IPath rel = ServerModelUtilities.getRootModuleRelativePath(getServer(), m);
-//			toExplode.add(new Path(rootModName).append(rel).toString());
-//		}
 		return (String[]) toExplode.toArray(new String[toExplode.size()]);
 	}
 	
@@ -424,6 +430,26 @@ public class ManagementPublishController extends AbstractSubsystemController
 			}
 		};
 	}
+	
+	/**
+	 * Access the optional restart controller for 
+	 * deciding whether to force a restart after an incremental publish
+	 * 
+	 * @return
+	 * @throws CoreException
+	 */
+	protected IModuleRestartBehaviorController getModuleRestartBehaviorController() throws CoreException {
+		if( restartController == null && !restartControllerLoadFailed) {
+			try {
+				restartController = (IModuleRestartBehaviorController)findDependencyFromBehavior(IModuleRestartBehaviorController.SYSTEM_ID);
+			} catch(CoreException ce) {
+				// Do not log; this is optional. But trace
+				restartControllerLoadFailed = true;
+			}
+		}
+		return restartController;
+	}
+	
 	
 	private LocalZippedModulePublishRunner createZippedRunner(IModule m, IPath p) {
 		return new LocalZippedModulePublishRunner(getServer(), m,p, getModulePathFilterProvider());
@@ -503,12 +529,27 @@ public class ManagementPublishController extends AbstractSubsystemController
 		public int incrementalPublish(IModule module, IncrementalDeploymentManagerService service, IProgressMonitor monitor) throws CoreException {
 			// module may be any size > 0 
 			monitor.beginTask("Incremental Publish", 200); //$NON-NLS-1$
+			boolean shouldMinimizeRedeploys = shouldMinimizeRedeployments();
 			
 			String rootName = getDeploymentOutputName(getServer(), module);
 			
 			
 			IModule[] asArr = new IModule[] {module};
 			IModuleResourceDelta[] delta = getDeltaForModule(asArr);
+			
+			// checking for whether module needs a restart
+			IModulePathFilter filter = ResourceModuleResourceUtil.findDefaultModuleFilter(module);
+			IModuleResourceDelta[] cleanDelta = filter != null ? filter.getFilteredDelta(delta) : delta;
+			IModuleRestartBehaviorController restartController = getModuleRestartBehaviorController();
+			
+			// Temporary override until bugs can be worked out
+			shouldMinimizeRedeploys = false;
+			
+			boolean requiresRestart = false;
+			if( !shouldMinimizeRedeploys) {
+				requiresRestart |= restartController.moduleRequiresRestart(new IModule[] {module}, cleanDelta);
+			}
+			
 			ManagementDouble dub = traverseDelta(delta, new SubProgressMonitor(monitor, 100));
 			IncrementalManagementModel model = new IncrementalManagementModel();
 			model.setDeploymentChanges(rootName, dub.changedContent, dub.removedContent);
@@ -520,7 +561,15 @@ public class ManagementPublishController extends AbstractSubsystemController
 			while(it.hasNext()) {
 				IModule[] m2 = it.next();
 				delta = getDeltaForModule(m2);
-				dub = traverseDelta(delta, new SubProgressMonitor(monitor, 100));
+				
+				// check child modules for restart / clean delta 
+				filter = ResourceModuleResourceUtil.findDefaultModuleFilter(module);
+				cleanDelta = filter != null ? filter.getFilteredDelta(delta) : delta;
+				if( !shouldMinimizeRedeploys) {
+					requiresRestart |= restartController.moduleRequiresRestart(m2, cleanDelta);
+				}
+				
+				dub = traverseDelta(cleanDelta, new SubProgressMonitor(monitor, 100));
 				
 				rel = ServerModelUtilities.getRootModuleRelativePath(getServer(), m2);
 				relative = rel.removeTrailingSeparator().toString();
@@ -528,7 +577,7 @@ public class ManagementPublishController extends AbstractSubsystemController
 			}
 			
 			IJBoss7DeploymentResult result = service.incrementalPublish(managementDetails, rootName, model, 
-					true, new SubProgressMonitor(monitor, 100));
+					requiresRestart, new SubProgressMonitor(monitor, 100));
 			IStatus s = result.getStatus();
 			if( !s.isOK()) {
 				ServerLogger.getDefault().log(getServer(), s);
