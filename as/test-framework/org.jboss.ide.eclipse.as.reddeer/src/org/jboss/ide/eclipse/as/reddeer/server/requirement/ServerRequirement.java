@@ -151,6 +151,7 @@ public class ServerRequirement extends ServerReqBase implements Requirement<JBos
 					serverTypeLabelText = label+" "+ version;
 				}
 			}
+			// condition should be removed after deprecated ServerReqType.EAP7x is removed
 			if(FamilyEAP.class.equals(config.getServerFamily().getClass())){
 				String label = config.getServerFamily().getLabel();
 				String version = config.getServerFamily().getVersion();

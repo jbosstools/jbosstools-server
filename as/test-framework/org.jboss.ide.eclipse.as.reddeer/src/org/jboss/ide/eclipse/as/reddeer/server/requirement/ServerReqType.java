@@ -84,9 +84,18 @@ public enum ServerReqType {
 	 */
 	EAP6_1plus(ServerReqFamily.EAP, "6.1+"),
 	/**
-	 * JBoss Enterprise Application Platform 6.1+
+	 * JBoss Enterprise Application Platform 7.x - Deprecated
 	 */
+	@Deprecated
 	EAP7x(ServerReqFamily.EAP, "7.x"),
+	/**
+	 * JBoss Enterprise Application Platform 7.0
+	 */
+	EAP7_0(ServerReqFamily.EAP, "7.0"),
+	/**
+	 * JBoss Enterprise Application Platform 7.1
+	 */
+	EAP7_1(ServerReqFamily.EAP, "7.1"),
 	
 	/**
 	 * WildFly
@@ -106,9 +115,13 @@ public enum ServerReqType {
 	/**
 	 * WildFly 10.x
 	 */
-	WILDFLY10x(ServerReqFamily.WILDFLY, "10.x");
+	WILDFLY10x(ServerReqFamily.WILDFLY, "10.x"),
 
-
+	/**
+	 * WildFly 11
+	 */
+	WILDFLY11(ServerReqFamily.WILDFLY, "11");
+	
 	private String version;
 	
 	private ServerReqFamily family;
