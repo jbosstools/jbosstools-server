@@ -25,7 +25,7 @@ public class Wildfly90ExtendedProperties extends Wildfly80ExtendedProperties {
 	
 	@Override
 	public String getJMXUrl() {
-			return getJMXUrl(9990, "service:jmx:http-remoting-jmx"); //$NON-NLS-1$
+			return getJMXUrl(9990, "service:jmx:remote+http"); //$NON-NLS-1$
 	}
 	
 	@Override
