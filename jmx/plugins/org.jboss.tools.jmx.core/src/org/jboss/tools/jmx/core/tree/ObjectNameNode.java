@@ -61,6 +61,7 @@ public class ObjectNameNode extends PropertyNode implements IAsyncRefreshable {
         		}
         	} else {
 		    	connectionWrapper.run(new IJMXRunnable() {
+		    		@Override
 		    		public void run(MBeanServerConnection mbsc) throws Exception {
 		        		MBeanInfo mbi = null;
 		        		try {
@@ -99,9 +100,7 @@ public class ObjectNameNode extends PropertyNode implements IAsyncRefreshable {
     }
 
     public boolean isLoaded() {
-    	if( wrapper != null || loadError != null)
-    		return true;
-    	return false;
+    	return wrapper != null || loadError != null;
     }
     
     @Override
@@ -143,6 +142,7 @@ public class ObjectNameNode extends PropertyNode implements IAsyncRefreshable {
 	@Override
 	public void refresh(final ICallback cb) {
 		new Thread("Refresh JMX Node") {
+			@Override
 			public void run() {
 				refreshInternal(cb);
 			}
