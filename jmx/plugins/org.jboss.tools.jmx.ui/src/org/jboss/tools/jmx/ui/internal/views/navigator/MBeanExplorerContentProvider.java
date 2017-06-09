@@ -41,7 +41,6 @@ import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionProviderListener;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.MBeanFeatureInfoWrapper;
-import org.jboss.tools.jmx.core.MBeanInfoWrapper;
 import org.jboss.tools.jmx.core.tree.ErrorRoot;
 import org.jboss.tools.jmx.core.tree.Node;
 import org.jboss.tools.jmx.core.tree.ObjectNameNode;
@@ -67,21 +66,26 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 	private HashMap<ObjectNameNode, DelayProxy> loadingObjectNameNode;
     public MBeanExplorerContentProvider() {
     	ExtensionManager.addConnectionProviderListener(this);
-    	loading = new HashMap<IConnectionWrapper, DelayProxy>();
-    	loadingObjectNameNode = new HashMap<ObjectNameNode, DelayProxy>();
+    	loading = new HashMap<>();
+    	loadingObjectNameNode = new HashMap<>();
     }
+    
+    @Override
     public void inputChanged(Viewer v, Object oldInput, Object newInput) {
     	this.viewer = v;
     }
-
+    
+    @Override
     public void dispose() {
     	ExtensionManager.removeConnectionProviderListener(this);
     }
-
+    
+    @Override
     public Object[] getElements(Object parent) {
         return getChildren(parent);
     }
-
+    
+    @Override
     public Object getParent(Object child) {
     	if( child instanceof Root )
     		return ((Root)child).getConnection();
@@ -117,9 +121,9 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
     	
 		// Return the providers
     	IConnectionProvider[] providers = ExtensionManager.getProviders();
-    	Set<String> categoryIds = new TreeSet<String>();
-    	ArrayList<ProviderCategory> categories = new ArrayList<ProviderCategory>();
-    	ArrayList<IConnectionProvider> unaffiliated = new ArrayList<IConnectionProvider>();
+    	Set<String> categoryIds = new TreeSet<>();
+    	ArrayList<ProviderCategory> categories = new ArrayList<>();
+    	ArrayList<IConnectionProvider> unaffiliated = new ArrayList<>();
     	for( int i = 0; i < providers.length; i++ ) {
     		if( providers[i] instanceof IConnectionCategory ) {
     			String id = ((IConnectionCategory)providers[i]).getCategoryId();
@@ -131,15 +135,15 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
     			unaffiliated.add(providers[i]);
     		}
     	}
-    	ArrayList<Object> toReturn = new ArrayList<Object>();
-    	this.categories = (ProviderCategory[]) categories.toArray(new ProviderCategory[categories.size()]);
+    	ArrayList<Object> toReturn = new ArrayList<>();
+    	this.categories = categories.toArray(new ProviderCategory[categories.size()]);
     	toReturn.addAll(categories);
     	toReturn.addAll(unaffiliated);
-    	return (Object[]) toReturn.toArray(new Object[toReturn.size()]);
+    	return toReturn.toArray(new Object[toReturn.size()]);
     }
     
     private IConnectionWrapper[] findAllConnectionsWithCategory(String id) {
-    	ArrayList<IConnectionWrapper> ret = new ArrayList<IConnectionWrapper>();
+    	ArrayList<IConnectionWrapper> ret = new ArrayList<>();
     	IConnectionProvider[] providers = ExtensionManager.getProviders();
     	for( int i = 0; i < providers.length; i++ ) {
     		if( providers[i] instanceof IConnectionCategory ) {
@@ -149,11 +153,14 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
     			}
     		}
     	}
-    	return (IConnectionWrapper[]) ret.toArray(new IConnectionWrapper[ret.size()]);
+    	return ret.toArray(new IConnectionWrapper[ret.size()]);
     }
-    
-    public Object[] getChildren(Object parent) {
-    	if( parent == null ) return new Object[] {};
+
+	@Override
+	public Object[] getChildren(Object parent) {
+		if( parent == null ) {
+			return new Object[] {};
+		}
 		if( parent instanceof IViewPart ) {
 			return getTopLevelElements();
 		}
@@ -191,12 +198,13 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 		if( w.getRoot() != null ) 
 			return getChildren(w.getRoot());
 
-		if( loading.containsKey(((IConnectionWrapper)parent))) {
-			return new Object[] { loading.get((IConnectionWrapper)parent)};
+		if( loading.containsKey(parent)) {
+			return new Object[] { loading.get(parent)};
 		}
 		
 		// Must load the model
 		Job job = new Job(Messages.LoadingJMXNodes) {
+			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
 					w.loadRoot(monitor);
@@ -218,7 +226,8 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
     }
     
     private void asyncRefresh(final IConnectionWrapper w, final Object parent) {
-		Display.getDefault().asyncExec(new Runnable() { 
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
 			public void run() {
 				if( viewer instanceof StructuredViewer) 
 					((StructuredViewer)viewer).refresh(parent);
@@ -235,18 +244,20 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 			}
 		});
 
-    }
-    
-    protected synchronized Object[] loadAndGetMbeanInfoWrapper(final ObjectNameNode parent) {
-    	if( parent.isLoaded())
-    		return parent.getMbeanInfoWrapper().getMBeanFeatureInfos();
-    	
-		if( loadingObjectNameNode.containsKey((parent))) {
+	}
+
+	protected synchronized Object[] loadAndGetMbeanInfoWrapper(final ObjectNameNode parent) {
+		if( parent.isLoaded()) {
+			return parent.getMbeanInfoWrapper().getMBeanFeatureInfos();
+		}
+
+		if( loadingObjectNameNode.containsKey(parent)) {
 			return new Object[] { loadingObjectNameNode.get(parent)};
 		}
 
 		// Must load the model
 		Job job = new Job(Messages.LoadingJMXNodes) {
+			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
 					parent.getMbeanInfoWrapper();
@@ -262,8 +273,9 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 		loadingObjectNameNode.put(parent, p);
 		job.schedule();
 		return new Object[] { p };
-    }    
+	}
 
+    @Override
     public boolean hasChildren(Object parent) {
     	if( parent instanceof ProviderCategory || parent instanceof IConnectionProvider ) {
     		return getChildren(parent).length > 0;
@@ -271,13 +283,13 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
     	
         if (parent instanceof ObjectNameNode) {
             ObjectNameNode node = (ObjectNameNode) parent;
-            if( node.isLoaded())
-            	return (node.getMbeanInfoWrapper().getMBeanFeatureInfos().length > 0);
+            if( node.isLoaded() )
+            	return node.getMbeanInfoWrapper().getMBeanFeatureInfos().length > 0;
             return true;
         }
         if (parent instanceof Node) {
             Node node = (Node) parent;
-            return (node.getChildren().length > 0);
+            return node.getChildren().length > 0;
         }
         if (parent instanceof MBeanFeatureInfoWrapper) {
             return false;
@@ -285,9 +297,7 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
         if( parent instanceof IConnectionWrapper ) {
         	return ((IConnectionWrapper)parent).isConnected();
         }
-        if( parent instanceof DelayProxy)
-        	return false;
-        return true;
+        return !(parent instanceof DelayProxy);
     }
 
     private synchronized ProviderCategory findCategory(String type) {
@@ -300,6 +310,7 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
     	return null;
     }
     
+	@Override
 	public void connectionAdded(IConnectionWrapper connection) {
 		IConnectionProvider provider = connection.getProvider();
 		if( provider instanceof IConnectionCategory ) {
@@ -309,16 +320,19 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 		}
 	}
 
+	@Override
 	public void connectionChanged(IConnectionWrapper connection) {
 		fireRefresh(connection, false);
 	}
 
+	@Override
 	public void connectionRemoved(IConnectionWrapper connection) {
 		removeConnection(connection);
 	}
 
 	private void fireRefresh(final IConnectionWrapper connection, final boolean full) {
 		Display.getDefault().asyncExec(new Runnable() {
+			@Override
 			public void run() {
 				if( viewer != null && !viewer.getControl().isDisposed()) {
 					if(full || !(viewer instanceof StructuredViewer))
@@ -331,6 +345,7 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 	}
 	private void addConnection(final IConnectionWrapper connection, final Object parent) {
 		Display.getDefault().asyncExec(new Runnable() {
+			@Override
 			public void run() {
 				if( viewer != null && !viewer.getControl().isDisposed()) {
 					if(isJMXView()) {
@@ -348,13 +363,11 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 
 	private boolean isJMXView() {
 		IWorkbenchPart nav = findView(JMXNavigator.VIEW_ID);
-		if( nav != null ) {
-			if( nav instanceof JMXNavigator) {
-				JMXNavigator jmxn = (JMXNavigator)nav;
-				CommonViewer viewer = jmxn.getCommonViewer();
-				if( this.viewer == viewer && viewer != null ) {
-					return true;
-				}
+		if(nav instanceof JMXNavigator) {
+			JMXNavigator jmxn = (JMXNavigator)nav;
+			CommonViewer navigatorViewer = jmxn.getCommonViewer();
+			if( this.viewer == navigatorViewer && navigatorViewer != null ) {
+				return true;
 			}
 		}
 		return false;
@@ -375,6 +388,7 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 	
 	private void removeConnection(final IConnectionWrapper connection) {
 		Display.getDefault().asyncExec(new Runnable() {
+			@Override
 			public void run() {
 				if( viewer != null && !viewer.getControl().isDisposed()) {
 					if(isJMXView())

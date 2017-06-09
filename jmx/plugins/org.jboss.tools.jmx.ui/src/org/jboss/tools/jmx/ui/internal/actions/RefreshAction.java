@@ -33,7 +33,6 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.IAsyncRefreshable;
-import org.jboss.tools.jmx.core.IAsyncRefreshable.ICallback;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.JMXActivator;
 import org.jboss.tools.jmx.core.JMXCoreMessages;
@@ -88,27 +87,12 @@ public class RefreshAction extends Action implements IWorkbenchWindowActionDeleg
 			refreshable.refresh();
 			refreshViewer(onode);
 		} else if( onode instanceof IAsyncRefreshable ) {
-			final IAsyncRefreshable n = (IAsyncRefreshable)onode;
-			n.refresh(new ICallback() {
-				public void refreshComplete() {
-					fireRefreshAsync(n);
-				}
-			});
+			 ((IAsyncRefreshable)onode).refresh(() -> fireRefreshAsync(onode));
 		} else if( onode instanceof ProviderCategory) {
 			viewer.refresh(onode, true);
-		}
-		else {
+		} else {
 			
-			IConnectionWrapper wrapper2 = null;
-
-			// Identify the connection wrapper.
-			if (onode instanceof IConnectionWrapper)
-				wrapper2 = (IConnectionWrapper) onode;
-
-			else if (onode instanceof Node) {
-				Root r = ((Node) onode).getRoot();
-				wrapper2 = (r == null ? null : r.getConnection());
-			}
+			IConnectionWrapper wrapper2 = identifyConnectionWrapper(onode);
 
 			if (wrapper2 != null && wrapper2.isConnected()) {
 				ISelection sel = viewer.getSelection();
@@ -117,6 +101,7 @@ public class RefreshAction extends Action implements IWorkbenchWindowActionDeleg
 				RefreshActionState.getDefault().setExpansion(wrapper2, paths);
 				final IConnectionWrapper wrapper = wrapper2;
 				new Job(Messages.RefreshActionJobTitle) {
+					@Override
 					protected IStatus run(IProgressMonitor monitor) {
 						try {
 							wrapper.disconnect();
@@ -136,14 +121,25 @@ public class RefreshAction extends Action implements IWorkbenchWindowActionDeleg
 		}
 	}  // refreshObjectNode
 
+	private IConnectionWrapper identifyConnectionWrapper(Object onode) {
+		IConnectionWrapper wrapper2 = null;
+
+		// Identify the connection wrapper.
+		if (onode instanceof IConnectionWrapper) {
+			wrapper2 = (IConnectionWrapper) onode;
+		} else if (onode instanceof Node) {
+			Root r = ((Node) onode).getRoot();
+			wrapper2 = r == null ? null : r.getConnection();
+		}
+		return wrapper2;
+	}
+
 	private void fireRefreshAsync(final Object wrapper) {
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				refreshViewer(wrapper);
-				if (viewer instanceof TreeViewer && !((TreeViewer) viewer).getTree().isDisposed()) {
-					TreeViewer treeViewer = (TreeViewer) viewer;
-					treeViewer.expandToLevel(wrapper, 1);
-				}
+		Display.getDefault().asyncExec(() -> {
+			refreshViewer(wrapper);
+			if (viewer instanceof TreeViewer && !((TreeViewer) viewer).getTree().isDisposed()) {
+				TreeViewer treeViewer = (TreeViewer) viewer;
+				treeViewer.expandToLevel(wrapper, 1);
 			}
 		});
 	}
@@ -198,6 +194,7 @@ public class RefreshAction extends Action implements IWorkbenchWindowActionDeleg
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
 	 */
+	@Override
 	public void run(IAction action) {
 		run();
 	}
@@ -205,18 +202,23 @@ public class RefreshAction extends Action implements IWorkbenchWindowActionDeleg
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction, org.eclipse.jface.viewers.ISelection)
 	 */
+	@Override
 	public void selectionChanged(IAction action, ISelection selection) {
+		//No actiobn taken on selection change
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#dispose()
 	 */
+	@Override
 	public void dispose() {
+		// Nothing to dispose
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#init(org.eclipse.ui.IWorkbenchWindow)
 	 */
+	@Override
 	public void init(IWorkbenchWindow window) {
 		this.window = window;
 	}

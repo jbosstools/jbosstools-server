@@ -32,7 +32,7 @@ public class NodeBuilder {
 	
     public static void addToList(Node root, ObjectName on) {
         Node node = buildDomainNode(root, on.getDomain());
-        node = buildObjectNameNode(node, "on", on.getKeyPropertyListString(), on); //$NON-NLS-1$
+        buildObjectNameNode(node, "on", on.getKeyPropertyListString(), on); //$NON-NLS-1$
     }
 
     public static void addToTree(Node root, ObjectName on, MBeanServerConnection mbsc) {
