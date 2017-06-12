@@ -200,13 +200,13 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 			}
 		});
 		
-		
+		IRuntime initial = (IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME);
 		createRuntimeSection(wrapper);
-		if( !runtimeForbidden()) {
+		if( initial != null && !runtimeForbidden()) {
 			addRuntimeDetailsGroup(wrapper);
 		}
 		setProfile(profileComposite.getSelectedProfile());
-		if( !runtimeForbidden()) {
+		if( !runtimeForbidden() && runtimeCombo != null) {
 			if( initialRuntime == null ) {
 				runtimeComboChanged();
 			} else {
@@ -317,6 +317,11 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 	}
 
 	protected void createRuntimeSection(Composite main) {
+		IRuntime runtime = (IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		createRuntimeSection(main, runtime != null);
+	}
+	
+	protected void createRuntimeSection(Composite main, boolean hasInitialRuntime) {
 		Composite runtimeWrap = new Composite(main, SWT.NONE);
 		runtimeWrap.setLayout(new FormLayout());
 		
@@ -325,8 +330,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		requiresRuntimeLabelData.width = 300;
 		requiresRuntimeLabel.setLayoutData(requiresRuntimeLabelData);
 		
-		IRuntime runtime = (IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME);
-		if( runtime == null && !runtimeForbidden()) {
+		if( !hasInitialRuntime && !runtimeForbidden()) {
 			useRuntimeButton = new Button(runtimeWrap, SWT.CHECK);
 			useRuntimeButton.setText("Assign a runtime to this server");
 			FormData useRuntimeButtonData = FormDataUtility.createFormData2(requiresRuntimeLabel, 15, null, 0, 0,5,100,-5);

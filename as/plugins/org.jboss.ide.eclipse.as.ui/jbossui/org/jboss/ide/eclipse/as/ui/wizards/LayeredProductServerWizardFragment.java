@@ -77,6 +77,8 @@ public class LayeredProductServerWizardFragment extends ServerProfileWizardFragm
 		g.setLayout(new GridLayout(1, true));
 		rtDetails = new RuntimeDetailsComposite(g, SWT.NONE);
 		g.setText("Runtime Details");
+		IRuntime rt = (IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		rtDetails.update(rt);
 	}
 
 	private class RuntimeDetailsComposite extends Composite {
