@@ -206,11 +206,12 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 			addRuntimeDetailsGroup(wrapper);
 		}
 		setProfile(profileComposite.getSelectedProfile());
-		if( !runtimeForbidden() && runtimeCombo != null) {
+		if( !runtimeForbidden() && runtimeCombo != null && !runtimeCombo.isDisposed()) {
 			if( initialRuntime == null ) {
 				runtimeComboChanged();
 			} else {
-				useRuntimeButton.setSelection(true);
+				if( useRuntimeButton != null && !useRuntimeButton.isDisposed())
+					useRuntimeButton.setSelection(true);
 				runtimeCombo.setEnabled(true);
 				String initialName = initialRuntime.getName();
 				String[] all = runtimeCombo.getItems();
@@ -561,7 +562,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 			}
 			requiresRuntimeLabel.setText(requiresText);
 			if( requires) {
-				if( useRuntimeButton != null ) {
+				if( useRuntimeButton != null && !useRuntimeButton.isDisposed()) {
 					useRuntimeButton.setSelection(true);
 					useRuntimeButton.setEnabled(false);
 					useRuntimeChanged();
