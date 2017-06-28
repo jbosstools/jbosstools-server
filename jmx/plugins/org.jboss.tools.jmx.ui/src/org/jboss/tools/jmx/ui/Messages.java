@@ -92,7 +92,8 @@ public class Messages extends NLS {
     public static String writable;
     public static String writeOnly;
 	public static String TypeInAFilter;
-	public static String LoadingJMXNodes;
+	public static String LoadingJMXObjectName;
+	public static String LoadingJMXRoot;
 	public static String Loading;
 	public static String ErrorLoading;
 	public static String UpdatingSelectionJob;

@@ -28,6 +28,7 @@ import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
@@ -203,7 +204,7 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 		}
 		
 		// Must load the model
-		Job job = new Job(Messages.LoadingJMXNodes) {
+		Job job = new Job(NLS.bind(Messages.LoadingJMXRoot, w.getProvider().getName(w))) {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
@@ -256,7 +257,7 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 		}
 
 		// Must load the model
-		Job job = new Job(Messages.LoadingJMXNodes) {
+		Job job = new Job(NLS.bind(Messages.LoadingJMXObjectName, parent.getObjectName().getCanonicalName())) {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				try {

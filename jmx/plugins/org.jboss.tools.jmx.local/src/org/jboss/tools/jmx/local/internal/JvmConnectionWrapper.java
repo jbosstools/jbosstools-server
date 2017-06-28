@@ -58,12 +58,9 @@ public class JvmConnectionWrapper implements IConnectionWrapper,
 	private JvmKey key;
 	private Root root;
 	private List<Runnable> afterLoadRunnables = new ArrayList<Runnable>();
-        private IProgressMonitor progressMonitor;
-
 
 	public JvmConnectionWrapper(IActiveJvm vm) {
 		this.activeJvm = vm;
-		this.progressMonitor = null;
 		this.key = getJvmKey(vm);
 	}
 
@@ -141,20 +138,24 @@ public class JvmConnectionWrapper implements IConnectionWrapper,
 	}
 
 	public void loadRoot() {
+	    loadRoot(new NullProgressMonitor());
+	}
+	
+	
+	@Override
+	public void loadRoot(IProgressMonitor monitor) {
+		if( monitor == null )
+			monitor = new NullProgressMonitor();
 	    if (isConnected() && root == null) {
-		try {
-		    if (progressMonitor == null)
-			progressMonitor = new NullProgressMonitor();
-
-		    root = NodeUtils.createObjectNameTree(this, progressMonitor);
-		    for (Runnable task : afterLoadRunnables) {
-		    	task.run();
-		    }
-		    afterLoadRunnables.clear();
-		} catch (Throwable e) {
-		    Activator.pluginLog().logWarning("Failed to load JMX tree for " + this + ". " + e, e);
-		}
-		progressMonitor = null;
+			try {
+			    root = NodeUtils.createObjectNameTree(this, monitor);
+			    for (Runnable task : afterLoadRunnables) {
+			    	task.run();
+			    }
+			    afterLoadRunnables.clear();
+			} catch (Throwable e) {
+			    Activator.pluginLog().logWarning("Failed to load JMX tree for " + this + ". " + e, e);
+			}
 	    }
 	}
 
@@ -208,13 +209,6 @@ public class JvmConnectionWrapper implements IConnectionWrapper,
 	}
 
 
-	@Override
-	public void loadRoot(IProgressMonitor monitor) throws CoreException {
-	    progressMonitor = monitor;
-	    loadRoot();
-	}
-	
-	
 	@Override
 	public int hashCode() {
 		return key.hashCode();
