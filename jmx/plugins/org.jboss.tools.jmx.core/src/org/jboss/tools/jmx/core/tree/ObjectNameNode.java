@@ -13,7 +13,10 @@ import javax.management.MBeanInfo;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
+import org.eclipse.core.runtime.IProduct;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.jboss.tools.jmx.core.IAsyncRefreshable;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
@@ -44,46 +47,50 @@ public class ObjectNameNode extends PropertyNode implements IAsyncRefreshable {
     }
     
     private synchronized void loadInfo(MBeanServerConnection mbsc) {
+    	loadInfo(mbsc, new NullProgressMonitor());
+    }
+    
+    private synchronized void loadInfo(MBeanServerConnection mbsc, IProgressMonitor mon) {
+    	mon.beginTask("Loading Object Name Node " + on.getCanonicalName(), 100);
+    	mon.worked(5);
         Root root = getRoot(parent);
         IConnectionWrapper connectionWrapper = root.getConnection();
     	final MBeanInfoWrapper[] array = new MBeanInfoWrapper[1];
-    	final ObjectName on2 = on;
     	try {
         	if( mbsc != null ) {
-        		MBeanInfo mbi = null;
-        		try {
-        			mbi = mbsc.getMBeanInfo(on2);
-        		} catch(IOException ioe) {
-        			// Ignore
-        		}
-        		if( mbi != null ) {
-        			array[0] = new MBeanInfoWrapper(on2, mbi, mbsc, ObjectNameNode.this);
-        		}
+        		array[0] = loadInfoInternal(mbsc);
         	} else {
 		    	connectionWrapper.run(new IJMXRunnable() {
 		    		@Override
 		    		public void run(MBeanServerConnection mbsc) throws Exception {
-		        		MBeanInfo mbi = null;
-		        		try {
-		        			mbi = mbsc.getMBeanInfo(on2);
-		        		} catch(IOException ioe) {
-		        			// Ignore
-		        		}
-
-		        		if( mbi != null ) {
-		    				array[0] = new MBeanInfoWrapper(on2, mbi, mbsc, ObjectNameNode.this);
-		    			}
+		        		array[0] = loadInfoInternal(mbsc);
 		    		}
 		    	});
         	}
+        	mon.worked(95);
     	} catch( Exception e ) {
     		JMXActivator.getDefault().getLog().log(new Status(IStatus.ERROR, JMXActivator.PLUGIN_ID, 
     				"Error loading object name details for JMX object: " + on.toString(), e));
     		loadError = e;
     	}
+    	mon.done();
     	wrapper = array[0];
     }
 
+    private synchronized MBeanInfoWrapper loadInfoInternal(MBeanServerConnection mbsc) throws Exception {
+    	final ObjectName on2 = on;
+    	MBeanInfo mbi = null;
+		try {
+			mbi = mbsc.getMBeanInfo(on2);
+		} catch(IOException ioe) {
+			// Ignore
+		}
+		if( mbi != null ) {
+			return new MBeanInfoWrapper(on2, mbi, mbsc, ObjectNameNode.this);
+		}
+		return null;
+    }
+    
     public boolean hasLoadError() {
     	return loadError != null;
     }
@@ -93,8 +100,11 @@ public class ObjectNameNode extends PropertyNode implements IAsyncRefreshable {
     }
 
     public synchronized MBeanInfoWrapper getMbeanInfoWrapper() {
+    	return getMbeanInfoWrapper(null);
+    }
+    public synchronized MBeanInfoWrapper getMbeanInfoWrapper(IProgressMonitor mon) {
     	if( wrapper == null ) {
-    		loadInfo(null);
+    		loadInfo(null, mon);
     	}
         return wrapper;
     }

@@ -260,7 +260,7 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
-					parent.getMbeanInfoWrapper();
+					parent.getMbeanInfoWrapper(monitor);
 				} finally {
 					loadingObjectNameNode.remove(parent);
 				}
