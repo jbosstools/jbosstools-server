@@ -79,8 +79,8 @@ public class MockArgsTests extends TestCase  {
 			String safeQuotesArgs = progArgs.replace("\"", "").replaceAll("[ ]+", " ");
 			String safeQuotesVM = vmArgs.replace("\"", "").replaceAll("[ ]+", " ");
 			
-			assertTrue(safeQuotesArgs + " should contain " + defaultArgs, safeQuotesArgs.contains(defaultArgs));
-			assertTrue(safeQuotesVM.contains(defaultVMArgs));
+			assertTrue(safeQuotesArgs + "    should contain    " + defaultArgs,   safeQuotesArgs.contains(defaultArgs));
+			assertTrue(safeQuotesVM   + "    should contain    " + defaultVMArgs, safeQuotesVM.contains(defaultVMArgs));
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
