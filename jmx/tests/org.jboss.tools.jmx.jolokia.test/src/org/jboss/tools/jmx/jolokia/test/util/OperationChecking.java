@@ -16,7 +16,10 @@
 package org.jboss.tools.jmx.jolokia.test.util;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.Instant;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -143,6 +146,56 @@ public class OperationChecking implements OperationCheckingMBean,MBeanRegistrati
     @Override
     public int overloadedMethod(String[] arg) {
         return 3;
+    }
+    
+    @Override
+    public long returnLong() {
+        return 1L;
+    }
+    
+    @Override
+    public Long returnLongObject() {
+        return Long.valueOf(1L);
+    }
+    
+    @Override
+    public int returnInt() {
+        return 1;
+    }
+    
+    @Override
+    public Integer returnIntegerObject() {
+        return Integer.valueOf(1);
+    }
+    
+    @Override
+    public double returnDouble() {
+        return Double.MAX_VALUE;
+    }
+    
+    @Override
+    public float returnFloat() {
+        return Float.MAX_VALUE;
+    }
+    
+    @Override
+    public short returnShort() {
+        return 1;
+    }
+    
+    @Override
+    public BigInteger returnBigInteger() {
+        return BigInteger.TEN;
+    }
+    
+    @Override
+    public BigDecimal returnBigDecimal() {
+        return BigDecimal.TEN;
+    }
+    
+    @Override
+    public Date returnDate() {
+    	return Date.from(Instant.ofEpochSecond(50000));
     }
 
     @Override

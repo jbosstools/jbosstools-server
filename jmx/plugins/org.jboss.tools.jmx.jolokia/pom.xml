@@ -47,6 +47,11 @@
 							<version>${jolokia.client.version}</version>
 						</artifactItem>
 						<artifactItem>
+							<groupId>org.jolokia</groupId>
+							<artifactId>jolokia-core</artifactId>
+							<version>${jolokia.client.version}</version>
+						</artifactItem>
+						<artifactItem>
 							<groupId>com.googlecode.json-simple</groupId>
 							<artifactId>json-simple</artifactId>
 							<version>${json.simple.version}</version>

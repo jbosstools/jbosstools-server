@@ -12,6 +12,8 @@ package org.jboss.tools.jmx.jolokia.internal.connection;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -19,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.management.Attribute;
@@ -29,8 +32,10 @@ import javax.management.InstanceNotFoundException;
 import javax.management.IntrospectionException;
 import javax.management.InvalidAttributeValueException;
 import javax.management.ListenerNotFoundException;
+import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanException;
 import javax.management.MBeanInfo;
+import javax.management.MBeanOperationInfo;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
@@ -69,6 +74,8 @@ import org.json.simple.JSONObject;
 public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 	private J4pClient j4pClient;
 	private String type; // GET or POST
+	private JolokiaJavaTypeConverter converter = new JolokiaJavaTypeConverter();
+	
 	public JolokiaMBeanServerConnection(J4pClient j4pClient, String type) {
 		this.j4pClient = j4pClient;
 		this.type = type;
@@ -149,7 +156,7 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 	public void setAttribute(ObjectName name, Attribute attribute)
 			throws InstanceNotFoundException, AttributeNotFoundException, InvalidAttributeValueException,
 			MBeanException, ReflectionException, IOException {
-		J4pWriteRequest req = new J4pWriteRequest(name, attribute.getName(), attribute.getValue());
+		J4pWriteRequest req = new J4pWriteRequest(name, attribute.getName(), converter.getJson(attribute.getValue()));
 		try {
 			J4pResponse<J4pWriteRequest> r = j4pClient.execute(req);  // TODO type??? GET or POST,  API missing?
 			Object o = r.asJSONObject().get("status");
@@ -189,43 +196,71 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 	}
 
 	@Override
-	public AttributeList getAttributes(ObjectName name, String[] attributes)
+	public AttributeList getAttributes(ObjectName name, String[] attributeNames)
 			throws InstanceNotFoundException, ReflectionException, IOException {
+		List<MBeanAttributeInfo> attributesInfos = getAttributesInfos(name);
+		
+		
 		AttributeList al = new AttributeList();
-		J4pReadRequest req = new J4pReadRequest(name, attributes);
+		J4pReadRequest req = new J4pReadRequest(name, attributeNames);
 		Object response = null;
 		try {
 			response = j4pClient.execute(req); // TODO type??? GET or POST,  API missing?
 		} catch (J4pException e) {
 			throw new IOException(e);
 		}
-		if( response != null ) {
-			if( response instanceof List) {
-				List<J4pResponse<J4pReadRequest>> resp = (List<J4pResponse<J4pReadRequest>>)response;
-				Iterator<J4pResponse<J4pReadRequest>> c = resp.iterator();
-				while(c.hasNext()) {
-					al.addAll(extractAttributesFromResponse(c.next()));
-				}
-			} else if( response instanceof J4pReadResponse){
-				al.addAll(extractAttributesFromResponse((J4pReadResponse) response));
+		if(response instanceof List) {
+			List<J4pResponse<J4pReadRequest>> resp = (List<J4pResponse<J4pReadRequest>>)response;
+			Iterator<J4pResponse<J4pReadRequest>> c = resp.iterator();
+			while(c.hasNext()) {
+				al.addAll(extractAttributesFromResponse(attributesInfos, c.next()));
+			}
+		} else if(response instanceof J4pReadResponse){
+			if(attributeNames.length == 1){
+				MBeanAttributeInfo mBeanAttributeInfo = findAttributeInfoWithName(attributesInfos, attributeNames[0]);
+				al.add(converter.getConvertedToCorrectTypeReturnedValue(mBeanAttributeInfo, ((J4pReadResponse) response).getValue()));
+			} else {
+				al.addAll(extractAttributesFromResponse(attributesInfos, (J4pReadResponse) response));
 			}
 		}
 		return al;
 	}
 
-	private List<Object> extractAttributesFromResponse(J4pResponse<?> response) {
+	private List<MBeanAttributeInfo> getAttributesInfos(ObjectName name)
+			throws InstanceNotFoundException, ReflectionException, IOException {
+		try {
+			MBeanInfo mBeanInfo = getMBeanInfo(name);
+			return Arrays.asList(mBeanInfo.getAttributes());
+		} catch (IntrospectionException e) {
+			Activator.pluginLog().logError(e);
+		}
+		return Collections.emptyList();
+	}
+
+	private List<Object> extractAttributesFromResponse(List<MBeanAttributeInfo> attributesInfos, J4pResponse<?> response) {
 		List<Object> extractedAttributes = new ArrayList<>();
 		Object o22 = response.getValue();
 		if(o22 instanceof JSONObject){
 			Set<Map.Entry<String, Object>> entrySet = ((JSONObject)o22).entrySet();
 			for (Map.Entry<String, Object> entry : entrySet) {
-				extractedAttributes.add(new Attribute(entry.getKey(), entry.getValue()));
+				String attributeName = entry.getKey();
+				MBeanAttributeInfo mBeanAttributeInfo = findAttributeInfoWithName(attributesInfos, attributeName);
+				Object jolokiaReturnedValue = entry.getValue();
+				Object convertedToCorrectTypeReturnedValue = converter.getConvertedToCorrectTypeReturnedValue(mBeanAttributeInfo, jolokiaReturnedValue);
+				extractedAttributes.add(new Attribute(attributeName, convertedToCorrectTypeReturnedValue));
 			}
 		} else {
-			// Keep old behavior in case something else than JSonObject is returned
+			// A single value is returned for simple attribute
 			extractedAttributes.add(o22);
 		}
 		return extractedAttributes;
+	}
+
+
+	private MBeanAttributeInfo findAttributeInfoWithName(List<MBeanAttributeInfo> attributesInfos, String attributeName) {
+		return attributesInfos.parallelStream()
+				.filter(attributeInfo -> attributeName.equals(attributeInfo.getName()))
+				.findAny().orElse(null);
 	}
 	
 	/* Operation Invocations */
@@ -233,13 +268,37 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 	public Object invoke(ObjectName name, String operationName, Object[] params, String[] signature)
 			throws InstanceNotFoundException, MBeanException, ReflectionException, IOException {
 		String operationNameWithSignature = createOperationNameWithSignature(operationName, signature);
+		String specifiedReturnedType = getSpecifiedReturnedType(name, operationName, params);
+		
 		J4pExecRequest req = createJ4pExecRequest(name, params, operationNameWithSignature);
 		try {
 			J4pExecResponse resp = j4pClient.execute(req);
-			return resp.getValue();
+			return converter.getConvertedToCorrectType(resp.getValue(), specifiedReturnedType);
 		} catch (J4pException e) {
 			throw new IOException(e);
 		}
+	}
+
+	private String getSpecifiedReturnedType(ObjectName name, String operationName, Object[] params) throws InstanceNotFoundException, ReflectionException, IOException {
+		try {
+			MBeanInfo mBeanInfo = getMBeanInfo(name);
+			if(mBeanInfo != null && params != null){
+				List<MBeanOperationInfo> operations = Arrays.asList(mBeanInfo.getOperations()).stream()
+						.filter(operationInfo -> operationName.equals(operationInfo.getName()))
+						.filter(operationInfo -> operationInfo.getSignature() != null && params.length == operationInfo.getSignature().length)
+						.collect(Collectors.toList());
+
+				if(operations.size() == 1){
+					return operations.get(0).getReturnType();
+				} else {
+					Activator.pluginLog().logInfo("Method invocation of "+ operationName +" might return the wrong Return Type due to current implementation limitations.");
+				}
+			}
+					
+		} catch (IntrospectionException e1) {
+			Activator.pluginLog().logError(e1);
+		}
+		return null;
 	}
 
 	private J4pExecRequest createJ4pExecRequest(ObjectName name, Object[] params, String operationNameWithSignature) {

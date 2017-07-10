@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.jboss.tools.jmx.jolokia.test.util;
 
+import java.util.Date;
+
 import javax.management.MBeanRegistration;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -19,6 +21,9 @@ public class AttributeChecking implements AttributeCheckingMBean,MBeanRegistrati
     private String domain;
 	private String anAttribute;
 	private String aSecondAttribute;
+	private int anIntAttribute;
+	private long aLongAttribute;
+	private Date aDateAttribute;
 
     public AttributeChecking(String pDomain) {
         domain = pDomain;
@@ -63,6 +68,36 @@ public class AttributeChecking implements AttributeCheckingMBean,MBeanRegistrati
 	@Override
 	public String getASecondAttribute() {
 		return aSecondAttribute;
+	}
+
+	@Override
+	public int getAnIntAttribute() {
+		return anIntAttribute;
+	}
+
+	@Override
+	public void setAnIntAttribute(int anIntAttribute) {
+		this.anIntAttribute = anIntAttribute;
+	}
+
+	@Override
+	public Date getADateAttribute() {
+		return aDateAttribute;
+	}
+
+	@Override
+	public void setADateAttribute(Date aDateAttribute) {
+		this.aDateAttribute = aDateAttribute;
+	}
+
+	@Override
+	public long getALongAttribute() {
+		return aLongAttribute;
+	}
+
+	@Override
+	public void setALongAttribute(long aLongAttribute) {
+		this.aLongAttribute = aLongAttribute;
 	}
 
 }
