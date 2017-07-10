@@ -10,11 +10,18 @@
  ******************************************************************************/
 package org.jboss.tools.jmx.jolokia.test.util;
 
+import java.util.Date;
+
 public interface AttributeCheckingMBean {
 
     void setAnAttribute(String attributeValue);
     String getAnAttribute();
     void setASecondAttribute(String attributeValue);
     String getASecondAttribute();
-    
+	int getAnIntAttribute();
+	void setAnIntAttribute(int anIntAttribute);
+	Date getADateAttribute();
+	void setADateAttribute(Date aDateAttribute);
+	long getALongAttribute();
+	void setALongAttribute(long aLongAttribute);
 }

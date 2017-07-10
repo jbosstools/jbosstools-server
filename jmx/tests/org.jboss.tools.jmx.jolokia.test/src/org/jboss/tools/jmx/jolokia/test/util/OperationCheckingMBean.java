@@ -16,6 +16,8 @@
 package org.jboss.tools.jmx.jolokia.test.util;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -68,4 +70,15 @@ public interface OperationCheckingMBean {
     TabularData update(String name,TabularData data);
     
     Set<String> setOfResult();
+
+	long returnLong();
+	Long returnLongObject();
+	Integer returnIntegerObject();
+	int returnInt();
+	double returnDouble();
+	short returnShort();
+	float returnFloat();
+	BigInteger returnBigInteger();
+	BigDecimal returnBigDecimal();
+	Date returnDate();
 }
