@@ -22,6 +22,8 @@ public class JBossEAP71ExtendedProperties extends Wildfly90ExtendedProperties {
 	}
 	@Override
 	public String getRuntimeTypeVersionString() {
+		System.out.println("Ugly sysout should be removed"); //$NON-NLS-1$
+		int x = 1;
 		return "7.x"; //$NON-NLS-1$
 	}
 	
