@@ -100,7 +100,7 @@ public class ObjectNameNode extends PropertyNode implements IAsyncRefreshable {
     }
 
     public synchronized MBeanInfoWrapper getMbeanInfoWrapper() {
-    	return getMbeanInfoWrapper(null);
+    	return getMbeanInfoWrapper(new NullProgressMonitor());
     }
     public synchronized MBeanInfoWrapper getMbeanInfoWrapper(IProgressMonitor mon) {
     	if( wrapper == null ) {
