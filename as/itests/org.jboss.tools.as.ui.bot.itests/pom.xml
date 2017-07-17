@@ -16,7 +16,7 @@
 		<suiteClass>org.jboss.tools.as.ui.bot.itests.AllTestsSuite</suiteClass>
 	</properties>
 
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -33,7 +33,7 @@
 	</build>
 
 
-	<!-- This profile requires two parameters: jbosstools.test.jboss-eap-7.x.url 
+	<!-- This profile requires two parameters: jbosstools.test.jboss-eap-7.x.url
 		and jbosstools.test.jboss-eap-7.x.md5;
 	 	activate using the test.profile property so that the parent pom does
 		not download all runtimes -->
@@ -77,6 +77,29 @@
 						<configuration>
 							<testSuite>org.jboss.tools.as.ui.bot.itests.parametized.server</testSuite>
 							<testClass>${test.class}</testClass>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>check-pr</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>target-platform-configuration</artifactId>
+						<configuration>
+							<dependency-resolution>
+								<extraRequirements>
+									<requirement>
+										<type>p2-installable-unit</type>
+										<id>org.jboss.ide.eclipse.as.feature.feature.group</id>
+										<versionRange>0.0.0</versionRange>
+									</requirement>
+								</extraRequirements>
+							</dependency-resolution>
 						</configuration>
 					</plugin>
 				</plugins>
