@@ -74,7 +74,9 @@ public class XBMarshallTest extends TestCase {
 			String expectedContents = FileIOUtil.getFileContents(expected);
 			String asString = XMLBinding.serializePackages(packs, new NullProgressMonitor());
 			asString = asString.replaceAll("\n", "").replaceAll("\r", "");
+			asString = asString.replace(" standalone=\"no\"", "");
 			expectedContents = expectedContents.replaceAll("\n", "").replaceAll("\r", "");
+			expectedContents = expectedContents.replace(" standalone=\"no\"", "");
 			// Ignore newlines
 			assertEquals(expectedContents, asString);
 		} catch( XbException xbe ) {
@@ -94,7 +96,9 @@ public class XBMarshallTest extends TestCase {
 			
 			// Ignore newlines
 			actualContents = actualContents.replaceAll("\n", "").replaceAll("\r", "");
+			actualContents = actualContents.replace(" standalone=\"no\"", "");
 			expectedContents = expectedContents.replaceAll("\n", "").replaceAll("\r", "");
+			expectedContents = expectedContents.replace(" standalone=\"no\"", "");
 
 			assertEquals(expectedContents, actualContents);
 		} catch( XbException xbe ) {
