@@ -99,8 +99,8 @@ public class PollerSection extends ServerEditorSection implements PropertyChange
 		
 		startPollerCombo.setEnabled(true);
 		stopPollerCombo.setEnabled(true);
-		String currentStartId = helper.getAttribute(IJBossServerConstants.STARTUP_POLLER_KEY, IJBossServerConstants.DEFAULT_STARTUP_POLLER);
-		String currentStopId = helper.getAttribute(IJBossServerConstants.SHUTDOWN_POLLER_KEY, IJBossServerConstants.DEFAULT_SHUTDOWN_POLLER);
+		String currentStartId = helper.getAttribute(IJBossToolingConstants.STARTUP_POLLER_KEY, IJBossToolingConstants.DEFAULT_STARTUP_POLLER);
+		String currentStopId = helper.getAttribute(IJBossToolingConstants.SHUTDOWN_POLLER_KEY, IJBossToolingConstants.DEFAULT_SHUTDOWN_POLLER);
 		int startIndex = startPollerCombo.indexOf(ExtensionManager.getDefault().getPollerType(currentStartId).getName());
 		int stopIndex = stopPollerCombo.indexOf(ExtensionManager.getDefault().getPollerType(currentStopId).getName());
 		
@@ -120,8 +120,8 @@ public class PollerSection extends ServerEditorSection implements PropertyChange
 		findPossiblePollers();
 		startPollerCombo.setItems(startupTypesStrings);
 		stopPollerCombo.setItems(shutdownTypesStrings);
-		String currentStartId = helper.getAttribute(IJBossServerConstants.STARTUP_POLLER_KEY, IJBossServerConstants.DEFAULT_STARTUP_POLLER);
-		String currentStopId = helper.getAttribute(IJBossServerConstants.SHUTDOWN_POLLER_KEY, IJBossServerConstants.DEFAULT_SHUTDOWN_POLLER);
+		String currentStartId = helper.getAttribute(IJBossToolingConstants.STARTUP_POLLER_KEY, IJBossToolingConstants.DEFAULT_STARTUP_POLLER);
+		String currentStopId = helper.getAttribute(IJBossToolingConstants.SHUTDOWN_POLLER_KEY, IJBossToolingConstants.DEFAULT_SHUTDOWN_POLLER);
 		int startIndex = startPollerCombo.indexOf(ExtensionManager.getDefault().getPollerType(currentStartId).getName());
 		int stopIndex = stopPollerCombo.indexOf(ExtensionManager.getDefault().getPollerType(currentStopId).getName());
 		if( startIndex >= 0 )
@@ -168,16 +168,16 @@ public class PollerSection extends ServerEditorSection implements PropertyChange
 
 	public class SetStartupPollerCommand extends SetPollerCommand {
 		public SetStartupPollerCommand(IServerWorkingCopy server) {
-			super(server, Messages.EditorChangeStartPollerCommandName,  IJBossServerConstants.STARTUP_POLLER_KEY, 
-					IJBossServerConstants.DEFAULT_STARTUP_POLLER,
+			super(server, Messages.EditorChangeStartPollerCommandName,  IJBossToolingConstants.STARTUP_POLLER_KEY, 
+					IJBossToolingConstants.DEFAULT_STARTUP_POLLER,
 					startupTypes, startPollerCombo, startPollerListener);
 		}
 	}
 	
 	public class SetStopPollerCommand extends SetPollerCommand {
 		public SetStopPollerCommand(IServerWorkingCopy server) {
-			super(server, Messages.EditorChangeStopPollerCommandName,  IJBossServerConstants.SHUTDOWN_POLLER_KEY, 
-					IJBossServerConstants.DEFAULT_SHUTDOWN_POLLER,
+			super(server, Messages.EditorChangeStopPollerCommandName,  IJBossToolingConstants.SHUTDOWN_POLLER_KEY, 
+					IJBossToolingConstants.DEFAULT_SHUTDOWN_POLLER,
 					shutdownTypes, stopPollerCombo, stopPollerListener);
 		}
 	}

@@ -56,7 +56,7 @@ public class UnknownLegacyClasspathContainerInitializer extends ClasspathContain
 	 * to resolve the entries. 
 	 */
 	public static final String CONTAINER_PATH_PREFIX = 
-			"org.jboss.ide.eclipse.as.classpath.core.runtime.ProjectRuntimeInitializer";
+			"org.jboss.ide.eclipse.as.classpath.core.runtime.ProjectRuntimeInitializer"; //$NON-NLS-1$
 	
 	public void initialize(IPath containerPath, IJavaProject project)
 			throws CoreException {

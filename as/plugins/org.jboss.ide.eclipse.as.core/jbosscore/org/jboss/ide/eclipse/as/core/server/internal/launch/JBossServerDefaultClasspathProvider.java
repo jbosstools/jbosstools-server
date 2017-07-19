@@ -14,8 +14,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.StandardClasspathProvider;
-import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IDefaultClasspathLaunchConfigurator;
 import org.jboss.ide.eclipse.as.core.server.ILaunchConfigConfigurator;
@@ -40,8 +38,6 @@ public class JBossServerDefaultClasspathProvider extends StandardClasspathProvid
 
 	protected IRuntimeClasspathEntry[] defaultEntries(ILaunchConfiguration config) {
 		try {
-			String server = new JBossLaunchConfigProperties().getServerId(config);
-			IServer s = ServerCore.findServer(server);
 			IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(config);
 			if( beh != null ) {
 				ISubsystemController cont = beh.getController(IControllableServerBehavior.SYSTEM_LAUNCH);

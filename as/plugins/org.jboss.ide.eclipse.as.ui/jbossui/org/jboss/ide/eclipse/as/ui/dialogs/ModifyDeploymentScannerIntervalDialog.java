@@ -225,7 +225,7 @@ public class ModifyDeploymentScannerIntervalDialog extends TitleAreaDialog {
 	    tv.setInput(scanners);
 	    
 	    final Button askAgain = new Button(main, SWT.CHECK);
-	    askAgain.setText("Don't ask this again.");
+	    askAgain.setText("Don't ask this again."); //$NON-NLS-1$
 	    askAgain.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
 				askAgainSelected = askAgain.getSelection();
@@ -254,7 +254,7 @@ public class ModifyDeploymentScannerIntervalDialog extends TitleAreaDialog {
 			if( columnIndex == 1 )
 				return ((AS7DeploymentScannerUtility.Scanner)element).getAddress();
 			if( columnIndex == 2 )
-				return "" + ((AS7DeploymentScannerUtility.Scanner)element).getInterval();
+				return "" + ((AS7DeploymentScannerUtility.Scanner)element).getInterval(); //$NON-NLS-1$
 			return null;
 		}
 		public void addListener(ILabelProviderListener listener) {

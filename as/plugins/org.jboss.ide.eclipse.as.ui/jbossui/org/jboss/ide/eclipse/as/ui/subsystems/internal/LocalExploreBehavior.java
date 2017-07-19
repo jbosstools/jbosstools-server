@@ -64,7 +64,7 @@ public class LocalExploreBehavior extends AbstractSubsystemController implements
 			return serverPath.toOSString();
 
 		// In case openshift or others support this key (?)
-		String ret = server.getAttribute(IDeployableServer.DEPLOY_DIRECTORY,(String) null); //$NON-NLS-1$
+		String ret = server.getAttribute(IDeployableServer.DEPLOY_DIRECTORY,(String) null);
 		if( ret != null )
 			return ret.trim();
 		

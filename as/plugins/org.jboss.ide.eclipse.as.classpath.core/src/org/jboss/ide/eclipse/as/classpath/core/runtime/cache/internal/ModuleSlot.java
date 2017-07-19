@@ -35,7 +35,7 @@ public class ModuleSlot {
 		return module;
 	}
 	public String getSlot() {
-		return slot == null ? "main" : slot;
+		return slot == null ? "main" : slot; //$NON-NLS-1$
 	}
 	@Override
 	public boolean equals(Object o) {
@@ -52,7 +52,7 @@ public class ModuleSlot {
 	}
 	// Get a relative path
 	public IPath getPath() {
-		String slashed = getModule().replaceAll("\\.", "/");
+		String slashed = getModule().replaceAll("\\.", "/"); //$NON-NLS-1$ //$NON-NLS-2$
 		return new Path(slashed).append(getSlot());
 	}
 	
@@ -61,7 +61,7 @@ public class ModuleSlot {
 	}
 	
 	public IPath[] getJars(IRuntime runtime) {
-		IPath modulesFolder = runtime.getLocation().append("modules");
+		IPath modulesFolder = runtime.getLocation().append("modules"); //$NON-NLS-1$
 		return getJars(modulesFolder);
 	}
 	
@@ -82,13 +82,13 @@ public class ModuleSlot {
 		ArrayList<IPath> list = new ArrayList<IPath>();
 		File[] children = layeredPath.listFiles();
 		for( int i = 0; i < children.length; i++ ) {
-			if( children[i].isFile() && children[i].getName().endsWith(".jar")) {
+			if( children[i].isFile() && children[i].getName().endsWith(".jar")) { //$NON-NLS-1$
 				list.add(new Path(children[i].getAbsolutePath()));
 			}
 		}
 		if( list.size() == 0 ) {
 			// Odds are high this is a module-alias, so we should check. 
-			File modulexml = new File(layeredPath, "module.xml");
+			File modulexml = new File(layeredPath, "module.xml"); //$NON-NLS-1$
 			String alias = new ModuleAliasUtil().getAlias(modulexml);
 			if( alias != null ) {
 				return new ModuleSlot(alias).getJars(modulesFolder);

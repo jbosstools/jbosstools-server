@@ -40,17 +40,17 @@ public class FilesetClasspathProviderFragment extends WizardFragment implements 
 	 */
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
 		this.handle = handle;
-		handle.setTitle("Create a fileset classpath entry.");
-		handle.setDescription("Create a new classpath fileset which can be added to all projects targeting this runtime-type");
+		handle.setTitle("Create a fileset classpath entry."); //$NON-NLS-1$
+		handle.setDescription("Create a new classpath fileset which can be added to all projects targeting this runtime-type"); //$NON-NLS-1$
 		
 		IRuntimeType rtt = (IRuntimeType)getTaskModel().getObject(RuntimeClasspathProviderWizard.RUNTIME_TYPE);
 		ServerExtendedProperties props = rtt == null ? null : 
 			(ServerExtendedProperties)Platform.getAdapterManager().getAdapter(rtt, ServerExtendedProperties.class);
-		String defaultLocation = props == null ? "" : props.getNewClasspathFilesetDefaultRootFolder();
+		String defaultLocation = props == null ? "" : props.getNewClasspathFilesetDefaultRootFolder(); //$NON-NLS-1$
 
 		Fileset fs = new Fileset();
         fs.setFolder(defaultLocation);
-        fs.setIncludesPattern("**/*.jar");
+        fs.setIncludesPattern("**/*.jar"); //$NON-NLS-1$
 
 		composite = new FilesetComposite(parent, fs, false, false);
 		composite.setErrorDisplay(this);

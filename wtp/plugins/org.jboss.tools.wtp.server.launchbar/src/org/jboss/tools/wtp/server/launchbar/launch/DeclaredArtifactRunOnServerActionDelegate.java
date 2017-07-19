@@ -96,11 +96,11 @@ public class DeclaredArtifactRunOnServerActionDelegate extends DeclaredServerRun
 		}
 		final Shell shell = shell2;
 		final IAdaptable info = new IAdaptable() {
-			public Object getAdapter(Class adapter) {
+			public <T> T getAdapter(Class<T> adapter) {
 				if (Shell.class.equals(adapter))
-					return shell;
+					return adapter.cast(shell);
 				if (String.class.equals(adapter))
-					return "user";
+					return adapter.cast(shell);
  				return null;
 			}
 		};

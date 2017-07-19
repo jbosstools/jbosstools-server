@@ -51,10 +51,10 @@ public class JBossJVMFacadeUtility {
 		JvmModel model = JvmModel.getInstance();
 		List<IHost> hosts = model.getHosts();
 		for (IHost host : hosts) {
-			String hostName = host.getName();
+			//String hostName = host.getName();
 			List<IActiveJvm> jvms = host.getActiveJvms();
 			for (IActiveJvm jvm : jvms) {
-				int pid = jvm.getPid();
+				//int pid = jvm.getPid();
 				String command = jvm.getLaunchCommand();
 				if( command.equals(target)) {
 					return jvm;

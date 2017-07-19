@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.ide.eclipse.as.ui.UIUtil;
+import org.jboss.ide.eclipse.as.wtp.ui.util.FormDataUtility;
 
 /**
  * @author rob.stryker <rob.stryker@redhat.com>
@@ -77,7 +77,7 @@ public class RequiredCredentialsDialog extends Dialog {
 		final Button saveCredentials = new Button(main, SWT.CHECK);
 		final Button neverAskAgain = new Button(main, SWT.CHECK);
 		
-		UIUtil u = new UIUtil();
+		FormDataUtility u = new FormDataUtility();
 		top.setLayoutData(u.createFormData(0,5,null,0,0,5,100,-5));
 		userLabel.setLayoutData(u.createFormData(top, 10, null, 0, 0,5, 100, -5));
 		userText.setLayoutData(u.createFormData(userLabel, 5, null, 0, 0,5, 100, -5));

@@ -51,14 +51,6 @@ public class ServerModeDetailsAdapterFactory implements IAdapterFactory, IJBossT
 				}
 			}
 			
-			// Following lines should be removed / deprecated
-			if( del instanceof IDelegatingServerBehavior) {
-				IJBossBehaviourDelegate del2 = ((IDelegatingServerBehavior)del).getDelegate();
-				if( del2 instanceof AbstractJBossBehaviourDelegate) {
-					return ((AbstractJBossBehaviourDelegate)del2).getServerModeDetails();
-				}
-			}
-			
 		}
 		return null;
 	}

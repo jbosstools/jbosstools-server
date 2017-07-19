@@ -254,7 +254,6 @@ public class JBossLaunchConfigProperties {
 		return launchConfig.hasAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<String> getClasspath(ILaunchConfiguration launchConfig) throws CoreException {
 		return (List<String>) launchConfig.getAttribute(
 				IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, new ArrayList<String>());

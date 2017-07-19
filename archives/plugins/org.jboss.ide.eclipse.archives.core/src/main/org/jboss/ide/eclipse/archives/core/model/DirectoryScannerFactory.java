@@ -341,7 +341,12 @@ public class DirectoryScannerFactory {
 		 * @since 3.4
 		 */
 	    public static class FileWrapper extends File implements ITreeNode {
-	    	// The actual source file
+	    	/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			// The actual source file
 	    	File f;
 
 	    	// The path of this file, either workspace relative or global

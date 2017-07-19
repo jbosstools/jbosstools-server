@@ -32,6 +32,8 @@ import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModelRootNode;
 import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveImpl;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbProperties.PropertiesExt;
+import org.jboss.tools.foundation.core.xml.IMemento;
+import org.jboss.tools.foundation.core.xml.XMLMemento;
 
 
 /**
@@ -43,6 +45,10 @@ import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbProperties.Proper
 public class XMLBinding {	
 	
 	public static class XbException extends Exception {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private Exception parent;
 		private String msg;
 		public XbException(String msg, Exception e) {

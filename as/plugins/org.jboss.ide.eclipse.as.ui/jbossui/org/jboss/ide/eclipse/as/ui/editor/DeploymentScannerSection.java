@@ -75,14 +75,14 @@ public class DeploymentScannerSection extends ServerEditorSection {
 			// using an unlikely value as default in case property isn't set. User is unlikely to have used -20 as timeout
 			int s = server.getAttribute(IJBossToolingConstants.PROPERTY_SCANNER_TIMEOUT, -20);
 			//int s2 = s == -20 ? DEFAULT_TIMEOUT : s; // default value of 60 seconds for timeout
-			timeoutText.setText(s == -20 ? "(default)" : new Integer(s).toString());
+			timeoutText.setText(s == -20 ? "(default)" : new Integer(s).toString()); //$NON-NLS-1$
 		}
 		
 		if( intervalText != null ) {
 			// using an unlikely value as default in case property isn't set. User is unlikely to have used -20 as interval
 			int s = server.getAttribute(IJBossToolingConstants.PROPERTY_SCANNER_INTERVAL, -20);
 			//int s2 = s == -20 ? DEFAULT_INTERVAL : s;  // default of 5000 ms for interval
-			intervalText.setText(s == -20 ? "(default)" : new Integer(s).toString());
+			intervalText.setText(s == -20 ? "(default)" : new Integer(s).toString()); //$NON-NLS-1$
 		}
 	}
 	

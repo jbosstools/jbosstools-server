@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.archives.core.build;
 
 
+import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -55,7 +56,8 @@ public class ModelChangeListenerWithRefresh extends ModelChangeListener {
 				IArchiveNode post = (delta2 == null ? null : delta2.getPostNode());
 				if( post != null ) {
 					IPath path = delta2.getPostNode().getModelRootNode().getDescriptor();
-					IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(path);
+					IFile[] files = ResourcesPlugin.getWorkspace().getRoot()
+							.findFilesForLocationURI(URIUtil.toURI(path.makeAbsolute()));
 					for( int i = 0; i < files.length; i++ ) {
 						try {
 							files[i].refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
@@ -66,8 +68,6 @@ public class ModelChangeListenerWithRefresh extends ModelChangeListener {
 				try {
 					ModelChangeListenerWithRefresh.super.executeAndLog(delta2);
 				} catch(FullBuildRequiredException fbre) {
-					IArchiveNode o = delta2.getPostNode(); 
-					IPath p = o == null ? null : o.getProjectPath();
 					return new ArchiveBuildDelegate().fullProjectBuild(delta2.getPostNode().getProjectPath(), monitor);
 				}
 				return Status.OK_STATUS;

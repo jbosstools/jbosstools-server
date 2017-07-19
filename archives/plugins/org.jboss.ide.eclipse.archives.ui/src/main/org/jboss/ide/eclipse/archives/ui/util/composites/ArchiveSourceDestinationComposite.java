@@ -244,27 +244,27 @@ public class ArchiveSourceDestinationComposite {
 
 
 		String translated=""; //$NON-NLS-1$
-		Image img=null;
+		//Image img=null;
 		try {
 			if( destinationNode == null ) {
 				translated = getTranslatedGlobalPath();
 				if( translated == null || !new Path(translated).toFile().exists()) {
 					translated= NLS.bind(ArchivesUIMessages.PathDoesNotExistInFilesystem,translated);
-					img = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK);
+					//img = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK);
 					statusType = IStatus.WARNING;
 					message = translated;
 				} else {
-					img = null;
+					//img = null;
 				}
 			}
 		} catch( CoreException ce ) {
 			translated = ce.getMessage();
 			if( ce.getStatus().getSeverity() == IStatus.ERROR) {
-				img = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
+				//img = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
 				statusType = IStatus.ERROR;
 				message = ce.getMessage();
 			} else if( ce.getStatus().getSeverity() == IStatus.WARNING) {
-				img = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK);
+				//img = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK);
 				statusType = IStatus.WARNING;
 				message = ce.getMessage();
 			}

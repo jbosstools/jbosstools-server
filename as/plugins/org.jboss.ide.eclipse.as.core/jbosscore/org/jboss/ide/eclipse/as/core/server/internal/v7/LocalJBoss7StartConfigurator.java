@@ -183,16 +183,16 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 	}
 	
 	protected String getBootLogPath(IJBossServerRuntime runtime) {
-		IJBossRuntimeResourceConstants c = new IJBossRuntimeResourceConstants() {};
 		IPath basedir = new Path(((LocalJBoss7ServerRuntime)runtime).getBaseDirectory());
-		IPath bootLog = basedir.append(c.FOLDER_LOG).append(c.AS7_BOOT_LOG);
+		IPath bootLog = basedir.append(IJBossRuntimeResourceConstants.FOLDER_LOG)
+				.append(IJBossRuntimeResourceConstants.AS7_BOOT_LOG);
 		return bootLog.toString();
 	}
 	
 	protected String getLoggingConfigPath(IJBossServerRuntime runtime) {
-		IJBossRuntimeResourceConstants c = new IJBossRuntimeResourceConstants() {};
 		IPath basedir = new Path(((LocalJBoss7ServerRuntime)runtime).getBaseDirectory());
-		IPath logConfigPath = basedir.append(c.CONFIGURATION).append(c.LOGGING_PROPERTIES);
+		IPath logConfigPath = basedir.append(IJBossRuntimeResourceConstants.CONFIGURATION)
+				.append(IJBossRuntimeResourceConstants.LOGGING_PROPERTIES);
 		try {
 			return logConfigPath.toFile().toURI().toURL().toString();
 		} catch (MalformedURLException murle) {
@@ -201,8 +201,7 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 	}
 	
 	protected boolean getPreferIP4(String host) {
-		boolean matches6 = ServerUtil.matchesIP6t(host);
-		return !matches6;
+		return !ServerUtil.matchesIP6t(host);
 	}
 
 

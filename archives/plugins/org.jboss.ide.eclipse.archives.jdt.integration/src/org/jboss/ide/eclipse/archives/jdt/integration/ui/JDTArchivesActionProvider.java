@@ -28,7 +28,6 @@ import org.jboss.ide.eclipse.archives.core.model.INamedContainerArchiveNode;
 import org.jboss.ide.eclipse.archives.jdt.integration.model.IArchiveLibFileSet;
 import org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages;
 import org.jboss.ide.eclipse.archives.ui.providers.ArchivesActionProvider;
-import org.jboss.ide.eclipse.archives.ui.wizards.FilesetWizard;
 
 public class JDTArchivesActionProvider extends CommonActionProvider {
 	private ICommonViewerSite site;

@@ -68,7 +68,7 @@ public class ModuleLaunchConfigurationProvider implements ILaunchConfigurationPr
 		String validName = getValidLaunchConfigurationName(descriptorName);
 		ILaunchConfigurationWorkingCopy wc = type.newInstance(null, validName);
 		
-		
+		String tName = target.getName();
 		if( descriptor instanceof ModuleLaunchDescriptor ) {
 			
 			// I would prefer to somehow pass an actual Object here, but cannot persist it in launch config
@@ -76,7 +76,7 @@ public class ModuleLaunchConfigurationProvider implements ILaunchConfigurationPr
 			// module from project. Unfortunately, its not 1:1 mapping, so I may lose my module selection
 			wc.setAttribute(ServerLaunchBarDelegate.ATTR_LAUNCH_TYPE, ServerLaunchBarDelegate.ATTR_LAUNCH_TYPE_MODULE);
 			wc.setAttribute(ServerLaunchBarDelegate.ATTR_PROJECT, ((ModuleLaunchDescriptor)descriptor).getModule().getProject().getName());
-			wc.setAttribute(ServerLaunchBarDelegate.ATTR_TARGET_NAME, target.getName());
+			wc.setAttribute(ServerLaunchBarDelegate.ATTR_TARGET_NAME, tName);
 			return wc;
 		}
 		
@@ -84,14 +84,14 @@ public class ModuleLaunchConfigurationProvider implements ILaunchConfigurationPr
 			wc.setAttribute(ServerLaunchBarDelegate.ATTR_LAUNCH_TYPE, ServerLaunchBarDelegate.ATTR_LAUNCH_TYPE_ARTIFACT);
 			wc.setAttribute(ServerLaunchBarDelegate.ATTR_ARTIFACT_STRING, ((ModuleArtifactDetailsLaunchDescriptor)descriptor).getArtifactWrapper().getArtifactString());
 			wc.setAttribute(ServerLaunchBarDelegate.ATTR_ARTIFACT_CLASS, ((ModuleArtifactDetailsLaunchDescriptor)descriptor).getArtifactWrapper().getArtifactClass());
-			wc.setAttribute(ServerLaunchBarDelegate.ATTR_TARGET_NAME, target.getName());
+			wc.setAttribute(ServerLaunchBarDelegate.ATTR_TARGET_NAME, tName);
 		}
 
 		if( descriptor instanceof ModuleArtifactLaunchDescriptor ) {
 			wc.setAttribute(ServerLaunchBarDelegate.ATTR_LAUNCH_TYPE, ServerLaunchBarDelegate.ATTR_LAUNCH_TYPE_ARTIFACT);
 			wc.setAttribute(ServerLaunchBarDelegate.ATTR_ARTIFACT_STRING, ((ModuleArtifactLaunchDescriptor)descriptor).getArtifactWrapper().getArtifactString());
 			wc.setAttribute(ServerLaunchBarDelegate.ATTR_ARTIFACT_CLASS, ((ModuleArtifactLaunchDescriptor)descriptor).getArtifactWrapper().getArtifactClass());
-			wc.setAttribute(ServerLaunchBarDelegate.ATTR_TARGET_NAME, target.getName());
+			wc.setAttribute(ServerLaunchBarDelegate.ATTR_TARGET_NAME, tName);
 		}
 		
 		// These launches are private and should not appear in the UI

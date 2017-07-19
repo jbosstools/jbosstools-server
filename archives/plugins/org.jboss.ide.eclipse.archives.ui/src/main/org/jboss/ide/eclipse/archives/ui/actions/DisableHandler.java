@@ -21,12 +21,11 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.ArchivesCorePlugin;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModel;
@@ -46,10 +45,10 @@ public class DisableHandler extends AbstractHandler implements IHandler {
 			final String jobName = NLS.bind(ArchivesUIMessages.DisableProjectArchivesJob, pName); 
 			new Job(jobName) {
 				protected IStatus run(IProgressMonitor monitor) {
-					monitor.beginTask(jobName, 300);
+					SubMonitor progress = SubMonitor.convert(monitor, jobName, 300);
 					CoreException ce = null;
 					try {
-						SubProgressMonitor deletionMonitor = new SubProgressMonitor(monitor, 100);
+						SubMonitor deletionMonitor = progress.split(100);
 						IResource r = ((IProject)e).getFile(IArchiveModel.DEFAULT_PACKAGES_FILE);
 						if( r != null && r.exists() ) 
 							r.delete(true, deletionMonitor);
@@ -59,10 +58,10 @@ public class DisableHandler extends AbstractHandler implements IHandler {
 					}
 					
 					IPath loc = ((IProject) e).getLocation();
-					SubProgressMonitor mon1 = new SubProgressMonitor(monitor, 100);
+					SubMonitor mon1 = progress.split(100);
 					ProjectUtils.removeProjectNature(((IProject) e), ArchivesNature.NATURE_ID, mon1);
 
-					SubProgressMonitor mon2 = new SubProgressMonitor(monitor, 100);
+					SubMonitor mon2 = progress.split(100);
 					ArchivesModel.instance().unregisterProject(loc, mon2);
 					
 					return ce == null ? Status.OK_STATUS : new Status(IStatus.ERROR, ArchivesCorePlugin.PLUGIN_ID, 

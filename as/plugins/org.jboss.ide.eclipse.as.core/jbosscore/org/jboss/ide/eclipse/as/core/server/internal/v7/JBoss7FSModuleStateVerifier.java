@@ -11,9 +11,6 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -123,11 +120,11 @@ public class JBoss7FSModuleStateVerifier extends AbstractJBoss7ModuleStateVerifi
 		IPath archiveDestination = getModuleDeployRoot(new IModule[]{module[0]});
 		if(state == IServer.STATE_STARTED ) {
 			// Remove undeployed marker, add dodeploy marker
-			DeploymentMarkerUtils.removedUndeployedMarker(archiveDestination, getFilesystemController());
+			DeploymentMarkerUtils.removeUndeployedMarker(archiveDestination, getFilesystemController());
 			DeploymentMarkerUtils.createDoDeployMarker(archiveDestination, getFilesystemController());
 		} else if (state == IServer.STATE_STOPPED) {
 			// remove deployed marker
-			DeploymentMarkerUtils.removedDeployedMarker(archiveDestination, getFilesystemController());
+			DeploymentMarkerUtils.removeDeployedMarker(archiveDestination, getFilesystemController());
 		} else {
 			throw new IllegalArgumentException("Only states IServer.STATE_STARTED and IServer.STATE_STOPPED are supported"); //$NON-NLS-1$
 		}

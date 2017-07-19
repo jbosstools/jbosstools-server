@@ -20,7 +20,6 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IModulePathFilter;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.DeploymentMarkerUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerHomeValidationUtility;
@@ -30,7 +29,7 @@ public class WildFlyFileSystemPublishController extends StandardFileSystemPublis
 	protected int removeModule(IModule[] module, IPath remote, IProgressMonitor monitor) throws CoreException {
 		boolean undeploySucceeded = undeployModuleAndWait(module, remote, 45000, monitor);
 		if( !undeploySucceeded ) {
-			ServerLogger.getDefault().log(getServer(), new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, 
+			JBossServerCorePlugin.log(new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, 
 					NLS.bind("Safely halting deployment {0} on server {1} before publish has failed.", module[0].getName(), getServer().getName()))); //$NON-NLS-1$
 		}
 		return super.removeModule(module, remote, monitor);
@@ -39,7 +38,7 @@ public class WildFlyFileSystemPublishController extends StandardFileSystemPublis
 			throws CoreException {
 		boolean undeploySucceeded = undeployModuleAndWait(module, archiveDestination, 45000, monitor);
 		if( !undeploySucceeded ) {
-			ServerLogger.getDefault().log(getServer(), new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, 
+			JBossServerCorePlugin.log(new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, 
 					NLS.bind("Safely halting deployment {0} on server {1} before publish has failed.", module[0].getName(), getServer().getName()))); //$NON-NLS-1$
 		}
 		return super.executeFullPublish(module, archiveDestination, filter, monitor);

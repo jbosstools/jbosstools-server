@@ -78,10 +78,10 @@ public class PortSection extends ServerEditorSection {
 			// sort them based on weight
 			Collections.sort(approved, new Comparator<IConfigurationElement>(){
 				public int compare(IConfigurationElement o1, IConfigurationElement o2) {
-					String weight1 = o1.getAttribute("weight");
-					String weight2 = o2.getAttribute("weight");
-					weight1 = (weight1 == null ? "100" : weight1);
-					weight2 = (weight2 == null ? "100" : weight2);
+					String weight1 = o1.getAttribute("weight"); //$NON-NLS-1$
+					String weight2 = o2.getAttribute("weight");//$NON-NLS-1$
+					weight1 = (weight1 == null ? "100" : weight1);//$NON-NLS-1$
+					weight2 = (weight2 == null ? "100" : weight2);//$NON-NLS-1$
 					int w1, w2;
 					try {
 						w1 = Integer.parseInt(weight1);
@@ -218,8 +218,8 @@ public class PortSection extends ServerEditorSection {
 			section.offsetChanged();
 		}
 		public int getOffset() {
-			String v = text == null ? "" : text.getText();
-			int i = "".equals(v) ? 0 : Integer.parseInt(v);
+			String v = text == null ? "" : text.getText();//$NON-NLS-1$
+			int i = "".equals(v) ? 0 : Integer.parseInt(v);//$NON-NLS-1$
 			return i;
 		}
 		@Override

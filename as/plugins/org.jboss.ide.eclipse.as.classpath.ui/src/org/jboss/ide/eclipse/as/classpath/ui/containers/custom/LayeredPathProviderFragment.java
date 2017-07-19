@@ -73,20 +73,20 @@ public class LayeredPathProviderFragment extends WizardFragment {
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
 		setComplete(false);
 		this.handle = handle;
-		handle.setTitle("Create a JBoss modules classpath entry.");
-		handle.setDescription("This classpath entry will search all available modules folders for the chosen module." + 
-		"This ensures patches are picked up properly. Example: module name = javax.faces.api,  slot=1.2");
+		handle.setTitle("Create a JBoss modules classpath entry."); //$NON-NLS-1$
+		handle.setDescription("This classpath entry will search all available modules folders for the chosen module." +  //$NON-NLS-1$
+		"This ensures patches are picked up properly. Example: module name = javax.faces.api,  slot=1.2"); //$NON-NLS-1$
 		Composite c = new Composite(parent, SWT.NONE);
 		c.setLayout(new GridLayout(2, false));
 		
 		Label moduleLabel = new Label(c, SWT.NONE);
-		moduleLabel.setText("Module ID: ");
+		moduleLabel.setText("Module ID: "); //$NON-NLS-1$
 		moduleText = new Text(c, SWT.SINGLE | SWT.BORDER);
 
 		Label slotLabel = new Label(c, SWT.NONE);
-		slotLabel.setText("Slot: ");
+		slotLabel.setText("Slot: "); //$NON-NLS-1$
 		slotText = new Text(c, SWT.SINGLE | SWT.BORDER);
-		slotText.setText("main");
+		slotText.setText("main"); //$NON-NLS-1$
 
 		GridData gd = new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
 		gd.widthHint = 200;
@@ -237,7 +237,7 @@ public class LayeredPathProviderFragment extends WizardFragment {
     }
     
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
-		LayeredProductPathProvider prov = new LayeredProductPathProvider(moduleId, slot); //$NON-NLS-1$
+		LayeredProductPathProvider prov = new LayeredProductPathProvider(moduleId, slot); 
 		getTaskModel().putObject(RuntimeClasspathProviderWizard.CREATED_PATH_PROVIDER, prov);
 	}
 	
@@ -275,7 +275,7 @@ public class LayeredPathProviderFragment extends WizardFragment {
 		}
 		
 		private void fireLoad(final String rtType) {
-			Job j = new Job("Loading Modules") {
+			Job j = new Job("Loading Modules") { //$NON-NLS-1$
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
 					try {
@@ -283,11 +283,11 @@ public class LayeredPathProviderFragment extends WizardFragment {
 						Set<ModuleSlot> ms = new HashSet<ModuleSlot>();
 						for( int i = 0; i < rt.length; i++ ) {
 							if( rt[i].getRuntimeType().getId().equals(rtType)) {
-								IPath modulesFolder = rt[i].getLocation().append("modules");
+								IPath modulesFolder = rt[i].getLocation().append("modules"); //$NON-NLS-1$
 								File[] layeredPaths = LayeredModulePathFactory.resolveLayeredModulePath(modulesFolder.toFile());
 								// Find every module.xml 
 								for( int j = 0; j < layeredPaths.length; j++ ) {
-									ArrayList<File> ignored = new ArrayList(Arrays.asList(layeredPaths));
+									ArrayList<File> ignored = new ArrayList<File>(Arrays.asList(layeredPaths));
 									ignored.remove(layeredPaths[j]);
 									ModuleSlot[] slots = findSlots(layeredPaths[j], ignored);
 									ms.addAll(Arrays.asList(slots));
@@ -310,7 +310,7 @@ public class LayeredPathProviderFragment extends WizardFragment {
 						return;
 					}
 					if( working.isFile()) {
-						if( working.getName().equals("module.xml")) {
+						if( working.getName().equals("module.xml")) { //$NON-NLS-1$
 							// handle found
 							int rootSegCount = new Path(root.getAbsolutePath()).segmentCount();
 							IPath relative = new Path(working.getAbsolutePath()).removeFirstSegments(rootSegCount);
@@ -321,7 +321,7 @@ public class LayeredPathProviderFragment extends WizardFragment {
 							for( int i = 0; i < module.segmentCount(); i++ ) {
 								modBuffer.append(module.segment(i));
 								if( i < module.segmentCount()-1)
-									modBuffer.append(".");
+									modBuffer.append("."); //$NON-NLS-1$
 							}
 							ModuleSlot ms= new ModuleSlot(modBuffer.toString(), slot);
 							collector.add(ms);

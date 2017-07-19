@@ -24,7 +24,7 @@ import org.eclipse.jdt.core.JavaCore;
 public final class ClasspathDecorations {
 	private IPath sourceAttachmentPath;
 	private IPath sourceAttachmentRootPath;
-	private ArrayList extraAttributes = new ArrayList();
+	private ArrayList<IClasspathAttribute> extraAttributes = new ArrayList<IClasspathAttribute>();
 
 	public IPath getSourceAttachmentPath() {
 		return this.sourceAttachmentPath;

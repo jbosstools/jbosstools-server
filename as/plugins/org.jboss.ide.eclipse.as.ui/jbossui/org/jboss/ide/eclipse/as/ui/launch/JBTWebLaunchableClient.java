@@ -60,7 +60,7 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 		final JBTCustomHttpLaunchable http = (JBTCustomHttpLaunchable) launchable;
 		wait(server, http.getModuleTree(server));
 		
-		if(server.getServerState() == server.STATE_STARTED) {
+		if(server.getServerState() == IServer.STATE_STARTED) {
 		Display.getDefault().asyncExec(new Runnable(){
 			public void run() {
 				openBrowser(http.getURL());

@@ -60,7 +60,6 @@ public class ExploreActionProvider extends CommonActionProvider {
 		}
 	}
 	public void createActions(CommonViewer tableViewer, ISelectionProvider provider) {
-		Shell shell = tableViewer.getTree().getShell();
 		exploreAction = new Action() {
 			public void run() {
 				runExplore();

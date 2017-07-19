@@ -18,17 +18,18 @@ import org.jboss.tools.jmx.core.IConnectionWrapper;
 public class JBossServerConnectionAdapterFactory implements IAdapterFactory {
 
 	@Override
-	public Object getAdapter(Object adaptableObject, Class adapterType) {
+	public <T> T getAdapter(Object adaptableObject, Class<T> adapterType) {
 		if( adaptableObject instanceof JBossServer ) {
 			JBossServer jbs = (JBossServer)adaptableObject;
 			IServer is = jbs.getServer();
-			return JBossJMXConnectionProviderModel.getDefault().getConnection(is);
+			IConnectionWrapper w = JBossJMXConnectionProviderModel.getDefault().getConnection(is);
+			return adapterType.cast(w);
 		}
 		return null;
 	}
 
 	@Override
-	public Class[] getAdapterList() {
+	public Class<?>[] getAdapterList() {
 		return new Class[]{IConnectionWrapper.class};
 	}
 

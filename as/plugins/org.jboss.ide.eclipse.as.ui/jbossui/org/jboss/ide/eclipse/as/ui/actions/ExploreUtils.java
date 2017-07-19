@@ -84,7 +84,7 @@ public class ExploreUtils {
 			} else if (new File("/usr/bin/konqueror").exists()) { //$NON-NLS-1$
 				exploreFolderCommandArray = new String[2];
 				exploreFolderCommandArray[0]="/usr/bin/konqueror"; //$NON-NLS-1$
-			} else if( new File("/usr/bin/xdg-open").exists()) {
+			} else if( new File("/usr/bin/xdg-open").exists()) { //$NON-NLS-1$
 				exploreFolderCommandArray = new String[2];
 				exploreFolderCommandArray[0]="/usr/bin/xdg-open"; //$NON-NLS-1$
 			}

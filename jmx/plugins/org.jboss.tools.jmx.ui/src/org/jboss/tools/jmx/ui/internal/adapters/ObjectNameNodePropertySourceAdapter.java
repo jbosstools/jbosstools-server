@@ -55,12 +55,6 @@ public class ObjectNameNodePropertySourceAdapter implements IPropertySource {
 		return objectName.getMbeanInfoWrapper().getMBeanAttributeInfoWrappers();
 	}
 
-	private void addDescriptor(String id, String displayName, String category, List<IPropertyDescriptor> descriptors) {
-		PropertyDescriptor descriptor = new PropertyDescriptor(id, displayName);
-		descriptor.setCategory(category);
-		descriptors.add(descriptor);
-	}
-
 	public Object getPropertyValue(Object anId) {
         MBeanAttributeInfoWrapper[] attributes = getAttributes();
         for (MBeanAttributeInfoWrapper attribute : attributes) {

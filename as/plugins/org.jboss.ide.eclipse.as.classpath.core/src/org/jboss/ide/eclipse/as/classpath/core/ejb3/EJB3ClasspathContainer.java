@@ -30,14 +30,17 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.classpath.core.internal.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 /**
  * @author Marshall
  * @author Rob Stryker 
  */
-public class EJB3ClasspathContainer implements IClasspathContainer, IJBossServerConstants {
+public class EJB3ClasspathContainer implements IClasspathContainer,
+	IJBossRuntimeConstants, IJBossRuntimeResourceConstants, IJBossToolingConstants {
    public static final String CONTAINER_ID = "org.jboss.ide.eclipse.as.classpath.core.ejb3.classpathContainer"; //$NON-NLS-1$
 
    public static final String DESCRIPTION = Messages.EJB3ClasspathContainer_ejb3_description;
@@ -264,13 +267,13 @@ public class EJB3ClasspathContainer implements IClasspathContainer, IJBossServer
 	   return get70JarsFromBase(homePath.append(MODULES));
    }
    protected static IClasspathEntry[] getEap61Jars(IPath homePath)  throws FileNotFoundException {
-	   return get70JarsFromBase(homePath.append(MODULES).append("system").append("layers").append("base"));
+	   return get70JarsFromBase(homePath.append(MODULES).append("system").append("layers").append("base")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
    }
    
    protected static IClasspathEntry[] get70JarsFromBase(IPath base)  throws FileNotFoundException {
-	   IPath apiFolder = base.append("javax").append("ejb").append("api").append("main");
-	   IPath jbossEjb3Folder = base.append("org").append("jboss").append("ejb3").append("main");
-	   IPath jbossASEjb3Folder = base.append("org").append("jboss").append("as").append("ejb3").append("main");
+	   IPath apiFolder = base.append("javax").append("ejb").append("api").append("main"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+	   IPath jbossEjb3Folder = base.append("org").append("jboss").append("ejb3").append("main"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+	   IPath jbossASEjb3Folder = base.append("org").append("jboss").append("as").append("ejb3").append("main"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 		
 	   IPath api = findJarFile(apiFolder);
 	   IPath jbossEjb3 = findJarFile(jbossEjb3Folder);
@@ -289,7 +292,7 @@ public class EJB3ClasspathContainer implements IClasspathContainer, IJBossServer
    protected static IPath findJarFile(IPath folder) {
 	   String[]  names = folder.toFile().list();
 	   for( int i = 0; i < names.length; i++ ) {
-		   if( names[i].endsWith(".jar"))
+		   if( names[i].endsWith(".jar")) //$NON-NLS-1$
 			   return folder.append(names[i]);
 	   }
 	   return null;

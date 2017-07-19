@@ -69,9 +69,9 @@ public class LayeredProductPathProvider implements IRuntimePathProvider {
 	}
 	
 	public IPath[] getAbsolutePaths() {
-		String runtimeHomePattern = "${" + ConfigNameResolver.JBOSS_SERVER_HOME + "}";
+		String runtimeHomePattern = "${" + ConfigNameResolver.JBOSS_SERVER_HOME + "}"; //$NON-NLS-1$ //$NON-NLS-2$
 		String runtimeHome = new ExpressionResolver(resolver).resolve(runtimeHomePattern);
-		IPath modulesFolder = new Path(runtimeHome).append("modules");
+		IPath modulesFolder = new Path(runtimeHome).append("modules"); //$NON-NLS-1$
 		return new ModuleSlot(moduleName, slot).getJars(modulesFolder);
 	}
 	
@@ -82,13 +82,13 @@ public class LayeredProductPathProvider implements IRuntimePathProvider {
 	
 	@Override
 	public String getDisplayString() {
-		return "JBoss Module: " + moduleName + " [" + (slot == null ? "main" : slot) + "]";
+		return "JBoss Module: " + moduleName + " [" + (slot == null ? "main" : slot) + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	}
 	
 	@Override
 	public void saveInMemento(XMLMemento memento) {
 		XMLMemento child = (XMLMemento)memento.createChild("layeredProductPath");//$NON-NLS-1$
-		child.putString(PROP_MODULE_NAME, moduleName);//$NON-NLS-1$
+		child.putString(PROP_MODULE_NAME, moduleName);
 		child.putString(PROP_SLOT, slot == null ? "main" : slot);//$NON-NLS-1$
 	}
 

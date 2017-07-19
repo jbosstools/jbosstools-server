@@ -13,7 +13,7 @@ package org.jboss.ide.eclipse.as.core.extensions.descriptors;
 import java.util.HashMap;
 
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.util.IMemento;
+import org.jboss.tools.foundation.core.xml.IMemento;
 
 /**
  * A class representing an XPath Category, which 

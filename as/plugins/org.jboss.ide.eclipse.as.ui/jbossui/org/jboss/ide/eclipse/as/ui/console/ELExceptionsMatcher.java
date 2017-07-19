@@ -34,7 +34,6 @@ import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.ISourceLocator;
@@ -91,7 +90,8 @@ public class ELExceptionsMatcher implements IPatternMatchListenerDelegate {
 			matcher = resourceLocationPattern.matcher(line);
 		}
 
-		String resource = null, lineNum, columnNum = null;
+		String resource = null, lineNum;
+		//columnNum = null;
 		int resourceStart = -1, resourceEnd = -1, columnEnd = -1;
 		if (matcher.find()) {
 			resource = matcher.group(1);
@@ -99,7 +99,7 @@ public class ELExceptionsMatcher implements IPatternMatchListenerDelegate {
 			resourceEnd = matcher.end(1);
 
 			lineNum = matcher.group(2);
-			columnNum = matcher.group(3);
+			//columnNum = matcher.group(3);
             columnEnd = matcher.end(3);
             
             int space = resource.lastIndexOf(' ');
@@ -175,7 +175,7 @@ public class ELExceptionsMatcher implements IPatternMatchListenerDelegate {
 			final String simpleName = resource.substring(resource
 					.lastIndexOf("/") + 1); //$NON-NLS-1$
 
-			IPath path = new Path(resource);
+			//IPath path = new Path(resource);
 			IProject[] projects = ResourcesPlugin.getWorkspace().getRoot()
 					.getProjects();
 

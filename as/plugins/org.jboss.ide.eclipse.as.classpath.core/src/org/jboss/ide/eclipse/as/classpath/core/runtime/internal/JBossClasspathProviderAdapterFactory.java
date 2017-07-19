@@ -21,14 +21,17 @@ import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
  * that should be added to a project.  
  */
 public final class JBossClasspathProviderAdapterFactory implements IAdapterFactory {
-	private static final Class[] ADAPTER_TYPES = { IClasspathProvider.class };
+	private static final Class<?>[] ADAPTER_TYPES = { IClasspathProvider.class };
 
-	public Object getAdapter(final Object adaptable, final Class adapterType) {
-		IRuntimeComponent rc = (IRuntimeComponent) adaptable;
-		return new RuntimeFacetClasspathProvider(rc);
+	public <T> T getAdapter(Object adaptableObject, Class<T> adapterType) { 
+		if( adaptableObject instanceof IRuntimeComponent) {
+			IRuntimeComponent rc = (IRuntimeComponent) adaptableObject;
+			adapterType.cast(new RuntimeFacetClasspathProvider(rc));
+		}
+		return null;
 	}
 
-	public Class[] getAdapterList() {
+	public Class<?>[] getAdapterList() {
 		return ADAPTER_TYPES;
 	}
 }

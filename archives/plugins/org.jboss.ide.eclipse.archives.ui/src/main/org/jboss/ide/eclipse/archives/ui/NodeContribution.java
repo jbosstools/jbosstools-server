@@ -26,7 +26,7 @@ import org.osgi.framework.Bundle;
  * @author "Rob Stryker" <rob.stryker@redhat.com>
  *
  */
-public class NodeContribution implements Comparable {
+public class NodeContribution implements Comparable<NodeContribution> {
 	private static final String ID = "id"; //$NON-NLS-1$
 	private static final String LABEL = "label"; //$NON-NLS-1$
 	private static final String ICON = "icon"; //$NON-NLS-1$
@@ -59,14 +59,12 @@ public class NodeContribution implements Comparable {
 		weight = Integer.parseInt(weightString == null ? new Integer(100).toString() : weightString);
 	}
 
-	public int compareTo(Object o) {
-		if (o instanceof NodeContribution) {
-			NodeContribution other = (NodeContribution) o;
-			if (weight < other.getWeight()) return -1;
-			else if (weight > other.getWeight()) return 1;
-			else if (weight == other.getWeight()) {
-				return label.compareTo(other.getLabel());
-			}
+	public int compareTo(NodeContribution o) {
+		NodeContribution other = (NodeContribution) o;
+		if (weight < other.getWeight()) return -1;
+		else if (weight > other.getWeight()) return 1;
+		else if (weight == other.getWeight()) {
+			return label.compareTo(other.getLabel());
 		}
 		return -1;
 	}
@@ -91,4 +89,5 @@ public class NodeContribution implements Comparable {
 	public int getWeight() {
 		return weight;
 	}
+
 }

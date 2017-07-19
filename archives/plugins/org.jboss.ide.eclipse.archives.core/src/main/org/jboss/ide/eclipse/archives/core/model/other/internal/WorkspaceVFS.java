@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.archives.core.model.other.internal;
 
+import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -96,7 +97,7 @@ public class WorkspaceVFS implements IArchivesVFS, IDynamicVariableResolver {
 	}
 
 	public IPath[] absolutePathToWorkspacePath(IPath path) {
-		IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(path);
+		IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocationURI(URIUtil.toURI(path.makeAbsolute()));
 		IPath[] paths = new IPath[files.length];
 		for( int i = 0; i < files.length; i++ ) {
 			paths[i] = files[i].getFullPath();

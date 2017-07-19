@@ -38,7 +38,6 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
-import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI.IServerModeUICallback;
 import org.jboss.ide.eclipse.as.ui.editor.ServerModeSectionComposite.ChangeServerPropertyCommand;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
@@ -147,7 +146,7 @@ public class JBoss7RSEDeploymentPrefComposite extends
 		baseDirLabel.setText(RSEUIMessages.REMOTE_BASE_DIR_LABEL);
 		rseBaseDirBrowse = new Button(child, SWT.NONE);
 		rseBaseDirBrowse.setText(RSEUIMessages.BROWSE);
-		rseBaseDirBrowse.setLayoutData(UIUtil.createFormData2(rseServerHome, 5, null,
+		rseBaseDirBrowse.setLayoutData(FormDataUtility.createFormData2(rseServerHome, 5, null,
 				0, null, 0, 100, -5));
 		rseBaseDirBrowse.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -155,9 +154,9 @@ public class JBoss7RSEDeploymentPrefComposite extends
 			}
 		});
 		rseBaseDirText = new Text(child, SWT.SINGLE | SWT.BORDER);
-		baseDirLabel.setLayoutData(UIUtil.createFormData2(rseServerHome, 7,
+		baseDirLabel.setLayoutData(FormDataUtility.createFormData2(rseServerHome, 7,
 				null, 0, 0, 10, null, 0));
-		FormData rseBaseDirTextData = UIUtil.createFormData2(rseServerHome, 5,
+		FormData rseBaseDirTextData = FormDataUtility.createFormData2(rseServerHome, 5,
 				null, 0, baseDirLabel, 5, rseBaseDirBrowse, -5);
 		rseBaseDirTextData.width = 100;
 		rseBaseDirText.setLayoutData(rseBaseDirTextData);
@@ -173,7 +172,7 @@ public class JBoss7RSEDeploymentPrefComposite extends
 		serverConfigLabel.setText(RSEUIMessages.REMOTE_CONFIG_FILE_LABEL);
 		rseConfigFileBrowse = new Button(child, SWT.NONE);
 		rseConfigFileBrowse.setText(RSEUIMessages.BROWSE);
-		rseConfigFileBrowse.setLayoutData(UIUtil.createFormData2(rseBaseDirText, 5, null,
+		rseConfigFileBrowse.setLayoutData(FormDataUtility.createFormData2(rseBaseDirText, 5, null,
 				0, null, 0, 100, -5));
 		rseConfigFileBrowse.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
@@ -185,9 +184,9 @@ public class JBoss7RSEDeploymentPrefComposite extends
 			}
 		});
 		rseConfigFileText = new Text(child, SWT.SINGLE | SWT.BORDER);
-		serverConfigLabel.setLayoutData(UIUtil.createFormData2(rseBaseDirText, 7,
+		serverConfigLabel.setLayoutData(FormDataUtility.createFormData2(rseBaseDirText, 7,
 				null, 0, 0, 10, null, 0));
-		rseConfigFileText.setLayoutData(UIUtil.createFormData2(rseBaseDirText, 5,
+		rseConfigFileText.setLayoutData(FormDataUtility.createFormData2(rseBaseDirText, 5,
 				null, 0, serverConfigLabel, 5, rseConfigFileBrowse, -5));
 		rseConfigFileText.setText(callback.getServer().getAttribute(
 				RSEUtils.RSE_SERVER_CONFIG, LocalJBoss7ServerRuntime.CONFIG_FILE_DEFAULT));

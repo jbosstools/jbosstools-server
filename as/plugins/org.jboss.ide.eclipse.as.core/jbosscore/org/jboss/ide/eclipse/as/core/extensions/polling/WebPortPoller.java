@@ -101,7 +101,7 @@ public class WebPortPoller implements IServerStatePoller2 {
 		} catch (MalformedURLException e) {
 			// Should NEVER happen since the URL's are hand-crafted, but whatever
 			Status s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, e.getMessage(), e);
-			JBossServerCorePlugin.getDefault().log(s);
+			JBossServerCorePlugin.log(s);
 		} catch (IOException e) {
 			// Does not need to be logged
 			return false;

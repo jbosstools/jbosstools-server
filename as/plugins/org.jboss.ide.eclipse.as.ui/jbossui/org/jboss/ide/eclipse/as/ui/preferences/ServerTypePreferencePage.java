@@ -45,6 +45,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
+import org.jboss.ide.eclipse.as.wtp.ui.util.FormDataUtility;
 
 public abstract class ServerTypePreferencePage extends PreferencePage implements
 		IWorkbenchPreferencePage {
@@ -393,7 +394,7 @@ public abstract class ServerTypePreferencePage extends PreferencePage implements
 		private FormData createFormData(Object topStart, int topOffset,
 				Object bottomStart, int bottomOffset, Object leftStart,
 				int leftOffset, Object rightStart, int rightOffset) {
-			return UIUtil.createFormData2(topStart, topOffset, bottomStart, bottomOffset, leftStart, leftOffset, rightStart, rightOffset);
+			return FormDataUtility.createFormData2(topStart, topOffset, bottomStart, bottomOffset, leftStart, leftOffset, rightStart, rightOffset);
 		}
 		
 		public String[] getChanged() {

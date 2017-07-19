@@ -39,6 +39,7 @@ import org.jboss.ide.eclipse.as.wtp.core.server.launch.ServerHotCodeReplaceListe
 import org.jboss.ide.eclipse.as.wtp.ui.editor.ServerWorkingCopyPropertyButtonCommand;
 import org.jboss.ide.eclipse.as.wtp.ui.editor.ServerWorkingCopyPropertyCommand;
 import org.jboss.ide.eclipse.as.wtp.ui.util.FormDataUtility;
+import org.jboss.ide.eclipse.as.wtp.ui.editor.ServerWorkingCopyPropertyComboCommand;
 import org.jboss.tools.as.core.server.controllable.subsystems.internal.StandardModuleRestartBehaviorController;
 
 public class ModuleRestartSection extends ServerEditorSection {

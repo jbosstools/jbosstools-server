@@ -62,9 +62,9 @@ public class JMXNavigator extends CommonNavigator implements ITabbedPropertyShee
 		return super.getLinkHelperService();
 	}
 	
-    public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
+    public <T> T getAdapter(Class<T> adapter) {
         if (adapter == IPropertySheetPage.class) {
-                return new TabbedPropertySheetPage(this);
+                return adapter.cast(new TabbedPropertySheetPage(this));
         }
         return super.getAdapter(adapter);
     }

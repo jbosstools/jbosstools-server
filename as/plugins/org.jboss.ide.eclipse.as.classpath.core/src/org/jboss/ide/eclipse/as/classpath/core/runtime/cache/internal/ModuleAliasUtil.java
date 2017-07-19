@@ -26,8 +26,8 @@ public class ModuleAliasUtil {
 					XMLMemento memento = XMLMemento.createReadRoot(new FileInputStream(moduleXml));
 					if( memento != null ) {
 						String nodeName = memento.getNodeName();
-						if( "module-alias".equals(nodeName)) {
-							String targName = memento.getString("target-name");
+						if( "module-alias".equals(nodeName)) { //$NON-NLS-1$
+							String targName = memento.getString("target-name"); //$NON-NLS-1$
 							if( targName != null )
 								return targName;
 						}

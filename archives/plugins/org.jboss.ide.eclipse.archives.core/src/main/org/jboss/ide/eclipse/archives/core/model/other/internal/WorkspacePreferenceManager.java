@@ -70,7 +70,7 @@ public class WorkspacePreferenceManager extends AbstractPreferenceInitializer im
 				}
 			} catch( CoreException ce ) {}
 		}
-		return new InstanceScope().getNode(ArchivesCorePlugin.PLUGIN_ID).getBoolean(AUTOMATIC_BUILDER_ENABLED, true);
+		return InstanceScope.INSTANCE.getNode(ArchivesCorePlugin.PLUGIN_ID).getBoolean(AUTOMATIC_BUILDER_ENABLED, true);
 	}
 
 	public void setArchivesBuilderEnabled(IPath path, boolean value) {
@@ -83,7 +83,7 @@ public class WorkspacePreferenceManager extends AbstractPreferenceInitializer im
 				return;
 			}
 		} catch( CoreException ce ) {}
-		IEclipsePreferences prefs = new InstanceScope().getNode(ArchivesCorePlugin.PLUGIN_ID);
+		IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(ArchivesCorePlugin.PLUGIN_ID);
 		prefs.putBoolean(AUTOMATIC_BUILDER_ENABLED, value);
 		try {
 			prefs.flush();
@@ -93,7 +93,7 @@ public class WorkspacePreferenceManager extends AbstractPreferenceInitializer im
 	}
 
 	public void initializeDefaultPreferences() {
-		IEclipsePreferences prefs = new DefaultScope().getNode(ArchivesCorePlugin.PLUGIN_ID);
+		IEclipsePreferences prefs = DefaultScope.INSTANCE.getNode(ArchivesCorePlugin.PLUGIN_ID);
 		prefs.putBoolean(AUTOMATIC_BUILDER_ENABLED, true);
 		try {
 			prefs.flush();

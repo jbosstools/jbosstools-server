@@ -27,8 +27,8 @@ import org.jaxen.XPath;
 import org.jaxen.dom4j.Dom4jXPath;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
 import org.jboss.ide.eclipse.as.core.resolvers.RuntimeVariableResolver;
-import org.jboss.ide.eclipse.as.core.util.IMemento;
 import org.jboss.tools.foundation.core.expressions.ExpressionResolver;
+import org.jboss.tools.foundation.core.xml.IMemento;
 
 /**
  * A simple value object to hold the XPath query data

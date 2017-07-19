@@ -31,7 +31,6 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerListener;
 import org.eclipse.wst.server.core.ServerEvent;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
@@ -347,7 +346,7 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 			}
 		} catch( Exception jmxe ) {
 			IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error connecting to jmx for server "+server.getName(), jmxe);
-			ServerLogger.getDefault().log(server, status);	
+			JBossServerCorePlugin.log(status);	
 			// I thought i was connected but I'm not. 
 			if( isConnected ) {
 				isConnected = false;

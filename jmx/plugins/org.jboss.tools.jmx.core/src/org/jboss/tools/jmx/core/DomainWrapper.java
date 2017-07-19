@@ -54,9 +54,9 @@ public class DomainWrapper {
 
     public MBeanInfoWrapper[] getMBeanInfos() {
         try {
-            Set set = mbsc.queryNames(getPattern(), null);
+            Set<ObjectName> set = mbsc.queryNames(getPattern(), null);
             ArrayList<MBeanInfoWrapper> ret = new ArrayList<MBeanInfoWrapper>();
-            for (Iterator iter = set.iterator(); iter.hasNext();) {
+            for (Iterator<ObjectName> iter = set.iterator(); iter.hasNext();) {
                 ObjectName on = (ObjectName) iter.next();
                 MBeanInfo info = null;
                 try {

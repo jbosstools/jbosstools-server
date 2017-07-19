@@ -189,11 +189,7 @@ public class DeployHandler extends AbstractHandler {
 		if( selection instanceof IStructuredSelection ) {
 			IStructuredSelection sel2 = (IStructuredSelection)selection;
 			Object[] objs = sel2.toArray();
-			if( server == null ) {
-				errorStatus = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, Messages.ActionDelegateDeployableServersNotFoundTitle);
-				errorTitle = Messages.ActionDelegateCannotPublish;
-				errorMessage = Messages.ActionDelegateDeployableServersNotFoundDesc;
-			} else if( objs == null || !allFiles(objs) ) {
+			if( objs == null || !allFiles(objs) ) {
 				errorStatus = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, Messages.ActionDelegateFileResourcesOnly);
 				errorTitle = Messages.ActionDelegateCannotPublish;
 				errorMessage = Messages.ActionDelegateFileResourcesOnly;
@@ -206,7 +202,7 @@ public class DeployHandler extends AbstractHandler {
 					IServerWorkingCopy copy = server.createWorkingCopy();
 					copy.modifyModules(modules, new IModule[0], new NullProgressMonitor());
 					IServer saved = copy.save(false, new NullProgressMonitor()); 
-					new PublishServerJob(saved).schedule();
+					new PublishServerJob(saved, IServer.PUBLISH_INCREMENTAL, true).schedule();
 				} catch( CoreException ce ) {
 					errorStatus = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, Messages.ActionDelegatePublishFailed, ce);
 					errorTitle = Messages.ActionDelegateCannotPublish;

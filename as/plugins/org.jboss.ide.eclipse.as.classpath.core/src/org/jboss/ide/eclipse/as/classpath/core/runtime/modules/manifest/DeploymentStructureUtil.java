@@ -54,12 +54,12 @@ public class DeploymentStructureUtil extends AbstractModuleSlotUtil{
 			// contains a list of  deployment   sub-deployment   module
 			IMemento[] all = mem.getChildren();
 			for( int i = 0; i < all.length; i++ ) {
-				IMemento[] deps = all[i].getChildren("dependencies");
+				IMemento[] deps = all[i].getChildren("dependencies"); //$NON-NLS-1$
 				for( int j = 0; j < deps.length; j++ ) {
-					IMemento[] modules = deps[j].getChildren("module");
+					IMemento[] modules = deps[j].getChildren("module"); //$NON-NLS-1$
 					for( int k = 0; k < modules.length; k++ ) {
-						String name = modules[k].getString("name");
-						String slot = modules[k].getString("slot");
+						String name = modules[k].getString("name"); //$NON-NLS-1$
+						String slot = modules[k].getString("slot"); //$NON-NLS-1$
 						if( name != null )
 							collector.add(new ModuleSlot(name, slot));
 					}
@@ -75,6 +75,6 @@ public class DeploymentStructureUtil extends AbstractModuleSlotUtil{
 	}
 	
 	protected IFile[] locateRelevantFiles(IProject p) throws CoreException {
-		return super.locateFiles(p,  "jboss-deployment-structure.xml");
+		return super.locateFiles(p,  "jboss-deployment-structure.xml"); //$NON-NLS-1$
 	}
 }

@@ -212,7 +212,7 @@ public class StrippedServerWizardFragment extends WizardFragment {
 		else
 			swc = s.createWorkingCopy();
 
-		String currentdeploy = swc.getAttribute(DeployableServer.DEPLOY_DIRECTORY, "");
+		String currentdeploy = swc.getAttribute(DeployableServer.DEPLOY_DIRECTORY, ""); //$NON-NLS-1$
 		if(!currentdeploy.equals(""))//$NON-NLS-1$
 			deployText.setText(currentdeploy); 
 	}

@@ -157,7 +157,7 @@ public class ActionProvider extends CommonActionProvider {
 		ArrayList<IConnectionWrapper> list = new ArrayList<IConnectionWrapper>();
 		IStructuredSelection selection = getContextSelection();
 		if (selection != null) {
-			Iterator i = selection.iterator();
+			Iterator<?> i = selection.iterator();
 			Object o;
 			while (i.hasNext()) {
 				o = i.next();

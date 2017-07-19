@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.ide.eclipse.as.ui.UIUtil;
+import org.jboss.ide.eclipse.as.wtp.ui.util.FormDataUtility;
 
 public class CopyConfigurationDialog extends TitleAreaDialog {
 	private String origHome, origDest, origConfig;
@@ -64,15 +64,15 @@ public class CopyConfigurationDialog extends TitleAreaDialog {
 		Point destSize = new GC(destLabel).textExtent(destLabel.getText());
 		Control wider = nameSize.x > destSize.x ? nameLabel : destLabel;
 		
-		nameText.setLayoutData(UIUtil.createFormData2(
+		nameText.setLayoutData(FormDataUtility.createFormData2(
 				0,13,null,0,wider,5,100,-5));
-		nameLabel.setLayoutData(UIUtil.createFormData2(
+		nameLabel.setLayoutData(FormDataUtility.createFormData2(
 				0,15,null,0,0,5,null,0));
-		destText.setLayoutData(UIUtil.createFormData2(
+		destText.setLayoutData(FormDataUtility.createFormData2(
 				nameText,5,null,0,wider,5,browse,-5));
-		destLabel.setLayoutData(UIUtil.createFormData2(
+		destLabel.setLayoutData(FormDataUtility.createFormData2(
 				nameText,7,null,0,0,5,null,0));
-		browse.setLayoutData(UIUtil.createFormData2( 
+		browse.setLayoutData(FormDataUtility.createFormData2( 
 				nameText,5,null,0,null,0,100,-5));
 		
 		nameText.addModifyListener(new ModifyListener(){

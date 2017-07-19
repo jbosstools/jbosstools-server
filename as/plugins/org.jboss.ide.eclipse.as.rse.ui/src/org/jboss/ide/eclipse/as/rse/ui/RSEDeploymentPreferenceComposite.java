@@ -54,9 +54,9 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.rse.core.RSEFrameworkUtils;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
-import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI.IServerModeUICallback;
 import org.jboss.ide.eclipse.as.ui.editor.ServerModeSectionComposite.ChangeServerPropertyCommand;
+import org.jboss.ide.eclipse.as.wtp.ui.util.FormDataUtility;
 
 public abstract class RSEDeploymentPreferenceComposite extends Composite implements PropertyChangeListener {
 	protected IServerModeUICallback callback;
@@ -68,7 +68,7 @@ public abstract class RSEDeploymentPreferenceComposite extends Composite impleme
 		this.callback = callback;
 		setLayout(new FormLayout());
 		Composite child = new Composite(this, SWT.None);
-		child.setLayoutData(UIUtil.createFormData2(0, 0, null, 0, 0, 5, 100, 0));
+		child.setLayoutData(FormDataUtility.createFormData2(0, 0, null, 0, 0, 5, 100, 0));
 		child.setLayout(new GridLayout());
 		String current = discoverCurrentHost(callback);
 		combo = new CustomSystemHostCombo(child, SWT.NULL, current, "files"); //$NON-NLS-1$
@@ -201,7 +201,7 @@ public abstract class RSEDeploymentPreferenceComposite extends Composite impleme
 			l.setText("Host");
 			newHost = new Button(this, SWT.NONE);
 			newHost.setText("New Host...");
-			newHost.setLayoutData(UIUtil.createFormData2(0, 0, null, 0, null, 0, 100, -5));
+			newHost.setLayoutData(FormDataUtility.createFormData2(0, 0, null, 0, null, 0, 100, -5));
 			newHost.addSelectionListener(new SelectionListener() {
 				public void widgetSelected(SelectionEvent e) {
 					newHostClicked();
@@ -211,14 +211,14 @@ public abstract class RSEDeploymentPreferenceComposite extends Composite impleme
 			});
 			
 			combo = new Combo(this, SWT.BORDER | SWT.READ_ONLY);
-			l.setLayoutData(UIUtil.createFormData2(0, 5, null, 0, 0, 0, null, 0));
-			combo.setLayoutData(UIUtil.createFormData2(0, 0, null, 0, l, 5, newHost, -5));
+			l.setLayoutData(FormDataUtility.createFormData2(0, 5, null, 0, 0, 0, null, 0));
+			combo.setLayoutData(FormDataUtility.createFormData2(0, 0, null, 0, l, 5, newHost, -5));
 			refreshConnections();
 			combo.addModifyListener(this);
 			
 			Link openRSEView = new Link(this, SWT.NONE);
 			openRSEView.setText("<a>Open Remote System Explorer View...</a>");
-			openRSEView.setLayoutData(UIUtil.createFormData2(combo, 5, null, 0, null, 0, 100, -5));
+			openRSEView.setLayoutData(FormDataUtility.createFormData2(combo, 5, null, 0, null, 0, 100, -5));
 			openRSEView.addSelectionListener(new SelectionListener() {
 				public void widgetSelected(SelectionEvent e) {
 					String viewId = "org.eclipse.rse.ui.view.systemView";

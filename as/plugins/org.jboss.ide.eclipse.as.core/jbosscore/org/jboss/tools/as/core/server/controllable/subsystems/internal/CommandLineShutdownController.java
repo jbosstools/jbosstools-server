@@ -21,7 +21,6 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.launch.CommandLineLaunchConfigProperties;
 import org.jboss.ide.eclipse.as.core.server.launch.LocalCommandLineRunner;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
@@ -100,7 +99,7 @@ public class CommandLineShutdownController extends AbstractSubsystemController i
 					IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
 					MessageFormat.format("Could not stop server {0}", getServer().getName()),  //$NON-NLS-1$
 					ce); 
-			ServerLogger.getDefault().log(getServer(), error);
+			JBossServerCorePlugin.log(error);
 			return  error;
 		}
 	}

@@ -12,21 +12,16 @@ package org.jboss.ide.eclipse.archives.ui.providers;
 
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.BaseLabelProvider;
-import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
-import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveAction;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
-import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveFileSetImpl;
-import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveFolderImpl;
-import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveImpl;
 import org.jboss.ide.eclipse.archives.core.util.PathUtils;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
 import org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages;
@@ -95,7 +90,7 @@ public class ArchivesLabelProvider extends BaseLabelProvider implements ILabelPr
 				if( isInternal(node)) {
 					switch (node.getNodeType()) {
 						case IArchiveNode.TYPE_ARCHIVE: {
-							if( node instanceof ArchiveImpl ) {
+							if( node instanceof IArchive ) {
 								IArchive pkg = (IArchive) node;
 								if (!pkg.isExploded())
 									return ArchivesSharedImages.getImage(ArchivesSharedImages.IMG_PACKAGE);
@@ -104,10 +99,10 @@ public class ArchivesLabelProvider extends BaseLabelProvider implements ILabelPr
 							}
 						}
 						case IArchiveNode.TYPE_ARCHIVE_FOLDER: 
-							if( node instanceof ArchiveFolderImpl) 
+							if( node instanceof IArchiveFolder) 
 								return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
 						case IArchiveNode.TYPE_ARCHIVE_FILESET: {
-							if( node instanceof ArchiveFileSetImpl )
+							if( node instanceof IArchiveStandardFileSet )
 								return ArchivesSharedImages.getImage(ArchivesSharedImages.IMG_MULTIPLE_FILES);
 						}
 					} // end switch
@@ -153,9 +148,9 @@ public class ArchivesLabelProvider extends BaseLabelProvider implements ILabelPr
 	}
 
 	private boolean isInternal(IArchiveNode node) {
-		if( node instanceof ArchiveImpl || 
-				node instanceof ArchiveFolderImpl || 
-				node instanceof ArchiveFileSetImpl)
+		if( node instanceof IArchive || 
+				node instanceof IArchiveFolder || 
+				node instanceof IArchiveStandardFileSet)
 			return true;
 		return false;
 	}

@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -35,7 +36,7 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveModelRootNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeVisitor;
 import org.jboss.ide.eclipse.archives.core.util.PathUtils;
-import org.jboss.ide.eclipse.archives.core.util.internal.TrueZipUtil;
+import org.jboss.ide.eclipse.archives.core.util.TrueZipUtil;
 
 /**
  * This builder is responsible for building the archives
@@ -52,7 +53,7 @@ public class ArchivesBuilder extends IncrementalProjectBuilder {
 	 * @see IncrementalProjectBuilder#build(int, Map, IProgressMonitor)
 	 * @see IProject#build(int, String, Map, IProgressMonitor)
 	 */
-	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
+	protected IProject[] build(int kind, Map<String, String> args, IProgressMonitor monitor) throws CoreException {
 
 		// if we're not to build, get out of here
 		if( !ArchivesCore.getInstance().getPreferenceManager().isArchivesBuilderEnabled(getProject().getLocation()))
@@ -147,7 +148,7 @@ public class ArchivesBuilder extends IncrementalProjectBuilder {
 						IArchiveFileSet fileset = (IArchiveFileSet)node;
 						IPath p = PathUtils.getGlobalLocation(fileset);
 						if( p != null ) {
-							IContainer[] containers = workspaceRoot.findContainersForLocation(p);
+							IContainer[] containers = workspaceRoot.findContainersForLocationURI(URIUtil.toURI(p.makeAbsolute()));
 							for( int i = 0; i < containers.length; i++ ) {
 								set.add(containers[i].getProject());
 							}

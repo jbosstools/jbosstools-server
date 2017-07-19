@@ -10,18 +10,11 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IFilesystemController;
 
 /**
@@ -40,21 +33,6 @@ public class DeploymentMarkerUtils {
 	public static final String UNDEPLOYED = ".undeployed";//$NON-NLS-1$
 	public static final String SKIP_DEPLOY = ".skipdeploy";//$NON-NLS-1$
 	public static final String PENDING = ".pending";//$NON-NLS-1$
-
-	private static File getOrCreateBlankFile() throws CoreException {
-		IPath p = JBossServerCorePlugin.getDefault().getStateLocation().append("BLANK_FILE"); //$NON-NLS-1$
-		if (!p.toFile().exists()) {
-			try {
-				OutputStream out = new FileOutputStream(p.toFile());
-				if (out != null) {
-					out.close();
-				}
-			} catch (IOException ioe) {
-				throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, ioe.getMessage(), ioe));
-			}
-		}
-		return p.toFile();
-	}
 
 	/**
 	 * Returns <code>true</code> if the given server supports the marker deployment method introduced in JBoss AS7.

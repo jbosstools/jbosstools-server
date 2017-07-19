@@ -330,7 +330,7 @@ public final class FileUtil {
         dest.mkdirs();
         JarFile jf = new JarFile(jar);
         try {
-            Enumeration es = jf.entries();
+            Enumeration<JarEntry> es = jf.entries();
             while(es.hasMoreElements()) {
                 JarEntry je = (JarEntry)es.nextElement();
                 String n = je.getName();
@@ -456,7 +456,7 @@ public final class FileUtil {
         dest.mkdirs();
         ZipFile zf = new ZipFile(jar);
         try {
-            Enumeration es = zf.entries();
+            Enumeration<? extends ZipEntry> es = zf.entries();
             while(es.hasMoreElements()) {
                 ZipEntry je = (ZipEntry)es.nextElement();
                 String n = je.getName();
@@ -488,7 +488,6 @@ public final class FileUtil {
     public static String fileURLToFilePath(String url) {
         if(url == null) return null;
         String resultUrl = url.replace('\\', '/');
-///        if(!url.startsWith("file:/")) return url;
 		if(!resultUrl.startsWith("file:")) return resultUrl; //$NON-NLS-1$
         int iLast = resultUrl.lastIndexOf(':'), iFirst = resultUrl.indexOf(':');
         return (iLast == iFirst) ? resultUrl.substring(5) : resultUrl.substring(iLast - 1);
@@ -511,7 +510,7 @@ public final class FileUtil {
 	private static String[] tokenizePath(String path) {
 		String tokenizedPath = path.replace('\\', '/');
 		StringTokenizer st = new StringTokenizer(tokenizedPath, "/"); //$NON-NLS-1$
-		ArrayList l = new ArrayList();
+		ArrayList<String> l = new ArrayList<String>();
 		while(st.hasMoreTokens()) {
 			String t = st.nextToken();
 			if(t.length() == 0 || t.equals(".")) continue; //$NON-NLS-1$
@@ -525,18 +524,9 @@ public final class FileUtil {
 	}
 
 	public static String encode(String text, String encoding) {
-		if(true) return text;
-		try {
-			byte[] bs = text.getBytes(System.getProperty("file.encoding")); //$NON-NLS-1$
-			ByteArrayInputStream is = new ByteArrayInputStream(bs);
-			InputStreamReader r = new InputStreamReader(is, encoding);
-			char[] cs = new char[bs.length];
-			int l = r.read(cs, 0, cs.length);
-			return new String(cs, 0, l);
-		} catch (IOException e) {
-			if("UTF-8".equals(encoding)) return text; //$NON-NLS-1$
-			return encode(text, "UTF-8"); //$NON-NLS-1$
-		}
+		// TODO previous code here was dead and made no sense
+		// No idea on what implementation should be
+		return text;
 	}
 
 	public static String encodeDefault(String text) {
@@ -605,13 +595,16 @@ public final class FileUtil {
     	return null;
     }
 
-    static Set validEncodings = new HashSet();
-    static Set invalidEncodings = new HashSet();
+    static Set<String> validEncodings = new HashSet<String>();
+    static Set<String> invalidEncodings = new HashSet<String>();
 
     public static String validateEncoding(String encoding, String defaultEncoding) {
-    	if(encoding == null || encoding.equals(defaultEncoding)) return defaultEncoding;
-    	if(validEncodings.contains(encoding)) return encoding;
-    	if(invalidEncodings.contains(encoding)) return defaultEncoding;
+    	if(encoding == null || encoding.equals(defaultEncoding)) 
+    		return defaultEncoding;
+    	if(validEncodings.contains(encoding)) 
+    		return encoding;
+    	if(invalidEncodings.contains(encoding)) 
+    		return defaultEncoding;
     	try {
     		if(defaultEncoding.equals("UTF-16")) { //$NON-NLS-1$
     			new String(XML_16, 0, XML_16.length, encoding);

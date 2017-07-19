@@ -37,7 +37,7 @@ public class ManifestChangeListener implements IResourceChangeListener {
 			IWorkspace ws = ResourcesPlugin.getWorkspace();
 			ws.addResourceChangeListener(listener, IResourceChangeEvent.POST_CHANGE | IResourceChangeEvent.PRE_BUILD);
 		} catch(Exception e) {
-			ClasspathCorePlugin.log("Unable to add manifest change listener", e);
+			ClasspathCorePlugin.log("Unable to add manifest change listener", e); //$NON-NLS-1$
 		}
 	}
 
@@ -47,7 +47,7 @@ public class ManifestChangeListener implements IResourceChangeListener {
 	}
 	
 	protected String getFileName() {
-		return "manifest.mf";
+		return "manifest.mf"; //$NON-NLS-1$
 	}
 	
 	protected void ensureInCache(IFile f) {

@@ -19,7 +19,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.eclipse.wst.server.core.internal.Server;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
 
@@ -35,7 +34,7 @@ public class DeploymentPreferencesLoader {
 	 * @return
 	 */
 	public static DeploymentPreferences loadPreferencesFromServer(IServerAttributes server) {
-		String xml = ((Server)server).getAttribute(DEPLOYMENT_PREFERENCES_KEY, (String)null);
+		String xml = server.getAttribute(DEPLOYMENT_PREFERENCES_KEY, (String)null);
 		ByteArrayInputStream bis = null;
 		if( xml != null ) {
 			bis = new ByteArrayInputStream(xml.getBytes());

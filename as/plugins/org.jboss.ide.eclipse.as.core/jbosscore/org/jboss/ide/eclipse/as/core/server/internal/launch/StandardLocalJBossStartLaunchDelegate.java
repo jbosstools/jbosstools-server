@@ -14,8 +14,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
-import org.eclipse.debug.core.model.IBreakpoint;
-import org.eclipse.jdt.debug.core.IJavaDebugTarget;
 import org.eclipse.jdt.debug.core.IJavaHotCodeReplaceListener;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.osgi.util.NLS;
@@ -24,7 +22,6 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.Trace;
-import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.IUserPrompter;
@@ -54,7 +51,7 @@ public class StandardLocalJBossStartLaunchDelegate extends
 	
 
 	protected void logStatus(IServer server, IStatus stat) {
-		ServerLogger.getDefault().log(server, stat);
+		JBossServerCorePlugin.log(stat);
 	}
 	
 	protected void initiatePolling(IServer server) {

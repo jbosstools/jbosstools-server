@@ -89,7 +89,7 @@ public class CommonActionProviderUtils {
 				final TriggerSequence[] activeBindings = bindingService
 						.getActiveBindingsFor(SHOW_IN_QUICK_MENU_ID);
 				if (activeBindings.length > 0) {
-					text += "\t" + activeBindings[0].format();
+					text += "\t" + activeBindings[0].format(); //$NON-NLS-1$
 				}
 				item = new MenuManager(text, SHOW_IN_QUICK_MENU_ID);
 				menuManager.insertAfter(ServerActionProvider.TOP_SECTION_END_SEPARATOR, item);

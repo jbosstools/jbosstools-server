@@ -32,6 +32,7 @@ import org.jboss.ide.eclipse.as.core.server.xpl.ModulePackager;
 import org.jboss.ide.eclipse.as.core.util.IEventCodes;
 import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
 import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
+import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 import org.jboss.tools.as.core.internal.modules.ModuleDeploymentPrefsUtil;
 
 public class PublishUtil extends ModuleResourceUtil {
@@ -76,7 +77,7 @@ public class PublishUtil extends ModuleResourceUtil {
 
 	
 	public static String getSuffix(String type) {
-		return new ModuleDeploymentPrefsUtil().getDefaultSuffix(type);
+		return ServerModelUtilities.getDefaultSuffixForModuleType(type);
 	}
 	
 	@Deprecated

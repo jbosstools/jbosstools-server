@@ -44,6 +44,7 @@ import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IServerShutdownController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ISubsystemController;
+import org.jboss.ide.eclipse.as.wtp.ui.util.FormDataUtility;
 import org.jboss.tools.as.core.server.controllable.systems.ICommandLineShutdownController;
 
 public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
@@ -72,8 +73,8 @@ public class CommandLineLaunchTab extends AbstractLaunchConfigurationTab {
 		Group startGroup = createStartGroup(main);
 		Group stopGroup = createStopGroup(main);
 		// Set the layout data of the two main widgets
-		startGroup.setLayoutData(UIUtil.createFormData(getStartCommandHeightHint(), SWT.DEFAULT, 0, 5, stopGroup, -5, 0, 5, 100, -5));
-		stopGroup.setLayoutData(UIUtil.createFormData(getStopCommandHeightHint(), SWT.DEFAULT, 50, 0, 100, -5, 0, 5, 100, -5));
+		startGroup.setLayoutData(FormDataUtility.createFormData(getStartCommandHeightHint(), SWT.DEFAULT, 0, 5, stopGroup, -5, 0, 5, 100, -5));
+		stopGroup.setLayoutData(FormDataUtility.createFormData(getStopCommandHeightHint(), SWT.DEFAULT, 50, 0, 100, -5, 0, 5, 100, -5));
 	}
 	
 	protected Group createStartGroup(Composite main) {

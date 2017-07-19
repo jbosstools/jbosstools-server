@@ -17,7 +17,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.wiring.BundleWiring;
 
-import de.schlichtherle.io.ArchiveDetector;
 import de.schlichtherle.key.KeyManager;
 
 /**
@@ -45,9 +44,9 @@ public class ArchivesCorePlugin extends Plugin {
 	 * (non-Javadoc)
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
-		this.context = context;
+	public void start(BundleContext context2) throws Exception {
+		super.start(context2);
+		context = context2;
 		
 		// Load the workspace version of ArchivesCore
 		new WorkspaceArchivesCore();

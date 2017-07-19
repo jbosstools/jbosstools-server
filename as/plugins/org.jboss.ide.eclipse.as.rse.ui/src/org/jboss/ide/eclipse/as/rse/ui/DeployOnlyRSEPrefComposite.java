@@ -22,8 +22,8 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI.IServerModeUICallback;
+import org.jboss.ide.eclipse.as.wtp.ui.util.FormDataUtility;
 
 public class DeployOnlyRSEPrefComposite extends
 		RSEDeploymentPreferenceComposite {
@@ -53,9 +53,9 @@ public class DeployOnlyRSEPrefComposite extends
 
 		deployButton = new Button(this, SWT.PUSH);
 		deployButton.setText(Messages.browse);
-		label.setLayoutData(UIUtil.createFormData2(composite, 7, null, 0, 0, 10, null, 0));
-		deployButton.setLayoutData(UIUtil.createFormData2(composite, 5, null, 0, null, 0, 100, -5));
-		deployText.setLayoutData(UIUtil.createFormData2(composite, 5, null, 0, label, 5, deployButton, -5));
+		label.setLayoutData(FormDataUtility.createFormData2(composite, 7, null, 0, 0, 10, null, 0));
+		deployButton.setLayoutData(FormDataUtility.createFormData2(composite, 5, null, 0, null, 0, 100, -5));
+		deployText.setLayoutData(FormDataUtility.createFormData2(composite, 5, null, 0, label, 5, deployButton, -5));
 
 		deployButton.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {

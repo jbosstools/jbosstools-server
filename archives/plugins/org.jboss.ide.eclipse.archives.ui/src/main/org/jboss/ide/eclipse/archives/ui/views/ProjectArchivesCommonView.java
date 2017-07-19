@@ -168,9 +168,10 @@ public class ProjectArchivesCommonView extends CommonNavigator implements IArchi
 		return null;
 	}
 
-	public Object getAdapter(Class adapter) {
-		if( adapter == IPropertySheetPage.class )
-			return new PropertySheetPage();
+	public <T> T getAdapter(Class<T> adapter) {
+		if( adapter == IPropertySheetPage.class ) {
+			return adapter.cast(new PropertySheetPage());
+		}
 		return super.getAdapter(adapter);
 	}
 

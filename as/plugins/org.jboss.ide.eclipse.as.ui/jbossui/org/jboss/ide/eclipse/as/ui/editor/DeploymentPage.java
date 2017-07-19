@@ -70,8 +70,8 @@ public class DeploymentPage extends ServerEditorPart implements IServerWorkingCo
 		if( helper == null ) {
 			helper = new ServerAttributeHelper(getServer().getOriginal(), getServer());
 		} else {
-			String helperTS = helper.getWorkingCopy().getAttribute("timestamp", (String)null);
-			String officialTS = getServer().getAttribute("timestamp", (String)null);
+			String helperTS = helper.getWorkingCopy().getAttribute("timestamp", (String)null); //$NON-NLS-1$
+			String officialTS = getServer().getAttribute("timestamp", (String)null); //$NON-NLS-1$
 			if( !helperTS.equals(officialTS)) {
 				helper = new ServerAttributeHelper(getServer().getOriginal(), getServer());
 			}

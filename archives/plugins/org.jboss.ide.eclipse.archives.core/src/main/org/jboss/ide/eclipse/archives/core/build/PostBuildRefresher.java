@@ -1,5 +1,6 @@
 package org.jboss.ide.eclipse.archives.core.build;
 
+import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -40,13 +41,13 @@ public class PostBuildRefresher extends AbstractBuildListener {
 		}
 		
 		IPath loc = PathUtils.getGlobalLocation(pkg);
-		IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(loc);
+		IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocationURI(URIUtil.toURI(loc.makeAbsolute()));
 		for( int i = 0; i < files.length; i++ ) {
 			try {
 				files[i].refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 			} catch( CoreException ce ) {}
 		}
-		IContainer[] folders = ResourcesPlugin.getWorkspace().getRoot().findContainersForLocation(loc);
+		IContainer[] folders = ResourcesPlugin.getWorkspace().getRoot().findContainersForLocationURI(URIUtil.toURI(loc.makeAbsolute()));
 		for( int i = 0; i < folders.length; i++ ) {
 			try {
 				folders[i].refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());

@@ -51,7 +51,6 @@ import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
 import org.eclipse.wst.server.ui.internal.viewers.InitialSelectionProvider;
-import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.IRuntimePathProvider;
 import org.jboss.ide.eclipse.as.classpath.ui.Messages;
@@ -89,7 +88,7 @@ public class CustomClasspathPreferencePage extends ServerTypePreferencePage {
 		
 		// Save the recently selected
 		String lastSelected = rootComp.getCurrentId();
-		IEclipsePreferences prefs = new InstanceScope().getNode(JBossServerUIPlugin.PLUGIN_ID);
+		IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(JBossServerUIPlugin.PLUGIN_ID);
 		prefs.put(LAST_SELECTED_RUNTIME_TYPE, lastSelected);
 		try {
 			prefs.flush();
@@ -165,7 +164,7 @@ public class CustomClasspathPreferencePage extends ServerTypePreferencePage {
 			super(parent, style);
 		}
 		protected void initializeSelection() {
-			IEclipsePreferences prefs = new InstanceScope().getNode(JBossServerUIPlugin.PLUGIN_ID);
+			IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(JBossServerUIPlugin.PLUGIN_ID);
 			String last = prefs.get(LAST_SELECTED_RUNTIME_TYPE, null);
 			IRuntimeType[] types = getRuntimeTypes();
 			if( last == null ) {
@@ -201,7 +200,7 @@ public class CustomClasspathPreferencePage extends ServerTypePreferencePage {
 			};
 		}
 		public String getDescriptionLabel() {
-			return "Set classpath filesets for this runtime type";
+			return "Set classpath filesets for this runtime type"; //$NON-NLS-1$
 		}
 		
 		protected Object[] getCurrentComboSelectionDefaultDataModel() {
@@ -230,7 +229,7 @@ public class CustomClasspathPreferencePage extends ServerTypePreferencePage {
 		}
 
 		protected String getAllOptionString() {
-			return "All Runtime Types";
+			return "All Runtime Types"; //$NON-NLS-1$
 		}
 		
 		private IRuntimeType[] types = null;

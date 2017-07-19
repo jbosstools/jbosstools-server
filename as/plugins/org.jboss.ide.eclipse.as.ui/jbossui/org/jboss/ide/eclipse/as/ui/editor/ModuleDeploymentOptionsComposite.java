@@ -61,6 +61,7 @@ import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.internal.ChangeModuleDeploymentPropertyCommand;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
+import org.jboss.ide.eclipse.as.wtp.ui.util.FormDataUtility;
 import org.jboss.tools.as.core.internal.modules.DeploymentModulePrefs;
 import org.jboss.tools.as.core.internal.modules.DeploymentPreferences;
 import org.jboss.tools.as.core.server.controllable.systems.AbstractJBossDeploymentOptionsController;
@@ -125,13 +126,13 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 		viewer = createTreeViewer(root);
 		
 		if( filterComposite == null ) {
-			FormData treeData = UIUtil.createFormData2(0, 5, null,-5, 0,5,100,-5);
+			FormData treeData = FormDataUtility.createFormData2(0, 5, null,-5, 0,5,100,-5);
 			viewer.getTree().setLayoutData(treeData);
 		} else {
-			FormData filterData = UIUtil.createFormData2(0, 5, viewer.getTree(),-5, 0,5,100,-5);
+			FormData filterData = FormDataUtility.createFormData2(0, 5, viewer.getTree(),-5, 0,5,100,-5);
 			filterComposite.setLayoutData(filterData);
 			
-			FormData treeData = UIUtil.createFormData2(filterComposite, 10, 100,-5, 0,5,100,-5);
+			FormData treeData = FormDataUtility.createFormData2(filterComposite, 10, 100,-5, 0,5,100,-5);
 			viewer.getTree().setLayoutData(treeData);
 		}
 		return root;

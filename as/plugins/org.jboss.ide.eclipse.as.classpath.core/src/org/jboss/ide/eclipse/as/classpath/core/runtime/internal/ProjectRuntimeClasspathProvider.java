@@ -81,7 +81,6 @@ public class ProjectRuntimeClasspathProvider
 
 	@Override
 	public IClasspathEntry[] resolveClasspathContainer(IProject project, IRuntime runtime) {
-		System.out.println("Inside resolveClasspathContainer");
 		if( !isJBossModulesStyle(runtime)) {
 			return legacyClientAllImplementation(project, runtime);
 		}
@@ -111,44 +110,28 @@ public class ProjectRuntimeClasspathProvider
 	 * @return
 	 */
 	private IClasspathEntry[] jbossModulesImplementation(IProject project, IRuntime runtime) {
-		System.out.println("Inside jbossModulesImplementation");
-
 		// check outdated slots
 		boolean manifestsChanged = new ModuleSlotManifestUtil().isCacheOutdated(project); 
 		boolean deploymentStructureChanged = new DeploymentStructureUtil().isCacheOutdated(project);
 		boolean defaultsPerRuntimeChanged = (RuntimeClasspathCache.getInstance().getEntries(runtime) == null ? true : false);
-
-		System.out.println("manifestsChanged: " + manifestsChanged);
-		System.out.println("deploymentStructureChanged: " + deploymentStructureChanged);
-		System.out.println("defaultsPerRuntimeChanged: " + defaultsPerRuntimeChanged);
-		
 		IClasspathEntry[] entries = ProjectRuntimeClasspathCache.getInstance().getEntries(project, runtime);
 		if( manifestsChanged || defaultsPerRuntimeChanged || deploymentStructureChanged ||  entries == null) {
-			System.out.println("Inside if statement");
 			// check the changed manifests
 			ModulesManifestEntryContainer cpc = new ModulesManifestEntryContainer(runtime, project);
 			IRuntimePathProvider[] fromManifest = cpc.getRuntimePathProviders();
-			System.out.println("fromManifest length: " + fromManifest.length);
 			
 			// check deployment-structure xml files
 			DeploymentStructureEntryContainer depStructureContainer = new DeploymentStructureEntryContainer(runtime, project);
 			IRuntimePathProvider[] fromStructure = depStructureContainer.getRuntimePathProviders();
-			System.out.println("fromStructure length: " + fromStructure.length);
 			
 			// check default modules for the project's runtime
 			IRuntimePathProvider[] fromRuntimeDefaults = CustomRuntimeClasspathModel.getInstance().getEntries(runtime.getRuntimeType());
-			System.out.println("fromRuntimeDefaults length: " + fromRuntimeDefaults.length);
-
-			
 			
 			IRuntimePathProvider[] merged = jbossModulesMerge(jbossModulesMerge(fromManifest, fromRuntimeDefaults), fromStructure);
-			System.out.println("merged length: " + merged.length);
 
 			// Merge it all together
 			IPath[] allPaths = PathProviderResolutionUtil.getAllPaths(runtime, merged);
-			System.out.println("allPaths length: " + allPaths.length);
 			IClasspathEntry[] runtimeClasspath = PathProviderResolutionUtil.getClasspathEntriesForResolvedPaths(allPaths);
-			System.out.println("runtimeClasspath length: " + runtimeClasspath.length);
 			
 			// store Cache in the various locales
 			IPath[] fromRuntimeDefaultsPaths = PathProviderResolutionUtil.getAllPaths(runtime, fromRuntimeDefaults);

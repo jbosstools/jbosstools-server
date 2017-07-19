@@ -13,7 +13,6 @@ package org.jboss.tools.wtp.server.launchbar.descriptors;
 import org.eclipse.launchbar.core.ILaunchDescriptor;
 import org.eclipse.launchbar.core.ILaunchDescriptorType;
 import org.eclipse.wst.server.core.IModule;
-import org.jboss.tools.wtp.server.launchbar.ModuleObjectProvider;
 import org.jboss.tools.wtp.server.launchbar.objects.ModuleWrapper;
 
 /**
@@ -35,7 +34,7 @@ public class ModuleLaunchDescriptor implements ILaunchDescriptor {
 	}
 	
 	@Override
-	public Object getAdapter(Class adapter) {
+	public <T> T getAdapter(Class<T> adapter) {
 		// TODO Auto-generated method stub
 		return null;
 	}

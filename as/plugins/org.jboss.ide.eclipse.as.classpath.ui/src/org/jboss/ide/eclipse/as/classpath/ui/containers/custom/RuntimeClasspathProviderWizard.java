@@ -33,8 +33,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.IRuntimePathProvider;
-import org.jboss.ide.eclipse.as.classpath.core.runtime.path.internal.LayeredProductPathProvider;
-import org.jboss.ide.eclipse.as.classpath.core.runtime.path.internal.RuntimePathProviderFileset;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.tools.foundation.core.tasks.TaskModel;
 import org.jboss.tools.foundation.ui.xpl.taskwizard.IWizardHandle;
@@ -51,7 +49,7 @@ public class RuntimeClasspathProviderWizard extends TaskWizard {
 	
 	
 	public RuntimeClasspathProviderWizard(IRuntimeType rtType) {
-		super("New Default Classpath Entry", new RootFragment());
+		super("New Default Classpath Entry", new RootFragment()); //$NON-NLS-1$
 		getTaskModel().putObject(RUNTIME_TYPE, rtType);
 	}
 	
@@ -89,17 +87,17 @@ public class RuntimeClasspathProviderWizard extends TaskWizard {
 			return true;
 		}
 		public String getName() {
-			return "Standard Fileset";
+			return "Standard Fileset"; //$NON-NLS-1$
 		}
 	}
 	private static class LayeredRuntimePathProviderTypeImpl implements RuntimePathProviderType {
 		public boolean isValidFor(IRuntimeType type) {
 			ServerExtendedProperties props = type == null ? null : 
 			(ServerExtendedProperties)Platform.getAdapterManager().getAdapter(type, ServerExtendedProperties.class);
-			return props != null && props.getFileStructure() == props.FILE_STRUCTURE_CONFIG_DEPLOYMENTS;
+			return props != null && props.getFileStructure() == ServerExtendedProperties.FILE_STRUCTURE_CONFIG_DEPLOYMENTS;
 		}
 		public String getName() {
-			return "JBoss Module";
+			return "JBoss Module"; //$NON-NLS-1$
 		}
 	}
 	
@@ -121,9 +119,9 @@ public class RuntimeClasspathProviderWizard extends TaskWizard {
 		 */
 		public Composite createComposite(Composite parent, IWizardHandle handle) {
 			this.handle = handle;
-			handle.setTitle("Select a classpath entry type");
-			handle.setDescription("Please select one of the classpath entry types below.");
-			handle.setImageDescriptor( AbstractUIPlugin.imageDescriptorFromPlugin( "org.eclipse.wst.common.modulecore.ui", "icons/assembly-banner.png" ) ); //$NON-NLS-1$
+			handle.setTitle("Select a classpath entry type"); //$NON-NLS-1$
+			handle.setDescription("Please select one of the classpath entry types below."); //$NON-NLS-1$
+			handle.setImageDescriptor( AbstractUIPlugin.imageDescriptorFromPlugin( "org.eclipse.wst.common.modulecore.ui", "icons/assembly-banner.png" ) ); //$NON-NLS-1$ //$NON-NLS-2$
 			Composite c = new Composite(parent, SWT.NONE);
 			c.setLayout(new GridLayout());
 			viewer = new TreeViewer(c, SWT.SINGLE | SWT.BORDER);

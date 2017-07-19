@@ -11,8 +11,6 @@
 package org.jboss.ide.eclipse.as.internal.management.wf11;
 
 import java.io.File;
-import java.util.List;
-import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.jboss.dmr.ModelNode;

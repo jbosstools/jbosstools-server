@@ -21,7 +21,6 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.wst.server.core.IRuntime;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.IRuntimePathProvider;
-import org.jboss.ide.eclipse.as.classpath.core.runtime.path.internal.LayeredProductPathProvider;
 import org.jboss.ide.eclipse.as.core.resolvers.RuntimeVariableResolver;
 import org.jboss.tools.foundation.core.expressions.ExpressionResolver;
 import org.jboss.tools.foundation.core.expressions.IVariableResolver;

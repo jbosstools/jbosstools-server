@@ -103,7 +103,7 @@ public class StandardModuleRestartBehaviorController extends
 			}
 			return testPath(relativePath);
 		} catch(CoreException ce) {
-			JBossServerCorePlugin.getDefault().log(ce);
+			JBossServerCorePlugin.log(ce);
 		}
 		return false;
 	}

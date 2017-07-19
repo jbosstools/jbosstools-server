@@ -60,9 +60,9 @@ public class ModuleSlotManifestUtil extends AbstractModuleSlotUtil {
 				if( contents != null ) {
 					Manifest mf = new Manifest(new ByteArrayInputStream(contents.getBytes()));
 					Attributes a = mf.getMainAttributes();
-					String val = a.getValue("Dependencies");
+					String val = a.getValue("Dependencies"); //$NON-NLS-1$
 					if( val != null ) {
-						String[] byComma = val.split(",");
+						String[] byComma = val.split(","); //$NON-NLS-1$
 						for( int j = 0; j < byComma.length; j++ ) {
 							ModuleSlot ms = getModuleSlot(byComma[j]);
 							if( ms != null ) {
@@ -81,6 +81,6 @@ public class ModuleSlotManifestUtil extends AbstractModuleSlotUtil {
 	}
 	
 	protected IFile[] locateRelevantFiles(IProject p) throws CoreException {
-		return super.locateFiles(p, "manifest.mf");
+		return super.locateFiles(p, "manifest.mf"); //$NON-NLS-1$
 	}
 }

@@ -15,6 +15,10 @@
  *
  */
 public class ArchivesModelException extends RuntimeException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Exception parent;
 
 	public ArchivesModelException(String message) {

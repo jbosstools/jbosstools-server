@@ -39,11 +39,11 @@ import org.eclipse.wst.server.core.ServerEvent;
 import org.jboss.ide.eclipse.as.core.server.IDeploymentScannerModifier;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.DeploymentPage;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentPageUIController;
 import org.jboss.ide.eclipse.as.ui.editor.ModuleDeploymentOptionsComposite;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
+import org.jboss.ide.eclipse.as.wtp.ui.util.FormDataUtility;
 import org.jboss.tools.foundation.ui.widget.WidgetVisitorUtility;
 
 /**
@@ -184,14 +184,14 @@ public class StandardDeploymentPageController extends
 		fd.right = new FormAttachment(100, -5);
 		l1.setLayoutData(fd);
 		
-		errorImage = toolkit.createLabel(parent, "");
+		errorImage = toolkit.createLabel(parent, ""); //$NON-NLS-1$
 		fd = new FormData();
 		fd.top = new FormAttachment(l1, 5); 
 		fd.left = new FormAttachment(0, 0);
 		errorImage.setLayoutData(fd);
 
 
-		errorLabel = toolkit.createLabel(parent, "", SWT.WRAP);
+		errorLabel = toolkit.createLabel(parent, "", SWT.WRAP); //$NON-NLS-1$
 		fd = new FormData();
 		fd.top = new FormAttachment(l1, 5); 
 		fd.left = new FormAttachment(0, 20);
@@ -201,7 +201,7 @@ public class StandardDeploymentPageController extends
 		
 		// First section is deployment mode (server / custom / metadata) etc. 
 		standardOptions = createServerDeploymentOptions(parent);
-		standardOptions.setLayoutData(UIUtil.createFormData2(errorLabel, 5, null,0,0,5,100,-5));
+		standardOptions.setLayoutData(FormDataUtility.createFormData2(errorLabel, 5, null,0,0,5,100,-5));
 		
 		// Simply create a composite to show the per-module customizations
 		perModuleOptions = createModuleDeploymentOptions(parent);
@@ -231,7 +231,7 @@ public class StandardDeploymentPageController extends
 	
 	protected void setStatus(IStatus status) {
 		if( status == null || status.isOK()) {
-			errorLabel.setText("");
+			errorLabel.setText(""); //$NON-NLS-1$
 			errorImage.setImage(null);
 		} else {
 			errorLabel.setText(status.getMessage());

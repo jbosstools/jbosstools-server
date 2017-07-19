@@ -238,10 +238,6 @@ public class ChangePortDialog extends TitleAreaDialog {
 		return String.valueOf(count);
 	}
 	
-	private String safeString(String s) {
-		return s == null ? "" : s; //$NON-NLS-1$
-	}
-
 	public String getSelection() {
 		return selected;
 	}

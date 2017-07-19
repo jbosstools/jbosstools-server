@@ -23,10 +23,11 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
+import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
 import org.jboss.ide.eclipse.archives.core.model.EventManager;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
@@ -34,11 +35,10 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModelRootNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeVisitor;
-import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
 import org.jboss.ide.eclipse.archives.core.util.ModelUtil;
 import org.jboss.ide.eclipse.archives.core.util.PathUtils;
+import org.jboss.ide.eclipse.archives.core.util.TrueZipUtil;
 import org.jboss.ide.eclipse.archives.core.util.internal.ModelTruezipBridge;
-import org.jboss.ide.eclipse.archives.core.util.internal.TrueZipUtil;
 import org.jboss.ide.eclipse.archives.core.util.internal.ModelTruezipBridge.FileWrapperStatusPair;
 
 /**
@@ -83,15 +83,14 @@ public class ArchiveBuildDelegate {
 			IArchiveNode[] nodes = root.getChildren(IArchiveNode.TYPE_ARCHIVE);
 			ArrayList<IStatus> errors = new ArrayList<IStatus>();
 
-			monitor.beginTask( ArchivesCore.bind(ArchivesCoreMessages.BuildingProject,
-					ArchivesCore.getInstance().getVFS().getProjectName(project)), nodes.length * 1000);
+			String title = ArchivesCore.bind(ArchivesCoreMessages.BuildingProject,
+					ArchivesCore.getInstance().getVFS().getProjectName(project));
+			SubMonitor progress = SubMonitor.convert(monitor, title, nodes.length * 1000);
 			
 			for( int i = 0; i < nodes.length; i++ ) {
 				errors.addAll(Arrays.asList(
 						fullArchiveBuild(
-								((IArchive)nodes[i]),
-								new SubProgressMonitor(monitor, 1000), 
-								false)));
+								((IArchive)nodes[i]), progress.split(1000), false)));
 			}
 
 			EventManager.finishedBuild(project);
@@ -171,7 +170,7 @@ public class ArchiveBuildDelegate {
 		 * create folders: 800
 		 * build filesets: 7000
 		 */
-		monitor.beginTask(ArchivesCore.bind(
+		SubMonitor progress = SubMonitor.convert(monitor, ArchivesCore.bind(
 				ArchivesCoreMessages.BuildingArchive, pkg.toString()), 8000);
 
 		// Run the pre actions
@@ -190,11 +189,11 @@ public class ArchiveBuildDelegate {
 							pkg.toString()));
 			errors.add(e);
 		}
-		monitor.worked(200);
+		progress.split(200);
 
 		// force create all folders
 		IArchiveFolder[] folders = ModelUtil.findAllDescendentFolders(pkg);
-		IProgressMonitor folderMonitor = new SubProgressMonitor(monitor, 800);
+		IProgressMonitor folderMonitor = progress.split(800);
 		folderMonitor.beginTask(ArchivesCoreMessages.CreatingFolders, folders.length * 100);
 		for( int i = 0; i < folders.length; i++ ) {
 			if( !ModelTruezipBridge.createFile(folders[i])) {
@@ -210,10 +209,10 @@ public class ArchiveBuildDelegate {
 
 		// build the filesets
 		IArchiveFileSet[] filesets = ModelUtil.findAllDescendentFilesets(pkg);
-		IProgressMonitor filesetMonitor = new SubProgressMonitor(monitor, 6000);
+		IProgressMonitor filesetMonitor = progress.split(6000);
 		filesetMonitor.beginTask(ArchivesCoreMessages.BuildingFilesets, filesets.length * 1000);
 		for( int i = 0; i < filesets.length; i++ ) {
-			IStatus[] errors2 = fullFilesetBuild(filesets[i], new SubProgressMonitor(filesetMonitor, 1000), pkg);
+			IStatus[] errors2 = fullFilesetBuild(filesets[i], progress.split(1000), pkg);
 			errors.addAll(Arrays.asList(errors2));
 		}
 		filesetMonitor.done();
@@ -228,14 +227,13 @@ public class ArchiveBuildDelegate {
 		
 		ArrayList<IArchive> referencingArchives = new ArrayList<IArchive>();
 		referencingArchives.addAll(Arrays.asList(findReferences(pkg)));
-		IProgressMonitor referenceMon = new SubProgressMonitor(monitor, 1000);
-		referenceMon.beginTask(ArchivesCoreMessages.BuildingArchive, 
+		
+		SubMonitor referenceMon = SubMonitor.convert(progress.split(1000), ArchivesCoreMessages.BuildingArchive, 
 				referencingArchives.size() * 1000);
 		for( Iterator<IArchive> i = referencingArchives.iterator(); i.hasNext();) {
 			IArchive toBuild = i.next();
 			if( !toBuild.equals(pkg)) {
-				errors.add(fullArchiveBuild(
-						toBuild, new SubProgressMonitor(referenceMon, 1000), log));
+				errors.add(fullArchiveBuild(toBuild, referenceMon.split(1000), log));
 			} else {
 				// RECURSE ERROR
 			}
@@ -285,7 +283,7 @@ public class ArchiveBuildDelegate {
 	 * @param removed       A list of removed resource paths
 	 */
 	public void incrementalBuild(IArchive archive, Set<IPath> addedChanged,
-			Set<IPath> removed, boolean workspaceRelative, IProgressMonitor monitor) {
+			Set<IPath> removed, boolean workspaceRelative, IProgressMonitor monitor2) {
 		ArrayList<IStatus> errors = new ArrayList<IStatus>();
 
 		if( addedChanged.size() == 0 && removed.size() == 0 )
@@ -293,7 +291,7 @@ public class ArchiveBuildDelegate {
 		
 		// removed get more work because all filesets are being rescanned before handling the removed
 		int totalWork = (addedChanged.size()*100) + (removed.size()*200) + 50 + 500;
-		monitor.beginTask(ArchivesCoreMessages.ProjectArchivesIncrementalBuild, totalWork);
+		SubMonitor progress = SubMonitor.convert(monitor2, ArchivesCoreMessages.ProjectArchivesIncrementalBuild, totalWork);
 
 		// find any and all filesets that match each file
 		Iterator<IPath> i;
@@ -322,7 +320,7 @@ public class ArchiveBuildDelegate {
 				}
 			}
 			EventManager.fileRemoved(path, matchingFilesets);
-			monitor.worked(100);
+			progress.split(100);
 		}
 
 		// reset all of the filesets that have already matched
@@ -348,20 +346,20 @@ public class ArchiveBuildDelegate {
 				errors.addAll(Arrays.asList(errors2));
 			}
 			EventManager.fileUpdated(path, matchingFilesets);
-			monitor.worked(200);
+			progress.split(200);
 		}
 
 
 		// NOW do the synch
 		TrueZipUtil.sync();
-		Comparator c = new Comparator() {
-			public int compare(Object o1, Object o2) {
-				return 0;
+		Comparator<IPath> c = new Comparator<IPath>() {
+			public int compare(IPath o1, IPath o2) {
+				return o1.toOSString().compareTo(o2.toOSString());
 			}
 		}; 
 		Set<IPath> changedPaths = new TreeSet<IPath>(c);
 		Iterator<IArchive> i2 = topPackagesChanged.iterator();
-		SubProgressMonitor consumedMon = new SubProgressMonitor(monitor, 500);
+		SubMonitor consumedMon = progress.split(500);
 		while(i2.hasNext()) {
 			try {
 				IArchive changed = i2.next();
@@ -376,11 +374,11 @@ public class ArchiveBuildDelegate {
 		if( errors.size() > 0 )
 			EventManager.error(null, errors.toArray(new IStatus[errors.size()]));
 		else {
-			incrementalBuild(null, changedPaths, new TreeSet(), false, 
-					new SubProgressMonitor(consumedMon, 500));
+			incrementalBuild(null, changedPaths, new TreeSet<IPath>(), false, 
+					consumedMon);
 		}
-		monitor.worked(50);
-		monitor.done();
+		progress.split(50);
+		progress.done();
 	}
 
 	private void localFireAffectedTopLevelPackages(ArrayList<IArchive> affected, IArchiveFileSet[] filesets) {

@@ -25,7 +25,7 @@ public class DeploymentStructureChangeListener extends ManifestChangeListener {
 			final IWorkspace ws = ResourcesPlugin.getWorkspace();
 			ws.addResourceChangeListener(listener, IResourceChangeEvent.POST_CHANGE | IResourceChangeEvent.PRE_BUILD);
 		} catch(Exception e) {
-			ClasspathCorePlugin.log("Unable to add jboss-deployment-structure.xml change listener", e);
+			ClasspathCorePlugin.log("Unable to add jboss-deployment-structure.xml change listener", e); //$NON-NLS-1$
 		}
 	}
 	
@@ -35,7 +35,7 @@ public class DeploymentStructureChangeListener extends ManifestChangeListener {
 	}
 
 	protected String getFileName() {
-		return "jboss-deployment-structure.xml";
+		return "jboss-deployment-structure.xml"; //$NON-NLS-1$
 	}
 	
 	protected void ensureInCache(IFile f) {

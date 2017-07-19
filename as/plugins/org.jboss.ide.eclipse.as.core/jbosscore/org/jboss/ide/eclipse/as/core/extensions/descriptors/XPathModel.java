@@ -41,9 +41,9 @@ import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAda
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-import org.jboss.ide.eclipse.as.core.util.IMemento;
 import org.jboss.ide.eclipse.as.core.util.ServerAttributeHelper;
-import org.jboss.ide.eclipse.as.core.util.XMLMemento;
+import org.jboss.tools.foundation.core.xml.IMemento;
+import org.jboss.tools.foundation.core.xml.XMLMemento;
 
 /**
  * The class representing the model for all xpath storage and searching

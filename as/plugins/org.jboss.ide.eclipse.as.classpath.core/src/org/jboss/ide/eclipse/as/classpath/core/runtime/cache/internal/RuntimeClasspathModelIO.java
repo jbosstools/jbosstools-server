@@ -67,7 +67,7 @@ public class RuntimeClasspathModelIO {
 				if( version == null ) {
 					// 1.0 of this file had no version set
 					fillVersion1PathProviders(model, memento);
-				} else if( "2.0".equals(version)){
+				} else if( "2.0".equals(version)){ //$NON-NLS-1$
 					// 1.0 of this file had no version set
 					fillVersion2PathProviders(model, memento);
 				}
@@ -114,15 +114,15 @@ public class RuntimeClasspathModelIO {
 	}
 
 	private void fillVersion2PathProviders(InternalRuntimeClasspathModel model, XMLMemento memento) {
-		IMemento nofacet = memento.getChild("nofacet");
+		IMemento nofacet = memento.getChild("nofacet"); //$NON-NLS-1$
 		IRuntimePathProvider[] noFacetProviders = loadProvidersFromMemento(((XMLMemento)nofacet));
 		model.addProviders(noFacetProviders);
 		
 		
-		IMemento[] facets = memento.getChildren("facet");
+		IMemento[] facets = memento.getChildren("facet");//$NON-NLS-1$
 		for( int i = 0; i < facets.length; i++ ) {
-			String id = facets[i].getString("id");
-			String version = facets[i].getString("version");
+			String id = facets[i].getString("id");//$NON-NLS-1$
+			String version = facets[i].getString("version");//$NON-NLS-1$
 			IRuntimePathProvider[] result = loadProvidersFromMemento((XMLMemento)facets[i]);
 			model.addProviders(id, version, result);
 		}
@@ -137,10 +137,10 @@ public class RuntimeClasspathModelIO {
 		}
 		IPath fileToWrite = DEFAULT_CLASSPATH_FS_ROOT.append(runtime.getId());
 		XMLMemento memento = XMLMemento.createWriteRoot("classpathProviders"); //$NON-NLS-1$
-		memento.putString(VERSION, "2.0");
+		memento.putString(VERSION, "2.0"); //$NON-NLS-1$
 		
 		// Save the no facet set
-		XMLMemento nofacet = (XMLMemento)memento.createChild("nofacet");
+		XMLMemento nofacet = (XMLMemento)memento.createChild("nofacet");//$NON-NLS-1$
 		IRuntimePathProvider[] noFacetProviders = model.getStandardProviders();
 		for( int i = 0; i < noFacetProviders.length; i++ ) {
 			noFacetProviders[i].saveInMemento(nofacet);
@@ -151,8 +151,8 @@ public class RuntimeClasspathModelIO {
 		String[] customized = model.getCustomizedFacets();
 		for( int i = 0; i < customized.length; i++ ) {
 			String facetName = customized[i];
-			XMLMemento facet = (XMLMemento)memento.createChild("facet");
-			facet.putString("id", facetName);
+			XMLMemento facet = (XMLMemento)memento.createChild("facet");//$NON-NLS-1$
+			facet.putString("id", facetName);//$NON-NLS-1$
 			IRuntimePathProvider[] providers = model.getProvidersForFacet(facetName);
 			for( int j = 0; j < providers.length; j++ ) {
 				providers[j].saveInMemento(facet);
@@ -168,9 +168,9 @@ public class RuntimeClasspathModelIO {
 			for( int j = 0; j < versions.length; j++ ) {
 				String v = versions[j];
 				IRuntimePathProvider[] providers = model.getProvidersForFacet(facetName, v);
-				XMLMemento facet = (XMLMemento)memento.createChild("facet");
-				facet.putString("id", facetName);
-				facet.putString("version", v);
+				XMLMemento facet = (XMLMemento)memento.createChild("facet");//$NON-NLS-1$
+				facet.putString("id", facetName);//$NON-NLS-1$
+				facet.putString("version", v);//$NON-NLS-1$
 				for( int k = 0; k < providers.length; k++ ) {
 					providers[k].saveInMemento(facet);
 				}

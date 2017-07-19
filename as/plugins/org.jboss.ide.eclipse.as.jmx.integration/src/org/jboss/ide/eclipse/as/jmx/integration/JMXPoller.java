@@ -27,7 +27,6 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
-import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePollerType;
@@ -312,7 +311,7 @@ public class JMXPoller implements IServerStatePoller2 {
 	
 	private void log(IStatus s) {
 		if( !canceled )
-			ServerLogger.getDefault().log(server,s);		
+			JBossServerCorePlugin.log(s);		
 	}
 
 	public IStatus getCurrentStateSynchronous(IServer server) {

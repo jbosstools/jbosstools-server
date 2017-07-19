@@ -40,7 +40,7 @@ public final class ClasspathDecorationsManager {
 	private static final String CLASSPATH_PREFERENCES = "classpathPreferences"; //$NON-NLS-1$
 	private static final String SEPARATOR = System
 			.getProperty("line.separator"); //$NON-NLS-1$
-	private final HashMap decorations;
+	private final HashMap<String, HashMap<String, ClasspathDecorations>> decorations;
 
 	public ClasspathDecorationsManager() {
 		this.decorations = read();
@@ -59,7 +59,7 @@ public final class ClasspathDecorationsManager {
 
 	public ClasspathDecorations getDecorations(final String key,
 			final String entry) {
-		final HashMap submap = (HashMap) this.decorations.get(key);
+		final HashMap<String, ClasspathDecorations> submap = this.decorations.get(key);
 
 		if (submap == null) {
 			return null;
@@ -70,10 +70,10 @@ public final class ClasspathDecorationsManager {
 
 	public void setDecorations(final String key, final String entry,
 			final ClasspathDecorations dec) {
-		HashMap submap = (HashMap) this.decorations.get(key);
+		HashMap<String, ClasspathDecorations> submap = this.decorations.get(key);
 
 		if (submap == null) {
-			submap = new HashMap();
+			submap = new HashMap<String, ClasspathDecorations>();
 			this.decorations.put(key, submap);
 		}
 
@@ -88,23 +88,20 @@ public final class ClasspathDecorationsManager {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("<classpath>"); //$NON-NLS-1$
 		buffer.append(SEPARATOR);
-		for (Iterator itr1 = decorations.entrySet().iterator(); itr1.hasNext();) {
-			final Map.Entry entry1 = (Map.Entry) itr1.next();
-			final Map submap = (Map) entry1.getValue();
+		for (Iterator<String> itr1 = decorations.keySet().iterator(); itr1.hasNext();) {
+			String k = itr1.next();
+			final Map<String, ClasspathDecorations> submap = decorations.get(k); 
 
 			buffer.append("  <container id=\""); //$NON-NLS-1$
-			buffer.append((String) entry1.getKey());
+			buffer.append(k);
 			buffer.append("\">"); //$NON-NLS-1$
 			buffer.append(SEPARATOR);
 
-			for (Iterator itr2 = submap.entrySet().iterator(); itr2.hasNext();) {
-				final Map.Entry entry2 = (Map.Entry) itr2.next();
-
-				final ClasspathDecorations dec = (ClasspathDecorations) entry2
-						.getValue();
-
+			for (Iterator<String> itr2 = submap.keySet().iterator(); itr2.hasNext();) {
+				String k2 = itr2.next();
+				ClasspathDecorations dec = submap.get(k2);
 				buffer.append("    <entry id=\""); //$NON-NLS-1$
-				buffer.append((String) entry2.getKey());
+				buffer.append(k2);
 				buffer.append("\">"); //$NON-NLS-1$
 				buffer.append(SEPARATOR);
 
@@ -157,8 +154,9 @@ public final class ClasspathDecorationsManager {
 		}
 	}
 
-	private HashMap read() {
-		final HashMap map = new HashMap();
+	private HashMap<String, HashMap<String, ClasspathDecorations>> read() {
+		final HashMap<String, HashMap<String, ClasspathDecorations>> map = 
+				new HashMap<String, HashMap<String, ClasspathDecorations>>();
 		String prefs = getPreferences();
 		if (prefs == null || prefs.length() <= 0)
 			return map;
@@ -179,15 +177,15 @@ public final class ClasspathDecorationsManager {
 			return map;
 		}
 
-		for (Iterator itr1 = elements(root, "container"); itr1.hasNext();) //$NON-NLS-1$
+		for (Iterator<Element> itr1 = elements(root, "container"); itr1.hasNext();) //$NON-NLS-1$
 		{
 			final Element e1 = (Element) itr1.next();
 			final String cid = e1.getAttribute("id"); //$NON-NLS-1$
 
-			final HashMap submap = new HashMap();
+			final HashMap<String, ClasspathDecorations> submap = new HashMap<String, ClasspathDecorations>();
 			map.put(cid, submap);
 
-			for (Iterator itr2 = elements(e1, "entry"); itr2.hasNext();) //$NON-NLS-1$
+			for (Iterator<Element> itr2 = elements(e1, "entry"); itr2.hasNext();) //$NON-NLS-1$
 			{
 				final Element e2 = (Element) itr2.next();
 				final String eid = e2.getAttribute("id"); //$NON-NLS-1$
@@ -195,8 +193,8 @@ public final class ClasspathDecorationsManager {
 
 				submap.put(eid, dec);
 
-				for (Iterator itr3 = elements(e2); itr3.hasNext();) {
-					final Element e3 = (Element) itr3.next();
+				for (Iterator<Element> itr3 = elements(e2); itr3.hasNext();) {
+					final Element e3 = itr3.next();
 					final String n = e3.getNodeName();
 					String text = text(e3);
 					if (text != null) {
@@ -253,15 +251,15 @@ public final class ClasspathDecorationsManager {
 		return str;
 	}
 
-	private static Iterator elements(final Element el, final String name) {
+	private static Iterator<Element> elements(final Element el, final String name) {
 		return new ElementsIterator(el, name);
 	}
 
-	private static Iterator elements(final Element el) {
+	private static Iterator<Element> elements(final Element el) {
 		return new ElementsIterator(el, null);
 	}
 
-	private static final class ElementsIterator implements Iterator {
+	private static final class ElementsIterator implements Iterator<Element> {
 		private final NodeList nodes;
 		private final int length;
 		private final String name;
@@ -296,7 +294,7 @@ public final class ClasspathDecorationsManager {
 			return (this.element != null);
 		}
 
-		public Object next() {
+		public Element next() {
 			final Element el = this.element;
 
 			if (el == null) {

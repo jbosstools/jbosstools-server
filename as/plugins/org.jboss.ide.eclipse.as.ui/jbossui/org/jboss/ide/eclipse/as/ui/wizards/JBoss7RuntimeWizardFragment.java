@@ -39,10 +39,9 @@ import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExt
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.JavaUtils;
-import org.jboss.ide.eclipse.as.core.util.RemotePath;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.ide.eclipse.as.ui.UIUtil;
+import org.jboss.ide.eclipse.as.wtp.ui.util.FormDataUtility;
 
 public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	private Label baseDirLabel;
@@ -51,7 +50,7 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	private String baseDirTextVal;
 
 	protected void createConfigurationComposite(Composite main) {
-		UIUtil u = new UIUtil(); // top bottom left right
+		FormDataUtility u = new FormDataUtility(); // top bottom left right
 		configComposite = new Composite(main, SWT.NONE);
 		configComposite.setLayoutData(u.createFormData(
 				jreComposite, 10, 100, -5, 0, 5, 100, -5));

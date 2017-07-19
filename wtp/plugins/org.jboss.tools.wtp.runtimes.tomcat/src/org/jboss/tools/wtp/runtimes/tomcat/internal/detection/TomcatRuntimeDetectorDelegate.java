@@ -232,10 +232,7 @@ public class TomcatRuntimeDetectorDelegate extends AbstractRuntimeDetectorDelega
 	private IRuntimeWorkingCopy getRuntimeWorkingCopyFromDir(File dir, IProgressMonitor monitor) {
 		for (String runtimeTypeId : runtimeTypes) {
 			IRuntimeWorkingCopy rwc = getTomcatRuntimeWorkingCopy(dir, runtimeTypeId, monitor);
-			if (rwc != null) {
-				ITomcatRuntimeWorkingCopy wc = (ITomcatRuntimeWorkingCopy) rwc.loadAdapter(ITomcatRuntimeWorkingCopy.class, null);
-				return rwc;
-			}
+			return rwc;
 		}
 		return null;
 	}

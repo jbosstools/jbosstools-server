@@ -20,7 +20,6 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.AbstractSubsystemController;
@@ -69,7 +68,7 @@ public abstract class AbstractJBoss7ModuleStateVerifier extends AbstractSubsyste
 			IStatus s = new Status(
 					IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID,
 					NLS.bind(er, module[0].getName(), server.getName()), e);
-			ServerLogger.getDefault().log(server, s);
+			JBossServerCorePlugin.log(s);
 			return IServer.STATE_UNKNOWN;
 		}
 	}
@@ -116,7 +115,7 @@ public abstract class AbstractJBoss7ModuleStateVerifier extends AbstractSubsyste
 					String info = "Module {0} on {1} not yet fully deployed. Waiting..."; //$NON-NLS-1$
 					IStatus s = new Status( IStatus.INFO, JBossServerCorePlugin.PLUGIN_ID, 
 						NLS.bind(info, module[0].getName(), server.getName()),null);
-					ServerLogger.getDefault().log(server, s);
+					JBossServerCorePlugin.log(s);
 				}
 				waitedOnce = true;
 				try {
@@ -130,13 +129,13 @@ public abstract class AbstractJBoss7ModuleStateVerifier extends AbstractSubsyste
 			IStatus s = new Status(
 					IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, 
 					NLS.bind(warning, module[0].getName(), server.getName()), null);
-			ServerLogger.getDefault().log(server, s);
+			JBossServerCorePlugin.log(s);
 		} catch (Exception e) {
 			String er = "Error occurred while waiting for {0} to start on server {1}"; //$NON-NLS-1$
 			IStatus s = new Status(
 					IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID,
 					NLS.bind(er, module[0].getName(), server.getName()), e);
-			ServerLogger.getDefault().log(server, s);
+			JBossServerCorePlugin.log(s);
 		}
 	}
 	

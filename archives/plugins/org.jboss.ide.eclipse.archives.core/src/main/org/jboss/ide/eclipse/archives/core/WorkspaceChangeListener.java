@@ -41,12 +41,10 @@ public class WorkspaceChangeListener implements IResourceChangeListener {
 
 	public void resourceChanged(IResourceChangeEvent event) {
 		// The comparator
-		Comparator c = new Comparator() {
-			public int compare(Object o1, Object o2) {
-				if( o1 instanceof IProject && o2 instanceof IProject)
-					return ((IProject)o1).getLocation().toOSString().compareTo(
-							((IProject)o2).getLocation().toOSString());
-				return 0;
+		Comparator<IProject> c = new Comparator<IProject>() {
+			public int compare(IProject o1, IProject o2) {
+				return ((IProject)o1).getLocation().toOSString().compareTo(
+						((IProject)o2).getLocation().toOSString());
 			}
 		};
 		

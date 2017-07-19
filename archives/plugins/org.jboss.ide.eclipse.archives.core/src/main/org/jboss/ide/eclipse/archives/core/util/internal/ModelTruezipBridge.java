@@ -31,7 +31,7 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeVisitor;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
 import org.jboss.ide.eclipse.archives.core.util.ModelUtil;
 import org.jboss.ide.eclipse.archives.core.util.PathUtils;
-
+import org.jboss.ide.eclipse.archives.core.util.TrueZipUtil;
 import de.schlichtherle.io.ArchiveDetector;
 import de.schlichtherle.io.File;
 
@@ -67,6 +67,11 @@ public class ModelTruezipBridge {
 	}
 
 	public static class FullBuildRequiredException extends RuntimeException {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public FullBuildRequiredException(String s, Exception cause) {
 			super(s,cause);
 		}

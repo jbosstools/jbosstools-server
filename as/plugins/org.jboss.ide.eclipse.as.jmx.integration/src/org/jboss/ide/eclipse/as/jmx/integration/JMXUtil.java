@@ -18,7 +18,7 @@ import java.util.Properties;
 
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 /**
@@ -46,30 +46,30 @@ public class JMXUtil {
 		Exception temp = null;
 		try {
 			// get our methods
-			Class simplePrincipal = Thread.currentThread()
+			Class<?>  simplePrincipal = Thread.currentThread()
 					.getContextClassLoader().loadClass(
-							IJBossServerConstants.CLASS_SIMPLE_PRINCIPAL);
-			Class securityAssoc = Thread.currentThread()
+							IJBossRuntimeConstants.CLASS_SIMPLE_PRINCIPAL);
+			Class<?>  securityAssoc = Thread.currentThread()
 					.getContextClassLoader().loadClass(
-							IJBossServerConstants.CLASS_SECURITY_ASSOCIATION);
+							IJBossRuntimeConstants.CLASS_SECURITY_ASSOCIATION);
 			securityAssoc.getMethods(); // force-init the methods since the
 			// class hasn't been initialized yet.
 
-			Constructor newSimplePrincipal = simplePrincipal
+			Constructor<?>  newSimplePrincipal = simplePrincipal
 					.getConstructor(new Class[] { String.class });
 			Object newPrincipalInstance = newSimplePrincipal
 					.newInstance(new Object[] { principal });
 
 			// set the principal
 			Method setPrincipalMethod = securityAssoc.getMethod(
-					IJBossServerConstants.METHOD_SET_PRINCIPAL,
+					IJBossRuntimeConstants.METHOD_SET_PRINCIPAL,
 					new Class[] { Principal.class });
 			setPrincipalMethod.invoke(null,
 					new Object[] { newPrincipalInstance });
 
 			// set the credential
 			Method setCredentialMethod = securityAssoc.getMethod(
-					IJBossServerConstants.METHOD_SET_CREDENTIAL, 
+					IJBossRuntimeConstants.METHOD_SET_CREDENTIAL, 
 					new Class[] { Object.class });
 			setCredentialMethod.invoke(null, new Object[] { credential });
 		} catch (ClassNotFoundException e) {
@@ -110,13 +110,13 @@ public class JMXUtil {
 		if( jbs != null ) {
 			
 			int port = jbs.getJNDIPort();
-			props.put(IJBossServerConstants.NAMING_FACTORY_KEY,
-					IJBossServerConstants.NAMING_FACTORY_VALUE);
-			props.put(IJBossServerConstants.NAMING_FACTORY_PKGS,
-					IJBossServerConstants.NAMING_FACTORY_INTERFACES);
-			props.put(IJBossServerConstants.NAMING_FACTORY_PROVIDER_URL, 
+			props.put(IJBossRuntimeConstants.NAMING_FACTORY_KEY,
+					IJBossRuntimeConstants.NAMING_FACTORY_VALUE);
+			props.put(IJBossRuntimeConstants.NAMING_FACTORY_PKGS,
+					IJBossRuntimeConstants.NAMING_FACTORY_INTERFACES);
+			props.put(IJBossRuntimeConstants.NAMING_FACTORY_PROVIDER_URL, 
 					"jnp://" + jbs.getHost() + ":" + port); //$NON-NLS-1$ //$NON-NLS-2$
-			props.put(IJBossServerConstants.JNP_DISABLE_DISCOVERY, new Boolean(true).booleanValue());
+			props.put(IJBossRuntimeConstants.JNP_DISABLE_DISCOVERY, new Boolean(true).booleanValue());
 		} 
 		return props;
 	}

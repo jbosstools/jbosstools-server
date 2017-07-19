@@ -38,6 +38,6 @@ public class JBossRuntimeHomeComposite extends DownloadRuntimeHomeComposite {
 	protected String getDefaultHomeDirectory(IRuntimeType rtt) {
 		IEclipsePreferences prefs2 = InstanceScope.INSTANCE.getNode(JBossServerUIPlugin.PLUGIN_ID);
 		String value = prefs2.get(IPreferenceKeys.RUNTIME_HOME_PREF_KEY_PREFIX + rtt.getId(), null);
-		return (value != null && value.length() != 0) ? value : "";
+		return (value != null && value.length() != 0) ? value : ""; //$NON-NLS-1$
 	}
 }

@@ -59,12 +59,12 @@ public class StringSubstitutionEngineClone {
 		performStringSubstitution(expression, true, manager );
 	}
 
-	private HashSet substitute(String expression, boolean reportUndefinedVariables, IVariableManager manager) throws CoreException {
-		Stack fStack;
+	private HashSet<String> substitute(String expression, boolean reportUndefinedVariables, IVariableManager manager) throws CoreException {
+		Stack<VariableReference> fStack;
 		fResult = new StringBuffer(expression.length());
-		fStack = new Stack();
+		fStack = new Stack<VariableReference>();
 
-		HashSet resolvedVariables = new HashSet();
+		HashSet<String> resolvedVariables = new HashSet<String>();
 
 		int pos = 0;
 		int state = SCAN_FOR_START;

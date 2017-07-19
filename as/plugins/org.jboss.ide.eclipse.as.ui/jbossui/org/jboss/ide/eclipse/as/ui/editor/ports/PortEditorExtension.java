@@ -66,9 +66,6 @@ public abstract class PortEditorExtension implements IPortEditorExtension {
 		label = new Label(parent, SWT.NONE);
 		text = new Text(parent, SWT.SINGLE | SWT.BORDER);
 		
-		boolean typeHasRuntime = helper.getServer().getServerType().hasRuntime();
-		boolean hasRuntime = helper.getServer().getRuntime() != null;
-		
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(label);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).minSize(80, 10).grab(true, false).applyTo(text);
 		
@@ -100,10 +97,10 @@ public abstract class PortEditorExtension implements IPortEditorExtension {
 		text.addListener(SWT.Modify, listener);
 		text.addVerifyListener(new VerifyListener() {
 			public void verifyText(VerifyEvent e) {
-				if( e.text == null || e.text.equals(""))
+				if( e.text == null || e.text.equals("")) //$NON-NLS-1$
 					return;
 				try {
-					Integer i = Integer.parseInt(e.text);
+					Integer.parseInt(e.text);
 				} catch( NumberFormatException nfe ) {
 					e.doit = false;
 				}
@@ -127,7 +124,7 @@ public abstract class PortEditorExtension implements IPortEditorExtension {
 		decoration.hide();
 		String v  = text.getText();
 		String errorText = "The empty string is not a valid port.";
-		if( "".equals(v)) {
+		if( "".equals(v)) { //$NON-NLS-1$
 			decoration.setDescriptionText(errorText);
 			decoration.show();
 		}

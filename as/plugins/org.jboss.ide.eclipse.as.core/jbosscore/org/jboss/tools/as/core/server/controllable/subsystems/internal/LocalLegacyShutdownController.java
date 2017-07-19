@@ -22,7 +22,6 @@ import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
-import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.LocalStopLaunchConfigurator;
@@ -198,13 +197,13 @@ public class LocalLegacyShutdownController extends AbstractSubsystemController
 		IStatus status = new Status(IStatus.ERROR,
 				JBossServerCorePlugin.PLUGIN_ID, IEventCodes.BEHAVIOR_FORCE_STOP_FAILED, 
 				Messages.FORCE_TERMINATE_FAILED, e);
-		ServerLogger.getDefault().log(getServer(), status);
+		JBossServerCorePlugin.log(status);
 	}
 	protected void addForceStopEvent() {
 		IStatus status = new Status(IStatus.ERROR,
 				JBossServerCorePlugin.PLUGIN_ID, IEventCodes.BEHAVIOR_FORCE_STOP, 
 				Messages.FORCE_TERMINATED, null);
-		ServerLogger.getDefault().log(getServer(), status);
+		JBossServerCorePlugin.log(status);
 	}
 	
 }

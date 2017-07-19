@@ -499,7 +499,7 @@ public class XPathDialogs {
 
 				public Object[] getElements(Object inputElement) {
 					if( inputElement instanceof ArrayList ) {
-						return ((ArrayList)inputElement).toArray();
+						return ((ArrayList<?>)inputElement).toArray();
 					}
 					return new Object[0];
 				}

@@ -142,7 +142,7 @@ public class ExtendedServerPropertiesAdapterFactory implements IAdapterFactory, 
 		return null;
 	}
 	
-	public Class[] getAdapterList() {
+	public Class<?>[] getAdapterList() {
 		return new Class[]{ ServerExtendedProperties.class, 
 				JBossExtendedProperties.class,
 				JBossAS7ExtendedProperties.class,

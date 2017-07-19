@@ -64,9 +64,9 @@ public class SourceJarsLocator implements IJBossToolingConstants, IJBossRuntimeR
 	/* Essentially, jars for app servers based on AS-7 or higher */
 	private IRuntimePathProvider[] configDeploymentsJars(IRuntimeType rt) {
 		ArrayList<RuntimePathProviderFileset> sets = new ArrayList<RuntimePathProviderFileset>();
-		sets.add(new RuntimePathProviderFileset("jboss-modules.jar"));
-		sets.add(new RuntimePathProviderFileset("modules"));
-		sets.add(new RuntimePathProviderFileset("bundles"));
+		sets.add(new RuntimePathProviderFileset("jboss-modules.jar")); //$NON-NLS-1$
+		sets.add(new RuntimePathProviderFileset("modules"));//$NON-NLS-1$
+		sets.add(new RuntimePathProviderFileset("bundles"));//$NON-NLS-1$
 		return sets.toArray(new RuntimePathProviderFileset[sets.size()]);
 	}
 }

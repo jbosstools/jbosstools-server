@@ -27,11 +27,11 @@ public class LocalBehaviorUI implements IDeploymentTypeUI {
 		//Do Nothing, just verify
 		this.callback = callback;
 		callback.setErrorMessage(null);
-		if( callback.getCallbackType() == callback.EDITOR)
+		if( callback.getCallbackType() == IServerModeUICallback.EDITOR)
 			verify();
 		callback.getServer().addPropertyChangeListener(new PropertyChangeListener(){
 			public void propertyChange(PropertyChangeEvent evt) {
-				if( callback.getCallbackType() == callback.EDITOR)
+				if( callback.getCallbackType() == IServerModeUICallback.EDITOR)
 					verify();
 			}});
 		parent.setLayout(new FillLayout());

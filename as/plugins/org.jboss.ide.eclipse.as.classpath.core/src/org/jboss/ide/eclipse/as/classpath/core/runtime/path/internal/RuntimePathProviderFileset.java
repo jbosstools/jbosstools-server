@@ -51,7 +51,7 @@ public class RuntimePathProviderFileset extends Fileset implements IRuntimePathP
 	
 	@Override
 	public String getDisplayString() {
-		return getRawFolder() + " - [" + getIncludesPattern() + "] - [" + getExcludesPattern() + "]";
+		return getRawFolder() + " - [" + getIncludesPattern() + "] - [" + getExcludesPattern() + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
 	
 	@Override

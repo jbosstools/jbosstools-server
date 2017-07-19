@@ -102,7 +102,7 @@ public class JBoss7LaunchConfigProperties extends JBossLaunchConfigProperties {
 	
 	private boolean supportsBindingFlag(ILaunchConfigurationWorkingCopy launchConfig ) throws CoreException {
 		ServerBeanLoader loader = getBeanLoader(launchConfig);
-		if( loader.getServerBean().getType().equals(JBossServerType.AS7)){
+		if( loader.getServerBean().getBeanType().equals(JBossServerType.AS7)){
 			String v = loader.getFullServerVersion();
 			if( "7.0.2".compareTo(v) >= 0 ) { //$NON-NLS-1$
 				// this is jboss 7.0 or 7.1

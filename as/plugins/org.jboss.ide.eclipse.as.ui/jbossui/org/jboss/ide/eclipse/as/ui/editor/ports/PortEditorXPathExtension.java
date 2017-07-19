@@ -130,7 +130,7 @@ public abstract class PortEditorXPathExtension extends PortEditorExtension {
 			v = text.getText();
 			errorText = "The empty string is not a valid port.";
 		}
-		if( "".equals(v)) {
+		if( "".equals(v)) { //$NON-NLS-1$
 			decoration.setDescriptionText(errorText);
 			decoration.show();
 		}

@@ -14,7 +14,6 @@ package org.jboss.ide.eclipse.as.classpath.core.jee;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IJavaProject;
 import org.jboss.ide.eclipse.as.classpath.core.internal.Messages;
-import org.jboss.ide.eclipse.as.classpath.core.jee.J2EE13ClasspathContainerInitializer.J2EE13ClasspathContainer;
 
 /**
  * 

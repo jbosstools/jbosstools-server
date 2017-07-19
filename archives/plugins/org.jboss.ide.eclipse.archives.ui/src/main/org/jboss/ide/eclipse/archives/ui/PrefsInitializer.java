@@ -45,7 +45,7 @@ public class PrefsInitializer extends AbstractPreferenceInitializer {
 	}
 
 	public void initializeDefaultPreferences() {
-		IEclipsePreferences prefs = new DefaultScope().getNode(PackagesUIPlugin.PLUGIN_ID);
+		IEclipsePreferences prefs = DefaultScope.INSTANCE.getNode(PackagesUIPlugin.PLUGIN_ID);
 		prefs.putBoolean(PREF_SHOW_FULL_FILESET_ROOT_DIR, true);
 		prefs.putBoolean(PREF_SHOW_PACKAGE_OUTPUT_PATH, true);
 		prefs.putBoolean(PREF_SHOW_PROJECT_ROOT, true);
@@ -77,7 +77,7 @@ public class PrefsInitializer extends AbstractPreferenceInitializer {
 				}
 			} catch(CoreException ce) {}
 		}
-		IEclipsePreferences prefs = new InstanceScope().getNode(PackagesUIPlugin.PLUGIN_ID);
+		IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(PackagesUIPlugin.PLUGIN_ID);
 		prefs.putBoolean(key, val);
 		try {
 			prefs.flush();
@@ -100,7 +100,7 @@ public class PrefsInitializer extends AbstractPreferenceInitializer {
 				}
 			} catch(CoreException ce) {}
 		}
-		IEclipsePreferences prefs = new InstanceScope().getNode(PackagesUIPlugin.PLUGIN_ID);
+		IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(PackagesUIPlugin.PLUGIN_ID);
 		prefs.put(key, val);
 		try {
 			prefs.flush();
@@ -164,8 +164,8 @@ public class PrefsInitializer extends AbstractPreferenceInitializer {
 				} catch(CoreException ce) {}
 			}
 		}
-		boolean defaultVal = new DefaultScope().getNode(PackagesUIPlugin.PLUGIN_ID).getBoolean(key, false);
-		return new InstanceScope().getNode(PackagesUIPlugin.PLUGIN_ID).getBoolean(key, defaultVal);
+		boolean defaultVal = DefaultScope.INSTANCE.getNode(PackagesUIPlugin.PLUGIN_ID).getBoolean(key, false);
+		return InstanceScope.INSTANCE.getNode(PackagesUIPlugin.PLUGIN_ID).getBoolean(key, defaultVal);
 	}
 	
 	public static String getString(String key) { 
@@ -186,7 +186,7 @@ public class PrefsInitializer extends AbstractPreferenceInitializer {
 				} catch(CoreException ce) {}
 			}
 		}
-		String defaultVal = new DefaultScope().getNode(PackagesUIPlugin.PLUGIN_ID).get(key, ""); //$NON-NLS-1$
-		return new InstanceScope().getNode(PackagesUIPlugin.PLUGIN_ID).get(key, defaultVal);
+		String defaultVal = DefaultScope.INSTANCE.getNode(PackagesUIPlugin.PLUGIN_ID).get(key, ""); //$NON-NLS-1$
+		return InstanceScope.INSTANCE.getNode(PackagesUIPlugin.PLUGIN_ID).get(key, defaultVal);
 	}
 }

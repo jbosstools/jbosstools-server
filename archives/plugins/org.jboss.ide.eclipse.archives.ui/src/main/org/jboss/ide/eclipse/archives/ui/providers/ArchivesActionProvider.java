@@ -54,9 +54,6 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
 import org.jboss.ide.eclipse.archives.core.model.INamedContainerArchiveNode;
-import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveFileSetImpl;
-import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveFolderImpl;
-import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveImpl;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
 import org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages;
 import org.jboss.ide.eclipse.archives.ui.ExtensionManager;
@@ -153,7 +150,7 @@ public class ArchivesActionProvider extends CommonActionProvider {
 				}
 
 				
-				if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE && node instanceof ArchiveImpl) {
+				if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE && node instanceof IArchive) {
 					editAction.setText(ArchivesUIMessages.ProjectPackagesView_editPackageAction_label);
 					deleteAction.setText(ArchivesUIMessages.ProjectPackagesView_deletePackageAction_label);
 					editAction.setImageDescriptor(ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_PACKAGE_EDIT));
@@ -161,13 +158,13 @@ public class ArchivesActionProvider extends CommonActionProvider {
 					manager.insertAfter(END_ADD_CHILD_SEPARATOR_ID, buildAction);
 					manager.add(editAction);
 					manager.add(deleteAction);
-				} else if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FOLDER && node instanceof ArchiveFolderImpl) {
+				} else if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FOLDER && node instanceof IArchiveFolder) {
 					editAction.setText(ArchivesUIMessages.ProjectPackagesView_editFolderAction_label);
 					deleteAction.setText(ArchivesUIMessages.ProjectPackagesView_deleteFolderAction_label);
 					editAction.setImageDescriptor(platformDescriptor(ISharedImages.IMG_OBJ_FOLDER));
 					manager.add(editAction);
 					manager.add(deleteAction);
-				} else if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET && node instanceof ArchiveFileSetImpl) {
+				} else if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET && node instanceof IArchiveStandardFileSet) {
 					editAction.setText(ArchivesUIMessages.ProjectPackagesView_editFilesetAction_label);
 					deleteAction.setText(ArchivesUIMessages.ProjectPackagesView_deleteFilesetAction_label);
 					ImageDescriptor id = ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_MULTIPLE_FILES);
@@ -223,7 +220,7 @@ public class ArchivesActionProvider extends CommonActionProvider {
 			if(o instanceof WrappedProject )
 				o = ((WrappedProject)o).getElement();
 			if( o instanceof IAdaptable ) {
-				IResource res = (IResource)  ((IAdaptable)o).getAdapter(IResource.class);
+				IResource res = ((IAdaptable)o).getAdapter(IResource.class);
 				if( res != null ) {
 					selected = res.getProject();
 				}
@@ -450,14 +447,14 @@ public class ArchivesActionProvider extends CommonActionProvider {
 		ArrayList<IArchiveNode> list = new ArrayList<IArchiveNode>();
 		IStructuredSelection selection = getSelection(site);
 		if (selection != null && !selection.isEmpty()) {
-			Iterator<Object> it = selection.iterator();
+			Iterator<?> it = selection.iterator();
 			while(it.hasNext() ) {
 				Object o = it.next();
 				if( o instanceof IArchiveNode )
 					list.add((IArchiveNode)o);
 			}
 		}
-		return (IArchiveNode[]) list.toArray(new IArchiveNode[list.size()]);
+		return list.toArray(new IArchiveNode[list.size()]);
 	}
 
 	

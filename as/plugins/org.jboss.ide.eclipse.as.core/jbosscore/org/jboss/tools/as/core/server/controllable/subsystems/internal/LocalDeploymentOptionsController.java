@@ -18,7 +18,6 @@ import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.TMP;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.IServerAttributes;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime;

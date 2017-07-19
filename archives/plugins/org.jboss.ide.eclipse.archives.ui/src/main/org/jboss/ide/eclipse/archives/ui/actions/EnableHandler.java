@@ -18,7 +18,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.osgi.util.NLS;
@@ -38,13 +38,12 @@ public class EnableHandler extends AbstractHandler {
 			final String jobName = NLS.bind(ArchivesUIMessages.EnableProjectArchivesJob, pName); 
 			new Job(jobName) {
 				protected IStatus run(IProgressMonitor monitor) {
-					monitor.beginTask(jobName, 200);
+					SubMonitor progress = SubMonitor.convert(monitor, jobName, 300);
 					IPath loc = ((IProject) e).getLocation();
-					
-					SubProgressMonitor mon1 = new SubProgressMonitor(monitor, 100);
+					SubMonitor mon1 = progress.split(100);
 					ProjectUtils.addProjectNature(((IProject) e), ArchivesNature.NATURE_ID, mon1);
 					
-					SubProgressMonitor mon2 = new SubProgressMonitor(monitor, 100);
+					SubMonitor mon2 = progress.split(100);
 					ArchivesModel.instance().registerProject(loc, mon2);					
 					return Status.OK_STATUS;
 				}

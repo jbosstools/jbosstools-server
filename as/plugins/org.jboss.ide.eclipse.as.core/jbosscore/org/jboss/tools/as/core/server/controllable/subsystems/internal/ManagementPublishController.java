@@ -325,7 +325,7 @@ public class ManagementPublishController extends AbstractSubsystemController
 			if( ms.isOK()) {
 				return IServer.PUBLISH_STATE_NONE;
 			}
-			ServerLogger.getDefault().log(getServer(), ms);
+			JBossServerCorePlugin.log(ms);
 			transferMonitor.done();
 			return IServer.PUBLISH_STATE_FULL;
 		} else {

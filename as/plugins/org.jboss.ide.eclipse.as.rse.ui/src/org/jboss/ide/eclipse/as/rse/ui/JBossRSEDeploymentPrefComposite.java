@@ -44,9 +44,9 @@ import org.eclipse.ui.progress.IProgressService;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.rse.core.RSEFrameworkUtils;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
-import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI.IServerModeUICallback;
 import org.jboss.ide.eclipse.as.ui.editor.ServerModeSectionComposite.ChangeServerPropertyCommand;
+import org.jboss.ide.eclipse.as.wtp.ui.util.FormDataUtility;
 
 public class JBossRSEDeploymentPrefComposite extends
 		RSEDeploymentPreferenceComposite {
@@ -72,7 +72,7 @@ public class JBossRSEDeploymentPrefComposite extends
 		serverHomeLabel.setText("Remote Server Home: ");
 		rseBrowse = new Button(this, SWT.NONE);
 		rseBrowse.setText("Browse...");
-		rseBrowse.setLayoutData(UIUtil.createFormData2(composite, 5, null,
+		rseBrowse.setLayoutData(FormDataUtility.createFormData2(composite, 5, null,
 				0, null, 0, 100, -5));
 		rseBrowse.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
@@ -84,9 +84,9 @@ public class JBossRSEDeploymentPrefComposite extends
 			}
 		});
 		rseServerHome = new Text(this, SWT.SINGLE | SWT.BORDER);
-		serverHomeLabel.setLayoutData(UIUtil.createFormData2(composite, 7,
+		serverHomeLabel.setLayoutData(FormDataUtility.createFormData2(composite, 7,
 				null, 0, 0, 10, null, 0));
-		rseServerHome.setLayoutData(UIUtil.createFormData2(composite, 5,
+		rseServerHome.setLayoutData(FormDataUtility.createFormData2(composite, 5,
 				null, 0, serverHomeLabel, 10, rseBrowse, -5));
 		rseServerHome.setText(callback.getServer().getAttribute(
 				RSEUtils.RSE_SERVER_HOME_DIR, ""));
@@ -103,7 +103,7 @@ public class JBossRSEDeploymentPrefComposite extends
 		Label serverConfigLabel = new Label(this, SWT.NONE);
 		serverConfigLabel.setText(RSEUIMessages.REMOTE_SERVER_CONFIG);
 		rseServerConfig = new Text(this, SWT.SINGLE | SWT.BORDER);
-		serverConfigLabel.setLayoutData(UIUtil.createFormData2(rseServerHome, 7, null, 0, 0, 10, null, 0));
+		serverConfigLabel.setLayoutData(FormDataUtility.createFormData2(rseServerHome, 7, null, 0, 0, 10, null, 0));
 		String defaultConfig = getRuntime() == null ? "default" : getRuntime().getJBossConfiguration(); 
 		rseServerConfig.setText(callback.getServer().getAttribute(
 				RSEUtils.RSE_SERVER_CONFIG,
@@ -118,9 +118,9 @@ public class JBossRSEDeploymentPrefComposite extends
 
 		rseTest = new Button(this, SWT.NONE);
 		rseTest.setText(RSEUIMessages.TEST);
-		rseTest.setLayoutData(UIUtil.createFormData2(rseServerHome, 5,
+		rseTest.setLayoutData(FormDataUtility.createFormData2(rseServerHome, 5,
 				null, 0, null, 0, 100, -5));
-		rseServerConfig.setLayoutData(UIUtil.createFormData2(rseServerHome,
+		rseServerConfig.setLayoutData(FormDataUtility.createFormData2(rseServerHome,
 				5, null, 0, serverConfigLabel, 5, rseTest, -5));
 		rseTest.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {

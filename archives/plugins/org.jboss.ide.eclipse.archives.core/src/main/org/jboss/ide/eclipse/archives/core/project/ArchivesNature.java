@@ -86,7 +86,7 @@ public class ArchivesNature implements IProjectNature {
 	      try {
 	         IProjectDescription desc = project.getDescription();
 	         ICommand[] commands = desc.getBuildSpec();
-	         ArrayList newCommands = new ArrayList();
+	         ArrayList<ICommand> newCommands = new ArrayList<ICommand>();
 
 	         for (int i = 0; i < commands.length; i++) {
 	            if (!commands[i].getBuilderName().equals(builderId)) {
