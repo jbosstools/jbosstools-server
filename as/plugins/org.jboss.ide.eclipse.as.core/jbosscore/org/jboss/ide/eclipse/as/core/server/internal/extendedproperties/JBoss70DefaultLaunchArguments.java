@@ -77,10 +77,10 @@ public class JBoss70DefaultLaunchArguments extends JBossDefaultLaunchArguments {
 
 		String ret = 
 			"-Djava.awt.headless=true" + //$NON-NLS-1$
-			SPACE + QUOTE + SYSPROP + JB7_BOOT_LOG_ARG + EQ + bootLog.toString() + QUOTE + 
+			SPACE + QUOTE + SYSPROP + JB7_BOOT_LOG_ARG + EQ + bootLog.toOSString() + QUOTE + 
 			SPACE + QUOTE + SYSPROP + JB7_LOGGING_CONFIG_FILE + EQ + 
 			"file:" + logConfig.toString() + QUOTE + //$NON-NLS-1$  
-			SPACE + QUOTE + SYSPROP + JBOSS_HOME_DIR + EQ + serverHome.toString() + QUOTE + SPACE;
+			SPACE + QUOTE + SYSPROP + JBOSS_HOME_DIR + EQ + serverHome.toOSString() + QUOTE + SPACE;
 		return ret;
 	}
 }

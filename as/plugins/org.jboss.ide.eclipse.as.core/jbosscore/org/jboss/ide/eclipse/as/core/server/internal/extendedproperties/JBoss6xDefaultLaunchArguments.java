@@ -48,7 +48,7 @@ public class JBoss6xDefaultLaunchArguments extends JBoss5xDefaultLaunchArguments
 			if( version.startsWith(IJBossToolingConstants.V6_1)) {
 				// Only relevent for as6.1
 				ret += SYSPROP + LOGGING_CONFIG_PROP + EQ + QUOTE + FILE_COLON + 
-						home.append(BIN).append(LOGGING_PROPERTIES) + QUOTE + SPACE;
+						home.append(BIN).append(LOGGING_PROPERTIES).toOSString() + QUOTE + SPACE;
 			}
 		}
 		return ret;

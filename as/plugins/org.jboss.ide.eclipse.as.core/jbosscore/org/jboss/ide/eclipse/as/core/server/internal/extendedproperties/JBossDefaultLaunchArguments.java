@@ -141,13 +141,13 @@ public class JBossDefaultLaunchArguments implements IDefaultLaunchArguments, IJB
 	protected String getJBossJavaFlags() {
 		IPath serverHome = getServerHome();
 		String ret = QUOTE + SYSPROP + ENDORSED_DIRS + EQ + 
-				(serverHome.append(LIB).append(ENDORSED)) + QUOTE + SPACE;
+				(serverHome.append(LIB).append(ENDORSED).toOSString()) + QUOTE + SPACE;
 		
 		// Assume the remote also has a native folder if the local has a native folder
 		// This avoids costly remote lookups. 
 		if( serverHome.append(BIN).append(NATIVE).toFile().exists() ) 
 			ret += SYSPROP + JAVA_LIB_PATH + EQ + QUOTE + 
-				serverHome.append(BIN).append(NATIVE) + QUOTE + SPACE;
+				serverHome.append(BIN).append(NATIVE).toOSString() + QUOTE + SPACE;
 		return ret;
 	}
 	

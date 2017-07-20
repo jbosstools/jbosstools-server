@@ -48,10 +48,10 @@ public class GateIn33AS71DefaultLaunchArguments extends JBoss71DefaultLaunchArgu
 		IPath gateInConfig = 
 				basedir.append("configuration").append("gatein"); //$NON-NLS-1$ //$NON-NLS-2$
 		String s1 = "-Dexo.conf.dir=" + QUOTE //$NON-NLS-1$
-				+ gateInConfig.toString()
+				+ gateInConfig.toOSString()
 				+ QUOTE + SPACE
 				+ "-Dgatein.conf.dir=" + QUOTE  //$NON-NLS-1$
-				+ gateInConfig + QUOTE 
+				+ gateInConfig.toOSString() + QUOTE 
 				+ SPACE 
 				+ "-Dexo.conf.dir.name=gatein" //$NON-NLS-1$
 				+ SPACE
