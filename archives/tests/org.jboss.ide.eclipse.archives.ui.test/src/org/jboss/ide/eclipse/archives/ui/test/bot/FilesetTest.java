@@ -10,6 +10,11 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.archives.ui.test.bot;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.jboss.ide.eclipse.archives.core.util.TrueZipUtil;
 import org.jboss.reddeer.common.wait.TimePeriod;
 import org.jboss.reddeer.common.wait.WaitUntil;
 import org.jboss.reddeer.common.wait.WaitWhile;
@@ -17,6 +22,7 @@ import org.jboss.reddeer.swt.condition.TreeContainsItem;
 import org.jboss.reddeer.swt.impl.tree.DefaultTree;
 import org.jboss.tools.archives.reddeer.archives.ui.ProjectArchivesExplorer;
 import org.jboss.tools.archives.reddeer.component.Archive;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -60,6 +66,21 @@ public class FilesetTest extends ArchivesTestBase {
 		addArchivesSupport(PROJECT_2);
 		createArchive(PROJECT_2, PROJECT_2_ARCHIVE, true);
 	}
+	
+
+	@AfterClass
+	public static void teardown(){
+		TrueZipUtil.umount();
+		IProject[] all = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+		for( int i = 0; i < all.length; i++ ) {
+			try {
+				all[i].delete(true, new NullProgressMonitor());
+			} catch(CoreException ce) {
+				// IGNORE THIS viciously
+			}
+		}
+	}
+	
 	
 	@Test
 	public void testCreatingFileset() {
