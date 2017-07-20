@@ -18,10 +18,10 @@ public class GeneratePluginXmlCatalog {
 	private static ArrayList<XSDObject> xsdObjs  = new ArrayList<XSDObject>();
 	private static ArrayList<DTDObject> dtObjs = new ArrayList<DTDObject>();
 	
-	private static final String PLUGIN_ROOT_DIR = "plugin.root.dir";
-	private static final String MODE = "output.mode";
-	private static final String MODE_DEBUG = "showErrors";
-	private static final String MODE_GENERATE = "generateCatalog";
+	private static final String PLUGIN_ROOT_DIR = "plugin.root.dir"; //$NON-NLS-1$
+	private static final String MODE = "output.mode"; //$NON-NLS-1$
+	private static final String MODE_DEBUG = "showErrors"; //$NON-NLS-1$
+	private static final String MODE_GENERATE = "generateCatalog"; //$NON-NLS-1$
 	
 	
 	
@@ -31,41 +31,41 @@ public class GeneratePluginXmlCatalog {
 			mode = MODE_GENERATE;
 		
 		if( mode.equals(MODE_GENERATE)) {
-			System.out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-			System.out.println("<?eclipse version=\"3.2\"?>");
-			System.out.println("<plugin>");
-			System.out.println("   <extension");
-			System.out.println("         point=\"org.eclipse.wst.xml.core.catalogContributions\">");
-			System.out.println("       <catalogContribution>");
+			System.out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"); //$NON-NLS-1$
+			System.out.println("<?eclipse version=\"3.2\"?>"); //$NON-NLS-1$
+			System.out.println("<plugin>"); //$NON-NLS-1$
+			System.out.println("   <extension"); //$NON-NLS-1$ 
+			System.out.println("         point=\"org.eclipse.wst.xml.core.catalogContributions\">"); //$NON-NLS-1$
+			System.out.println("       <catalogContribution>"); //$NON-NLS-1$
 			
-			System.out.println("<!-- DTDs -->");
+			System.out.println("<!-- DTDs -->"); //$NON-NLS-1$
 			runDTDs(true);
 			
-			System.out.println("\n\n<!-- XSD -->");
+			System.out.println("\n\n<!-- XSD -->"); //$NON-NLS-1$
 			runXSDs(true);
 			
-			System.out.println("       </catalogContribution>");
-			System.out.println("   </extension>");
-			System.out.println("</plugin>");
+			System.out.println("       </catalogContribution>"); //$NON-NLS-1$
+			System.out.println("   </extension>"); //$NON-NLS-1$
+			System.out.println("</plugin>"); //$NON-NLS-1$
 		} else if( mode.equals(MODE_DEBUG)){
 			runDTDs(false);
 			runXSDs(false);
 			runXSDErrors();
 		} else {
-			System.out.println("Usage: java -Dplugin.root.dir=/path/to/jbosstools-server/as/plugins/org.jboss.tools.as.catalog org.\\");
-			System.out.println("       -Doutput.mode=[generateCatalog | showErrors]");
-			System.out.println("       jboss.tools.as.catalog.internal.GeneratePluginXmlCatalog ");
+			System.out.println("Usage: java -Dplugin.root.dir=/path/to/jbosstools-server/as/plugins/org.jboss.tools.as.catalog org.\\"); //$NON-NLS-1$
+			System.out.println("       -Doutput.mode=[generateCatalog | showErrors]"); //$NON-NLS-1$
+			System.out.println("       jboss.tools.as.catalog.internal.GeneratePluginXmlCatalog "); //$NON-NLS-1$
 		}
 	}
 	
 	private static void runXSDErrors() {
 		// A list of namespaces that are common and are not an error. 
 		List<String> commonNamespaces = new ArrayList<String>();
-		commonNamespaces.add("http://xmlns.jcp.org/xml/ns/javaee");
-		commonNamespaces.add("http://java.sun.com/xml/ns/javaee");
-		commonNamespaces.add("http://java.sun.com/xml/ns/j2ee");
-		commonNamespaces.add("http://java.sun.com/xml/ns/j2ee");
-		commonNamespaces.add("http://java.sun.com/xml/ns/persistence");
+		commonNamespaces.add("http://xmlns.jcp.org/xml/ns/javaee"); //$NON-NLS-1$
+		commonNamespaces.add("http://java.sun.com/xml/ns/javaee"); //$NON-NLS-1$
+		commonNamespaces.add("http://java.sun.com/xml/ns/j2ee"); //$NON-NLS-1$
+		commonNamespaces.add("http://java.sun.com/xml/ns/j2ee"); //$NON-NLS-1$
+		commonNamespaces.add("http://java.sun.com/xml/ns/persistence"); //$NON-NLS-1$
 		
 		
 		HashMap<String, XSDObject> duplicateUriMap = new HashMap<String, XSDObject>();
@@ -77,7 +77,7 @@ public class GeneratePluginXmlCatalog {
 				String f1Name = duplicateUriMap.get(o.getName()).file.getName();
 				String f2Name = o.file.getName();
 				if( !f1Name.equals(f2Name) && !commonNamespaces.contains(o.getName()))
-					System.err.println( f1Name + " is a duplicate with " + f2Name + " and has name " + o.getName());
+					System.err.println( f1Name + " is a duplicate with " + f2Name + " and has name " + o.getName()); //$NON-NLS-1$  //$NON-NLS-2$
 			}
 			duplicateUriMap.put(o.getName(), o);
 		}
@@ -91,12 +91,12 @@ public class GeneratePluginXmlCatalog {
 	private static void runXSDs(boolean printEntries) {
 		String rootdir = System.getProperty(PLUGIN_ROOT_DIR);
 		if( rootdir == null ) {
-			rootdir = "";
+			rootdir = ""; //$NON-NLS-1$
 		}
 		
 		File root = new File(new File(rootdir).getAbsolutePath());
-		File schemas = new File(root, "schema");
-		File xsd = new File(schemas, "xsd");
+		File schemas = new File(root, "schema"); //$NON-NLS-1$
+		File xsd = new File(schemas, "xsd"); //$NON-NLS-1$
 		List<File> all = Arrays.asList(xsd.listFiles());
 		all.sort(new Comparator<File>() {
 			public int compare(File o1, File o2) {
@@ -104,12 +104,12 @@ public class GeneratePluginXmlCatalog {
 			}
 		});
 		for( File f : all) {
-			if( !f.getName().equalsIgnoreCase(".gitignore")) {
+			if( !f.getName().equalsIgnoreCase(".gitignore")) { //$NON-NLS-1$
 				XSDObject o = new XSDObject(f);
 				if( o.valid ) {
 					xsdObjs.add(o);
 				} else {
-					errors.add(f + " is invalid: " + (o.validException == null ? "null" : o.validException.getMessage()));
+					errors.add(f + " is invalid: " + (o.validException == null ? "null" : o.validException.getMessage())); //$NON-NLS-1$  //$NON-NLS-2$
 				}
 			}
 		}
@@ -152,37 +152,36 @@ public class GeneratePluginXmlCatalog {
 		
 		public String toString() {
 			StringBuffer sb = new StringBuffer();
-			sb.append("\t\t<uri name=\"");
+			sb.append("\t\t<uri name=\""); //$NON-NLS-1$
 			sb.append(getName());
-			sb.append("\" uri=\"");
+			sb.append("\" uri=\""); //$NON-NLS-1$
 			sb.append(getUri());
-			sb.append("\"/>");
+			sb.append("\"/>"); //$NON-NLS-1$
 			return sb.toString();
 		}
 		
 		String getUri() {
-			String uri = "platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/" + file.getName();
-			return uri;
+			return "platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/" + file.getName();  //$NON-NLS-1$
 		}
 		
 		String getName() {
 			if( uri != null ) {
 				return uri;
 			}
-			int start = contents.indexOf("targetNamespace=\"");
+			int start = contents.indexOf("targetNamespace=\""); //$NON-NLS-1$
 			if( start == -1 ) {
-				start = contents.indexOf("xmlns=\"");
+				start = contents.indexOf("xmlns=\""); //$NON-NLS-1$
 			}
 			if( start == -1 ) {
 				valid = false;
-				return "";
+				return ""; //$NON-NLS-1$
 			}
-			int subStart = contents.indexOf("\"", start);
-			int subEnd = contents.indexOf("\"", subStart+1);
+			int subStart = contents.indexOf("\"", start); //$NON-NLS-1$
+			int subEnd = contents.indexOf("\"", subStart+1); //$NON-NLS-1$
 			uri = contents.substring(subStart+1, subEnd);
 			
-			if( "http://www.jboss.com/xml/ns/javaee".equals(uri)) {
-				uri = "http://www.jboss.org/j2ee/schema/" + file.getName();
+			if( "http://www.jboss.com/xml/ns/javaee".equals(uri)) { //$NON-NLS-1$
+				uri = "http://www.jboss.org/j2ee/schema/" + file.getName(); //$NON-NLS-1$
 			}
 			
 			return uri;
@@ -192,12 +191,12 @@ public class GeneratePluginXmlCatalog {
 	private static void runDTDs(boolean printEntry) {
 		String rootdir = System.getProperty(PLUGIN_ROOT_DIR);
 		if( rootdir == null ) {
-			rootdir = "";
+			rootdir = ""; //$NON-NLS-1$
 		}
 
 		File root = new File(new File(rootdir).getAbsolutePath());
-		File schemas = new File(root, "schema");
-		File dtd = new File(schemas, "dtd");
+		File schemas = new File(root, "schema"); //$NON-NLS-1$
+		File dtd = new File(schemas, "dtd"); //$NON-NLS-1$
 		File[] dtdFiles = dtd.listFiles();
 		List<File> sorted = Arrays.asList(dtdFiles);
 		sorted.sort(new Comparator<File>() {
@@ -251,25 +250,20 @@ public class GeneratePluginXmlCatalog {
 		
 		private void checkValid() {
 			String publicString, webURL;
-			int start = contents.indexOf("PUBLIC");
+			int start = contents.indexOf("PUBLIC"); //$NON-NLS-1$
 			if( start == -1 ) {
-				String err = "Improper format: " + f.getAbsolutePath();
+				String err = "Improper format: " + f.getAbsolutePath(); //$NON-NLS-1$
 				error = err;
 				isValid = false;
 				return;
 			}
 			
-			
-			int end = contents.indexOf(">", start+1);
-			String substr = contents.substring(start, end);
-			//System.out.println(substr);
-			
-			int publicOpenQuote = contents.indexOf("\"", start);
-			int publicCloseQuote = contents.indexOf("\"", publicOpenQuote+1);
+			int publicOpenQuote = contents.indexOf("\"", start); //$NON-NLS-1$
+			int publicCloseQuote = contents.indexOf("\"", publicOpenQuote+1); //$NON-NLS-1$
 			publicString = contents.substring(publicOpenQuote+1, publicCloseQuote);
 			
-			int webURLOpenQuote = contents.indexOf("\"", publicCloseQuote+1);
-			int webURLCloseQuote = contents.indexOf("\"", webURLOpenQuote+1);
+			int webURLOpenQuote = contents.indexOf("\"", publicCloseQuote+1); //$NON-NLS-1$
+			int webURLCloseQuote = contents.indexOf("\"", webURLOpenQuote+1); //$NON-NLS-1$
 			webURL = contents.substring(webURLOpenQuote+1, webURLCloseQuote);
 			
 			
@@ -285,18 +279,18 @@ public class GeneratePluginXmlCatalog {
 			 
 			 */
 			
-			String uri = "platform:/plugin/org.jboss.tools.as.catalog/schema/dtd/" + f.getName();
+			String uri = "platform:/plugin/org.jboss.tools.as.catalog/schema/dtd/" + f.getName(); //$NON-NLS-1$
 			StringBuffer sb = new StringBuffer();
-			sb.append("\t\t\t<public publicId=\"");
+			sb.append("\t\t\t<public publicId=\""); //$NON-NLS-1$
 			sb.append(publicString);
-			sb.append("\"\n\t\t\t\turi=\"");
+			sb.append("\"\n\t\t\t\turi=\""); //$NON-NLS-1$
 			sb.append(uri);
-			sb.append("\"/>\n");
-			sb.append("\t\t\t<system systemId=\"");
+			sb.append("\"/>\n"); //$NON-NLS-1$
+			sb.append("\t\t\t<system systemId=\""); //$NON-NLS-1$
 			sb.append(webURL);
-			sb.append("\"\n\t\t\t\turi=\"");
+			sb.append("\"\n\t\t\t\turi=\""); //$NON-NLS-1$
 			sb.append(uri);
-			sb.append("\"/>\n");
+			sb.append("\"/>\n"); //$NON-NLS-1$
 			toString = sb.toString();
 		}
 		public String toString() {
