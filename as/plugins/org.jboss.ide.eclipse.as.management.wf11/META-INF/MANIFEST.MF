@@ -21,6 +21,6 @@ Bundle-ClassPath: .,
  lib/xnio-api-3.5.0.Beta4.jar,
  lib/xnio-nio-3.5.0.Beta4.jar
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.jboss.ide.eclipse.as.internal.management.wf11;x-friends:="org.jboss.ide.eclipse.as.management.as7.tests"
+Export-Package: org.jboss.ide.eclipse.as.internal.management.wf11;x-friends:="org.jboss.ide.eclipse.as.management.itests"
 Bundle-Vendor: JBoss by Red Hat
 Bundle-Localization: plugin 
