@@ -9,6 +9,7 @@
 	<groupId>org.jboss.tools.as.itests</groupId>
 	<artifactId>org.jboss.tools.as.management.itests</artifactId> 
 	<packaging>eclipse-test-plugin</packaging>
+<!-- move these deps into the MANIFEST so they're found by surefire
 	<build>
 		<plugins>
 			<plugin>
@@ -36,9 +37,9 @@
 							<artifactId>org.jboss.ide.eclipse.as.management.eap61plus</artifactId>
 							<version>0.0.0</version>
 						</dependency>
-					</dependencies>
+ 					</dependencies>
 				</configuration>
 			</plugin>
 		</plugins>
-	</build>
+	</build> -->
 </project>
