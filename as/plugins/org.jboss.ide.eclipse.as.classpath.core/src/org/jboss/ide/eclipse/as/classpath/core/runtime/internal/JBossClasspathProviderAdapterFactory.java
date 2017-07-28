@@ -26,7 +26,7 @@ public final class JBossClasspathProviderAdapterFactory implements IAdapterFacto
 	public <T> T getAdapter(Object adaptableObject, Class<T> adapterType) { 
 		if( adaptableObject instanceof IRuntimeComponent) {
 			IRuntimeComponent rc = (IRuntimeComponent) adaptableObject;
-			adapterType.cast(new RuntimeFacetClasspathProvider(rc));
+			return adapterType.cast(new RuntimeFacetClasspathProvider(rc));
 		}
 		return null;
 	}
