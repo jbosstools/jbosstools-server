@@ -12,11 +12,17 @@
             class="org.jboss.tools.wtp.server.launchbar.ModuleDescriptorType"
             id="org.jboss.tools.wtp.server.launchbar.ModuleDescriptorType"
             priority="5">
+            <enablement>
+                <instanceof value="org.eclipse.debug.core.ILaunchConfiguration">
+                </instanceof>
+            </enablement>
       </descriptorType>
       <configProvider
             descriptorType="org.jboss.tools.wtp.server.launchbar.ModuleDescriptorType"
             class="org.jboss.tools.wtp.server.launchbar.ModuleLaunchConfigurationProvider"
             priority="1">
+            <enablement>
+            </enablement>
       </configProvider>
    </extension>
    <extension
