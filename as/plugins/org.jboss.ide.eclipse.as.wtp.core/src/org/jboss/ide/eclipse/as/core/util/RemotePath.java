@@ -202,9 +202,20 @@ public class RemotePath implements IPath, Cloneable {
 	 * The decision is made based on the separator character
 	 * @return
 	 */
-	protected boolean isTargetSystemWindows() {
+	public boolean isTargetSystemWindows() {
 		return targetSystemSeparator == '\\';
 	}
+	
+	
+	/**
+	 * Is the target system windows?
+	 * The decision is made based on the separator character
+	 * @return
+	 */
+	public char getTargetSystemSeparator() {
+		return targetSystemSeparator;
+	}
+
 	
 	
 	/** 

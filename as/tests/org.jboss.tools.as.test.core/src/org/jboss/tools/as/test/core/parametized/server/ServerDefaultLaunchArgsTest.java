@@ -11,12 +11,14 @@
 package org.jboss.tools.as.test.core.parametized.server;
 
 import java.util.Collection;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
@@ -90,10 +92,10 @@ public class ServerDefaultLaunchArgsTest extends TestCase {
 		String vmArgs = localArgs.getStartDefaultVMArgs();
 		if( as7Style ) {
 			// verify for as7-style servers
-			assertTrue(vmArgs.contains("mockedServers/" + serverType + "/standalone/configuration/logging.properties"));
+			assertTrue(vmArgs.matches(".*mockedServers." + serverType + ".standalone.configuration.logging.properties.*"));
 		} else {
 			// verify for as<7 serversnt
-			boolean matches1a = vmArgs.matches(".*-Djava.endorsed.dirs=.*metadata/.plugins/org.jboss.tools.as.test.core/mockedServers/.*/lib/endorsed.*");
+			boolean matches1a = vmArgs.matches(".*-Djava.endorsed.dirs=.*metadata..plugins.org.jboss.tools.as.test.core.mockedServers..*.lib.endorsed.*");
 			assertTrue(matches1a);
 		}
 		
@@ -117,22 +119,29 @@ public class ServerDefaultLaunchArgsTest extends TestCase {
 		assertNotNull(ret);
 		assertTrue(ret instanceof RSEServerModeDetails);
 		
-		JBossExtendedProperties props2a = (JBossExtendedProperties)
-				Platform.getAdapterManager().getAdapter(server, JBossExtendedProperties.class);
-		JBossDefaultLaunchArguments rseArgs = (JBossDefaultLaunchArguments) props2a.getDefaultLaunchArguments();
-		
-		
-		progArgs = rseArgs.getStartDefaultProgramArgs();
-		vmArgs = rseArgs.getStartDefaultVMArgs();
-		if( as7Style ) {
-			// verify for as7-style servers
-			assertTrue(vmArgs.contains("/home/otherUser/jboss/standNOTalone/configuration/logging.properties"));
-			assertTrue(vmArgs.contains("-Djboss.home.dir=/home/otherUser/jboss"));
-		} else {
-			// verify for as<7 servers
-			assertTrue(vmArgs.matches(".*-Djava.endorsed.dirs=/home/otherUser/jboss/lib/endorsed.*"));
+		try {
+			ILaunchConfiguration lc22 = server.getLaunchConfiguration(true, new NullProgressMonitor());
+			String startupCmd = lc22.getAttribute("org.jboss.ide.eclipse.as.rse.core.RSEJBossStartLaunchDelegate.STARTUP_COMMAND", (String)null);
+			assertNotNull(startupCmd);
+			
+			startupCmd = startupCmd.replaceAll("\"", "");
+			if (as7Style) {
+				// verify for as7-style servers
+				String c1 = "/home/otherUser/jboss/standNOTalone/configuration/logging.properties";
+				assertTrue(startupCmd + " should contain " + c1, startupCmd.contains(c1));
+				if( startupCmd.contains("-Djboss.home.dir")) {
+					String c2 = "-Djboss.home.dir=/home/otherUser/jboss";
+					assertTrue(startupCmd + " should contain " + c1, startupCmd.contains(c2));
+				}
+			} else {
+				// verify for as<7 servers
+				String c1 = "-Djava.endorsed.dirs=/home/otherUser/jboss/lib/endorsed";
+				assertTrue(startupCmd + " should contain " + c1,  startupCmd.contains(c1));
+			}
+
+		} catch(CoreException ce) {
+			fail(ce.getMessage());
 		}
-		
 	}
 	
 	

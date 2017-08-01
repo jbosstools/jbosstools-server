@@ -17,6 +17,9 @@ import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IServerModeDetails;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.RemotePath;
+
+import de.schlichtherle.io.File;
 
 public class JBoss70DefaultLaunchArguments extends JBossDefaultLaunchArguments {
 	public JBoss70DefaultLaunchArguments(IServer s) {
@@ -28,12 +31,13 @@ public class JBoss70DefaultLaunchArguments extends JBossDefaultLaunchArguments {
 	
 	@Override
 	public String getStartDefaultProgramArgs() {
-		return DASH + JB7_MP_ARG + SPACE + QUOTE 
-				+ getServerHome().append(MODULES).toString() + QUOTE 
+		String ret = DASH + JB7_MP_ARG + SPACE + QUOTE 
+				+ getServerHome().append(MODULES).toOSString() + QUOTE 
 				+ getLoggingProgramArg() + SPACE
 				+ getJaxpProvider() + SPACE
 				+ getJaxpProvider()
 				+ SPACE + JB7_STANDALONE_ARG;
+		return ret;
 	}
 	
 	protected String getJaxpProvider() {
@@ -65,12 +69,15 @@ public class JBoss70DefaultLaunchArguments extends JBossDefaultLaunchArguments {
 
 	@Override
 	protected String getJBossJavaFlags() {
+		char sep = File.separatorChar;
 		IPath serverHome = getServerHome();
-
+		if( serverHome instanceof RemotePath ) {
+			sep = ((RemotePath)serverHome).getTargetSystemSeparator();
+		}
 		IServerModeDetails det = (IServerModeDetails)Platform.getAdapterManager().getAdapter(server, IServerModeDetails.class);
 		String basedir = det.getProperty(IServerModeDetails.PROP_SERVER_BASE_DIR_ABS);
 		
-		IPath base = new Path(basedir);
+		IPath base = new RemotePath(basedir, sep);
 		// TODO this can be changed to the config folder, if such a feature is added
 		IPath bootLog = base.append(IJBossRuntimeResourceConstants.FOLDER_LOG).append(IJBossRuntimeResourceConstants.AS7_BOOT_LOG);
 		IPath logConfig = base.append(IJBossRuntimeResourceConstants.CONFIGURATION).append(IJBossRuntimeResourceConstants.LOGGING_PROPERTIES);
@@ -79,7 +86,7 @@ public class JBoss70DefaultLaunchArguments extends JBossDefaultLaunchArguments {
 			"-Djava.awt.headless=true" + //$NON-NLS-1$
 			SPACE + QUOTE + SYSPROP + JB7_BOOT_LOG_ARG + EQ + bootLog.toOSString() + QUOTE + 
 			SPACE + QUOTE + SYSPROP + JB7_LOGGING_CONFIG_FILE + EQ + 
-			"file:" + logConfig.toString() + QUOTE + //$NON-NLS-1$  
+			"file:" + logConfig.toOSString() + QUOTE + //$NON-NLS-1$  
 			SPACE + QUOTE + SYSPROP + JBOSS_HOME_DIR + EQ + serverHome.toOSString() + QUOTE + SPACE;
 		return ret;
 	}

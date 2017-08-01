@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.wst.server.core.IServer;
@@ -87,7 +88,7 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 	}
 	
 	protected String getModulesFolder(JBossServer server, IJBossServerRuntime runtime)  throws CoreException {
-		return runtime.getRuntime().getLocation().append(IJBossRuntimeConstants.MODULES).toString();
+		return runtime.getRuntime().getLocation().append(IJBossRuntimeConstants.MODULES).toOSString();
 	}
 	
 	protected String getServerConfigFile(JBossServer server, IJBossServerRuntime runtime)  throws CoreException {
@@ -160,7 +161,7 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 
 	@Override
 	protected String getServerHome(IJBossServerRuntime runtime) {
-		return runtime.getRuntime().getLocation().toString();
+		return runtime.getRuntime().getLocation().toOSString();
 	}
 
 
@@ -186,18 +187,14 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 		IPath basedir = new Path(((LocalJBoss7ServerRuntime)runtime).getBaseDirectory());
 		IPath bootLog = basedir.append(IJBossRuntimeResourceConstants.FOLDER_LOG)
 				.append(IJBossRuntimeResourceConstants.AS7_BOOT_LOG);
-		return bootLog.toString();
+		return bootLog.toOSString();
 	}
 	
 	protected String getLoggingConfigPath(IJBossServerRuntime runtime) {
 		IPath basedir = new Path(((LocalJBoss7ServerRuntime)runtime).getBaseDirectory());
 		IPath logConfigPath = basedir.append(IJBossRuntimeResourceConstants.CONFIGURATION)
 				.append(IJBossRuntimeResourceConstants.LOGGING_PROPERTIES);
-		try {
-			return logConfigPath.toFile().toURI().toURL().toString();
-		} catch (MalformedURLException murle) {
-			return null;
-		}
+		return "file:" + logConfigPath.toOSString(); //$NON-NLS-1$
 	}
 	
 	protected boolean getPreferIP4(String host) {

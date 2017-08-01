@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.rse.core;
 
+import java.io.File;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -27,10 +29,14 @@ import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
+import org.jboss.ide.eclipse.as.core.util.RemotePath;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.wtp.core.debug.RemoteDebugUtils;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerTCPIPMonitorUtil;
+import org.jboss.tools.as.core.server.controllable.systems.IDeploymentOptionsController;
 
 /**
  * @author André Dietisheim
@@ -198,11 +204,36 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 	}		
 	
 	protected String getDefaultVMArguments(IServer server) {
-		return getExtendedProperties().getDefaultLaunchArguments().getStartDefaultVMArgs();
+		String rseHome = RSEUtils.getRSEHomeDir(server);
+		RemotePath rp = new RemotePath(rseHome, getSeparatorCharacter(server));
+		String ret =  getExtendedProperties().getDefaultLaunchArguments().getStartDefaultVMArgs(rp);
+		return ret;
 	}
 
 	protected String getDefaultProgramArguments(IServer server) {
-		return getExtendedProperties().getDefaultLaunchArguments().getStartDefaultProgramArgs();
+		String rseHome = RSEUtils.getRSEHomeDir(server);
+		RemotePath rp = new RemotePath(rseHome, getSeparatorCharacter(server));
+		String ret = getExtendedProperties().getDefaultLaunchArguments().getStartDefaultProgramArgs(rp);
+		return ret;
+	}
+	
+	
+	protected char getSeparatorCharacter(IServer server) {
+
+		// Discover the proper separator character for the paths being used
+		char sep = File.separatorChar;
+		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(server);
+		if( beh != null ) {
+			try {
+				IDeploymentOptionsController cont = (IDeploymentOptionsController)beh.getController(IDeploymentOptionsController.SYSTEM_ID);
+				if( cont != null ) {
+					sep = cont.getPathSeparatorCharacter();
+				}
+			} catch(CoreException ce) {
+				// Ignore
+			}
+		}
+		return sep;
 	}
 	
 	protected String getJar(IServer server) {

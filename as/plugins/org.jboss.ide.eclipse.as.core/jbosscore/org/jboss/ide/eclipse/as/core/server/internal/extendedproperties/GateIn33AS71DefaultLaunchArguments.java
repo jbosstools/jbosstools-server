@@ -27,9 +27,9 @@ public class GateIn33AS71DefaultLaunchArguments extends JBoss71DefaultLaunchArgu
 	@Override
 	public String getStartDefaultProgramArgs() {
 		return DASH + JB7_MP_ARG + SPACE + QUOTE 
-				+ getServerHome().append(MODULES).toString() 
+				+ getServerHome().append(MODULES).toOSString() 
 				+ ":" //$NON-NLS-1$
-				+ getServerHome().append("gatein").append(MODULES).toString()  //$NON-NLS-1$
+				+ getServerHome().append("gatein").append(MODULES).toOSString()  //$NON-NLS-1$
 				+ QUOTE 
 				+ getLoggingProgramArg()
 				+ SPACE + DASH + JB7_JAXPMODULE + SPACE + JB7_JAXP_PROVIDER
