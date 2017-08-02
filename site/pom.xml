@@ -11,7 +11,4 @@
 	<artifactId>server.site</artifactId>
 	
 	<packaging>eclipse-repository</packaging>
-	<properties>
-		<skipDeployToJBossOrg>false</skipDeployToJBossOrg>
-	</properties>
 </project>
