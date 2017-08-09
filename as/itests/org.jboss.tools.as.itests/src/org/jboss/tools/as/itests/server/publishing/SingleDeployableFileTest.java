@@ -11,10 +11,15 @@
 package org.jboss.tools.as.itests.server.publishing;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
@@ -49,7 +54,8 @@ public class SingleDeployableFileTest extends AbstractPublishingTest {
 		Object[][] allOptions = new Object[][] {
 				servers, zipOption, new Object[]{ServerParameterUtils.DEPLOY_META}, new Object[]{ServerParameterUtils.DEPLOY_PERMOD_DEFAULT}
 		};
-		return MatrixUtils.toMatrix(allOptions);
+		ArrayList<Object[]> ret = MatrixUtils.toMatrix(allOptions);
+		return ret;
 	}
 	
 	private String projectName;
@@ -78,6 +84,45 @@ public class SingleDeployableFileTest extends AbstractPublishingTest {
 		addModuleToServer(mods[0]);
 	}
 	
+	public static class TestResourceChangeListener implements IResourceChangeListener {
+		private String name;
+		private boolean found = false;
+		public TestResourceChangeListener(String resourceName) {
+			this.name = resourceName;
+		}
+		@Override
+		public void resourceChanged(IResourceChangeEvent event) {
+			System.out.println("    * Resource Changed!!! ");
+			final Boolean[] b = new Boolean[1];
+			b[0] = false;
+			try {
+				event.getDelta().accept(new IResourceDeltaVisitor() {
+					@Override
+					public boolean visit(IResourceDelta delta) throws CoreException {
+						IResource r = delta.getResource();
+						if( r != null && r.getName().equals(name)) {
+							b[0] = (true);
+						}
+						return true;
+					}
+				});
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			setFound(b[0]);
+		}
+		
+		private synchronized void setFound(boolean b) {
+			found = b;
+		}
+		
+		public synchronized boolean isFound() {
+			return found;
+		}
+	}
+	
+	
 	@Test
 	public void testSingleDeployableFullPublish() throws IOException, CoreException {
 		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
@@ -86,16 +131,15 @@ public class SingleDeployableFileTest extends AbstractPublishingTest {
 		fullPublishAndVerify(IServer.PUBLISH_FULL, "<test>done</test>");
 		
 		/* Add incremental */
-		ResourceUtils.setContents(p, new Path("test.xml"), "2");
-		JobUtils.waitForIdle();
+		setContentsAndWait(p, "2");
 		fullPublishAndVerify(IServer.PUBLISH_INCREMENTAL, "2");
-		ResourceUtils.setContents(p, new Path("test.xml"), "3");
-		JobUtils.waitForIdle();
+		setContentsAndWait(p, "3");
 		fullPublishAndVerify(IServer.PUBLISH_INCREMENTAL, "3");
 	}
 	
 	private void fullPublishAndVerify(int publishType, String expectedContents) throws CoreException, IOException  {
 		publishAndCheckError(server,publishType);
+		
 		boolean isFullPublish = publishType == IServer.PUBLISH_FULL;
 		int[] vals = isFullPublish ? new int[] { 2,0} : new int[] {2,0};
 		// binary modules are always full publish really
@@ -104,11 +148,26 @@ public class SingleDeployableFileTest extends AbstractPublishingTest {
 		verifyPublishMethodResults(vals[0], vals[1]);
 	}
 	
-	private IModuleFile findBinaryModuleFile(IModuleFile[] files, String name) {
-		for( int i = 0; i < files.length; i++ ) {
-			if( files[i].getName().equals(name))
-				return files[i];
+	
+	private void setContentsAndWait(IProject p, String contents) throws IOException, CoreException {
+		/* Add incremental */
+		TestResourceChangeListener listener = new TestResourceChangeListener("test.xml");
+		System.out.println("Adding Listener");
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(listener, IResourceChangeEvent.POST_CHANGE);
+		System.out.println("Setting contents to " + contents);
+		ResourceUtils.setContents(p, new Path("test.xml"), contents);
+		long t = System.currentTimeMillis();
+		System.out.println("Waiting for listener to get event: ");
+		while( !listener.isFound() && System.currentTimeMillis() < (t + 10000)) {
+			System.out.println("- Still Waiting");
+			try {
+				Thread.sleep(200);
+			} catch(InterruptedException ie) {}
 		}
-		return null;
+		if( !listener.isFound()) {
+			fail("Listener not alerted to any file change.");
+		}
+		JobUtils.waitForIdle();
+		ResourcesPlugin.getWorkspace().removeResourceChangeListener(listener);
 	}
 }

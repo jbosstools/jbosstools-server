@@ -20,17 +20,41 @@ public class MockPublishMethodFilesystemController extends AbstractSubsystemCont
 		public static ArrayList<IPath> changed = new ArrayList<IPath>();
 		public static ArrayList<IPath> removed = new ArrayList<IPath>();
 		public static ArrayList<java.io.File> copiedFiles = new ArrayList<java.io.File>();		
-		public static IPath[] getRemoved() {
+		
+		public static synchronized IPath[] getRemoved() {
 			return (IPath[]) removed.toArray(new IPath[removed.size()]);
 		}
-		public static java.io.File[] getChangedFiles() {
+		public static synchronized java.io.File[] getChangedFiles() {
 			return copiedFiles.toArray(new java.io.File[copiedFiles.size()]);
 		}
 		
-		public static IPath[] getChanged() {
+		public static synchronized  void markChanged(IPath absoluteRemotePath, File file) {
+			System.out.println("Marking changed: " + absoluteRemotePath.toOSString());
+			if( !changed.contains(absoluteRemotePath)) 
+				changed.add(absoluteRemotePath);
+			if( !copiedFiles.contains(file))
+				copiedFiles.add(file);
+		}
+		public static synchronized void dirChanged(IPath dir) {
+			if( !changed.contains(dir))
+				changed.add(dir);
+		}
+		
+		public static synchronized  void touch(IPath p) {
+			System.out.println("Touching: " + p.toOSString());
+			if( !changed.contains(p))
+				changed.add(p);
+		}
+		public static synchronized  void delete(IPath p) {
+			System.out.println("Deleting: " + p.toOSString());
+			if( !removed.contains(p))
+				removed.add(p);
+		}
+		public static synchronized  IPath[] getChanged() {
 			return (IPath[]) changed.toArray(new IPath[changed.size()]);
 		}
-		public static void clearAll() {
+		public static synchronized  void clearAll() {
+			System.out.println("[MockPublishMethodFilesystemController] - Clearing all");
 			changed.clear();
 			removed.clear();
 			copiedFiles.clear();
@@ -42,7 +66,6 @@ public class MockPublishMethodFilesystemController extends AbstractSubsystemCont
 	
 
 	private LocalFilesystemController delegate;
-	private StaticModel myModelRef = model;
 	private LocalFilesystemController getDelegate() {
 		if( delegate == null ) {
 			delegate = new LocalFilesystemController();
@@ -53,10 +76,7 @@ public class MockPublishMethodFilesystemController extends AbstractSubsystemCont
 	
 	@Override
 	public IStatus copyFile(File file, IPath absoluteRemotePath, IProgressMonitor monitor) throws CoreException {
-		if( !model.changed.contains(absoluteRemotePath)) 
-			model.changed.add(absoluteRemotePath);
-		if( !model.copiedFiles.contains(file))
-			model.copiedFiles.add(file);
+		model.markChanged(absoluteRemotePath, file);
 		getDelegate().copyFile(file, absoluteRemotePath, monitor);
 		return null;
 	}
@@ -64,8 +84,7 @@ public class MockPublishMethodFilesystemController extends AbstractSubsystemCont
 	@Override
 	public IStatus deleteResource(IPath path, IProgressMonitor monitor)
 			throws CoreException {
-		if( !model.removed.contains(path))
-			model.removed.add(path);
+		model.delete(path);
 		getDelegate().deleteResource(path, monitor);
 		return null;
 	}
@@ -79,8 +98,7 @@ public class MockPublishMethodFilesystemController extends AbstractSubsystemCont
 	@Override
 	public IStatus makeDirectoryIfRequired(IPath dir, IProgressMonitor monitor)
 			throws CoreException {
-		if( !model.changed.contains(dir))
-			model.changed.add(dir);
+		model.dirChanged(dir);
 		getDelegate().makeDirectoryIfRequired(dir, monitor);
 		return null;
 	}
@@ -88,8 +106,7 @@ public class MockPublishMethodFilesystemController extends AbstractSubsystemCont
 	@Override
 	public IStatus touchResource(IPath path, IProgressMonitor monitor)
 			throws CoreException {
-		if( !model.changed.contains(path))
-			model.changed.add(path);
+		model.touch(path);
 		getDelegate().makeDirectoryIfRequired(path.removeLastSegments(1), monitor);
 		getDelegate().touchResource(path, monitor);
 		return Status.OK_STATUS;

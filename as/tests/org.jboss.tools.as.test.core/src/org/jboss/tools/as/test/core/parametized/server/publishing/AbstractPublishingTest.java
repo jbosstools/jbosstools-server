@@ -306,7 +306,12 @@ public abstract class AbstractPublishingTest extends TestCase {
 	/* Util methods to do the checking */
 	protected static void publishAndCheckError(IServer server, int pubType) {
 		MockPublishMethodFilesystemController.StaticModel.clearAll();
+//		System.out.println("Kicking off publish...");
 		server.publish(pubType, new NullProgressMonitor());
+//		System.out.println("Publish complete, waiting for idle");
+		try {
+			Thread.sleep(5000);
+		} catch(InterruptedException ie) {}
 		JobUtils.waitForIdle();
 	}
 	protected void verifyPublishMethodResults(int changed, int removed) {

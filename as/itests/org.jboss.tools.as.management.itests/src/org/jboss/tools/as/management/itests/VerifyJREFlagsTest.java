@@ -56,7 +56,7 @@ public class VerifyJREFlagsTest extends TestCase {
 			
 			String j7v = getVersion(j7Lines);
 			assertNotNull("Unable to verify java7 version", j7v);
-			assertTrue("Java 7 version string must start with 1.7: " + j7v, j7v.startsWith("1.7."));
+			assertTrue("Java 7 version string must start with 1.7. Please verify sysprop " + JRE7_SYSPROP + ". Current version: " + j7v, j7v.startsWith("1.7."));
 		} catch(Exception e) {
 			fail(e.getMessage());
 		}
