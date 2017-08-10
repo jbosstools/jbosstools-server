@@ -11,21 +11,19 @@
 	<packaging>eclipse-plugin</packaging>
 
 	<properties>
-	  <wildfly.client.config.version>1.0.0.Beta3</wildfly.client.config.version>
-	  <wildfly.common.version>1.2.0.Beta9</wildfly.common.version>
-	  <wildfly.elytron.version>1.1.0.Beta36</wildfly.elytron.version>
-
-	  <jbossdmr.version>1.4.0.Final</jbossdmr.version>
+	  <jbossdmr.version>1.4.1.Final</jbossdmr.version>
 	  <jboss.logging.version>3.3.1.Final</jboss.logging.version>
-	  <jboss.remoting.version>5.0.0.Beta19</jboss.remoting.version>
-
+	  <jboss.remoting.version>5.0.0.CR5</jboss.remoting.version>
 	  <jboss.threads.version>2.2.1.Final</jboss.threads.version>
 
-      <wildfly.controller.version>3.0.0.Beta16</wildfly.controller.version>
-      <wildfly.protocol.version>3.0.0.Beta16</wildfly.protocol.version>
+	  <wildfly.client.config.version>1.0.0.CR3</wildfly.client.config.version>
+	  <wildfly.common.version>1.2.0.CR1</wildfly.common.version>
+	  <wildfly.controller.version>3.0.0.Beta30</wildfly.controller.version>
+	  <wildfly.elytron.version>1.1.0.CR4</wildfly.elytron.version>
+	  <wildfly.protocol.version>3.0.0.Beta30</wildfly.protocol.version>
 
-	  <xnio.api.version>3.5.0.Beta4</xnio.api.version>
-	  <xnio.nio.version>3.5.0.Beta4</xnio.nio.version>
+	  <xnio.api.version>3.5.0.CR2</xnio.api.version>
+	  <xnio.nio.version>3.5.0.CR2</xnio.nio.version>
 	</properties>
 	
 	<build>

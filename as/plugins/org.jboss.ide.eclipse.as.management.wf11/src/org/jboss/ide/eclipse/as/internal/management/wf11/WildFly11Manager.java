@@ -25,18 +25,9 @@ import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants
 import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.SERVER_STATE;
 import static org.jboss.ide.eclipse.as.management.core.ModelDescriptionConstants.SHUTDOWN;
 
-
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.ExecutionException;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
-import java.net.UnknownHostException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
@@ -54,7 +46,6 @@ import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.sasl.RealmCallback;
 
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
@@ -62,11 +53,9 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.osgi.util.NLS;
 import org.jboss.as.controller.client.ModelControllerClient;
 import org.jboss.as.controller.client.ModelControllerClientConfiguration;
-import org.jboss.as.controller.client.helpers.domain.DeploymentActionResult;
 import org.jboss.as.controller.client.helpers.standalone.DeploymentAction;
 import org.jboss.as.controller.client.helpers.standalone.DeploymentPlan;
 import org.jboss.as.controller.client.helpers.standalone.DeploymentPlanBuilder;
-import org.jboss.as.controller.client.helpers.standalone.InitialDeploymentPlanBuilder;
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentManager;
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentPlanResult;
 import org.jboss.dmr.ModelNode;
@@ -612,21 +601,16 @@ public class WildFly11Manager {
 			List<String> removedContent,
 			DeploymentPlanBuilder bd) throws IOException {
 
-		Map<String, InputStream> addStreams = new HashMap<>();
+		Map<String, Path> addStreams = new HashMap<>();
 		Iterator<String> changedIt = changedContent.keySet().iterator();
-		ArrayList<String> failedChanges = new ArrayList<String>();
 		while(changedIt.hasNext()) {
 			String k = changedIt.next();
 			String v = changedContent.get(k);
-			try {
-				addStreams.put(k, new FileInputStream(new File(v)));
-			} catch (FileNotFoundException e) {
-				failedChanges.add(k);
-			}
+			addStreams.put(k, new File(v).toPath());
 		}
 		
 		if( addStreams.size() > 0 ) {
-			bd = bd.addContentToDeployment(deploymentName, addStreams);
+			bd = bd.addContentFileToDeployment(deploymentName, addStreams);
 		}
 		if( removedContent.size() > 0 ) {
 			bd = bd.removeContenFromDeployment(deploymentName, removedContent); 
