@@ -124,7 +124,15 @@ public class AttributeControlFactory {
         	} else {
                 List<IAttributeControlFactory> factories = findFactories(clazz);
                 if (factories == null) {
-                    factory = value.getClass().isArray() ? arrayFactory : defaultFactory;
+                	if( value == null ) {
+                		if( type != null && type.startsWith("[")) { //$NON-NLS-1$
+                			factory = arrayFactory;
+                		} else {
+                			factory = defaultFactory;
+                		}
+                	} else {
+                		factory = value.getClass().isArray() ? arrayFactory : defaultFactory;
+                	}
                 } else {
                     factory = factories.get(0);
                 }
