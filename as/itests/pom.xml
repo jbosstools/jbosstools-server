@@ -346,7 +346,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
 
 							<execution>
-								<id>install-wildfly-11.0.0.Alpha1</id>
+								<id>install-wildfly-11.0.0.Beta1</id>
 								<phase>pre-integration-test</phase>
 								<goals>
 									<goal>wget</goal>
