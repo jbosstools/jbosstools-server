@@ -70,6 +70,7 @@ public class RSEUtilsTest extends TestCase {
 		String home = "c:\\apps\\jboss\\jboss-eap-5.1";
 		IServer s = createEAP5Server(home);
 		String args = getStartArgsForServer(s);
+		assertNotNull(args);
 		assertTrue(args.contains("c:\\apps\\jboss\\jboss-eap-5.1\\lib\\endorsed"));
 		assertTrue(args.contains("c:\\apps\\jboss\\jboss-eap-5.1\\server"));
 		assertTrue(args.contains("c:\\apps\\jboss\\jboss-eap-5.1\\bin\\native"));
