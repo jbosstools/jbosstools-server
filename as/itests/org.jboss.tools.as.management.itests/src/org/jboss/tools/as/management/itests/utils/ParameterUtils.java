@@ -1,6 +1,7 @@
 package org.jboss.tools.as.management.itests.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.eclipse.wst.server.core.IServerType;
@@ -87,6 +88,15 @@ public class ParameterUtils {
 	}
 	
 	public static Object[] getIncrementalMgmtDeploymentHomes() {
+		Object[] all = getAllIncrementalMgmtDeploymentHomes();
+		if( !isSingleRuntime()) 
+			return all;
+		if( Arrays.asList(all).contains(SINGLE_RUNTIME))
+			return new String[] {SINGLE_RUNTIME};
+		return null;
+	}
+	
+	public static Object[] getAllIncrementalMgmtDeploymentHomes() {
 		boolean skipReqs = skipPrivateRequirements();
 		ArrayList<String> paths = new ArrayList<String>();
 		paths.add(JBOSS_WILDFLY_110_HOME);
@@ -96,4 +106,39 @@ public class ParameterUtils {
 		// NEW_SERVER_ADAPTER
 		return paths.toArray(new String[paths.size()]);
 	}
+	
+	
+	public static final String SINGLE_RUNTIME_KEY = "jbosstools.test.singleruntime.location";
+	public static final String SINGLE_RUNTIME = System.getProperty(SINGLE_RUNTIME_KEY);
+
+	public static Object[] getServerHomes() {
+		Object[] ret = getAS7ServerHomes();
+		if( !isSingleRuntime()) {
+			return getAS7ServerHomes();
+		}
+		
+		if( Arrays.asList(ret).contains(SINGLE_RUNTIME))
+			return new String[] {SINGLE_RUNTIME};
+		return null;
+	}
+	
+	public static String getSingleRuntimeHome() {
+		if( isSingleRuntime()) {
+			Object[] ret = getAS7ServerHomes();
+			if( Arrays.asList(ret).contains(SINGLE_RUNTIME))
+				return SINGLE_RUNTIME;
+		}
+		return null;
+	}
+
+	public static boolean isSingleRuntime() {
+		if( SINGLE_RUNTIME == null || SINGLE_RUNTIME.isEmpty())
+			return false;
+		if("${jbosstools.test.singleruntime.location}".equals(SINGLE_RUNTIME))
+			return false;
+		
+		System.out.println(SINGLE_RUNTIME);
+		return true;
+	}
+	
 }

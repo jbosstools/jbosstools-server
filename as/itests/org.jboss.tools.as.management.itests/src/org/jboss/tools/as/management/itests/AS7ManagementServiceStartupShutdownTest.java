@@ -26,7 +26,8 @@ public class AS7ManagementServiceStartupShutdownTest extends Assert {
 
 	@Parameters
 	public static Collection<Object[]> data() {
-		ArrayList<Object[]> l = MatrixUtils.toMatrix(new Object[][]{ParameterUtils.getAS7ServerHomes()});
+		ArrayList<Object[]> l = MatrixUtils.toMatrix(new Object[][]{
+			ParameterUtils.getServerHomes()});
 		return l;
 	}
 	

@@ -56,8 +56,6 @@ import org.osgi.util.tracker.ServiceTracker;
 @RunWith(value = Parameterized.class)
 public class IncrementalManagerDeployTest extends AssertUtility {
 
-	
-
 	@Parameters
 	public static Collection<Object[]> data() {
 		ArrayList<Object[]> l = MatrixUtils.toMatrix(new Object[][]{
