@@ -127,11 +127,14 @@ public class XMLDocumentRepository {
 	 */
 	public boolean refresh(String fullPath) {
 		boolean found = pathToTimestamp.get(fullPath) != null;
-		if (!found || new File(fullPath).lastModified() != pathToTimestamp
-				.get(fullPath).longValue()) {
+		File f = new File(fullPath);
+		boolean modified = f.lastModified() != pathToTimestamp.get(fullPath).longValue();
+		if( !f.exists()) {
+			pathToDocument.put(fullPath, null);
+			pathToTimestamp.put(fullPath, System.currentTimeMillis());
+		} else if (!found || modified) {
 			pathToDocument.put(fullPath, loadDocument(fullPath));
-			pathToTimestamp.put(fullPath, new Long(new File(fullPath)
-					.lastModified()));
+			pathToTimestamp.put(fullPath, new Long(f.lastModified()));
 			return true;
 		}
 		return false;
