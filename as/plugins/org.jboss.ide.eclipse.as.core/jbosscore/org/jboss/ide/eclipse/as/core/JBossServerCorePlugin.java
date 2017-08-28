@@ -141,7 +141,7 @@ public class JBossServerCorePlugin extends Plugin  {
     
 
     public static void log(Throwable e) {
-    	log(e.getMessage(), e);
+    	log(e.getMessage() == null ? e.getClass().getName() : e.getMessage(), e);
     }
 
     public static void log(String message, Throwable e) {

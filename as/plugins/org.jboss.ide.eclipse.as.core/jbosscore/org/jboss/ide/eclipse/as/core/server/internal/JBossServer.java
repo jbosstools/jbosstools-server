@@ -210,6 +210,8 @@ public class JBossServer extends DeployableServer
 			}
 		} catch(CoreException ce) {
 			JBossServerCorePlugin.log(ce.getStatus());
+		} catch(Throwable t) {
+			JBossServerCorePlugin.log(t);
 		}
 		return defaultValue;
 	}
