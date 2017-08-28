@@ -126,18 +126,38 @@ public class XMLDocumentRepository {
 	 * @return whether the document was re-read
 	 */
 	public boolean refresh(String fullPath) {
-		boolean found = pathToTimestamp.get(fullPath) != null;
+		boolean hasCachedTimestamp = pathToTimestamp.get(fullPath) != null;
 		File f = new File(fullPath);
-		boolean modified = f.lastModified() != pathToTimestamp.get(fullPath).longValue();
+		
 		if( !f.exists()) {
+			// The file doesn't exist, so we cache a null document with current timestamp
 			pathToDocument.put(fullPath, null);
 			pathToTimestamp.put(fullPath, System.currentTimeMillis());
-		} else if (!found || modified) {
+			return false;
+		}
+		
+		boolean refreshed = false;
+		// The file does exist...
+		if (!hasCachedTimestamp) {
+			// We don't have a cached timestamp, so we'll cache the current doc
+			// and modification stamp
 			pathToDocument.put(fullPath, loadDocument(fullPath));
 			pathToTimestamp.put(fullPath, new Long(f.lastModified()));
-			return true;
+			refreshed = true;
+		} else {
+			// We DO have a cached timestamp, and the file exists. Let's see if
+			// it was modified
+			Long cachedStamp = pathToTimestamp.get(fullPath);
+			long cVal = cachedStamp == null ? 0 : cachedStamp.longValue();
+			boolean modified = cVal < f.lastModified();
+			if (modified) {
+				pathToDocument.put(fullPath, loadDocument(fullPath));
+				pathToTimestamp.put(fullPath, new Long(f.lastModified()));
+				refreshed = true;
+			}
 		}
-		return false;
+		
+		return refreshed;
 	}
 	
 	/**
