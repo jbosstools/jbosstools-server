@@ -12,6 +12,7 @@ import org.jboss.tools.as.management.itests.utils.AS7ManagerTestUtils;
 import org.jboss.tools.as.management.itests.utils.ParameterUtils;
 import org.jboss.tools.as.management.itests.utils.StartupUtility;
 import org.jboss.tools.as.test.core.internal.utils.MatrixUtils;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -62,10 +63,14 @@ public class AS7ManagementServiceStartupShutdownTest extends Assert {
 
 		String hd2 = util.getHomeDir();
 		if( !homeDir.equals(hd2)) {
-			util.dispose();
 			util.setHomeDir(homeDir);
 			util.start(true);
 		}
+	}
+	
+	@After
+	public void after() {
+		util.dispose();
 	}
 	
 	@Test

@@ -1,35 +1,23 @@
 package org.jboss.tools.as.management.itests.utils;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
-import org.eclipse.wst.server.core.IRuntimeType;
-import org.eclipse.wst.server.core.IServerType;
-import org.eclipse.wst.server.core.ServerCore;
-import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
-import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
-import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
-import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.ThreadUtils;
 import org.jboss.ide.eclipse.as.management.core.IAS7ManagementDetails;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
-import org.jboss.tools.as.management.itests.VerifyJREFlagsTest;
 import org.jboss.tools.as.management.itests.utils.AS7ManagerTestUtils.MockAS7ManagementDetails;
-
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class StartupUtility extends Assert {
 
@@ -260,11 +248,24 @@ public class StartupUtility extends Assert {
 		Exception ex = null;
 		try {
 			boolean isListening = (AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.LOCALHOST, getPort()));
-			assertTrue(isListening);
-			service.stop(createConnectionDetails());
-			ThreadUtils.sleepFor(3000);
-			isListening = (AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.LOCALHOST, getPort()));
-			assertFalse(isListening);
+			if( isListening ) {
+				service.stop(createConnectionDetails());
+				ThreadUtils.sleepFor(3000);
+				isListening = (AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.LOCALHOST, getPort()));
+				assertFalse(isListening);
+				boolean terminated = waitForTermination(p, 15000);
+				if( !terminated ) {
+					// It's not listening. Either it's frozen or it was started incorrectly or something
+					p.destroyForcibly();
+					boolean t2 = waitForTermination(p, 15000);
+					fail("Shutdown of server at " + getHomeDir() + " did not work. The process has been killed instead. Termination " + (t2 ? "succeeded" : "failed."));
+				}
+			} else {
+				// It's not listening. Either it's frozen or it was started incorrectly or something
+				p.destroyForcibly();
+				boolean terminated = waitForTermination(p, 15000);
+				fail("Shutdown of server at " + getHomeDir() + " did not work. The process has been killed instead. Termination " + (terminated ? "succeeded" : "failed."));
+			}
 		} catch (Exception e) {
 			ex = e;
 		} finally {
@@ -277,6 +278,25 @@ public class StartupUtility extends Assert {
 		}
 	}
 
+	protected boolean waitForTermination(Process p, int timeout) {
+		long l = System.currentTimeMillis();
+		long end = l + timeout;
+		while(System.currentTimeMillis() < end ) {
+			try {
+				p.exitValue();
+				return true;
+			} catch( IllegalThreadStateException itse ) {
+				// ignore
+			}
+			try {
+				Thread.sleep(200);
+			} catch(InterruptedException ie) {
+				// ignore
+			}
+		}
+		return false;
+	}
+	
 	protected IAS7ManagementDetails createConnectionDetails() {
 		return new MockAS7ManagementDetails(AS7ManagerTestUtils.LOCALHOST, getPort(), homeDir);
 	}
