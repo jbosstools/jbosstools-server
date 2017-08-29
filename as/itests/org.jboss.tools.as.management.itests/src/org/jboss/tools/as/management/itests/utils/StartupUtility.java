@@ -3,6 +3,8 @@ package org.jboss.tools.as.management.itests.utils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -250,10 +252,9 @@ public class StartupUtility extends Assert {
 			boolean isListening = (AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.LOCALHOST, getPort()));
 			if( isListening ) {
 				service.stop(createConnectionDetails());
-				ThreadUtils.sleepFor(3000);
+				boolean terminated = waitForTermination(p, 15000);
 				isListening = (AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.LOCALHOST, getPort()));
 				assertFalse(isListening);
-				boolean terminated = waitForTermination(p, 15000);
 				if( !terminated ) {
 					// It's not listening. Either it's frozen or it was started incorrectly or something
 					p.destroyForcibly();
@@ -273,8 +274,13 @@ public class StartupUtility extends Assert {
 				service.dispose();
 			if (p != null)
 				p.destroy();
-			if (ex != null)
-				fail("Could not stop server " + homeDir + ": " + ex.getMessage());
+			if (ex != null) {
+				StringWriter sw = new StringWriter();
+				PrintWriter pw = new PrintWriter(sw);
+				ex.printStackTrace(pw);
+				String sStackTrace = sw.toString(); // stack trace as a string
+				fail("Could not stop server " + homeDir + ": " + ex.getMessage() + "\n" + sStackTrace);
+			}
 		}
 	}
 
