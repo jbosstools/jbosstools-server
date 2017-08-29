@@ -6,6 +6,9 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.reddeer.core.condition.ShellWithTextIsAvailable;
 import org.jboss.reddeer.eclipse.wst.server.ui.RuntimePreferencePage;
 import org.jboss.reddeer.eclipse.wst.server.ui.view.Server;
@@ -18,7 +21,19 @@ import org.jboss.tools.runtime.core.model.RuntimePath;
 import org.jboss.tools.runtime.ui.RuntimeUIActivator;
 
 public class CleanEnvironmentUtils {
+	private static boolean USE_UI_DEFAULT = false;
 
+	public static void cleanAll() {
+		cleanAll(USE_UI_DEFAULT);
+	}
+	
+	public static void cleanAll(boolean ui) {
+		cleanPaths();
+		cleanServers(ui);
+		cleanServerRuntimes(ui);
+		deleteAllProjects();
+	}
+	
 	public static void cleanPaths() {
 		// make sure that paths were removed
 		for (RuntimePath path : RuntimeUIActivator.getDefault().getModel().getRuntimePaths()) {
@@ -38,12 +53,6 @@ public class CleanEnvironmentUtils {
 		}
 	}
 
-	public static void cleanAll() {
-		cleanPaths();
-		cleanServers();
-		cleanServerRuntimes();
-		deleteAllProjects();
-	}
 
 	public static void deleteAllProjects() {
 		IProject[] all = ResourcesPlugin.getWorkspace().getRoot().getProjects();
@@ -58,26 +67,60 @@ public class CleanEnvironmentUtils {
 	}
 	
 	public static void deleteServersAndRuntimes() {
-		cleanServers();
-		cleanServerRuntimes();
+		deleteServersAndRuntimes(USE_UI_DEFAULT);
+	}
+	
+	public static void deleteServersAndRuntimes(boolean ui) {
+		cleanServers(ui);
+		cleanServerRuntimes(ui);
 	}
 
 	public static void cleanServerRuntimes() {
-		WorkbenchPreferenceDialog preferenceDialog = new WorkbenchPreferenceDialog();
-		preferenceDialog.open();
-		RuntimePreferencePage runtimePage = new RuntimePreferencePage();
-		preferenceDialog.select(runtimePage);
-		runtimePage.removeAllRuntimes();
-		preferenceDialog.ok();
+		cleanServerRuntimes(USE_UI_DEFAULT);
 	}
-
-	public static void cleanServers() {
-		ServersView serversView = new ServersView();
-		serversView.open();
-		List<Server> servers = serversView.getServers();
-		for (Server server : servers) {
-			server.delete();
+	
+	public static void cleanServerRuntimes(boolean ui) {
+		if( ui ) {
+			WorkbenchPreferenceDialog preferenceDialog = new WorkbenchPreferenceDialog();
+			preferenceDialog.open();
+			RuntimePreferencePage runtimePage = new RuntimePreferencePage();
+			preferenceDialog.select(runtimePage);
+			runtimePage.removeAllRuntimes();
+			preferenceDialog.ok();
+		} else {
+			IRuntime[] all = ServerCore.getRuntimes();
+			for( int i = 0; i < all.length; i++ ) {
+				try {
+					all[i].delete();
+				} catch(CoreException ce) {
+					ce.printStackTrace();
+				}
+			}
 		}
 	}
 
+	public static void cleanServers() {
+		cleanServers(false);
+	}
+	
+	public static void cleanServers(boolean ui) {
+		if( ui ) {
+			ServersView serversView = new ServersView();
+			serversView.open();
+			List<Server> servers = serversView.getServers();
+			for (Server server : servers) {
+				server.delete();
+			}
+		} else {
+
+			IServer[] all = ServerCore.getServers();
+			for( int i = 0; i < all.length; i++ ) {
+				try {
+					all[i].delete();
+				} catch(CoreException ce) {
+					ce.printStackTrace();
+				}
+			}
+		}
+	}
 }
