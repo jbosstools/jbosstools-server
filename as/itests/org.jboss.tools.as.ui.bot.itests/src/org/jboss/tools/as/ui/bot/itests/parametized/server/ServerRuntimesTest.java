@@ -162,7 +162,11 @@ public class ServerRuntimesTest {
     	
     	// Let's also verify the ports situation in the editor
     	String serverName = ServerRuntimeUIConstants.getServerName(runtimeString);
-		JBossServer server = new JBossServerView().getServer(serverName);
+    	JBossServerView jbsview = new JBossServerView();
+    	if(!jbsview.isOpened()) {
+    		jbsview.open();
+    	}
+		JBossServer server = jbsview.getServer(serverName);
 		JBossServerEditor editor = server.open();
 		
 		EditorPort[] ports = ServerRuntimeUIConstants.getPorts(runtimeString);
