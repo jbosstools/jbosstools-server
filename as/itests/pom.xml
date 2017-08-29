@@ -108,10 +108,31 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 			</activation>
 			<properties>
 				<!-- property will be fixed when ../../tests folder exists, so that we can reuse it for downloaded requirements -->
-				<requirementsDirectory>${project.build.directory}/../../target/requirements</requirementsDirectory>
+				<requirementsDirectory>${basedir}/../target/requirements</requirementsDirectory>
 			</properties>
 			<build>
 				<plugins>
+					<plugin>
+						<artifactId>maven-clean-plugin</artifactId>
+						<version>3.0.0</version>
+						<executions>
+							<execution>
+								<id>clean-requirementsDirectory</id>
+								<phase>clean</phase>
+								<goals>
+									<goal>clean</goal>
+								</goals>
+								<configuration>
+									<filesets>
+										<fileset>
+											<directory>${basedir}/../target/requirements</directory>
+											<followSymlinks>false</followSymlinks>
+										</fileset>
+									</filesets>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-dependency-plugin</artifactId>
