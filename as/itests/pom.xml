@@ -64,6 +64,47 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 	</build>
 		
 	<profiles>
+
+		<!-- this profile will be activated automatically when ../../tests folder exists, so that we can reuse it for downloaded requirements -->
+		<profile>
+			<id>fix-requirementsDirectory</id>
+			<activation>
+				<file>
+					<exists>../../itests</exists>
+				</file>
+			</activation>
+			<properties>
+				<requirementsDirectory>${project.build.directory}/../../target/requirements</requirementsDirectory>
+			</properties>
+		</profile>
+		<!-- this profile can be used to simply display the values of project.build.directory and requirementsDirectory -->
+		<profile>
+			<id>verbose-requirementsDirectory</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>${maven.antrun.plugin.version}</version>
+						<executions>
+							<execution>
+								<phase>verify</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<quiet>true</quiet>
+									<tasks>
+										<echo>project.build.directory = ${project.build.directory}</echo>
+										<echo>requirementsDirectory = ${requirementsDirectory}</echo>
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 		<profile>
 			<id>download-all-runtimes</id>
 			<!-- Do not download all runtimes if only testing one runtime - eap compatibility testing -->
