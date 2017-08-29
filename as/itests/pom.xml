@@ -65,18 +65,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		
 	<profiles>
 
-		<!-- this profile will be activated automatically when ../../tests folder exists, so that we can reuse it for downloaded requirements -->
-		<profile>
-			<id>fix-requirementsDirectory</id>
-			<activation>
-				<file>
-					<exists>../../itests</exists>
-				</file>
-			</activation>
-			<properties>
-				<requirementsDirectory>${project.build.directory}/../../target/requirements</requirementsDirectory>
-			</properties>
-		</profile>
 		<!-- this profile can be used to simply display the values of project.build.directory and requirementsDirectory -->
 		<profile>
 			<id>verbose-requirementsDirectory</id>
@@ -107,13 +95,21 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		</profile>
 		<profile>
 			<id>download-all-runtimes</id>
-			<!-- Do not download all runtimes if only testing one runtime - eap compatibility testing -->
 			<activation>
+				<!-- JBIDE-24763 only download everything if we're running in a plugin folder, not the itests/ folder. -->
+				<file>
+					<exists>../../itests</exists>
+				</file>
+				<!-- Do not download all runtimes if only testing one runtime - eap compatibility testing -->
 				<property>
 					<name>test.profile</name>
 					<value>!eap7x-compatibility</value>
 				</property>
 			</activation>
+			<properties>
+				<!-- property will be fixed when ../../tests folder exists, so that we can reuse it for downloaded requirements -->
+				<requirementsDirectory>${project.build.directory}/../../target/requirements</requirementsDirectory>
+			</properties>
 			<build>
 				<plugins>
 					<plugin>
