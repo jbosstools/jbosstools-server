@@ -10,12 +10,12 @@
  ******************************************************************************/
 package org.jboss.tools.archives.reddeer.component;
 
-import org.jboss.reddeer.swt.api.TreeItem;
-import org.jboss.reddeer.core.condition.JobIsRunning;
-import org.jboss.reddeer.swt.impl.menu.ContextMenu;
-import org.jboss.reddeer.common.exception.RedDeerException;
-import org.jboss.reddeer.common.logging.Logger;
-import org.jboss.reddeer.common.wait.WaitWhile;
+import org.eclipse.reddeer.swt.api.TreeItem;
+import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
+import org.eclipse.reddeer.swt.impl.menu.ContextMenuItem;
+import org.eclipse.reddeer.common.exception.RedDeerException;
+import org.eclipse.reddeer.common.logging.Logger;
+import org.eclipse.reddeer.common.wait.WaitWhile;
 import org.jboss.tools.archives.reddeer.archives.ui.NewJarDialog;
 
 /**
@@ -39,13 +39,13 @@ public class ArchiveProject {
 	
 	public NewJarDialog newJarArchive() {
 		selectArchive();
-		new ContextMenu("New Archive", "JAR").select();
+		new ContextMenuItem("New Archive", "JAR").select();
 		return new NewJarDialog();
 	}
 	
 	public void buildProjectFull() {
 		selectArchive();
-		new ContextMenu("Build Project (Full)").select();
+		new ContextMenuItem("Build Project (Full)").select();
 		new WaitWhile(new JobIsRunning());
 	}
 	

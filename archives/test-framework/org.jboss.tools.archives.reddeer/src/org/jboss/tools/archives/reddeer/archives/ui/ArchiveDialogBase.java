@@ -10,13 +10,13 @@
  ******************************************************************************/
 package org.jboss.tools.archives.reddeer.archives.ui;
 
-import org.jboss.reddeer.core.condition.JobIsRunning;
-import org.jboss.reddeer.swt.condition.ShellIsAvailable;
-import org.jboss.reddeer.swt.impl.button.PushButton;
-import org.jboss.reddeer.swt.impl.button.RadioButton;
-import org.jboss.reddeer.swt.impl.shell.DefaultShell;
-import org.jboss.reddeer.swt.impl.text.LabeledText;
-import org.jboss.reddeer.common.wait.WaitWhile;
+import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
+import org.eclipse.reddeer.swt.condition.ShellIsAvailable;
+import org.eclipse.reddeer.swt.impl.button.PushButton;
+import org.eclipse.reddeer.swt.impl.button.RadioButton;
+import org.eclipse.reddeer.swt.impl.shell.DefaultShell;
+import org.eclipse.reddeer.swt.impl.text.LabeledText;
+import org.eclipse.reddeer.common.wait.WaitWhile;
 
 /**
  * Base dialog class for EditArchiveDialog and NewJarDialog
@@ -33,43 +33,43 @@ public abstract class ArchiveDialogBase extends DefaultShell {
 	public ArchiveDialogBase setArchiveName(String archiveName) {
 		String newArchiveName = archiveName.contains(".jar")?
 				archiveName:archiveName + ".jar";
-		new LabeledText("Archive name:").setText(newArchiveName);
+		new LabeledText(this, "Archive name:").setText(newArchiveName);
 		return this;
 	}
 	
 	public ArchiveDialogBase setDestination(String location) {
-		new LabeledText("Destination:").setText("");
-		new LabeledText("Destination:").setText(location);
+		new LabeledText(this, "Destination:").setText("");
+		new LabeledText(this, "Destination:").setText(location);
 		return this;
 	}
 	
 	public ArchiveDialogBase setFileSystemRelative() {
-		new RadioButton("Filesystem Relative").click();
+		new RadioButton(this, "Filesystem Relative").click();
 		return this;
 	}
 	
 	public ArchiveDialogBase setWorkspaceRelative() {
-		new RadioButton("Workspace Relative").click();
+		new RadioButton(this, "Workspace Relative").click();
 		return this;
 	}
 	
 	public ArchiveDialogBase setZipStandardArchiveType() {
-		new RadioButton("Standard archive using zip compression").click();
+		new RadioButton(this, "Standard archive using zip compression").click();
 		return this;
 	}
 	
 	public ArchiveDialogBase setNoCompressionArchiveType() {
-		new RadioButton("Exploded archive resulting in a folder (no compression)").click();
+		new RadioButton(this, "Exploded archive resulting in a folder (no compression)").click();
 		return this;
 	}
 	
 	public void cancel() {
-		new PushButton("Cancel").click();
+		new PushButton(this, "Cancel").click();
 		new WaitWhile(new ShellIsAvailable(this));
 	}
 	
 	public void finish() {
-		new PushButton("Finish").click();
+		new PushButton(this, "Finish").click();
 		new WaitWhile(new ShellIsAvailable(this));
 		new WaitWhile(new JobIsRunning());
 	}

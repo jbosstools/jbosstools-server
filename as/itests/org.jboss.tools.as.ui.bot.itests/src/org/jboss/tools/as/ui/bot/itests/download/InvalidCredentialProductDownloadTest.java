@@ -2,16 +2,18 @@ package org.jboss.tools.as.ui.bot.itests.download;
 
 import static org.junit.Assert.fail;
 
-import org.jboss.reddeer.common.condition.WaitCondition;
-import org.jboss.reddeer.common.exception.WaitTimeoutExpiredException;
-import org.jboss.reddeer.common.wait.WaitUntil;
-import org.jboss.reddeer.common.wait.WaitWhile;
-import org.jboss.reddeer.core.exception.CoreLayerException;
-import org.jboss.reddeer.swt.impl.button.CancelButton;
-import org.jboss.reddeer.swt.impl.progressbar.DefaultProgressBar;
-import org.jboss.reddeer.swt.impl.shell.DefaultShell;
-import org.jboss.reddeer.swt.impl.text.DefaultText;
-import org.jboss.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
+import org.eclipse.reddeer.common.condition.AbstractWaitCondition;
+import org.eclipse.reddeer.common.exception.WaitTimeoutExpiredException;
+import org.eclipse.reddeer.common.wait.WaitUntil;
+import org.eclipse.reddeer.common.wait.WaitWhile;
+import org.eclipse.reddeer.core.exception.CoreLayerException;
+import org.eclipse.reddeer.swt.api.Shell;
+import org.eclipse.reddeer.swt.condition.ShellIsAvailable;
+import org.eclipse.reddeer.swt.impl.button.CancelButton;
+import org.eclipse.reddeer.swt.impl.progressbar.DefaultProgressBar;
+import org.eclipse.reddeer.swt.impl.shell.DefaultShell;
+import org.eclipse.reddeer.swt.impl.text.DefaultText;
+import org.eclipse.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
 import org.jboss.tools.as.ui.bot.itests.reddeer.util.DisableSecureStorageRequirement.DisableSecureStorage;
 import org.junit.Test;
 
@@ -42,8 +44,9 @@ public class InvalidCredentialProductDownloadTest {
 		
 		assertErrorMessageIsShown();
 		
-		new DefaultShell("Download Runtimes");
-		new CancelButton().click();
+		Shell downloadRuntimesShell = new DefaultShell("Download Runtimes");
+		new CancelButton(downloadRuntimesShell).click();
+		new WaitWhile(new ShellIsAvailable(downloadRuntimesShell));
 		new WorkbenchPreferenceDialog().ok();
 	}
 	
@@ -57,7 +60,7 @@ public class InvalidCredentialProductDownloadTest {
 		}
 	}
 
-	private class ErrorMessageIsShown implements WaitCondition{
+	private class ErrorMessageIsShown extends AbstractWaitCondition{
 		
 		@Override
 		public boolean test() {
@@ -70,7 +73,7 @@ public class InvalidCredentialProductDownloadTest {
 		}
 		
 		@Override
-		public String errorMessage() {
+		public String errorMessageWhile() {
 			return "error message was not shown.";
 		}
 		
@@ -80,7 +83,7 @@ public class InvalidCredentialProductDownloadTest {
 		}
 	}
 	
-	private class ValidatingCredentialsProgressBarIsRunning implements WaitCondition{
+	private class ValidatingCredentialsProgressBarIsRunning extends AbstractWaitCondition{
 
 		@Override
 		public boolean test() {
@@ -98,7 +101,7 @@ public class InvalidCredentialProductDownloadTest {
 		}
 
 		@Override
-		public String errorMessage() {
+		public String errorMessageUntil() {
 			return "Validating Credentials progress bar is not running";
 		}
 		

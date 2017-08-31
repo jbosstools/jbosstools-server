@@ -18,29 +18,29 @@ import org.jboss.ide.eclipse.as.reddeer.matcher.ServerConsoleContainsNoException
 import org.jboss.ide.eclipse.as.reddeer.server.editor.ServerModuleWebPageEditor;
 import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServer;
 import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServerModule;
-import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServerView;
-import org.jboss.reddeer.common.exception.WaitTimeoutExpiredException;
-import org.jboss.reddeer.common.logging.Logger;
-import org.jboss.reddeer.common.wait.TimePeriod;
-import org.jboss.reddeer.common.wait.WaitUntil;
-import org.jboss.reddeer.eclipse.condition.ConsoleHasNoChange;
-import org.jboss.reddeer.eclipse.condition.ConsoleHasText;
-import org.jboss.reddeer.eclipse.core.resources.Project;
-import org.jboss.reddeer.eclipse.jdt.ui.packageexplorer.PackageExplorer;
-import org.jboss.reddeer.eclipse.ui.console.ConsoleView;
-import org.jboss.reddeer.eclipse.ui.dialogs.ExplorerItemPropertyDialog;
-import org.jboss.reddeer.eclipse.ui.ide.NewFileCreationWizardDialog;
-import org.jboss.reddeer.eclipse.ui.ide.NewFileCreationWizardPage;
-import org.jboss.reddeer.eclipse.ui.problems.ProblemsView;
-import org.jboss.reddeer.eclipse.ui.problems.ProblemsView.ProblemType;
-import org.jboss.reddeer.eclipse.ui.wizards.datatransfer.ExternalProjectImportWizardDialog;
-import org.jboss.reddeer.eclipse.ui.wizards.datatransfer.WizardProjectsImportPage;
-import org.jboss.reddeer.eclipse.wst.common.project.facet.ui.RuntimesPropertyPage;
-import org.jboss.reddeer.eclipse.wst.server.ui.view.ServersViewEnums.ServerPublishState;
-import org.jboss.reddeer.eclipse.wst.server.ui.view.ServersViewEnums.ServerState;
-import org.jboss.reddeer.eclipse.wst.server.ui.wizard.ModifyModulesDialog;
-import org.jboss.reddeer.eclipse.wst.server.ui.wizard.ModifyModulesPage;
-import org.jboss.reddeer.workbench.impl.editor.TextEditor;
+import org.eclipse.reddeer.common.exception.WaitTimeoutExpiredException;
+import org.eclipse.reddeer.common.logging.Logger;
+import org.eclipse.reddeer.common.wait.TimePeriod;
+import org.eclipse.reddeer.common.wait.WaitUntil;
+import org.eclipse.reddeer.eclipse.condition.ConsoleHasNoChange;
+import org.eclipse.reddeer.eclipse.condition.ConsoleHasText;
+import org.eclipse.reddeer.eclipse.core.resources.Project;
+import org.eclipse.reddeer.eclipse.jdt.ui.packageview.PackageExplorerPart;
+import org.eclipse.reddeer.eclipse.ui.console.ConsoleView;
+import org.eclipse.reddeer.eclipse.ui.dialogs.PropertyDialog;
+import org.eclipse.reddeer.eclipse.ui.dialogs.WizardNewFileCreationPage;
+import org.eclipse.reddeer.eclipse.ui.views.markers.ProblemsView;
+import org.eclipse.reddeer.eclipse.ui.views.markers.ProblemsView.ProblemType;
+import org.eclipse.reddeer.eclipse.ui.wizards.datatransfer.ExternalProjectImportWizardDialog;
+import org.eclipse.reddeer.eclipse.ui.wizards.datatransfer.WizardProjectsImportPage;
+import org.eclipse.reddeer.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard;
+import org.eclipse.reddeer.eclipse.wst.common.project.facet.ui.RuntimesPropertyPage;
+import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
+import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersViewEnums.ServerPublishState;
+import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersViewEnums.ServerState;
+import org.eclipse.reddeer.eclipse.wst.server.ui.wizard.ModifyModulesDialog;
+import org.eclipse.reddeer.eclipse.wst.server.ui.wizard.ModifyModulesPage;
+import org.eclipse.reddeer.workbench.impl.editor.TextEditor;
 import org.jboss.tools.as.ui.bot.itests.Activator;
 import org.junit.Test;
 
@@ -73,7 +73,7 @@ public class DeployJSPProjectTemplate {
 		ExternalProjectImportWizardDialog dialog = new ExternalProjectImportWizardDialog();
 		dialog.open();
 		
-		WizardProjectsImportPage page = new WizardProjectsImportPage();
+		WizardProjectsImportPage page = new WizardProjectsImportPage(dialog);
 		page.setArchiveFile(Activator.getPathToFileWithinPlugin(projectPath));
 		page.selectProjects(projectName);
 		
@@ -88,9 +88,8 @@ public class DeployJSPProjectTemplate {
 	protected void openPropertyDialog(String projectName, Project project, String runtimeLabel) {
 		try {
 			log.step("Set targeted runtime for " + projectName);
-			ExplorerItemPropertyDialog propertyDialog = new ExplorerItemPropertyDialog(project);
-			propertyDialog.open();
-			RuntimesPropertyPage targetedRuntimes = new RuntimesPropertyPage();
+			PropertyDialog propertyDialog = project.openProperties();
+			RuntimesPropertyPage targetedRuntimes = new RuntimesPropertyPage(propertyDialog);
 			propertyDialog.select(targetedRuntimes);
 			targetedRuntimes.selectRuntime(runtimeLabel);
 	
@@ -101,7 +100,7 @@ public class DeployJSPProjectTemplate {
 	}
 	
 	public JBossServer getServer(String name) {
-		return new JBossServerView().getServer(name);
+		return new ServersView2().getServer(JBossServer.class, name);
 	}
 	
 	@Test
@@ -188,13 +187,13 @@ public class DeployJSPProjectTemplate {
 
 	private void addModule(JBossServer server, String projectName) {
 		ModifyModulesDialog modifyModulesDialog = server.addAndRemoveModules();
-		ModifyModulesPage modifyModulesPage = new ModifyModulesPage();
+		ModifyModulesPage modifyModulesPage = new ModifyModulesPage(modifyModulesDialog);
 		modifyModulesPage.add(projectName);
 		modifyModulesDialog.finish();
 	}
 	
 	private Project getProject(String projectName){
-		PackageExplorer explorer = new PackageExplorer();
+		PackageExplorerPart explorer = new PackageExplorerPart();
 		explorer.open();
 		return explorer.getProject(projectName);
 	}
@@ -238,9 +237,9 @@ public class DeployJSPProjectTemplate {
 	
 	public void hotDeployment(String projectName){
 		log.step("Create " + HOT_JSP_FILE_NAME + " file");
-		NewFileCreationWizardDialog newFileDialog = new NewFileCreationWizardDialog();
+		BasicNewFileResourceWizard newFileDialog = new BasicNewFileResourceWizard();
 		newFileDialog.open();
-		NewFileCreationWizardPage page = new NewFileCreationWizardPage();
+		WizardNewFileCreationPage page = new WizardNewFileCreationPage(newFileDialog);
 		page.setFileName(HOT_JSP_FILE_NAME);
 		page.setFolderPath(projectName, "WebContent");
 		newFileDialog.finish();
@@ -283,7 +282,7 @@ public class DeployJSPProjectTemplate {
 
 	private void undeploy(JBossServer server, String projectName) {
 		ModifyModulesDialog modifyModulesDialog = server.addAndRemoveModules();
-		ModifyModulesPage modifyModulesPage = new ModifyModulesPage();
+		ModifyModulesPage modifyModulesPage = new ModifyModulesPage(modifyModulesDialog);
 		modifyModulesPage.remove(projectName);;
 		modifyModulesDialog.finish();
 	}

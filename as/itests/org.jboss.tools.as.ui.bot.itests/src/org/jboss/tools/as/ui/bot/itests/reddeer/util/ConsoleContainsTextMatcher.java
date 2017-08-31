@@ -2,7 +2,7 @@ package org.jboss.tools.as.ui.bot.itests.reddeer.util;
 
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
-import org.jboss.reddeer.eclipse.ui.console.ConsoleView;
+import org.eclipse.reddeer.eclipse.ui.console.ConsoleView;
 
 /**
  * Checks if the active console in console view contains specified text.

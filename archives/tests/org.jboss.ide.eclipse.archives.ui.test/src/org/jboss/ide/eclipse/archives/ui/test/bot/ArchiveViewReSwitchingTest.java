@@ -12,11 +12,11 @@ package org.jboss.ide.eclipse.archives.ui.test.bot;
 
 import static org.junit.Assert.fail;
 
-import org.jboss.reddeer.common.exception.RedDeerException;
-import org.jboss.reddeer.eclipse.ui.console.ConsoleView;
-import org.jboss.reddeer.eclipse.ui.views.log.LogView;
-import org.jboss.reddeer.eclipse.wst.server.ui.view.ServersView;
-import org.jboss.reddeer.workbench.api.View;
+import org.eclipse.reddeer.common.exception.RedDeerException;
+import org.eclipse.reddeer.eclipse.ui.console.ConsoleView;
+import org.eclipse.reddeer.eclipse.ui.views.log.LogView;
+import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
+import org.eclipse.reddeer.workbench.api.View;
 import org.jboss.tools.archives.reddeer.archives.ui.ProjectArchivesView;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -33,7 +33,7 @@ public class ArchiveViewReSwitchingTest extends ArchivesTestBase {
 	private static String projectName = "ArchiveViewReSwitchingTest";
 	private static LogView errorsView = new LogView();
 	private static ConsoleView consoleView = new ConsoleView();
-	private static ServersView serversView = new ServersView();
+	private static ServersView2 serversView = new ServersView2();
 	
 	@BeforeClass
 	public static void setup() {

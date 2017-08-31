@@ -8,10 +8,10 @@ import java.util.List;
 
 import org.eclipse.ui.PlatformUI;
 import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServer;
-import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServerView;
-import org.jboss.reddeer.core.util.Display;
-import org.jboss.reddeer.eclipse.wst.server.ui.view.Server;
-import org.jboss.reddeer.junit.runner.RedDeerSuite;
+import org.eclipse.reddeer.common.util.Display;
+import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.Server;
+import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
+import org.eclipse.reddeer.junit.runner.RedDeerSuite;
 import org.jboss.tools.as.ui.bot.itests.Activator;
 import org.jboss.tools.as.ui.bot.itests.download.RuntimeDownloadTestUtility;
 import org.jboss.tools.as.ui.bot.itests.parametized.server.ServerRuntimeUIConstants;
@@ -56,8 +56,9 @@ public class SingleServerRuntimeTest {
     public void detect(){
     	DetectRuntimeTemplate.detectRuntime(getDownloadPath().getAbsolutePath());
     	DetectRuntimeTemplate.removePath(getDownloadPath().getAbsolutePath());
-    	new JBossServerView().open();
-    	List<Server> all = new JBossServerView().getServers();
+    	ServersView2 serversView = new ServersView2();
+    	serversView.open();
+    	List<Server> all = serversView.getServers();
     	assertThat(all.size(), is(1));
     	serverName = all.get(0).getLabel().getName();
     }
@@ -71,8 +72,9 @@ public class SingleServerRuntimeTest {
     public void operate(){
     	DetectRuntimeTemplate.detectRuntime(getDownloadPath().getAbsolutePath());
     	DetectRuntimeTemplate.removePath(getDownloadPath().getAbsolutePath());
-    	new JBossServerView().open();
-    	List<Server> all = new JBossServerView().getServers();
+    	ServersView2 serversView = new ServersView2();
+    	serversView.open();
+    	List<Server> all = serversView.getServers();
     	assertThat(all.size(), is(1));
     	serverName = all.get(0).getLabel().getName();
     	OperateServerTemplate operate = new OperateServerTemplate(serverName);
@@ -94,8 +96,9 @@ public class SingleServerRuntimeTest {
     	
     	DetectRuntimeTemplate.detectRuntime(getDownloadPath().getAbsolutePath());
     	DetectRuntimeTemplate.removePath(getDownloadPath().getAbsolutePath());
-    	new JBossServerView().open();
-    	List<Server> all = new JBossServerView().getServers();
+    	ServersView2 serversView = new ServersView2();
+    	serversView.open();
+    	List<Server> all = serversView.getServers();
     	assertThat(all.size(), is(1));
     	serverName = all.get(0).getLabel().getName();
     	OperateServerTemplate operate = new OperateServerTemplate(serverName);

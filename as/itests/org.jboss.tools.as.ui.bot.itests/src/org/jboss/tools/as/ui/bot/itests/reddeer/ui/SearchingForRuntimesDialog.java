@@ -7,16 +7,15 @@ import java.util.TreeMap;
 
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
-import org.jboss.reddeer.common.wait.WaitWhile;
-import org.jboss.reddeer.core.condition.ShellWithTextIsActive;
-import org.jboss.reddeer.core.util.Display;
-import org.jboss.reddeer.core.util.ResultRunnable;
-import org.jboss.reddeer.swt.api.Shell;
-import org.jboss.reddeer.swt.api.TreeItem;
-import org.jboss.reddeer.swt.impl.button.CheckBox;
-import org.jboss.reddeer.swt.impl.button.PushButton;
-import org.jboss.reddeer.swt.impl.shell.DefaultShell;
-import org.jboss.reddeer.swt.impl.tree.DefaultTree;
+import org.eclipse.reddeer.common.wait.WaitWhile;
+import org.eclipse.reddeer.swt.condition.ShellIsAvailable;
+import org.eclipse.reddeer.common.util.Display;
+import org.eclipse.reddeer.common.util.ResultRunnable;
+import org.eclipse.reddeer.swt.api.TreeItem;
+import org.eclipse.reddeer.swt.impl.button.CheckBox;
+import org.eclipse.reddeer.swt.impl.button.PushButton;
+import org.eclipse.reddeer.swt.impl.shell.DefaultShell;
+import org.eclipse.reddeer.swt.impl.tree.DefaultTree;
 import org.jboss.tools.as.ui.bot.itests.reddeer.Runtime;
 
 public class SearchingForRuntimesDialog extends DefaultShell {
@@ -72,18 +71,17 @@ public class SearchingForRuntimesDialog extends DefaultShell {
 	}
 	
 	public void ok(){
-		Shell shell = new DefaultShell();
-		String title = shell.getText();
-		new PushButton("OK").click();
-		new WaitWhile(new ShellWithTextIsActive(title));
+		new PushButton(this, "OK").click();
+		new WaitWhile(new ShellIsAvailable(this));
 	}
 	
 	public void cancel(){
-		new PushButton("Cancel").click();
+		new PushButton(this, "Cancel").click();
+		new WaitWhile(new ShellIsAvailable(this));
 	}
 
 	public void hideAlreadyCreatedRuntimes() {
-		new CheckBox("Hide already created runtimes").toggle(true);
+		new CheckBox(this, "Hide already created runtimes").toggle(true);
 	}
 	
 	public void deselect(String runtimeName){
@@ -95,6 +93,6 @@ public class SearchingForRuntimesDialog extends DefaultShell {
 	}
 	
 	private List<TreeItem> getRuntimesTreeItems(){
-		return new DefaultTree().getAllItems();
+		return new DefaultTree(this).getAllItems();
 	}
 }

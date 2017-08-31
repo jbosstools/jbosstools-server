@@ -13,14 +13,14 @@ package org.jboss.tools.archives.reddeer.archives.ui;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jboss.reddeer.swt.api.Table;
-import org.jboss.reddeer.swt.condition.ShellIsAvailable;
-import org.jboss.reddeer.core.condition.JobIsRunning;
-import org.jboss.reddeer.swt.impl.button.CheckBox;
-import org.jboss.reddeer.swt.impl.button.PushButton;
-import org.jboss.reddeer.swt.impl.shell.DefaultShell;
-import org.jboss.reddeer.swt.impl.table.DefaultTable;
-import org.jboss.reddeer.common.wait.WaitWhile;
+import org.eclipse.reddeer.swt.api.Table;
+import org.eclipse.reddeer.swt.condition.ShellIsAvailable;
+import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
+import org.eclipse.reddeer.swt.impl.button.CheckBox;
+import org.eclipse.reddeer.swt.impl.button.PushButton;
+import org.eclipse.reddeer.swt.impl.shell.DefaultShell;
+import org.eclipse.reddeer.swt.impl.table.DefaultTable;
+import org.eclipse.reddeer.common.wait.WaitWhile;
 
 /**
  * Dialog for deploying archive on servers 
@@ -81,36 +81,36 @@ public class ArchivePublishDialog extends DefaultShell {
 	}
 	
 	public ArchivePublishDialog checkAlwaysPublish() {
-		new CheckBox(0).toggle(true);
+		new CheckBox(this, 0).toggle(true);
 		return this; 
 	}
 	
 	public ArchivePublishDialog uncheckAlwaysPublish() {
-		new CheckBox(0).toggle(false);
+		new CheckBox(this, 0).toggle(false);
 		return this; 
 	}
 	
 	public ArchivePublishDialog checkAutoDeploy() {
-		new CheckBox(1).toggle(true);
+		new CheckBox(this, 1).toggle(true);
 		return this; 
 	}
 	
 	public ArchivePublishDialog uncheckAutoDeploy() {
-		new CheckBox(1).toggle(false);
+		new CheckBox(this, 1).toggle(false);
 		return this; 
 	}
 	
 	private Table table() {
-		return new DefaultTable();
+		return new DefaultTable(this);
 	}
 	
 	public void cancel() {
-		new PushButton("Cancel").click();
+		new PushButton(this, "Cancel").click();
 		new WaitWhile(new ShellIsAvailable(this));
 	}
 	
 	public void finish() {
-		new PushButton("Finish").click();
+		new PushButton(this, "Finish").click();
 		new WaitWhile(new ShellIsAvailable(this));
 		new WaitWhile(new JobIsRunning());
 	}

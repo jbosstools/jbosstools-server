@@ -15,37 +15,37 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServer;
 import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServerModule;
-import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServerView;
-import org.jboss.reddeer.common.condition.AbstractWaitCondition;
-import org.jboss.reddeer.common.exception.WaitTimeoutExpiredException;
-import org.jboss.reddeer.common.logging.Logger;
-import org.jboss.reddeer.common.matcher.RegexMatcher;
-import org.jboss.reddeer.common.wait.TimePeriod;
-import org.jboss.reddeer.common.wait.WaitUntil;
-import org.jboss.reddeer.common.wait.WaitWhile;
-import org.jboss.reddeer.core.condition.JobIsRunning;
-import org.jboss.reddeer.core.exception.CoreLayerException;
-import org.jboss.reddeer.core.matcher.TreeItemTextMatcher;
-import org.jboss.reddeer.eclipse.condition.ConsoleHasNoChange;
-import org.jboss.reddeer.eclipse.core.resources.Project;
-import org.jboss.reddeer.eclipse.exception.EclipseLayerException;
-import org.jboss.reddeer.eclipse.jdt.ui.ProjectExplorer;
-import org.jboss.reddeer.eclipse.ui.browser.BrowserEditor;
-import org.jboss.reddeer.eclipse.ui.browser.BrowserView;
-import org.jboss.reddeer.eclipse.ui.console.ConsoleView;
-import org.jboss.reddeer.eclipse.wst.server.ui.view.ModuleLabel;
-import org.jboss.reddeer.eclipse.wst.server.ui.view.Server;
-import org.jboss.reddeer.eclipse.wst.server.ui.view.ServerModule;
-import org.jboss.reddeer.eclipse.wst.server.ui.view.ServersView;
-import org.jboss.reddeer.eclipse.wst.server.ui.view.ServersViewEnums.ServerPublishState;
-import org.jboss.reddeer.eclipse.wst.server.ui.view.ServersViewEnums.ServerState;
-import org.jboss.reddeer.eclipse.wst.server.ui.wizard.ModifyModulesDialog;
-import org.jboss.reddeer.eclipse.wst.server.ui.wizard.ModifyModulesPage;
-import org.jboss.reddeer.jface.wizard.WizardDialog;
-import org.jboss.reddeer.swt.impl.menu.ContextMenu;
-import org.jboss.reddeer.swt.impl.tree.DefaultTreeItem;
-import org.jboss.reddeer.workbench.impl.editor.DefaultEditor;
+import org.eclipse.reddeer.common.condition.AbstractWaitCondition;
+import org.eclipse.reddeer.common.exception.WaitTimeoutExpiredException;
+import org.eclipse.reddeer.common.logging.Logger;
+import org.eclipse.reddeer.common.matcher.RegexMatcher;
+import org.eclipse.reddeer.common.wait.TimePeriod;
+import org.eclipse.reddeer.common.wait.WaitUntil;
+import org.eclipse.reddeer.common.wait.WaitWhile;
+import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
+import org.eclipse.reddeer.core.exception.CoreLayerException;
+import org.eclipse.reddeer.core.matcher.TreeItemTextMatcher;
+import org.eclipse.reddeer.eclipse.condition.ConsoleHasNoChange;
+import org.eclipse.reddeer.eclipse.core.resources.Project;
+import org.eclipse.reddeer.eclipse.exception.EclipseLayerException;
+import org.eclipse.reddeer.eclipse.ui.browser.BrowserEditor;
+import org.eclipse.reddeer.eclipse.ui.browser.WebBrowserView;
+import org.eclipse.reddeer.eclipse.ui.console.ConsoleView;
+import org.eclipse.reddeer.eclipse.ui.navigator.resources.ProjectExplorer;
+import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ModuleLabel;
+import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.Server;
+import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServerModule;
+import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
+import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersViewEnums.ServerPublishState;
+import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersViewEnums.ServerState;
+import org.eclipse.reddeer.eclipse.wst.server.ui.wizard.ModifyModulesDialog;
+import org.eclipse.reddeer.eclipse.wst.server.ui.wizard.ModifyModulesPage;
+import org.eclipse.reddeer.jface.wizard.WizardDialog;
+import org.eclipse.reddeer.swt.impl.menu.ContextMenuItem;
+import org.eclipse.reddeer.swt.impl.tree.DefaultTreeItem;
+import org.eclipse.reddeer.workbench.impl.editor.DefaultEditor;
 
 /**
  * 
@@ -61,7 +61,7 @@ public class DeployOnServer {
 	private static final Logger log = Logger.getLogger(DeployOnServer.class);
 
 	public void checkServerStatus(String serverName) {
-		ServersView serversView = new ServersView();
+		ServersView2 serversView = new ServersView2();
 		serversView.open();
 		Server server = serversView.getServer(serverName);
 		assertTrue("Server has not been started!", server.getLabel().getState() == ServerState.STARTED);
@@ -98,7 +98,7 @@ public class DeployOnServer {
 	 */
 	public void unDeployModule(String moduleName, String serverName) {
 		log.info("UNDEPLOYING MODULE" + moduleName + " ON SERVER " + serverName);
-		ServersView serversView = new ServersView();
+		ServersView2 serversView = new ServersView2();
 		serversView.open();
 		Server server = serversView.getServer(serverName);
 		ServerModule serverModule = server.getModule(new RegexMatcher(".*" + moduleName + ".*"));
@@ -121,8 +121,8 @@ public class DeployOnServer {
 		explorer.activate();
 		Project project = explorer.getProject(deployableProject);
 		project.select();
-		new ContextMenu("Run As", "1 Run on Server").select();
-		new WizardDialog().finish();
+		new ContextMenuItem("Run As", "1 Run on Server").select();
+		new WizardDialog("Run On Server").finish();
 	}
 
 	/**
@@ -136,12 +136,12 @@ public class DeployOnServer {
 	 */
 	@SuppressWarnings("unchecked")
 	public void deployProjectModule(String projectName, String serverName) {
-		JBossServerView serversView = new JBossServerView();
+		ServersView2 serversView = new ServersView2();
 		serversView.open();
-		ModifyModulesDialog modulesDialog = serversView.getServer(serverName).addAndRemoveModules();
+		ModifyModulesDialog modulesDialog = serversView.getServer(JBossServer.class, serverName).addAndRemoveModules();
 		String moduleName = new DefaultTreeItem(new TreeItemTextMatcher(new RegexMatcher(".*" + projectName + ".*")))
 				.getText();
-		new ModifyModulesPage().add(moduleName);
+		new ModifyModulesPage(modulesDialog).add(moduleName);
 		modulesDialog.finish();
 		new WaitUntil(new WaitForProjectToStartAndSynchronize(moduleName, serverName), TimePeriod.LONG);
 	}
@@ -155,7 +155,7 @@ public class DeployOnServer {
 	 *            name of server
 	 */
 	public void restartServer(String serverName) {
-		ServersView serversView = new ServersView();
+		ServersView2 serversView = new ServersView2();
 		serversView.open();
 		Server server = serversView.getServer(serverName);
 		server.clean();
@@ -196,12 +196,11 @@ public class DeployOnServer {
 			new WaitWhile(new JobIsRunning());
 			new WaitUntil(new ConsoleHasNoChange(TimePeriod.LONG), TimePeriod.VERY_LONG);
 		}
-		JBossServerView serversView = new JBossServerView();
+		ServersView2 serversView = new ServersView2();
 		serversView.open();
 		String moduleName = projectName.equals("template") ? "QUICKSTART_NAME" : projectName;
-		JBossServerModule module = (JBossServerModule) serversView.getServer(serverNameLabel)
-				.getModule(new RegexMatcher(".*" + moduleName + ".*"));
-		if (new ContextMenu("Show In", "Web Browser").isEnabled()) {
+		JBossServerModule module  = serversView.getServer(JBossServer.class, serverNameLabel).getModule(new RegexMatcher(".*" + moduleName + ".*"));
+		if (new ContextMenuItem("Show In", "Web Browser").isEnabled()) {
 			module.openWebPage();
 
 			final BrowserEditor browser = new BrowserEditor(new RegexMatcher(".*"));
@@ -246,7 +245,7 @@ public class DeployOnServer {
 	 *            name of server
 	 */
 	protected void checkServerViewForStatus(String moduleName, String serverNameLabel) {
-		ServersView serversView = new ServersView();
+		ServersView2 serversView = new ServersView2();
 		serversView.open();
 		Server server = serversView.getServer(serverNameLabel);
 		ServerModule serverModule = server.getModule(new RegexMatcher(".*" + moduleName + ".*"));
@@ -272,7 +271,7 @@ public class DeployOnServer {
 	 * @param browserView
 	 * @param url
 	 */
-	public static void checkBrowserForErrorPage(BrowserView browserView, String url) {
+	public static void checkBrowserForErrorPage(WebBrowserView browserView, String url) {
 		//Try to refresh page if it is not loaded.
 		if (browserView.getText().contains("Unable") || browserView.getText().contains("404")) {
 			if (url == null) {
@@ -362,10 +361,10 @@ public class DeployOnServer {
 		private JBossServerModule getModule() {
 			int counter = 0;
 			while (module == null && counter < 5) {
-				JBossServerView serversView = new JBossServerView();
+				ServersView2 serversView = new ServersView2();
 				serversView.open();
 				try {
-					module = serversView.getServer(serverNameLabel).getModule(projectName);
+					module = serversView.getServer(JBossServer.class,serverNameLabel).getModule(projectName);
 				} catch (EclipseLayerException ex) {
 					// module not found
 					counter++;

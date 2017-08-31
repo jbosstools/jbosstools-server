@@ -11,9 +11,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.hamcrest.core.Is;
-import org.jboss.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
+import org.eclipse.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
 import org.jboss.tools.as.ui.bot.itests.reddeer.Runtime;
 import org.jboss.tools.as.ui.bot.itests.reddeer.RuntimeMatcher;
+import org.jboss.tools.as.ui.bot.itests.reddeer.ui.RuntimeDetectionPreferencePage;
 import org.jboss.tools.as.ui.bot.itests.reddeer.ui.SearchingForRuntimesDialog;
 
 /**
@@ -37,7 +38,8 @@ public class DetectRuntimeTemplate extends RuntimeDetectionUtility {
 		
 		List<Runtime> runtimes = searchingForRuntimesDialog.getRuntimes();
 		searchingForRuntimesDialog.ok();
-		runtimeDetectionPage.ok();
+		WorkbenchPreferenceDialog preferences = new WorkbenchPreferenceDialog();
+		preferences.ok();
 		return runtimes;
 	}
 	
@@ -48,7 +50,9 @@ public class DetectRuntimeTemplate extends RuntimeDetectionUtility {
 		List<Runtime> runtimes = searchingForRuntimesDialog.getRuntimes();
 		
 		searchingForRuntimesDialog.ok();
-		runtimeDetectionPage.ok();
+		
+		WorkbenchPreferenceDialog preferences = new WorkbenchPreferenceDialog();
+		preferences.ok();
 		
 		assertCountOfRuntimes(searchingForRuntimesDialog, expected, runtimes, path);
 		assertThatExpectedRuntimesArePresent(expected, runtimes);
@@ -59,6 +63,7 @@ public class DetectRuntimeTemplate extends RuntimeDetectionUtility {
 	public static void removePath(String requiredPath) {
 		WorkbenchPreferenceDialog preferenceDialog = new WorkbenchPreferenceDialog();
 		preferenceDialog.open();
+		RuntimeDetectionPreferencePage runtimeDetectionPage = new RuntimeDetectionPreferencePage(preferenceDialog);
 		preferenceDialog.select(runtimeDetectionPage);
 						
 		List<String> allPaths = runtimeDetectionPage.getAllPaths();
@@ -69,7 +74,7 @@ public class DetectRuntimeTemplate extends RuntimeDetectionUtility {
 		
 		allPaths = runtimeDetectionPage.getAllPaths();
 		
-		runtimeDetectionPage.ok();
+		preferenceDialog.ok();
 		
 		assertThat("Not all paths were removed. There are " + Arrays.toString(allPaths.toArray()), allPaths.size(), Is.is(0));
 	}

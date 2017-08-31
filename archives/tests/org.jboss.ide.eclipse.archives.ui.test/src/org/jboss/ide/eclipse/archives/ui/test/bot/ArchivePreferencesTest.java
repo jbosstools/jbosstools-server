@@ -12,16 +12,11 @@ package org.jboss.ide.eclipse.archives.ui.test.bot;
 
 import static org.junit.Assert.fail;
 
-import org.jboss.reddeer.common.wait.WaitWhile;
-import org.jboss.reddeer.core.condition.ShellWithTextIsAvailable;
-import org.jboss.reddeer.eclipse.jdt.ui.ProjectExplorer;
-import org.jboss.reddeer.swt.impl.button.PushButton;
-import org.jboss.reddeer.swt.impl.clabel.DefaultCLabel;
-import org.jboss.reddeer.swt.impl.link.DefaultLink;
-import org.jboss.reddeer.swt.impl.menu.ContextMenu;
-import org.jboss.reddeer.swt.impl.shell.DefaultShell;
-import org.jboss.reddeer.swt.impl.tree.DefaultTreeItem;
-import org.jboss.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
+import org.eclipse.reddeer.eclipse.ui.dialogs.PropertyDialog;
+import org.eclipse.reddeer.eclipse.ui.navigator.resources.ProjectExplorer;
+import org.eclipse.reddeer.swt.impl.clabel.DefaultCLabel;
+import org.eclipse.reddeer.swt.impl.link.DefaultLink;
+import org.eclipse.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
 import org.jboss.tools.archives.reddeer.archives.ui.MainPreferencePage;
 import org.junit.Test;
 
@@ -43,7 +38,7 @@ public class ArchivePreferencesTest extends ArchivesTestBase {
 
 	private void testGlobalArchivePreferences() {
 		WorkbenchPreferenceDialog preferenceDialog = new WorkbenchPreferenceDialog();
-		MainPreferencePage archivesPreferencePage = new MainPreferencePage();
+		MainPreferencePage archivesPreferencePage = new MainPreferencePage(preferenceDialog);
 		preferenceDialog.open();
 		preferenceDialog.select(archivesPreferencePage);
 		checkAllSettingsInArchivePreferencePage(archivesPreferencePage);
@@ -57,20 +52,14 @@ public class ArchivePreferencesTest extends ArchivesTestBase {
 		ProjectExplorer pExplorer = new ProjectExplorer();
 		pExplorer.open();
 		
-		pExplorer.getProject(projectName).select();
-		new ContextMenu("Properties").select();
-		String projectProperties = "Properties for " + projectName;
-		new DefaultShell(projectProperties);
-		new DefaultTreeItem("Project Archives").select();
-		new DefaultLink("Configure Workspace Settings...").click();
-		new DefaultShell("Preferences (Filtered)"); // TODO externalize!
+		PropertyDialog pd = pExplorer.getProject(projectName).openProperties();
+		pd.select("Project Archives");
+		new DefaultLink(pd, "Configure Workspace Settings...").click();
+		WorkbenchPreferenceDialog wd = new WorkbenchPreferenceDialog();
 		try {
-			new DefaultCLabel("Project Archives");
-			new PushButton("Cancel").click();
-			new WaitWhile(new ShellWithTextIsAvailable("Preferences (Filtered)")); // TODO externalize!
-			new DefaultShell("Properties for " + projectName);
-			new PushButton("Cancel").click();
-			new WaitWhile(new ShellWithTextIsAvailable("Properties for " + projectName));
+			new DefaultCLabel(wd, "Project Archives");
+			wd.cancel();
+			pd.cancel();
 		}catch (Exception wnfe) {
 			fail("Archive global preferences page was not invoked");
 		}

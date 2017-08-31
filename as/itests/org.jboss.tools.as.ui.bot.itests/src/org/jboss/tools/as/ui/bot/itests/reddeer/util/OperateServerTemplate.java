@@ -7,23 +7,24 @@ import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.fail;
 
 import org.jboss.ide.eclipse.as.reddeer.matcher.ServerConsoleContainsNoExceptionMatcher;
-import org.jboss.reddeer.common.condition.AbstractWaitCondition;
-import org.jboss.reddeer.common.logging.Logger;
-import org.jboss.reddeer.common.wait.TimePeriod;
-import org.jboss.reddeer.common.wait.WaitUntil;
-import org.jboss.reddeer.common.wait.WaitWhile;
-import org.jboss.reddeer.core.condition.JobIsRunning;
-import org.jboss.reddeer.eclipse.condition.ConsoleHasNoChange;
-import org.jboss.reddeer.eclipse.exception.EclipseLayerException;
-import org.jboss.reddeer.eclipse.ui.console.ConsoleView;
-import org.jboss.reddeer.eclipse.wst.server.ui.RuntimePreferencePage;
-import org.jboss.reddeer.eclipse.wst.server.ui.view.Server;
-import org.jboss.reddeer.eclipse.wst.server.ui.view.ServersView;
-import org.jboss.reddeer.swt.condition.ShellIsActive;
-import org.jboss.reddeer.swt.exception.SWTLayerException;
-import org.jboss.reddeer.swt.impl.button.PushButton;
-import org.jboss.reddeer.swt.impl.shell.DefaultShell;
-import org.jboss.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
+import org.eclipse.reddeer.common.condition.AbstractWaitCondition;
+import org.eclipse.reddeer.common.logging.Logger;
+import org.eclipse.reddeer.common.wait.TimePeriod;
+import org.eclipse.reddeer.common.wait.WaitUntil;
+import org.eclipse.reddeer.common.wait.WaitWhile;
+import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
+import org.eclipse.reddeer.eclipse.condition.ConsoleHasNoChange;
+import org.eclipse.reddeer.eclipse.exception.EclipseLayerException;
+import org.eclipse.reddeer.eclipse.ui.console.ConsoleView;
+import org.eclipse.reddeer.eclipse.wst.server.ui.RuntimePreferencePage;
+import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.Server;
+import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
+import org.eclipse.reddeer.swt.api.Shell;
+import org.eclipse.reddeer.swt.condition.ShellIsAvailable;
+import org.eclipse.reddeer.swt.exception.SWTLayerException;
+import org.eclipse.reddeer.swt.impl.button.PushButton;
+import org.eclipse.reddeer.swt.impl.shell.DefaultShell;
+import org.eclipse.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
 
 /**
  * Checks if the given server can be started, restarted, stopped and deleted
@@ -36,7 +37,7 @@ public class OperateServerTemplate {
 
 	private final Logger LOGGER = Logger.getLogger(this.getClass());
 	
-	private ServersView serversView = new ServersView();
+	private ServersView2 serversView = new ServersView2();
 	private ConsoleView consoleView = new ConsoleView();
 
 	private String serverName;
@@ -79,7 +80,7 @@ public class OperateServerTemplate {
 	}
 	
 	private void serverIsPresentInServersView() {
-		ServersView sw = new ServersView();
+		ServersView2 sw = new ServersView2();
 		sw.open();
 		try {
 			sw.getServer(getServerName());
@@ -105,8 +106,9 @@ public class OperateServerTemplate {
 	public void cleanServerAndConsoleView() {
 		try{
 			LOGGER.step("Trying to close shell \"Warning: server process not terminated\"");
-			new DefaultShell("Warning: server process not terminated");
-			new PushButton("Yes").click();
+			Shell warningShell = new DefaultShell("Warning: server process not terminated");
+			new PushButton(warningShell, "Yes").click();
+			new WaitWhile(new ShellIsAvailable(warningShell));
 			LOGGER.step("Warning shell is closed.");
 		}catch(Exception e){
 			//nothing
@@ -163,8 +165,8 @@ public class OperateServerTemplate {
 		try{
 			LOGGER.step("Trying to close shell \"Warning: server process not terminated\"");
 			DefaultShell warningShell = new DefaultShell("Warning: server process not terminated");
-			new PushButton("Yes").click();
-			new WaitWhile(new ShellIsActive(warningShell));
+			new PushButton(warningShell, "Yes").click();
+			new WaitWhile(new ShellIsAvailable(warningShell));
 			LOGGER.step("Warning shell is closed.");
 		}catch (SWTLayerException e) {
 			//Shell did not pop up -> do nothing
@@ -179,7 +181,7 @@ public class OperateServerTemplate {
 	private void removeAllRuntimes() {
 		WorkbenchPreferenceDialog preferenceDialog = new WorkbenchPreferenceDialog();
 		preferenceDialog.open();
-		RuntimePreferencePage runtimePage = new RuntimePreferencePage();
+		RuntimePreferencePage runtimePage = new RuntimePreferencePage(preferenceDialog);
 		preferenceDialog.select(runtimePage);
 		runtimePage.removeAllRuntimes();
 		preferenceDialog.ok();

@@ -15,13 +15,13 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 
 import org.jboss.ide.eclipse.archives.ui.test.bot.ArchivesTestBase;
-import org.jboss.reddeer.eclipse.jst.ejb.ui.EjbProjectFirstPage;
-import org.jboss.reddeer.eclipse.jst.ejb.ui.EjbProjectWizard;
-import org.jboss.reddeer.eclipse.jst.servlet.ui.WebProjectFirstPage;
-import org.jboss.reddeer.eclipse.jst.servlet.ui.WebProjectWizard;
-import org.jboss.reddeer.eclipse.ui.views.log.LogMessage;
-import org.jboss.reddeer.eclipse.ui.views.log.LogView;
-import org.jboss.reddeer.junit.runner.RedDeerSuite;
+import org.eclipse.reddeer.eclipse.jst.ejb.ui.project.facet.EjbProjectFirstPage;
+import org.eclipse.reddeer.eclipse.jst.ejb.ui.project.facet.EjbProjectWizard;
+import org.eclipse.reddeer.eclipse.jst.servlet.ui.project.facet.WebProjectFirstPage;
+import org.eclipse.reddeer.eclipse.jst.servlet.ui.project.facet.WebProjectWizard;
+import org.eclipse.reddeer.eclipse.ui.views.log.LogMessage;
+import org.eclipse.reddeer.eclipse.ui.views.log.LogView;
+import org.eclipse.reddeer.junit.runner.RedDeerSuite;
 import org.jboss.tools.as.ui.bot.itests.Activator;
 import org.jboss.tools.as.ui.bot.itests.download.RuntimeDownloadTestUtility;
 import org.jboss.tools.as.ui.bot.itests.parametized.server.ServerRuntimeUIConstants;
@@ -99,7 +99,7 @@ public class VariousProjectsArchiving extends ArchivesTestBase {
 	private void createDynamicWebProject(String project, String targetRuntime) {
 		WebProjectWizard ww = new WebProjectWizard();
 		ww.open();
-		WebProjectFirstPage fp = new WebProjectFirstPage();
+		WebProjectFirstPage fp = new WebProjectFirstPage(ww);
 		fp.setProjectName(project);
 		fp.setTargetRuntime(targetRuntime);
 		ww.finish();
@@ -108,7 +108,7 @@ public class VariousProjectsArchiving extends ArchivesTestBase {
 	private void createEJBProject(String project, String targetRuntime) {
 		EjbProjectWizard ejbw = new EjbProjectWizard();
 		ejbw.open();
-		EjbProjectFirstPage fp = new EjbProjectFirstPage();
+		EjbProjectFirstPage fp = new EjbProjectFirstPage(ejbw);
 		fp.setProjectName(project);
 		fp.setTargetRuntime(targetRuntime);
 		ejbw.finish();

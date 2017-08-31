@@ -40,13 +40,13 @@ public class BuildingArchiveTest extends ArchivesTestBase{
 	@Test
 	public void testBuildingArchiveWithView() {
 		viewForProject(projectName).getProject(projectName).getArchive(ARCHIVE_PATH).buildArchiveFull();
-		assertTrue(projectExplorer.getProject(projectName).containsItem(ARCHIVE_NAME));
+		assertTrue(projectExplorer.getProject(projectName).containsResource(ARCHIVE_NAME));
 	}
 	
 	@Test
 	public void testBuildingArchiveWithExplorer() {
 		explorerForProject(projectName).getArchive(ARCHIVE_PATH).buildArchiveFull();
-		assertTrue(projectExplorer.getProject(projectName).containsItem(ARCHIVE_NAME));
+		assertTrue(projectExplorer.getProject(projectName).containsResource(ARCHIVE_NAME));
 	}
 	
 }

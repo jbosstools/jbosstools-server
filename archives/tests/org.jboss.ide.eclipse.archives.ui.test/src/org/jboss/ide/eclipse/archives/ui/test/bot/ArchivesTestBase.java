@@ -15,19 +15,19 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import org.jboss.reddeer.common.logging.Logger;
-import org.jboss.reddeer.common.wait.TimePeriod;
-import org.jboss.reddeer.common.wait.WaitWhile;
-import org.jboss.reddeer.core.condition.JobIsRunning;
-import org.jboss.reddeer.eclipse.jdt.ui.ProjectExplorer;
-import org.jboss.reddeer.eclipse.jdt.ui.ide.NewJavaProjectWizardDialog;
-import org.jboss.reddeer.eclipse.jdt.ui.ide.NewJavaProjectWizardPage;
-import org.jboss.reddeer.eclipse.ui.perspectives.JavaPerspective;
-import org.jboss.reddeer.eclipse.ui.views.log.LogView;
-import org.jboss.reddeer.requirements.cleanworkspace.CleanWorkspaceRequirement.CleanWorkspace;
-import org.jboss.reddeer.requirements.openperspective.OpenPerspectiveRequirement.OpenPerspective;
-import org.jboss.reddeer.swt.impl.menu.ContextMenu;
-import org.jboss.reddeer.workbench.impl.shell.WorkbenchShell;
+import org.eclipse.reddeer.common.logging.Logger;
+import org.eclipse.reddeer.common.wait.TimePeriod;
+import org.eclipse.reddeer.common.wait.WaitWhile;
+import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
+import org.eclipse.reddeer.eclipse.jdt.ui.wizards.JavaProjectWizard;
+import org.eclipse.reddeer.eclipse.jdt.ui.wizards.NewJavaProjectWizardPageOne;
+import org.eclipse.reddeer.eclipse.ui.navigator.resources.ProjectExplorer;
+import org.eclipse.reddeer.eclipse.ui.perspectives.JavaPerspective;
+import org.eclipse.reddeer.eclipse.ui.views.log.LogView;
+import org.eclipse.reddeer.requirements.cleanworkspace.CleanWorkspaceRequirement.CleanWorkspace;
+import org.eclipse.reddeer.requirements.openperspective.OpenPerspectiveRequirement.OpenPerspective;
+import org.eclipse.reddeer.swt.impl.menu.ContextMenuItem;
+import org.eclipse.reddeer.workbench.impl.shell.WorkbenchShell;
 import org.jboss.tools.archives.reddeer.archives.ui.NewJarDialog;
 import org.jboss.tools.archives.reddeer.archives.ui.ProjectArchivesExplorer;
 import org.jboss.tools.archives.reddeer.archives.ui.ProjectArchivesView;
@@ -103,13 +103,13 @@ public class ArchivesTestBase{
 	}
 	
 	protected static void createJavaProject(String projectName) {
-		NewJavaProjectWizardDialog javaProject = new NewJavaProjectWizardDialog();
+		JavaProjectWizard javaProject = new JavaProjectWizard();
 		javaProject.open();
 		
-		NewJavaProjectWizardPage javaWizardPage = new NewJavaProjectWizardPage();
+		NewJavaProjectWizardPageOne javaWizardPage = new NewJavaProjectWizardPageOne(javaProject);
 		javaWizardPage.setProjectName(projectName);
 		
-		javaProject.finish(false);
+		javaProject.finish();
 	}
 	
 	protected static void addArchivesSupport(String projectName) {
@@ -125,9 +125,9 @@ public class ArchivesTestBase{
 		pe.open();
 		pe.getProject(projectName).select();
 		if (add) {
-			new ContextMenu("Configure", "Add Project Archives Support").select();
+			new ContextMenuItem("Configure", "Add Project Archives Support").select();
 		} else {
-			new ContextMenu("Configure", "Remove Project Archives Support").select();
+			new ContextMenuItem("Configure", "Remove Project Archives Support").select();
 		}
 		new WaitWhile(new JobIsRunning(), TimePeriod.LONG);
 	}

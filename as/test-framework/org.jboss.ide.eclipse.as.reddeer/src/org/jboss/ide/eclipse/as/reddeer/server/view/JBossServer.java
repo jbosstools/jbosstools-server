@@ -5,21 +5,26 @@ import java.util.List;
 
 import org.jboss.ide.eclipse.as.reddeer.server.editor.JBossServerEditor;
 import org.jboss.ide.eclipse.as.reddeer.server.editor.WelcomeToServerEditor;
-import org.jboss.reddeer.common.condition.AbstractWaitCondition;
-import org.jboss.reddeer.common.exception.WaitTimeoutExpiredException;
-import org.jboss.reddeer.common.logging.Logger;
-import org.jboss.reddeer.common.wait.TimePeriod;
-import org.jboss.reddeer.common.wait.WaitUntil;
-import org.jboss.reddeer.eclipse.ui.console.ConsoleView;
-import org.jboss.reddeer.eclipse.wst.server.ui.editor.ServerEditor;
-import org.jboss.reddeer.eclipse.wst.server.ui.view.Server;
-import org.jboss.reddeer.eclipse.wst.server.ui.view.ServerModule;
-import org.jboss.reddeer.eclipse.wst.server.ui.view.ServersView;
-import org.jboss.reddeer.swt.api.Shell;
-import org.jboss.reddeer.swt.api.TreeItem;
-import org.jboss.reddeer.swt.exception.SWTLayerException;
-import org.jboss.reddeer.swt.impl.menu.ContextMenu;
-import org.jboss.reddeer.swt.impl.shell.DefaultShell;
+import org.eclipse.reddeer.common.condition.AbstractWaitCondition;
+import org.eclipse.reddeer.common.exception.WaitTimeoutExpiredException;
+import org.eclipse.reddeer.common.logging.Logger;
+import org.eclipse.reddeer.common.util.Display;
+import org.eclipse.reddeer.common.wait.TimePeriod;
+import org.eclipse.reddeer.common.wait.WaitUntil;
+import org.eclipse.reddeer.eclipse.exception.EclipseLayerException;
+import org.eclipse.reddeer.eclipse.ui.console.ConsoleView;
+import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.AbstractServer;
+import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServerModule;
+import org.eclipse.wst.server.core.IModule;
+import org.eclipse.reddeer.eclipse.wst.server.ui.editor.ServerEditor;
+import org.eclipse.reddeer.swt.api.Shell;
+import org.eclipse.reddeer.swt.api.TreeItem;
+import org.eclipse.reddeer.swt.exception.SWTLayerException;
+import org.eclipse.reddeer.swt.impl.menu.ContextMenuItem;
+import org.eclipse.reddeer.swt.impl.shell.DefaultShell;
+import org.eclipse.wst.server.ui.IServerModule;
+import org.hamcrest.Matcher;
+import org.hamcrest.core.IsEqual;
 
 /**
  * Represents a JBoss server and contains state and operations specific to this kind of server. 
@@ -28,40 +33,65 @@ import org.jboss.reddeer.swt.impl.shell.DefaultShell;
  * @author Lucia Jelinkova
  *
  */
-public class JBossServer extends Server {
+public class JBossServer extends AbstractServer {
 
 	public static final String XML_LABEL_DECORATION_SEPARATOR = "   ";
 	
 	private static final Logger log = Logger.getLogger(JBossServer.class);
 
-	protected JBossServer(TreeItem treeItem, ServersView view) {
-		super(treeItem, view);
+	public JBossServer(TreeItem treeItem) {
+		super(treeItem);
 	}
 
 	@Override
 	public JBossServerEditor open() {
-		ServerEditor editor = super.open();
+		String editorName = getLabel().getName();
+		super.open();
 
-		if (!(editor instanceof JBossServerEditor)){
-			throw new IllegalStateException("Unexpected ServerEditor subtype. Expected: " + JBossServerEditor.class + " but was: " + editor.getClass());
-		}
-		return (JBossServerEditor) editor;
+		return new JBossServerEditor(editorName);
 	}
 
 	@Override
-	public JBossServerModule getModule(String name) {
-		ServerModule module = super.getModule(name);
-
-		if (!(module instanceof JBossServerModule)){
-			throw new IllegalStateException("Unexpected ServerModule subtype. Expected: " + JBossServerModule.class + " but was: " + module.getClass());
+	public JBossServerModule getModule(String name) {		
+		return getModule(new IsEqual<String>(name));
+	}
+	
+	@Override
+	public JBossServerModule getModule(Matcher<String> stringMatcher) {
+		for (JBossServerModule module : getJBossModules()) {
+			if (stringMatcher.matches(module.getLabel().getName())) {
+				return module;
+			}
 		}
-		return (JBossServerModule) module;
+		throw new EclipseLayerException("There is no module with name matching matcher " + stringMatcher.toString()
+				+ " on server " + getLabel().getName());
+	}
+	
+	public List<JBossServerModule> getJBossModules() {
+		activate();
+		final List<JBossServerModule> modules = new ArrayList<JBossServerModule>();
+
+		for (final TreeItem item : treeItem.getItems()) {
+			Display.syncExec(new Runnable() {
+
+				@Override
+				public void run() {
+					org.eclipse.swt.widgets.TreeItem swtItem = item.getSWTWidget();
+					Object data = swtItem.getData();
+					if (data instanceof IModule || data instanceof IServerModule) {
+						modules.add(createServerModule(item));
+					}
+				}
+			});
+		}
+
+		return modules;
 	}
 
 	public WelcomeToServerEditor openWebPage(){
 		activate();
 		new WaitUntil(new ContextMenuIsEnabled("Show In", "Web Browser"));
-		new ContextMenu("Show In", "Web Browser").select();
+		new ContextMenuItem("Show In", "Web Browser").select();
 		return new WelcomeToServerEditor();
 	}
 
@@ -108,7 +138,7 @@ public class JBossServer extends Server {
 		List<TreeItem> configurationItems = categoryItem.getItems();
 		
 		// does not work on AS 4.0
-		new WaitUntil(new TreeItemLabelDecorated(configurationItems.get(0)), TimePeriod.NORMAL, false);
+		new WaitUntil(new TreeItemLabelDecorated(configurationItems.get(0)), TimePeriod.DEFAULT, false);
 		
 		// does not work on AS 3.2
 		new WaitUntil(new TreeItemLabelDecorated(configurationItems.get(configurationItems.size() - 1)), TimePeriod.NONE, false);
@@ -126,13 +156,11 @@ public class JBossServer extends Server {
 		return configurations;
 	}
 
-	@Override
 	protected ServerEditor createServerEditor(String title) {
 		return new JBossServerEditor(title);
 	}
 
-	@Override
-	protected ServerModule createServerModule(TreeItem item) {
+	protected JBossServerModule createServerModule(TreeItem item) {
 		return new JBossServerModule(item, view);
 	}
 
@@ -182,7 +210,7 @@ public class JBossServer extends Server {
 
 		@Override
 		public boolean test() {
-			return new ContextMenu(path).isEnabled();
+			return new ContextMenuItem(path).isEnabled();
 		}
 
 		@Override

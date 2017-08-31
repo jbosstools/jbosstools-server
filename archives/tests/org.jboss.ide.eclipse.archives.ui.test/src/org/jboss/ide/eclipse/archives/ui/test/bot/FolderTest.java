@@ -11,10 +11,10 @@
 package org.jboss.ide.eclipse.archives.ui.test.bot;
 
 
-import org.jboss.reddeer.common.wait.WaitUntil;
-import org.jboss.reddeer.common.wait.WaitWhile;
-import org.jboss.reddeer.swt.condition.TreeContainsItem;
-import org.jboss.reddeer.swt.impl.tree.DefaultTree;
+import org.eclipse.reddeer.common.wait.WaitUntil;
+import org.eclipse.reddeer.common.wait.WaitWhile;
+import org.eclipse.reddeer.swt.condition.TreeContainsItem;
+import org.eclipse.reddeer.swt.impl.tree.DefaultTree;
 import org.jboss.tools.archives.reddeer.archives.ui.ProjectArchivesExplorer;
 import org.jboss.tools.archives.reddeer.component.Archive;
 import org.junit.BeforeClass;

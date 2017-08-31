@@ -5,11 +5,14 @@ import java.util.List;
 
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
-import org.jboss.reddeer.jface.wizard.WizardPage;
-import org.jboss.reddeer.swt.api.Combo;
-import org.jboss.reddeer.swt.impl.button.CheckBox;
-import org.jboss.reddeer.swt.impl.button.RadioButton;
-import org.jboss.reddeer.swt.impl.combo.DefaultCombo;
+import org.eclipse.reddeer.common.util.Display;
+import org.eclipse.reddeer.common.util.ResultRunnable;
+import org.eclipse.reddeer.core.reference.ReferencedComposite;
+import org.eclipse.reddeer.jface.wizard.WizardPage;
+import org.eclipse.reddeer.swt.api.Combo;
+import org.eclipse.reddeer.swt.impl.button.CheckBox;
+import org.eclipse.reddeer.swt.impl.button.RadioButton;
+import org.eclipse.reddeer.swt.impl.combo.DefaultCombo;
 /**
  * Create a New Server Adapter wizard page<br/>
  * 
@@ -22,6 +25,10 @@ import org.jboss.reddeer.swt.impl.combo.DefaultCombo;
  * @since JBoss Tools 4.2.0.Beta1
  */
 public class NewServerAdapterPage extends WizardPage {
+
+	public NewServerAdapterPage(ReferencedComposite referencedComposite) {
+		super(referencedComposite);
+	}
 
 	public void setProfile(Profile profile) {
 
@@ -37,14 +44,14 @@ public class NewServerAdapterPage extends WizardPage {
 	}
 
 	public Profile getProfile() {
-		if(new RadioButton("Local").isSelected())
+		if(new RadioButton(referencedComposite, "Local").isSelected())
 			return Profile.LOCAL;
 		else
 			return Profile.REMOTE;
 	}
 
 	public void setAssignRuntime(boolean assign) {
-		CheckBox check = new CheckBox();
+		CheckBox check = new CheckBox(referencedComposite);
 		if(check.isChecked() != assign) {
 			check.click();
 		}
@@ -82,7 +89,7 @@ public class NewServerAdapterPage extends WizardPage {
 	}
 
 	private Combo getRuntimeCombo() {
-		return new DefaultCombo(new RuntimeComboMatcher());
+		return new DefaultCombo(referencedComposite, new RuntimeComboMatcher());
 	}
 
 	public enum Profile {
@@ -119,8 +126,15 @@ public class NewServerAdapterPage extends WizardPage {
 	class RuntimeComboMatcher extends TypeSafeMatcher<org.eclipse.swt.widgets.Combo> {
 
 		@Override
-		protected boolean matchesSafely(org.eclipse.swt.widgets.Combo combo) {
-			for (String item : combo.getItems()){
+		protected boolean matchesSafely(final org.eclipse.swt.widgets.Combo combo) {
+			String[] items = Display.syncExec(new ResultRunnable<String[]>() {
+
+				@Override
+				public String[] run() {
+					return combo.getItems();
+				}
+			});
+			for (String item : items){
 				if (item.trim().equals(NEW_RUNTIME_LABEL)){
 					return true;
 				}

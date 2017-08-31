@@ -1,9 +1,10 @@
 package org.jboss.ide.eclipse.as.reddeer.server.wizard.page;
 
-import org.jboss.reddeer.common.logging.Logger;
-import org.jboss.reddeer.core.exception.CoreLayerException;
-import org.jboss.reddeer.eclipse.wst.server.ui.wizard.NewServerWizardPage;
-import org.jboss.reddeer.swt.impl.text.LabeledText;
+import org.eclipse.reddeer.common.logging.Logger;
+import org.eclipse.reddeer.core.exception.CoreLayerException;
+import org.eclipse.reddeer.core.reference.ReferencedComposite;
+import org.eclipse.reddeer.eclipse.wst.server.ui.wizard.NewServerWizardPage;
+import org.eclipse.reddeer.swt.impl.text.LabeledText;
 
 /**
  * 
@@ -16,10 +17,14 @@ import org.jboss.reddeer.swt.impl.text.LabeledText;
 
 public class NewServerWizardPageWithErrorCheck extends NewServerWizardPage {
 
+	public NewServerWizardPageWithErrorCheck(ReferencedComposite referencedComposite) {
+		super(referencedComposite);
+	}
+
 	protected final static Logger log = Logger.getLogger(NewServerWizardPageWithErrorCheck.class);
 	
 	public String getServerName() {
-		return new LabeledText("Server name:").getText();
+		return new LabeledText(referencedComposite, "Server name:").getText();
 	}
 
 	public void checkErrors() {
@@ -32,7 +37,7 @@ public class NewServerWizardPageWithErrorCheck extends NewServerWizardPage {
 	private String getErrorText() {
 		String text;
 		try {
-			text = new LabeledText("Define a New Server").getText();
+			text = new LabeledText(referencedComposite, "Define a New Server").getText();
 			log.info("Found error text: " + text);
 		} catch(CoreLayerException e) {
 			log.info("No error text found.");

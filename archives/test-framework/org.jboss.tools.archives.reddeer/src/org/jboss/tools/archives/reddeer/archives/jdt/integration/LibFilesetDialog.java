@@ -13,14 +13,14 @@ package org.jboss.tools.archives.reddeer.archives.jdt.integration;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jboss.reddeer.swt.api.TreeItem;
-import org.jboss.reddeer.swt.condition.ShellIsAvailable;
-import org.jboss.reddeer.core.condition.JobIsRunning;
-import org.jboss.reddeer.swt.impl.button.PushButton;
-import org.jboss.reddeer.swt.impl.shell.DefaultShell;
-import org.jboss.reddeer.swt.impl.tree.DefaultTree;
-import org.jboss.reddeer.swt.impl.tree.DefaultTreeItem;
-import org.jboss.reddeer.common.wait.WaitWhile;
+import org.eclipse.reddeer.swt.api.TreeItem;
+import org.eclipse.reddeer.swt.condition.ShellIsAvailable;
+import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
+import org.eclipse.reddeer.swt.impl.button.PushButton;
+import org.eclipse.reddeer.swt.impl.shell.DefaultShell;
+import org.eclipse.reddeer.swt.impl.tree.DefaultTree;
+import org.eclipse.reddeer.swt.impl.tree.DefaultTreeItem;
+import org.eclipse.reddeer.common.wait.WaitWhile;
 
 /**
  * Dialog for creating or modifying User library fileset
@@ -38,24 +38,24 @@ public class LibFilesetDialog extends DefaultShell {
 
 	public List<String> getUserLibraries() {
 		List<String> userLibraries = new ArrayList<String>();
-		for (TreeItem ti : new DefaultTree().getItems()) {
+		for (TreeItem ti : new DefaultTree(this).getItems()) {
 			userLibraries.add(ti.getText());
 		}
 		return userLibraries;
 	}
 	
 	public LibFilesetDialog selectUserLibrary(String library) {
-		new DefaultTreeItem(library).select();
+		new DefaultTreeItem(new DefaultTree(this), library).select();
 		return this;
 	}
 	
 	public void cancel() {
-		new PushButton("Cancel").click();
+		new PushButton(this, "Cancel").click();
 		new WaitWhile(new ShellIsAvailable(this));
 	}
 	
 	public void finish() {
-		new PushButton("Finish").click();
+		new PushButton(this, "Finish").click();
 		new WaitWhile(new ShellIsAvailable(this));
 		new WaitWhile(new JobIsRunning());
 	}

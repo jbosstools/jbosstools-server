@@ -10,20 +10,19 @@
  ******************************************************************************/
 package org.jboss.tools.archives.reddeer.component;
 
-import org.jboss.reddeer.swt.api.Shell;
-import org.jboss.reddeer.swt.api.TreeItem;
-import org.jboss.reddeer.swt.condition.ShellIsAvailable;
-import org.jboss.reddeer.swt.condition.TreeContainsItem;
-import org.jboss.reddeer.swt.impl.button.PushButton;
-import org.jboss.reddeer.swt.impl.menu.ContextMenu;
-import org.jboss.reddeer.swt.impl.shell.DefaultShell;
-import org.jboss.reddeer.swt.impl.tree.DefaultTree;
-import org.jboss.reddeer.swt.keyboard.KeyboardFactory;
+import org.eclipse.reddeer.swt.api.Shell;
+import org.eclipse.reddeer.swt.api.TreeItem;
+import org.eclipse.reddeer.swt.condition.ShellIsAvailable;
+import org.eclipse.reddeer.swt.condition.TreeContainsItem;
+import org.eclipse.reddeer.swt.impl.button.PushButton;
+import org.eclipse.reddeer.swt.impl.menu.ContextMenuItem;
+import org.eclipse.reddeer.swt.impl.shell.DefaultShell;
+import org.eclipse.reddeer.swt.impl.tree.DefaultTree;
+import org.eclipse.reddeer.swt.keyboard.KeyboardFactory;
 import org.eclipse.swt.SWT;
-import org.jboss.reddeer.common.wait.WaitUntil;
-import org.jboss.reddeer.common.wait.WaitWhile;
-import org.jboss.reddeer.core.condition.JobIsRunning;
-import org.jboss.reddeer.eclipse.jdt.ui.ProjectExplorer;
+import org.eclipse.reddeer.common.wait.WaitUntil;
+import org.eclipse.reddeer.common.wait.WaitWhile;
+import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
 import org.jboss.tools.archives.reddeer.archives.jdt.integration.LibFilesetDialog;
 import org.jboss.tools.archives.reddeer.archives.ui.ArchivePublishDialog;
 import org.jboss.tools.archives.reddeer.archives.ui.EditArchiveDialog;
@@ -54,57 +53,57 @@ public class Archive {
 	
 	public NewJarDialog newJarArchive() {
 		archive.select();
-		new ContextMenu("New Archive", "JAR").select();
+		new ContextMenuItem("New Archive", "JAR").select();
 		return new NewJarDialog();
 		
 	}
 	
 	public NewFolderDialog newFolder() {
 		archive.select();
-		new ContextMenu("New Folder").select();
+		new ContextMenuItem("New Folder").select();
 		return new NewFolderDialog();
 	}
 	
 	public FilesetDialog newFileset() {
 		archive.select();
-		new ContextMenu("New Fileset").select();
+		new ContextMenuItem("New Fileset").select();
 		return new FilesetDialog();
 	}
 	
 	public LibFilesetDialog newUserLibraryFileset() {
 		archive.select();
-		new ContextMenu("New User Library Fileset").select();
+		new ContextMenuItem("New User Library Fileset").select();
 		return new LibFilesetDialog();
 	}
 	
 	public void buildArchiveFull() {
 		archive.select();
-		new ContextMenu("Build Archive (Full)").select();
+		new ContextMenuItem("Build Archive (Full)").select();
 		new WaitWhile(new JobIsRunning());
 	}
 	
 	public EditArchiveDialog editArchive() {
 		archive.select();
-		new ContextMenu("Edit Archive").select();
+		new ContextMenuItem("Edit Archive").select();
 		return new EditArchiveDialog();
 	}
 	
-	public void deleteArchive(boolean withContextMenu) {
+	public void deleteArchive(boolean withContextMenuItem) {
 		archive.select();
-		if (withContextMenu) {
-			new ContextMenu("Delete Archive").select();
+		if (withContextMenuItem) {
+			new ContextMenuItem("Delete Archive").select();
 		} else {
 			KeyboardFactory.getKeyboard().invokeKeyCombination(SWT.DEL);
 		}
 		Shell dShell = new DefaultShell("Delete selected nodes?");
-		new PushButton("Yes").click();
+		new PushButton(dShell, "Yes").click();
 		new WaitWhile(new ShellIsAvailable(dShell));
 		new WaitWhile(new JobIsRunning());
 	}
 	
 	public ArchivePublishDialog publishToServer() {
 		archive.select();
-		new ContextMenu("Publish To Server").select();
+		new ContextMenuItem("Publish To Server").select();
 		if (new DefaultShell().getText().equals("Archive Publish Settings")) {
 			return new ArchivePublishDialog();
 		}
@@ -114,7 +113,7 @@ public class Archive {
 	
 	public ArchivePublishDialog editPublishSettings() {
 		archive.select();
-		new ContextMenu("Edit publish settings...").select();
+		new ContextMenuItem("Edit publish settings...").select();
 		return new ArchivePublishDialog();
 	}
 	
