@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Scanner;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -16,6 +17,7 @@ import org.eclipse.core.runtime.Platform;
 import org.jboss.ide.eclipse.as.core.util.ThreadUtils;
 import org.jboss.ide.eclipse.as.management.core.IAS7ManagementDetails;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
+import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerServiceProxy;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ServerState;
 import org.jboss.tools.as.management.itests.utils.AS7ManagerTestUtils.MockAS7ManagementDetails;
@@ -249,17 +251,43 @@ public class StartupUtility extends Assert {
 		IJBoss7ManagerService service = AS7ManagerTestUtils.findService(runtimeType);
 		Exception ex = null;
 		try {
+			// Counting the number of running java processes is a workaround 
+			// for windows. Since we're launching via the .bat file, 
+			// Even though we're stopping via mgmt, the server itself stops, but, 
+			// the process that was launched is actually a conhost.exe, which
+			// doesn't terminate even when the java process terminates. (NO IDEA WHY). 
+			// So we revert to counting java processes in the before and after case.
+			int preStop = countJavaProcesses();
 			boolean isListening = (AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.LOCALHOST, getPort()));
-			if( isListening ) {
+			if (isListening) {
+				// Some output
+				System.out.println("Trying to stop runtimeType=" + runtimeType);
+				JBoss7ManagerServiceProxy service2 = (JBoss7ManagerServiceProxy) service;
+				IJBoss7ManagerService deleg = service2.getService();
+				System.out.println("Service class: " + (deleg == null ? "null" : deleg.getClass().getName()));
+
 				service.stop(createConnectionDetails());
+
 				boolean terminated = waitForTermination(p, 15000);
 				isListening = (AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.LOCALHOST, getPort()));
 				assertFalse(isListening);
-				if( !terminated ) {
-					// It's not listening. Either it's frozen or it was started incorrectly or something
+				int postStop = countJavaProcesses();
+
+				if (!terminated) {
+					// It's not listening. Either it's frozen or it was started incorrectly or something 
+					// Or it's on windows, and the batch file itself is still running for some reason
 					p.destroyForcibly();
-					boolean t2 = waitForTermination(p, 15000);
-					fail("Shutdown of server at " + getHomeDir() + " did not work. The process has been killed instead. Termination " + (t2 ? "succeeded" : "failed."));
+					boolean t2 = waitForTermination(p, 6000);
+					int postStop2 = countJavaProcesses();
+					
+					// Not implemented for linux, and since linux behaves properly, 
+					// we don't need to keep count and can just assume this has failed
+					boolean supportCountingProcs = !(preStop == -1 && postStop == -1);
+					boolean stopHadEffect = preStop > postStop;
+					boolean terminateHadEffect = postStop != postStop2; // Terminating did something to java procs count
+					if (!stopHadEffect || terminateHadEffect || !supportCountingProcs) {
+						fail("Shutdown of server at " + getHomeDir() + " did not work. The process has been killed instead. Termination "+ (t2 ? "succeeded" : "failed."));
+					}
 				}
 			} else {
 				// It's not listening. Either it's frozen or it was started incorrectly or something
@@ -282,6 +310,48 @@ public class StartupUtility extends Assert {
 				fail("Could not stop server " + homeDir + ": " + ex.getMessage() + "\n" + sStackTrace);
 			}
 		}
+	}
+	
+	
+	protected int countJavaProcesses() {
+		if( Platform.getOS().equals(Platform.OS_WIN32)) {
+			return countJavaProcessesWin();
+		}
+		return countJavaProcessesNix();
+	}
+
+	protected int countJavaProcessesNix() {
+		return -1;
+	}
+	
+	protected int countJavaProcessesWin() {
+		final int[] result = new int[] {0};
+		Process process;
+		try {
+			process = new ProcessBuilder("tasklist.exe", "/fo", "csv", "/nh").start();
+			new Thread(() -> {
+				Scanner sc = new Scanner(process.getInputStream());
+				if (sc.hasNextLine())
+					sc.nextLine();
+				while (sc.hasNextLine()) {
+					String line = sc.nextLine();
+					String[] parts = line.split(",");
+					String unq = parts[0].substring(1).replaceFirst(".$", "");
+					String pid = parts[1].substring(1).replaceFirst(".$", "");
+					if( unq.toLowerCase().startsWith("java.exe") || unq.toLowerCase().startsWith("javaw.exe")) {
+						result[0]++;
+					}
+				}
+			}).start();
+			try {
+				process.waitFor();
+			} catch(InterruptedException ie) {}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return result[0];
 	}
 
 	protected boolean waitForTermination(Process p, int timeout) {
