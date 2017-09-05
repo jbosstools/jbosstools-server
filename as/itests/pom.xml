@@ -329,8 +329,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 									<goal>wget</goal>
 								</goals>
 								<configuration>
-									<url>http://download-node-02.eng.bos.redhat.com/rcm-guest/staging/jboss-eap/JBEAP-7.1.0.DR18/jboss-eap-7.1.0.DR18.zip</url>
-									<md5>b42a26f7d292d4293c37cb6d8d64650e</md5>
+									<url>http://download-node-02.eng.bos.redhat.com/rcm-guest/staging/jboss-eap/JBEAP-7.1.0.CR1/jboss-eap-7.1.0.CR1.zip</url>
+									<md5>14e4f8853111086962fa042a4d3cf1d2</md5>
 									<unpack>true</unpack>
 									<skip>${skipPrivateRequirements}</skip>
 								</configuration>
