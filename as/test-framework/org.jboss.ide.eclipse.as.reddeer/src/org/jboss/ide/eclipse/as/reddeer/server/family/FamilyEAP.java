@@ -3,7 +3,7 @@ package org.jboss.ide.eclipse.as.reddeer.server.family;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.jboss.reddeer.requirements.server.IServerFamily;
+import org.eclipse.reddeer.requirements.server.IServerFamily;
 
 /**
  * Server family: Enterprise Application Platform

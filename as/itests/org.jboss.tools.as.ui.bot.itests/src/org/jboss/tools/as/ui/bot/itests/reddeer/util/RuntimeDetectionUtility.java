@@ -7,8 +7,8 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-import org.jboss.reddeer.eclipse.wst.server.ui.RuntimePreferencePage;
-import org.jboss.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
+import org.eclipse.reddeer.eclipse.wst.server.ui.RuntimePreferencePage;
+import org.eclipse.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
 import org.jboss.tools.as.ui.bot.itests.parametized.CleanEnvironmentUtils;
 import org.jboss.tools.as.ui.bot.itests.reddeer.ui.RuntimeDetectionPreferencePage;
 import org.jboss.tools.as.ui.bot.itests.reddeer.ui.SearchingForRuntimesDialog;
@@ -61,7 +61,7 @@ public class RuntimeDetectionUtility {
 	public static void assertServerRuntimesNumber(int expected) {
 		preferences.open();
 		preferences.select(runtimePreferencePage);
-		List<org.jboss.reddeer.eclipse.wst.server.ui.Runtime> runtimes = 
+		List<org.eclipse.reddeer.eclipse.wst.server.ui.Runtime> runtimes = 
 				runtimePreferencePage.getServerRuntimes();
 		assertThat("Expected are " + expected + " runtimes but there are:\n"
 				+ Arrays.toString(runtimes.toArray()), runtimes.size(), is(expected));

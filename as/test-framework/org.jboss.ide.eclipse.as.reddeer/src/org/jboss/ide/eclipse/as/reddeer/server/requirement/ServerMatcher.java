@@ -4,7 +4,7 @@ import org.jboss.ide.eclipse.as.reddeer.server.family.FamilyAS;
 import org.jboss.ide.eclipse.as.reddeer.server.family.FamilyEAP;
 import org.jboss.ide.eclipse.as.reddeer.server.family.FamilyWildFly;
 import org.jboss.ide.eclipse.as.reddeer.server.requirement.ServerReqType.ServerReqFamily;
-import org.jboss.reddeer.requirements.server.IServerFamily;
+import org.eclipse.reddeer.requirements.server.IServerFamily;
 
 /**
  * Provides methods for matching required server to configured server

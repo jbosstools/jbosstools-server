@@ -1,8 +1,8 @@
 package org.jboss.ide.eclipse.as.reddeer.server.view;
 
-import org.jboss.reddeer.eclipse.wst.server.ui.view.Server;
-import org.jboss.reddeer.eclipse.wst.server.ui.view.ServersView;
-import org.jboss.reddeer.swt.api.TreeItem;
+import org.eclipse.reddeer.eclipse.wst.server.ui.view.Server;
+import org.eclipse.reddeer.eclipse.wst.server.ui.view.ServersView;
+import org.eclipse.reddeer.swt.api.TreeItem;
 
 /**
  * Represents the Servers view with JBoss server specific options. 

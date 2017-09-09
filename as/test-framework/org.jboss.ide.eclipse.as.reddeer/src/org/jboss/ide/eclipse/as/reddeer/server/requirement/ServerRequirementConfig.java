@@ -8,8 +8,8 @@ import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.jboss.ide.eclipse.as.reddeer.server.family.*;
-import org.jboss.reddeer.requirements.server.IServerFamily;
-import org.jboss.reddeer.requirements.server.IServerReqConfig;
+import org.eclipse.reddeer.requirements.server.IServerFamily;
+import org.eclipse.reddeer.requirements.server.IServerReqConfig;
 
 /**
  * 

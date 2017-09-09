@@ -1,6 +1,6 @@
 package org.jboss.tools.as.ui.bot.itests;
 
-import org.jboss.reddeer.junit.runner.RedDeerSuite;
+import org.eclipse.reddeer.junit.runner.RedDeerSuite;
 import org.jboss.tools.as.ui.bot.itests.server.SingleServerDirectoryStructureTest;
 import org.jboss.tools.as.ui.bot.itests.server.SingleServerRuntimeTest;
 import org.junit.runner.RunWith;

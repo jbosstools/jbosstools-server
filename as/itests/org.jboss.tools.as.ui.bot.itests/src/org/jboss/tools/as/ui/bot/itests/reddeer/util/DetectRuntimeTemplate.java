@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.hamcrest.core.Is;
-import org.jboss.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
+import org.eclipse.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
 import org.jboss.tools.as.ui.bot.itests.reddeer.Runtime;
 import org.jboss.tools.as.ui.bot.itests.reddeer.RuntimeMatcher;
 import org.jboss.tools.as.ui.bot.itests.reddeer.ui.SearchingForRuntimesDialog;

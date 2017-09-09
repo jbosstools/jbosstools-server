@@ -1,8 +1,8 @@
 package org.jboss.ide.eclipse.as.reddeer.server.editor;
 
 import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServer;
-import org.jboss.reddeer.swt.impl.group.DefaultGroup;
-import org.jboss.reddeer.swt.impl.text.DefaultText;
+import org.eclipse.reddeer.swt.impl.group.DefaultGroup;
+import org.eclipse.reddeer.swt.impl.text.DefaultText;
 
 /**
  * Represents a server editor's launch configuration  with entries specific 

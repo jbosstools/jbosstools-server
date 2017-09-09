@@ -23,7 +23,7 @@ import org.jboss.ide.eclipse.archives.ui.test.bot.FolderTest;
 import org.jboss.ide.eclipse.archives.ui.test.bot.ModifyingArchiveTest;
 import org.jboss.ide.eclipse.archives.ui.test.bot.UserLibrariesFilesetTest;
 import org.jboss.ide.eclipse.archives.ui.test.bot.ViewIsPresentTest;
-import org.jboss.reddeer.junit.runner.RedDeerSuite;
+import org.eclipse.reddeer.junit.runner.RedDeerSuite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 
