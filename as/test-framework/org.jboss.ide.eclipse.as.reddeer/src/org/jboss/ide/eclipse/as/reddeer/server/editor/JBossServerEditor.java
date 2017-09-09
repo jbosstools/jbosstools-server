@@ -2,13 +2,13 @@ package org.jboss.ide.eclipse.as.reddeer.server.editor;
 
 import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServer;
 import org.jboss.ide.eclipse.as.reddeer.server.wizard.page.JBossRuntimeWizardPage;
-import org.jboss.reddeer.core.matcher.WithLabelMatcher;
-import org.jboss.reddeer.eclipse.wst.server.ui.editor.ServerEditor;
-import org.jboss.reddeer.swt.impl.combo.LabeledCombo;
-import org.jboss.reddeer.swt.impl.spinner.DefaultSpinner;
-import org.jboss.reddeer.swt.impl.text.LabeledText;
-import org.jboss.reddeer.uiforms.impl.hyperlink.DefaultHyperlink;
-import org.jboss.reddeer.uiforms.impl.section.DefaultSection;
+import org.eclipse.reddeer.core.matcher.WithLabelMatcher;
+import org.eclipse.reddeer.eclipse.wst.server.ui.editor.ServerEditor;
+import org.eclipse.reddeer.swt.impl.combo.LabeledCombo;
+import org.eclipse.reddeer.swt.impl.spinner.DefaultSpinner;
+import org.eclipse.reddeer.swt.impl.text.LabeledText;
+import org.eclipse.reddeer.uiforms.impl.hyperlink.DefaultHyperlink;
+import org.eclipse.reddeer.uiforms.impl.section.DefaultSection;
 
 /**
  * Represents a server editor with entries specific for JBoss servers {@link JBossServer}

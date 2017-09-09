@@ -1,9 +1,9 @@
 package org.jboss.tools.as.ui.bot.itests.reddeer.util;
 
-import org.jboss.reddeer.eclipse.ui.browser.BrowserView;
-import org.jboss.reddeer.common.condition.AbstractWaitCondition;
-import org.jboss.reddeer.common.wait.AbstractWait;
-import org.jboss.reddeer.common.wait.TimePeriod;
+import org.eclipse.reddeer.eclipse.ui.browser.BrowserView;
+import org.eclipse.reddeer.common.condition.AbstractWaitCondition;
+import org.eclipse.reddeer.common.wait.AbstractWait;
+import org.eclipse.reddeer.common.wait.TimePeriod;
 
 /**
  * Waits until the active browser contains the specified text. 

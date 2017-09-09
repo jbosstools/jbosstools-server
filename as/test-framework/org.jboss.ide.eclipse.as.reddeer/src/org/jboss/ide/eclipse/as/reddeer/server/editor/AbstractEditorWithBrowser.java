@@ -1,8 +1,8 @@
 package org.jboss.ide.eclipse.as.reddeer.server.editor;
 
 import org.hamcrest.Matcher;
-import org.jboss.reddeer.swt.impl.browser.InternalBrowser;
-import org.jboss.reddeer.workbench.impl.editor.AbstractEditor;
+import org.eclipse.reddeer.swt.impl.browser.InternalBrowser;
+import org.eclipse.reddeer.workbench.impl.editor.AbstractEditor;
 
 /**
  * Represents a special editor that contains only browser. 

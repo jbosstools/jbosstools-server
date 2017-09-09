@@ -1,6 +1,6 @@
 package org.jboss.ide.eclipse.as.reddeer.server.editor;
 
-import org.jboss.reddeer.common.matcher.RegexMatcher;
+import org.eclipse.reddeer.common.matcher.RegexMatcher;
 
 /**
  * This editor is displayed when user clicks on a specific server 

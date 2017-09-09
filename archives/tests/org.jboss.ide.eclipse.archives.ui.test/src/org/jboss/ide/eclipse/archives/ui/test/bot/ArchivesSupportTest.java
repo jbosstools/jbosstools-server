@@ -11,8 +11,8 @@
 package org.jboss.ide.eclipse.archives.ui.test.bot;
 
 import org.jboss.ide.eclipse.archives.ui.test.bot.util.ExplorerInProjectExplorer;
-import org.jboss.reddeer.common.wait.WaitUntil;
-import org.jboss.reddeer.common.wait.WaitWhile;
+import org.eclipse.reddeer.common.wait.WaitUntil;
+import org.eclipse.reddeer.common.wait.WaitWhile;
 import org.junit.BeforeClass;
 import org.junit.Test;
  
