@@ -28,7 +28,7 @@ public class ViewIsPresentTest extends ArchivesTestBase {
 	public void testArchivesViewIsPresent() {
 		ProjectArchivesView pw = new ProjectArchivesView();
 		pw.open();
-		assertTrue(pw.isOpened());
+		assertTrue(pw.isOpen());
 	}
 	
 }

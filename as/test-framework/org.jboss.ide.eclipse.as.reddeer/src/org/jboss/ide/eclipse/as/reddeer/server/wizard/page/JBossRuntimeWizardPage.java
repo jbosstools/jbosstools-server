@@ -2,11 +2,13 @@ package org.jboss.ide.eclipse.as.reddeer.server.wizard.page;
 
 import java.io.File;
 
-import org.jboss.reddeer.common.logging.Logger;
-import org.jboss.reddeer.core.exception.CoreLayerException;
-import org.jboss.reddeer.swt.impl.button.RadioButton;
-import org.jboss.reddeer.swt.impl.combo.DefaultCombo;
-import org.jboss.reddeer.swt.impl.text.LabeledText;
+import org.eclipse.reddeer.common.logging.Logger;
+import org.eclipse.reddeer.core.exception.CoreLayerException;
+import org.eclipse.reddeer.core.reference.ReferencedComposite;
+import org.eclipse.reddeer.jface.wizard.WizardPage;
+import org.eclipse.reddeer.swt.impl.button.RadioButton;
+import org.eclipse.reddeer.swt.impl.combo.DefaultCombo;
+import org.eclipse.reddeer.swt.impl.text.LabeledText;
 
 /**
  * Represents JBoss Runtime page displayed when adding JBoss Runtime via New Server dialog.
@@ -18,8 +20,12 @@ import org.jboss.reddeer.swt.impl.text.LabeledText;
  * 
  */
 
-public class JBossRuntimeWizardPage {
+public class JBossRuntimeWizardPage extends WizardPage{
 	
+	public JBossRuntimeWizardPage(ReferencedComposite referencedComposite) {
+		super(referencedComposite);
+	}
+
 	private static final Logger LOGGER = Logger.getLogger(JBossRuntimeWizardPage.class);
 	
 	private static final String RUNTIME_NAME_LABEL = "Name";
@@ -27,40 +33,38 @@ public class JBossRuntimeWizardPage {
 	private static final String HOME_DIRECTORY_LABEL = "Home Directory";
 	
 	public void setRuntimeName(String name){
-		 new LabeledText(RUNTIME_NAME_LABEL).setText(name);
+		 new LabeledText(referencedComposite, RUNTIME_NAME_LABEL).setText(name);
 	}
 
 	public String getRuntimeName() {
-		return new LabeledText(RUNTIME_NAME_LABEL).getText();
+		return new LabeledText(referencedComposite, RUNTIME_NAME_LABEL).getText();
 	}
 
 	public void setRuntimeDir(String path){
 		if(!new File(path).exists()) {
 			throw new IllegalArgumentException("Path doesn't exist: "+path);
 		}
-		new LabeledText(HOME_DIRECTORY_LABEL).setText(path);
+		new LabeledText(referencedComposite, HOME_DIRECTORY_LABEL).setText(path);
 	}
 
 	public String getRuntimeDir() {
-		return new LabeledText(HOME_DIRECTORY_LABEL).getText();
+		return new LabeledText(referencedComposite, HOME_DIRECTORY_LABEL).getText();
 	}
 	
 	public void setExecutionEnvironment(String env){
-		System.out.println(new RadioButton().getText());
-		System.out.println(new RadioButton(1).getText());
-		new RadioButton("Execution Environment: ").toggle(true);
-		new DefaultCombo(0).setSelection(env);
+		new RadioButton(referencedComposite, "Execution Environment: ").toggle(true);
+		new DefaultCombo(referencedComposite, 0).setSelection(env);
 	}
 	
 	public void setAlternateJRE(String jre){
-		new RadioButton("Alternate JRE: ").toggle(true);
-		new DefaultCombo(1).setSelection(jre);
+		new RadioButton(referencedComposite, "Alternate JRE: ").toggle(true);
+		new DefaultCombo(referencedComposite, 1).setSelection(jre);
 	}
 
 	public void checkErrors() {
 		String text;
 		try {
-			text = new LabeledText("JBoss Runtime").getText();
+			text = new LabeledText(referencedComposite, "JBoss Runtime").getText();
 			LOGGER.info("Found error text: " + text);
 		} catch(CoreLayerException e) {
 			LOGGER.info("No error text found.");

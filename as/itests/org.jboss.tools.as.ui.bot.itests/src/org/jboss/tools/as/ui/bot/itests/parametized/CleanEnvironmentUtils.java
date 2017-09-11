@@ -9,14 +9,10 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
-import org.jboss.reddeer.core.condition.ShellWithTextIsAvailable;
-import org.jboss.reddeer.eclipse.wst.server.ui.RuntimePreferencePage;
-import org.jboss.reddeer.eclipse.wst.server.ui.view.Server;
-import org.jboss.reddeer.eclipse.wst.server.ui.view.ServersView;
-import org.jboss.reddeer.swt.impl.button.PushButton;
-import org.jboss.reddeer.swt.impl.shell.DefaultShell;
-import org.jboss.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
-import org.jboss.tools.as.ui.bot.itests.reddeer.ui.SearchingForRuntimesDialog;
+import org.eclipse.reddeer.eclipse.wst.server.ui.RuntimePreferencePage;
+import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.Server;
+import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
+import org.eclipse.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
 import org.jboss.tools.runtime.core.model.RuntimePath;
 import org.jboss.tools.runtime.ui.RuntimeUIActivator;
 
@@ -38,18 +34,6 @@ public class CleanEnvironmentUtils {
 		// make sure that paths were removed
 		for (RuntimePath path : RuntimeUIActivator.getDefault().getModel().getRuntimePaths()) {
 			RuntimeUIActivator.getDefault().getModel().removeRuntimePath(path);
-		}
-	}
-
-	public static void closeShells() {
-		// close opened shells
-		String[] openedShells = new String[] { SearchingForRuntimesDialog.DIALOG_TITLE,
-				WorkbenchPreferenceDialog.DIALOG_TITLE };
-		for (String title : openedShells) {
-			if (new ShellWithTextIsAvailable(title).test()) {
-				new DefaultShell(title);
-				new PushButton("Cancel").click();
-			}
 		}
 	}
 
@@ -83,7 +67,7 @@ public class CleanEnvironmentUtils {
 		if( ui ) {
 			WorkbenchPreferenceDialog preferenceDialog = new WorkbenchPreferenceDialog();
 			preferenceDialog.open();
-			RuntimePreferencePage runtimePage = new RuntimePreferencePage();
+			RuntimePreferencePage runtimePage = new RuntimePreferencePage(preferenceDialog);
 			preferenceDialog.select(runtimePage);
 			runtimePage.removeAllRuntimes();
 			preferenceDialog.ok();
@@ -105,7 +89,7 @@ public class CleanEnvironmentUtils {
 	
 	public static void cleanServers(boolean ui) {
 		if( ui ) {
-			ServersView serversView = new ServersView();
+			ServersView2 serversView = new ServersView2();
 			serversView.open();
 			List<Server> servers = serversView.getServers();
 			for (Server server : servers) {

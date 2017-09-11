@@ -3,12 +3,13 @@ package org.jboss.ide.eclipse.as.reddeer.server.wizard.page;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.jboss.reddeer.jface.wizard.WizardPage;
-import org.jboss.reddeer.swt.api.Button;
-import org.jboss.reddeer.swt.api.Combo;
-import org.jboss.reddeer.swt.impl.button.PushButton;
-import org.jboss.reddeer.swt.impl.combo.DefaultCombo;
-import org.jboss.reddeer.swt.impl.text.DefaultText;
+import org.eclipse.reddeer.core.reference.ReferencedComposite;
+import org.eclipse.reddeer.eclipse.rse.ui.wizards.newconnection.RSEMainNewConnectionWizard;
+import org.eclipse.reddeer.jface.wizard.WizardPage;
+import org.eclipse.reddeer.swt.api.Combo;
+import org.eclipse.reddeer.swt.impl.button.PushButton;
+import org.eclipse.reddeer.swt.impl.combo.DefaultCombo;
+import org.eclipse.reddeer.swt.impl.text.DefaultText;
 
 /**
  * TODO comment here
@@ -18,19 +19,23 @@ import org.jboss.reddeer.swt.impl.text.DefaultText;
 public class NewServerRSIWizardPage extends WizardPage{
 	
 	
+	public NewServerRSIWizardPage(ReferencedComposite referencedComposite) {
+		super(referencedComposite);
+	}
+
 	/**
 	 * Set Remote Server Home path
 	 * @param path
 	 */
 	public void setRemoteServerHome(String path){
-		new DefaultText(0).setText(path);
+		new DefaultText(referencedComposite, 0).setText(path);
 	}
 
 	/**
 	 * @return Remote Server Home text
 	 */
 	public String getRemoteServerHome() {
-		return new DefaultText(0).getText();
+		return new DefaultText(referencedComposite, 0).getText();
 	}
 	
 	/**
@@ -54,10 +59,12 @@ public class NewServerRSIWizardPage extends WizardPage{
 	}
 	
 	private Combo getHostCombo() {
-		return new DefaultCombo(0);
+		return new DefaultCombo(referencedComposite, 0);
 	}
 	
-	public Button getNewHostBtn(){
-		return new PushButton("New Host...");
+	public RSEMainNewConnectionWizard createNewHost(){
+		new PushButton(referencedComposite, "New Host...").click();
+		return new RSEMainNewConnectionWizard();
+		
 	}
 }

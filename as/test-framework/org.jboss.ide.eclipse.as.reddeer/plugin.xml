@@ -1,0 +1,5 @@
+<plugin>
+   <extension point="org.eclipse.reddeer.junit.requirement">
+	   <requirement class="org.jboss.ide.eclipse.as.reddeer.server.requirement.ServerRequirement"/>
+   </extension>
+</plugin>

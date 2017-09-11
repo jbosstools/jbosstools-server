@@ -13,12 +13,9 @@ import java.util.jar.Manifest;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.jboss.reddeer.junit.runner.RedDeerSuite;
-import org.jboss.tools.as.ui.bot.itests.reddeer.util.DisableSecureStorageRequirement.DisableSecureStorage;
-import org.junit.FixMethodOrder;
+import org.eclipse.reddeer.junit.runner.RedDeerSuite;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 
 /**
  * This test is trying to optimize and clean up the huge number of tests that

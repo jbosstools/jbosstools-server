@@ -11,13 +11,13 @@ import java.util.Collection;
 import org.eclipse.ui.PlatformUI;
 import org.jboss.ide.eclipse.as.reddeer.server.editor.JBossServerEditor;
 import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServer;
-import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServerView;
-import org.jboss.reddeer.core.util.Display;
-import org.jboss.reddeer.eclipse.jdt.ui.preferences.JREsPreferencePage;
-import org.jboss.reddeer.junit.internal.runner.ParameterizedRequirementsRunnerFactory;
-import org.jboss.reddeer.junit.runner.RedDeerSuite;
-import org.jboss.reddeer.swt.impl.text.LabeledText;
-import org.jboss.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
+import org.eclipse.reddeer.common.util.Display;
+import org.eclipse.reddeer.eclipse.jdt.debug.ui.jres.JREsPreferencePage;
+import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
+import org.eclipse.reddeer.junit.internal.runner.ParameterizedRequirementsRunnerFactory;
+import org.eclipse.reddeer.junit.runner.RedDeerSuite;
+import org.eclipse.reddeer.swt.impl.text.LabeledText;
+import org.eclipse.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
 import org.jboss.tools.as.ui.bot.itests.Activator;
 import org.jboss.tools.as.ui.bot.itests.SuiteConstants;
 import org.jboss.tools.as.ui.bot.itests.download.RuntimeDownloadTestUtility;
@@ -112,18 +112,18 @@ public class ServerRuntimesTest {
     }
     
     public static void removeJRE(String name) {
-		JREsPreferencePage page = new JREsPreferencePage();
 		WorkbenchPreferenceDialog dialog = new WorkbenchPreferenceDialog();
 		dialog.open();
+		JREsPreferencePage page = new JREsPreferencePage(dialog);
 		dialog.select(page);
 		page.deleteJRE(name);
 		dialog.ok();
     }
     
     private static void addJRE(String name, String path) {
-		JREsPreferencePage page = new JREsPreferencePage();
 		WorkbenchPreferenceDialog dialog = new WorkbenchPreferenceDialog();
 		dialog.open();
+		JREsPreferencePage page = new JREsPreferencePage(dialog);
 		dialog.select(page);
 		page.addJRE(path, name);
 		dialog.ok();
@@ -162,11 +162,11 @@ public class ServerRuntimesTest {
     	
     	// Let's also verify the ports situation in the editor
     	String serverName = ServerRuntimeUIConstants.getServerName(runtimeString);
-    	JBossServerView jbsview = new JBossServerView();
-    	if(!jbsview.isOpened()) {
+    	ServersView2 jbsview = new ServersView2();
+    	if(!jbsview.isOpen()) {
     		jbsview.open();
     	}
-		JBossServer server = jbsview.getServer(serverName);
+		JBossServer server = jbsview.getServer(JBossServer.class, serverName);
 		JBossServerEditor editor = server.open();
 		
 		EditorPort[] ports = ServerRuntimeUIConstants.getPorts(runtimeString);

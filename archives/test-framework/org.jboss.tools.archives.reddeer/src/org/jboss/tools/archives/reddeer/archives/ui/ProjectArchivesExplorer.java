@@ -10,12 +10,12 @@
  ******************************************************************************/
 package org.jboss.tools.archives.reddeer.archives.ui;
 
-import org.jboss.reddeer.common.wait.WaitWhile;
-import org.jboss.reddeer.core.condition.JobIsRunning;
-import org.jboss.reddeer.eclipse.jdt.ui.ProjectExplorer;
-import org.jboss.reddeer.swt.api.TreeItem;
-import org.jboss.reddeer.swt.impl.menu.ContextMenu;
-import org.jboss.reddeer.swt.impl.tree.DefaultTreeItem;
+import org.eclipse.reddeer.common.wait.WaitWhile;
+import org.eclipse.reddeer.eclipse.ui.navigator.resources.ProjectExplorer;
+import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
+import org.eclipse.reddeer.swt.api.TreeItem;
+import org.eclipse.reddeer.swt.impl.menu.ContextMenuItem;
+import org.eclipse.reddeer.swt.impl.tree.DefaultTreeItem;
 import org.jboss.tools.archives.reddeer.archives.ui.NewJarDialog;
 import org.jboss.tools.archives.reddeer.component.Archive;
 /**
@@ -48,14 +48,14 @@ public class ProjectArchivesExplorer {
 	
 	public NewJarDialog newJarArchive() {
 		explorer.select();
-		new ContextMenu("New Archive", "JAR").select();
+		new ContextMenuItem("New Archive", "JAR").select();
 		return new NewJarDialog();
 		
 	}
 	
 	public void buildProjectFull() {
 		explorer.select();
-		new ContextMenu("Build Project (Full)").select();
+		new ContextMenuItem("Build Project (Full)").select();
 		new WaitWhile(new JobIsRunning());
 	}
 	

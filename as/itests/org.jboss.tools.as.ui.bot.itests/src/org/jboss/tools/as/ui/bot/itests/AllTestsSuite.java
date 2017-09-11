@@ -1,6 +1,6 @@
 package org.jboss.tools.as.ui.bot.itests;
 
-import org.jboss.reddeer.junit.runner.RedDeerSuite;
+import org.eclipse.reddeer.junit.runner.RedDeerSuite;
 import org.jboss.tools.as.ui.bot.itests.archives.DeployingArchiveTest;
 import org.jboss.tools.as.ui.bot.itests.archives.VariousProjectsArchiving;
 import org.jboss.tools.as.ui.bot.itests.download.InvalidCredentialProductDownloadTest;

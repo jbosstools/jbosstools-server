@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.archives.ui.test.bot.util;
 
-import org.jboss.reddeer.common.condition.AbstractWaitCondition;
+import org.eclipse.reddeer.common.condition.AbstractWaitCondition;
 import org.jboss.tools.archives.reddeer.archives.ui.ProjectArchivesExplorer;
 
 /**

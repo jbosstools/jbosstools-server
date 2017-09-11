@@ -10,15 +10,15 @@
  ******************************************************************************/
 package org.jboss.tools.archives.reddeer.component;
 
-import org.jboss.reddeer.common.exception.RedDeerException;
-import org.jboss.reddeer.common.wait.WaitWhile;
-import org.jboss.reddeer.core.condition.JobIsRunning;
-import org.jboss.reddeer.swt.api.Shell;
-import org.jboss.reddeer.swt.api.TreeItem;
-import org.jboss.reddeer.swt.condition.ShellIsAvailable;
-import org.jboss.reddeer.swt.impl.button.PushButton;
-import org.jboss.reddeer.swt.impl.menu.ContextMenu;
-import org.jboss.reddeer.swt.impl.shell.DefaultShell;
+import org.eclipse.reddeer.common.exception.RedDeerException;
+import org.eclipse.reddeer.common.wait.WaitWhile;
+import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
+import org.eclipse.reddeer.swt.api.Shell;
+import org.eclipse.reddeer.swt.api.TreeItem;
+import org.eclipse.reddeer.swt.condition.ShellIsAvailable;
+import org.eclipse.reddeer.swt.impl.button.PushButton;
+import org.eclipse.reddeer.swt.impl.menu.ContextMenuItem;
+import org.eclipse.reddeer.swt.impl.shell.DefaultShell;
 import org.jboss.tools.archives.reddeer.archives.ui.FilesetDialog;
 
 /**
@@ -41,17 +41,17 @@ public class Fileset {
 	
 	public FilesetDialog editFileset() {
 		fileset.select();
-		new ContextMenu("Edit Fileset").select();
+		new ContextMenuItem("Edit Fileset").select();
 		return new FilesetDialog();
 	}
 	
-	public void deleteFileset(boolean withContextMenu) {
+	public void deleteFileset(boolean withContextMenuItem) {
 		fileset.select();
 		
-		new ContextMenu("Delete Fileset").select();
+		new ContextMenuItem("Delete Fileset").select();
 		try {
 			Shell s = new DefaultShell("Delete selected nodes?");
-			new PushButton("Yes").click();
+			new PushButton(s, "Yes").click();
 			new WaitWhile(new ShellIsAvailable(s));
 		} catch (RedDeerException e) {
 			//do nothing here

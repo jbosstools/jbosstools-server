@@ -7,8 +7,8 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-import org.jboss.reddeer.eclipse.wst.server.ui.RuntimePreferencePage;
-import org.jboss.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
+import org.eclipse.reddeer.eclipse.wst.server.ui.RuntimePreferencePage;
+import org.eclipse.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
 import org.jboss.tools.as.ui.bot.itests.parametized.CleanEnvironmentUtils;
 import org.jboss.tools.as.ui.bot.itests.reddeer.ui.RuntimeDetectionPreferencePage;
 import org.jboss.tools.as.ui.bot.itests.reddeer.ui.SearchingForRuntimesDialog;
@@ -23,16 +23,11 @@ import org.jboss.tools.runtime.ui.RuntimeUIActivator;
  */
 public class RuntimeDetectionUtility {
 
-	public static RuntimeDetectionPreferencePage runtimeDetectionPage = new RuntimeDetectionPreferencePage();
-
-	public static RuntimePreferencePage runtimePreferencePage = new RuntimePreferencePage();
-
-	public static WorkbenchPreferenceDialog preferences = new WorkbenchPreferenceDialog();
-
 	public static SearchingForRuntimesDialog addPath(String path){
 		RuntimeUIActivator.getDefault().getModel().addRuntimePath(new RuntimePath(new File(path).getAbsolutePath()));
-		runtimeDetectionPage = new RuntimeDetectionPreferencePage();
+		WorkbenchPreferenceDialog preferences = new WorkbenchPreferenceDialog();
 		preferences.open();
+		RuntimeDetectionPreferencePage runtimeDetectionPage = new RuntimeDetectionPreferencePage(preferences);
 		preferences.select(runtimeDetectionPage);
 		if(!runtimeDetectionPage.getAllPaths().contains(path)) {
 			preferences.cancel();
@@ -43,8 +38,9 @@ public class RuntimeDetectionUtility {
 	}
 
 	public static SearchingForRuntimesDialog searchFirstPath(){
-		runtimeDetectionPage = new RuntimeDetectionPreferencePage();
+		WorkbenchPreferenceDialog preferences = new WorkbenchPreferenceDialog();
 		preferences.open();
+		RuntimeDetectionPreferencePage runtimeDetectionPage = new RuntimeDetectionPreferencePage(preferences);
 		preferences.select(runtimeDetectionPage);
 		return runtimeDetectionPage.search();
 	}
@@ -59,9 +55,11 @@ public class RuntimeDetectionUtility {
 
 
 	public static void assertServerRuntimesNumber(int expected) {
+		WorkbenchPreferenceDialog preferences = new WorkbenchPreferenceDialog();
 		preferences.open();
+		RuntimePreferencePage runtimePreferencePage = new RuntimePreferencePage(preferences);
 		preferences.select(runtimePreferencePage);
-		List<org.jboss.reddeer.eclipse.wst.server.ui.Runtime> runtimes = 
+		List<org.eclipse.reddeer.eclipse.wst.server.ui.Runtime> runtimes = 
 				runtimePreferencePage.getServerRuntimes();
 		assertThat("Expected are " + expected + " runtimes but there are:\n"
 				+ Arrays.toString(runtimes.toArray()), runtimes.size(), is(expected));

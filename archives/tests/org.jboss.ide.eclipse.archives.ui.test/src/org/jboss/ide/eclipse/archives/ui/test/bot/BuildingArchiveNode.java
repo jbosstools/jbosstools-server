@@ -42,7 +42,7 @@ public class BuildingArchiveNode extends ArchivesTestBase {
 		view.getProject(projectName).getArchive(ARCHIVE_PATH);
 		view.buildArchiveNode();
 		projectExplorer.open();
-		assertTrue(projectExplorer.getProject(projectName).containsItem(ARCHIVE_NAME));
+		assertTrue(projectExplorer.getProject(projectName).containsResource(ARCHIVE_NAME));
 	}
 	
 }

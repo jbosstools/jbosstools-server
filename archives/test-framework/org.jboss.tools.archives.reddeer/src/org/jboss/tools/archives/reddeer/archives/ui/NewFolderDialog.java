@@ -10,12 +10,12 @@
  ******************************************************************************/
 package org.jboss.tools.archives.reddeer.archives.ui;
 
-import org.jboss.reddeer.core.condition.JobIsRunning;
-import org.jboss.reddeer.swt.condition.ShellIsAvailable;
-import org.jboss.reddeer.swt.impl.button.PushButton;
-import org.jboss.reddeer.swt.impl.shell.DefaultShell;
-import org.jboss.reddeer.swt.impl.text.DefaultText;
-import org.jboss.reddeer.common.wait.WaitWhile;
+import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
+import org.eclipse.reddeer.swt.condition.ShellIsAvailable;
+import org.eclipse.reddeer.swt.impl.button.PushButton;
+import org.eclipse.reddeer.swt.impl.shell.DefaultShell;
+import org.eclipse.reddeer.swt.impl.text.DefaultText;
+import org.eclipse.reddeer.common.wait.WaitWhile;
 
 /**
  * Dialog for creating or modifying a folder
@@ -31,17 +31,17 @@ public class NewFolderDialog extends DefaultShell {
 	}
 
 	public NewFolderDialog setNameOfFolder(String fileName) {
-		new DefaultText().setText(fileName);
+		new DefaultText(this).setText(fileName);
 		return this;
 	}
 	
 	public void cancel() {
-		new PushButton("Cancel").click();
+		new PushButton(this, "Cancel").click();
 		new WaitWhile(new ShellIsAvailable(this));
 	}
 	
 	public void ok() {
-		new PushButton("OK").click();
+		new PushButton(this,"OK").click();
 		new WaitWhile(new ShellIsAvailable(this));
 		new WaitWhile(new JobIsRunning());
 	}

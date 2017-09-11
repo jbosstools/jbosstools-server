@@ -6,19 +6,20 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 
-import org.jboss.reddeer.common.condition.WaitCondition;
-import org.jboss.reddeer.common.exception.WaitTimeoutExpiredException;
-import org.jboss.reddeer.common.logging.Logger;
-import org.jboss.reddeer.common.wait.TimePeriod;
-import org.jboss.reddeer.common.wait.WaitUntil;
-import org.jboss.reddeer.common.wait.WaitWhile;
-import org.jboss.reddeer.core.condition.JobIsRunning;
-import org.jboss.reddeer.core.condition.ShellWithTextIsAvailable;
-import org.jboss.reddeer.jface.wizard.WizardDialog;
-import org.jboss.reddeer.swt.impl.button.PushButton;
-import org.jboss.reddeer.swt.impl.shell.DefaultShell;
-import org.jboss.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
+import org.eclipse.reddeer.common.condition.AbstractWaitCondition;
+import org.eclipse.reddeer.common.exception.WaitTimeoutExpiredException;
+import org.eclipse.reddeer.common.logging.Logger;
+import org.eclipse.reddeer.common.wait.TimePeriod;
+import org.eclipse.reddeer.common.wait.WaitUntil;
+import org.eclipse.reddeer.common.wait.WaitWhile;
+import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
+import org.eclipse.reddeer.swt.condition.ShellIsAvailable;
+import org.eclipse.reddeer.jface.wizard.WizardDialog;
+import org.eclipse.reddeer.swt.impl.button.PushButton;
+import org.eclipse.reddeer.swt.impl.shell.DefaultShell;
+import org.eclipse.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
 import org.jboss.tools.as.ui.bot.itests.parametized.CleanEnvironmentUtils;
+import org.jboss.tools.as.ui.bot.itests.reddeer.ui.RuntimeDetectionPreferencePage;
 import org.jboss.tools.as.ui.bot.itests.reddeer.util.FileUtils;
 import org.jboss.tools.as.ui.bot.itests.reddeer.util.RuntimeDetectionUtility;
 import org.jboss.tools.runtime.reddeer.wizard.TaskWizardFirstPage;
@@ -97,23 +98,22 @@ public final class RuntimeDownloadTestUtility extends RuntimeDetectionUtility {
 	public void invokeDownloadRuntimesWizard() {
 		WorkbenchPreferenceDialog preferenceDialog = new WorkbenchPreferenceDialog();
 		preferenceDialog.open();
+		RuntimeDetectionPreferencePage runtimeDetectionPage = new RuntimeDetectionPreferencePage(preferenceDialog);
 		preferenceDialog.select(runtimeDetectionPage);
 
-		new PushButton("Download...").click();
-		new WaitUntil(new ShellWithTextIsAvailable("Download Runtimes"), TimePeriod.VERY_LONG);
-		new DefaultShell("Download Runtimes"); // make sure Download Runtimes
-												// shell is active.
-		runtimeDownloadWizard = new WizardDialog();
+		new PushButton(preferenceDialog, "Download...").click();
+		new WaitUntil(new ShellIsAvailable("Download Runtimes"), TimePeriod.VERY_LONG);
+		runtimeDownloadWizard = new WizardDialog("Download Runtimes");
 	}
 
 	public void processSelectingRuntime(String runtime) {
-		TaskWizardFirstPage selectRuntimePage = new TaskWizardFirstPage();
+		TaskWizardFirstPage selectRuntimePage = new TaskWizardFirstPage(runtimeDownloadWizard);
 		selectRuntimePage.selectRuntime(runtime);
 		runtimeDownloadWizard.next();
 	}
 
 	public void processInsertingCredentials(String username, String password) {
-		TaskWizardLoginPage credentialsPage = new TaskWizardLoginPage();
+		TaskWizardLoginPage credentialsPage = new TaskWizardLoginPage(runtimeDownloadWizard);
 		assertEquals("Domain is set to jboss.org", "jboss.org", credentialsPage.getDomain());
 
 		// username is not enabled -> we have to add credential
@@ -133,7 +133,8 @@ public final class RuntimeDownloadTestUtility extends RuntimeDetectionUtility {
 	}
 
 	public void processRuntimeDownload() {
-		TaskWizardThirdPage downloadRuntimePage = new TaskWizardThirdPage();
+		
+		TaskWizardThirdPage downloadRuntimePage = new TaskWizardThirdPage(runtimeDownloadWizard);
 		downloadRuntimePage.setInstallFolder(tmpPath.getAbsolutePath());
 
 		// wizard.finish(); -- does not work (Problem with slow downloading)
@@ -142,17 +143,19 @@ public final class RuntimeDownloadTestUtility extends RuntimeDetectionUtility {
 
 		new WaitUntil(new JobIsRunning(), TimePeriod.VERY_LONG, false);
 		new WaitWhile(new JobIsRunning(), TimePeriod.getCustom(900));
+		WorkbenchPreferenceDialog preferenceDialog = new WorkbenchPreferenceDialog();
+		preferenceDialog.open();
 
-		runtimeDetectionPage.ok();
+		preferenceDialog.ok();
 	}
 
 	public void processLicenceAgreement() {
-		TaskWizardSecondPage licenceAgreementPage = new TaskWizardSecondPage();
+		TaskWizardSecondPage licenceAgreementPage = new TaskWizardSecondPage(runtimeDownloadWizard);
 		licenceAgreementPage.acceptLicense(true);
 		runtimeDownloadWizard.next();
 	}
 
-	private class SuccesfullyDeleted implements WaitCondition {
+	private class SuccesfullyDeleted extends AbstractWaitCondition {
 
 		private File dir;
 
@@ -175,12 +178,6 @@ public final class RuntimeDownloadTestUtility extends RuntimeDetectionUtility {
 
 		@Override
 		public String description() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String errorMessage() {
 			// TODO Auto-generated method stub
 			return null;
 		}

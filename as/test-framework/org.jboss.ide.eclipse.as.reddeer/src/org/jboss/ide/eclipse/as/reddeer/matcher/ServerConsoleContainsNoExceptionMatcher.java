@@ -6,8 +6,8 @@ import java.util.Scanner;
 
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
-import org.jboss.reddeer.common.logging.Logger;
-import org.jboss.reddeer.eclipse.ui.console.ConsoleView;
+import org.eclipse.reddeer.common.logging.Logger;
+import org.eclipse.reddeer.eclipse.ui.console.ConsoleView;
 
 /**
  * Checks that the active console in console view does not contain an unexpected exception. 
