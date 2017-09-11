@@ -22,7 +22,7 @@ public class ServerBeanTypeEAP61 extends ServerBeanTypeEnterprise {
 				"Enterprise Application Platform", //$NON-NLS-1$
 				asPath("modules","system","layers","base",
 						"org","jboss","as","server","main"),
-				new String[]{V6_1, V6_2}, new EAP61ServerTypeCondition());
+				new String[]{V6_1, V6_2, "6.3", "6.4"}, new EAP61ServerTypeCondition());
 	}
 	public static class EAP61ServerTypeCondition extends org.jboss.ide.eclipse.as.core.server.bean.ServerBeanTypeEAP6.EAP6ServerTypeCondition {
 		@Override
