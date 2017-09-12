@@ -35,9 +35,6 @@ public class DataVirt62FragmentProvider implements IWorkflowProvider {
 		if( "jbossdv620runtime".equals(dr.getId())) {
 			return true;
 		}
-		if( "jbossdv630runtime".equals(dr.getId())) {
-			return true;
-		}
 		return false;
 	}
 
@@ -46,21 +43,12 @@ public class DataVirt62FragmentProvider implements IWorkflowProvider {
 		if( "jbossdv620runtime".equals(dr.getId())) {
 			return createFragmentsForDV62(dr);
 		}
-		if( "jbossdv630runtime".equals(dr.getId())) {
-			return createFragmentsForDV63(dr);
-		}
 		return new WizardFragment[] {};
 	}
 	public WizardFragment[] createFragmentsForDV62(DownloadRuntime dr) {
 		String title = "Data Virtualization 6.2 Warning";
 		String msg = "Data Virtualization 6.2 installer requires EAP 6.4 to be installed prior to installation.";
 		String labelMsg = "Data Virtualization 6.2 requires EAP 6.4 to be installed prior to installation.\n\nIt is strongly reccommended you first install EAP 6.4 before proceeding.";
-		return createFragmentsForDVxxx(dr, title, msg, labelMsg, JBossServerType.EAP61, "6.4");
-	}
-	public WizardFragment[] createFragmentsForDV63(DownloadRuntime dr) {
-		String title = "Data Virtualization 6.3 Warning";
-		String msg = "Data Virtualization 6.3 installer requires EAP 6.4 to be installed prior to installation.";
-		String labelMsg = "Data Virtualization 6.3 requires EAP 6.4 to be installed prior to installation.\n\nIt is strongly reccommended you first install EAP 6.4 before proceeding.";
 		return createFragmentsForDVxxx(dr, title, msg, labelMsg, JBossServerType.EAP61, "6.4");
 	}
 	public WizardFragment[] createFragmentsForDVxxx(DownloadRuntime dr, String title, String msg, String label, JBossServerType beanType, String versionPrefix) {
@@ -84,10 +72,21 @@ public class DataVirt62FragmentProvider implements IWorkflowProvider {
 					
 					protected void validateInstall() {
 						File locale = new File(underlyingLocation.getText());
-						ServerBean sb = new ServerBeanLoader(locale).getServerBean();
-						if( sb.getBeanType().equals(beanType) && sb.getVersion().equals(versionPrefix)) {
-							getTaskModel().putObject(FinalizeRuntimeDownloadFragment.FINALIZE_RUNTIMED_OWNLOAD_FRAGMENT_INSTALLPATH, underlyingLocation.getText());
-							setComplete(true);
+						if( locale.exists() ) {
+							ServerBean sb = new ServerBeanLoader(locale).getServerBean();
+							if( sb.getBeanType().equals(beanType) && sb.getVersion().equals(versionPrefix)) {
+								getTaskModel().putObject(FinalizeRuntimeDownloadFragment.FINALIZE_RUNTIMED_OWNLOAD_FRAGMENT_INSTALLPATH, underlyingLocation.getText());
+								setComplete(true);
+								handle.setMessage(null, IMessageProvider.NONE);
+							} else {
+								String msg2 = "The selected folder contains " + sb.getBeanType().getId() + " with version " + sb.getFullVersion();
+								handle.setMessage(msg2, IMessageProvider.WARNING);
+								setComplete(false);
+							}
+						} else {
+							// file doesnt exist so just reset standard warning
+							handle.setMessage(msg, IMessageProvider.WARNING);
+							setComplete(false);
 						}
 						handle.update();
 					}
