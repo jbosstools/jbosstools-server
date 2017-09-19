@@ -6,12 +6,16 @@ import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.fail;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import org.jboss.ide.eclipse.as.reddeer.matcher.ServerConsoleContainsNoExceptionMatcher;
 import org.eclipse.reddeer.common.condition.AbstractWaitCondition;
 import org.eclipse.reddeer.common.logging.Logger;
 import org.eclipse.reddeer.common.wait.TimePeriod;
 import org.eclipse.reddeer.common.wait.WaitUntil;
 import org.eclipse.reddeer.common.wait.WaitWhile;
+import org.eclipse.reddeer.core.exception.CoreLayerException;
 import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
 import org.eclipse.reddeer.eclipse.condition.ConsoleHasNoChange;
 import org.eclipse.reddeer.eclipse.exception.EclipseLayerException;
@@ -168,10 +172,9 @@ public class OperateServerTemplate {
 			new PushButton(warningShell, "Yes").click();
 			new WaitWhile(new ShellIsAvailable(warningShell));
 			LOGGER.step("Warning shell is closed.");
-		}catch (SWTLayerException e) {
+		}catch (CoreLayerException e) {
 			//Shell did not pop up -> do nothing
-		}
-		
+		} 
 	}
 
 	public void deleteServer() {
