@@ -2,6 +2,9 @@ package org.jboss.tools.as.management.itests;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.security.Security;
+import java.security.PrivilegedAction;
+import java.security.AccessController;
 
 import junit.framework.Assert;
 
@@ -36,6 +39,11 @@ public class AS7ManagementServiceStartupShutdownTest extends Assert {
 	@BeforeClass 
 	public static void init() {
 		util = new StartupUtility();
+		AccessController.doPrivileged(new PrivilegedAction<Integer> () {
+	                public Integer run() {
+	                   return Security.insertProviderAt(new org.wildfly.security.WildFlyElytronProvider(), 1);
+                }
+        });
 	}
 	@AfterClass 
 	public static void cleanup() {

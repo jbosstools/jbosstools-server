@@ -21,6 +21,8 @@ Require-Bundle: org.jboss.ide.eclipse.as.core;bundle-version="[3.0.0,4.0.0)",
  org.jboss.ide.eclipse.as.dmr,
  org.jboss.tools.locus.mockito;bundle-version="1.9.5"
 Bundle-ClassPath: .,
- wars/
+ wars/,
+ lib/wildfly-elytron-1.1.0.Beta36.jar,
+ lib/wildfly-common-1.2.0.Beta9.jar
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.jboss.tools.as.management.itests.Activator
