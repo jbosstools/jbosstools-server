@@ -219,13 +219,16 @@ public class DeployJSPProjectTemplate {
 		
 		log.step("Check exception in console");
 		ConsoleView consoleView = new ConsoleView();
-		consoleView.open();
+		boolean alreadyOpened = consoleView.isOpen();
+		if( !alreadyOpened )
+			consoleView.open();
 		consoleView.toggleShowConsoleOnStandardOutChange(false);
 		
 		new WaitUntil(new ConsoleHasNoChange(), TimePeriod.LONG);
 		assertThat(message, consoleView, consoleViewMatcher);
 
-		consoleView.close();
+		if( !alreadyOpened) 
+			consoleView.close();
 	}
 	
 	
