@@ -88,20 +88,30 @@ public class JREParameterUtils extends Assert {
 		String cmdName = (Platform.getOS().equals(Platform.OS_WIN32) ? "java.exe" : "java");
 		String bin = new Path(home).append("bin").append(cmdName).toOSString();
 		assertTrue(asString + " binary does not exist", new File(bin).exists());
+		String[] lines = null;
 		try {
-			String[] lines = CommandRunner.call(bin, new String[] {"-version"}, 
+			lines = CommandRunner.call(bin, new String[] {"-version"}, 
 					ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile(),
 					new HashMap<String,String>(), 10000, CommandRunner.SYSERR);
-			
-			String versionString = getVersion(lines);
-			assertNotNull("Unable to verify " + asString + " version", versionString);
-			
-			String versionError = asString + " version string must start with \"" + versionPrefix + "\". Please verify sysprop " 
-					+ sysprop + ". Current version: " + versionString;
-			assertTrue(versionError,versionString.startsWith(versionPrefix));
 		} catch(Exception e) {
-			fail(e.getMessage());
+			String err = "Attempt to call '" + bin + " -version' has failed: " + e.getMessage() + "\n\nOutput: \n";
+			if( lines != null ) {
+				for( int i = 0; i < lines.length; i++ ) {
+					if( lines[i] != null ) {
+						err = err + lines[i] + "\n";
+					}
+				}
+			}
+			fail(err);
 		}
+		
+		assertNotNull(lines);
+		String versionString = getVersion(lines);
+		assertNotNull("Unable to verify " + asString + " version", versionString);
+		
+		String versionError = asString + " version string must start with \"" + versionPrefix + "\". Please verify sysprop " 
+				+ sysprop + ". Current version: " + versionString;
+		assertTrue(versionError,versionString.startsWith(versionPrefix));
 	}
 	
 	public static String getJava8Home() {
