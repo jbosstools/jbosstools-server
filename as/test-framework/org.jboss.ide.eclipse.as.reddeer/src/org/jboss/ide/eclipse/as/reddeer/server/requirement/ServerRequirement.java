@@ -12,14 +12,10 @@ import org.eclipse.reddeer.eclipse.rse.ui.wizards.newconnection.RSEDefaultNewCon
 import org.eclipse.reddeer.eclipse.rse.ui.wizards.newconnection.RSEMainNewConnectionWizard;
 import org.eclipse.reddeer.eclipse.rse.ui.wizards.newconnection.RSENewConnectionWizardSelectionPage;
 import org.eclipse.reddeer.eclipse.rse.ui.wizards.newconnection.RSENewConnectionWizardSelectionPage.SystemType;
-import org.eclipse.reddeer.eclipse.wst.server.ui.Runtime;
-import org.eclipse.reddeer.eclipse.wst.server.ui.RuntimePreferencePage;
-import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.Server;
 import org.eclipse.reddeer.eclipse.wst.server.ui.wizard.NewServerWizard;
 import org.eclipse.reddeer.eclipse.wst.server.ui.wizard.NewServerWizardPage;
 import org.eclipse.reddeer.junit.requirement.ConfigurableRequirement;
 import org.eclipse.reddeer.requirements.server.AbstractServerRequirement;
-import org.eclipse.reddeer.requirements.server.ConfiguredServerInfo;
 import org.jboss.ide.eclipse.as.reddeer.server.family.JBossFamily;
 import org.jboss.ide.eclipse.as.reddeer.server.requirement.ServerRequirement.JBossServer;
 import org.jboss.ide.eclipse.as.reddeer.server.wizard.page.JBossRuntimeWizardPage;
@@ -28,7 +24,6 @@ import org.jboss.ide.eclipse.as.reddeer.server.wizard.page.NewServerAdapterPage.
 import org.jboss.ide.eclipse.as.reddeer.server.wizard.page.NewServerRSIWizardPage;
 import org.jboss.ide.eclipse.as.reddeer.server.wizard.page.NewServerWizardPageWithErrorCheck;
 import org.eclipse.reddeer.requirements.server.ServerRequirementState;
-import org.eclipse.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
 
 import static org.junit.Assert.assertTrue;
 
@@ -43,8 +38,6 @@ public class ServerRequirement extends AbstractServerRequirement implements Conf
 
 	private static final Logger LOGGER = Logger.getLogger(ServerRequirement.class);
 	
-	private static ConfiguredServerInfo lastServerConfiguration;
-	
 	private ServerRequirementConfig config;
 	private JBossServer server;
 	
@@ -57,21 +50,13 @@ public class ServerRequirement extends AbstractServerRequirement implements Conf
 
 	@Override
 	public void fulfill() {
-		if(lastServerConfiguration != null) {
-			boolean differentConfig = !config.equals(lastServerConfiguration.getConfig());
-			if (differentConfig) {
-				removeServerAndRuntime(lastServerConfiguration);
-				lastServerConfiguration = null;
-			}
-		}
-		if (lastServerConfiguration == null || !isLastConfiguredServerPresent()) {
+		if (!isLastConfiguredServerPresent()) {
 			LOGGER.info("Setup server");
 			if(config.getRemote() != null) {
 				setupRemoteServerAdapter();
 			} else {
 				setupLocalServerAdapter();
 			}	
-			lastServerConfiguration = new ConfiguredServerInfo(getServerNameLabelText(), getRuntimeNameLabelText(), null);
 		}
 		setupServerState(server.state());
 		
@@ -102,7 +87,7 @@ public class ServerRequirement extends AbstractServerRequirement implements Conf
 			}
 			
 			sp.selectType(config.getFamily().getCategory(), serverTypeLabelText);
-			sp.setName(getServerNameLabelText());
+			sp.setName(getServerName());
 
 			serverW.next();
 
@@ -135,7 +120,7 @@ public class ServerRequirement extends AbstractServerRequirement implements Conf
 	protected void setupRuntime(NewServerWizard wizard){
 		
 		JBossRuntimeWizardPage rp = new JBossRuntimeWizardPage(wizard);
-		rp.setRuntimeName(getRuntimeNameLabelText());
+		rp.setRuntimeName(getRuntimeName());
 		rp.setRuntimeDir(config.getRuntime());
 
 		rp.checkErrors();
@@ -171,7 +156,7 @@ public class ServerRequirement extends AbstractServerRequirement implements Conf
 			//-- Select the server type and fill in server name, then continue on next page
 			NewServerWizardPageWithErrorCheck sp = new NewServerWizardPageWithErrorCheck(serverW);
 			sp.selectType(config.getFamily().getCategory(),config.getFamily().getLabel()+" "+ config.getVersion());
-			sp.setName(getServerNameLabelText());
+			sp.setName(getServerName());
 			sp.checkErrors();
 			serverW.next();
 			
@@ -217,8 +202,7 @@ public class ServerRequirement extends AbstractServerRequirement implements Conf
 	@Override
 	public void cleanUp() {
 		if(server.cleanup() && config != null){
-			removeServerAndRuntime(lastServerConfiguration);
-			lastServerConfiguration = null;
+			removeServerAndRuntime();
 		}
 		
 	}
@@ -240,37 +224,13 @@ public class ServerRequirement extends AbstractServerRequirement implements Conf
 	}
 
 	@Override
-	public String getServerNameLabelText() {
+	public String getServerName() {
 		return config.getFamily().getLabel()+" "+config.getVersion()+" Server"; 
 	}
 
 	@Override
-	public String getRuntimeNameLabelText() {
+	public String getRuntimeName() {
 		return config.getFamily().getLabel()+" "+config.getVersion()+" Runtime"; 
-	}
-
-	@Override
-	public ConfiguredServerInfo getConfiguredConfig() {
-		return lastServerConfiguration;
-	}
-	
-	/**
-	 * Removes given server and its runtime.
-	 */
-	protected void removeServerAndRuntime(ConfiguredServerInfo config) {
-		Server serverInView = getConfiguredServer();
-		if(serverInView == null){
-			return;
-		}
-		//remove server added by last requirement
-		serverInView.delete(true);
-		//remove runtime
-		WorkbenchPreferenceDialog preferenceDialog = new WorkbenchPreferenceDialog();
-		preferenceDialog.open();
-		RuntimePreferencePage runtimePage = new RuntimePreferencePage(preferenceDialog);
-		preferenceDialog.select(runtimePage);
-		runtimePage.removeRuntime(new Runtime(config.getRuntimeName(), "test"));
-		preferenceDialog.ok();
 	}
 
 }
