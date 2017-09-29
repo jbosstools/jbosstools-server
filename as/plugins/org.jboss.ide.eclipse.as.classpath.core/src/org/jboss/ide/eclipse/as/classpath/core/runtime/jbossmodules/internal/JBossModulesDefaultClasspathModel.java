@@ -45,11 +45,28 @@ public class JBossModulesDefaultClasspathModel extends InternalRuntimeClasspathM
 		if( rtt.getId().equals(IJBossToolingConstants.EAP_70)) {
 			return getDefaultJEE8JBossModulesEntries();
 		}
+		if( rtt.getId().equals(IJBossToolingConstants.EAP_71)) {
+			return getDefaultWF11JBossModulesEntries();
+		}
+		if( rtt.getId().equals(IJBossToolingConstants.WILDFLY_110)) {
+			return getDefaultWF11JBossModulesEntries();
+		}
+		
 		return getDefaultJBossModulesEntries();
 	}
 	
+	private IRuntimePathProvider[] getDefaultWF11JBossModulesEntries() {
+		ArrayList<String> all = new ArrayList<String>();
+		all.addAll(Arrays.asList(getDefaultJEE8JBossModulesEntryKeys()));
+		
+		all.add("org.wildfly.common"); //$NON-NLS-1$
+		all.add("org.wildfly.security.elytron-private"); //$NON-NLS-1$
+		
+		String[] allString = (String[]) all.toArray(new String[all.size()]);
+		return toRuntimePathProvider(allString);
+	}
 
-	private IRuntimePathProvider[] getDefaultJEE8JBossModulesEntries() {
+	private String[] getDefaultJEE8JBossModulesEntryKeys() {
 		ArrayList<String> all = new ArrayList<String>();
 		all.addAll(Arrays.asList(getDefaultJBossModulesEntryKeys()));
 		all.add("javax.batch.api"); //$NON-NLS-1$
@@ -62,8 +79,10 @@ public class JBossModulesDefaultClasspathModel extends InternalRuntimeClasspathM
 		all.remove("javax.rmi.api");//$NON-NLS-1$
 		all.remove("javax.xml.registry.api");//$NON-NLS-1$
 
-		// Convert
-		String[] allString = (String[]) all.toArray(new String[all.size()]);
+		return (String[]) all.toArray(new String[all.size()]);
+	}
+	private IRuntimePathProvider[] getDefaultJEE8JBossModulesEntries() {
+		String[] allString = getDefaultJEE8JBossModulesEntryKeys();
 		return toRuntimePathProvider(allString);
 	}
 	
