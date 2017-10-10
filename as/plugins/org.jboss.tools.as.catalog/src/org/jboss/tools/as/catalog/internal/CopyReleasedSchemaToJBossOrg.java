@@ -15,7 +15,7 @@ public class CopyReleasedSchemaToJBossOrg {
 	private static File dumpingGround;
 	public static void main(String[] args) {
 		if( args.length < 2) {
-			System.err.println("Usage:  java CopyReleasedSchemaToJBossOrg /home/user/apps/wildfly10/docs/schema /home/user/code/jboss.org.schema [relativePathForUnMatched]");
+			System.err.println("Usage:  java org.jboss.tools.as.catalog.internal.CopyReleasedSchemaToJBossOrg /home/user/apps/wildfly10/docs/schema /home/user/code/jboss.org.schema [relativePathForUnMatched]");
 			return;
 		}
 		

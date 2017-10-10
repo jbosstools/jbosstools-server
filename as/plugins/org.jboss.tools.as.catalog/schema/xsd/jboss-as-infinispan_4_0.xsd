@@ -155,11 +155,6 @@
                 <xs:documentation>Defines the jgroups stack used by the transport.</xs:documentation>
             </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="cluster" type="xs:string">
-            <xs:annotation>
-                <xs:documentation>Defines the name for the underlying group communication cluster.</xs:documentation>
-            </xs:annotation>
-        </xs:attribute>
         <xs:attribute name="lock-timeout" type="xs:long" default="240000">
             <xs:annotation>
                 <xs:documentation>
@@ -212,12 +207,12 @@
                     </xs:element>
                     <xs:element name="binary-keyed-jdbc-store" type="tns:binary-keyed-jdbc-store">
                         <xs:annotation>
-                            <xs:documentation>Defines a database cache store accessed via JDBC using binary-based keys.</xs:documentation>
+                            <xs:documentation>Defines a database cache store accessed via JDBC using binary-based keys. Warning: This option has been deprecated, please use string-keyed-jdbc-store instead</xs:documentation>
                         </xs:annotation>
                     </xs:element>
                     <xs:element name="mixed-keyed-jdbc-store" type="tns:mixed-keyed-jdbc-store">
                         <xs:annotation>
-                            <xs:documentation>Defines a database cache store accessed via JDBC using mixed string and binary-based keys.</xs:documentation>
+                            <xs:documentation>Defines a database cache store accessed via JDBC using mixed string and binary-based keys. Warning: This option has been deprecated, please use string-keyed-jdbc-store instead.</xs:documentation>
                         </xs:annotation>
                     </xs:element>
                 </xs:choice>
@@ -339,22 +334,22 @@
     <xs:complexType name="clustered-cache" abstract="true">
         <xs:complexContent>
             <xs:extension base="tns:cache">
-                <xs:attribute name="mode" type="tns:mode" use="required">
+                <xs:attribute name="mode" type="tns:mode" default="SYNC">
                     <xs:annotation>
                         <xs:documentation>Sets the clustered cache mode, ASYNC for asynchronous operation, or SYNC for synchronous operation.</xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
                 <xs:attribute name="queue-size" type="xs:int" default="0">
                     <xs:annotation>
-                        <xs:documentation>In ASYNC mode, this attribute can be used to trigger flushing of the queue when it reaches a specific threshold.</xs:documentation>
+                        <xs:documentation>Deprecated. In ASYNC mode, this attribute can be used to trigger flushing of the queue when it reaches a specific threshold.</xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
                 <xs:attribute name="queue-flush-interval" type="xs:long" default="10">
                     <xs:annotation>
-                        <xs:documentation>In ASYNC mode, this attribute controls how often the asynchronous thread used to flush the replication queue runs. This should be a positive integer which represents thread wakeup time in milliseconds.</xs:documentation>
+                        <xs:documentation>Deprecated. In ASYNC mode, this attribute controls how often the asynchronous thread used to flush the replication queue runs. This should be a positive integer which represents thread wakeup time in milliseconds.</xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
-                <xs:attribute name="remote-timeout" type="xs:long" default="17500">
+                <xs:attribute name="remote-timeout" type="xs:long" default="10000">
                     <xs:annotation>
                         <xs:documentation>In SYNC mode, the timeout (in ms) used to wait for an acknowledgment when making a remote call, after which the call is aborted and an exception is thrown.</xs:documentation>
                     </xs:annotation>
@@ -383,7 +378,7 @@
                             <xs:documentation>The state transfer configuration for distributed and replicated caches.</xs:documentation>
                         </xs:annotation>
                     </xs:element>
-                    <xs:choice minOccurs="0">
+                    <xs:sequence minOccurs="0">
                         <xs:element name="backups" type="tns:backups" minOccurs="0">
                             <xs:annotation>
                                 <xs:documentation>A list of backup sites for this cache (for use with cross-site replication).</xs:documentation>
@@ -394,7 +389,7 @@
                                 <xs:documentation>Configures this cache as a backup for a cache on a remote site (for use with cross-site replication).</xs:documentation>
                             </xs:annotation>
                         </xs:element>
-                    </xs:choice>
+                    </xs:sequence>
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
@@ -419,7 +414,7 @@
                         <xs:documentation>Number of hash space segments (per cluster).</xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
-                <xs:attribute name="l1-lifespan" type="xs:long" default="600000">
+                <xs:attribute name="l1-lifespan" type="xs:long" default="0">
                     <xs:annotation>
                         <xs:documentation>Maximum lifespan in milliseconds of an entry placed in the L1 cache.</xs:documentation>
                     </xs:annotation>
@@ -1026,6 +1021,7 @@
             <xs:enumeration value="HSQL"/>
             <xs:enumeration value="INFORMIX"/>
             <xs:enumeration value="INTERBASE"/>
+            <xs:enumeration value="MARIA_DB"/>
             <xs:enumeration value="MYSQL"/>
             <xs:enumeration value="ORACLE"/>
             <xs:enumeration value="POSTGRES"/>
