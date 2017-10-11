@@ -81,6 +81,8 @@ public class CatalogValidationTest extends TestCase {
 		expectedErrors.put("module-1_2.xsd", 4);
 		expectedErrors.put("module-1_3.xsd", 4);
 		expectedErrors.put("module-1_5.xsd", 4);
+		// wildfly-client_1_0.xml requires additional namespaces to have functional child elements ootb
+		expectedErrors.put("wildfly-client_1_0.xsd", 1); 
 	}
 	
 	private static ArrayList<String> noRootElement = new ArrayList<String>();
@@ -159,9 +161,11 @@ public class CatalogValidationTest extends TestCase {
 		
 		IFile file = null;
 		try {
+			project.refreshLocal(10, new NullProgressMonitor());
 			NewXMLGenerator gen = createGeneratorForCatalogEntry(n);
 			String fname = lastSegment.replace(".xsd", ".xml");
 			file = project.getFile(fname);
+			file.delete(true, new NullProgressMonitor());
 			file.create(new ByteArrayInputStream("".getBytes()), true, new NullProgressMonitor());
 			gen.createXMLDocument(file, file.getLocation().toOSString());
 			System.out.println(file.getLocation().toOSString());
@@ -188,7 +192,8 @@ public class CatalogValidationTest extends TestCase {
 				}
 			}
 			
-			Integer expected = expectedErrors.get(new Path(n.getURI()).lastSegment());
+			String key = new Path(n.getURI()).lastSegment();
+			Integer expected = expectedErrors.get(key);
 			int eCount = expected == null ? 0 : expected.intValue();
 			assertFalse("Failure validating catalog entry " + new Path(n.getURI()).lastSegment() + ",  " + errorMessage.toString(), tangibleErrorCount > eCount);
 		} catch(Exception e ) {
