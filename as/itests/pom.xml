@@ -42,10 +42,10 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<jbosstools.test.jboss.home.eap.7.1>${requirementsDirectory}/jboss-eap-7.1</jbosstools.test.jboss.home.eap.7.1>
 
 		<additionalProperties></additionalProperties>
-		<!-- skipPrivateRequirements is inherited from parent pom -->
+		<!-- skipPrivateRequirements and skipTestsWithPrivateRequirements are inherited from parent pom -->
 
 		<!-- jbosstools.test.jre.7 is defined in root pom for convenience of reuse -->
-		<systemProperties> -Djbosstools.test.jre.6=${jbosstools.test.jre.6}  -Djbosstools.test.jre.7=${jbosstools.test.jre.7}  -Djbosstools.test.jre.8=${jbosstools.test.jre.8} -Djbosstools.test.jboss.home.3.2=${jbosstools.test.jboss.home.3.2} -Djbosstools.test.jboss.home.4.0=${jbosstools.test.jboss.home.4.0} -Djbosstools.test.jboss.home.4.2=${jbosstools.test.jboss.home.4.2} -Djbosstools.test.jboss.home.5.0=${jbosstools.test.jboss.home.5.0} -Djbosstools.test.jboss.home.5.1=${jbosstools.test.jboss.home.5.1} -Djbosstools.test.jboss.home.6.0=${jbosstools.test.jboss.home.6.0} -Djbosstools.test.jboss.home.7.0=${jbosstools.test.jboss.home.7.0} -Djbosstools.test.jboss.home.7.1=${jbosstools.test.jboss.home.7.1} -Djbosstools.test.jboss.home.8.0=${jbosstools.test.jboss.home.8.0} -Djbosstools.test.jboss.home.8.1=${jbosstools.test.jboss.home.8.1} -Djbosstools.test.jboss.home.9.0=${jbosstools.test.jboss.home.9.0} -Djbosstools.test.jboss.home.10.0=${jbosstools.test.jboss.home.10.0} -Djbosstools.test.jboss.home.10.1=${jbosstools.test.jboss.home.10.1} -Djbosstools.test.jboss.home.11.0=${jbosstools.test.jboss.home.11.0} -Djbosstools.test.jboss.home.eap.4.3=${jbosstools.test.jboss.home.eap.4.3} -Djbosstools.test.jboss.home.eap.5.0=${jbosstools.test.jboss.home.eap.5.0} -Djbosstools.test.jboss.home.eap.6.0=${jbosstools.test.jboss.home.eap.6.0} -Djbosstools.test.jboss.home.eap.6.1=${jbosstools.test.jboss.home.eap.6.1} -Djbosstools.test.jboss.home.eap.6.2=${jbosstools.test.jboss.home.eap.6.2} -Djbosstools.test.jboss.home.eap.6.3=${jbosstools.test.jboss.home.eap.6.3} -Djbosstools.test.jboss.home.eap.7.0=${jbosstools.test.jboss.home.eap.7.0} -Djbosstools.test.jboss.home.eap.7.1=${jbosstools.test.jboss.home.eap.7.1} -Dorg.jboss.tools.tests.skipPrivateRequirements=${skipPrivateRequirements} -Djboss.org.username=${jboss.org.username} -Djboss.org.password=${jboss.org.password} -Djbosstools.test.singleruntime.location=${jbosstools.test.singleruntime.location} ${additionalProperties}</systemProperties>
+		<systemProperties> -Djbosstools.test.jre.6=${jbosstools.test.jre.6}  -Djbosstools.test.jre.7=${jbosstools.test.jre.7}  -Djbosstools.test.jre.8=${jbosstools.test.jre.8} -Djbosstools.test.jboss.home.3.2=${jbosstools.test.jboss.home.3.2} -Djbosstools.test.jboss.home.4.0=${jbosstools.test.jboss.home.4.0} -Djbosstools.test.jboss.home.4.2=${jbosstools.test.jboss.home.4.2} -Djbosstools.test.jboss.home.5.0=${jbosstools.test.jboss.home.5.0} -Djbosstools.test.jboss.home.5.1=${jbosstools.test.jboss.home.5.1} -Djbosstools.test.jboss.home.6.0=${jbosstools.test.jboss.home.6.0} -Djbosstools.test.jboss.home.7.0=${jbosstools.test.jboss.home.7.0} -Djbosstools.test.jboss.home.7.1=${jbosstools.test.jboss.home.7.1} -Djbosstools.test.jboss.home.8.0=${jbosstools.test.jboss.home.8.0} -Djbosstools.test.jboss.home.8.1=${jbosstools.test.jboss.home.8.1} -Djbosstools.test.jboss.home.9.0=${jbosstools.test.jboss.home.9.0} -Djbosstools.test.jboss.home.10.0=${jbosstools.test.jboss.home.10.0} -Djbosstools.test.jboss.home.10.1=${jbosstools.test.jboss.home.10.1} -Djbosstools.test.jboss.home.11.0=${jbosstools.test.jboss.home.11.0} -Djbosstools.test.jboss.home.eap.4.3=${jbosstools.test.jboss.home.eap.4.3} -Djbosstools.test.jboss.home.eap.5.0=${jbosstools.test.jboss.home.eap.5.0} -Djbosstools.test.jboss.home.eap.6.0=${jbosstools.test.jboss.home.eap.6.0} -Djbosstools.test.jboss.home.eap.6.1=${jbosstools.test.jboss.home.eap.6.1} -Djbosstools.test.jboss.home.eap.6.2=${jbosstools.test.jboss.home.eap.6.2} -Djbosstools.test.jboss.home.eap.6.3=${jbosstools.test.jboss.home.eap.6.3} -Djbosstools.test.jboss.home.eap.7.0=${jbosstools.test.jboss.home.eap.7.0} -Djbosstools.test.jboss.home.eap.7.1=${jbosstools.test.jboss.home.eap.7.1} -Dorg.jboss.tools.tests.skipPrivateRequirements=${skipPrivateRequirements} -Dorg.jboss.tools.tests.skipTestsWithPrivateRequirements=${skipTestsWithPrivateRequirements} -Djboss.org.username=${jboss.org.username} -Djboss.org.password=${jboss.org.password} -Djbosstools.test.singleruntime.location=${jbosstools.test.singleruntime.location} ${additionalProperties}</systemProperties>
 	</properties>
 
 	<build>
@@ -241,7 +241,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 									<url>http://download.devel.redhat.com/released/JBEAP-4.3.0/CP10/zip/jboss-eap-4.3.0.GA_CP10.zip</url>
 									<md5>1ffb95d935c54a0a1a29865f563e55c7</md5>
 									<unpack>true</unpack>
-									<skip>${skipPrivateRequirements}</skip>
+									<skip>${skipTestsWithPrivateRequirements}</skip>
 								</configuration>
 							</execution>
 							<execution>
@@ -254,7 +254,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 									<url>http://download.devel.redhat.com/released/JBEAP-5/5.1.2/zip/jboss-eap-5.1.2.zip</url>
 									<md5>6d652593f03b398a9b832760c71ae1ad</md5>
 									<unpack>true</unpack>
-									<skip>${skipPrivateRequirements}</skip>
+									<skip>${skipTestsWithPrivateRequirements}</skip>
 								</configuration>
 							</execution>
 							<execution>
@@ -267,7 +267,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 									<url>http://download.devel.redhat.com/released/JBEAP-6/6.0.1/zip/jboss-eap-6.0.1.zip</url>
 									<md5>0d025d640eb6babd2c3d9484f89ccf3f</md5>
 									<unpack>true</unpack>
-									<skip>${skipPrivateRequirements}</skip>
+									<skip>${skipTestsWithPrivateRequirements}</skip>
 								</configuration>
 							</execution>
 							<execution>
@@ -280,7 +280,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 									<url>http://download.devel.redhat.com/released/JBEAP-6/6.1.2/jboss-eap-6.1.2.zip</url>
 									<md5>1c431e8ff2179a2dc10b8793b7505046</md5>
 									<unpack>true</unpack>
-									<skip>${skipPrivateRequirements}</skip>
+									<skip>${skipTestsWithPrivateRequirements}</skip>
 								</configuration>
 							</execution>
 							<execution>
@@ -293,7 +293,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 									<url>http://download.devel.redhat.com/released/JBEAP-6/6.2.4/jboss-eap-6.2.4-full-build.zip</url>
 									<md5>180e27786c84328e67fbb10fbeed6af8</md5>
 									<unpack>true</unpack>
-									<skip>${skipPrivateRequirements}</skip>
+									<skip>${skipTestsWithPrivateRequirements}</skip>
 								</configuration>
 							</execution>
 							<execution>
@@ -306,7 +306,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 									<url>http://download.devel.redhat.com/released/JBEAP-6/6.3.0/jboss-eap-6.3.0.zip</url>
 									<md5>f1ce6b83cd117bc612e9d15ff64575dd</md5>
 									<unpack>true</unpack>
-									<skip>${skipPrivateRequirements}</skip>
+									<skip>${skipTestsWithPrivateRequirements}</skip>
 								</configuration>
 							</execution>
 							<execution>
@@ -319,7 +319,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 									<url>http://download.devel.redhat.com/released/JBEAP-7/7.0.0/jboss-eap-7.0.0.zip</url>
 									<md5>cd02482daa0398bf5500e1628d28179a</md5>
 									<unpack>true</unpack>
-									<skip>${skipPrivateRequirements}</skip>
+									<skip>${skipTestsWithPrivateRequirements}</skip>
 								</configuration>
 							</execution>
 							<execution>
@@ -332,7 +332,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 									<url>http://download-node-02.eng.bos.redhat.com/rcm-guest/staging/jboss-eap/JBEAP-7.1.0.CR2/jboss-eap-7.1.0.CR2.zip</url>
 									<md5>0b028571f1637c2321214b7059bc2508</md5>
 									<unpack>true</unpack>
-									<skip>${skipPrivateRequirements}</skip>
+									<skip>${skipTestsWithPrivateRequirements}</skip>
 								</configuration>
 							</execution>
 
