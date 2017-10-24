@@ -11,15 +11,15 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/jboss-dmr-1.4.1.Final.jar,
  lib/jboss-logging-3.3.1.Final.jar,
- lib/jboss-remoting-5.0.3.Final.jar,
+ lib/jboss-remoting-5.0.5.Final.jar,
  lib/jboss-threads-2.2.1.Final.jar,
  lib/wildfly-client-config-1.0.0.Final.jar,
  lib/wildfly-common-1.2.0.Final.jar,
- lib/wildfly-controller-client-3.0.6.Final.jar,
- lib/wildfly-elytron-1.1.5.Final.jar,
- lib/wildfly-protocol-3.0.6.Final.jar,
- lib/xnio-api-3.5.2.Final.jar,
- lib/xnio-nio-3.5.2.Final.jar
+ lib/wildfly-controller-client-3.0.8.Final.jar,
+ lib/wildfly-elytron-1.1.6.Final.jar,
+ lib/wildfly-protocol-3.0.8.Final.jar,
+ lib/xnio-api-3.5.4.Final.jar,
+ lib/xnio-nio-3.5.4.Final.jar
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.jboss.ide.eclipse.as.internal.management.wf11;x-friends:="org.jboss.ide.eclipse.as.management.itests"
 Bundle-Vendor: JBoss by Red Hat

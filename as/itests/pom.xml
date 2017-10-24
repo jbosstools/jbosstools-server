@@ -31,7 +31,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<jbosstools.test.jboss.home.9.0>${requirementsDirectory}/wildfly-9.0.1.Final</jbosstools.test.jboss.home.9.0>
 		<jbosstools.test.jboss.home.10.0>${requirementsDirectory}/wildfly-10.0.0.Final</jbosstools.test.jboss.home.10.0>
 		<jbosstools.test.jboss.home.10.1>${requirementsDirectory}/wildfly-10.1.0.Final</jbosstools.test.jboss.home.10.1>
-		<jbosstools.test.jboss.home.11.0>${requirementsDirectory}/wildfly-11.0.0.CR1</jbosstools.test.jboss.home.11.0>
+		<jbosstools.test.jboss.home.11.0>${requirementsDirectory}/wildfly-11.0.0.Final</jbosstools.test.jboss.home.11.0>
 		<jbosstools.test.jboss.home.eap.4.3>${requirementsDirectory}/jboss-eap-4.3/jboss-as</jbosstools.test.jboss.home.eap.4.3>
 		<jbosstools.test.jboss.home.eap.5.0>${requirementsDirectory}/jboss-eap-5.1/jboss-as</jbosstools.test.jboss.home.eap.5.0>
 		<jbosstools.test.jboss.home.eap.6.0>${requirementsDirectory}/jboss-eap-6.0</jbosstools.test.jboss.home.eap.6.0>
@@ -410,8 +410,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 									<goal>wget</goal>
 								</goals>
 								<configuration>
-									<url>http://download.jboss.org/wildfly/11.0.0.CR1/wildfly-11.0.0.CR1.zip</url>
-									<md5>495af6e6eeb3eed9571c05855f72b982</md5>
+									<url>http://download.jboss.org/wildfly/11.0.0.Final/wildfly-11.0.0.Final.zip</url>
+									<md5>cabc51179090c24c2644c118df7422d9</md5>
 									<unpack>true</unpack>
 									<skip>${skipTestsOrITests}</skip>
 								</configuration>
