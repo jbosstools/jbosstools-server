@@ -30,6 +30,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.Server;
+import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
@@ -318,7 +319,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		 * 
 		 * private int handleBinaryModule(IModule[] module, IPath archiveDestination) throws CoreException
 		 */
-		boolean isBinaryObject = ServerModelUtilities.isBinaryModule(module);
+		boolean isBinaryObject = treatAsBinaryModule(module);
 		Trace.trace(Trace.STRING_FINER, "   Module " + module[module.length-1].getName() + " is binary? " + isBinaryObject); //$NON-NLS-1$ //$NON-NLS-2$
 
 		boolean serverPrefersZipped = prefersZipped();
@@ -407,6 +408,14 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		return acc == null || acc.isOK() ? IServer.PUBLISH_STATE_NONE : IServer.PUBLISH_STATE_UNKNOWN;
 	}
 	
+	protected boolean treatAsBinaryModule(IModule[] module) {
+		return true; // isBinaryModule(module);		
+	}
+
+	protected boolean isBinaryModule(IModule[] module) {
+		return ServerModelUtilities.isBinaryModule(module);		
+	}
+
 	/*
 	 * Binary modules are non-standard modules that WTP has created, and so must
 	 * be handled. Your typical module will follow servertools API, and, the
