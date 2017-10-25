@@ -409,7 +409,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 	}
 	
 	protected boolean treatAsBinaryModule(IModule[] module) {
-		return true; // isBinaryModule(module);		
+		return isBinaryModule(module);
 	}
 
 	protected boolean isBinaryModule(IModule[] module) {
