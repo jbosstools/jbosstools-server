@@ -10,7 +10,10 @@
  ******************************************************************************/
 package org.jboss.tools.as.test.core.parametized.server.publishing.defect;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -22,7 +25,6 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerUtil;
-import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
@@ -34,54 +36,40 @@ import org.junit.Before;
 import org.junit.Test;
 
 
-public class PublishWeb2DeletesWeb1LibsTest extends TestCase {
-	TestProjectProvider[] providers = null;
-	IProject[] projects = null;
+public class PublishWeb2DeletesWeb1LibsTest {
+	List<TestProjectProvider> providers = null;
 	IServer server;
 	 
 	@Before
 	public void setUp() throws Exception {
-		TestProjectProvider util1Provider = new TestProjectProvider("org.jboss.tools.as.test.core", null, 
-				"UserForum1Util1", true); 
-		IProject util1Project = util1Provider.getProject();
-		util1Project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-
-		TestProjectProvider util2Provider = new TestProjectProvider("org.jboss.tools.as.test.core", null, 
-				"UserForum1Util2", true); 
-		IProject util2Project = util2Provider.getProject();
-		util2Project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-		
-		TestProjectProvider ejb1Provider = new TestProjectProvider("org.jboss.tools.as.test.core", null, 
-				"UserForum1EJB1", true); 
-		IProject ejb1Project = ejb1Provider.getProject();
-		ejb1Project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-
-
-		TestProjectProvider web1Provider = new TestProjectProvider("org.jboss.tools.as.test.core", null, 
-				"UserForum1Web1", true); 
-		IProject web1Project = web1Provider.getProject();
-		web1Project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-
-		TestProjectProvider web2Provider = new TestProjectProvider("org.jboss.tools.as.test.core", null, 
-				"UserForum1Web2", true); 
-		IProject web2Project = web2Provider.getProject();
-		web2Project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+		TestProjectProvider util1Provider = importProject("UserForum1Util1");
+		TestProjectProvider util2Provider = importProject("UserForum1Util2");
+		TestProjectProvider ejb1Provider = importProject("UserForum1EJB1"); 
+		TestProjectProvider web1Provider = importProject("UserForum1Web1"); 
+		TestProjectProvider web2Provider = importProject("UserForum1Web2"); 
 		
 		JobUtils.waitForIdle();
-		projects = new IProject[]{ util1Project, util2Project, ejb1Project, web1Project, web2Project};
-		providers = new TestProjectProvider[]{util1Provider, util2Provider, ejb1Provider, web1Provider, web2Provider};
+		providers = Arrays.asList(new TestProjectProvider[]{util1Provider, util2Provider, ejb1Provider, web1Provider, web2Provider});
 		
-		for( int i = 0; i < projects.length; i++ ) {
-			assertTrue(projects[i].exists());
-			assertTrue(projects[i].isAccessible());
-			assertTrue(projects[i].isNatureEnabled( FacetedProjectNature.NATURE_ID ));
+		for (TestProjectProvider provider : providers) {
+			IProject project = provider.getProject();
+			assertTrue(project.exists());
+			assertTrue(project.isAccessible());
+			assertTrue(project.isNatureEnabled( FacetedProjectNature.NATURE_ID ));
 		}
 		
 		server = ServerCreationTestUtils.createServerWithRuntime(IJBossToolingConstants.DEPLOY_ONLY_SERVER, getClass().getName());
 	}
+
+	protected TestProjectProvider importProject(String projectName) throws CoreException {
+		TestProjectProvider testProjectProvider = new TestProjectProvider("org.jboss.tools.as.test.core", null, projectName, true); 
+		IProject projectImported = testProjectProvider.getProject();
+		projectImported.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+		return testProjectProvider;
+	}
 	
 	private void addModuleAndFullPublish(String projectName) throws CoreException {
-		IDeployableServer ds = ServerConverter.getDeployableServer(server);
+		ServerConverter.getDeployableServer(server);
 		server = addModuleToServer(findModuleForProject(projectName));
 		server.publish(IServer.PUBLISH_FULL, new NullProgressMonitor());
 		JobUtils.waitForIdle();
@@ -100,9 +88,7 @@ public class PublishWeb2DeletesWeb1LibsTest extends TestCase {
 		verifyEJBAndJarExist();
 		verifyWeb1AndLibsExist();
 		verifyWeb2AndLibsExist();
-
 	}
-	
 	
 	private void verifyEJBAndJarExist() {
 		// Make sure ejb and libs exist
