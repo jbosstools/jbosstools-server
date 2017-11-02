@@ -2,7 +2,7 @@
 <feature 
    id="org.jboss.ide.eclipse.as.serverAdapter.wtp.feature" 
    label="%featureName" 
-   version="3.3.1.qualifier" 
+   version="3.5.2.qualifier" 
    license-feature="org.jboss.tools.foundation.license.feature"
    license-feature-version="0.0.0"
    provider-name="%providerName">

@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %BundleName
 Bundle-Vendor: %BundleVendor
 Bundle-SymbolicName: org.jboss.tools.as.runtimes.integration;singleton:=true
-Bundle-Version: 3.3.1.qualifier
+Bundle-Version: 3.5.2.qualifier
 Bundle-Activator: org.jboss.tools.as.runtimes.integration.ServerRuntimesIntegrationActivator
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources;bundle-version="3.8.100",
