@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.jboss.tools.as.core.server.controllable.subsystems.internal;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,7 +21,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.debug.core.ILaunchManager;
@@ -30,7 +28,6 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.Server;
-import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
@@ -57,6 +54,7 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IPublishControllerDelegate;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.util.PublishControllerUtil;
 import org.jboss.ide.eclipse.as.wtp.core.server.launch.AbstractStartJavaServerLaunchDelegate;
+import org.jboss.ide.eclipse.as.wtp.core.server.publish.BinaryModulePublishRunner;
 import org.jboss.ide.eclipse.as.wtp.core.server.publish.LocalZippedModulePublishRunner;
 import org.jboss.ide.eclipse.as.wtp.core.server.publish.ModulePublishErrorCache;
 import org.jboss.ide.eclipse.as.wtp.core.server.publish.PublishModuleFullRunner;
@@ -325,20 +323,27 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		boolean serverPrefersZipped = prefersZipped();
 		Trace.trace(Trace.STRING_FINER, "   Server " + getServer().getName() + " prefers zipped deployment? " + serverPrefersZipped); //$NON-NLS-1$ //$NON-NLS-2$
 
-		IPath archiveDestination = getModuleDeployRoot(module);
+		IPath archiveDestination = getModuleDeployRoot(module, isBinaryObject);
 		Trace.trace(Trace.STRING_FINER, "   Archive destination: " + archiveDestination.toString()); //$NON-NLS-1$
 
+		boolean anyDeleted = ServerModelUtilities.isAnyDeleted(module);
+		
 		int publishType = PublishControllerUtil.getPublishType(getServer(), module, kind, deltaKind);
 
 
 		// Handle removals of modules
 		if( publishType == PublishControllerUtil.REMOVE_PUBLISH){
-			Trace.trace(Trace.STRING_FINER, "   Removing module: " + module[module.length-1].getName()); //$NON-NLS-1$
-			return removeModule(module, archiveDestination, subMonitor.split(1));
+			if( !isBinaryObject ) {
+				Trace.trace(Trace.STRING_FINER, "   Removing module: " + module[module.length-1].getName()); //$NON-NLS-1$
+				return removeModule(module, archiveDestination, subMonitor.split(1));
+			} else {
+				Trace.trace(Trace.STRING_FINER, "   Removing binary module: " + module[module.length-1].getName()); //$NON-NLS-1$
+				return handlePublishBinaryModule(module, archiveDestination, anyDeleted, publishType);
+			}
 		}
 		
 		// Skip any wtp-deleted-module for a full or incremental publish
-		if( ServerModelUtilities.isAnyDeleted(module) ) {
+		if( anyDeleted ) {
 			Trace.trace(Trace.STRING_FINER, "   Module or parent module is a wtp 'deleted module' (aka missing/deleted /closed project). No Action Taken. Returning state=unknown "); //$NON-NLS-1$
 			return IServer.PUBLISH_STATE_UNKNOWN;
 		}
@@ -367,7 +372,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		if( isBinaryObject ) {
 			// Remove situation has been handled
 			Trace.trace(Trace.STRING_FINER, "   Publishing binary module."); //$NON-NLS-1$
-			return handlePublishBinaryModule(module, archiveDestination, publishType);
+			return handlePublishBinaryModule(module, archiveDestination, anyDeleted, publishType);
  		}
 		
 		
@@ -435,31 +440,37 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 	 * and also named "lib.jar". To avoid the unnecessary and incorrect
 	 * wrapping, binary modules must be handled separately.
 	 */
-	private int handlePublishBinaryModule(IModule[] module, IPath archiveDestination, int publishType) throws CoreException {
+	private int handlePublishBinaryModule(IModule[] module, IPath archiveDestination, boolean anyDeleted, int publishType) throws CoreException {
 		if( PublishControllerUtil.NO_PUBLISH == publishType ) {
 			markModulePublished(module, PublishControllerUtil.NO_PUBLISH, null, true);
 			return IServer.PUBLISH_STATE_NONE;
 		}
-		
-		
-		// Handle the publish here
-		// binary modules should only have 1 resource in them. 
+		IPath archDest2 = getModuleDeployRoot(module, false);
+		IFilesystemController fc = getFilesystemController();
 		IModuleResource[] all = ModuleResourceUtil.getMembers(module[module.length-1]);
-		if( all != null && all.length > 0 && all[0] != null ) {
-			IModuleResource r = all[0];
-			File f = ModuleResourceUtil.getFile(r);
-			IPath folder = archiveDestination.removeLastSegments(1); 
-			IStatus s1 = getFilesystemController().makeDirectoryIfRequired(folder, new NullProgressMonitor());
-			IStatus result = null;
-			if( s1 != null && !s1.isOK()) {
-				result = s1;
+		IModuleResourceDelta[] delta = getDeltaForModule(module);
+		BinaryModulePublishRunner runner = new BinaryModulePublishRunner(module, archiveDestination, archDest2, fc, all, delta);
+		if( PublishControllerUtil.REMOVE_PUBLISH == publishType) {
+			IStatus ms = null;
+			if( anyDeleted ) {
+				ms = runner.removeDeletedBinaryModule();
 			} else {
-				IStatus s2 = getFilesystemController().copyFile(f, archiveDestination, new NullProgressMonitor());
-				result = s2;
+				ms = runner.removeBinaryModule();
 			}
-
-			markModulePublished(module, PublishControllerUtil.FULL_PUBLISH, result, true);
-			return result == null || result.isOK() ? IServer.PUBLISH_STATE_NONE : IServer.PUBLISH_STATE_FULL;
+			int ret = ms.isOK() ? IServer.PUBLISH_STATE_NONE : IServer.PUBLISH_STATE_FULL;
+			markModulePublished(module, PublishControllerUtil.REMOVE_PUBLISH, ms, true);
+			return ret;
+		}
+		if( PublishControllerUtil.INCREMENTAL_PUBLISH == publishType) {
+			IStatus ms = runner.publishModuleIncremental();
+			int ret = ms.isOK() ? IServer.PUBLISH_STATE_NONE : IServer.PUBLISH_STATE_FULL;
+			markModulePublished(module, PublishControllerUtil.INCREMENTAL_PUBLISH, ms, true);
+			return ret;
+		} else if( PublishControllerUtil.FULL_PUBLISH == publishType) {
+			IStatus ms = runner.publishModuleFull();
+			int ret = ms.isOK() ? IServer.PUBLISH_STATE_NONE : IServer.PUBLISH_STATE_FULL;
+			markModulePublished(module, PublishControllerUtil.FULL_PUBLISH, ms, true);
+			return ret;
 		}
 		return IServer.PUBLISH_STATE_UNKNOWN;
 	}
@@ -581,12 +592,16 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 	private boolean prefersZipped() throws CoreException {
 		return getDeploymentOptions().prefersZippedDeployments();
 	}
+
+	protected IPath getModuleDeployRoot(IModule[] module) throws CoreException {
+		return getModuleDeployRoot(module, treatAsBinaryModule(module));
+	}
 	
-	private IPath getModuleDeployRoot(IModule[] module) throws CoreException {
+	protected IPath getModuleDeployRoot(IModule[] module, boolean isBinaryObject) throws CoreException {
 		// Find dependency will throw a CoreException if an object is not found, rather than return null
 		IDeploymentOptionsController opts = getDeploymentOptions();
 		IModuleDeployPathController depPath = getDeployPathController();
-		return new RemotePath(depPath.getDeployDirectory(module).toOSString(), 
+		return new RemotePath(depPath.getDeployDirectory(module, isBinaryObject).toOSString(), 
 				opts.getPathSeparatorCharacter());
 	}
 	

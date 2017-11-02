@@ -110,9 +110,22 @@ public class ModuleDeployPathController extends AbstractSubsystemController
 	
 	@Override
 	public IPath getDeployDirectory(IModule[] module) {
+		return getDeployDirectory(module, isBinaryModule(module));
+	}
+	
+	@Override
+	public IPath getDeployDirectory(IModule[] module, boolean binary) {
 		IServerAttributes server = getServerOrWC();
 		IPath fullPath = createModuleDeploymentPrefsUtil().getModuleTreeDestinationFullPath(module, server, getDefaultDeployFolder(), getTargetSystemSeparator());
-		return fullPath;
+		if( !binary ) {
+			return fullPath;
+		} else {
+			return fullPath.removeLastSegments(1);
+		}
+	}
+	
+	protected boolean isBinaryModule(IModule[] module) {
+		return ServerModelUtilities.isBinaryModule(module);		
 	}
 
 	@Override

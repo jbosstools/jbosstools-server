@@ -14,7 +14,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IModule2;
-import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.RemotePath;
@@ -36,7 +35,7 @@ public class ModuleDeploymentPrefsUtil {
 	 * @param separator
 	 * @return
 	 */
-	public IPath getModuleRootDestination(IModule[] moduleTree, IServer server, 
+	public IPath getModuleRootDestination(IModule[] moduleTree, IServerAttributes server, 
 			String defaultFolder, char separator) {
 		DeploymentPreferences prefs = DeploymentPreferencesLoader.loadPreferencesFromServer(server);
 		String folder = getPathPropertyFromDeploymentModulePrefs(

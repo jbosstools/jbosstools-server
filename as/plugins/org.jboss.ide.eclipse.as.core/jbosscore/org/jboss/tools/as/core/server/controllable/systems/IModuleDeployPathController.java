@@ -85,6 +85,21 @@ public interface IModuleDeployPathController extends ISubsystemController {
 	public IPath getDeployDirectory(IModule[] module);
 	
 	/**
+	 * Get the ABSOLUTE path of the deploy folder for this module.
+	 * For example, given a war nested in an ear, it will return something like:
+	 * 		/home/user/server/deploy/App.ear/Web.war
+	 * 
+	 * In the case of binary modules, the module's name and assumed suffix
+	 * will not be included, since binary modules will publish their contents
+	 * directly rather than inside a containing folder/zip. 
+	 * 
+	 * @param module
+	 * @param binary
+	 * @return
+	 */
+	public IPath getDeployDirectory(IModule[] module, boolean binary);
+	
+	/**
 	 * Get a absolute path of the temporary deploy folder for this module
 	 * @param module
 	 * @return

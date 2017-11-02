@@ -126,9 +126,13 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 		controller.initialize(server, null, null);
 		int result = controller.publishModule(IServer.PUBLISH_INCREMENTAL, ServerBehaviourDelegate.ADDED, module, null);
 		assertEquals(result, IServer.PUBLISH_STATE_NONE);
-		String s = controller.getDeployPathController().getDeployDirectory(module).toOSString();
+		IPath f1 = controller.getDeployPathController().getDeployDirectory(module);
+		String s = f1.toOSString();
 		assertTrue(new Path(s).toFile().exists());
-		assertTrue(new Path(s).toFile().isFile()); 
+		assertTrue(new Path(s).toFile().isDirectory()); 
+		assertTrue(f1.append("some.war").toFile().exists());
+		assertTrue(f1.append("some.war").toFile().isFile());
+		
 		IModuleResource[] resources = ModuleResourceUtil.getResources(module[0], new NullProgressMonitor());
 		assertTrue(resources.length == 1);
 	}
@@ -204,15 +208,17 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 		verifyListRelativePath(new Path(webDepDir), Arrays.asList(new IPath[]{new Path("index.html")}), true);
 		
 		String utilDepDir = controller.getDeployPathController().getDeployDirectory(module).toOSString();
+		String utilDepJar = controller.getDeployPathController().getDeployDirectory(module, false).toOSString();
 		if( !testIsZip()) {
 			ServerExtendedProperties props = ExtendedServerPropertiesAdapterFactory.getServerExtendedProperties(server);
 			assertNotNull(props);
 
 			// we're not testing in zip mode, so utilDepDir should exist 
 			assertTrue(new Path(utilDepDir).toFile().exists());
+			assertTrue(new Path(utilDepJar).toFile().exists());
 			
 			// This is a binary module being tested, so should always be a file
-			assertEquals(true, new Path(utilDepDir).toFile().isFile());
+			assertEquals(true, new Path(utilDepJar).toFile().isFile());
 		} else {
 			// Our util is inside a zipped war. Verify that exists
 			IPath utilRelToWeb = new Path(utilDepDir).removeFirstSegments(new Path(webDepDir).segmentCount());
