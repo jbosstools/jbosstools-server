@@ -338,7 +338,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 				return removeModule(module, archiveDestination, subMonitor.split(1));
 			} else {
 				Trace.trace(Trace.STRING_FINER, "   Removing binary module: " + module[module.length-1].getName()); //$NON-NLS-1$
-				return handlePublishBinaryModule(module, archiveDestination, anyDeleted, publishType);
+				return handlePublishBinaryModule(module, archiveDestination, anyDeleted, publishType, subMonitor.split(1));
 			}
 		}
 		
@@ -372,7 +372,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 		if( isBinaryObject ) {
 			// Remove situation has been handled
 			Trace.trace(Trace.STRING_FINER, "   Publishing binary module."); //$NON-NLS-1$
-			return handlePublishBinaryModule(module, archiveDestination, anyDeleted, publishType);
+			return handlePublishBinaryModule(module, archiveDestination, anyDeleted, publishType, subMonitor.split(1));
  		}
 		
 		
@@ -440,34 +440,34 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 	 * and also named "lib.jar". To avoid the unnecessary and incorrect
 	 * wrapping, binary modules must be handled separately.
 	 */
-	private int handlePublishBinaryModule(IModule[] module, IPath archiveDestination, boolean anyDeleted, int publishType) throws CoreException {
+	private int handlePublishBinaryModule(IModule[] module, IPath deployFolder, boolean anyDeleted, int publishType, IProgressMonitor monitor) throws CoreException {
 		if( PublishControllerUtil.NO_PUBLISH == publishType ) {
 			markModulePublished(module, PublishControllerUtil.NO_PUBLISH, null, true);
 			return IServer.PUBLISH_STATE_NONE;
 		}
-		IPath archDest2 = getModuleDeployRoot(module, false);
+		IPath archDestinationWithNameSegment = getModuleDeployRoot(module, false);
 		IFilesystemController fc = getFilesystemController();
 		IModuleResource[] all = ModuleResourceUtil.getMembers(module[module.length-1]);
 		IModuleResourceDelta[] delta = getDeltaForModule(module);
-		BinaryModulePublishRunner runner = new BinaryModulePublishRunner(module, archiveDestination, archDest2, fc, all, delta);
+		BinaryModulePublishRunner runner = new BinaryModulePublishRunner(module, deployFolder, archDestinationWithNameSegment, fc, all, delta);
 		if( PublishControllerUtil.REMOVE_PUBLISH == publishType) {
 			IStatus ms = null;
 			if( anyDeleted ) {
-				ms = runner.removeDeletedBinaryModule();
+				ms = runner.removeDeletedBinaryModule(monitor);
 			} else {
-				ms = runner.removeBinaryModule();
+				ms = runner.removeBinaryModule(monitor);
 			}
 			int ret = ms.isOK() ? IServer.PUBLISH_STATE_NONE : IServer.PUBLISH_STATE_FULL;
 			markModulePublished(module, PublishControllerUtil.REMOVE_PUBLISH, ms, true);
 			return ret;
 		}
 		if( PublishControllerUtil.INCREMENTAL_PUBLISH == publishType) {
-			IStatus ms = runner.publishModuleIncremental();
+			IStatus ms = runner.publishModuleIncremental(monitor);
 			int ret = ms.isOK() ? IServer.PUBLISH_STATE_NONE : IServer.PUBLISH_STATE_FULL;
 			markModulePublished(module, PublishControllerUtil.INCREMENTAL_PUBLISH, ms, true);
 			return ret;
 		} else if( PublishControllerUtil.FULL_PUBLISH == publishType) {
-			IStatus ms = runner.publishModuleFull();
+			IStatus ms = runner.publishModuleFull(monitor);
 			int ret = ms.isOK() ? IServer.PUBLISH_STATE_NONE : IServer.PUBLISH_STATE_FULL;
 			markModulePublished(module, PublishControllerUtil.FULL_PUBLISH, ms, true);
 			return ret;

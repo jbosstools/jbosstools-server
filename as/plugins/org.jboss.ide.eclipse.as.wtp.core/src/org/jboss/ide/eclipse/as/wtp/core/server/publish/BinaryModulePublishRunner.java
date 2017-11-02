@@ -1,3 +1,13 @@
+/******************************************************************************* 
+ * Copyright (c) 2017 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.wtp.core.server.publish;
 
 import java.io.File;
@@ -6,9 +16,11 @@ import java.util.Arrays;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleFolder;
@@ -44,23 +56,30 @@ public class BinaryModulePublishRunner {
 	 * Then use the members to delete all those, too. 
 	 * @return
 	 */
-	public MultiStatus removeBinaryModule() throws CoreException {
-		MultiStatus ms = removeDeletedBinaryModule();
-		if( !isNestedSingleResourceBinaryModule()) {
-			removeMembers(all, ms);
+	public MultiStatus removeBinaryModule(IProgressMonitor monitor) throws CoreException {
+		boolean nestedSingle = isNestedSingleResourceBinaryModule();
+		if( nestedSingle ) {
+			MultiStatus ms = removeDeletedBinaryModule(monitor);
+			return ms;
+		} else {
+			SubMonitor progress = SubMonitor.convert(monitor, 2); 
+			MultiStatus ms = removeDeletedBinaryModule(progress.split(1));
+			removeMembers(all, ms, progress.split(1));
+			return ms;
 		}
-		return ms;
 	}
 	
-	private IStatus removeMembers(IModuleResource[] all, MultiStatus ms) throws CoreException {
+	private IStatus removeMembers(IModuleResource[] all, MultiStatus ms, IProgressMonitor monitor) throws CoreException {
+		SubMonitor sub = SubMonitor.convert(monitor, 2 * all.length);
 		for( int i = 0; i < all.length; i++ ) {
+			SubMonitor recurse = sub.split(1);
 			if( all[i] instanceof IModuleFolder) {
 				IModuleResource[] children = ((IModuleFolder)all[i]).members();
-				removeMembers(children, ms);
+				removeMembers(children, ms, recurse);
 			}
 			IPath relative = all[i].getModuleRelativePath();
 			IPath published = archiveDestination.append(relative).append(all[i].getName());
-			IStatus s = fc.deleteResource(published, new NullProgressMonitor());
+			IStatus s = fc.deleteResource(published, sub.split(1));
 			if( s != null && !s.isOK()) {
 				ms.add(s);
 			}
@@ -69,9 +88,9 @@ public class BinaryModulePublishRunner {
 	}
 	
 	
-	private MultiStatus removeNestedSingleResourceBinary(MultiStatus ms) throws CoreException {
+	private MultiStatus removeNestedSingleResourceBinary(MultiStatus ms, IProgressMonitor monitor) throws CoreException {
 		IPath published = archiveDestinationWithName;
-		IStatus s = fc.deleteResource(published, new NullProgressMonitor());
+		IStatus s = fc.deleteResource(published, monitor);
 		if( s != null && !s.isOK()) {
 			ms.add(s);
 		}
@@ -80,11 +99,11 @@ public class BinaryModulePublishRunner {
 	/*
 	 * Use the delta because the module is gone and has no members
 	 */
-	public MultiStatus removeDeletedBinaryModule() throws CoreException {
+	public MultiStatus removeDeletedBinaryModule(IProgressMonitor monitor) throws CoreException {
 		MultiStatus ms = new MultiStatus(ASWTPToolsPlugin.PLUGIN_ID, 0, "Errors while deleting binary module " + module[module.length-1].getName(), null);
 		IModuleResource[] deleted = getAllResources(delta, IModuleResourceDelta.REMOVED, true);
 		if( isNestedSingleResourceBinaryModule()) {
-			removeNestedSingleResourceBinary(ms);
+			removeNestedSingleResourceBinary(ms, monitor);
 			return ms;
 		}
 		
@@ -102,27 +121,28 @@ public class BinaryModulePublishRunner {
 	 * Use the delta to publish only changed resources
 	 * @return
 	 */
-	public MultiStatus publishModuleIncremental() throws CoreException {
+	public MultiStatus publishModuleIncremental(IProgressMonitor monitor) throws CoreException {
 		MultiStatus ms = new MultiStatus(ASWTPToolsPlugin.PLUGIN_ID, 0, "Errors while publishing binary module " + module[module.length-1].getName(), null);
 		if( isNestedSingleResourceBinaryModule()) {
-			copyOneResourceSingleBinary(all[0], ms);
+			copyOneResourceSingleBinary(all[0], ms, monitor);
 		} else {
-			publishModuleIncremental(delta, ms);
+			publishModuleIncremental(delta, ms, monitor);
 		}
 		return ms;
 	}
-	public void publishModuleIncremental(IModuleResourceDelta[] delta, MultiStatus ms) throws CoreException {
+	public void publishModuleIncremental(IModuleResourceDelta[] delta, MultiStatus ms, IProgressMonitor monitor) throws CoreException {
+		SubMonitor sub = SubMonitor.convert(monitor, delta.length);
 		for( int i = 0; i < delta.length; i++ ) {
 			int kind = delta[i].getKind();
 			IModuleResource mr = delta[i].getModuleResource();
 			if( kind == IModuleResourceDelta.REMOVED) {
-				removeMembers(new IModuleResource[] {mr}, ms);
+				removeMembers(new IModuleResource[] {mr}, ms, sub.split(1));
 			} else if( kind == IModuleResourceDelta.CHANGED || kind == IModuleResourceDelta.ADDED) {
 				if( mr instanceof IModuleFolder ) {
 					IModuleResourceDelta[] children = delta[i].getAffectedChildren();
-					publishModuleIncremental(children, ms);
+					publishModuleIncremental(children, ms, sub.split(1));
 				} else {
-					copyOneResource(mr, ms);
+					copyOneResource(mr, ms, sub.split(1));
 				}
 			}
 		}
@@ -131,55 +151,51 @@ public class BinaryModulePublishRunner {
 	/*
 	 * Remove the module. Then do a full publish
 	 */
-	public MultiStatus publishModuleFull() throws CoreException {
-		MultiStatus status = (MultiStatus)removeDeletedBinaryModule();
-		if( isNestedSingleResourceBinaryModule()) {
-			copyOneResourceSingleBinary(all[0], status);
+	public MultiStatus publishModuleFull(IProgressMonitor monitor) throws CoreException {
+		boolean nested = isNestedSingleResourceBinaryModule();
+		SubMonitor sub = SubMonitor.convert(monitor, 2);
+		MultiStatus status = removeDeletedBinaryModule(sub.split(1));
+		if( nested ) {
+			copyOneResourceSingleBinary(all[0], status, sub.split(1));
 		} else {
-			publishModuleMembers(all, status);
+			publishModuleMembers(all, status, sub.split(1));
 		}
 		return status;
 	}
 	
 	
 	private boolean isNestedSingleResourceBinaryModule() {
-		if( module.length > 1 && all.length == 1 && all[0] instanceof IModuleFile) {
-			return true;
-		}
-		return false;
+		return module.length > 1 && all.length == 1 && all[0] instanceof IModuleFile;
 	}
-	private void publishModuleMembers(IModuleResource[] members, MultiStatus ms) throws CoreException {
+	private void publishModuleMembers(IModuleResource[] members, MultiStatus ms, IProgressMonitor monitor) throws CoreException {
+		SubMonitor sub = SubMonitor.convert(monitor, members.length);
 		for( int i = 0; i < members.length; i++ ) {
 			IModuleResource mr = members[i];
 			if( mr instanceof IModuleFolder ) {
 				IModuleResource[] children = ((IModuleFolder)mr).members();
-				publishModuleMembers(children, ms);
+				publishModuleMembers(children, ms, sub.split(1));
 			} else {
-				copyOneResource(mr, ms);
+				copyOneResource(mr, ms,sub.split(1));
 			}
 		}
 	}
 
-	private void copyOneResource(IModuleResource r, MultiStatus ms) throws CoreException {
-		copyOneResource(r, r.getName(), ms);
+	private void copyOneResource(IModuleResource r, MultiStatus ms, IProgressMonitor monitor) throws CoreException {
+		copyOneResource(r, r.getName(), ms, monitor);
 	}
 	
 
-	private void copyOneResourceSingleBinary(IModuleResource r, MultiStatus ms) throws CoreException {
-		copyOneResource(r, archiveDestinationWithName.lastSegment(), ms);
+	private void copyOneResourceSingleBinary(IModuleResource r, MultiStatus ms, IProgressMonitor monitor) throws CoreException {
+		copyOneResource(r, archiveDestinationWithName.lastSegment(), ms, monitor);
 	}
 	
-	private void copyOneResource(IModuleResource r, String lastSegmentName, MultiStatus ms) throws CoreException {
+	private void copyOneResource(IModuleResource r, String lastSegmentName, MultiStatus ms, IProgressMonitor monitor) throws CoreException {
 		File f = ModuleResourceUtil.getFile(r);
 		IPath folder = archiveDestination.append(r.getModuleRelativePath());
 		IPath dest = folder.append(lastSegmentName);
-		IStatus s1 = fc.makeDirectoryIfRequired(folder, new NullProgressMonitor());
-		IStatus result = null;
-		if( s1 != null && !s1.isOK()) {
-			result = s1;
-		} else {
-			IStatus s2 = fc.copyFile(f, dest, new NullProgressMonitor());
-			result = s2;
+		IStatus result = fc.makeDirectoryIfRequired(folder, new NullProgressMonitor());
+		if( result == null || result.isOK()) {
+			result = fc.copyFile(f, dest, new NullProgressMonitor());
 		}
 		if( result != null )
 			ms.add(result);
@@ -194,7 +210,7 @@ public class BinaryModulePublishRunner {
 		for( int i = 0; i < delta.length; i++ ) {
 			IModuleResource r = delta[i].getModuleResource();
 			IModuleResourceDelta[] children = delta[i].getAffectedChildren();
-			IModuleResource[] childrenRes = null;
+			IModuleResource[] childrenRes;
 			if( children != null ) {
 				childrenRes = getAllResources(children, kind, depthFirst);
 			} else {
@@ -213,6 +229,6 @@ public class BinaryModulePublishRunner {
 				list.addAll(Arrays.asList(childrenRes));
 			}
 		}
-		return (IModuleResource[]) list.toArray(new IModuleResource[list.size()]);
+		return list.toArray(new IModuleResource[list.size()]);
 	}
 }
