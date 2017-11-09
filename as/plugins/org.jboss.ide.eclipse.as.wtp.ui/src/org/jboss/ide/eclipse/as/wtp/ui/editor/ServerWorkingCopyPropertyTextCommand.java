@@ -77,7 +77,7 @@ public class ServerWorkingCopyPropertyTextCommand extends ServerCommand {
 			text.removeModifyListener(listener);
 		wc.setAttribute(key, val);
 		if( text != null && !text.isDisposed())
-			text.setText(val);
+			text.setText(val == null ? "" : val);
 		if( listener != null )
 			text.addModifyListener(listener);
 		postOp(POST_REDO);
