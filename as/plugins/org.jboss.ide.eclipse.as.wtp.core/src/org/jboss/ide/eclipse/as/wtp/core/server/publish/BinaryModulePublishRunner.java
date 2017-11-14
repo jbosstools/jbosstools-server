@@ -13,6 +13,7 @@ package org.jboss.ide.eclipse.as.wtp.core.server.publish;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -206,7 +207,7 @@ public class BinaryModulePublishRunner {
 		if( delta == null )
 			return new IModuleResource[0];
 		
-		ArrayList<IModuleResource> list = new ArrayList<IModuleResource>();
+		List<IModuleResource> list = new ArrayList<>();
 		for( int i = 0; i < delta.length; i++ ) {
 			IModuleResource r = delta[i].getModuleResource();
 			IModuleResourceDelta[] children = delta[i].getAffectedChildren();
