@@ -20,7 +20,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.model.IModuleFile;
@@ -60,8 +59,7 @@ public class BinaryModulePublishRunner {
 	public MultiStatus removeBinaryModule(IProgressMonitor monitor) throws CoreException {
 		boolean nestedSingle = isNestedSingleResourceBinaryModule();
 		if( nestedSingle ) {
-			MultiStatus ms = removeDeletedBinaryModule(monitor);
-			return ms;
+			return removeDeletedBinaryModule(monitor);
 		} else {
 			SubMonitor progress = SubMonitor.convert(monitor, 2); 
 			MultiStatus ms = removeDeletedBinaryModule(progress.split(1));
@@ -108,10 +106,11 @@ public class BinaryModulePublishRunner {
 			return ms;
 		}
 		
+		SubMonitor subMonitor = SubMonitor.convert(monitor, deleted.length);
 		for( int i = 0; i < deleted.length; i++ ) {
 			IPath relative = deleted[i].getModuleRelativePath();
 			IPath published = archiveDestination.append(relative).append(deleted[i].getName());
-			IStatus s = fc.deleteResource(published, new NullProgressMonitor());
+			IStatus s = fc.deleteResource(published, subMonitor.split(1));
 			if( s != null && !s.isOK()) {
 				ms.add(s);
 			}
@@ -194,12 +193,15 @@ public class BinaryModulePublishRunner {
 		File f = ModuleResourceUtil.getFile(r);
 		IPath folder = archiveDestination.append(r.getModuleRelativePath());
 		IPath dest = folder.append(lastSegmentName);
-		IStatus result = fc.makeDirectoryIfRequired(folder, new NullProgressMonitor());
+		SubMonitor subMonitor = SubMonitor.convert(monitor, 2);
+		IStatus result = fc.makeDirectoryIfRequired(folder, subMonitor.split(1));
 		if( result == null || result.isOK()) {
-			result = fc.copyFile(f, dest, new NullProgressMonitor());
+			result = fc.copyFile(f, dest, subMonitor.split(1));
 		}
-		if( result != null )
+		subMonitor.setWorkRemaining(0);
+		if( result != null ) {
 			ms.add(result);
+		}
 	}
 
 	
