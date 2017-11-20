@@ -81,4 +81,5 @@ public interface OperationCheckingMBean {
 	BigInteger returnBigInteger();
 	BigDecimal returnBigDecimal();
 	Date returnDate();
+	int returnParamLength(String param);
 }

@@ -272,10 +272,10 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 		
 		J4pExecRequest req = createJ4pExecRequest(name, params, operationNameWithSignature);
 		try {
-			J4pExecResponse resp = j4pClient.execute(req);
+			J4pExecResponse resp = j4pClient.execute(req, type);
 			return converter.getConvertedToCorrectType(resp.getValue(), specifiedReturnedType);
 		} catch (J4pException e) {
-			throw new IOException(e);
+			throw new IOException("Operation Signature of failed request: " + operationNameWithSignature, e);
 		}
 	}
 

@@ -233,4 +233,9 @@ public class OperationChecking implements OperationCheckingMBean,MBeanRegistrati
     public Set<String> setOfResult() {
     	return new HashSet<String>(Arrays.asList("value1", "value2"));
     }
+
+	@Override
+	public int returnParamLength(String param) {
+		return param.length();
+	}
 }

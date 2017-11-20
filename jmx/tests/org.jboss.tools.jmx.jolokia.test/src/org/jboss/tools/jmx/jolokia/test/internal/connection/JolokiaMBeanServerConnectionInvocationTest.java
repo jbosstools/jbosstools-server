@@ -11,11 +11,14 @@
 package org.jboss.tools.jmx.jolokia.test.internal.connection;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assume.assumeFalse;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.CharBuffer;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Set;
 
@@ -30,15 +33,28 @@ import org.jboss.tools.jmx.jolokia.test.util.JolokiaTestEnvironmentSetup;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
 
+@RunWith(Parameterized.class)
 public class JolokiaMBeanServerConnectionInvocationTest extends JolokiaTestEnvironmentSetup {
 	
 	private static final String JOLOKIA_IT_OPERATION = JOLOKIA_IT_DOMAIN+":type=operation";
 	private JolokiaMBeanServerConnection jolokiaMBeanServerConnection;
-
+	
+	@Parameter
+	public String requestType;
+	
+	@Parameters(name = "{0}")
+	public static Iterable<? extends Object> data() {
+	    return Arrays.asList("GET", "POST");
+	}
+	
 	@Before
 	public void setup(){
-		jolokiaMBeanServerConnection = new JolokiaMBeanServerConnection(j4pClient, null);
+		jolokiaMBeanServerConnection = new JolokiaMBeanServerConnection(j4pClient, requestType);
 	}
 
 	@Test
@@ -54,7 +70,15 @@ public class JolokiaMBeanServerConnectionInvocationTest extends JolokiaTestEnvir
 	}
 	
 	@Test
-	@Ignore("Conversion of invocation return type nto supported for specific case of overloaded methods")
+	public void testInvocationWithLongParameter() throws Exception {
+		assumeFalse("GET".equals(requestType));
+		String longParameter = CharBuffer.allocate(10000+1).toString().replaceAll("\0", "a");
+		Object res = jolokiaMBeanServerConnection.invoke(new ObjectName(JOLOKIA_IT_OPERATION), "returnParamLength", new Object[]{longParameter}, new String[]{String.class.getName()});
+		assertThat(res).isEqualTo(longParameter.length());
+	}
+	
+	@Test
+	@Ignore("Conversion of invocation return type not supported for specific case of overloaded methods")
 	public void testInvocationReturningTypeConvertedWithOverloadedMethodHavingSeveralMethodsWithSameArgumentNumber() throws Exception {
 		Object res = jolokiaMBeanServerConnection.invoke(new ObjectName(JOLOKIA_IT_OPERATION), "overloadedMethod", new Object[]{"dummy"}, new String[]{String.class.getName()});
 		assertThat(res).isEqualTo(1);
