@@ -18,7 +18,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.CharBuffer;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Set;
 
@@ -35,22 +34,12 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
 public class JolokiaMBeanServerConnectionInvocationTest extends JolokiaTestEnvironmentSetup {
 	
 	private static final String JOLOKIA_IT_OPERATION = JOLOKIA_IT_DOMAIN+":type=operation";
 	private JolokiaMBeanServerConnection jolokiaMBeanServerConnection;
-	
-	@Parameter
-	public String requestType;
-	
-	@Parameters(name = "{0}")
-	public static Iterable<? extends Object> data() {
-	    return Arrays.asList("GET", "POST");
-	}
 	
 	@Before
 	public void setup(){

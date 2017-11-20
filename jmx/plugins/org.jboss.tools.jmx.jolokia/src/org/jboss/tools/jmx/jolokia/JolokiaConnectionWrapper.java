@@ -18,8 +18,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -310,7 +308,7 @@ public class JolokiaConnectionWrapper implements IConnectionWrapper, IAdaptable 
 		J4pClient j4pClient = createJ4pClient();
 		try {
 			J4pReadRequest req = new J4pReadRequest("java.lang:type=Memory", "HeapMemoryUsage");
-			J4pReadResponse resp = j4pClient.execute(req);
+			J4pReadResponse resp = j4pClient.execute(req, type);
 			Map<String, String> vals = resp.getValue();
 			Object used = vals.get("used");
 			Object max = vals.get("max");
