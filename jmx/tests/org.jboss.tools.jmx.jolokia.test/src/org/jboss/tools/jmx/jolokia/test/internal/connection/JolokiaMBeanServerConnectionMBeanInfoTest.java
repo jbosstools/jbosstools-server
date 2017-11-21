@@ -15,22 +15,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import javax.management.MBeanInfo;
 import javax.management.ObjectName;
 
-import org.jboss.tools.jmx.jolokia.internal.connection.JolokiaMBeanServerConnection;
 import org.jboss.tools.jmx.jolokia.test.util.JolokiaTestEnvironmentSetup;
 import org.jboss.tools.jmx.jolokia.test.util.OperationChecking;
 import org.jboss.tools.jmx.jolokia.test.util.OperationCheckingMBean;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
+@RunWith(Parameterized.class)
 public class JolokiaMBeanServerConnectionMBeanInfoTest extends JolokiaTestEnvironmentSetup {
 	
-	private JolokiaMBeanServerConnection jolokiaMBeanServerConnection;
-
-	@Before
-	public void setup(){
-		jolokiaMBeanServerConnection = new JolokiaMBeanServerConnection(j4pClient, null);
-	}
-
 	@Test
 	public void testClassNameAvailable() throws Exception {
 		MBeanInfo res = jolokiaMBeanServerConnection.getMBeanInfo(new ObjectName(JOLOKIA_IT_DOMAIN+":type=operation"));

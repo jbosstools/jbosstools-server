@@ -16,24 +16,24 @@ import java.util.Date;
 
 import javax.management.Attribute;
 import javax.management.AttributeList;
-import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
-import org.jboss.tools.jmx.jolokia.internal.connection.JolokiaMBeanServerConnection;
 import org.jboss.tools.jmx.jolokia.test.util.JolokiaTestEnvironmentSetup;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
+@RunWith(Parameterized.class)
 public class JolokiaMBeanServerGetAttributeWithConvertedTypeTest extends JolokiaTestEnvironmentSetup {
 
 	private static final String JOLOKIA_IT_OBJECTNAME_OPERATION = JOLOKIA_IT_DOMAIN+":type=attributetest";
 	
-	private JolokiaMBeanServerConnection jolokiaMBeanServerConnection;
 	private ObjectName objectWithAttributes;
 
 	@Before
-	public void setup() throws MalformedObjectNameException {
-		jolokiaMBeanServerConnection = new JolokiaMBeanServerConnection(j4pClient, null);
+	public void setup() throws Exception {
+		super.setup();
 		objectWithAttributes = new ObjectName(JOLOKIA_IT_OBJECTNAME_OPERATION);
 	}
 	

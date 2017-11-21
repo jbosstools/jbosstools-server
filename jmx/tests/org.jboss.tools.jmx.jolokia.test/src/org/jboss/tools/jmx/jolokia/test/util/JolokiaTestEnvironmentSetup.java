@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,13 +31,17 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.security.Constraint;
+import org.jboss.tools.jmx.jolokia.internal.connection.JolokiaMBeanServerConnection;
 import org.jboss.tools.jmx.jolokia.test.JolokiaTestPlugin;
 import org.jolokia.client.BasicAuthenticator;
 import org.jolokia.client.J4pClient;
 import org.jolokia.http.AgentServlet;
 import org.jolokia.jmx.JolokiaMBeanServerUtil;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
 
 public class JolokiaTestEnvironmentSetup {
 
@@ -45,6 +50,20 @@ public class JolokiaTestEnvironmentSetup {
 	private static Server jettyServer;
 	protected static J4pClient j4pClient;
 	private static Set<ObjectName> registeredMBeans = new HashSet<>();
+	protected JolokiaMBeanServerConnection jolokiaMBeanServerConnection;
+	
+	@Parameter
+	public String requestType;
+	
+	@Parameters(name = "{0}")
+	public static Iterable<? extends Object> data() {
+	    return Arrays.asList("GET", "POST");
+	}
+
+	@Before
+	public void setup() throws Exception {
+		jolokiaMBeanServerConnection = new JolokiaMBeanServerConnection(j4pClient, requestType);
+	}
 	
 	@BeforeClass
 	public static void start() throws Exception{

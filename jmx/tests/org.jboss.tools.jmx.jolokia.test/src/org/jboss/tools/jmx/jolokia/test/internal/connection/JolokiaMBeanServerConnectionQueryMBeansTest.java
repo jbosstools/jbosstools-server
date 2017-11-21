@@ -17,22 +17,16 @@ import java.util.Set;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 
-import org.jboss.tools.jmx.jolokia.internal.connection.JolokiaMBeanServerConnection;
 import org.jboss.tools.jmx.jolokia.test.util.AttributeChecking;
 import org.jboss.tools.jmx.jolokia.test.util.JolokiaTestEnvironmentSetup;
 import org.jboss.tools.jmx.jolokia.test.util.OperationChecking;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
+@RunWith(Parameterized.class)
 public class JolokiaMBeanServerConnectionQueryMBeansTest extends JolokiaTestEnvironmentSetup {
 	
-	private JolokiaMBeanServerConnection jolokiaMBeanServerConnection;
-
-	@Before
-	public void setup(){
-		jolokiaMBeanServerConnection = new JolokiaMBeanServerConnection(j4pClient, null);
-	}
-
 	@Test
 	public void testQueryWithFullySpecifiedName() throws Exception {
 		ObjectName javaLangMemoryObjectName = new ObjectName("java.lang:type=Memory");

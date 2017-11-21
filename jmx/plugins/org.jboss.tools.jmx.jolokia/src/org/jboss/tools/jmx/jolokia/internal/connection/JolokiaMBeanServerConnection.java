@@ -158,7 +158,7 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 			MBeanException, ReflectionException, IOException {
 		J4pWriteRequest req = new J4pWriteRequest(name, attribute.getName(), converter.getJson(attribute.getValue()));
 		try {
-			J4pResponse<J4pWriteRequest> r = j4pClient.execute(req);  // TODO type??? GET or POST,  API missing?
+			J4pResponse<J4pWriteRequest> r = j4pClient.execute(req, type);
 			Object o = r.asJSONObject().get("status");
 			if( o == null ) {
 				// We don't know what happened
@@ -205,7 +205,7 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 		J4pReadRequest req = new J4pReadRequest(name, attributeNames);
 		Object response = null;
 		try {
-			response = j4pClient.execute(req); // TODO type??? GET or POST,  API missing?
+			response = j4pClient.execute(req, type);
 		} catch (J4pException e) {
 			throw new IOException(e);
 		}
@@ -325,7 +325,7 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 		Set<ObjectInstance> res = new HashSet<>();
 		try {
 			J4pSearchRequest req = new J4pSearchRequest(name.getCanonicalName());
-			J4pResponse<J4pSearchRequest> j4pResponse = j4pClient.execute(req);
+			J4pResponse<J4pSearchRequest> j4pResponse = j4pClient.execute(req, type);
 			Object value = j4pResponse.getValue();
 			if(value instanceof JSONArray){
 				for (Object mbean : (JSONArray)value) {
@@ -354,7 +354,7 @@ public class JolokiaMBeanServerConnection implements MBeanServerConnection {
 		String escapedCanonicalPropertyList = objectName.getCanonicalKeyPropertyListString().replaceAll("/", "!/");
 		J4pListRequest listAttributes = new J4pListRequest(objectName.getDomain()+"/"+escapedCanonicalPropertyList+"/class");
 		try {
-			J4pResponse<J4pListRequest> listAttributesResponse = j4pClient.execute(listAttributes);
+			J4pResponse<J4pListRequest> listAttributesResponse = j4pClient.execute(listAttributes, type);
 			return listAttributesResponse.getValue();
 		} catch (J4pException e) {
 			Activator.pluginLog().logError(e);

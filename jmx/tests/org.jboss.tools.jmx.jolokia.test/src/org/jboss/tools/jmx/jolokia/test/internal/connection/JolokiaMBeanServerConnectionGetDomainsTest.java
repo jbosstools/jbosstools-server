@@ -12,20 +12,14 @@ package org.jboss.tools.jmx.jolokia.test.internal.connection;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.jboss.tools.jmx.jolokia.internal.connection.JolokiaMBeanServerConnection;
 import org.jboss.tools.jmx.jolokia.test.util.JolokiaTestEnvironmentSetup;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
+@RunWith(Parameterized.class)
 public class JolokiaMBeanServerConnectionGetDomainsTest extends JolokiaTestEnvironmentSetup {
 	
-	private JolokiaMBeanServerConnection jolokiaMBeanServerConnection;
-
-	@Before
-	public void setup(){
-		jolokiaMBeanServerConnection = new JolokiaMBeanServerConnection(j4pClient, null);
-	}
-
 	@Test
 	public void testGetDomains() throws Exception {
 		String[] res = jolokiaMBeanServerConnection.getDomains();
