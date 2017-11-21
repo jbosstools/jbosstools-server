@@ -184,6 +184,22 @@
 		</pollerHandler>
 	</extension>
 
+
+
+
+	<extension point="org.eclipse.ui.actionSets">
+		<actionSet description="%actionSets.serverActions.description"
+			id="org.jboss.tools.jst.web.ui.server.actionSet" label="%actionSets.serverActions.label"
+			visible="true">
+			<action
+				class="org.jboss.ide.eclipse.as.ui.actions.SelectServerActionDelegate"
+				icon="$nl$/icons/actions/xpl/server.gif"
+				id="org.jboss.tools.jst.web.ui.action.server.SelectServerActionDelegate"
+				label="label1" style="pulldown" toolbarPath="Normal/SelectServer"
+				tooltip="%actionSets.serverActions.selectServer.label">
+			</action>
+		</actionSet>
+	</extension>
 	<extension point="org.jboss.ide.eclipse.as.ui.ServerEditorPortSection">
 		<!-- deploy only server -->
 		<section
