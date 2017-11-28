@@ -462,8 +462,10 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 			return ret;
 		}
 		if( PublishControllerUtil.INCREMENTAL_PUBLISH == publishType) {
+			boolean requiresRestart2 = getModuleRestartBehaviorController().moduleRequiresRestart(module, delta);
 			IStatus ms = runner.publishModuleIncremental(monitor);
 			int ret = ms.isOK() ? IServer.PUBLISH_STATE_NONE : IServer.PUBLISH_STATE_FULL;
+			this.requiresRestart.put(module, requiresRestart2);
 			markModulePublished(module, PublishControllerUtil.INCREMENTAL_PUBLISH, ms, true);
 			return ret;
 		} else if( PublishControllerUtil.FULL_PUBLISH == publishType) {
