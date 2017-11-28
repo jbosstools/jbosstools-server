@@ -44,6 +44,9 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(value = Parameterized.class)
 public class SingleDeployableFileTest extends AbstractPublishingTest {
 	public static final String PROJECT_ROOT_NAME = "SingleDeployableTest";
+	private static final String FILENAME_XML = "test.xml"; 
+	private static final String FILENAME_JAR = "test.jar"; 
+	
 	public static int count = 0;
 	
 	
@@ -51,18 +54,22 @@ public class SingleDeployableFileTest extends AbstractPublishingTest {
 	public static Collection<Object[]> params() {
 		Object[] servers = ServerParameterUtils.getPublishServerTypes();
 		Object[] zipOption = ServerParameterUtils.getServerZipOptions();
+		Object[] filenames = new String[] { FILENAME_XML, FILENAME_JAR };
 		Object[][] allOptions = new Object[][] {
-				servers, zipOption, new Object[]{ServerParameterUtils.DEPLOY_META}, new Object[]{ServerParameterUtils.DEPLOY_PERMOD_DEFAULT}
+				servers, zipOption, new Object[]{ServerParameterUtils.DEPLOY_META}, 
+				new Object[]{ServerParameterUtils.DEPLOY_PERMOD_DEFAULT}, filenames
 		};
 		ArrayList<Object[]> ret = MatrixUtils.toMatrix(allOptions);
 		return ret;
 	}
 	
 	private String projectName;
+	private String filename;
 
 	public SingleDeployableFileTest(String serverType, String zip,
-			String deployLoc, String perMod) {
+			String deployLoc, String perMod, String filename) {
 		super(serverType, zip, deployLoc, perMod);
+		this.filename = filename;
 	}
 	
 	@Override
@@ -74,7 +81,6 @@ public class SingleDeployableFileTest extends AbstractPublishingTest {
 		OperationTestCase.runAndVerify(dm);
 		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		assertTrue(p.exists());
-		final String filename = "test.xml";
 		IResource file = ResourceUtils.createFile(p, filename, "<test>done</test>");
 		IModule[] mods = SingleDeployableFactory.getFactory().getModules();
 		assertEquals(mods.length, 0);
@@ -141,21 +147,23 @@ public class SingleDeployableFileTest extends AbstractPublishingTest {
 		publishAndCheckError(server,publishType);
 		
 		boolean isFullPublish = publishType == IServer.PUBLISH_FULL;
-		int[] vals = isFullPublish ? new int[] { 2,0} : new int[] {2,0};
+		int[] vals = new int[] {2,0};
 		// binary modules are always full publish really
-		vals[0] += getFullPublishChangedResourceCountModifier();
-		vals[1] += getFullPublishRemovedResourceCountModifier();
+		if( isFullPublish || filename.equals(FILENAME_JAR)) {
+			vals[0] += getFullPublishChangedResourceCountModifier();
+			vals[1] += getFullPublishRemovedResourceCountModifier();
+		}
 		verifyPublishMethodResults(vals[0], vals[1]);
 	}
 	
 	
 	private void setContentsAndWait(IProject p, String contents) throws IOException, CoreException {
 		/* Add incremental */
-		TestResourceChangeListener listener = new TestResourceChangeListener("test.xml");
+		TestResourceChangeListener listener = new TestResourceChangeListener(filename);
 		System.out.println("Adding Listener");
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(listener, IResourceChangeEvent.POST_CHANGE);
 		System.out.println("Setting contents to " + contents);
-		ResourceUtils.setContents(p, new Path("test.xml"), contents);
+		ResourceUtils.setContents(p, new Path(filename), contents);
 		long t = System.currentTimeMillis();
 		System.out.println("Waiting for listener to get event: ");
 		while( !listener.isFound() && System.currentTimeMillis() < (t + 10000)) {
