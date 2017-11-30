@@ -94,7 +94,7 @@ public class AllSubsystemResolutionTest extends TestCase {
 		return subsystems;
 	}
 	
-	@Parameters
+	@Parameters(name = "{0}, {1}, {2}")
 	public static Collection<Object[]> data() {
 		String[] allServers = ServerParameterUtils.getAllJBossServerTypeParameters();
 		String[] jbossServers = ServerParameterUtils.getJBossServerTypeParameters();

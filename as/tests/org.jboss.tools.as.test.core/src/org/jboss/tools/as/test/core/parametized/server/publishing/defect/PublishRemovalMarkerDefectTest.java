@@ -48,7 +48,7 @@ import org.junit.runners.Parameterized.Parameters;
  */
 @RunWith(value = Parameterized.class)
 public class PublishRemovalMarkerDefectTest extends AbstractPublishingTest {
-	@Parameters
+	@Parameters(name = "{0}, {1}, {2}, {3}")
 	public static Collection<Object[]> params() {
 		Object[] servers = new String[] {  IJBossToolingConstants.SERVER_AS_71 };
 		Object[] zipOption = ServerParameterUtils.getServerZipOptions();

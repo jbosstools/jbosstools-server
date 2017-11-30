@@ -21,7 +21,7 @@ import org.osgi.util.tracker.ServiceTracker;
 @RunWith(value = Parameterized.class)
 public class AS7ManagementServicePreReqTest extends Assert {
 
-	@Parameters
+	@Parameters(name = "{0}")
 	public static Collection<Object[]> data() {
 		ArrayList<Object[]> l = MatrixUtils.toMatrix(new Object[][]{
 			ParameterUtils.getServerHomes()});

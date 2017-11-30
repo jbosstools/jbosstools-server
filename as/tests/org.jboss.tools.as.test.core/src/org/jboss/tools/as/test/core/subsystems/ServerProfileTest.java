@@ -53,7 +53,7 @@ import org.junit.runners.Parameterized.Parameters;
 public class ServerProfileTest extends TestCase {
 	private String serverType;
 	
-	@Parameters
+	@Parameters(name = "{0}")
 	public static Collection<Object[]> data() {
 		String[] allServers = ServerParameterUtils.getAllJBossServerTypeParameters();
 		return MatrixUtils.toMatrix(new Object[][]{allServers});

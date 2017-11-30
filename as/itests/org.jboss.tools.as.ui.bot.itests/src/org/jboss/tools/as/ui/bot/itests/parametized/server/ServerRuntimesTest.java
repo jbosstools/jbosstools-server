@@ -77,7 +77,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 @DisableSecureStorage
 public class ServerRuntimesTest {
 
-    @Parameters
+    @Parameters(name = "{0}, {1}")
     public static Collection<Object[]> data(){
     	String scope = System.getProperty(SuiteConstants.SYSPROP_KEY);
     	ArrayList<Object[]> ret = (ArrayList<Object[]>) ServerRuntimeUIConstants.getParametersForScope(scope);

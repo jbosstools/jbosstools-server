@@ -46,7 +46,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(value = Parameterized.class)
 public class WebDeployableArtifactUtilDefectTest extends TestCase {
-	@Parameters
+	@Parameters(name = "{0}")
 	public static Collection<Object[]> data() {
 		ArrayList<Object[]> options = new ArrayList<Object[]>();
 		Collection<Object[]> all = ServerParameterUtils.asCollection(ServerParameterUtils.getAllJBossServerTypeParamterers());

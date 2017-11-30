@@ -53,7 +53,7 @@ import org.junit.runners.Parameterized.Parameters;
  */
 @RunWith(value = Parameterized.class)
 public class PerModuleZipTest extends AbstractPublishingTest {
-	@Parameters
+	@Parameters(name = "{0}, {1}")
 	public static Collection<Object[]> params() {
 		Object[] zipDefault = new String[]{ServerParameterUtils.UNZIPPED, ServerParameterUtils.ZIPPED};
 		Object[] zipModule = new String[]{ServerParameterUtils.UNZIPPED, ServerParameterUtils.ZIPPED, ServerParameterUtils.ZIP_OPTION_UNSET};

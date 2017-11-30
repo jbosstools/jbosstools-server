@@ -43,7 +43,7 @@ import org.junit.runners.Parameterized.Parameters;
 public class RuntimeJarUtilityTest extends TestCase {
 	private String serverType;
 	private IServer server;
-	@Parameters
+	@Parameters(name = "{0}")
 	public static Collection<Object[]> data() {
 		 return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerTypeParameters());
 	}

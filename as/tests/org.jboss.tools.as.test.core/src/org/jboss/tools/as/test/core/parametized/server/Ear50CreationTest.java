@@ -39,7 +39,7 @@ public class Ear50CreationTest extends Assert {
 	private static String PROJECT_PREFIX = "a1Ear";
 	private static int PROJECT_ID = 1;
 
-	 @Parameters
+	 @Parameters(name = "{0}")
 	 public static Collection<Object[]> data() {
 		 return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerTypeParamterers());
 	 }

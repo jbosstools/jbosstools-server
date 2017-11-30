@@ -31,7 +31,7 @@ public class ServerHomeTest extends Assert {
 	 public ServerHomeTest(String serverType) {
 		 this.serverType = serverType;
 	 }
-	 @Parameters
+	 @Parameters(name = "{0}")
 	 public static Collection<Object[]> data() {
 		 return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerTypeParamterers());
 	 }

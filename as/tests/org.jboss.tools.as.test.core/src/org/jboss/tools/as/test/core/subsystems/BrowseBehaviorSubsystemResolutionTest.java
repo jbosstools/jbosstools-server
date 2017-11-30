@@ -41,7 +41,7 @@ public class BrowseBehaviorSubsystemResolutionTest extends TestCase {
 	private String serverType;
 	private String mode;
 	private IServer server;
-	@Parameters
+	@Parameters(name = "{0}, {1}")
 	public static Collection<Object[]> data() {
 		String[] servers = ServerParameterUtils.getAllJBossServerTypeParameters();
 		String[] modes = new String[]{"local", "rse", null};

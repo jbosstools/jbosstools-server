@@ -49,7 +49,7 @@ import org.junit.runners.Parameterized.Parameters;
  */
 @RunWith(value = Parameterized.class)
 public class UnchangedUtilRestartedDefectTest extends AbstractPublishingTest {
-	@Parameters
+	@Parameters(name = "{0}, {1}, {2}, {3}")
 	public static Collection<Object[]> params() {
 		Object[] servers = new String[] {  IJBossToolingConstants.SERVER_AS_71 };
 		Object[] zipOption = new String[]{ServerParameterUtils.UNZIPPED};
