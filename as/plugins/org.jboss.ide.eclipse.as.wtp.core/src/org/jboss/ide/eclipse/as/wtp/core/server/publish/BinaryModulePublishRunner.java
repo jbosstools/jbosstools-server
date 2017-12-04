@@ -94,6 +94,7 @@ public class BinaryModulePublishRunner {
 			ms.add(s);
 		}
 		return ms;
+		
 	}
 	/*
 	 * Use the delta because the module is gone and has no members
@@ -130,18 +131,19 @@ public class BinaryModulePublishRunner {
 		}
 		return ms;
 	}
+
 	public void publishModuleIncremental(IModuleResourceDelta[] delta, MultiStatus ms, IProgressMonitor monitor) throws CoreException {
 		SubMonitor sub = SubMonitor.convert(monitor, delta.length);
 		for( int i = 0; i < delta.length; i++ ) {
 			int kind = delta[i].getKind();
 			IModuleResource mr = delta[i].getModuleResource();
-			if( kind == IModuleResourceDelta.REMOVED) {
-				removeMembers(new IModuleResource[] {mr}, ms, sub.split(1));
-			} else if( kind == IModuleResourceDelta.CHANGED || kind == IModuleResourceDelta.ADDED) {
-				if( mr instanceof IModuleFolder ) {
-					IModuleResourceDelta[] children = delta[i].getAffectedChildren();
-					publishModuleIncremental(children, ms, sub.split(1));
-				} else {
+			if (mr instanceof IModuleFolder) {
+				IModuleResourceDelta[] children = delta[i].getAffectedChildren();
+				publishModuleIncremental(children, ms, sub.split(1));
+			} else {
+				if (kind == IModuleResourceDelta.REMOVED) {
+					removeMembers(new IModuleResource[] { mr }, ms, monitor);
+				} else if (kind == IModuleResourceDelta.CHANGED || kind == IModuleResourceDelta.ADDED) {
 					copyOneResource(mr, ms, sub.split(1));
 				}
 			}
