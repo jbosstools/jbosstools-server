@@ -39,7 +39,7 @@ import org.osgi.framework.Version;
  */
 @RunWith(value = Parameterized.class)
 public class ServerBeanRuntimeMatcherTest extends TestCase {
-	@Parameters
+	@Parameters(name = "{0}")
 	 public static Collection<Object[]> data() {
 		 return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerTypeParametersPlusAdditionalMocks());
 	 }

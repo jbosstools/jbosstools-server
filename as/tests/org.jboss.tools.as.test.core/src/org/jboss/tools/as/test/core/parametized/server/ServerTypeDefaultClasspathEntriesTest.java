@@ -34,7 +34,7 @@ public class ServerTypeDefaultClasspathEntriesTest extends Assert {
 	 public ServerTypeDefaultClasspathEntriesTest(String serverType) {
 		 this.serverType = serverType;
 	 }
-	 @Parameters
+	 @Parameters(name = "{0}")
 	 public static Collection<Object[]> data() {
 		 return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerTypeParamterers());
 	 }

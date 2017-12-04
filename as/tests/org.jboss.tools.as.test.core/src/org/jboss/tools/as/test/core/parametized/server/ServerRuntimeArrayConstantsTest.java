@@ -32,7 +32,7 @@ public class ServerRuntimeArrayConstantsTest extends Assert {
 	 public ServerRuntimeArrayConstantsTest(String typeId) {
 		 this.typeId = typeId;
 	 }
-	 @Parameters
+	 @Parameters(name = "{0}")
 	 public static Collection<Object[]> data() {
 		 IServerType[] servers = ServerCore.getServerTypes();
 		 IRuntimeType[] rtTypes = ServerCore.getRuntimeTypes();

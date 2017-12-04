@@ -58,7 +58,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(value = Parameterized.class)
 public class ProjectRuntimeClasspathTest extends TestCase {
-	@Parameters
+	@Parameters(name = "{0}")
 	 public static Collection<Object[]> data() {
 		 return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerTypeParamterers());
 	 }

@@ -47,7 +47,7 @@ import org.junit.runners.Parameterized.Parameters;
 public class SarModuleTest extends TestCase {
 	private String serverType;
 	private IServer server;
-	@Parameters
+	@Parameters(name = "{0}")
 	public static Collection<Object[]> data() {
 		ArrayList<Object> list = new ArrayList<Object>();
 		list.addAll(Arrays.asList(ServerParameterUtils.getAllJBossServerTypeParamterers()));

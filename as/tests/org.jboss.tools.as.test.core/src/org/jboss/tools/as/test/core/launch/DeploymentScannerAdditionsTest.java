@@ -56,7 +56,7 @@ public class DeploymentScannerAdditionsTest extends TestCase  {
 	
 	private String serverType;
 	
-	@Parameters
+	@Parameters(name = "{0}")
 	public static Collection<Object[]> data() {
 		 return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerTypeParameters());
 	}

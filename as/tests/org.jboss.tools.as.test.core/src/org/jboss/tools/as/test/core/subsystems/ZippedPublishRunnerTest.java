@@ -62,7 +62,7 @@ public class ZippedPublishRunnerTest extends TestCase {
 	
 	private String serverType;
 	private IServer server;
-	@Parameters
+	@Parameters(name = "{0}")
 	public static Collection<Object[]> data() {
 		 return ServerParameterUtils.asCollection(new Object[]{IJBossToolingConstants.DEPLOY_ONLY_SERVER});
 	}

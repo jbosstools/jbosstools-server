@@ -32,7 +32,7 @@ import org.osgi.framework.Version;
  */
 @RunWith(value = Parameterized.class)
 public class DownloadRuntimeMatcherTest extends TestCase {
-	@Parameters
+	@Parameters(name = "{0}")
 	 public static Collection<Object[]> data() {
 		 DownloadRuntime[] rts = RuntimeCoreActivator.getDefault().getDownloadRuntimeArray(new NullProgressMonitor());
 		 return ServerParameterUtils.asCollection(rts);

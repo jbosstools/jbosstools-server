@@ -33,7 +33,7 @@ import junit.framework.TestCase;
 @DisableSecureStorage
 public class RuntimeDetectionDuplicatesTest extends TestCase {
 
-    @Parameters
+    @Parameters(name = "{0}")
     public static Collection<Object[]> data(){
     	String[] homes = PomServerConstants.getJBossHomeFlags();
     	return MatrixUtils.toMatrix(new Object[][]{homes});

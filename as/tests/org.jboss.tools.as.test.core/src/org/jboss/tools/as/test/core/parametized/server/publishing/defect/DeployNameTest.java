@@ -49,7 +49,7 @@ import org.junit.runners.Parameterized.Parameters;
  */
 @RunWith(value = Parameterized.class)
 public class DeployNameTest extends AbstractPublishingTest {
-	@Parameters
+	@Parameters(name = "{0}")
 	public static Collection<Object[]> params() {
 		Object[] zipOption = new String[]{ServerParameterUtils.UNZIPPED, ServerParameterUtils.ZIPPED};
 		Object[][] allOptions = new Object[][] {zipOption};

@@ -53,7 +53,7 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(value = Parameterized.class)
 public class PublishRunnerTest extends TestCase {
 	
-	@Parameters
+	@Parameters(name = "{0}")
 	public static Collection<Object[]> params() {
 		ArrayList<Object[]> ret = new ArrayList<Object[]>();
 		ret.add(new Object[]{"C:\\some\\folder", new Character('\\')});

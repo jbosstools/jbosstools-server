@@ -39,7 +39,7 @@ public class TabGroupSubsystemResolutionTest extends TestCase {
 	private String serverType;
 	private String mode;
 	private IServer server;
-	@Parameters
+	@Parameters(name = "{0}, {1}")
 	public static Collection<Object[]> data() {
 		String[] servers = ServerParameterUtils.getJBossServerTypeParameters();
 		String[] modes = new String[]{"local", "rse", null};
