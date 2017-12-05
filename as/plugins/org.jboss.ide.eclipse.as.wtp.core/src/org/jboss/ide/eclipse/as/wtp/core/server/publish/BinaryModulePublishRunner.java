@@ -137,14 +137,22 @@ public class BinaryModulePublishRunner {
 		for( int i = 0; i < delta.length; i++ ) {
 			int kind = delta[i].getKind();
 			IModuleResource mr = delta[i].getModuleResource();
-			if (mr instanceof IModuleFolder) {
-				IModuleResourceDelta[] children = delta[i].getAffectedChildren();
-				publishModuleIncremental(children, ms, sub.split(1));
-			} else {
+			
+			// Handle the case of a file
+			if (mr instanceof IModuleFile) {
 				if (kind == IModuleResourceDelta.REMOVED) {
-					removeMembers(new IModuleResource[] { mr }, ms, monitor);
+					removeMembers(new IModuleResource[] { mr }, ms, sub.split(1));
 				} else if (kind == IModuleResourceDelta.CHANGED || kind == IModuleResourceDelta.ADDED) {
 					copyOneResource(mr, ms, sub.split(1));
+				}
+			} else {
+				IModuleResourceDelta[] children = delta[i].getAffectedChildren();
+				SubMonitor folderMonitor = SubMonitor.convert(sub.split(1), 2);
+				// Handle children first. They will also make parent dir if required
+				publishModuleIncremental(children, ms, folderMonitor.split(1));
+				if (kind == IModuleResourceDelta.REMOVED) {
+					// Remove the empty folder if requested
+					removeMembers(new IModuleResource[] { mr }, ms, folderMonitor.split(1));
 				}
 			}
 		}
