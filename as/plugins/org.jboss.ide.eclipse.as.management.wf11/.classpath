@@ -9,9 +9,9 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="lib/jboss-remoting-5.0.5.Final.jar"/>
-	<classpathentry kind="lib" path="lib/wildfly-controller-client-3.0.8.Final.jar"/>
-	<classpathentry kind="lib" path="lib/wildfly-elytron-1.1.6.Final.jar"/>
-	<classpathentry kind="lib" path="lib/wildfly-protocol-3.0.8.Final.jar"/>
+	<classpathentry kind="lib" path="lib/wildfly-controller-client-3.0.10.Final.jar"/>
+	<classpathentry kind="lib" path="lib/wildfly-elytron-1.1.7.Final.jar"/>
+	<classpathentry kind="lib" path="lib/wildfly-protocol-3.0.10.Final.jar"/>
 	<classpathentry kind="lib" path="lib/xnio-api-3.5.4.Final.jar"/>
 	<classpathentry kind="lib" path="lib/xnio-nio-3.5.4.Final.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
