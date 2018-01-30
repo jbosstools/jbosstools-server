@@ -242,7 +242,23 @@ public abstract class RuntimeWizardFragment extends WizardFragment {
 		if (getRuntime(name) != null) {
 			return Messages.rwf_NameInUse;
 		}
+			
+		String execEnvError = getExecutionEnvironmentError();
+		if( execEnvError != null )
+			return execEnvError;
 
+		
+		if (name == null || name.equals("")) //$NON-NLS-1$
+			return Messages.rwf_nameTextBlank;
+
+		if( !homeDirComposite.isHomeValid() ) {
+			return Messages.rwf_jboss7homeNotValid;
+		}
+		
+		return null;
+	}
+	
+	protected String getExecutionEnvironmentError() {
 		if( jreComposite != null ) {
 			IExecutionEnvironment selectedEnv = jreComposite.getSelectedExecutionEnvironment();
 			IVMInstall install = jreComposite.getSelectedVM();
@@ -254,15 +270,20 @@ public abstract class RuntimeWizardFragment extends WizardFragment {
 					}
 				}
 			}
+			if( install != null && selectedEnv == null && !jreComposite.getValidJREs().contains(install)) {
+				if( jreComposite.getMaximumExecutionEnvironment() == null ) {
+					return NLS.bind(org.jboss.ide.eclipse.as.wtp.ui.Messages.rwf_incompatibleJRE, 
+							jreComposite.getMinimumExecutionEnvironment().getId());
+				}
+				if( jreComposite.getMinimumExecutionEnvironment().equals(jreComposite.getMaximumExecutionEnvironment() )) {
+					return NLS.bind(org.jboss.ide.eclipse.as.wtp.ui.Messages.rwf_incompatibleJREExact, 
+							jreComposite.getMinimumExecutionEnvironment().getId());
+				}
+				String minSafe = (jreComposite.getMinimumExecutionEnvironment() == null ? "null" : jreComposite.getMinimumExecutionEnvironment().getId());
+				String maxSafe = (jreComposite.getMaximumExecutionEnvironment() == null ? "null" : jreComposite.getMaximumExecutionEnvironment().getId());
+				return NLS.bind(org.jboss.ide.eclipse.as.wtp.ui.Messages.rwf_incompatibleJREMinMax, minSafe, maxSafe);
+			}
 		}
-			
-		if (name == null || name.equals("")) //$NON-NLS-1$
-			return Messages.rwf_nameTextBlank;
-
-		if( !homeDirComposite.isHomeValid() ) {
-			return Messages.rwf_jboss7homeNotValid;
-		}
-		
 		return null;
 	}
 	

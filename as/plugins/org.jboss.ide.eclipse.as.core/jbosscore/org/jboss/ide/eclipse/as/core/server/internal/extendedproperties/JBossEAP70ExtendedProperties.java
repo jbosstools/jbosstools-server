@@ -14,8 +14,9 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
+import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 
-public class JBossEAP70ExtendedProperties extends Wildfly90ExtendedProperties {
+public class JBossEAP70ExtendedProperties extends JBossAS710ExtendedProperties {
 	public JBossEAP70ExtendedProperties(IAdaptable obj) {
 		super(obj);
 	}
@@ -35,5 +36,28 @@ public class JBossEAP70ExtendedProperties extends Wildfly90ExtendedProperties {
 		if( server != null)
 			return new JBossEAP70DefaultLaunchArguments(server);
 		return new JBossEAP70DefaultLaunchArguments(runtime);
+	}
+
+	@Override
+	public String getJMXUrl() {
+			return getJMXUrl(9990, "service:jmx:remote+http"); //$NON-NLS-1$
+	}
+	
+	@Override
+	public boolean requiresJDK() {
+		return true;
+	}
+	@Override
+	public String getManagerServiceId() {
+		return IJBoss7ManagerService.WILDFLY_VERSION_900;
+	}
+	
+	@Override
+	public boolean allowExplodedModulesInWarLibs() {
+		return true;
+	}
+	
+	public boolean allowExplodedModulesInEars() {
+		return true;
 	}
 }
