@@ -321,11 +321,12 @@ public class JolokiaConnectionWrapper implements IConnectionWrapper, IAdaptable 
 		} catch (MalformedObjectNameException mone) {
 			throw new IOException(mone);
 		} catch (J4pRemoteException e) {
-			int statusCode = extractStatus(e.getResponse());
-			if( statusCode == -1 ) {
-				throw new IOException("Remote error. No status code could be discovered. (" + e.getLocalizedMessage() + ")", e);
+			int jsonStatus = extractJSONStatus(e.getResponse());
+			if( jsonStatus == -1 ) {
+				int httpStatus = e.getStatus();
+				throw new IOException("Remote error. No status code could be found in JSON response. HTTP Status Code = " + httpStatus + " (" + e.getLocalizedMessage() + ")", e);
 			} else {
-				throw new IOException("Remote error status=" + statusCode + " (" + e.getLocalizedMessage() + ")", e);
+				throw new IOException("Remote error. Status code in JSON = " + jsonStatus + " (" + e.getLocalizedMessage() + ")", e);
 			}
 		} catch (J4pException e) {
             throw new IOException(e);
@@ -341,7 +342,7 @@ public class JolokiaConnectionWrapper implements IConnectionWrapper, IAdaptable 
 	 * @param response the JSON response
 	 * @return the status code
 	 */
-	private int extractStatus(JSONObject response) {
+	private int extractJSONStatus(JSONObject response) {
         if( response == null )
         	return -1;
         int status = 500;
