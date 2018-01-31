@@ -57,6 +57,7 @@ public class Messages extends NLS {
 	public static String rwf_jboss7homeNotValid;
 	public static String rwf_homeIncorrectVersionError; 
 	public static String rwf_incompatibleJRE;
+	public static String rwf_incompatibleJREExact;
 	public static String rwf_incompatibleJREMinMax;
 
 	

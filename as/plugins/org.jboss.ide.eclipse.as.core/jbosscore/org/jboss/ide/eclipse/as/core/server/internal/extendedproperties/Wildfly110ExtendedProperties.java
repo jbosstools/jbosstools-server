@@ -11,9 +11,12 @@
 package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
+import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 
-public class Wildfly110ExtendedProperties extends Wildfly100ExtendedProperties {
+public class Wildfly110ExtendedProperties extends JBossAS710ExtendedProperties {
 	public Wildfly110ExtendedProperties(IAdaptable obj) {
 		super(obj);
 	}
@@ -27,4 +30,44 @@ public class Wildfly110ExtendedProperties extends Wildfly100ExtendedProperties {
 		return IJBoss7ManagerService.WILDFLY_VERSION_110;
 	}
 
+	@Override
+	public IExecutionEnvironment getDefaultExecutionEnvironment() {
+		return JavaRuntime.getExecutionEnvironmentsManager().getEnvironment("JavaSE-1.8"); //$NON-NLS-1$
+	}
+	
+	@Override
+	public IDefaultLaunchArguments getDefaultLaunchArguments() {
+		if( server != null)
+			return new Wildfly100DefaultLaunchArguments(server);
+		return new Wildfly100DefaultLaunchArguments(runtime);
+	}
+
+	@Override
+	public String getJMXUrl() {
+			return getJMXUrl(9990, "service:jmx:remote+http"); //$NON-NLS-1$
+	}
+
+	@Override
+	public boolean requiresJDK() {
+		return true;
+	}
+
+	@Override
+	public boolean allowExplodedModulesInWarLibs() {
+		return true;
+	}
+	
+	@Override
+	public boolean allowExplodedModulesInEars() {
+		return true;
+	}
+	
+
+	/**
+	 * Wildfly 11 appears to work through java 9 to varying degrees
+	 */
+	@Override
+	public IExecutionEnvironment getMaximumExecutionEnvironment() {
+		return null;
+	}
 }

@@ -242,20 +242,12 @@ public abstract class RuntimeWizardFragment extends WizardFragment {
 		if (getRuntime(name) != null) {
 			return Messages.rwf_NameInUse;
 		}
-
-		if( jreComposite != null ) {
-			IExecutionEnvironment selectedEnv = jreComposite.getSelectedExecutionEnvironment();
-			IVMInstall install = jreComposite.getSelectedVM();
-			if( install == null ) {
-				// user has selected an exec-env, not a vm
-				if( selectedEnv != null ) {
-					if( selectedEnv.getCompatibleVMs().length == 0 ) {
-						return NLS.bind(Messages.rwf_noValidJRE, selectedEnv.getId());
-					}
-				}
-			}
-		}
 			
+		String execEnvError = getExecutionEnvironmentError();
+		if( execEnvError != null )
+			return execEnvError;
+
+		
 		if (name == null || name.equals("")) //$NON-NLS-1$
 			return Messages.rwf_nameTextBlank;
 
@@ -263,6 +255,28 @@ public abstract class RuntimeWizardFragment extends WizardFragment {
 			return Messages.rwf_jboss7homeNotValid;
 		}
 		
+		return null;
+	}
+	
+	protected String getExecutionEnvironmentError() {
+		if( jreComposite != null ) {
+			String minSafe = (jreComposite.getMinimumExecutionEnvironment() == null ? "null" : jreComposite.getMinimumExecutionEnvironment().getId());
+			String maxSafe = (jreComposite.getMaximumExecutionEnvironment() == null ? "null" : jreComposite.getMaximumExecutionEnvironment().getId());
+			IExecutionEnvironment selectedEnv = jreComposite.getSelectedExecutionEnvironment();
+			IVMInstall install = jreComposite.getSelectedVM();
+			if( install == null && selectedEnv != null && selectedEnv.getCompatibleVMs().length == 0) {
+				// user has selected an exec-env, not a vm
+				return NLS.bind(Messages.rwf_noValidJRE, selectedEnv.getId());
+			}
+			if( install != null && selectedEnv == null && !jreComposite.getValidJREs().contains(install)) {
+				if( jreComposite.getMaximumExecutionEnvironment() == null ) {
+					return NLS.bind(org.jboss.ide.eclipse.as.wtp.ui.Messages.rwf_incompatibleJRE, minSafe);
+				} else 	if( jreComposite.getMaximumExecutionEnvironment().equals(jreComposite.getMinimumExecutionEnvironment() )) {
+					return NLS.bind(org.jboss.ide.eclipse.as.wtp.ui.Messages.rwf_incompatibleJREExact, minSafe);
+				}
+				return NLS.bind(org.jboss.ide.eclipse.as.wtp.ui.Messages.rwf_incompatibleJREMinMax, minSafe, maxSafe);
+			}
+		}
 		return null;
 	}
 	

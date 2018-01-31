@@ -13,8 +13,10 @@ package org.jboss.ide.eclipse.as.core.server.internal.extendedproperties;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
+import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
+import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 
-public class Wildfly90ExtendedProperties extends Wildfly80ExtendedProperties {
+public class Wildfly90ExtendedProperties extends JBossAS710ExtendedProperties {
 	public Wildfly90ExtendedProperties(IAdaptable obj) {
 		super(obj);
 	}
@@ -31,5 +33,31 @@ public class Wildfly90ExtendedProperties extends Wildfly80ExtendedProperties {
 	@Override
 	public IExecutionEnvironment getDefaultExecutionEnvironment() {
 		return JavaRuntime.getExecutionEnvironmentsManager().getEnvironment("JavaSE-1.8"); //$NON-NLS-1$
+	}
+
+	@Override
+	public IDefaultLaunchArguments getDefaultLaunchArguments() {
+		if( server != null)
+			return new Wildfly80DefaultLaunchArguments(server);
+		return new Wildfly80DefaultLaunchArguments(runtime);
+	}
+	
+	@Override
+	public boolean requiresJDK() {
+		return true;
+	}
+	@Override
+	public String getManagerServiceId() {
+		return IJBoss7ManagerService.WILDFLY_VERSION_900;
+	}
+	
+	@Override
+	public boolean allowExplodedModulesInWarLibs() {
+		return true;
+	}
+	
+	@Override
+	public boolean allowExplodedModulesInEars() {
+		return true;
 	}
 }

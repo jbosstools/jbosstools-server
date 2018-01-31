@@ -16,7 +16,7 @@ import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 
-public class JBossEAP71ExtendedProperties extends Wildfly90ExtendedProperties {
+public class JBossEAP71ExtendedProperties extends JBossAS710ExtendedProperties {
 	public JBossEAP71ExtendedProperties(IAdaptable obj) {
 		super(obj);
 	}
@@ -41,4 +41,30 @@ public class JBossEAP71ExtendedProperties extends Wildfly90ExtendedProperties {
 			return new Wildfly100DefaultLaunchArguments(server);
 		return new Wildfly100DefaultLaunchArguments(runtime);
 	}
+	@Override
+	public String getJMXUrl() {
+			return getJMXUrl(9990, "service:jmx:remote+http"); //$NON-NLS-1$
+	}
+	
+	@Override
+	public boolean requiresJDK() {
+		return true;
+	}
+	
+	@Override
+	public boolean allowExplodedModulesInWarLibs() {
+		return true;
+	}
+	@Override
+	public boolean allowExplodedModulesInEars() {
+		return true;
+	}
+	/**
+	 * EAP 7.1 appears to work through java 9 to varying degrees
+	 */
+	@Override
+	public IExecutionEnvironment getMaximumExecutionEnvironment() {
+		return null;
+	}
+
 }
