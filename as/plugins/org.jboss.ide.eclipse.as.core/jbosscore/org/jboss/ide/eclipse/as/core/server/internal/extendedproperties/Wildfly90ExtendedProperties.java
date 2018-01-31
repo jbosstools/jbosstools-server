@@ -56,6 +56,7 @@ public class Wildfly90ExtendedProperties extends JBossAS710ExtendedProperties {
 		return true;
 	}
 	
+	@Override
 	public boolean allowExplodedModulesInEars() {
 		return true;
 	}

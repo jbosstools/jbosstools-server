@@ -44,10 +44,12 @@ public class JBossEAP61ExtendedProperties extends JBossAS710ExtendedProperties {
 		return true;
 	}
 
+	@Override
 	public boolean requiresJDK() {
 		return true;
 	}
 	
+	@Override
 	public boolean allowExplodedModulesInEars() {
 		return allowExplodedModulesInWarLibs();
 	}

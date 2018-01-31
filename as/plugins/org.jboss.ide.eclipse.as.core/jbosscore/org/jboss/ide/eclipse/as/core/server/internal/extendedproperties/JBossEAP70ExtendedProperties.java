@@ -57,6 +57,7 @@ public class JBossEAP70ExtendedProperties extends JBossAS710ExtendedProperties {
 		return true;
 	}
 	
+	@Override
 	public boolean allowExplodedModulesInEars() {
 		return true;
 	}

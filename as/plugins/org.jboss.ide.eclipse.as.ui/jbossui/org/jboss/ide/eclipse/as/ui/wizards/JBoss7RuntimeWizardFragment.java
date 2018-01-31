@@ -18,7 +18,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.launching.IVMInstall;
-import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -337,10 +336,8 @@ public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 	@Override
 	protected String getExecutionEnvironmentError() {
 		String sup = super.getExecutionEnvironmentError();
-		if( sup == null ) {
-			if( jreComposite.getValidJREs().size() == 0 ) {
-				return NLS.bind(Messages.rwf_noValidJRE, getRuntime().getExecutionEnvironment().getId());
-			}
+		if( sup == null && jreComposite.getValidJREs().isEmpty() ) {
+			return NLS.bind(Messages.rwf_noValidJRE, getRuntime().getExecutionEnvironment().getId());
 		}
 		return sup;
 	}
