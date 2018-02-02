@@ -13,11 +13,6 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.hamcrest.Matcher;
-import org.jboss.ide.eclipse.as.reddeer.matcher.ServerConsoleContainsNoExceptionMatcher;
-import org.jboss.ide.eclipse.as.reddeer.server.editor.ServerModuleWebPageEditor;
-import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServer;
-import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServerModule;
 import org.eclipse.reddeer.common.exception.WaitTimeoutExpiredException;
 import org.eclipse.reddeer.common.logging.Logger;
 import org.eclipse.reddeer.common.wait.TimePeriod;
@@ -41,6 +36,11 @@ import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersViewEnums.ServerStat
 import org.eclipse.reddeer.eclipse.wst.server.ui.wizard.ModifyModulesDialog;
 import org.eclipse.reddeer.eclipse.wst.server.ui.wizard.ModifyModulesPage;
 import org.eclipse.reddeer.workbench.impl.editor.TextEditor;
+import org.hamcrest.Matcher;
+import org.jboss.ide.eclipse.as.reddeer.matcher.ServerConsoleContainsNoExceptionMatcher;
+import org.jboss.ide.eclipse.as.reddeer.server.editor.ServerModuleWebPageEditor;
+import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServer;
+import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServerModule;
 import org.jboss.tools.as.ui.bot.itests.Activator;
 import org.junit.Test;
 
@@ -83,7 +83,6 @@ public class DeployJSPProjectTemplate {
 		
 		openPropertyDialog(projectName, project, runtimeLabel);
 	}
-	
 	
 	protected void openPropertyDialog(String projectName, Project project, String runtimeLabel) {
 		try {
@@ -149,6 +148,7 @@ public class DeployJSPProjectTemplate {
 		log.step("Assert no error on Problems view");
 		ProblemsView problemsView = new ProblemsView();
 		problemsView.open();
+		log.step(problemsView.getProblems(ProblemType.ERROR).toString());
 		assertThat(problemsView.getProblems(ProblemType.ERROR).size(), is(0));
 	}
 
