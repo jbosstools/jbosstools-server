@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jboss.tools.jmx</groupId>
 		<artifactId>plugins</artifactId>
-		<version>1.10.2-SNAPSHOT</version>
+		<version>1.10.3-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jboss.tools.jmx.plugins</groupId>
 	<artifactId>org.jboss.tools.jmx.core</artifactId> 
