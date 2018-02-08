@@ -12,11 +12,11 @@ import org.eclipse.reddeer.common.logging.Logger;
 import org.eclipse.reddeer.common.wait.TimePeriod;
 import org.eclipse.reddeer.common.wait.WaitUntil;
 import org.eclipse.reddeer.common.wait.WaitWhile;
-import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
-import org.eclipse.reddeer.swt.condition.ShellIsAvailable;
 import org.eclipse.reddeer.jface.wizard.WizardDialog;
+import org.eclipse.reddeer.swt.condition.ShellIsAvailable;
 import org.eclipse.reddeer.swt.impl.button.PushButton;
 import org.eclipse.reddeer.swt.impl.shell.DefaultShell;
+import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
 import org.eclipse.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
 import org.jboss.tools.as.ui.bot.itests.parametized.CleanEnvironmentUtils;
 import org.jboss.tools.as.ui.bot.itests.reddeer.ui.RuntimeDetectionPreferencePage;
@@ -39,6 +39,7 @@ import org.jboss.tools.runtime.reddeer.wizard.TaskWizardThirdPage;
 public final class RuntimeDownloadTestUtility extends RuntimeDetectionUtility {
 	private static final String JBOSS_ORG_USERNAME_PROPERTY_KEY = "jboss.org.username";
 	private static final String JBOSS_ORG_PASSWORD_PROPERTY_KEY = "jboss.org.password";
+	private static final String CREDENTIAL_DOMAIN = "access.redhat.com";
 	
 	// UI elements
 	protected WizardDialog runtimeDownloadWizard;
@@ -114,7 +115,8 @@ public final class RuntimeDownloadTestUtility extends RuntimeDetectionUtility {
 
 	public void processInsertingCredentials(String username, String password) {
 		TaskWizardLoginPage credentialsPage = new TaskWizardLoginPage(runtimeDownloadWizard);
-		assertEquals("Domain is set to jboss.org", "jboss.org", credentialsPage.getDomain());
+		assertEquals("Domain is set to access.redhat.com", CREDENTIAL_DOMAIN, credentialsPage.getDomain());
+		credentialsPage.setDomain(CREDENTIAL_DOMAIN);
 
 		// username is not enabled -> we have to add credential
 		if (!credentialsPage.containsUsername(username)) {
