@@ -38,8 +38,8 @@ public class JBossEAP71ExtendedProperties extends JBossAS710ExtendedProperties {
 	@Override
 	public IDefaultLaunchArguments getDefaultLaunchArguments() {
 		if( server != null)
-			return new Wildfly100DefaultLaunchArguments(server);
-		return new Wildfly100DefaultLaunchArguments(runtime);
+			return new JBossEAP70DefaultLaunchArguments(server);
+		return new JBossEAP70DefaultLaunchArguments(runtime);
 	}
 	@Override
 	public String getJMXUrl() {

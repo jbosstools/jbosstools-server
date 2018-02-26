@@ -21,4 +21,9 @@ public class JBossEAP70DefaultLaunchArguments extends
 	public JBossEAP70DefaultLaunchArguments(IRuntime rt) {
 		super(rt);
 	}
+	
+	protected String getMemoryArgs() {
+		return "-Xms1303m -Xmx1303m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m "; //$NON-NLS-1$
+	}
+
 }
