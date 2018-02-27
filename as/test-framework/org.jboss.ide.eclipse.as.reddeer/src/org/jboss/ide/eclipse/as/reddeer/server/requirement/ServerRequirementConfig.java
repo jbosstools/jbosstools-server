@@ -14,6 +14,7 @@ public class ServerRequirementConfig implements RequirementConfiguration {
 	private String version;
 	private JBossFamily family;
 	private RemoteServerConfiguration remote;
+	private String runtimeEnvironment;
 	
 	
 	@Override
@@ -59,6 +60,15 @@ public class ServerRequirementConfig implements RequirementConfiguration {
 
 	public void setRemote(RemoteServerConfiguration remote) {
 		this.remote = remote;
+	}
+	
+	public String getRuntimeEnvironment() {
+		return runtimeEnvironment;
+	}
+
+
+	public void setRuntimeEnvironment(String runtimeEnv) {
+		this.runtimeEnvironment = runtimeEnv;
 	}
 
 
