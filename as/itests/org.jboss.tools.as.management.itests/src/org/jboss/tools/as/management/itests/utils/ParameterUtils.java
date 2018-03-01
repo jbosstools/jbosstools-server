@@ -76,6 +76,7 @@ public class ParameterUtils {
 		paths.add(JBOSS_WILDFLY_100_HOME);
 		paths.add(JBOSS_WILDFLY_101_HOME);
 		paths.add(JBOSS_WILDFLY_110_HOME);
+		paths.add(JBOSS_WILDFLY_120_HOME);
 		if( !skipReqs ) {
 			paths.add(JBOSS_EAP_60_HOME);
 			paths.add(JBOSS_EAP_61_HOME);
