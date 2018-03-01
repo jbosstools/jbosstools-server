@@ -420,14 +420,14 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
 
 							<execution>
-								<id>install-wildfly-12.0.0.CR1</id>
+								<id>install-wildfly-12.0.0.Final</id>
 								<phase>pre-integration-test</phase>
 								<goals>
 									<goal>wget</goal>
 								</goals>
 								<configuration>
-									<url>http://download.jboss.org/wildfly/12.0.0.CR1/wildfly-12.0.0.CR1.zip</url>
-									<md5>4460340e21aafea2d419580d9f25ccad</md5>
+									<url>http://download.jboss.org/wildfly/12.0.0.Final/wildfly-12.0.0.Final.zip</url>
+									<md5>923a9e286098ce094d0216b2d4f175e3</md5>
 									<unpack>true</unpack>
 									<skip>${skipTestsOrITests}</skip>
 								</configuration>
