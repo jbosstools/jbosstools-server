@@ -19,6 +19,7 @@ public class ParameterUtils {
 	public static final String JBOSS_WILDFLY_100_HOME = TestConstants.JBOSS_WF_100_HOME;
 	public static final String JBOSS_WILDFLY_101_HOME = TestConstants.JBOSS_WF_101_HOME;
 	public static final String JBOSS_WILDFLY_110_HOME = TestConstants.JBOSS_WF_110_HOME;
+	public static final String JBOSS_WILDFLY_120_HOME = TestConstants.JBOSS_WF_120_HOME;
 	public static final String JBOSS_EAP_60_HOME = TestConstants.JBOSS_EAP_60_HOME;
 	public static final String JBOSS_EAP_61_HOME = TestConstants.JBOSS_EAP_61_HOME;
 	public static final String JBOSS_EAP_62_HOME = TestConstants.JBOSS_EAP_62_HOME;
@@ -75,6 +76,7 @@ public class ParameterUtils {
 		paths.add(JBOSS_WILDFLY_100_HOME);
 		paths.add(JBOSS_WILDFLY_101_HOME);
 		paths.add(JBOSS_WILDFLY_110_HOME);
+		paths.add(JBOSS_WILDFLY_120_HOME);
 		if( !skipReqs ) {
 			paths.add(JBOSS_EAP_60_HOME);
 			paths.add(JBOSS_EAP_61_HOME);

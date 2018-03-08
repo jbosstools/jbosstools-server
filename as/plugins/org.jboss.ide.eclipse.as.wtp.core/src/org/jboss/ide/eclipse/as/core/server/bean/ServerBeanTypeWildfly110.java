@@ -47,7 +47,6 @@ public class ServerBeanTypeWildfly110 extends JBossServerType {
 		}
 		
 		public String getServerTypeId(String version) {	
-			// Just return adapter type wf8 until we discover incompatibility. 
 			return IJBossToolingConstants.SERVER_WILDFLY_110;
 		}
 	}

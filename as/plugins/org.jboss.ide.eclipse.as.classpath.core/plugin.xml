@@ -139,6 +139,12 @@
       <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossClasspathProviderAdapterFactory"/>
       <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
 	</adapter>
+	<adapter>
+      <runtime-component
+            id="org.jboss.ide.eclipse.as.runtime.wildfly.component" version="12.0"/>
+      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossClasspathProviderAdapterFactory"/>
+      <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
+	</adapter>
 	
      <adapter>
       <runtime-component

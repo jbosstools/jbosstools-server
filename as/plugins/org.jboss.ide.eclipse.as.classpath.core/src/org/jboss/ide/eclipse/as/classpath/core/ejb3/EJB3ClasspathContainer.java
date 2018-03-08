@@ -152,6 +152,7 @@ public class EJB3ClasspathContainer implements IClasspathContainer,
 			      case WILDFLY_90: 
 			      case WILDFLY_100: 
 			      case WILDFLY_110: 
+			      case WILDFLY_120: 
 			      case EAP_61: 
 			      case EAP_70: 
 			      case EAP_71: 
