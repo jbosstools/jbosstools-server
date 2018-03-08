@@ -59,7 +59,6 @@ public class ServerRequirement extends AbstractServerRequirement implements Conf
 			}	
 		}
 		setupServerState(server.state());
-		
 	}
 	
 	protected void setupLocalServerAdapter() {
@@ -122,9 +121,10 @@ public class ServerRequirement extends AbstractServerRequirement implements Conf
 		JBossRuntimeWizardPage rp = new JBossRuntimeWizardPage(wizard);
 		rp.setRuntimeName(getRuntimeName());
 		rp.setRuntimeDir(config.getRuntime());
-
+		if (config.getRuntimeEnvironment() != null && !config.getRuntimeEnvironment().isEmpty()) {
+			rp.setExecutionEnvironment(config.getRuntimeEnvironment());
+		}
 		rp.checkErrors();
-		
 	}
 
 	protected void setupRemoteSystem(){
