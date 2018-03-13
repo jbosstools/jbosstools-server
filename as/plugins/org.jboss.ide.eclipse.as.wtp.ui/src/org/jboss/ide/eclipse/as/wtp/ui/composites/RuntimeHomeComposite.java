@@ -28,6 +28,8 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
+import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
@@ -114,6 +116,19 @@ public class RuntimeHomeComposite extends Composite {
 		return r;
 	}
 	
+	protected IRuntimeType getRuntimeTypeFromTaskModel() {
+		IRuntime r = (IRuntime) tm.getObject(TaskModel.TASK_RUNTIME);
+		if( r != null )
+			return r.getRuntimeType();
+		IServer s = (IServer) tm.getObject(TaskModel.TASK_SERVER);
+		if( s != null ) {
+			IServerType st = s.getServerType();
+			if( st != null ) {
+				return st.getRuntimeType();
+			}
+		}
+		return null;
+	}
 	
 	protected void browseHomeDirClicked() {
 		File file = homeDir == null ? null : new File(homeDir);
