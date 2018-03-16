@@ -117,7 +117,7 @@ public abstract class AbstractStacksDownloadRuntimesProvider implements IDownloa
 		String name = workingRT.getName();
 		String version = workingRT.getVersion();
 		DownloadRuntime dr = new DownloadRuntime(effectiveId, name, version, dlUrl);
-		dr.setDisclaimer(!wtpRT.startsWith(IJBossToolingConstants.EAP_RUNTIME_PREFIX));
+		setDisclaimerData(dr, workingRT, wtpRT, category);
 		dr.setHumanUrl(workingRT.getUrl());
 		dr.setLicenseURL(license);
 		dr.setSize(fileSize);
@@ -133,6 +133,9 @@ public abstract class AbstractStacksDownloadRuntimesProvider implements IDownloa
 		return dr;
 	}
 	
+	protected void setDisclaimerData(DownloadRuntime dlrt, org.jboss.jdf.stacks.model.Runtime workingRT, String wtpRT, String category) {
+		dlrt.setDisclaimer(!wtpRT.startsWith(IJBossToolingConstants.EAP_RUNTIME_PREFIX));
+	}
 	
 	/**
 	 * The following supposes a yaml runtime that has no property "downloadURL", or
