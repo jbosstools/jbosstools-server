@@ -132,7 +132,7 @@ public abstract class DownloadRuntimeHyperlinkComposite extends Composite {
 							
 							// So the download job finished. Now we have to update the 
 							// server home with the newly unzipped path. 
-							final String unzipLoc = (String)wizard.getTaskModel().getObject(DownloadRuntimesTaskWizard.UNZIPPED_SERVER_HOME_DIRECTORY);
+							final String unzipLoc = getServerHomeFromTaskModel(wizard);
 							if( unzipLoc != null ) {
 								new Job("Update wizard buttons") {
 									protected IStatus run( IProgressMonitor monitor) {
@@ -156,11 +156,12 @@ public abstract class DownloadRuntimeHyperlinkComposite extends Composite {
 		}
 	}
 
+	protected String getServerHomeFromTaskModel(DownloadRuntimesTaskWizard taskWizard) {
+		return (String)taskWizard.getTaskModel().getObject(DownloadRuntimesTaskWizard.UNZIPPED_SERVER_HOME_DIRECTORY);
+	}
+	
 	protected abstract void postDownloadRuntimeUpdateWizard(String newHomeDir);
-//		if(!homeDirText.isDisposed()) 
-//			homeDirText.setText(newHomeDir);
-//		getWizardHandle().update();
-//	}
+
 	
 	private void fireInitialWidgetUpdates() {
 		new Job("Update Download Runtimes Hyperlink") {
