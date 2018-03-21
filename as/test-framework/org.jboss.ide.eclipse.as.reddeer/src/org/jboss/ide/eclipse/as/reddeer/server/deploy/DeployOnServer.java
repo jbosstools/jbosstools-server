@@ -15,8 +15,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServer;
-import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServerModule;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.reddeer.common.condition.AbstractWaitCondition;
 import org.eclipse.reddeer.common.exception.WaitTimeoutExpiredException;
 import org.eclipse.reddeer.common.logging.Logger;
@@ -24,14 +27,12 @@ import org.eclipse.reddeer.common.matcher.RegexMatcher;
 import org.eclipse.reddeer.common.wait.TimePeriod;
 import org.eclipse.reddeer.common.wait.WaitUntil;
 import org.eclipse.reddeer.common.wait.WaitWhile;
-import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
-import org.eclipse.reddeer.core.exception.CoreLayerException;
+import org.eclipse.reddeer.core.condition.WidgetIsFound;
 import org.eclipse.reddeer.core.matcher.TreeItemTextMatcher;
-import org.eclipse.reddeer.eclipse.condition.ConsoleHasNoChange;
+import org.eclipse.reddeer.eclipse.condition.ServerModuleHasState;
 import org.eclipse.reddeer.eclipse.core.resources.Project;
 import org.eclipse.reddeer.eclipse.exception.EclipseLayerException;
 import org.eclipse.reddeer.eclipse.ui.browser.BrowserEditor;
-import org.eclipse.reddeer.eclipse.ui.browser.WebBrowserView;
 import org.eclipse.reddeer.eclipse.ui.console.ConsoleView;
 import org.eclipse.reddeer.eclipse.ui.navigator.resources.ProjectExplorer;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ModuleLabel;
@@ -43,9 +44,19 @@ import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersViewEnums.ServerStat
 import org.eclipse.reddeer.eclipse.wst.server.ui.wizard.ModifyModulesDialog;
 import org.eclipse.reddeer.eclipse.wst.server.ui.wizard.ModifyModulesPage;
 import org.eclipse.reddeer.jface.wizard.WizardDialog;
+import org.eclipse.reddeer.swt.api.Browser;
+import org.eclipse.reddeer.swt.api.TreeItem;
+import org.eclipse.reddeer.swt.condition.PageIsLoaded;
+import org.eclipse.reddeer.swt.impl.browser.InternalBrowser;
 import org.eclipse.reddeer.swt.impl.menu.ContextMenuItem;
+import org.eclipse.reddeer.swt.impl.tree.DefaultTree;
 import org.eclipse.reddeer.swt.impl.tree.DefaultTreeItem;
+import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
+import org.eclipse.reddeer.workbench.core.exception.WorkbenchCoreLayerException;
+import org.eclipse.reddeer.workbench.exception.WorkbenchLayerException;
 import org.eclipse.reddeer.workbench.impl.editor.DefaultEditor;
+import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServer;
+import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServerModule;
 
 /**
  * 
@@ -77,7 +88,11 @@ public class DeployOnServer {
 	 *            name of server
 	 */
 	public void deployUndeployProjectToServer(String projectToDeploy, String serverName) {
-		new ConsoleView().clearConsole();
+		try {
+			new ConsoleView().clearConsole();
+		} catch (WorkbenchLayerException e) {
+			//swallow - console view is not opened
+		}
 
 		// deploy
 		deployProject(projectToDeploy, serverName);
@@ -122,7 +137,26 @@ public class DeployOnServer {
 		Project project = explorer.getProject(deployableProject);
 		project.select();
 		new ContextMenuItem("Run As", "1 Run on Server").select();
+		selectServer(serverName);
 		new WizardDialog("Run On Server").finish();
+	}
+	
+	private List<TreeItem> getServers() {
+		for(TreeItem ti : new DefaultTree().getItems()) {
+			if(ti.getCell(0).equals("localhost")) {
+				return ti.getItems();
+			}
+		}
+		return new ArrayList<TreeItem>();
+	}
+
+	private void selectServer(String server) {
+		for (TreeItem ti : getServers()) {
+			if(ti.getCell(0).equals(server)) {
+				ti.select();
+				break;
+			}
+		}
 	}
 
 	/**
@@ -174,12 +208,12 @@ public class DeployOnServer {
 				browser.close();
 				try {
 					browser = new BrowserEditor(new RegexMatcher(".*"));
-				} catch (CoreLayerException ex) {
+				} catch (WorkbenchCoreLayerException ex) {
 					// Browser editor is not opened
 					browser = null;
 				}
 			}
-		} catch (CoreLayerException ex) {
+		} catch (WorkbenchCoreLayerException ex) {
 			return;
 		}
 	}
@@ -192,31 +226,31 @@ public class DeployOnServer {
 	 * @param serverNameLabel
 	 */
 	public void checkDeployedProject(String projectName, String serverNameLabel) {
-		if (!projectName.contains("ejb-timer") && !projectName.contains("cluster-ha-singleton")) {
-			new WaitWhile(new JobIsRunning());
-			new WaitUntil(new ConsoleHasNoChange(TimePeriod.LONG), TimePeriod.VERY_LONG);
-		}
+		closeBrowser();
 		ServersView2 serversView = new ServersView2();
 		serversView.open();
-		String moduleName = projectName.equals("template") ? "QUICKSTART_NAME" : projectName;
-		JBossServerModule module  = serversView.getServer(JBossServer.class, serverNameLabel).getModule(new RegexMatcher(".*" + moduleName + ".*"));
+		String moduleName = projectName;
+		JBossServerModule module = serversView.getServer(JBossServer.class, serverNameLabel)
+				.getModule(new RegexMatcher(".*" + moduleName + ".*"));
+		new WaitUntil(new ServerModuleHasState(module, ServerState.STARTED));
 		if (new ContextMenuItem("Show In", "Web Browser").isEnabled()) {
 			module.openWebPage();
+			new WaitUntil(new WidgetIsFound(org.eclipse.swt.browser.Browser.class), false);
 
-			final BrowserEditor browser = new BrowserEditor(new RegexMatcher(".*"));
+			InternalBrowser browser = new InternalBrowser();
 			try {
-				new WaitUntil(new BrowserIsNotEmpty(browser));
+				new WaitUntil(new PageIsLoaded(browser));
 			} catch (WaitTimeoutExpiredException e) {
 				// try to refresh browser and wait one more time.
-				browser.refreshPage();
-				new WaitUntil(new BrowserIsNotEmpty(browser));
+				browser.refresh();
+				new WaitUntil(new PageIsLoaded(browser));
 			}
 
 			// Now the browser should not be empty. Let's check for error
 			// messages
 			// (strings like "404")
 			checkBrowserForErrorPage(browser);
-			assertNotEquals("", browser.getText());
+			assertNotEquals("", getTextFromBrowser(browser));
 			new DefaultEditor().close();
 		}
 		checkConsoleForException();
@@ -260,30 +294,27 @@ public class DeployOnServer {
 	 * 
 	 * @param browserEditor
 	 */
-	public static void checkBrowserForErrorPage(BrowserEditor browserEditor) {
-		evaluateBrowserPage(browserEditor.getText());
+	public static void checkBrowserForErrorPage(Browser browser) {
+		evaluateBrowserPage(getTextFromBrowser(browser));
 	}
 	
-	/**
-	 * 
-	 * Checks browser, if module is running and address is correct.
-	 * 
-	 * @param browserView
-	 * @param url
-	 */
-	public static void checkBrowserForErrorPage(WebBrowserView browserView, String url) {
-		//Try to refresh page if it is not loaded.
-		if (browserView.getText().contains("Unable") || browserView.getText().contains("404")) {
-			if (url == null) {
-				browserView.refreshPage();
-			} else {
-				browserView.openPageURL(url);
+	private static String getTextFromBrowser(Browser browser) {
+		new WaitUntil(new PageIsLoaded(browser));
+
+		if (Platform.getOS().startsWith(Platform.OS_WIN32)) {
+			return browser.getText();
+		} else {
+			// Workaround for webkit issues with method browser.getText(), e.g.
+			// https://bugs.eclipse.org/bugs/show_bug.cgi?id=514719
+			String pageHTML = "";
+			if (!StringUtils.isEmpty(browser.getURL())) {
+				pageHTML = (String) browser.evaluate("return document.documentElement.innerHTML;");
 			}
+			return pageHTML;
 		}
-		new WaitWhile(new JobIsRunning());
-		evaluateBrowserPage(browserView.getText());
+		
 	}
-	
+
 	/**
 	 * 
 	 * Evaluate page text, if it not empty or without error.
@@ -306,29 +337,6 @@ public class DeployOnServer {
 						+ System.getProperty("line.separator") + "Browser contents:" + browserPage,
 				browserPage.contains("Forbidden"));
 
-	}
-
-
-	/**
-	 * 
-	 * Wait condition if browser is empty.
-	 * 
-	 */
-	class BrowserIsNotEmpty extends AbstractWaitCondition {
-
-		BrowserEditor browser;
-
-		public BrowserIsNotEmpty(BrowserEditor browser) {
-			this.browser = browser;
-		}
-
-		public boolean test() {
-			return !browser.getText().equals("");
-		}
-
-		public String description() {
-			return "Browser is empty!";
-		}
 	}
 
 	/**
@@ -364,7 +372,7 @@ public class DeployOnServer {
 				ServersView2 serversView = new ServersView2();
 				serversView.open();
 				try {
-					module = serversView.getServer(JBossServer.class,serverNameLabel).getModule(projectName);
+					module = serversView.getServer(JBossServer.class, serverNameLabel).getModule(projectName);
 				} catch (EclipseLayerException ex) {
 					// module not found
 					counter++;
