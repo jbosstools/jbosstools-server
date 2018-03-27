@@ -55,6 +55,7 @@ Export-Package: org.jboss.ide.eclipse.as.core,
  org.jboss.ide.eclipse.as.core.util,
  org.jboss.tools.as.core.internal.modules;x-friends:="org.jboss.ide.eclipse.as.ui",
  org.jboss.tools.as.core.server.controllable,
+ org.jboss.tools.as.core.server.controllable.subsystems,
  org.jboss.tools.as.core.server.controllable.subsystems.internal;x-friends:="org.jboss.tools.as.test.core,org.jboss.ide.eclipse.as.ui",
  org.jboss.tools.as.core.server.controllable.systems,
  org.jboss.tools.as.core.server.controllable.util
