@@ -30,9 +30,8 @@ import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAda
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.DeploymentMarkerUtils;
 import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
-import org.jboss.tools.as.core.server.controllable.subsystems.internal.StandardFileSystemPublishController;
+import org.jboss.tools.as.core.server.controllable.subsystems.StandardFileSystemPublishController;
 import org.jboss.tools.as.test.core.ASMatrixTests;
-import org.jboss.tools.as.test.core.internal.MockPublishMethodFilesystemController;
 import org.jboss.tools.as.test.core.internal.utils.IOUtil;
 import org.jboss.tools.as.test.core.internal.utils.MockModule;
 import org.jboss.tools.as.test.core.internal.utils.MockModuleUtil;

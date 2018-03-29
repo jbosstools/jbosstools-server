@@ -25,7 +25,7 @@ import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-import org.jboss.tools.as.core.server.controllable.subsystems.internal.StandardFileSystemPublishController;
+import org.jboss.tools.as.core.server.controllable.subsystems.StandardFileSystemPublishController;
 import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.internal.utils.IOUtil;
 import org.jboss.tools.as.test.core.internal.utils.MatrixUtils;

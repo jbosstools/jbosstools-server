@@ -11,7 +11,6 @@
 package org.jboss.tools.as.test.core.parametized.server.publishing.defect;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -25,7 +24,6 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-import org.jboss.tools.as.core.server.controllable.subsystems.internal.StandardFileSystemPublishController;
 import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.internal.utils.IOUtil;
 import org.jboss.tools.as.test.core.internal.utils.MatrixUtils;
