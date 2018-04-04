@@ -93,7 +93,7 @@ public class CleanEnvironmentUtils {
 			serversView.open();
 			List<Server> servers = serversView.getServers();
 			for (Server server : servers) {
-				server.delete();
+				server.delete(true);
 			}
 		} else {
 

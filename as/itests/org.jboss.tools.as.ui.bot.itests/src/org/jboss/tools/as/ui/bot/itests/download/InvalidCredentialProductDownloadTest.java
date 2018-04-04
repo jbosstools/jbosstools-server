@@ -14,6 +14,7 @@ import org.eclipse.reddeer.swt.impl.progressbar.DefaultProgressBar;
 import org.eclipse.reddeer.swt.impl.shell.DefaultShell;
 import org.eclipse.reddeer.swt.impl.text.DefaultText;
 import org.eclipse.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
+import org.jboss.tools.as.ui.bot.itests.AbstractTest;
 import org.jboss.tools.as.ui.bot.itests.reddeer.util.DisableSecureStorageRequirement.DisableSecureStorage;
 import org.junit.Test;
 
@@ -27,7 +28,7 @@ import org.junit.Test;
  */
 
 @DisableSecureStorage
-public class InvalidCredentialProductDownloadTest {
+public class InvalidCredentialProductDownloadTest extends AbstractTest {
 
 	/**
 	 * Test downloading of runtime via $0 subscription download with invalid
@@ -38,7 +39,7 @@ public class InvalidCredentialProductDownloadTest {
 		RuntimeDownloadTestUtility util = new RuntimeDownloadTestUtility();
 		util.invokeDownloadRuntimesWizard();
 
-		util.processSelectingRuntime("JBoss EAP 6.2.0");
+		util.processSelectingRuntime("JBoss EAP 7.0.0");
 		util.processInsertingCredentials("Invalid username", "Invalid password");
 		new WaitWhile(new ValidatingCredentialsProgressBarIsRunning());
 		
@@ -65,7 +66,7 @@ public class InvalidCredentialProductDownloadTest {
 		@Override
 		public boolean test() {
 			try {
-				new DefaultText(" Your credentials are incorrect. Please review the values and try again.");
+				new DefaultText(" Your credentials have failed to validate.\nServer Message: Please, use a valid user name and password!\n");
 				return true;
 			} catch (CoreLayerException e) {
 				return false;

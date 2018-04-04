@@ -7,11 +7,14 @@ import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.fail;
 
 import org.eclipse.reddeer.common.condition.AbstractWaitCondition;
+import org.eclipse.reddeer.common.exception.WaitTimeoutExpiredException;
 import org.eclipse.reddeer.common.logging.Logger;
+import org.eclipse.reddeer.common.matcher.RegexMatcher;
 import org.eclipse.reddeer.common.wait.TimePeriod;
 import org.eclipse.reddeer.common.wait.WaitUntil;
 import org.eclipse.reddeer.common.wait.WaitWhile;
 import org.eclipse.reddeer.core.exception.CoreLayerException;
+import org.eclipse.reddeer.core.matcher.WithTextMatcher;
 import org.eclipse.reddeer.eclipse.condition.ConsoleHasNoChange;
 import org.eclipse.reddeer.eclipse.exception.EclipseLayerException;
 import org.eclipse.reddeer.eclipse.ui.console.ConsoleView;
@@ -21,6 +24,7 @@ import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
 import org.eclipse.reddeer.swt.api.Shell;
 import org.eclipse.reddeer.swt.condition.ShellIsAvailable;
 import org.eclipse.reddeer.swt.impl.button.PushButton;
+import org.eclipse.reddeer.swt.impl.menu.ContextMenuItem;
 import org.eclipse.reddeer.swt.impl.shell.DefaultShell;
 import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
 import org.eclipse.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
@@ -116,6 +120,7 @@ public class OperateServerTemplate {
 		new WaitWhile(new JobIsRunning(), TimePeriod.LONG);
 		serversView.open();
 		for (Server server : serversView.getServers()) {
+			server.setServerStateChangeTimeout(TimePeriod.LONG);
 			server.delete(true);
 		}
 		consoleView.open();
@@ -154,7 +159,17 @@ public class OperateServerTemplate {
 	public void stopServer() {
 		new WaitUntil(new JobIsRunning(),TimePeriod.LONG, false);
 		serversView.getServer(getServerName()).select();
-		serversView.getServer(getServerName()).stop();
+		try {
+			serversView.getServer(getServerName()).setServerStateChangeTimeout(TimePeriod.LONG);
+			serversView.getServer(getServerName()).stop();
+		} catch (WaitTimeoutExpiredException ex) {
+			//try to stop server once again
+			serversView.open();
+			serversView.getServer(getServerName()).setServerStateChangeTimeout(TimePeriod.LONG);
+			serversView.getServer(getServerName()).select();
+			new ContextMenuItem(new RegexMatcher("Stop.*")).select();
+			new WaitUntil(new JobIsRunning(),TimePeriod.LONG);
+		}
 		tryServerProcessNotTerminated();
 		final String state = "Stopped";
 		new WaitUntil(new ConsoleHasNoChange(TimePeriod.getCustom(5)), TimePeriod.LONG);
