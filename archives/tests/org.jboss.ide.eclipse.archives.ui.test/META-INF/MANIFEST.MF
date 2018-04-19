@@ -16,7 +16,7 @@ Require-Bundle: org.junit,
  org.jboss.ide.eclipse.archives.core;bundle-version="2.0.0",
  org.eclipse.ui.navigator;bundle-version="3.4.1",
  org.jboss.ide.eclipse.archives.jdt.integration;bundle-version="3.1.0",
- org.eclipse.reddeer.go;bundle-version="[2.0.0,2.1.0)",
+ org.eclipse.reddeer.go;bundle-version="2.1.0",
  org.eclipse.ui.views.log,
  org.jboss.tools.archives.reddeer
 Export-Package: org.jboss.ide.eclipse.archives.ui.test,

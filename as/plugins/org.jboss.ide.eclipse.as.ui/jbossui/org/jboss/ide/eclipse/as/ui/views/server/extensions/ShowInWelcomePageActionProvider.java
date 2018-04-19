@@ -29,7 +29,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.internal.browser.ImageResource;
+//import org.eclipse.ui.internal.browser.ImageResource;
 import org.eclipse.ui.navigator.CommonActionProvider;
 import org.eclipse.ui.navigator.CommonViewer;
 import org.eclipse.ui.navigator.ICommonActionExtensionSite;
@@ -101,7 +101,7 @@ public class ShowInWelcomePageActionProvider extends CommonActionProvider {
 		};
 		action.setText(ServerActionMessages.OpenWithBrowser);
 		action.setDescription(ServerActionMessages.OpenWithBrowserDescription);
-		action.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_INTERNAL_BROWSER));
+		//action.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_INTERNAL_BROWSER));
 	}
 
 	private boolean hasURL() {
