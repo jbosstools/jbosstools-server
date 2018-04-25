@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %BundleName
 Bundle-SymbolicName: org.jboss.tools.jmx.jolokia.test
-Bundle-Version: 1.10.3.qualifier
+Bundle-Version: 1.10.4.qualifier
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: %BundleProvider
@@ -32,4 +32,6 @@ Bundle-ClassPath: .,
  lib/jolokia-client-java-1.3.7.jar
 Bundle-Activator: org.jboss.tools.jmx.jolokia.test.JolokiaTestPlugin
 Bundle-ActivationPolicy: lazy
+Provide-Capability: osgi.extender; osgi.extender=osgi.serviceloader.processor
+
 
