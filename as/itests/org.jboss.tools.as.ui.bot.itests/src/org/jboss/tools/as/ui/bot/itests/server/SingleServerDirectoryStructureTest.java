@@ -74,7 +74,7 @@ public class SingleServerDirectoryStructureTest {
 		try {
 			Manifest man = new Manifest(new FileInputStream(prodManifest.toFile()));
 			String o3 = man.getMainAttributes().getValue("JBoss-Product-Release-Name");
-			assertEquals("JBoss EAP", o3);
+			assertTrue("JBoss EAP".equals(o3) || "JBoss EAP CD".equals(o3));
 			String o4 = man.getMainAttributes().getValue("JBoss-Product-Release-Version");
 			assertNotNull(o4);
 		} catch(IOException ioe) {
