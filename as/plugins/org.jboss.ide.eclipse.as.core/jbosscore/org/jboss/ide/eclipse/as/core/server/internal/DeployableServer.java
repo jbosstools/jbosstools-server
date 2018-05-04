@@ -280,7 +280,8 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 			try {
 				IModule[] moduleToTest = deep ? module : new IModule[]{module[0]};
 				IModuleDeployPathController controller = (IModuleDeployPathController)beh.getController(IModuleDeployPathController.SYSTEM_ID);
-				IPath ret =  controller.getDeployDirectory(moduleToTest);
+				// We always want the full path of this module. We do not want the last
+				IPath ret =  controller.getDeployDirectory(moduleToTest, false);
 				return ret;
 			} catch(CoreException ce) {
 				// TODO log
