@@ -6,17 +6,12 @@ import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.fail;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
-import org.jboss.ide.eclipse.as.reddeer.matcher.ServerConsoleContainsNoExceptionMatcher;
 import org.eclipse.reddeer.common.condition.AbstractWaitCondition;
 import org.eclipse.reddeer.common.logging.Logger;
 import org.eclipse.reddeer.common.wait.TimePeriod;
 import org.eclipse.reddeer.common.wait.WaitUntil;
 import org.eclipse.reddeer.common.wait.WaitWhile;
 import org.eclipse.reddeer.core.exception.CoreLayerException;
-import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
 import org.eclipse.reddeer.eclipse.condition.ConsoleHasNoChange;
 import org.eclipse.reddeer.eclipse.exception.EclipseLayerException;
 import org.eclipse.reddeer.eclipse.ui.console.ConsoleView;
@@ -25,10 +20,11 @@ import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.Server;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
 import org.eclipse.reddeer.swt.api.Shell;
 import org.eclipse.reddeer.swt.condition.ShellIsAvailable;
-import org.eclipse.reddeer.swt.exception.SWTLayerException;
 import org.eclipse.reddeer.swt.impl.button.PushButton;
 import org.eclipse.reddeer.swt.impl.shell.DefaultShell;
+import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
 import org.eclipse.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
+import org.jboss.ide.eclipse.as.reddeer.matcher.ServerConsoleContainsNoExceptionMatcher;
 
 /**
  * Checks if the given server can be started, restarted, stopped and deleted
@@ -123,7 +119,11 @@ public class OperateServerTemplate {
 			server.delete(true);
 		}
 		consoleView.open();
-		consoleView.clearConsole();
+		try {
+			consoleView.clearConsole();
+		} catch(CoreLayerException ex) {
+			//swallow - console is empty
+		}
 		
 		removeAllRuntimes();
 	}
@@ -152,6 +152,8 @@ public class OperateServerTemplate {
 	}
 
 	public void stopServer() {
+		new WaitUntil(new JobIsRunning(),TimePeriod.LONG, false);
+		serversView.getServer(getServerName()).select();
 		serversView.getServer(getServerName()).stop();
 		tryServerProcessNotTerminated();
 		final String state = "Stopped";

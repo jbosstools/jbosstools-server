@@ -1,6 +1,5 @@
 package org.jboss.tools.as.ui.bot.itests.reddeer.util;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,7 +37,6 @@ import org.eclipse.reddeer.eclipse.wst.server.ui.wizard.ModifyModulesPage;
 import org.eclipse.reddeer.workbench.impl.editor.TextEditor;
 import org.hamcrest.Matcher;
 import org.jboss.ide.eclipse.as.reddeer.matcher.ServerConsoleContainsNoExceptionMatcher;
-import org.jboss.ide.eclipse.as.reddeer.server.editor.ServerModuleWebPageEditor;
 import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServer;
 import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServerModule;
 import org.jboss.tools.as.ui.bot.itests.Activator;
@@ -113,17 +111,19 @@ public class DeployJSPProjectTemplate {
 		assertNotNull("Server contains project", server.getModule(projectName));
 		// console
 		log.step("Assert console has deployment notification");
-		new WaitUntil(new ConsoleHasText(expectedConsoleMessage));
+		new WaitUntil(new ConsoleHasText(expectedConsoleMessage), TimePeriod.LONG);
 		assertNoException("Error in console after deploy");
 		// web
 		log.step("Open module's web page");
 		JBossServerModule module = server.getModule(projectName);
 		module.openWebPage();
-		ServerModuleWebPageEditor editor = new ServerModuleWebPageEditor(module.getLabel().getName()); 
+
+		BrowserContainsTextCondition bctc = new BrowserContainsTextCondition("http://localhost:8080/" + 
+				projectName + "/index.jsp", "Hello tests", true); 
 
 		assertProjectIsBuilt(projectName);
 		try {
-			new WaitUntil(new EditorWithBrowserContainsTextCondition(editor, "Hello tests"));
+			new WaitUntil(bctc);
 		} catch (WaitTimeoutExpiredException e) {
 			log.step("Deploy failed, assert project is built");
 			try {
@@ -139,7 +139,7 @@ public class DeployJSPProjectTemplate {
 			throw e;
 		}
 		log.step("Assert web page text");
-		assertThat(editor.getText(), containsString("Hello tests!"));
+		assertTrue(bctc.test());
 		// view
 		log.step("Assert server's states");
 		assertThat(getServer(serverName).getLabel().getState(), is(ServerState.STARTED));

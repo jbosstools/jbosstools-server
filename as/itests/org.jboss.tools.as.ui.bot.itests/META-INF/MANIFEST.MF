@@ -124,6 +124,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.wst.xsd.ui,
  org.eclipse.wst.xsdeditor.doc.user,
  org.eclipse.jst.servlet.ui,
- org.eclipse.jst.ejb.ui
+ org.eclipse.jst.ejb.ui,
+ org.apache.commons.lang
 Bundle-Activator: org.jboss.tools.as.ui.bot.itests.Activator
 
