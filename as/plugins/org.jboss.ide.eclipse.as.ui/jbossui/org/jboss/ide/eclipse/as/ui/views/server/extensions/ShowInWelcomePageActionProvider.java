@@ -77,12 +77,13 @@ public class ShowInWelcomePageActionProvider extends CommonActionProvider {
 		action = new Action() {
 			@Override
 			public void run() {
+				final Object sel = getSelection();
 				new Job("Fetching Welcome Page URL") {
 					public IStatus run(IProgressMonitor monitor) {
 						// Get the url in a background thread to not freeze the UI
 						String url2 = null;
 						try {
-							url2 = getUrl();
+							url2 = getUrl(sel);
 						} catch(CoreException ce) {
 							return ce.getStatus();
 						}
@@ -113,7 +114,7 @@ public class ShowInWelcomePageActionProvider extends CommonActionProvider {
 		
 		try {
 			if( getModuleServer() != null ) {
-				return getUrl() != null;
+				return getUrl(getSelection()) != null;
 			} else {
 				return props.hasWelcomePage(); 
 			}
@@ -168,11 +169,11 @@ public class ShowInWelcomePageActionProvider extends CommonActionProvider {
 	}
 
 	
-	private String getUrl() throws CoreException {
+	private String getUrl(Object sel) throws CoreException {
 		String urlString = null;
-		IServer server = getServer();
+		IServer server = getServer(sel);
 		if(server!=null && server.getServerState() == IServer.STATE_STARTED) {
-			ModuleServer ms = getModuleServer();
+			ModuleServer ms = getModuleServer(sel);
 			if(ms!=null) {
 				urlString = getWelcomePageURL(ms);
 			} else {
@@ -266,7 +267,16 @@ public class ShowInWelcomePageActionProvider extends CommonActionProvider {
 	}
 
 	public IServer getServer() {
-		Object o = getSelection();
+		Object sel = getSelection();
+		return getServer(sel);
+	}
+
+	public ModuleServer getModuleServer() {
+		Object sel = getSelection();
+		return getModuleServer(sel);
+	}
+
+	public IServer getServer(Object o) {
 		if (o instanceof IServer) {
 			return ((IServer)o);
 		}
@@ -276,8 +286,7 @@ public class ShowInWelcomePageActionProvider extends CommonActionProvider {
 		return null;
 	}
 
-	public ModuleServer getModuleServer() {
-		Object o = getSelection();
+	public ModuleServer getModuleServer(Object o) {
 		if(o instanceof ModuleServer) { 
 			return ((ModuleServer) o);
 		}
