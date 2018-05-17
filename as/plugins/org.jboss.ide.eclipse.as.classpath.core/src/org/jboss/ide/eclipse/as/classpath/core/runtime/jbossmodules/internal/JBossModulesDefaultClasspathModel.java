@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.classpath.core.runtime.jbossmodules.internal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.IRuntimePathProvider;
@@ -30,28 +31,24 @@ public class JBossModulesDefaultClasspathModel extends InternalRuntimeClasspathM
 		setProviders(getDefaultJBossModulesEntries(rtt));
 	}
 	
-	
+	private static List<String> ee7 = Arrays.asList(new String[] {IJBossToolingConstants.WILDFLY_80});
+	private static List<String> ee8 = Arrays.asList(new String[] {
+			IJBossToolingConstants.WILDFLY_90, IJBossToolingConstants.WILDFLY_100,
+			IJBossToolingConstants.EAP_70});
+	private static List<String> wf11Plus = Arrays.asList(new String[] {
+			IJBossToolingConstants.WILDFLY_110, IJBossToolingConstants.WILDFLY_120,
+			IJBossToolingConstants.EAP_71});
+	// NEW_SERVER_ADAPTER
 
 	private IRuntimePathProvider[] getDefaultJBossModulesEntries(IRuntimeType rtt) {
-		if( rtt.getId().equals(IJBossToolingConstants.WILDFLY_80)) {
+		String rttId = rtt.getId();
+		if( ee7.contains(rttId))
 			return getDefaultJEE7JBossModulesEntries();
-		}
-		if( rtt.getId().equals(IJBossToolingConstants.WILDFLY_90)) {
+		if( ee8.contains(rttId))
 			return getDefaultJEE8JBossModulesEntries();
-		}
-		if( rtt.getId().equals(IJBossToolingConstants.WILDFLY_100)) {
-			return getDefaultJEE8JBossModulesEntries();
-		}
-		if( rtt.getId().equals(IJBossToolingConstants.EAP_70)) {
-			return getDefaultJEE8JBossModulesEntries();
-		}
-		if( rtt.getId().equals(IJBossToolingConstants.EAP_71)) {
+		if( wf11Plus.contains(rttId)) 
 			return getDefaultWF11JBossModulesEntries();
-		}
-		if( rtt.getId().equals(IJBossToolingConstants.WILDFLY_110)) {
-			return getDefaultWF11JBossModulesEntries();
-		}
-		
+		// NEW_SERVER_ADAPTER
 		return getDefaultJBossModulesEntries();
 	}
 	
