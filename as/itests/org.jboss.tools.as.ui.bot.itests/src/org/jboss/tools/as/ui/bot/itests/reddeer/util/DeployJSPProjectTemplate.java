@@ -34,6 +34,8 @@ import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersViewEnums.ServerPubl
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersViewEnums.ServerState;
 import org.eclipse.reddeer.eclipse.wst.server.ui.wizard.ModifyModulesDialog;
 import org.eclipse.reddeer.eclipse.wst.server.ui.wizard.ModifyModulesPage;
+import org.eclipse.reddeer.swt.condition.ShellIsAvailable;
+import org.eclipse.reddeer.swt.impl.button.PushButton;
 import org.eclipse.reddeer.workbench.impl.editor.TextEditor;
 import org.hamcrest.Matcher;
 import org.jboss.ide.eclipse.as.reddeer.matcher.ServerConsoleContainsNoExceptionMatcher;
@@ -245,8 +247,16 @@ public class DeployJSPProjectTemplate {
 		WizardNewFileCreationPage page = new WizardNewFileCreationPage(newFileDialog);
 		page.setFileName(HOT_JSP_FILE_NAME);
 		page.setFolderPath(projectName, "WebContent");
-		newFileDialog.finish();
-		
+		try {
+			newFileDialog.finish(TimePeriod.DEFAULT);
+		} catch(WaitTimeoutExpiredException ex) {
+			try {
+				new WaitUntil(new ShellIsAvailable("Browser Engine"));
+				new PushButton("Stay with HTML5").click();
+			} catch (WaitTimeoutExpiredException e) {
+				//swallow - it is not opened
+			}
+		}
 		log.step("Set content of " + HOT_JSP_FILE_NAME + " file");
 		TextEditor editor = new TextEditor();
 		editor.setText(JSP_CONTENT);

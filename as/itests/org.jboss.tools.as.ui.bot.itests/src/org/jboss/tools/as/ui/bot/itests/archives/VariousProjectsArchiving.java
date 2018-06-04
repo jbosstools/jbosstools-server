@@ -49,7 +49,7 @@ public class VariousProjectsArchiving extends ArchivesTestBase {
 		File f = Activator.getDownloadFolder(SMOKETEST_TYPE);
 		if( !f.exists() || f.list() == null || f.list().length == 0 ) {
 	        RuntimeDownloadTestUtility util = new RuntimeDownloadTestUtility(f);
-			util.downloadRuntimeNoCredentials(SMOKETEST_TYPE);
+	        util.downloadRuntimeWithCredentials(SMOKETEST_TYPE);
 		} else {
 	    	DetectRuntimeTemplate.detectRuntime(f.getAbsolutePath(), 
 	    			ServerRuntimeUIConstants.getRuntimesForDownloadable(SMOKETEST_TYPE));

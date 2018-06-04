@@ -12,14 +12,16 @@ package org.jboss.tools.as.ui.bot.itests.archives;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.List;
 
-import org.jboss.ide.eclipse.archives.ui.test.bot.ArchivesTestBase;
+import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.Server;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
 import org.eclipse.reddeer.eclipse.wst.server.ui.wizard.ModifyModulesDialog;
 import org.eclipse.reddeer.eclipse.wst.server.ui.wizard.ModifyModulesPage;
 import org.eclipse.reddeer.junit.runner.RedDeerSuite;
 import org.eclipse.reddeer.swt.api.TreeItem;
 import org.eclipse.reddeer.swt.impl.tree.DefaultTree;
+import org.jboss.ide.eclipse.archives.ui.test.bot.ArchivesTestBase;
 import org.jboss.tools.archives.reddeer.archives.ui.ArchivePublishDialog;
 import org.jboss.tools.archives.reddeer.archives.ui.ProjectArchivesExplorer;
 import org.jboss.tools.archives.reddeer.component.Archive;
@@ -52,6 +54,7 @@ public class DeployingArchiveTest extends ArchivesTestBase {
 	
 	@BeforeClass
 	public static void setup() {
+		deleteRuntimes();
 		createJavaProject(projectName);
 		addArchivesSupport(projectName);
 		createArchive(projectName, ARCHIVE_NAME_1, true);
@@ -60,12 +63,23 @@ public class DeployingArchiveTest extends ArchivesTestBase {
 		File f = Activator.getDownloadFolder(SMOKETEST_TYPE);
 		if( !f.exists() || f.list() == null || f.list().length == 0 ) {
 	        RuntimeDownloadTestUtility util = new RuntimeDownloadTestUtility(f);
-			util.downloadRuntimeNoCredentials(SMOKETEST_TYPE);
+	    	util.downloadRuntimeWithCredentials(SMOKETEST_TYPE);
 		} else {
 	    	DetectRuntimeTemplate.detectRuntime(f.getAbsolutePath(), 
 	    			ServerRuntimeUIConstants.getRuntimesForDownloadable(SMOKETEST_TYPE));
 	    	DetectRuntimeTemplate.removePath(f.getAbsolutePath());
 		}
+	}
+	
+	public static void deleteRuntimes() {
+		ServersView2 serversView = new ServersView2();
+		serversView.open();
+		serversView.getServers();
+		List<Server> all = serversView.getServers();
+		for (Server server : all) {
+			server.delete();
+		}
+		new RuntimeDownloadTestUtility(Activator.getStateFolder().toFile()).clean(true);
 	}
 	
     @AfterClass
@@ -94,7 +108,10 @@ public class DeployingArchiveTest extends ArchivesTestBase {
 		assertArchiveIsDeployed(projectName + "/" + ARCHIVE_NAME_2);
 		removeArchiveFromServer(projectName + "/" + ARCHIVE_NAME_2);
 		explorer = explorerForProject(projectName);
+		archive = explorer.getArchive(PATH_ARCHIVE_2);
 		fillPublishDialog(archive.editPublishSettings(), true, false);
+		explorer = explorerForProject(projectName);
+		archive = explorer.getArchive(PATH_ARCHIVE_2);
 		archive.publishToServer();
 		assertArchiveIsDeployed(projectName + "/" + ARCHIVE_NAME_2);
 	}

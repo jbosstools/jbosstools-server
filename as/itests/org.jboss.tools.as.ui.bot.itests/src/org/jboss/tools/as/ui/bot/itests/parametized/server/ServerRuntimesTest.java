@@ -8,16 +8,17 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.eclipse.ui.PlatformUI;
-import org.jboss.ide.eclipse.as.reddeer.server.editor.JBossServerEditor;
-import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServer;
 import org.eclipse.reddeer.common.util.Display;
 import org.eclipse.reddeer.eclipse.jdt.debug.ui.jres.JREsPreferencePage;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
 import org.eclipse.reddeer.junit.internal.runner.ParameterizedRequirementsRunnerFactory;
 import org.eclipse.reddeer.junit.runner.RedDeerSuite;
 import org.eclipse.reddeer.swt.impl.text.LabeledText;
+import org.eclipse.reddeer.workbench.handler.WorkbenchShellHandler;
 import org.eclipse.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
+import org.eclipse.ui.PlatformUI;
+import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServer;
+import org.jboss.tools.as.ui.bot.itests.AbstractTest;
 import org.jboss.tools.as.ui.bot.itests.Activator;
 import org.jboss.tools.as.ui.bot.itests.SuiteConstants;
 import org.jboss.tools.as.ui.bot.itests.download.RuntimeDownloadTestUtility;
@@ -75,7 +76,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 @UseParametersRunnerFactory(ParameterizedRequirementsRunnerFactory.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)//first acquireAndDetect, then detect, then operate
 @DisableSecureStorage
-public class ServerRuntimesTest {
+public class ServerRuntimesTest extends AbstractTest {
 
     @Parameters(name = "{0}, {1}")
     public static Collection<Object[]> data(){
@@ -167,7 +168,7 @@ public class ServerRuntimesTest {
     		jbsview.open();
     	}
 		JBossServer server = jbsview.getServer(JBossServer.class, serverName);
-		JBossServerEditor editor = server.open();
+		server.open();
 		
 		EditorPort[] ports = ServerRuntimeUIConstants.getPorts(runtimeString);
 		assertNotNull(ports);
@@ -206,7 +207,6 @@ public class ServerRuntimesTest {
     		operate.startServerSafe();
     		DeployJSPProjectTemplate djsppt = new DeployJSPProjectTemplate();
     		djsppt.clearConsole();
-    		JBossServer jbs = djsppt.getServer(serverName);
     		djsppt.importProject("jsp-project", "projects/jsp-project.zip", serverName + " Runtime");
     		
     		String depString = ServerRuntimeUIConstants.getDeployString(runtimeString, "jsp-project", ".war");
@@ -237,6 +237,8 @@ public class ServerRuntimesTest {
 			}
 		});
     	new RuntimeDownloadTestUtility(getDownloadPath()).clean(false);
+    	//Close windows, if opened.
+    	WorkbenchShellHandler.getInstance().closeAllNonWorbenchShells();
     }
     
     @AfterClass
