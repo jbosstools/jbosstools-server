@@ -22,5 +22,5 @@ Bundle-ClassPath: .,
  lib/xnio-nio-3.0.13.GA-redhat-1.jar
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.jboss.ide.eclipse.as.internal.management.eap61plus;x-friends:="org.jboss.ide.eclipse.as.management.itests"
-Bundle-Vendor: JBoss by Red Hat
+Bundle-Vendor: Red Hat
 Bundle-Localization: plugin 
