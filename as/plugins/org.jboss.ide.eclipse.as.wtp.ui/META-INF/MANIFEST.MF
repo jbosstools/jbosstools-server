@@ -40,7 +40,7 @@ Require-Bundle: org.eclipse.ui;bundle-version="3.7.0",
  org.eclipse.ui.console;bundle-version="3.6.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-Vendor: JBoss by Red Hat
+Bundle-Vendor: Red Hat
 Export-Package: org.jboss.ide.eclipse.as.wtp.ui,
  org.jboss.ide.eclipse.as.wtp.ui.composites,
  org.jboss.ide.eclipse.as.wtp.ui.console,
