@@ -81,6 +81,7 @@ public class CatalogValidationTest extends TestCase {
 		expectedErrors.put("module-1_2.xsd", 4);
 		expectedErrors.put("module-1_3.xsd", 4);
 		expectedErrors.put("module-1_5.xsd", 4);
+		expectedErrors.put("xmldsig-core-schema.xsd", 4);
 		// wildfly-client_1_0.xml requires additional namespaces to have functional child elements ootb
 		expectedErrors.put("wildfly-client_1_0.xsd", 1); 
 	}

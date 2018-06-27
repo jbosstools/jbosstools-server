@@ -80,6 +80,7 @@ public class DefaultPollerResolutionTest extends TestCase {
 				IJBossToolingConstants.SERVER_WILDFLY_90,
 				IJBossToolingConstants.SERVER_WILDFLY_100,
 				IJBossToolingConstants.SERVER_WILDFLY_110,
+				IJBossToolingConstants.SERVER_WILDFLY_130,
 				IJBossToolingConstants.SERVER_EAP_60,
 				IJBossToolingConstants.SERVER_EAP_61,
 				IJBossToolingConstants.SERVER_EAP_70,
