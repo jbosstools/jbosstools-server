@@ -25,6 +25,7 @@ public class ServerBeanTypeWildfly130Web extends JBossServerType {
 				new String[]{"13.0"}, new Wildfly100WebServerTypeCondition());
 	}
 	
+	@Override
 	protected String getServerTypeBaseName() {
 		return getId();
 	}
@@ -41,11 +42,12 @@ public class ServerBeanTypeWildfly130Web extends JBossServerType {
 			return null;
 		}
 
-		
+		@Override
 		public boolean isServerRoot(File location) {
 			return getFullVersion(location, null) != null;
 		}
 		
+		@Override
 		public String getServerTypeId(String version) {	
 			return IJBossToolingConstants.SERVER_WILDFLY_130;
 		}
