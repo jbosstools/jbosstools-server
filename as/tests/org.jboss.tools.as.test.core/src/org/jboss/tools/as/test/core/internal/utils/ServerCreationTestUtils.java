@@ -64,6 +64,7 @@ public class ServerCreationTestUtils extends Assert {
 	private static final String wildfly_10_0_jar = "wf10.0.0.mf.jboss-as-server.jar";
 	private static final String wildfly_11_0_jar = "wf11.0.0.mf.jboss-as-server.jar";
 	private static final String wildfly_12_0_jar = "wf12.0.0.mf.jboss-as-server.jar";
+	private static final String wildfly_13_0_jar = "wf13.0.0.mf.jboss-as-server.jar";
 	private static final String twiddle_eap_4_3 = "eap4.3" + twiddle_suffix;
 	private static final String twiddle_eap_5_0 = "eap5.0" + twiddle_suffix;
 	private static final String twiddle_eap_5_1 = "eap5.1" + twiddle_suffix;
@@ -111,6 +112,7 @@ public class ServerCreationTestUtils extends Assert {
 		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_100, wildfly_10_0_jar);
 		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_110, wildfly_11_0_jar);
 		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_120, wildfly_12_0_jar);
+		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_130, wildfly_13_0_jar);
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_43, twiddle_eap_4_3);
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_50, twiddle_eap_5_1);
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_60, eap_server_6_0_jar);
@@ -137,6 +139,7 @@ public class ServerCreationTestUtils extends Assert {
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_WILDFLY_100, IJBossToolingConstants.WILDFLY_100);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_WILDFLY_110, IJBossToolingConstants.WILDFLY_110);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_WILDFLY_120, IJBossToolingConstants.WILDFLY_120);
+		serverRuntimeMap.put(IJBossToolingConstants.SERVER_WILDFLY_130, IJBossToolingConstants.WILDFLY_130);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_43, IJBossToolingConstants.EAP_43);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_50, IJBossToolingConstants.EAP_50);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_60, IJBossToolingConstants.EAP_60);
@@ -193,6 +196,8 @@ public class ServerCreationTestUtils extends Assert {
 			serverDir = createWildfly110MockServerDirectory(name, serverType, asSystemJar.get(serverType));
 		} else if( IJBossToolingConstants.SERVER_WILDFLY_120.equals(serverType)) {
 			serverDir = createWildfly120MockServerDirectory(name, serverType, asSystemJar.get(serverType));
+		} else if( IJBossToolingConstants.SERVER_WILDFLY_130.equals(serverType)) {
+			serverDir = createWildfly130MockServerDirectory(name, serverType, asSystemJar.get(serverType));
 		} else if( TEST_SERVER_TYPE_GATEIN_34.equals(serverType)) {
 			serverDir = createGateIn34MockServerDirectory(name);
 		} else if( TEST_SERVER_TYPE_GATEIN_35.equals(serverType)) {
@@ -376,7 +381,7 @@ public class ServerCreationTestUtils extends Assert {
 		}
 		return loc;
 	}
-	
+
 	private static IPath createWildfly120MockServerDirectory(String name, String serverTypeId, String serverJar) {
 		// TODO WF_12
 		IPath loc = mockedServers.append(name);
@@ -384,6 +389,21 @@ public class ServerCreationTestUtils extends Assert {
 		IPath productDir = loc.append("modules/system/layers/base/org/jboss/as/product/wildfly-full/dir/META-INF/");
 		productDir.toFile().mkdirs();
 		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 12.0.0.Alpha1-SNAPSHOT\n"; 
+		try {
+			IOUtil.setContents(new File(productDir.toFile(), "manifest.mf"), manString);
+		} catch(IOException ioe) {
+			
+		}
+		return loc;
+	}
+
+	private static IPath createWildfly130MockServerDirectory(String name, String serverTypeId, String serverJar) {
+		// TODO WF_13
+		IPath loc = mockedServers.append(name);
+		createAS7xProductStructure(loc, true, serverJar, null, null);
+		IPath productDir = loc.append("modules/system/layers/base/org/jboss/as/product/wildfly-full/dir/META-INF/");
+		productDir.toFile().mkdirs();
+		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 13.0.0.xyz\n"; 
 		try {
 			IOUtil.setContents(new File(productDir.toFile(), "manifest.mf"), manString);
 		} catch(IOException ioe) {

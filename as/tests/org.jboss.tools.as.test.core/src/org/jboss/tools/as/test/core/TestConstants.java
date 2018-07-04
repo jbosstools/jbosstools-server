@@ -31,7 +31,8 @@ public class TestConstants {
 	public static final String JBOSS_WF_100_HOME = System.getProperty("jbosstools.test.jboss.home.10.0", "C:\\apps\\jboss\\jboss-wildfly-10.0.0.GA\\");
 	public static final String JBOSS_WF_101_HOME = System.getProperty("jbosstools.test.jboss.home.10.1", "C:\\apps\\jboss\\jboss-wildfly-10.1.0.GA\\");
 	public static final String JBOSS_WF_110_HOME = System.getProperty("jbosstools.test.jboss.home.11.0", "C:\\apps\\jboss\\jboss-wildfly-11.0.0.GA\\");
-	public static final String JBOSS_WF_120_HOME = System.getProperty("jbosstools.test.jboss.home.11.0", "C:\\apps\\jboss\\jboss-wildfly-12.0.0.GA\\");
+	public static final String JBOSS_WF_120_HOME = System.getProperty("jbosstools.test.jboss.home.12.0", "C:\\apps\\jboss\\jboss-wildfly-12.0.0.GA\\");
+	public static final String JBOSS_WF_130_HOME = System.getProperty("jbosstools.test.jboss.home.13.0", "C:\\apps\\jboss\\jboss-wildfly-13.0.0.GA\\");
 	public static final String JBOSS_EAP_43_HOME = System.getProperty("jbosstools.test.jboss.home.eap.4.3", "C:\\apps\\jboss\\jboss-eap-4.3.0.GA\\");
 	public static final String JBOSS_EAP_50_HOME = System.getProperty("jbosstools.test.jboss.home.eap.5.0", "C:\\apps\\jboss\\jboss-eap-5.0.0.GA\\");
 	public static final String JBOSS_EAP_60_HOME = System.getProperty("jbosstools.test.jboss.home.eap.6.0", "C:\\apps\\jboss\\jboss-eap-6.0.0.GA\\");
@@ -64,6 +65,8 @@ public class TestConstants {
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_WILDFLY_90, JBOSS_AS_90_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_WILDFLY_100, JBOSS_WF_100_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_WILDFLY_110, JBOSS_WF_110_HOME);
+		serverTypeToHome.put(IJBossToolingConstants.SERVER_WILDFLY_120, JBOSS_WF_120_HOME);
+		serverTypeToHome.put(IJBossToolingConstants.SERVER_WILDFLY_130, JBOSS_WF_130_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_43, JBOSS_EAP_43_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_50, JBOSS_EAP_50_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_60, JBOSS_EAP_60_HOME);
