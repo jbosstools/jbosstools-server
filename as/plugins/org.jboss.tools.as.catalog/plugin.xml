@@ -120,10 +120,13 @@
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-client_6_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-client_6_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-common_5_1.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-common_5_1.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-common_6_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-common_6_0.xsd"/>
+		<uri name="http://www.jboss.org/j2ee/schema/jboss-common_7_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-common_7_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-ds_5_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ds_5_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-ejb3-2_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb3-2_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-web_10_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-web_10_0.xsd"/>
+		<uri name="http://www.jboss.org/j2ee/schema/jboss-web_10_1.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-web_10_1.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-web_11_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-web_11_0.xsd"/>
+		<uri name="http://www.jboss.org/j2ee/schema/jboss-web_12_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-web_12_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-web_5_1.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-web_5_1.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-web_6_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-web_6_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-web_7_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-web_7_0.xsd"/>
@@ -133,7 +136,7 @@
 		<uri name="http://www.jboss.org/j2ee/schema/jboss_5_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss_5_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss_5_1.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss_5_1.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jbossws-web-services_1_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jbossws-web-services_1_0.xsd"/>
-		<uri name="http://www.jboss.org/j2ee/schema/jbxb_1_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jbxb_1_0.xsd"/>
+		<uri name="http://www.jboss.org/xml/ns/jbxb" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jbxb_1_0.xsd"/>
 		<uri name="http://www.w3.org/2000/09/xmldsig#" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/xmldsig-core-schema.xsd"/>
 		<uri name="http://www.w3.org/2005/08/addressing" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/ws-addr.xsd"/>
 		<uri name="http://www.w3.org/XML/1998/namespace" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/xml.xsd"/>
@@ -145,6 +148,8 @@
 		<uri name="urn:ejb-cache:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb-cache_1_0.xsd"/>
 		<uri name="urn:ejb-pool:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb-pool_1_0.xsd"/>
 		<uri name="urn:elytron:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/elytron-1_0.xsd"/>
+		<uri name="urn:elytron:1.0.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/elytron-1_0_1.xsd"/>
+		<uri name="urn:elytron:client:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/elytron-client-1_1.xsd"/>
 		<uri name="urn:iiop" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb-iiop_1_0.xsd"/>
 		<uri name="urn:infinispan:config:6.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/infinispan-config-6.0.xsd"/>
 		<uri name="urn:jboss-remoting:5.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-remoting_5_0.xsd"/>
@@ -157,6 +162,8 @@
 		<uri name="urn:jboss:cli:2.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-cli_2_0.xsd"/>
 		<uri name="urn:jboss:cli:3.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-cli_3_0.xsd"/>
 		<uri name="urn:jboss:cli:3.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-cli_3_1.xsd"/>
+		<uri name="urn:jboss:cli:3.2" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-cli_3_2.xsd"/>
+		<uri name="urn:jboss:cli:3.3" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-cli_3_3.xsd"/>
 		<uri name="urn:jboss:deployment-dependencies:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-deployment-dependencies-1_0.xsd"/>
 		<uri name="urn:jboss:deployment-structure:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-deployment-structure-1_0.xsd"/>
 		<uri name="urn:jboss:deployment-structure:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-deployment-structure-1_1.xsd"/>
@@ -179,6 +186,8 @@
 		<uri name="urn:jboss:domain:4.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-config_4_1.xsd"/>
 		<uri name="urn:jboss:domain:4.2" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-config_4_2.xsd"/>
 		<uri name="urn:jboss:domain:5.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-config_5_0.xsd"/>
+		<uri name="urn:jboss:domain:6.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-config_6_0.xsd"/>
+		<uri name="urn:jboss:domain:7.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-config_7_0.xsd"/>
 		<uri name="urn:jboss:domain:batch-jberet:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-batch-jberet_1_0.xsd"/>
 		<uri name="urn:jboss:domain:batch-jberet:2.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-batch-jberet_2_0.xsd"/>
 		<uri name="urn:jboss:domain:batch:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-batch_1_0.xsd"/>
@@ -198,6 +207,7 @@
 		<uri name="urn:jboss:domain:deployment-scanner:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-deployment-scanner_1_1.xsd"/>
 		<uri name="urn:jboss:domain:deployment-scanner:2.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-deployment-scanner_2_0.xsd"/>
 		<uri name="urn:jboss:domain:discovery:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-discovery_1_0.xsd"/>
+		<uri name="urn:jboss:domain:ee-security:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-ee-security_1_0.xsd"/>
 		<uri name="urn:jboss:domain:ee:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-ee_1_0.xsd"/>
 		<uri name="urn:jboss:domain:ee:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-ee_1_1.xsd"/>
 		<uri name="urn:jboss:domain:ee:1.2" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-ee_1_2.xsd"/>
@@ -225,9 +235,12 @@
 		<uri name="urn:jboss:domain:infinispan:2.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-infinispan_2_0.xsd"/>
 		<uri name="urn:jboss:domain:infinispan:3.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-infinispan_3_0.xsd"/>
 		<uri name="urn:jboss:domain:infinispan:4.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-infinispan_4_0.xsd"/>
+		<uri name="urn:jboss:domain:infinispan:5.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-infinispan_5_0.xsd"/>
+		<uri name="urn:jboss:domain:infinispan:6.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-infinispan_6_0.xsd"/>
 		<uri name="urn:jboss:domain:io:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-io_1_0.xsd"/>
 		<uri name="urn:jboss:domain:io:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-io_1_1.xsd"/>
 		<uri name="urn:jboss:domain:io:2.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-io_2_0.xsd"/>
+		<uri name="urn:jboss:domain:io:3.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-io_3_0.xsd"/>
 		<uri name="urn:jboss:domain:jacorb:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-jacorb_1_0.xsd"/>
 		<uri name="urn:jboss:domain:jacorb:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-jacorb_1_1.xsd"/>
 		<uri name="urn:jboss:domain:jacorb:1.2" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-jacorb_1_2.xsd"/>
@@ -250,6 +263,7 @@
 		<uri name="urn:jboss:domain:jgroups:3.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-jgroups_3_0.xsd"/>
 		<uri name="urn:jboss:domain:jgroups:4.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-jgroups_4_0.xsd"/>
 		<uri name="urn:jboss:domain:jgroups:5.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-jgroups_5_0.xsd"/>
+		<uri name="urn:jboss:domain:jgroups:6.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-jgroups_6_0.xsd"/>
 		<uri name="urn:jboss:domain:jmx:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-jmx_1_0.xsd"/>
 		<uri name="urn:jboss:domain:jmx:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-jmx_1_1.xsd"/>
 		<uri name="urn:jboss:domain:jmx:1.2" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-jmx_1_2.xsd"/>
@@ -257,6 +271,7 @@
 		<uri name="urn:jboss:domain:jpa:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-jpa_1_0.xsd"/>
 		<uri name="urn:jboss:domain:jpa:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-jpa_1_1.xsd"/>
 		<uri name="urn:jboss:domain:jsf:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-jsf_1_0.xsd"/>
+		<uri name="urn:jboss:domain:jsf:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-jsf_1_1.xsd"/>
 		<uri name="urn:jboss:domain:jsr77:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-jsr77_1_0.xsd"/>
 		<uri name="urn:jboss:domain:logging:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-logging_1_0.xsd"/>
 		<uri name="urn:jboss:domain:logging:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-logging_1_1.xsd"/>
@@ -266,6 +281,8 @@
 		<uri name="urn:jboss:domain:logging:1.5" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-logging_1_5.xsd"/>
 		<uri name="urn:jboss:domain:logging:2.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-logging_2_0.xsd"/>
 		<uri name="urn:jboss:domain:logging:3.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-logging_3_0.xsd"/>
+		<uri name="urn:jboss:domain:logging:4.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-logging_4_0.xsd"/>
+		<uri name="urn:jboss:domain:logging:5.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-logging_5_0.xsd"/>
 		<uri name="urn:jboss:domain:mail:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-mail_1_0.xsd"/>
 		<uri name="urn:jboss:domain:mail:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-mail_1_1.xsd"/>
 		<uri name="urn:jboss:domain:mail:1.2" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-mail_1_2.xsd"/>
@@ -273,6 +290,7 @@
 		<uri name="urn:jboss:domain:mail:3.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-mail_3_0.xsd"/>
 		<uri name="urn:jboss:domain:messaging-activemq:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-messaging-activemq_1_0.xsd"/>
 		<uri name="urn:jboss:domain:messaging-activemq:2.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-messaging-activemq_2_0.xsd"/>
+		<uri name="urn:jboss:domain:messaging-activemq:3.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-messaging-activemq_3_0.xsd"/>
 		<uri name="urn:jboss:domain:messaging:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-messaging_1_0.xsd"/>
 		<uri name="urn:jboss:domain:messaging:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-messaging_1_1.xsd"/>
 		<uri name="urn:jboss:domain:messaging:1.2" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-messaging_1_2.xsd"/>
@@ -342,6 +360,8 @@
 		<uri name="urn:jboss:domain:undertow:3.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-undertow_3_0.xsd"/>
 		<uri name="urn:jboss:domain:undertow:3.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-undertow_3_1.xsd"/>
 		<uri name="urn:jboss:domain:undertow:4.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-undertow_4_0.xsd"/>
+		<uri name="urn:jboss:domain:undertow:5.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-undertow_5_0.xsd"/>
+		<uri name="urn:jboss:domain:undertow:6.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-undertow_6_0.xsd"/>
 		<uri name="urn:jboss:domain:web:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-web_1_0.xsd"/>
 		<uri name="urn:jboss:domain:web:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-web_1_1.xsd"/>
 		<uri name="urn:jboss:domain:web:1.2" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-web_1_2.xsd"/>
@@ -377,6 +397,8 @@
 		<uri name="urn:jboss:module:1.3" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/module-1_3.xsd"/>
 		<uri name="urn:jboss:module:1.5" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/module-1_5.xsd"/>
 		<uri name="urn:jboss:module:1.6" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/module-1_6.xsd"/>
+		<uri name="urn:jboss:module:1.7" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/module-1_7.xsd"/>
+		<uri name="urn:jboss:module:1.8" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/module-1_8.xsd"/>
 		<uri name="urn:jboss:pojo:7.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-pojo_7_0.xsd"/>
 		<uri name="urn:jboss:service:7.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-service_7_0.xsd"/>
 		<uri name="urn:jboss:shared-session-config:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/shared-session-config_1_0.xsd"/>
@@ -398,6 +420,9 @@
 		<uri name="urn:wildfly:client:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-client_1_0.xsd"/>
 		<uri name="urn:wildfly:elytron:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-elytron_1_0.xsd"/>
 		<uri name="urn:wildfly:elytron:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-elytron_1_1.xsd"/>
+		<uri name="urn:wildfly:elytron:1.2" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-elytron_1_2.xsd"/>
+		<uri name="urn:wildfly:elytron:2.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-elytron_2_0.xsd"/>
+		<uri name="urn:wildfly:elytron:3.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-elytron_3_0.xsd"/>
 		<uri name="urn:xnio:3.5" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/xnio_3_5.xsd"/>
        </catalogContribution>
    </extension>

@@ -2,7 +2,7 @@
 
 <!--
   ~ JBoss, Home of Professional Open Source.
-  ~ Copyright 2014 Red Hat, Inc., and individual contributors
+  ~ Copyright 2016 Red Hat, Inc., and individual contributors
   ~ as indicated by the @author tags.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,8 +19,8 @@
   -->
 
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="urn:jboss:module:1.3"
-            xmlns="urn:jboss:module:1.3"
+            targetNamespace="urn:jboss:module:1.7"
+            xmlns="urn:jboss:module:1.7"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
             version="1.0">
@@ -107,44 +107,30 @@
                 </annotation>
             </xsd:element>
         </xsd:all>
-        <xsd:attribute name="name" type="moduleNameType" use="required">
+        <xsd:attribute name="name" type="xsd:string" use="required">
             <annotation xmlns="http://www.w3.org/2001/XMLSchema">
                 <documentation>
                     The name of this module (required).
                 </documentation>
             </annotation>
         </xsd:attribute>
-        <xsd:attribute name="slot" type="moduleSlotType" use="optional">
+        <xsd:attribute name="version" type="moduleVersionType" use="optional">
             <annotation xmlns="http://www.w3.org/2001/XMLSchema">
                 <documentation>
-                    The version slot of this module (optional).
+                    The version of this module (optional).
                 </documentation>
             </annotation>
         </xsd:attribute>
     </xsd:complexType>
 
-    <xsd:simpleType name="moduleNameType">
+    <xsd:simpleType name="moduleVersionType">
         <annotation xmlns="http://www.w3.org/2001/XMLSchema">
             <documentation>
-                A module name, which consists of one or more dot (.)-separated segments. Each segment must begin and end
-                with an alphanumeric or underscore (_), and may otherwise contain alphanumerics, underscores, and hyphens
-                (-).
+                A module version string.
             </documentation>
         </annotation>
         <xsd:restriction base="xsd:string">
-            <xsd:pattern value="[a-zA-Z0-9_]([-a-zA-Z0-9_]*[a-zA-Z0-9_])?(\.[a-zA-Z0-9_]([-a-zA-Z0-9_]*[a-zA-Z0-9_])?)*"/>
-        </xsd:restriction>
-    </xsd:simpleType>
-
-    <xsd:simpleType name="moduleSlotType">
-        <annotation xmlns="http://www.w3.org/2001/XMLSchema">
-            <documentation>
-                A module version slot. A slot may consist of one or more alphanumerics, hyphens (-), underscores (_),
-                plus signs (+), asterisks (*), or dots (.).
-            </documentation>
-        </annotation>
-        <xsd:restriction base="xsd:string">
-            <xsd:pattern value="[-a-zA-Z0-9_+*.]+"/>
+            <xsd:pattern value="([a-zA-Z0-9]+)([-_+.][a-zA-Z0-9]+)*"/>
         </xsd:restriction>
     </xsd:simpleType>
 
@@ -200,17 +186,10 @@
                 </annotation>
             </xsd:element>
         </xsd:all>
-        <xsd:attribute name="name" type="moduleNameType" use="required">
+        <xsd:attribute name="name" type="xsd:string" use="required">
             <annotation xmlns="http://www.w3.org/2001/XMLSchema">
                 <documentation>
                     The dependency module name (required).
-                </documentation>
-            </annotation>
-        </xsd:attribute>
-        <xsd:attribute name="slot" type="moduleSlotType" use="optional">
-            <annotation xmlns="http://www.w3.org/2001/XMLSchema">
-                <documentation>
-                    The dependency module version slot (optional).
                 </documentation>
             </annotation>
         </xsd:attribute>
@@ -378,6 +357,22 @@
                 A maven artifact within a deployment.
             </documentation>
         </annotation>
+        <xsd:all>
+            <xsd:element name="filter" type="filterType" minOccurs="0">
+                <annotation xmlns="http://www.w3.org/2001/XMLSchema">
+                    <documentation>
+                        A path filter specification for this resource root (optional). By default all paths are accepted.
+                    </documentation>
+                </annotation>
+            </xsd:element>
+            <xsd:element name="conditions" type="conditionsType" minOccurs="0">
+                <annotation xmlns="http://www.w3.org/2001/XMLSchema">
+                    <documentation>
+                        A condition filter specification for this resource root (optional). If this resolves to false the resource will not be used.
+                    </documentation>
+                </annotation>
+            </xsd:element>
+        </xsd:all>
         <xsd:attribute name="name" type="xsd:string" use="required">
             <annotation xmlns="http://www.w3.org/2001/XMLSchema">
                 <documentation>
@@ -402,6 +397,13 @@
                     </documentation>
                 </annotation>
             </xsd:element>
+            <xsd:element name="conditions" type="conditionsType" minOccurs="0">
+                <annotation xmlns="http://www.w3.org/2001/XMLSchema">
+                    <documentation>
+                        A condition filter specification for this resource root (optional). If this resolves to false the resource will not be used.
+                    </documentation>
+                </annotation>
+            </xsd:element>
         </xsd:all>
         <xsd:attribute name="name" type="xsd:string" use="optional">
             <annotation xmlns="http://www.w3.org/2001/XMLSchema">
@@ -414,7 +416,7 @@
         <xsd:attribute name="path" type="xsd:string" use="required">
             <annotation xmlns="http://www.w3.org/2001/XMLSchema">
                 <documentation>
-                    The path of this resource root, relative to the path in which the module.xml file is found.
+                    The path of this resource root, either absolute or relative.  Relative paths are resolved with respect to the location at which the module.xml file is found.
                 </documentation>
             </annotation>
         </xsd:attribute>
@@ -499,31 +501,17 @@
                 A module alias type, which defines the target for a module alias.
             </documentation>
         </annotation>
-        <xsd:attribute name="name" type="moduleNameType" use="required">
+        <xsd:attribute name="name" type="xsd:string" use="required">
             <annotation xmlns="http://www.w3.org/2001/XMLSchema">
                 <documentation>
                     The name of this module alias (required).
                 </documentation>
             </annotation>
         </xsd:attribute>
-        <xsd:attribute name="slot" type="moduleSlotType" use="optional">
-            <annotation xmlns="http://www.w3.org/2001/XMLSchema">
-                <documentation>
-                    The version slot of this module alias (optional).
-                </documentation>
-            </annotation>
-        </xsd:attribute>
-        <xsd:attribute name="target-name" type="moduleNameType" use="required">
+        <xsd:attribute name="target-name" type="xsd:string" use="required">
             <annotation xmlns="http://www.w3.org/2001/XMLSchema">
                 <documentation>
                     The name of the module to which this alias refers (required).
-                </documentation>
-            </annotation>
-        </xsd:attribute>
-        <xsd:attribute name="target-slot" type="moduleSlotType" use="optional">
-            <annotation xmlns="http://www.w3.org/2001/XMLSchema">
-                <documentation>
-                    The version slot of the module to which this alias refers (optional).
                 </documentation>
             </annotation>
         </xsd:attribute>
@@ -535,17 +523,10 @@
                 An explicitly absent module.
             </documentation>
         </annotation>
-        <xsd:attribute name="name" type="moduleNameType" use="required">
+        <xsd:attribute name="name" type="xsd:string" use="required">
             <annotation xmlns="http://www.w3.org/2001/XMLSchema">
                 <documentation>
                     The name of the absent module (required).
-                </documentation>
-            </annotation>
-        </xsd:attribute>
-        <xsd:attribute name="slot" type="moduleSlotType" use="optional">
-            <annotation xmlns="http://www.w3.org/2001/XMLSchema">
-                <documentation>
-                    The version slot of the absent module (optional).
                 </documentation>
             </annotation>
         </xsd:attribute>
@@ -618,6 +599,52 @@
                     The (optional) list of actions, required by some permission types.
                 </documentation>
             </annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+
+    <xsd:complexType name="conditionsType">
+        <annotation xmlns="http://www.w3.org/2001/XMLSchema">
+            <documentation>
+                A condition that determines if a resource is used. All conditions must resolve to true for the resource to be included in the module.
+            </documentation>
+        </annotation>
+        <xsd:sequence>
+            <xsd:element name="property-equal" type="propertyConditionType" minOccurs="0">
+                <annotation xmlns="http://www.w3.org/2001/XMLSchema">
+                    <documentation>
+                        A condition that evaluates to true if the property is equal to the provided value.
+                    </documentation>
+                </annotation>
+            </xsd:element>
+            <xsd:element name="property-not-equal" type="propertyConditionType" minOccurs="0">
+                <annotation xmlns="http://www.w3.org/2001/XMLSchema">
+                    <documentation>
+                        A condition that evaluates to true if the property is equal to the provided value.
+                    </documentation>
+                </annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="propertyConditionType">
+        <annotation xmlns="http://www.w3.org/2001/XMLSchema">
+            <documentation>
+                A condition based on the value of a system property.
+            </documentation>
+        </annotation>
+        <xsd:attribute name="name" use="required">
+            <xsd:annotation>
+                <xsd:documentation>
+                    The property name
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="value" use="required">
+            <xsd:annotation>
+                <xsd:documentation>
+                    The property value
+                </xsd:documentation>
+            </xsd:annotation>
         </xsd:attribute>
     </xsd:complexType>
 </xsd:schema>

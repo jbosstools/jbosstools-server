@@ -19,8 +19,8 @@
   -->
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="urn:wildfly:elytron:1.0"
-            xmlns="urn:wildfly:elytron:1.0"
+            targetNamespace="urn:wildfly:elytron:3.0"
+            xmlns="urn:wildfly:elytron:3.0"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
             version="1.0">
@@ -38,6 +38,7 @@
             <xs:element name="security-realms" type="realmsType" minOccurs="0" />
             <xs:element name="credential-security-factories" type="credentialSecurityFactoriesType" minOccurs="0" />
             <xs:element name="mappers" type="mappersType" minOccurs="0" />
+            <xs:element name="permission-sets" type="permissionSetsType" minOccurs="0" />
             <xs:element name="http" type="httpType" minOccurs="0" />
             <xs:element name="sasl" type="saslType" minOccurs="0" />
             <xs:element name="tls" type="tlsType" minOccurs="0" />
@@ -225,6 +226,21 @@
                     Reference to a security domain to use for a forwarded identity.
                 </xs:documentation>
             </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="forwarding-mode" default="authentication">
+            <xs:simpleType>
+                <xs:annotation>
+                    <xs:documentation>
+                        The type of identity forwarding to use when security-domain is specified. The value "authenticaiton" forwards
+                        the identity of the currently authenticated user, including credentials. The value "authorization" forwards
+                        the underlying authorization identity, which allows for a different identity to be used for authentication.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="authentication" />
+                    <xs:enumeration value="authorization" />
+                </xs:restriction>
+            </xs:simpleType>
         </xs:attribute>
         <xs:attribute name = "sasl-mechanism-selector" type="xs:string">
             <xs:annotation>
@@ -2125,6 +2141,14 @@
                         </xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
+                <xs:attribute name="fail-cache" type="xs:int">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Amount of seconds before new try to obtain server credential should be done if it has failed last time.
+                            Allows to prevent long waiting to unavailable KDC on every authentication.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
                 <xs:attribute name="server" type="xs:boolean" default="true">
                     <xs:annotation>
                         <xs:documentation>
@@ -2328,8 +2352,35 @@
                     <xs:element name="permission-mapping" minOccurs="0" maxOccurs="unbounded">
                         <xs:complexType>
                             <xs:sequence>
+                                <xs:element name="principal" minOccurs="0" maxOccurs="unbounded">
+                                    <xs:complexType>
+                                        <xs:attribute name="name" type="xs:string" use="required">
+                                            <xs:annotation>
+                                                <xs:documentation>
+                                                    The name of the principal.
+                                                </xs:documentation>
+                                            </xs:annotation>
+                                         </xs:attribute>
+                                    </xs:complexType>
+                                </xs:element>
+                                <xs:element name="role" minOccurs="0" maxOccurs="unbounded">
+                                    <xs:complexType>
+                                        <xs:attribute name="name" type="xs:string" use="required">
+                                            <xs:annotation>
+                                                <xs:documentation>
+                                                    The name of the role.
+                                                </xs:documentation>
+                                            </xs:annotation>
+                                         </xs:attribute>
+                                    </xs:complexType>
+                                </xs:element>
                                 <xs:element name="permission" minOccurs="0" maxOccurs="unbounded">
                                     <xs:complexType>
+                                        <xs:annotation>
+                                            <xs:documentation>
+                                                Deprecated. Use a reference to a 'permission-set' instead.
+                                            </xs:documentation>
+                                        </xs:annotation>
                                         <xs:attribute name="class-name" type="xs:string" use="required">
                                             <xs:annotation>
                                                 <xs:documentation>
@@ -2360,22 +2411,9 @@
                                          </xs:attribute>
                                     </xs:complexType>
                                 </xs:element>
+                                <xs:element name="permission-set" type="permissionSetRefType" minOccurs="0" maxOccurs="unbounded" />
                             </xs:sequence>
-
-                            <xs:attribute name="principals" type="stringListType">
-                                <xs:annotation>
-                                    <xs:documentation>
-                                        If the identities principal name matches any of the principals listed here then this permission mapping will be a match.
-                                    </xs:documentation>
-                                </xs:annotation>
-                            </xs:attribute>
-                            <xs:attribute name="roles" type="stringListType">
-                                <xs:annotation>
-                                    <xs:documentation>
-                                        If the identity is a member of any of the roles listed here then the permission mapping will be a match.
-                                    </xs:documentation>
-                                </xs:annotation>
-                            </xs:attribute>
+                            <xs:attribute name="match-all" type="xs:boolean" default="false" />
                         </xs:complexType>
                     </xs:element>
                 </xs:sequence>
@@ -2392,9 +2430,14 @@
         </xs:annotation>
         <xs:complexContent>
             <xs:extension base="permissionMapperType">
-                <xs:sequence>
+                <xs:choice maxOccurs="unbounded">
                     <xs:element name="permission" maxOccurs="unbounded">
                         <xs:complexType>
+                            <xs:annotation>
+                                <xs:documentation>
+                                    Deprecated. Use a reference to a 'permission-set' instead.
+                                </xs:documentation>
+                            </xs:annotation>
                             <xs:attribute name="class-name" type="xs:string" use="required">
                                 <xs:annotation>
                                     <xs:documentation>
@@ -2425,9 +2468,19 @@
                             </xs:attribute>
                         </xs:complexType>
                     </xs:element>
-                </xs:sequence>
+                    <xs:element name="permission-set" type="permissionSetRefType" maxOccurs="unbounded" />
+                </xs:choice>
             </xs:extension>
         </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="permissionSetRefType">
+        <xs:annotation>
+            <xs:documentation>
+                A reference to a permission set.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="name" type="xs:string" use="required" />
     </xs:complexType>
 
     <xs:simpleType name="simpleMappingMode">
@@ -3325,6 +3378,66 @@
             <xs:annotation>
                 <xs:documentation>
                     Reference to a RealmMapper to be used by this mechanism realm.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="permissionSetsType">
+        <xs:annotation>
+            <xs:documentation>
+                Container for the permission set definitions.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="permission-set" type="permissionSetType" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="permissionSetType">
+        <xs:annotation>
+            <xs:documentation>
+                Definition of a permission set.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="permission" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:attribute name="class-name" type="xs:string" use="required">
+                        <xs:annotation>
+                            <xs:documentation>
+                                The fully qualified class name of the permission.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="module" type="xs:string">
+                        <xs:annotation>
+                            <xs:documentation>
+                                The module to use to load the permission class.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="target-name" type="xs:string">
+                        <xs:annotation>
+                            <xs:documentation>
+                                The target-name to pass to the constructor of the permission.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="action" type="xs:string">
+                        <xs:annotation>
+                            <xs:documentation>
+                                The action to pass to the constructor of the permission.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>
+                    The unique name for the permission set, note names used for permission sets must be unique across the whole context.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -4847,14 +4960,14 @@
                 A definition that sets up a policy provider.
             </xs:documentation>
         </xs:annotation>
-        <xs:choice maxOccurs="unbounded">
-            <xs:element name="jacc-policy" type="jaccPolicyType" minOccurs="0" />
-            <xs:element name="custom-policy" type="customPolicyType" minOccurs="0" />
+        <xs:choice>
+            <xs:element name="jacc-policy" type="jaccPolicyType" minOccurs="1" />
+            <xs:element name="custom-policy" type="customPolicyType" minOccurs="1" />
         </xs:choice>
-        <xs:attribute name="default-policy" type="xs:string">
+        <xs:attribute name="name" type="xs:string">
             <xs:annotation>
                 <xs:documentation>
-                    The name of a default policy provider.
+                    The name of the policy provider definition.
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
@@ -4866,13 +4979,6 @@
                 A policy provider definition that sets up JACC and related services.
             </xs:documentation>
         </xs:annotation>
-        <xs:attribute name="name" type="xs:string" use="required">
-            <xs:annotation>
-                <xs:documentation>
-                    The name of this provider.
-                </xs:documentation>
-            </xs:annotation>
-        </xs:attribute>
         <xs:attribute name="policy" type="xs:string" use="optional">
             <xs:annotation>
                 <xs:documentation>
@@ -4902,13 +5008,6 @@
                 A custom policy provider definition.
             </xs:documentation>
         </xs:annotation>
-        <xs:attribute name="name" type="xs:string" use="required">
-            <xs:annotation>
-                <xs:documentation>
-                    The name of this provider.
-                </xs:documentation>
-            </xs:annotation>
-        </xs:attribute>
         <xs:attribute name="class-name" type="xs:string" use="required">
             <xs:annotation>
                 <xs:documentation>

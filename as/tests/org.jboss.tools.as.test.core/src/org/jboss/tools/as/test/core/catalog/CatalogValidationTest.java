@@ -90,6 +90,7 @@ public class CatalogValidationTest extends TestCase {
 		// Some schema have no root elements and thus can't be generated. Maybe this is a bug? Idk. 
 		noRootElement.add("jboss-common_5_1.xsd");
 		noRootElement.add("jboss-common_6_0.xsd");
+		noRootElement.add("jboss-common_7_0.xsd");
 		noRootElement.add("xml.xsd");
 	}
 	
