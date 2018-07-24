@@ -8,12 +8,12 @@ import java.util.List;
 import org.eclipse.reddeer.common.condition.AbstractWaitCondition;
 import org.eclipse.reddeer.common.wait.TimePeriod;
 import org.eclipse.reddeer.common.wait.WaitUntil;
+import org.eclipse.reddeer.core.exception.CoreLayerException;
 import org.eclipse.reddeer.core.reference.ReferencedComposite;
 import org.eclipse.reddeer.jface.preference.PreferencePage;
 import org.eclipse.reddeer.swt.api.Button;
 import org.eclipse.reddeer.swt.api.Table;
 import org.eclipse.reddeer.swt.api.TableItem;
-import org.eclipse.reddeer.swt.exception.SWTLayerException;
 import org.eclipse.reddeer.swt.impl.button.PushButton;
 import org.eclipse.reddeer.swt.impl.label.DefaultLabel;
 import org.eclipse.reddeer.swt.impl.shell.DefaultShell;
@@ -69,7 +69,7 @@ public class RuntimeDetectionPreferencePage extends PreferencePage {
 			try {
 				new DefaultLabel("Searching runtimes is finished.");
 				return true;
-			} catch (SWTLayerException e){
+			} catch (CoreLayerException e){
 				return false;
 			}
 		}
