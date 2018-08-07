@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.jboss.tools.jmx.jvmmonitor.tools;singleton:=true
-Bundle-Version: 1.10.4.qualifier
+Bundle-Version: 1.10.5.qualifier
 Bundle-Activator: org.jboss.tools.jmx.jvmmonitor.tools.Activator
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
