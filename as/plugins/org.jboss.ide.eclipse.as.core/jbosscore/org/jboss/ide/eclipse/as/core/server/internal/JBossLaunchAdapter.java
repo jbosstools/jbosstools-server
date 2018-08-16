@@ -29,6 +29,7 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IModuleArtifact;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.model.IURLProvider;
 import org.eclipse.wst.server.core.model.IURLProvider2;
 import org.eclipse.wst.server.core.model.LaunchableAdapterDelegate;
@@ -61,6 +62,11 @@ public class JBossLaunchAdapter extends LaunchableAdapterDelegate {
 	 */
 	public Object getLaunchable(IServer server, IModuleArtifact moduleObject) {
 		if (server != null) {
+			if( server instanceof IServerWorkingCopy) {
+				if( ((IServerWorkingCopy)server).getOriginal() == null ) {
+					return null;
+				}
+			}
 			ServerDelegate delegate = (ServerDelegate)server.loadAdapter(ServerDelegate.class,null);
 	        if( moduleObject instanceof IModuleArtifact2 ) {
 	        	IModuleArtifact2 rootArt = ((IModuleArtifact2)moduleObject);
