@@ -44,6 +44,7 @@ import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IControllableServerBehavior;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.tools.as.core.server.controllable.systems.IPortsController;
 import org.jboss.tools.jmx.core.IConnectionFacade;
@@ -204,9 +205,12 @@ public class JBossServer extends DeployableServer
 
 	protected int findPort(int key, int defaultValue) {
 		try {
-			IPortsController pc = (IPortsController)JBossServerBehaviorUtils.getControllableBehavior(getServer()).getController(IPortsController.SYSTEM_ID);
-			if( pc != null ) {
-				return pc.findPort(key, defaultValue);
+			IControllableServerBehavior behavior = JBossServerBehaviorUtils.getControllableBehavior(getServer());
+			if (behavior != null) {
+				IPortsController pc = (IPortsController) behavior.getController(IPortsController.SYSTEM_ID);
+				if (pc != null) {
+					return pc.findPort(key, defaultValue);
+				}
 			}
 		} catch(CoreException ce) {
 			JBossServerCorePlugin.log(ce.getStatus());
