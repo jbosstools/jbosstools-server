@@ -13,6 +13,7 @@ import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
 import org.eclipse.reddeer.junit.internal.runner.ParameterizedRequirementsRunnerFactory;
 import org.eclipse.reddeer.junit.runner.RedDeerSuite;
 import org.eclipse.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
+import org.jboss.tools.as.ui.bot.itests.AbstractTest;
 import org.jboss.tools.as.ui.bot.itests.Activator;
 import org.jboss.tools.as.ui.bot.itests.parametized.CleanEnvironmentUtils;
 import org.jboss.tools.as.ui.bot.itests.parametized.MatrixUtils;
@@ -21,6 +22,7 @@ import org.jboss.tools.as.ui.bot.itests.reddeer.util.RuntimeDetectionUtility;
 import org.jboss.tools.as.ui.bot.itests.reddeer.util.DisableSecureStorageRequirement.DisableSecureStorage;
 import org.jboss.tools.common.util.FileUtil;
 import org.junit.After;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
@@ -43,6 +45,11 @@ public class RuntimeDetectionDuplicatesTest extends TestCase {
     private String serverHomeFlag;
     public RuntimeDetectionDuplicatesTest(String serverHome) {
     	this.serverHomeFlag = serverHome;
+    }
+    
+    @BeforeClass
+    public static void prepare() {
+    	AbstractTest.deleteRuntimes();
     }
     
 

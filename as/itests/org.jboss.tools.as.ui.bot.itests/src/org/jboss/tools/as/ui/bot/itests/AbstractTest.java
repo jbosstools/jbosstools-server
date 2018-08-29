@@ -10,7 +10,9 @@
  ******************************************************************************/
 package org.jboss.tools.as.ui.bot.itests;
 
+import org.eclipse.reddeer.eclipse.wst.server.ui.RuntimePreferencePage;
 import org.eclipse.reddeer.workbench.handler.WorkbenchShellHandler;
+import org.eclipse.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
 import org.junit.AfterClass;
 
 /**
@@ -24,5 +26,14 @@ public abstract class AbstractTest {
 	public static void cleanUpAfterTest() {
 		//Close all shells if test fails (could interfere next tests)
 		WorkbenchShellHandler.getInstance().closeAllNonWorbenchShells();
+	}
+	
+	public static void deleteRuntimes() {
+		WorkbenchPreferenceDialog preferences = new WorkbenchPreferenceDialog();
+		preferences.open();
+		RuntimePreferencePage runtimePreferencePage = new RuntimePreferencePage(preferences);
+		preferences.select(runtimePreferencePage);
+		runtimePreferencePage.removeAllRuntimes();
+		preferences.ok();
 	}
 }

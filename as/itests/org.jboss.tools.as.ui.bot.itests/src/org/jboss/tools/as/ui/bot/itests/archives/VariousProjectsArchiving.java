@@ -22,6 +22,7 @@ import org.eclipse.reddeer.eclipse.jst.servlet.ui.project.facet.WebProjectWizard
 import org.eclipse.reddeer.eclipse.ui.views.log.LogMessage;
 import org.eclipse.reddeer.eclipse.ui.views.log.LogView;
 import org.eclipse.reddeer.junit.runner.RedDeerSuite;
+import org.jboss.tools.as.ui.bot.itests.AbstractTest;
 import org.jboss.tools.as.ui.bot.itests.Activator;
 import org.jboss.tools.as.ui.bot.itests.download.RuntimeDownloadTestUtility;
 import org.jboss.tools.as.ui.bot.itests.parametized.server.ServerRuntimeUIConstants;
@@ -46,6 +47,7 @@ public class VariousProjectsArchiving extends ArchivesTestBase {
 	
 	@BeforeClass
 	public static void setup() {
+		AbstractTest.deleteRuntimes();
 		File f = Activator.getDownloadFolder(SMOKETEST_TYPE);
 		if( !f.exists() || f.list() == null || f.list().length == 0 ) {
 	        RuntimeDownloadTestUtility util = new RuntimeDownloadTestUtility(f);

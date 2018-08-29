@@ -82,9 +82,22 @@ public class ServerRuntimesTest extends AbstractTest {
     public static Collection<Object[]> data(){
     	String scope = System.getProperty(SuiteConstants.SYSPROP_KEY);
     	ArrayList<Object[]> ret = (ArrayList<Object[]>) ServerRuntimeUIConstants.getParametersForScope(scope);
-    	return ret;
+    	return fixCredentialsForEAP(ret);
     }
     
+	private static  ArrayList<Object[]> fixCredentialsForEAP(ArrayList<Object[]> paths) {
+		ArrayList<Object[]> pathsModified = new ArrayList<Object[]>();
+		for(Object[] object:paths) {
+			String server = (String) object[0];
+			if (server.contains("EAP")) {
+				Object[] modified = { object[0], false};
+				pathsModified.add(modified);
+			} else {
+				pathsModified.add(object);
+			}	
+		}	
+		return pathsModified;
+	} 
     
     @BeforeClass
     public static void addJREs() {
@@ -103,6 +116,7 @@ public class ServerRuntimesTest extends AbstractTest {
     	addJRE("JRE6",jre6);
     	addJRE("JRE7",jre7);
     	addJRE("JRE8",jre8);
+    	deleteRuntimes();
     }
     
     @AfterClass
@@ -129,8 +143,6 @@ public class ServerRuntimesTest extends AbstractTest {
 		page.addJRE(path, name);
 		dialog.ok();
     }
-
-
 
     private String runtimeString;
     private boolean dlType;
