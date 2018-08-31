@@ -39,33 +39,33 @@
       <import plugin="org.eclipse.ui" version="3.8.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.wst.server.ui" version="1.1.305" match="greaterOrEqual"/>
       <import plugin="org.eclipse.debug.ui" version="3.7.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.rse.core" version="3.1.200" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.rse.subsystems.files.core" version="3.2.100" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.rse.services" version="3.2.100" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.rse.services.files.ftp" version="3.0.300" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.rse.services.local" version="2.1.300" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.rse.services.ssh" version="3.1.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.rse.subsystems.shells.core" version="3.1.200" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.rse.core"/>
+      <import plugin="org.eclipse.rse.subsystems.files.core"/>
+      <import plugin="org.eclipse.rse.services"/>
+      <import plugin="org.eclipse.rse.services.files.ftp"/>
+      <import plugin="org.eclipse.rse.services.local"/>
+      <import plugin="org.eclipse.rse.services.ssh"/>
+      <import plugin="org.eclipse.rse.subsystems.shells.core"/>
       <import plugin="org.jboss.ide.eclipse.as.core"/>
       <import plugin="org.jboss.ide.eclipse.archives.webtools"/>
       <import plugin="org.jboss.ide.eclipse.as.ui"/>
-      <import plugin="org.eclipse.rse.files.ui" version="3.2.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.rse.ui" version="3.2.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.rse.subsystems.shells.dstore" version="2.1.300" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.rse.subsystems.shells.local" version="2.1.300" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.rse.subsystems.shells.ssh" version="2.1.300" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.rse.subsystems.shells.telnet" version="1.2.200" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.rse.files.ui"/>
+      <import plugin="org.eclipse.rse.ui"/>
+      <import plugin="org.eclipse.rse.subsystems.shells.dstore"/>
+      <import plugin="org.eclipse.rse.subsystems.shells.local"/>
+      <import plugin="org.eclipse.rse.subsystems.shells.ssh"/>
+      <import plugin="org.eclipse.rse.subsystems.shells.telnet"/>
       <import feature="org.jboss.tools.jmx.feature"/>
       
       <!-- new for Mars M7 -->
       <import plugin="org.eclipse.core.expressions" version="3.4.400" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.tm.terminal.control" version="4.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.tm.terminal.view.core" version="4.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.tm.terminal.view.ui" version="4.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.tm.terminal.view.ui.rse" version="4.0.0" match="greaterOrEqual"/>
-      <import feature="org.eclipse.tm.terminal.connector.local.feature" version="4.0.0" match="greaterOrEqual"/>
-      <import feature="org.eclipse.tm.terminal.connector.ssh.feature" version="4.0.0" match="greaterOrEqual"/>
-      <import feature="org.eclipse.tm.terminal.connector.telnet.feature" version="4.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.tm.terminal.control"/>
+      <import plugin="org.eclipse.tm.terminal.view.core"/>
+      <import plugin="org.eclipse.tm.terminal.view.ui"/>
+      <import plugin="org.eclipse.tm.terminal.view.ui.rse"/>
+      <import feature="org.eclipse.tm.terminal.connector.local.feature"/>
+      <import feature="org.eclipse.tm.terminal.connector.ssh.feature"/>
+      <import feature="org.eclipse.tm.terminal.connector.telnet.feature"/>
 
    </requires>
 
