@@ -35,9 +35,9 @@ public class JBossModulesDefaultClasspathModel extends InternalRuntimeClasspathM
 	private static List<String> ee8 = Arrays.asList(new String[] {
 			IJBossToolingConstants.WILDFLY_90, IJBossToolingConstants.WILDFLY_100,
 			IJBossToolingConstants.EAP_70});
-	private static List<String> wf11Plus = Arrays.asList(new String[] {
-			IJBossToolingConstants.WILDFLY_110, IJBossToolingConstants.WILDFLY_120,
-			IJBossToolingConstants.EAP_71});
+	private static List<String> wf11Plus = Arrays.asList(new String[] { IJBossToolingConstants.WILDFLY_110,
+			IJBossToolingConstants.WILDFLY_120, IJBossToolingConstants.WILDFLY_130, IJBossToolingConstants.WILDFLY_140,
+			IJBossToolingConstants.EAP_71 });
 	// NEW_SERVER_ADAPTER
 
 	private IRuntimePathProvider[] getDefaultJBossModulesEntries(IRuntimeType rtt) {
@@ -49,9 +49,6 @@ public class JBossModulesDefaultClasspathModel extends InternalRuntimeClasspathM
 		if( wf11Plus.contains(rttId)) 
 			return getDefaultWF11JBossModulesEntries();
 		// NEW_SERVER_ADAPTER
-		if( rtt.getId().equals(IJBossToolingConstants.WILDFLY_130)) {
-			return getDefaultWF11JBossModulesEntries();
-		}
 		return getDefaultJBossModulesEntries();
 	}
 
