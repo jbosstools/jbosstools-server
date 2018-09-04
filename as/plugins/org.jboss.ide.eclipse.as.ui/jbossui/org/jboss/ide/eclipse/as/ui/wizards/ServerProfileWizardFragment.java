@@ -118,6 +118,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 	private IRuntimeWorkingCopy newRuntimeWorkingCopy;
 	
 	private IProfileComposite profileComposite;
+	private IServerWorkingCopy swc;
 	
 	public ServerProfileWizardFragment() {
 		super();
@@ -175,7 +176,7 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		IServerModeUICallback cb = getOrCreateCallback();
 		
 		
-		IServerWorkingCopy swc = (IServerWorkingCopy)getTaskModel().getObject(TaskModel.TASK_SERVER);
+		swc = (IServerWorkingCopy)getTaskModel().getObject(TaskModel.TASK_SERVER);
 		swc.addPropertyChangeListener(this);
 		
 		
@@ -619,11 +620,13 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 		if( cb != null && cb instanceof EditServerWizardBehaviourCallback) {
 			((EditServerWizardBehaviourCallback)cb).performFinish();
 		}
+		dispose();
 	}
 
 	@Override
 	public void performCancel(IProgressMonitor monitor) throws CoreException {
 		super.performCancel(monitor);
+		dispose();
 	}
 	
 	public boolean hasComposite() {
@@ -764,5 +767,11 @@ public class ServerProfileWizardFragment extends WizardFragment implements IComp
 			runtimeComboChanged();
 		}
 		updateErrorMessage();
+	}
+	
+	private void dispose() {
+		if (swc != null) {
+			swc.removePropertyChangeListener(this);
+		}
 	}
 }
