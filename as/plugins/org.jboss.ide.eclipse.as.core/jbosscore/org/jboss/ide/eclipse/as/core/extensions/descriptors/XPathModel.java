@@ -303,7 +303,6 @@ public class XPathModel extends UnitedServerListener {
 		rtToPortsFile.put(IConstants.WILDFLY_110, getURLFor(DEFAULT_PROPS_80));
 		rtToPortsFile.put(IConstants.WILDFLY_120, getURLFor(DEFAULT_PROPS_80));
 		rtToPortsFile.put(IConstants.WILDFLY_130, getURLFor(DEFAULT_PROPS_80));
-		rtToPortsFile.put(IConstants.WILDFLY_140, getURLFor(DEFAULT_PROPS_80));
 		// TODO NEW_SERVER_ADAPTER Add the new server ID to port mapping file above this line 
 	}
 	

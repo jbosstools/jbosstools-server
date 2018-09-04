@@ -16,6 +16,8 @@ package org.jboss.ide.eclipse.as.core.util;
  */
 public interface IJBossToolingConstants {
 	/* Server runtime types */
+	public static final String WILDFLY_130 = "org.jboss.ide.eclipse.as.runtime.wildfly.130"; //-NLS-1$
+	public static final String SERVER_WILDFLY_130 = "org.jboss.ide.eclipse.as.wildfly.130"; //-NLS-1$
 	public static final String AS_32 = "org.jboss.ide.eclipse.as.runtime.32"; //$NON-NLS-1$
 	public static final String AS_40 = "org.jboss.ide.eclipse.as.runtime.40"; //$NON-NLS-1$
 	public static final String AS_42 = "org.jboss.ide.eclipse.as.runtime.42"; //$NON-NLS-1$
@@ -29,8 +31,6 @@ public interface IJBossToolingConstants {
 	public static final String WILDFLY_100 = "org.jboss.ide.eclipse.as.runtime.wildfly.100"; //$NON-NLS-1$
 	public static final String WILDFLY_110 = "org.jboss.ide.eclipse.as.runtime.wildfly.110"; //$NON-NLS-1$
 	public static final String WILDFLY_120 = "org.jboss.ide.eclipse.as.runtime.wildfly.120"; //$NON-NLS-1$
-	public static final String WILDFLY_130 = "org.jboss.ide.eclipse.as.runtime.wildfly.130";//$NON-NLS-1$
-	public static final String WILDFLY_140 = "org.jboss.ide.eclipse.as.runtime.wildfly.140";//$NON-NLS-1$
 	public static final String RUNTIME_PREFIX = "org.jboss.ide.eclipse.as.runtime."; //$NON-NLS-1$
 	public static final String EAP_RUNTIME_PREFIX = "org.jboss.ide.eclipse.as.runtime.eap."; //$NON-NLS-1$
 	public static final String WF_RUNTIME_PREFIX = "org.jboss.ide.eclipse.as.runtime.wildfly."; //$NON-NLS-1$
@@ -42,7 +42,7 @@ public interface IJBossToolingConstants {
 	public static final String EAP_71 = "org.jboss.ide.eclipse.as.runtime.eap.71"; //$NON-NLS-1$
 	public static final String[] ALL_JBOSS_RUNTIMES = new String[] {
 		AS_32,AS_40,AS_42,AS_50,AS_51,AS_60,
-		AS_70,AS_71,WILDFLY_80,WILDFLY_90,WILDFLY_100,WILDFLY_110,WILDFLY_120,WILDFLY_130,WILDFLY_140,
+		AS_70,AS_71,WILDFLY_80,WILDFLY_90,WILDFLY_100,WILDFLY_110,WILDFLY_120,WILDFLY_130,
 		EAP_43,EAP_50,EAP_60, EAP_61, EAP_70, EAP_71
 	};
 	// NEW_SERVER_ADAPTER Add the new runtime constant above this line
@@ -61,8 +61,6 @@ public interface IJBossToolingConstants {
 	public static final String SERVER_WILDFLY_100 = "org.jboss.ide.eclipse.as.wildfly.100"; //$NON-NLS-1$
 	public static final String SERVER_WILDFLY_110 = "org.jboss.ide.eclipse.as.wildfly.110"; //$NON-NLS-1$
 	public static final String SERVER_WILDFLY_120 = "org.jboss.ide.eclipse.as.wildfly.120"; //$NON-NLS-1$
-	public static final String SERVER_WILDFLY_130 = "org.jboss.ide.eclipse.as.wildfly.130"; //-NLS-1$
-	public static final String SERVER_WILDFLY_140 = "org.jboss.ide.eclipse.as.wildfly.140"; //-NLS-1$
 	public static final String WF_SERVER_PREFIX = "org.jboss.ide.eclipse.as.wildfly."; //$NON-NLS-1$
 	public static final String EAP_SERVER_PREFIX = "org.jboss.ide.eclipse.as.eap."; //$NON-NLS-1$
 	public static final String SERVER_EAP_43 = "org.jboss.ide.eclipse.as.eap.43"; //$NON-NLS-1$
@@ -74,7 +72,7 @@ public interface IJBossToolingConstants {
 	public static final String[] ALL_JBOSS_SERVERS = new String[] {
 		SERVER_AS_32,SERVER_AS_40,SERVER_AS_42,SERVER_AS_50,SERVER_AS_51,
 		SERVER_AS_60,SERVER_AS_70,SERVER_AS_71,
-		SERVER_WILDFLY_80,SERVER_WILDFLY_90,SERVER_WILDFLY_100,SERVER_WILDFLY_110,SERVER_WILDFLY_120,SERVER_WILDFLY_130,SERVER_WILDFLY_140,
+		SERVER_WILDFLY_80,SERVER_WILDFLY_90,SERVER_WILDFLY_100,SERVER_WILDFLY_110,SERVER_WILDFLY_120,SERVER_WILDFLY_130,
 		SERVER_EAP_43,SERVER_EAP_50,SERVER_EAP_60, SERVER_EAP_61, SERVER_EAP_70, SERVER_EAP_71
 	};
 	// NEW_SERVER_ADAPTER Add the new server id above this line
