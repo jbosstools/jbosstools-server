@@ -1,0 +1,82 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.jboss.tools.jmx</groupId>
+    <artifactId>itests</artifactId>
+    <version>1.10.5-SNAPSHOT</version>
+  </parent>
+  <groupId>org.jboss.tools.jmx.tests</groupId>
+  <artifactId>org.jboss.tools.jmx.ui.bot.test</artifactId>
+  <version>1.10.100-SNAPSHOT</version>
+  <packaging>eclipse-test-plugin</packaging>
+  
+	 <properties>
+	 	<maven.test.failure.ignore>true</maven.test.failure.ignore>
+	 	<rd.config>${project.build.directory}/classes/requirements.json</rd.config>
+		<systemProperties>-Drd.config=${rd.config} -Dusage_reporting_enabled=false -Djbosstools.test.wildfly.14.home=${jbosstools.test.wildfly.14.home}</systemProperties>
+		<surefire.timeout>14400</surefire.timeout>
+		<jbosstools.test.wildfly.14.home>${requirementsDirectory}/wildfly-14.0.0.Final</jbosstools.test.wildfly.14.home>
+		<suiteClass>org.jboss.tools.jmx.ui.bot.test.JMXAllTests</suiteClass>
+	</properties>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>wildfly</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<skip>${skipTests}</skip>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.wildfly</groupId>
+									<artifactId>wildfly-dist</artifactId>
+									<version>14.0.0.Final</version>
+									<type>zip</type>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-compiler-plugin</artifactId>
+	            <version>3.5.1</version>
+	            <configuration>
+	                <source>1.8</source>
+	                <target>1.8</target>
+	            </configuration>
+        	</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-surefire-plugin</artifactId>
+				<configuration>
+					<appArgLine>-pluginCustomization ${requirementsDirectory}/pluginCustomization.ini</appArgLine>
+					<useUIThread>false</useUIThread>
+					<testSuite>org.jboss.tools.jmx.ui.bot.test</testSuite>
+					<testClass>${suiteClass}</testClass>
+					<skip>${skipITests}</skip>
+				</configuration>
+			</plugin>
+		</plugins>
+		<resources>
+			<resource>
+				<directory>resources</directory>
+				<includes>
+					<include>*</include>
+				</includes>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+	</build>
+</project>

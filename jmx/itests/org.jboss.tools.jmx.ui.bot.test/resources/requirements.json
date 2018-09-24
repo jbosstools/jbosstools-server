@@ -1,0 +1,9 @@
+{
+	"org.jboss.ide.eclipse.as.reddeer.server.requirement.ServerRequirement.JBossServer": [
+		{
+			"runtime": "${jbosstools.test.wildfly.14.home}",
+			"version": "14",
+			"family": "WILDFLY"
+		}
+	]
+}
