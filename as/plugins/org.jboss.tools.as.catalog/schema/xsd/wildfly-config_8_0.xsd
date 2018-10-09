@@ -19,8 +19,8 @@
   -->
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns="urn:jboss:domain:7.0"
-           targetNamespace="urn:jboss:domain:7.0"
+           xmlns="urn:jboss:domain:8.0"
+           targetNamespace="urn:jboss:domain:8.0"
            elementFormDefault="qualified"
            attributeFormDefault="unqualified"
         >
@@ -4892,6 +4892,15 @@
                             <xs:documentation>
                                 <![CDATA[
                                    A shorthand identifier for kernel management API version 6.0.x
+                                ]]>
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:enumeration>
+                    <xs:enumeration value="WildFly13.0">
+                        <xs:annotation>
+                            <xs:documentation>
+                                <![CDATA[
+                                   A shorthand identifier for kernel management API version 7.0.x
                                 ]]>
                             </xs:documentation>
                         </xs:annotation>
