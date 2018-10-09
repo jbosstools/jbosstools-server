@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: org.jboss.tools.jmx.reddeer
+Bundle-SymbolicName: org.jboss.tools.jmx.reddeer;singleton:=true
+Bundle-Version: 1.10.100.qualifier
+Bundle-ActivationPolicy: lazy
+Bundle-Vendor: Red Hat Inc.
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: org.junit, 
+ org.eclipse.reddeer.go
+Export-Package: org.jboss.tools.jmx.reddeer.core,
+ org.jboss.tools.jmx.reddeer.ui.editor,
+ org.jboss.tools.jmx.reddeer.ui.view
+

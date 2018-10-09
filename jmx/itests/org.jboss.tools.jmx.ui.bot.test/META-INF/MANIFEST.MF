@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %BundleName
+Bundle-SymbolicName: org.jboss.tools.jmx.ui.bot.test
+Bundle-Version: 1.10.100.qualifier
+Bundle-Vendor: Red Hat
+Require-Bundle: org.junit,
+ org.eclipse.reddeer.go;bundle-version="[2.1.0,3.0.0)",
+ org.jboss.ide.eclipse.as.reddeer,
+ org.jboss.tools.jmx.reddeer
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Eclipse-BundleShape: jar
