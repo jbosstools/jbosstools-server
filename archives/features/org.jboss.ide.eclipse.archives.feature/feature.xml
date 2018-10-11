@@ -2,7 +2,7 @@
 <feature 
    id="org.jboss.ide.eclipse.archives.feature" 
    label="%featureName" 
-   version="3.6.201.qualifier" 
+   version="3.6.202.qualifier" 
    provider-name="%providerName" 
    license-feature="org.jboss.tools.foundation.license.feature"
    license-feature-version="0.0.0"
