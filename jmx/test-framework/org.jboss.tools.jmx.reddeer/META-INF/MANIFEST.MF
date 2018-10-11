@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: org.jboss.tools.jmx.reddeer
 Bundle-SymbolicName: org.jboss.tools.jmx.reddeer;singleton:=true
-Bundle-Version: 1.10.100.qualifier
+Bundle-Version: 1.10.6.qualifier
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: Red Hat Inc.
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

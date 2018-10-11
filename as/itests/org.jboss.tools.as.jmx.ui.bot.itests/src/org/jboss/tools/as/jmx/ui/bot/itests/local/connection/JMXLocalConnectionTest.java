@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.tools.jmx.ui.bot.test.local.connection;
+package org.jboss.tools.as.jmx.ui.bot.itests.local.connection;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -21,10 +21,10 @@ import org.eclipse.reddeer.swt.api.Button;
 import org.eclipse.reddeer.swt.condition.ShellIsAvailable;
 import org.eclipse.reddeer.swt.impl.button.PushButton;
 import org.eclipse.reddeer.swt.impl.text.DefaultText;
+import org.jboss.tools.as.jmx.ui.bot.itests.JMXTestTemplate;
 import org.jboss.tools.jmx.reddeer.core.JMXConnectionItem;
 import org.jboss.tools.jmx.reddeer.ui.editor.MBeanEditor;
 import org.jboss.tools.jmx.reddeer.ui.editor.OperationsPage;
-import org.jboss.tools.jmx.ui.bot.test.JMXTestTemplate;
 import org.junit.Test;
 
 /**

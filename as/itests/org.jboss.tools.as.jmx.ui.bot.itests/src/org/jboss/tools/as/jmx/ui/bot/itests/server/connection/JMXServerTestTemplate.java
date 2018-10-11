@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.tools.jmx.ui.bot.test.server.connection;
+package org.jboss.tools.as.jmx.ui.bot.itests.server.connection;
 
 import static org.junit.Assert.fail;
 
@@ -16,8 +16,8 @@ import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.Server;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
 import org.eclipse.reddeer.junit.requirement.inject.InjectRequirement;
 import org.jboss.ide.eclipse.as.reddeer.server.requirement.ServerRequirement;
+import org.jboss.tools.as.jmx.ui.bot.itests.JMXTestTemplate;
 import org.jboss.tools.jmx.reddeer.core.JMXConnectionItem;
-import org.jboss.tools.jmx.ui.bot.test.JMXTestTemplate;
 
 public class JMXServerTestTemplate extends JMXTestTemplate {
 

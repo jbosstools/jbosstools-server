@@ -8,12 +8,12 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.tools.jmx.ui.bot.test;
+package org.jboss.tools.as.jmx.ui.bot.itests;
 
 import org.eclipse.reddeer.junit.runner.RedDeerSuite;
-import org.jboss.tools.jmx.ui.bot.test.local.connection.JMXLocalConnectionTest;
-import org.jboss.tools.jmx.ui.bot.test.server.connection.JMXServerConnectionAutoDeployDisableTest;
-import org.jboss.tools.jmx.ui.bot.test.server.connection.JMXServerConnectionTest;
+import org.jboss.tools.as.jmx.ui.bot.itests.local.connection.JMXLocalConnectionTest;
+import org.jboss.tools.as.jmx.ui.bot.itests.server.connection.JMXServerConnectionAutoDeployDisableTest;
+import org.jboss.tools.as.jmx.ui.bot.itests.server.connection.JMXServerConnectionTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 
