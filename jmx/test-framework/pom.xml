@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.jboss.tools</groupId>
 		<artifactId>jmx</artifactId>
-		<version>1.10.5-SNAPSHOT</version>
+		<version>1.10.6-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jboss.tools.jmx</groupId>
 	<artifactId>test-framework</artifactId>
