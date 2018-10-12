@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.tools.jmx.ui.bot.test.util;
+package org.jboss.tools.as.jmx.ui.bot.itests.util;
 
 import org.eclipse.reddeer.common.util.Display;
 import org.eclipse.reddeer.junit.requirement.RequirementException;

@@ -8,11 +8,11 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.tools.jmx.ui.bot.test;
+package org.jboss.tools.as.jmx.ui.bot.itests;
 
+import org.jboss.tools.as.jmx.ui.bot.itests.util.JMXUtils;
 import org.jboss.tools.jmx.reddeer.core.JMXConnection;
 import org.jboss.tools.jmx.reddeer.ui.view.JMXNavigatorView;
-import org.jboss.tools.jmx.ui.bot.test.util.JMXUtils;
 import org.junit.After;
 import org.junit.Before;
 
