@@ -42,7 +42,7 @@ public class JMXLocalConnectionTest extends JMXTestTemplate {
 	public void setUpJMXConnection() {
 		local = view.getLocalProcessesItem();
 		try {
-			connection = local.getConnections("eclipse").get(0);
+			connection = local.getConnectionsIgnoreCase("eclipse").get(0);
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			fail(e.getMessage());

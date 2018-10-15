@@ -130,19 +130,30 @@ public class ServerRequirement extends AbstractServerRequirement implements Conf
 	protected void setupRemoteSystem(){
 		
 		SystemViewPart sview = new SystemViewPart();
+		sview.open();
 		RSEMainNewConnectionWizard connW = sview.newConnection();
 		RSENewConnectionWizardSelectionPage sp = new RSENewConnectionWizardSelectionPage(connW);
-		sp.selectSystemType(SystemType.SSH_ONLY);
+		sp.selectSystemType(getSystemTypeFromString(config.getRemote().getSystemType()));
 		connW.next();
 		RSEDefaultNewConnectionWizardMainPage mp = new RSEDefaultNewConnectionWizardMainPage(connW);
 		mp.setHostName(config.getRemote().getServerHost());
 		connW.finish();
 		
-		org.eclipse.reddeer.eclipse.rse.ui.view.System system = sview.getSystem(config.getRemote().getServerHost());
-		system.connect(config.getRemote().getUsername(), config.getRemote().getPassword());
-				
-		assertTrue(system.isConnected());
-		
+		if (getSystemTypeFromString(config.getRemote().getSystemType()) == SystemType.SSH_ONLY) {
+			org.eclipse.reddeer.eclipse.rse.ui.view.System system = sview.getSystem(config.getRemote().getServerHost());
+			system.connect(config.getRemote().getUsername(), config.getRemote().getPassword());
+					
+			assertTrue(system.isConnected());
+		}
+	}
+	
+	private SystemType getSystemTypeFromString(String type) {
+		for(SystemType value : SystemType.values()) {
+			if (value.getLabel().equalsIgnoreCase(type.toLowerCase())) {
+				return value;
+			}
+		}
+		throw new RedDeerException("Given type :" + type + " does no correspond to any of SystemType enum value");
 	}
 	
 	protected void setupRemoteServerAdapter() {
