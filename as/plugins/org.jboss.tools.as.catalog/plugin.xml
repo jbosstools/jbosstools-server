@@ -115,12 +115,16 @@
 		<uri name="http://www.jboss.com/ws-security/config" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ws-security_1_0.xsd"/>
 		<uri name="http://www.jboss.org/ironjacamar/schema" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/ironjacamar_1_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-app_7_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-app_7_0.xsd"/>
+		<uri name="http://www.jboss.org/j2ee/schema/jboss-app_8_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-app_8_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-client_5_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-client_5_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-client_5_1.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-client_5_1.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-client_6_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-client_6_0.xsd"/>
+		<uri name="http://www.jboss.org/j2ee/schema/jboss-client_8_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-client_8_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-common_5_1.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-common_5_1.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-common_6_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-common_6_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-common_7_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-common_7_0.xsd"/>
+		<uri name="http://www.jboss.org/j2ee/schema/jboss-common_7_1.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-common_7_1.xsd"/>
+		<uri name="http://www.jboss.org/j2ee/schema/jboss-common_8_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-common_8_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-ds_5_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ds_5_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-ejb3-2_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb3-2_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-web_10_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-web_10_0.xsd"/>
@@ -138,6 +142,7 @@
 		<uri name="http://www.jboss.org/j2ee/schema/jboss-web_8_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-web_8_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss_5_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss_5_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss_5_1.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss_5_1.xsd"/>
+		<uri name="http://www.jboss.org/j2ee/schema/jboss_7_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss_7_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jbossws-web-services_1_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jbossws-web-services_1_0.xsd"/>
 		<uri name="http://www.jboss.org/xml/ns/jbxb" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jbxb_1_0.xsd"/>
 		<uri name="http://www.w3.org/2000/09/xmldsig#" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/xmldsig-core-schema.xsd"/>
