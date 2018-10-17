@@ -53,19 +53,24 @@ public class CatalogMissingEntriesTest extends TestCase {
 		while(i.hasNext()) {
 			System.out.println(i.next() + " is not found in plugin.xml");
 		}
-		assertEquals(missing.size(), 0);
+		assertEquals(0, missing.size());
 	}
 	
 	public void testMissingFile() {
 		// First get a list of all files in our schema folder
 		String[] insidePlugin = findAllSchema();
 		String[] insidePluginXML = getAllUris();
+		ArrayList<String> missing = new ArrayList<String>();
 		for( int i = 0; i < insidePluginXML.length; i++ ) {
 			if( !uriInPlugin(insidePluginXML[i], insidePlugin)) {
-				fail(insidePlugin[i] + " a file that is not found in the plugin");
+				missing.add(insidePluginXML[i]);
 			}
 		}
-		
+		Iterator<String> i = missing.iterator();
+		while(i.hasNext()) {
+			System.out.println(i.next() + " is a file not found in plugin");
+		}
+		assertEquals(0, missing.size());
 	}
 
 	private boolean fileInPluginXml(String path, String[] allUri) {

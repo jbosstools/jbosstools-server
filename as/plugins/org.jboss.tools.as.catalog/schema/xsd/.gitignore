@@ -21,7 +21,6 @@ javaee_web_services_1_4.xsd
 javaee_web_services_client_1_2.xsd
 javaee_web_services_client_1_3.xsd
 javaee_web_services_client_1_4.xsd
-jboss_7_0.xsd
 jboss-datasources.xsd
 jboss-deployment-scanner.xsd
 jboss-ee.xsd
