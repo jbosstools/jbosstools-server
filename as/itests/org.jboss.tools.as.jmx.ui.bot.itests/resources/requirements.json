@@ -4,6 +4,16 @@
 			"runtime": "${jbosstools.test.wildfly.14.home}",
 			"version": "14",
 			"family": "WILDFLY"
+		},
+		{
+			"runtime": "${jbosstools.test.eap.7.1.home}",
+			"version": "7.x",
+			"family": "EAP",
+			"remote": {
+				"serverHome": "${jbosstools.test.eap.7.1.home}",
+				"serverHost": "LOCALHOST",
+				"systemType": "Local"
+			}
 		}
 	]
 }

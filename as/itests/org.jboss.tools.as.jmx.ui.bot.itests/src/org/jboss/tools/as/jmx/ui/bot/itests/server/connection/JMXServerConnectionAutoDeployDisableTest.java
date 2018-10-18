@@ -35,8 +35,11 @@ import org.eclipse.reddeer.common.condition.AbstractWaitCondition;
 import org.eclipse.reddeer.common.logging.Logger;
 import org.eclipse.reddeer.common.wait.TimePeriod;
 import org.eclipse.reddeer.common.wait.WaitUntil;
+import org.eclipse.reddeer.junit.annotation.RequirementRestriction;
+import org.eclipse.reddeer.junit.requirement.matcher.RequirementMatcher;
 import org.eclipse.reddeer.requirements.server.ServerRequirementState;
 import org.eclipse.reddeer.swt.impl.combo.DefaultCombo;
+import org.jboss.ide.eclipse.as.reddeer.server.family.ServerMatcher;
 import org.jboss.ide.eclipse.as.reddeer.server.requirement.ServerRequirement.JBossServer;
 import org.jboss.tools.jmx.reddeer.ui.editor.AttributesPage;
 import org.jboss.tools.jmx.reddeer.ui.editor.MBeanEditor;
@@ -62,12 +65,17 @@ public class JMXServerConnectionAutoDeployDisableTest extends JMXServerTestTempl
 	
 	private static final Logger log = Logger.getLogger(JMXServerConnectionAutoDeployDisableTest.class);
 	
+	@RequirementRestriction
+	public static RequirementMatcher getRestrictionMatcher() {
+	  return new RequirementMatcher(JBossServer.class, "family", ServerMatcher.WildFly());
+	}
+	
 	@Before
 	public void setupServer() {
 		setUpView();
 		
 		deploymentPath = Paths.get(serverConfig.getConfiguration().getRuntime(), "standalone", "deployments");
-		wildfly = getServer(serverConfig.getServerName());
+		server = getServer(serverConfig.getServerName());
 		serverItem = view.getServerConnectionsItem();
 	}
 	

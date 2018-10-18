@@ -14,6 +14,7 @@ import org.eclipse.reddeer.junit.runner.RedDeerSuite;
 import org.jboss.tools.as.jmx.ui.bot.itests.local.connection.JMXLocalConnectionTest;
 import org.jboss.tools.as.jmx.ui.bot.itests.server.connection.JMXServerConnectionAutoDeployDisableTest;
 import org.jboss.tools.as.jmx.ui.bot.itests.server.connection.JMXServerConnectionTest;
+import org.jboss.tools.as.jmx.ui.bot.itests.server.connection.RemoteServerJMXConnectionTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 
@@ -23,7 +24,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	JMXUITest.class,
 	JMXLocalConnectionTest.class,
 	JMXServerConnectionTest.class,
-	JMXServerConnectionAutoDeployDisableTest.class
+	JMXServerConnectionAutoDeployDisableTest.class,
+	RemoteServerJMXConnectionTest.class
 })
 public class JMXAllTests {
 }

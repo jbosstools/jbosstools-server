@@ -1,12 +1,22 @@
 package org.jboss.ide.eclipse.as.reddeer.server.requirement;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RemoteServerConfiguration {
 	
 	public String serverHome;
 	public String serverHost;
 	public String username;
 	public String password;
+	public String systemType;
 	
+	public String getSystemType() {
+		return systemType;
+	}
+	public void setSystemType(String systemType) {
+		this.systemType = systemType;
+	}
 	public String getUsername() {
 		return username;
 	}
@@ -31,9 +41,5 @@ public class RemoteServerConfiguration {
 	public void setServerHost(String serverHost) {
 		this.serverHost = serverHost;
 	}
-	
-	
-	
-	
 
 }
