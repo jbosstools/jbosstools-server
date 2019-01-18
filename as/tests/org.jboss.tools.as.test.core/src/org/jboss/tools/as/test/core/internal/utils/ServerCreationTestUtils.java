@@ -66,6 +66,7 @@ public class ServerCreationTestUtils extends Assert {
 	private static final String wildfly_12_0_jar = "wf12.0.0.mf.jboss-as-server.jar";
 	private static final String wildfly_13_0_jar = "wf13.0.0.mf.jboss-as-server.jar";
 	private static final String wildfly_14_0_jar = "wf14.0.0.mf.jboss-as-server.jar";
+	private static final String wildfly_15_0_jar = "wf15.0.0.mf.jboss-as-server.jar";
 	private static final String twiddle_eap_4_3 = "eap4.3" + twiddle_suffix;
 	private static final String twiddle_eap_5_0 = "eap5.0" + twiddle_suffix;
 	private static final String twiddle_eap_5_1 = "eap5.1" + twiddle_suffix;
@@ -115,6 +116,7 @@ public class ServerCreationTestUtils extends Assert {
 		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_120, wildfly_12_0_jar);
 		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_130, wildfly_13_0_jar);
 		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_140, wildfly_14_0_jar);
+		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_150, wildfly_15_0_jar);
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_43, twiddle_eap_4_3);
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_50, twiddle_eap_5_1);
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_60, eap_server_6_0_jar);
@@ -143,6 +145,7 @@ public class ServerCreationTestUtils extends Assert {
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_WILDFLY_120, IJBossToolingConstants.WILDFLY_120);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_WILDFLY_130, IJBossToolingConstants.WILDFLY_130);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_WILDFLY_140, IJBossToolingConstants.WILDFLY_140);
+		serverRuntimeMap.put(IJBossToolingConstants.SERVER_WILDFLY_150, IJBossToolingConstants.WILDFLY_150);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_43, IJBossToolingConstants.EAP_43);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_50, IJBossToolingConstants.EAP_50);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_60, IJBossToolingConstants.EAP_60);
