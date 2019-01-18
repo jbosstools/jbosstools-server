@@ -29,7 +29,7 @@ import org.osgi.framework.ServiceReference;
  */
 public class JBossManagementServiceTest {
 
-	private static final String DS_BUNDLEID = "org.eclipse.equinox.ds";
+	private static final String DS_BUNDLEID = "org.apache.felix.scr";
 	private static final String AS7MANAGER_PLUGINID = "org.jboss.ide.eclipse.as.management.as7";
 	private static final String WF9MANAGER_PLUGINID = "org.jboss.ide.eclipse.as.management.wildfly9";
 	private static final String WF11MANAGER_PLUGINID = "org.jboss.ide.eclipse.as.management.wf11";
