@@ -203,6 +203,8 @@ public class ServerCreationTestUtils extends Assert {
 			serverDir = createWildfly130MockServerDirectory(name, serverType, asSystemJar.get(serverType));
 		} else if( IJBossToolingConstants.SERVER_WILDFLY_140.equals(serverType)) {
 			serverDir = createWildfly140MockServerDirectory(name, serverType, asSystemJar.get(serverType));
+		} else if( IJBossToolingConstants.SERVER_WILDFLY_150.equals(serverType)) {
+			serverDir = createWildfly150MockServerDirectory(name, serverType, asSystemJar.get(serverType));
 		} else if( TEST_SERVER_TYPE_GATEIN_34.equals(serverType)) {
 			serverDir = createGateIn34MockServerDirectory(name);
 		} else if( TEST_SERVER_TYPE_GATEIN_35.equals(serverType)) {
@@ -372,6 +374,11 @@ public class ServerCreationTestUtils extends Assert {
 
 	private static IPath createWildfly140MockServerDirectory(String name, String serverTypeId, String serverJar) {
 		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 14.0.0.xyz\n"; 
+		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
+	}
+
+	private static IPath createWildfly150MockServerDirectory(String name, String serverTypeId, String serverJar) {
+		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 15.0.0.xyz\n"; 
 		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
 	}
 
