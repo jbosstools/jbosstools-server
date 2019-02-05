@@ -320,7 +320,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 									<goal>wget</goal>
 								</goals>
 								<configuration>
-									<url>http://download.devel.redhat.com/released/JBEAP-7/7.0.0/jboss-eap-7.0.0.zip</url>
+									<url>http://download.eng.brq.redhat.com/released/JBoss-middleware/eap7/7.0.0/jboss-eap-7.0.0.zip</url>
 									<md5>cd02482daa0398bf5500e1628d28179a</md5>
 									<unpack>true</unpack>
 									<skip>${skipTestsWithPrivateRequirements}</skip>
