@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 Red Hat, Inc.
+ * Copyright (c) 2019 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -38,8 +38,8 @@ public class Wildfly150ExtendedProperties extends JBossAS710ExtendedProperties {
 	@Override
 	public IDefaultLaunchArguments getDefaultLaunchArguments() {
 		if( server != null)
-			return new Wildfly100DefaultLaunchArguments(server);
-		return new Wildfly100DefaultLaunchArguments(runtime);
+			return new Wildfly150DefaultLaunchArguments(server);
+		return new Wildfly150DefaultLaunchArguments(runtime);
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class Wildfly150ExtendedProperties extends JBossAS710ExtendedProperties {
 	
 
 	/**
-	 * Wildfly 11 appears to work through java 9 to varying degrees
+	 * Wildfly 15 appears to work through java 11 to varying degrees
 	 */
 	@Override
 	public IExecutionEnvironment getMaximumExecutionEnvironment() {

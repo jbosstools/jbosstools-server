@@ -61,13 +61,4 @@ public class Wildfly140ExtendedProperties extends JBossAS710ExtendedProperties {
 	public boolean allowExplodedModulesInEars() {
 		return true;
 	}
-	
-
-	/**
-	 * Wildfly 11 appears to work through java 9 to varying degrees
-	 */
-	@Override
-	public IExecutionEnvironment getMaximumExecutionEnvironment() {
-		return null;
-	}
 }
