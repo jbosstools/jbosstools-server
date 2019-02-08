@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007 - 2013 Red Hat, Inc.
+ * Copyright (c) 2007 - 2019 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -65,15 +65,15 @@ public class EJB3SupportVerifierTest extends TestCase {
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_100, true);
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_110, true);
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_120, true);
+		expected.put(IJBossToolingConstants.SERVER_WILDFLY_130, true);
+		expected.put(IJBossToolingConstants.SERVER_WILDFLY_140, true);
+		expected.put(IJBossToolingConstants.SERVER_WILDFLY_150, true);
 		expected.put(IJBossToolingConstants.SERVER_EAP_43, true);
 		expected.put(IJBossToolingConstants.SERVER_EAP_50, true);
 		expected.put(IJBossToolingConstants.SERVER_EAP_60, true);
 		expected.put(IJBossToolingConstants.SERVER_EAP_61, true);
 		expected.put(IJBossToolingConstants.SERVER_EAP_70, true);
 		expected.put(IJBossToolingConstants.SERVER_EAP_71, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_150, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_130, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_140, true);
 		// NEW_SERVER_ADAPTER
 	}
 	 

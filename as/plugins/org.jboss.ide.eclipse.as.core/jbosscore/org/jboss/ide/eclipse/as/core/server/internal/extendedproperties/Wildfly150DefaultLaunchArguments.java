@@ -26,9 +26,8 @@ public class Wildfly150DefaultLaunchArguments extends
 	public Wildfly150DefaultLaunchArguments(IRuntime rt) {
 		super(rt);
 	}
-	
-	@Override
-	public String getStartDefaultVMArgs() {
+
+	protected String getJava9VMArgs() {
 		String suffix = "";
 		try {
 			IJBossServerRuntime jbossRuntime = RuntimeUtils.checkedGetJBossServerRuntime(getRuntime());
@@ -40,7 +39,11 @@ public class Wildfly150DefaultLaunchArguments extends
 		} catch (CoreException e) {
 			throw new RuntimeException(e);
 		}
-		return super.getStartDefaultVMArgs() + suffix;
+		return suffix;
 	}
-
+	
+	@Override
+	public String getStartDefaultVMArgs() {
+		return super.getStartDefaultVMArgs() + getJava9VMArgs();
+	}
 }
