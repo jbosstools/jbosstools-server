@@ -14,15 +14,15 @@ import java.io.File;
 
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
-public class ServerBeanTypeWildfly140 extends JBossServerType {
+public class ServerBeanTypeWildfly150Web extends JBossServerType {
 	private static final String WF_100_RELEASE_MANIFEST_KEY = "JBoss-Product-Release-Version"; //$NON-NLS-1$
-	public ServerBeanTypeWildfly140() {
+	public ServerBeanTypeWildfly150Web() {
 		super(
-				"WildFly", //$NON-NLS-1$
+				"WildFly-Web", //$NON-NLS-1$
 				"WildFly Application Server", //$NON-NLS-1$
 				asPath("modules","system","layers","base",
 						"org","jboss","as","server","main"),
-				new String[]{"14.0"}, new Wildfly140ServerTypeCondition());
+				new String[]{"15.0"}, new Wildfly150WebServerTypeCondition());
 	}
 	
 	@Override
@@ -30,13 +30,13 @@ public class ServerBeanTypeWildfly140 extends JBossServerType {
 		return getId();
 	}
 	
-	public static class Wildfly140ServerTypeCondition extends AbstractCondition {
+	public static class Wildfly150WebServerTypeCondition extends AbstractCondition {
 		
 		@Override
 		public String getFullVersion(File location, File systemFile) {
 			String vers = ServerBeanType.getManifestPropFromJBossModulesFolder(new File[]{new File(location, "modules")}, 
-					"org.jboss.as.product", "wildfly-full/dir/META-INF", WF_100_RELEASE_MANIFEST_KEY);
-			if( vers != null && vers.startsWith("14.")) {
+					"org.jboss.as.product", "wildfly-web/dir/META-INF", WF_100_RELEASE_MANIFEST_KEY);
+			if( vers != null && vers.startsWith("15.")) {
 				return vers;
 			}
 			return null;
@@ -46,9 +46,10 @@ public class ServerBeanTypeWildfly140 extends JBossServerType {
 		public boolean isServerRoot(File location) {
 			return getFullVersion(location, null) != null;
 		}
+		
 		@Override
 		public String getServerTypeId(String version) {	
-			return IJBossToolingConstants.SERVER_WILDFLY_140;
+			return IJBossToolingConstants.SERVER_WILDFLY_150;
 		}
 	}
 }
