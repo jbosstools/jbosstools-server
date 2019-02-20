@@ -804,7 +804,7 @@
 
       <runtimeType
              vendor="%enterpriseProviderName"
-             class="org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss72ServerRuntime"
+             class="org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss71ServerRuntime"
              description="%jboss.eap.version.72.description"
              name="%jboss.eap.version.72.runtime.name"
              id="org.jboss.ide.eclipse.as.runtime.eap.72"
@@ -1095,6 +1095,9 @@
       		<runtime-component-version
             	type="org.jboss.ide.eclipse.eap.runtime.component"
             	version="7.1"/>
+      		<runtime-component-version
+            	type="org.jboss.ide.eclipse.eap.runtime.component"
+            	version="7.2"/>
             	<!-- NEW_SERVER_ADAPTER Add the new server type above this line -->     
    			<supported>
         		<runtime-component
@@ -1172,6 +1175,20 @@
 		       <facet id="wst.web"  version="1.0"/>
 		       <facet id="jst.web"  version="2.2,2.3,2.4,2.5,3.0,3.1"/>
 		       <facet id="jst.java" version="5.0,6.0,1.7,1.8,9"/>
+		       <facet id="jst.utility" version="1.0"/>
+		       <facet id="jst.connector" version="1.0,1.5,1.6,1.7"/>
+		       <facet id="jst.ejb" version="2.0,2.1,3.0,3.1,3.2"/>
+		       <facet id="jst.ear" version="1.2,1.3,1.4,5.0,6.0,7.0"/>
+		       <facet id="jst.appclient" version="1.2,1.3,1.4,5.0,6.0,7.0"/>
+		       <facet id="jst.webfragment" version="3.0,3.1"/>
+     		</supported>
+   			<supported>
+        		<runtime-component
+         			id="org.jboss.ide.eclipse.eap.runtime.component"
+         			version="7.2"/>
+		       <facet id="wst.web"  version="1.0"/>
+		       <facet id="jst.web"  version="2.2,2.3,2.4,2.5,3.0,3.1,4.0"/>
+		       <facet id="jst.java" version="5.0,6.0,1.7,1.8,9,10,11"/>
 		       <facet id="jst.utility" version="1.0"/>
 		       <facet id="jst.connector" version="1.0,1.5,1.6,1.7"/>
 		       <facet id="jst.ejb" version="2.0,2.1,3.0,3.1,3.2"/>
@@ -1576,6 +1593,10 @@
           <facet id="jst.java" version="1.8"></facet>
       </default-facets>
       
+      <default-facets>
+          <runtime-component id="org.jboss.ide.eclipse.eap.runtime.component" version="7.2"></runtime-component>
+          <facet id="jst.java" version="1.8"></facet>
+      </default-facets>
       <!-- NEW_SERVER_ADAPTER Add the new default facet for a new runtime above this line -->
    </extension>
 

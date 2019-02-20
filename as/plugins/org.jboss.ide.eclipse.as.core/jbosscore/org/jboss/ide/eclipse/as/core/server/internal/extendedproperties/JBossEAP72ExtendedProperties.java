@@ -22,7 +22,7 @@ public class JBossEAP72ExtendedProperties extends JBossAS710ExtendedProperties {
 	}
 	@Override
 	public String getRuntimeTypeVersionString() {
-		return "7.1"; //$NON-NLS-1$
+		return "7.2"; //$NON-NLS-1$
 	}
 	
 	@Override
