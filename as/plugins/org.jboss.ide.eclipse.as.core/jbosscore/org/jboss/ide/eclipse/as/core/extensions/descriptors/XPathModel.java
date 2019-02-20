@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2007 Red Hat, Inc. 
+ * Copyright (c) 2007-2019 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -297,14 +297,15 @@ public class XPathModel extends UnitedServerListener {
 		rtToPortsFile.put(IConstants.EAP_61, getURLFor(DEFAULT_PROPS_71));
 		rtToPortsFile.put(IConstants.EAP_70, getURLFor(DEFAULT_PROPS_80));
 		rtToPortsFile.put(IConstants.EAP_71, getURLFor(DEFAULT_PROPS_80));
+		rtToPortsFile.put(IConstants.EAP_72, getURLFor(DEFAULT_PROPS_80));
 		rtToPortsFile.put(IConstants.WILDFLY_80, getURLFor(DEFAULT_PROPS_80));
 		rtToPortsFile.put(IConstants.WILDFLY_90, getURLFor(DEFAULT_PROPS_80));
 		rtToPortsFile.put(IConstants.WILDFLY_100, getURLFor(DEFAULT_PROPS_80));
 		rtToPortsFile.put(IConstants.WILDFLY_110, getURLFor(DEFAULT_PROPS_80));
 		rtToPortsFile.put(IConstants.WILDFLY_120, getURLFor(DEFAULT_PROPS_80));
-		rtToPortsFile.put(IConstants.WILDFLY_150, getURLFor(DEFAULT_PROPS_80));
-		rtToPortsFile.put(IConstants.WILDFLY_140, getURLFor(DEFAULT_PROPS_80));
 		rtToPortsFile.put(IConstants.WILDFLY_130, getURLFor(DEFAULT_PROPS_80));
+		rtToPortsFile.put(IConstants.WILDFLY_140, getURLFor(DEFAULT_PROPS_80));
+		rtToPortsFile.put(IConstants.WILDFLY_150, getURLFor(DEFAULT_PROPS_80));
 		// TODO NEW_SERVER_ADAPTER Add the new server ID to port mapping file above this line 
 	}
 	

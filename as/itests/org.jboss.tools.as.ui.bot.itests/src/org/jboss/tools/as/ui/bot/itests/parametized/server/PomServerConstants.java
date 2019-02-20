@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2017 - 2019 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.tools.as.ui.bot.itests.parametized.server;
 
 public class PomServerConstants {
@@ -27,6 +37,7 @@ public class PomServerConstants {
 	public static final String JBOSS_EAP_63_HOME="jbosstools.test.jboss.home.eap.6.3";
 	public static final String JBOSS_EAP_70_HOME="jbosstools.test.jboss.home.eap.7.0";
 	public static final String JBOSS_EAP_71_HOME="jbosstools.test.jboss.home.eap.7.1";
+	public static final String JBOSS_EAP_72_HOME="jbosstools.test.jboss.home.eap.7.2";
 	// NEW_SERVER_ADAPTER
 
 	public static final String[] PUBLIC = new String[]{
@@ -44,7 +55,8 @@ public class PomServerConstants {
 			JBOSS_81_HOME, JBOSS_90_HOME, JBOSS_10_HOME, JBOSS_101_HOME,
 			JBOSS_110_HOME, JBOSS_120_HOME, JBOSS_130_HOME,
 			JBOSS_EAP_43_HOME, JBOSS_EAP_50_HOME, JBOSS_EAP_60_HOME, JBOSS_EAP_61_HOME, 
-			JBOSS_EAP_62_HOME, JBOSS_EAP_63_HOME, JBOSS_EAP_70_HOME, JBOSS_EAP_71_HOME
+			JBOSS_EAP_62_HOME, JBOSS_EAP_63_HOME, JBOSS_EAP_70_HOME, JBOSS_EAP_71_HOME,
+			JBOSS_EAP_72_HOME
 	};
 	// NEW_SERVER_ADAPTER
 

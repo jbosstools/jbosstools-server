@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2013 Red Hat, Inc. 
+ * Copyright (c) 2013-2019 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -50,6 +50,7 @@ public class JBossServerType extends ServerBeanType implements IJBossToolingCons
 
 	public static final JBossServerType EAP70 = new ServerBeanTypeEAP70();
 	public static final JBossServerType EAP71 = new ServerBeanTypeEAP71();
+	public static final JBossServerType EAP72 = new ServerBeanTypeEAP72();
 	
 	public static final JBossServerType JPP6 = new ServerBeanTypeJPP6();
 	
@@ -82,6 +83,7 @@ public class JBossServerType extends ServerBeanType implements IJBossToolingCons
 		JBossServerType.AS, 
 		JBossServerType.EAP70,
 		JBossServerType.EAP71,
+		JBossServerType.EAP72,
 		JBossServerType.WILDFLY90, 
 		JBossServerType.WILDFLY90_WEB,
 		JBossServerType.WILDFLY100,

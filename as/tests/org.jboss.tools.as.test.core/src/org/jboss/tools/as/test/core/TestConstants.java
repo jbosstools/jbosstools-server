@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007 - 2013 Red Hat, Inc.
+ * Copyright (c) 2007 - 2019 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -43,6 +43,7 @@ public class TestConstants {
 	public static final String JBOSS_EAP_63_HOME = System.getProperty("jbosstools.test.jboss.home.eap.6.3", "C:\\apps\\jboss\\jboss-eap-6.3.0.GA\\");
 	public static final String JBOSS_EAP_70_HOME = System.getProperty("jbosstools.test.jboss.home.eap.7.0", "C:\\apps\\jboss\\jboss-eap-7.0.0.GA\\");
 	public static final String JBOSS_EAP_71_HOME = System.getProperty("jbosstools.test.jboss.home.eap.7.1", "C:\\apps\\jboss\\jboss-eap-7.1.0.GA\\");
+	public static final String JBOSS_EAP_72_HOME = System.getProperty("jbosstools.test.jboss.home.eap.7.2", "C:\\apps\\jboss\\jboss-eap-7.2.0.GA\\");
 		// NEW_SERVER_ADAPTER
 	
 	public static final String JRE_14_HOME = System.getProperty("jbosstools.test.jre.1.4", "C:\\apps\\java\\jre1.4\\");
@@ -77,6 +78,7 @@ public class TestConstants {
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_61, JBOSS_EAP_61_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_70, JBOSS_EAP_70_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_71, JBOSS_EAP_71_HOME);
+		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_72, JBOSS_EAP_72_HOME);
 		// NEW_SERVER_ADAPTER
 	}
 	

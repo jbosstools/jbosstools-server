@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2011 Red Hat, Inc. 
+ * Copyright (c) 2011-2019 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -30,6 +30,7 @@ public interface IJBossToolingConstants {
 	public static final String AS_60 = "org.jboss.ide.eclipse.as.runtime.60"; //$NON-NLS-1$
 	public static final String AS_70 = "org.jboss.ide.eclipse.as.runtime.70"; //$NON-NLS-1$
 	public static final String AS_71 = "org.jboss.ide.eclipse.as.runtime.71"; //$NON-NLS-1$
+	public static final String AS_72 = "org.jboss.ide.eclipse.as.runtime.72"; //$NON-NLS-1$
 	public static final String WILDFLY_80 = "org.jboss.ide.eclipse.as.runtime.wildfly.80"; //$NON-NLS-1$
 	public static final String WILDFLY_90 = "org.jboss.ide.eclipse.as.runtime.wildfly.90"; //$NON-NLS-1$
 	public static final String WILDFLY_100 = "org.jboss.ide.eclipse.as.runtime.wildfly.100"; //$NON-NLS-1$
@@ -44,10 +45,11 @@ public interface IJBossToolingConstants {
 	public static final String EAP_61 = "org.jboss.ide.eclipse.as.runtime.eap.61"; //$NON-NLS-1$
 	public static final String EAP_70 = "org.jboss.ide.eclipse.as.runtime.eap.70"; //$NON-NLS-1$
 	public static final String EAP_71 = "org.jboss.ide.eclipse.as.runtime.eap.71"; //$NON-NLS-1$
+	public static final String EAP_72 = "org.jboss.ide.eclipse.as.runtime.eap.72"; //$NON-NLS-1$
 	public static final String[] ALL_JBOSS_RUNTIMES = new String[] {
 		AS_32,AS_40,AS_42,AS_50,AS_51,AS_60,
 		AS_70,AS_71,WILDFLY_80,WILDFLY_90,WILDFLY_100,WILDFLY_110,WILDFLY_120,WILDFLY_130,WILDFLY_140,WILDFLY_150,
-		EAP_43,EAP_50,EAP_60, EAP_61, EAP_70, EAP_71
+		EAP_43,EAP_50,EAP_60, EAP_61, EAP_70, EAP_71, EAP_72
 	};
 	// NEW_SERVER_ADAPTER Add the new runtime constant above this line
 	
@@ -73,11 +75,12 @@ public interface IJBossToolingConstants {
 	public static final String SERVER_EAP_61 = "org.jboss.ide.eclipse.as.eap.61"; //$NON-NLS-1$
 	public static final String SERVER_EAP_70 = "org.jboss.ide.eclipse.as.eap.70"; //$NON-NLS-1$
 	public static final String SERVER_EAP_71 = "org.jboss.ide.eclipse.as.eap.71"; //$NON-NLS-1$
+	public static final String SERVER_EAP_72 = "org.jboss.ide.eclipse.as.eap.72"; //$NON-NLS-1$
 	public static final String[] ALL_JBOSS_SERVERS = new String[] {
 		SERVER_AS_32,SERVER_AS_40,SERVER_AS_42,SERVER_AS_50,SERVER_AS_51,
 		SERVER_AS_60,SERVER_AS_70,SERVER_AS_71,
 		SERVER_WILDFLY_80,SERVER_WILDFLY_90,SERVER_WILDFLY_100,SERVER_WILDFLY_110,SERVER_WILDFLY_120,SERVER_WILDFLY_130,SERVER_WILDFLY_140,SERVER_WILDFLY_150,
-		SERVER_EAP_43,SERVER_EAP_50,SERVER_EAP_60, SERVER_EAP_61, SERVER_EAP_70, SERVER_EAP_71
+		SERVER_EAP_43,SERVER_EAP_50,SERVER_EAP_60, SERVER_EAP_61, SERVER_EAP_70, SERVER_EAP_71, SERVER_EAP_72
 	};
 	// NEW_SERVER_ADAPTER Add the new server id above this line
 	
