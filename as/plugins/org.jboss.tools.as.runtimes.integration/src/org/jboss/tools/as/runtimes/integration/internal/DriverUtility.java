@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Red Hat, Inc.
+ * Copyright (c) 2012-2019 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -74,6 +74,7 @@ public class DriverUtility implements IRuntimeIntegrationConstants {
 		RUNTIME_DRIVER_LOCATION.put(IJBossToolingConstants.WILDFLY_150, new Pair(HSQLDB_DRIVER_72_EAP61_LOCATION, H2_TYPE));
 		RUNTIME_DRIVER_LOCATION.put(IJBossToolingConstants.EAP_70, new Pair(HSQLDB_DRIVER_72_EAP61_LOCATION, H2_TYPE));
 		RUNTIME_DRIVER_LOCATION.put(IJBossToolingConstants.EAP_71, new Pair(HSQLDB_DRIVER_72_EAP61_LOCATION, H2_TYPE));
+		RUNTIME_DRIVER_LOCATION.put(IJBossToolingConstants.EAP_72, new Pair(HSQLDB_DRIVER_72_EAP61_LOCATION, H2_TYPE));
 		// NEW_SERVER_ADAPTER 
 	}
 

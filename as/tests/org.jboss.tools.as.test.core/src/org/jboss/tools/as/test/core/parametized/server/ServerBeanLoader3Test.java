@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007 - 2013 Red Hat, Inc.
+ * Copyright (c) 2007 - 2019 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -11,7 +11,6 @@
 package org.jboss.tools.as.test.core.parametized.server;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -22,7 +21,6 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-import org.jboss.tools.as.test.core.TestConstants;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -92,6 +90,7 @@ public class ServerBeanLoader3Test extends TestCase {
 		expected.put(IJBossToolingConstants.SERVER_EAP_61, new Data(JBossServerType.EAP61, IJBossToolingConstants.V6_1));
 		expected.put(IJBossToolingConstants.SERVER_EAP_70, new Data(JBossServerType.EAP70, IJBossToolingConstants.V7_0));
 		expected.put(IJBossToolingConstants.SERVER_EAP_71, new Data(JBossServerType.EAP71, IJBossToolingConstants.V7_1));
+		expected.put(IJBossToolingConstants.SERVER_EAP_72, new Data(JBossServerType.EAP72, IJBossToolingConstants.V7_2));
 		expected.put(ServerCreationTestUtils.TEST_SERVER_TYPE_EAP_65, new Data(JBossServerType.EAP61, "6.5"));
 		expected.put(ServerCreationTestUtils.TEST_SERVER_TYPE_GATEIN_34, new Data(JBossServerType.AS7GateIn, IJBossToolingConstants.V3_4));
 		expected.put(ServerCreationTestUtils.TEST_SERVER_TYPE_GATEIN_35, new Data(JBossServerType.AS7GateIn, IJBossToolingConstants.V3_5));

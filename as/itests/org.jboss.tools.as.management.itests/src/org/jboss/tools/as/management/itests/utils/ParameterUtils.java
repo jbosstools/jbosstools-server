@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2013-2019 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.tools.as.management.itests.utils;
 
 import java.util.ArrayList;
@@ -29,6 +39,7 @@ public class ParameterUtils {
 	public static final String JBOSS_EAP_63_HOME = TestConstants.JBOSS_EAP_63_HOME;
 	public static final String JBOSS_EAP_70_HOME = TestConstants.JBOSS_EAP_70_HOME;
 	public static final String JBOSS_EAP_71_HOME = TestConstants.JBOSS_EAP_71_HOME;
+	public static final String JBOSS_EAP_72_HOME = TestConstants.JBOSS_EAP_72_HOME;
 	// NEW_SERVER_ADAPTER
 	
 	public static HashMap<String,String> serverHomeToRuntimeType = new HashMap<String, String>();
@@ -51,6 +62,7 @@ public class ParameterUtils {
 		serverHomeToRuntimeType.put(JBOSS_EAP_63_HOME, IJBossToolingConstants.EAP_61);
 		serverHomeToRuntimeType.put(JBOSS_EAP_70_HOME, IJBossToolingConstants.EAP_70);
 		serverHomeToRuntimeType.put(JBOSS_EAP_71_HOME, IJBossToolingConstants.EAP_71);
+		serverHomeToRuntimeType.put(JBOSS_EAP_72_HOME, IJBossToolingConstants.EAP_72);
 		// NEW_SERVER_ADAPTER
 	}
 	
@@ -93,6 +105,7 @@ public class ParameterUtils {
 			paths.add(JBOSS_EAP_63_HOME);
 			paths.add(JBOSS_EAP_70_HOME);
 			paths.add(JBOSS_EAP_71_HOME);
+			paths.add(JBOSS_EAP_72_HOME);
 		}
 		// NEW_SERVER_ADAPTER
 		return paths.toArray(new String[paths.size()]);
@@ -111,8 +124,13 @@ public class ParameterUtils {
 		boolean skipReqs = skipPrivateRequirements();
 		ArrayList<String> paths = new ArrayList<String>();
 		paths.add(JBOSS_WILDFLY_110_HOME);
+		paths.add(JBOSS_WILDFLY_120_HOME);
+		paths.add(JBOSS_WILDFLY_130_HOME);
+		paths.add(JBOSS_WILDFLY_140_HOME);
+		paths.add(JBOSS_WILDFLY_150_HOME);
 		if( !skipReqs ) {
 			paths.add(JBOSS_EAP_71_HOME);
+			paths.add(JBOSS_EAP_72_HOME);
 		}
 		// NEW_SERVER_ADAPTER
 		return paths.toArray(new String[paths.size()]);

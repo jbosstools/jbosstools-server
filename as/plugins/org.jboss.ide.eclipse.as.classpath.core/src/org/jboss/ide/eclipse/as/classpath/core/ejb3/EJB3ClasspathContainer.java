@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Red Hat, Inc.
+ * Copyright (c) 2011-2019 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -152,6 +152,7 @@ public class EJB3ClasspathContainer
 					break;
 				case AS_70:
 				case AS_71:
+				case AS_72:
 					ret = get70Jars(homePath);
 					break;
 				case EAP_60:

@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2012 Red Hat, Inc. 
+ * Copyright (c) 2012-2019 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -30,6 +30,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossEAP
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossEAP61ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossEAP70ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossEAP71ExtendedProperties;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossEAP72ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.Wildfly100ExtendedProperties;
@@ -109,6 +110,8 @@ public class ExtendedServerPropertiesAdapterFactory implements IAdapterFactory, 
 				return new JBossEAP70ExtendedProperties(adaptable);
 			if( SERVER_EAP_71.equals(typeId) || EAP_71.equals(typeId))
 				return new JBossEAP71ExtendedProperties(adaptable);
+			if( SERVER_EAP_72.equals(typeId) || EAP_72.equals(typeId))
+				return new JBossEAP72ExtendedProperties(adaptable);
 
 			if( SERVER_WILDFLY_80.equals(typeId) || WILDFLY_80.equals(typeId))
 				return new Wildfly80ExtendedProperties(adaptable);

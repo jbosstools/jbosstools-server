@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Red Hat, Inc.
+ * Copyright (c) 2014-2019 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -37,7 +37,7 @@ public class JBossModulesDefaultClasspathModel extends InternalRuntimeClasspathM
 			IJBossToolingConstants.EAP_70});
 	private static List<String> wf11Plus = Arrays.asList(new String[] {
 			IJBossToolingConstants.WILDFLY_110, IJBossToolingConstants.WILDFLY_120,  IJBossToolingConstants.WILDFLY_130,  IJBossToolingConstants.WILDFLY_140, IJBossToolingConstants.WILDFLY_150,
-			IJBossToolingConstants.EAP_71});
+			IJBossToolingConstants.EAP_71, IJBossToolingConstants.EAP_72});
 	// NEW_SERVER_ADAPTER
 
 	private IRuntimePathProvider[] getDefaultJBossModulesEntries(IRuntimeType rtt) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Red Hat, Inc.
+ * Copyright (c) 2014-2019 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -18,7 +18,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentPageUIController;
@@ -118,7 +117,8 @@ public class AllSubsystemResolutionTest extends TestCase {
 				IJBossToolingConstants.SERVER_EAP_60,
 				IJBossToolingConstants.SERVER_EAP_61,
 				IJBossToolingConstants.SERVER_EAP_70,
-				IJBossToolingConstants.SERVER_EAP_71
+				IJBossToolingConstants.SERVER_EAP_71,
+				IJBossToolingConstants.SERVER_EAP_72
 				//NEW_SERVER_ADAPTER 
 		};
 		String[] as7Modes = new String[]{"local", "rse", null, "local.mgmt", "rse.mgmt"};

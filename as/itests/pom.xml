@@ -45,6 +45,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<jbosstools.test.jboss.home.eap.6.3>${requirementsDirectory}/jboss-eap-6.3</jbosstools.test.jboss.home.eap.6.3>
 		<jbosstools.test.jboss.home.eap.7.0>${requirementsDirectory}/jboss-eap-7.0</jbosstools.test.jboss.home.eap.7.0>
 		<jbosstools.test.jboss.home.eap.7.1>${requirementsDirectory}/jboss-eap-7.1</jbosstools.test.jboss.home.eap.7.1>
+		<jbosstools.test.jboss.home.eap.7.1>${requirementsDirectory}/jboss-eap-7.2</jbosstools.test.jboss.home.eap.7.1>
 
 		<additionalProperties></additionalProperties>
 		<!-- skipPrivateRequirements and skipTestsWithPrivateRequirements are inherited from parent pom -->
@@ -336,6 +337,19 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 								<configuration>
 									<url>http://download-node-02.eng.bos.redhat.com/released/jboss/eap7/7.1.0/jboss-eap-7.1.0.zip</url>
 									<md5>9f608e6603a8db05316e6effd5440fca</md5>
+									<unpack>true</unpack>
+									<skip>${skipTestsWithPrivateRequirements}</skip>
+								</configuration>
+							</execution>
+							<execution>
+								<id>install-eap-7.2.0</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>wget</goal>
+								</goals>
+								<configuration>
+									<url>http://download-node-02.eng.bos.redhat.com/released/jboss/eap7/7.2.0/jboss-eap-7.2.0.zip</url>
+									<md5>c06ac5dd62547d9982dea970c1b379f6</md5>
 									<unpack>true</unpack>
 									<skip>${skipTestsWithPrivateRequirements}</skip>
 								</configuration>
