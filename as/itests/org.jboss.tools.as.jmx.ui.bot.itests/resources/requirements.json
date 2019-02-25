@@ -6,11 +6,11 @@
 			"family": "WILDFLY"
 		},
 		{
-			"runtime": "${jbosstools.test.eap.7.1.home}",
-			"version": "7.x",
+			"runtime": "${jbosstools.test.eap.7.2.home}",
+			"version": "7.2",
 			"family": "EAP",
 			"remote": {
-				"serverHome": "${jbosstools.test.eap.7.1.home}",
+				"serverHome": "${jbosstools.test.eap.7.2.home}",
 				"serverHost": "LOCALHOST",
 				"systemType": "Local"
 			}
