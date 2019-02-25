@@ -13,7 +13,9 @@ package org.jboss.tools.as.jmx.ui.bot.itests.local.connection;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import org.eclipse.reddeer.common.logging.Logger;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.eclipse.reddeer.common.wait.TimePeriod;
 import org.eclipse.reddeer.common.wait.WaitUntil;
 import org.eclipse.reddeer.common.wait.WaitWhile;
@@ -22,9 +24,11 @@ import org.eclipse.reddeer.swt.condition.ShellIsAvailable;
 import org.eclipse.reddeer.swt.impl.button.PushButton;
 import org.eclipse.reddeer.swt.impl.text.DefaultText;
 import org.jboss.tools.as.jmx.ui.bot.itests.JMXTestTemplate;
+import org.jboss.tools.jmx.reddeer.core.JMXConnection;
 import org.jboss.tools.jmx.reddeer.core.JMXConnectionItem;
 import org.jboss.tools.jmx.reddeer.ui.editor.MBeanEditor;
 import org.jboss.tools.jmx.reddeer.ui.editor.OperationsPage;
+import org.junit.After;
 import org.junit.Test;
 
 /**
@@ -35,22 +39,34 @@ import org.junit.Test;
 public class JMXLocalConnectionTest extends JMXTestTemplate {
 
 	protected JMXConnectionItem local;
-	
-	private static final Logger log = Logger.getLogger(JMXLocalConnectionTest.class);
 
 	@Override
 	public void setUpJMXConnection() {
 		local = view.getLocalProcessesItem();
-		try {
-			connection = local.getConnectionsIgnoreCase("eclipse").get(0);
-		} catch (Exception e) {
-			log.error(e.getMessage());
-			fail(e.getMessage());
+		if (local == null) {
+			fail("There are no local processes");
+		}
+		List<JMXConnection> foundConnestions = local.getConnectionsIgnoreCase(JAVA_APP);
+		if (!foundConnestions.isEmpty()) {
+			connection = foundConnestions.get(0);
+		} else {
+			String connections = local.getConnections().stream()
+			.map( item -> item.getLabel().getName())
+			.collect( Collectors.joining("\r\n"));
+			fail("There is no connection like searched one: " + JAVA_APP + 
+					"Only available connections are: " + connections);
 		}
 	}
 	
+	@After
+	public void cleanUp() {
+		if (local != null) {
+			local = null;
+		}
+	}	
+	
 	@Test
-	public void testLocalEclipseConnectionOperation() {
+	public void testLocalJavaConnectionOperation() {
 		connection.connect();
 		connection.openMBeanObjectEditor(0, "com.sun.management", "DiagnosticCommand");
 		MBeanEditor editor = new MBeanEditor("com.sun.management:type=DiagnosticCommand");
