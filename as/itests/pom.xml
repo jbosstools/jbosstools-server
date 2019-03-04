@@ -37,6 +37,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<jbosstools.test.jboss.home.13.0>${requirementsDirectory}/wildfly-13.0.0.Final</jbosstools.test.jboss.home.13.0>
 		<jbosstools.test.jboss.home.14.0>${requirementsDirectory}/wildfly-14.0.0.Final</jbosstools.test.jboss.home.14.0>
 		<jbosstools.test.jboss.home.15.0>${requirementsDirectory}/wildfly-15.0.0.Final</jbosstools.test.jboss.home.15.0>
+		<jbosstools.test.jboss.home.16.0>${requirementsDirectory}/wildfly-16.0.0.Final</jbosstools.test.jboss.home.16.0>
 		<jbosstools.test.jboss.home.eap.4.3>${requirementsDirectory}/jboss-eap-4.3/jboss-as</jbosstools.test.jboss.home.eap.4.3>
 		<jbosstools.test.jboss.home.eap.5.0>${requirementsDirectory}/jboss-eap-5.1/jboss-as</jbosstools.test.jboss.home.eap.5.0>
 		<jbosstools.test.jboss.home.eap.6.0>${requirementsDirectory}/jboss-eap-6.0</jbosstools.test.jboss.home.eap.6.0>
@@ -486,6 +487,19 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 								<configuration>
 									<url>http://download.jboss.org/wildfly/15.0.0.Final/wildfly-15.0.0.Final.zip</url>
 									<md5>63b9575ac659e704c44992317a621b47</md5>
+									<unpack>true</unpack>
+									<skip>${skipTestsOrITests}</skip>
+								</configuration>
+							</execution>
+							<execution>
+								<id>install-wildfly-16.0.0.Final</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>wget</goal>
+								</goals>
+								<configuration>
+									<url>http://download.jboss.org/wildfly/16.0.0.Final/wildfly-16.0.0.Final.zip</url>
+									<md5>6350533a4c7c21588aac8356cbd61095</md5>
 									<unpack>true</unpack>
 									<skip>${skipTestsOrITests}</skip>
 								</configuration>
