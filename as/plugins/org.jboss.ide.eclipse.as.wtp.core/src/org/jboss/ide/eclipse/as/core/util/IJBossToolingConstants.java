@@ -16,12 +16,14 @@ package org.jboss.ide.eclipse.as.core.util;
  */
 public interface IJBossToolingConstants {
 	/* Server runtime types */
-	public static final String WILDFLY_150 = "org.jboss.ide.eclipse.as.runtime.wildfly.150"; //-NLS-1$
-	public static final String SERVER_WILDFLY_150 = "org.jboss.ide.eclipse.as.wildfly.150"; //-NLS-1$
-	public static final String WILDFLY_140 = "org.jboss.ide.eclipse.as.runtime.wildfly.140"; //-NLS-1$
-	public static final String SERVER_WILDFLY_140 = "org.jboss.ide.eclipse.as.wildfly.140"; //-NLS-1$
 	public static final String WILDFLY_130 = "org.jboss.ide.eclipse.as.runtime.wildfly.130"; //-NLS-1$
 	public static final String SERVER_WILDFLY_130 = "org.jboss.ide.eclipse.as.wildfly.130"; //-NLS-1$
+	public static final String WILDFLY_140 = "org.jboss.ide.eclipse.as.runtime.wildfly.140"; //-NLS-1$
+	public static final String SERVER_WILDFLY_140 = "org.jboss.ide.eclipse.as.wildfly.140"; //-NLS-1$
+	public static final String WILDFLY_150 = "org.jboss.ide.eclipse.as.runtime.wildfly.150"; //-NLS-1$
+	public static final String SERVER_WILDFLY_150 = "org.jboss.ide.eclipse.as.wildfly.150"; //-NLS-1$
+	public static final String WILDFLY_160 = "org.jboss.ide.eclipse.as.runtime.wildfly.160"; //-NLS-1$
+	public static final String SERVER_WILDFLY_160 = "org.jboss.ide.eclipse.as.wildfly.160"; //-NLS-1$
 	public static final String AS_32 = "org.jboss.ide.eclipse.as.runtime.32"; //$NON-NLS-1$
 	public static final String AS_40 = "org.jboss.ide.eclipse.as.runtime.40"; //$NON-NLS-1$
 	public static final String AS_42 = "org.jboss.ide.eclipse.as.runtime.42"; //$NON-NLS-1$

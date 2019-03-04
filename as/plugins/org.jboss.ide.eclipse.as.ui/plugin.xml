@@ -449,6 +449,7 @@
 						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.wildfly.130"></test>
                         <test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.wildfly.140"></test>
                         <test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.wildfly.150"></test>
+                        <test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.wildfly.160"></test>
 					</or>
 				</and>
 			</triggerPoints>
