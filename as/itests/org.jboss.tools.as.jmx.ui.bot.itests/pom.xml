@@ -15,14 +15,14 @@
 	<properties>
 		<maven.test.failure.ignore>true</maven.test.failure.ignore>
 		<rd.config>${project.build.directory}/classes/requirements.json</rd.config>
-		<systemProperties>-Drd.config=${rd.config} -Dusage_reporting_enabled=false -Djbosstools.test.wildfly.14.home=${jbosstools.test.wildfly.14.home} -Djbosstools.test.eap.7.1.home=${jbosstools.test.eap.7.1.home} -Dusername=${username} -Dpassword=${password} -Dremote.system.type=${remote.system.type}</systemProperties>
+		<systemProperties>-Drd.config=${rd.config} -Dusage_reporting_enabled=false -Djbosstools.test.wildfly.14.home=${jbosstools.test.wildfly.14.home} -Djbosstools.test.eap.7.2.home=${jbosstools.test.eap.7.2.home} -Dusername=${username} -Dpassword=${password} -Dremote.system.type=${remote.system.type}</systemProperties>
 		<surefire.timeout>14400</surefire.timeout>
 		<username></username>
 		<password></password>
 		<server.host></server.host>
 		<remote.system.type></remote.system.type>
 		<jbosstools.test.wildfly.14.home>${requirementsDirectory}/wildfly-14.0.0.Final</jbosstools.test.wildfly.14.home>
-		<jbosstools.test.eap.7.1.home>${requirementsDirectory}/jboss-eap-7.1</jbosstools.test.eap.7.1.home>
+		<jbosstools.test.eap.7.2.home>${requirementsDirectory}/jboss-eap-7.2</jbosstools.test.eap.7.2.home>
 		<suiteClass>org.jboss.tools.as.jmx.ui.bot.itests.JMXAllTests</suiteClass>
 	</properties>
 
@@ -57,14 +57,14 @@
 				<artifactId>download-maven-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>install-eap-7.x</id>
+						<id>install-eap-7.2</id>
 						<phase>pre-integration-test</phase>
 						<goals>
 							<goal>wget</goal>
 						</goals>
 						<configuration>
-							<url>http://download-node-02.eng.bos.redhat.com/released/jboss/eap7/7.1.0/jboss-eap-7.1.0.zip</url>
-							<md5>9f608e6603a8db05316e6effd5440fca</md5>
+							<url>http://download-node-02.eng.bos.redhat.com/released/jboss/eap7/7.2.0/jboss-eap-7.2.0.zip</url>
+							<md5>c06ac5dd62547d9982dea970c1b379f6</md5>
 							<unpack>true</unpack>
 						</configuration>
 					</execution>
