@@ -32,23 +32,26 @@
 	</build>
 
 
-	<!-- This profile requires two parameters: jbosstools.test.jboss-eap-7.x.url
-		and jbosstools.test.jboss-eap-7.x.md5;
+	<!-- This profile requires two parameters: jbosstools.test.jboss-server.url
+		and jbosstools.test.jboss-server.md5;
 	 	activate using the test.profile property so that the parent pom does
 		not download all runtimes -->
 	<profiles>
 		<profile>
-			<id>eap7x-compatibility</id>
+			<id>eap-team-compatibility</id>
 			<activation>
 				<property>
 					<name>test.profile</name>
-					<value>eap7x-compatibility</value>
+					<value>eap-team-compatibility</value>
 				</property>
 			</activation>
 			<properties>
 				<test.class>org.jboss.tools.as.ui.bot.itests.EAPTestsSuite</test.class>
-				<jbosstools.test.jboss-eap-7.x.home>jboss-eap-7.1</jbosstools.test.jboss-eap-7.x.home>
-				<additionalProperties>-Djbosstools.test.single.runtime.location=${requirementsDirectory}/${jbosstools.test.jboss-eap-7.x.home}</additionalProperties>
+				<jbosstools.test.jboss-server.home>jboss-eap-7.2</jbosstools.test.jboss-server.home>
+				<jbosstools.test.single.runtime.server.identification>JBoss EAP 7.2.0</jbosstools.test.single.runtime.server.identification>
+				<jbosstools.test.single.runtime.product.slot>eap</jbosstools.test.single.runtime.product.slot>
+				<jbosstools.test.single.runtime.product.release.name>JBoss EAP</jbosstools.test.single.runtime.product.release.name>
+				<additionalProperties>-Djbosstools.test.single.runtime.location=${requirementsDirectory}/${jbosstools.test.jboss-server.home} -Djbosstools.test.single.runtime.server.identification=${jbosstools.test.single.runtime.server.identification} -Djbosstools.test.single.runtime.product.slot=${jbosstools.test.single.runtime.product.slot} -Djbosstools.test.single.runtime.product.release.name=${jbosstools.test.single.runtime.product.release.name}</additionalProperties>
 			</properties>
 			<build>
 				<plugins>
@@ -57,14 +60,14 @@
 						<artifactId>download-maven-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>install-eap-7.x</id>
+								<id>install-server</id>
 								<phase>pre-integration-test</phase>
 								<goals>
 									<goal>wget</goal>
 								</goals>
 								<configuration>
-									<url>${jbosstools.test.jboss-eap-7.x.url}</url>
-									<md5>${jbosstools.test.jboss-eap-7.x.md5}</md5>
+									<url>${jbosstools.test.jboss-server.url}</url>
+									<md5>${jbosstools.test.jboss-server.md5}</md5>
 									<unpack>true</unpack>
 								</configuration>
 							</execution>
