@@ -20,7 +20,6 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChang
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.osgi.util.NLS;
-import org.jboss.tools.common.jdt.debug.JavaUtilities;
 import org.jboss.tools.common.jdt.debug.RemoteDebugActivator;
 import org.jboss.tools.common.jdt.debug.tools.ToolsCore;
 import org.jboss.tools.common.jdt.debug.tools.ToolsCore.AttachedVM;
@@ -234,7 +233,7 @@ public class JvmAttachHandler implements IJvmAttachHandler,
         try {
             virtualMachine = ToolsCore.attach(pid);
 
-            if(!JavaUtilities.isJigsawRunning()) {
+            if(!ToolsCore.isJigsawRunning(virtualMachine)) {
                  String javaHome = ToolsCore.getSystemProperties(virtualMachine)
             	        .getProperty(IConstants.JAVA_HOME_PROPERTY_KEY);
 
