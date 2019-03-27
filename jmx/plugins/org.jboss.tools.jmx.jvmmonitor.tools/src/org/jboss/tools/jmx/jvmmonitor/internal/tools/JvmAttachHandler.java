@@ -248,10 +248,12 @@ public class JvmAttachHandler implements IJvmAttachHandler,
 
                 ToolsCore.loadAgent(virtualMachine, file.getAbsolutePath(),
                         IConstants.JMX_REMOTE_AGENT);
+                Properties props = ToolsCore.getAgentProperties(virtualMachine);
+                url = (String) props.get(LOCAL_CONNECTOR_ADDRESS);
+            } else {
+            	url = ToolsCore.startLocalManagementAgent(virtualMachine);
             }
 
-            Properties props = ToolsCore.getAgentProperties(virtualMachine);
-            url = (String) props.get(LOCAL_CONNECTOR_ADDRESS);
         } catch(ToolsCoreException tce) {
         	throw new JvmCoreException(IStatus.ERROR, tce.getMessage(), tce);
         } finally {
