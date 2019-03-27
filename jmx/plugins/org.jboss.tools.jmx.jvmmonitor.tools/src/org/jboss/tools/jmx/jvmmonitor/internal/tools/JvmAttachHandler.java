@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChang
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.osgi.util.NLS;
+import org.jboss.tools.common.jdt.debug.JavaUtilities;
 import org.jboss.tools.common.jdt.debug.RemoteDebugActivator;
 import org.jboss.tools.common.jdt.debug.tools.ToolsCore;
 import org.jboss.tools.common.jdt.debug.tools.ToolsCore.AttachedVM;
@@ -233,20 +234,22 @@ public class JvmAttachHandler implements IJvmAttachHandler,
         try {
             virtualMachine = ToolsCore.attach(pid);
 
-            String javaHome = ToolsCore.getSystemProperties(virtualMachine)
-                    .getProperty(IConstants.JAVA_HOME_PROPERTY_KEY);
+            if(!JavaUtilities.isJigsawRunning()) {
+                 String javaHome = ToolsCore.getSystemProperties(virtualMachine)
+            	        .getProperty(IConstants.JAVA_HOME_PROPERTY_KEY);
 
-            File file = new File(javaHome + IConstants.MANAGEMENT_AGENT_JAR);
+                File file = new File(javaHome + IConstants.MANAGEMENT_AGENT_JAR);
 
-            if (!file.exists()) {
-                String message = NLS.bind(Messages.fileNotFoundMsg,
-                        file.getPath());
-                throw new JvmCoreException(IStatus.ERROR, message,
-                        new Exception());
+                if (!file.exists()) {
+                    String message = NLS.bind(Messages.fileNotFoundMsg,
+                            file.getPath());
+                    throw new JvmCoreException(IStatus.ERROR, message,
+                            new Exception());
+                }
+
+                ToolsCore.loadAgent(virtualMachine, file.getAbsolutePath(),
+                        IConstants.JMX_REMOTE_AGENT);
             }
-
-            ToolsCore.loadAgent(virtualMachine, file.getAbsolutePath(),
-                    IConstants.JMX_REMOTE_AGENT);
 
             Properties props = ToolsCore.getAgentProperties(virtualMachine);
             url = (String) props.get(LOCAL_CONNECTOR_ADDRESS);
