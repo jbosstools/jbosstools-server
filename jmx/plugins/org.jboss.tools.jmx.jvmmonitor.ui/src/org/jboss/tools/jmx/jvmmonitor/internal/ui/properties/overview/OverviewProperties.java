@@ -15,6 +15,7 @@ import java.util.Set;
 import javax.management.JMException;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
+import javax.management.RuntimeMBeanException;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.osgi.util.NLS;
@@ -90,6 +91,10 @@ public class OverviewProperties {
                     Activator.log(Messages.getMBeanAttributeFailedMsg, e);
                 } catch (JMException e) {
                     Activator.log(IStatus.ERROR,
+                            Messages.getMBeanAttributeFailedMsg, e);
+                } catch (RuntimeMBeanException e) {
+                	//FIXME : workaround for bootclasspath attribute not supported in Java 11
+                	Activator.log(IStatus.WARNING,
                             Messages.getMBeanAttributeFailedMsg, e);
                 }
             }
