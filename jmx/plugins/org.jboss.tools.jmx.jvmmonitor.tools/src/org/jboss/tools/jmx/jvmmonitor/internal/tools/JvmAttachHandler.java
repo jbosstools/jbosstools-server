@@ -233,23 +233,27 @@ public class JvmAttachHandler implements IJvmAttachHandler,
         try {
             virtualMachine = ToolsCore.attach(pid);
 
-            String javaHome = ToolsCore.getSystemProperties(virtualMachine)
-                    .getProperty(IConstants.JAVA_HOME_PROPERTY_KEY);
+            if(!ToolsCore.isJigsawRunning(virtualMachine)) {
+                 String javaHome = ToolsCore.getSystemProperties(virtualMachine)
+            	        .getProperty(IConstants.JAVA_HOME_PROPERTY_KEY);
 
-            File file = new File(javaHome + IConstants.MANAGEMENT_AGENT_JAR);
+                File file = new File(javaHome + IConstants.MANAGEMENT_AGENT_JAR);
 
-            if (!file.exists()) {
-                String message = NLS.bind(Messages.fileNotFoundMsg,
-                        file.getPath());
-                throw new JvmCoreException(IStatus.ERROR, message,
-                        new Exception());
+                if (!file.exists()) {
+                    String message = NLS.bind(Messages.fileNotFoundMsg,
+                            file.getPath());
+                    throw new JvmCoreException(IStatus.ERROR, message,
+                            new Exception());
+                }
+
+                ToolsCore.loadAgent(virtualMachine, file.getAbsolutePath(),
+                        IConstants.JMX_REMOTE_AGENT);
+                Properties props = ToolsCore.getAgentProperties(virtualMachine);
+                url = (String) props.get(LOCAL_CONNECTOR_ADDRESS);
+            } else {
+            	url = ToolsCore.startLocalManagementAgent(virtualMachine);
             }
 
-            ToolsCore.loadAgent(virtualMachine, file.getAbsolutePath(),
-                    IConstants.JMX_REMOTE_AGENT);
-
-            Properties props = ToolsCore.getAgentProperties(virtualMachine);
-            url = (String) props.get(LOCAL_CONNECTOR_ADDRESS);
         } catch(ToolsCoreException tce) {
         	throw new JvmCoreException(IStatus.ERROR, tce.getMessage(), tce);
         } finally {
