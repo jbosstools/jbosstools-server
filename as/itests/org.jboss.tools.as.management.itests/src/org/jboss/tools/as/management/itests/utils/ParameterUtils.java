@@ -100,6 +100,8 @@ public class ParameterUtils {
 		paths.add(JBOSS_WILDFLY_120_HOME);
 		paths.add(JBOSS_WILDFLY_130_HOME);
 		paths.add(JBOSS_WILDFLY_140_HOME);
+		paths.add(JBOSS_WILDFLY_150_HOME);
+		paths.add(JBOSS_WILDFLY_160_HOME);
 		if( !skipReqs ) {
 			paths.add(JBOSS_EAP_60_HOME);
 			paths.add(JBOSS_EAP_61_HOME);
@@ -130,6 +132,7 @@ public class ParameterUtils {
 		paths.add(JBOSS_WILDFLY_130_HOME);
 		paths.add(JBOSS_WILDFLY_140_HOME);
 		paths.add(JBOSS_WILDFLY_150_HOME);
+		paths.add(JBOSS_WILDFLY_160_HOME);
 		if( !skipReqs ) {
 			paths.add(JBOSS_EAP_71_HOME);
 			paths.add(JBOSS_EAP_72_HOME);
@@ -155,9 +158,7 @@ public class ParameterUtils {
 	
 	public static String getSingleRuntimeHome() {
 		if( isSingleRuntime()) {
-			Object[] ret = getAS7ServerHomes();
-			if( Arrays.asList(ret).contains(SINGLE_RUNTIME))
-				return SINGLE_RUNTIME;
+			return SINGLE_RUNTIME;
 		}
 		return null;
 	}
@@ -168,7 +169,7 @@ public class ParameterUtils {
 		if("${jbosstools.test.singleruntime.location}".equals(SINGLE_RUNTIME))
 			return false;
 		
-		System.out.println(SINGLE_RUNTIME);
+		System.out.println("Single runtime location parameter: " + SINGLE_RUNTIME);
 		return true;
 	}
 	

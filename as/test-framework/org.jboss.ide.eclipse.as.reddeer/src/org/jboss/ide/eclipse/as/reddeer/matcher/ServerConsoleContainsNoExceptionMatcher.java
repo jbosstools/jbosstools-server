@@ -22,7 +22,8 @@ public class ServerConsoleContainsNoExceptionMatcher extends TypeSafeMatcher<Con
 			{".*Remote connection failed: java.io.IOException: Connection reset by peer.*",
 			".*Remote connection failed: java.io.IOException: An established connection was aborted by the software in your host.*",
 			".*XNIO001007: .*XNIO007007: Thread is terminating",
-			".*java.io.FileNotFoundException:.*"};
+			".*java.io.FileNotFoundException:.*",
+			".*expandExceptionLogs.*"};
 
 	private static final Logger log = Logger.getLogger(ServerConsoleContainsNoExceptionMatcher.class);
 
