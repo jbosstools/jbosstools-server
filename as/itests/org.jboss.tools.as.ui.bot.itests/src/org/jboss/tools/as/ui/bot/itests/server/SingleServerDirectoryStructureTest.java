@@ -22,30 +22,35 @@ import org.junit.runner.RunWith;
  * were here.
  * 
  * Pre-reqs: 1)
- * -Djbosstools.test.single.runtime.location=/path/to/some/eap/unzipped/loc
+ * -Djbosstools.test.single.runtime.location=/path/to/some/server/unzipped/loc
  */
 
 @RunWith(RedDeerSuite.class)
 public class SingleServerDirectoryStructureTest {
 	private String location;
+	private String productSlot;
+	private String productReleaseName;
 
 	public SingleServerDirectoryStructureTest() {
 		location = System.getProperty("jbosstools.test.single.runtime.location");
+		productSlot = System.getProperty("jbosstools.test.single.runtime.product.slot");
+		productReleaseName = System.getProperty("jbosstools.test.single.runtime.product.release.name");
 	}
-
 	
 	/*
 	  1) bin/product.conf exists
-	  2) bin/product.conf has slot = "eap"
+	  2) bin/product.conf has slot = jbosstools.test.single.runtime.product.slot
 	  3) jboss-modules.jar must exist
 	  4) standalone/configuration/standalone.xml must exist
-	  5) modules/system/layers/base/org/jboss/as/product/eap/dir/META-INF/MANIFEST.MF exists
-	  6) JBoss-Product-Release-Name key in manifest.mf above has value "JBoss EAP"
-	  7) JBoss-Product-Release-Version key in manifest.mf has value starting with "7.0"
+	  5) modules/system/layers/base/org/jboss/as/product/+jbosstools.test.single.runtime.product.slot+/dir/META-INF/MANIFEST.MF exists
+	  6) JBoss-Product-Release-Name key in manifest.mf above has value jbosstools.test.single.runtime.product.release.name (+ " CD")
+	  7) JBoss-Product-Release-Version key in manifest.mf is not null
 	 */
 	
 	@Test
 	public void verifyFolderStructure() {
+		assertNotNull(productSlot);
+		assertNotNull(productReleaseName);
 		assertNotNull(location);
 		File f = new File(location);
 		assertTrue(f.exists());
@@ -55,7 +60,7 @@ public class SingleServerDirectoryStructureTest {
 		try {
 			Properties p = new Properties();
 			p.load(new FileInputStream(prodConf));
-			assertEquals("eap", p.getProperty("slot"));
+			assertEquals(productSlot, p.getProperty("slot"));
 		} catch(IOException ioe) {
 			fail(ioe.getMessage());		
 		}
@@ -68,13 +73,13 @@ public class SingleServerDirectoryStructureTest {
 		
 		
 		Path p2 = new Path(location);
-		IPath prodManifest = p2.append("modules/system/layers/base/org/jboss/as/product/eap/dir/META-INF/MANIFEST.MF");
+		IPath prodManifest = p2.append("modules/system/layers/base/org/jboss/as/product/" + productSlot + "/dir/META-INF/MANIFEST.MF");
 		assertTrue(prodManifest.toFile().exists());
 	
 		try {
 			Manifest man = new Manifest(new FileInputStream(prodManifest.toFile()));
 			String o3 = man.getMainAttributes().getValue("JBoss-Product-Release-Name");
-			assertTrue("JBoss EAP".equals(o3) || "JBoss EAP CD".equals(o3));
+			assertTrue(productReleaseName.equals(o3) || (productReleaseName + " CD").equals(o3));
 			String o4 = man.getMainAttributes().getValue("JBoss-Product-Release-Version");
 			assertNotNull(o4);
 		} catch(IOException ioe) {

@@ -42,9 +42,11 @@ public class SingleServerRuntimeTest {
 
 	private String location;
 	private String serverName;
+	private String serverIdentification;
 
 	public SingleServerRuntimeTest() {
 		location = System.getProperty("jbosstools.test.single.runtime.location");
+		serverIdentification = System.getProperty("jbosstools.test.single.runtime.server.identification");
 	}
 
 	protected File getDownloadPath() {
@@ -83,9 +85,9 @@ public class SingleServerRuntimeTest {
 		// Right now there's only 2 versions of each, and one is only for very old app
 		// servers
 		// So we'll use the JB7+ / WF / EAP5+ strings
-		String undepString = ServerRuntimeUIConstants.getUndeployString(ServerRuntimeUIConstants.JBEAP_700,
+		String undepString = ServerRuntimeUIConstants.getUndeployString(serverIdentification,
 				"jsp-project", ".war");
-		String depString = ServerRuntimeUIConstants.getDeployString(ServerRuntimeUIConstants.JBEAP_700, "jsp-project",
+		String depString = ServerRuntimeUIConstants.getDeployString(serverIdentification, "jsp-project",
 				".war");
 
 		checkCountAndGetServerName();
