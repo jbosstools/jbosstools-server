@@ -15,7 +15,6 @@
 	<properties>
 		<enforceFailOnUIDependencyInCore>true</enforceFailOnUIDependencyInCore>
 		<tycho.scmUrl>scm:git:https://github.com/jbosstools/jbosstools-server.git</tycho.scmUrl>
-		<sonar.test.inclusions>**/*Test.*,**/test/**/*,**/*AllTests*,**/*AllBotTests*,**/*TestSuite*</sonar.test.inclusions>
 		<!-- timeout in seconds; 3000s = 50m -->
 		<surefire.itests.timeout>3000</surefire.itests.timeout>
 	</properties>
@@ -25,6 +24,7 @@
 		<module>wtp</module>
 		<module>jmx</module>
 		<module>site</module>
+		<module>jacoco-report</module>
 	</modules>
 	<repositories>
 		<repository>
@@ -53,37 +53,21 @@
 				<!-- sonar properties -->
 				<sonar.code.codeCoveragePlugin>jacoco</sonar.code.codeCoveragePlugin>
 				<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-				<!-- points to the target folder of the global parent project -->
-				<sonar.jacoco.reportPath>../../target/jacoco.exec</sonar.jacoco.reportPath>
-				<sonar.jacoco.reportPaths>${sonar.jacoco.reportPath}</sonar.jacoco.reportPaths>
+				<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+				<sonar.organization>jbosstools</sonar.organization>
 			</properties>
 			<build>
 				<plugins>
 					<plugin>
 						<groupId>org.jacoco</groupId>
 						<artifactId>jacoco-maven-plugin</artifactId>
-						<version>0.7.9</version>
-						<configuration>
-							<append>true</append>
-							<includes>
-								<include>org.jboss.tools.wtp.*</include>
-								<include>org.jboss.tools.jmx.*</include>
-								<include>org.jboss.tools.as.*</include>
-								<include>org.jboss.ide.as.*</include>
-								<include>org.jboss.ide.eclipse.as.*</include>
-								<include>org.jboss.ide.eclipse.archives.*</include>
-								<include>org.jboss.tools.archives.*</include>
-							</includes>
-						</configuration>
+						<version>${jacoco.version}</version>
 						<executions>
 							<execution>
 								<id>agent-for-ut</id>
 								<goals>
 									<goal>prepare-agent</goal>
 								</goals>
-								<configuration>
-									<destFile>${sonar.jacoco.reportPath}</destFile>
-								</configuration>
 							</execution>
 							<execution>
 								<id>jacoco-site</id>
