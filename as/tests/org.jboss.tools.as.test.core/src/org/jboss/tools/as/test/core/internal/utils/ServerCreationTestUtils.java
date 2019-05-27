@@ -68,6 +68,7 @@ public class ServerCreationTestUtils extends Assert {
 	private static final String wildfly_14_0_jar = "wf14.0.0.mf.jboss-as-server.jar";
 	private static final String wildfly_15_0_jar = "wf15.0.0.mf.jboss-as-server.jar";
 	private static final String wildfly_16_0_jar = "wf16.0.0.mf.jboss-as-server.jar";
+	private static final String wildfly_17_0_jar = "wf17.0.0.mf.jboss-as-server.jar";
 	private static final String twiddle_eap_4_3 = "eap4.3" + twiddle_suffix;
 	private static final String twiddle_eap_5_0 = "eap5.0" + twiddle_suffix;
 	private static final String twiddle_eap_5_1 = "eap5.1" + twiddle_suffix;
@@ -120,6 +121,7 @@ public class ServerCreationTestUtils extends Assert {
 		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_140, wildfly_14_0_jar);
 		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_150, wildfly_15_0_jar);
 		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_160, wildfly_16_0_jar);
+		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_170, wildfly_17_0_jar);
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_43, twiddle_eap_4_3);
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_50, twiddle_eap_5_1);
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_60, eap_server_6_0_jar);
@@ -151,6 +153,7 @@ public class ServerCreationTestUtils extends Assert {
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_WILDFLY_140, IJBossToolingConstants.WILDFLY_140);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_WILDFLY_150, IJBossToolingConstants.WILDFLY_150);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_WILDFLY_160, IJBossToolingConstants.WILDFLY_160);
+		serverRuntimeMap.put(IJBossToolingConstants.SERVER_WILDFLY_170, IJBossToolingConstants.WILDFLY_170);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_43, IJBossToolingConstants.EAP_43);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_50, IJBossToolingConstants.EAP_50);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_60, IJBossToolingConstants.EAP_60);
@@ -218,6 +221,8 @@ public class ServerCreationTestUtils extends Assert {
 			serverDir = createWildfly150MockServerDirectory(name, serverType, asSystemJar.get(serverType));
 		} else if( IJBossToolingConstants.SERVER_WILDFLY_160.equals(serverType)) {
 			serverDir = createWildfly160MockServerDirectory(name, serverType, asSystemJar.get(serverType));
+		} else if( IJBossToolingConstants.SERVER_WILDFLY_170.equals(serverType)) {
+			serverDir = createWildfly170MockServerDirectory(name, serverType, asSystemJar.get(serverType));
 		} else if( TEST_SERVER_TYPE_GATEIN_34.equals(serverType)) {
 			serverDir = createGateIn34MockServerDirectory(name);
 		} else if( TEST_SERVER_TYPE_GATEIN_35.equals(serverType)) {
@@ -397,6 +402,11 @@ public class ServerCreationTestUtils extends Assert {
 
 	private static IPath createWildfly160MockServerDirectory(String name, String serverTypeId, String serverJar) {
 		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 16.0.0.xyz\n"; 
+		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
+	}
+
+	private static IPath createWildfly170MockServerDirectory(String name, String serverTypeId, String serverJar) {
+		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 17.0.0.xyz\n"; 
 		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
 	}
 

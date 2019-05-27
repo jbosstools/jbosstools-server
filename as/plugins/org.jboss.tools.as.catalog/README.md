@@ -5,7 +5,7 @@
 Once in this folder, run the following command:
 
 ```java
-java -cp target/org.jboss.tools.as.catalog-*-SNAPSHOT.jar $SERVER_folder schema
+java -cp target/org.jboss.tools.as.catalog-*-SNAPSHOT.jar org.jboss.tools.as.catalog.internal.CopyReleasedSchemaToJBossOrg  $SERVER_folder schema
 ```
 
 where **$SERVER_folder** is the folder under the Wildfly or EAP distribution where the
@@ -22,5 +22,12 @@ reverse update time order (ie latest released last)
 
 ## Updating the schema catalog
 
-Once you've updated the schema files
+Once you've updated the schema files, the schema catalog must be updated. Run the following command:
+
+```java
+java -cp target/org.jboss.tools.as.catalog-*-SNAPSHOT.jar org.jboss.tools.as.catalog.internal.GeneratePluginXmlCatalog >plugin1.xml
+```
+
+Then diff plugin.xml plugin1.xml and report changes back to plugin.xml
+
 
