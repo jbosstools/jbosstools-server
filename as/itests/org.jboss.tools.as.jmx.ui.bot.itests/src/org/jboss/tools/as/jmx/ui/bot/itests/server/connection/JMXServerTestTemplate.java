@@ -80,6 +80,7 @@ public abstract class JMXServerTestTemplate extends JMXTestTemplate {
 		JMXConnection serverConnection = null;
 		for (TreeItem item : items) {
 			if (item.getText().contains("JMX")) {
+				item.select();
 				serverConnection = new JMXConnection(item);
 			}
 		}

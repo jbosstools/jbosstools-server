@@ -40,7 +40,7 @@ public class JMXConnectionItem extends AbstractJMXConnection {
 	public List<JMXConnection> getConnectionsIgnoreCase(String name) {
 		return getConnections().stream()
 				.filter( x -> x.getLabel().getName().toLowerCase().contains(name.toLowerCase()))
-				.collect(Collectors.toList());		
+				.collect(Collectors.toList());
 	}
 	
 	public JMXConnection getConnection(String name) {
@@ -52,5 +52,4 @@ public class JMXConnectionItem extends AbstractJMXConnection {
 					message = message.concat(" \r\nAvailable connections are: " + getConnections().stream().map(x -> x.getLabel().getName()).collect(Collectors.joining(", ")));
 					throw new JMXException(message);});
 	}
-	
 }

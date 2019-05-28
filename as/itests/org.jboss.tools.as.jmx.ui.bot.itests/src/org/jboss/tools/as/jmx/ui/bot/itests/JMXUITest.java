@@ -19,13 +19,15 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.eclipse.reddeer.common.logging.Logger;
 import org.eclipse.reddeer.eclipse.ui.views.properties.PropertySheet;
 import org.eclipse.reddeer.swt.api.TreeItem;
 import org.eclipse.reddeer.swt.impl.tree.DefaultTree;
+import org.jboss.tools.jmx.reddeer.core.JMXConnection;
 import org.jboss.tools.jmx.reddeer.core.JMXConnectionItem;
 import org.jboss.tools.jmx.reddeer.core.JMXConnectionState;
+import org.junit.After;
 import org.junit.Test;
 
 /**
@@ -37,16 +39,28 @@ public class JMXUITest extends JMXTestTemplate {
 	
 	protected JMXConnectionItem local;
 	
-	private static final Logger log = Logger.getLogger(JMXUITest.class);
-
 	@Override
 	public void setUpJMXConnection() {
 		local = view.getLocalProcessesItem();
-		try {
-			connection = local.getConnectionsIgnoreCase("eclipse").get(0);
-		} catch (Exception e) {
-			log.error(e.getMessage());
-			fail(e.getMessage());
+		if (local == null) {
+			fail("There are no local processes");
+		}
+		List<JMXConnection> foundConnestions = local.getConnectionsIgnoreCase(JAVA_APP);
+		if (!foundConnestions.isEmpty()) {
+			connection = foundConnestions.get(0);
+		} else {
+			String connections = local.getConnections().stream()
+			.map( item -> item.getLabel().getName())
+			.collect( Collectors.joining("\r\n"));
+			fail("There is no connection like searched one: " + JAVA_APP + 
+					"Only available connections are: " + connections);
+		}
+	}
+	
+	@After
+	public void cleanUp() {
+		if (local != null) {
+			local = null;
 		}
 	}
 	

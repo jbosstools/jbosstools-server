@@ -1,8 +1,8 @@
 {
 	"org.jboss.ide.eclipse.as.reddeer.server.requirement.ServerRequirement.JBossServer": [
 		{
-			"runtime": "${jbosstools.test.wildfly.14.home}",
-			"version": "14",
+			"runtime": "${jbosstools.test.wildfly.16.home}",
+			"version": "16",
 			"family": "WILDFLY"
 		},
 		{
@@ -14,6 +14,11 @@
 				"serverHost": "LOCALHOST",
 				"systemType": "Local"
 			}
+		},
+		{
+			"runtime": "${jbosstools.test.eap.7.2.home}",
+			"version": "7.2",
+			"family": "EAP"
 		}
 	]
 }

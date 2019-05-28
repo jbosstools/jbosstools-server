@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2018 Red Hat, Inc. 
+ * Copyright (c) 2018-2019 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -14,8 +14,8 @@ import org.eclipse.reddeer.common.exception.WaitTimeoutExpiredException;
 import org.eclipse.reddeer.common.logging.Logger;
 import org.eclipse.reddeer.common.wait.WaitUntil;
 import org.eclipse.reddeer.common.wait.WaitWhile;
-import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersViewException;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersViewEnums.ServerState;
+import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersViewException;
 import org.eclipse.reddeer.junit.annotation.RequirementRestriction;
 import org.eclipse.reddeer.junit.requirement.matcher.RequirementMatcher;
 import org.eclipse.reddeer.requirements.server.ServerRequirementState;
@@ -23,7 +23,7 @@ import org.eclipse.reddeer.swt.condition.ShellIsAvailable;
 import org.eclipse.reddeer.swt.impl.button.PushButton;
 import org.eclipse.reddeer.swt.impl.shell.DefaultShell;
 import org.eclipse.swt.widgets.Shell;
-import org.jboss.ide.eclipse.as.reddeer.server.family.ServerMatcher;
+import org.hamcrest.core.IsNull;
 import org.jboss.ide.eclipse.as.reddeer.server.requirement.ServerRequirement.JBossServer;
 import org.junit.After;
 import org.junit.Before;
@@ -41,7 +41,7 @@ public class RemoteServerJMXConnectionTest extends JMXServerTestTemplate {
 	
 	@RequirementRestriction
 	public static RequirementMatcher getRestrictionMatcher() {
-		return new RequirementMatcher(JBossServer.class, "family", ServerMatcher.EAP());
+	  return new RequirementMatcher(JBossServer.class, "remote", IsNull.notNullValue());
 	}
 	
 	@Before
@@ -90,7 +90,7 @@ public class RemoteServerJMXConnectionTest extends JMXServerTestTemplate {
 	
 	@Test
 	public void testJMXServerConnection() {
-		verifyJMXServerConnection("Enterprise Application Platform 7");
+		verifyJMXServerConnection(serverConfig.getServerName());
 	}
 	
 	@Test

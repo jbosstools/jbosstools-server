@@ -65,8 +65,14 @@ public class JMXConnection extends AbstractJMXConnection {
 	public void connect() {
 		select();
 		new ContextMenuItem("Connect...").select();
-		new WaitUntil(new ConnectionHasState(this, JMXConnectionState.CONNECTED), TimePeriod.MEDIUM);
-		new WaitWhile(new JobIsRunning(), TimePeriod.MEDIUM);
+		if (this.item.isSelected()) {
+			new WaitUntil(new ConnectionHasState(this, JMXConnectionState.CONNECTED), TimePeriod.DEFAULT);
+			new WaitWhile(new JobIsRunning(), TimePeriod.DEFAULT);
+		} else {
+			select();
+			new WaitUntil(new ConnectionHasState(this, JMXConnectionState.CONNECTED), TimePeriod.DEFAULT);
+			new WaitWhile(new JobIsRunning(), TimePeriod.DEFAULT);
+		}
 	}
 	
 	public void deleteConnection() {
