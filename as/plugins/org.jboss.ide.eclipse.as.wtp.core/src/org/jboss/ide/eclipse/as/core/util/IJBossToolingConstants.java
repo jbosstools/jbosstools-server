@@ -24,6 +24,8 @@ public interface IJBossToolingConstants {
 	public static final String SERVER_WILDFLY_150 = "org.jboss.ide.eclipse.as.wildfly.150"; //-NLS-1$
 	public static final String WILDFLY_160 = "org.jboss.ide.eclipse.as.runtime.wildfly.160"; //-NLS-1$
 	public static final String SERVER_WILDFLY_160 = "org.jboss.ide.eclipse.as.wildfly.160"; //-NLS-1$
+	public static final String WILDFLY_170 = "org.jboss.ide.eclipse.as.runtime.wildfly.170"; //-NLS-1$
+	public static final String SERVER_WILDFLY_170 = "org.jboss.ide.eclipse.as.wildfly.170"; //-NLS-1$
 	public static final String AS_32 = "org.jboss.ide.eclipse.as.runtime.32"; //$NON-NLS-1$
 	public static final String AS_40 = "org.jboss.ide.eclipse.as.runtime.40"; //$NON-NLS-1$
 	public static final String AS_42 = "org.jboss.ide.eclipse.as.runtime.42"; //$NON-NLS-1$
@@ -50,7 +52,7 @@ public interface IJBossToolingConstants {
 	public static final String EAP_72 = "org.jboss.ide.eclipse.as.runtime.eap.72"; //$NON-NLS-1$
 	public static final String[] ALL_JBOSS_RUNTIMES = new String[] {
 		AS_32,AS_40,AS_42,AS_50,AS_51,AS_60,AS_70,AS_71,
-		WILDFLY_80,WILDFLY_90,WILDFLY_100,WILDFLY_110,WILDFLY_120,WILDFLY_130,WILDFLY_140,WILDFLY_150,WILDFLY_160,
+		WILDFLY_80,WILDFLY_90,WILDFLY_100,WILDFLY_110,WILDFLY_120,WILDFLY_130,WILDFLY_140,WILDFLY_150,WILDFLY_160,WILDFLY_170,
 		EAP_43,EAP_50,EAP_60, EAP_61, EAP_70, EAP_71, EAP_72
 	};
 	// NEW_SERVER_ADAPTER Add the new runtime constant above this line
