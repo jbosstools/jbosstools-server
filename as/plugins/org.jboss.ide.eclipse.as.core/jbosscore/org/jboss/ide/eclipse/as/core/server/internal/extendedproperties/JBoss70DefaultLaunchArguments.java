@@ -19,7 +19,7 @@ import org.jboss.ide.eclipse.as.core.server.IServerModeDetails;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.RemotePath;
 
-import de.schlichtherle.io.File;
+import java.io.File;
 
 public class JBoss70DefaultLaunchArguments extends JBossDefaultLaunchArguments {
 	public JBoss70DefaultLaunchArguments(IServer s) {
