@@ -4,22 +4,18 @@ Bundle-Name: Archives UI Test
 Bundle-SymbolicName: org.jboss.ide.eclipse.archives.ui.test
 Bundle-Version: 3.6.202.qualifier
 Bundle-Vendor: JBoss by RedHat
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Eclipse-BundleShape: dir
 Require-Bundle: org.junit,
  org.jboss.tools.tests,
  org.jboss.ide.eclipse.archives.ui,
- org.eclipse.jface;bundle-version="3.5.0",
- org.eclipse.ui;bundle-version="3.5.0",
- org.eclipse.core.resources;bundle-version="3.5.1",
- org.eclipse.core.runtime;bundle-version="3.5.0",
- org.jboss.ide.eclipse.archives.core;bundle-version="2.0.0",
- org.eclipse.ui.navigator;bundle-version="3.4.1",
- org.jboss.ide.eclipse.archives.jdt.integration;bundle-version="3.1.0",
- org.eclipse.reddeer.go;bundle-version="2.1.0",
+ org.jboss.ide.eclipse.archives.core,
+ org.eclipse.reddeer.go,
  org.eclipse.ui.views.log,
+ org.jboss.ide.eclipse.archives.jdt.integration,
  org.jboss.tools.archives.reddeer,
  org.eclipse.wst.server.ui
 Export-Package: org.jboss.ide.eclipse.archives.ui.test,
  org.jboss.ide.eclipse.archives.ui.test.bot,
  org.jboss.ide.eclipse.archives.ui.test.bot.util
+Automatic-Module-Name: org.jboss.ide.eclipse.archives.ui.test
