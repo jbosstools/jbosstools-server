@@ -167,6 +167,7 @@
 		<uri name="urn:iiop:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb-iiop_1_1.xsd"/>
 		<uri name="urn:infinispan:config:6.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/infinispan-config-6.0.xsd"/>
 		<uri name="urn:jboss-remoting:5.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-remoting_5_0.xsd"/>
+		<uri name="urn:jboss-remoting:5.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-remoting_5_1.xsd"/>
 		<uri name="urn:jboss:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss_1_0.xsd"/>
 		<uri name="urn:jboss:batch-jberet:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/batch-jberet_1_0.xsd"/>
 		<uri name="urn:jboss:cli:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-cli_1_0.xsd"/>
