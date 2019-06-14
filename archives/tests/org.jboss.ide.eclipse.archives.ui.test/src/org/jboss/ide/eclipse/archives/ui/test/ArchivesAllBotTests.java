@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.archives.ui.test;
 
+import org.eclipse.reddeer.junit.runner.RedDeerSuite;
 import org.jboss.ide.eclipse.archives.ui.test.bot.ArchivePreferencesTest;
 import org.jboss.ide.eclipse.archives.ui.test.bot.ArchiveViewReSwitchingTest;
 import org.jboss.ide.eclipse.archives.ui.test.bot.ArchivesSupportTest;
@@ -23,7 +24,6 @@ import org.jboss.ide.eclipse.archives.ui.test.bot.FolderTest;
 import org.jboss.ide.eclipse.archives.ui.test.bot.ModifyingArchiveTest;
 import org.jboss.ide.eclipse.archives.ui.test.bot.UserLibrariesFilesetTest;
 import org.jboss.ide.eclipse.archives.ui.test.bot.ViewIsPresentTest;
-import org.eclipse.reddeer.junit.runner.RedDeerSuite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 
@@ -46,8 +46,6 @@ import org.junit.runners.Suite.SuiteClasses;
 	CreatingArchiveTest.class,
 	DeletingArchiveTest.class, 
 	ModifyingArchiveTest.class,
-	//VariousProjectsArchiving.class,
-	//DeployingArchiveTest.class,
 })
 public class ArchivesAllBotTests {
 		
