@@ -185,6 +185,7 @@
 		<uri name="urn:jboss:deployment-structure:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-deployment-structure-1_1.xsd"/>
 		<uri name="urn:jboss:deployment-structure:1.2" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-deployment-structure-1_2.xsd"/>
 		<uri name="urn:jboss:deployment-structure:1.3" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-deployment-structure-1_3.xsd"/>
+		<uri name="urn:jboss:distributable-web:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/distributable-web_1_0.xsd"/>
 		<uri name="urn:jboss:domain:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-config_1_0.xsd"/>
 		<uri name="urn:jboss:domain:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-config_1_1.xsd"/>
 		<uri name="urn:jboss:domain:1.2" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-config_1_2.xsd"/>
@@ -227,6 +228,7 @@
 		<uri name="urn:jboss:domain:deployment-scanner:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-deployment-scanner_1_1.xsd"/>
 		<uri name="urn:jboss:domain:deployment-scanner:2.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-deployment-scanner_2_0.xsd"/>
 		<uri name="urn:jboss:domain:discovery:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-discovery_1_0.xsd"/>
+		<uri name="urn:jboss:domain:distributable-web:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-distributable-web_1_0.xsd"/>
 		<uri name="urn:jboss:domain:ee-security:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-ee-security_1_0.xsd"/>
 		<uri name="urn:jboss:domain:ee:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-ee_1_0.xsd"/>
 		<uri name="urn:jboss:domain:ee:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-ee_1_1.xsd"/>
@@ -469,6 +471,8 @@
 		<uri name="urn:wildfly:elytron:7.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-elytron_7_0.xsd"/>
 		<uri name="urn:wildfly:microprofile-config-smallrye:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-microprofile-config-smallrye_1_0.xsd"/>
 		<uri name="urn:wildfly:microprofile-health-smallrye:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-microprofile-health-smallrye_1_0.xsd"/>
+		<uri name="urn:wildfly:microprofile-metrics-smallrye:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-microprofile-metrics-smallrye_1_0.xsd"/>
+		<uri name="urn:wildfly:microprofile-metrics-smallrye:2.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-microprofile-metrics-smallrye_2_0.xsd"/>
 		<uri name="urn:wildfly:microprofile-opentracing-smallrye:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-microprofile-opentracing_1_0.xsd"/>
 		<uri name="urn:xnio:3.5" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/xnio_3_5.xsd"/>
        </catalogContribution>
