@@ -1,5 +1,5 @@
 /******************************************************************************* 
-* Copyright (c) 2011-2013 Red Hat, Inc. 
+* Copyright (c) 2011-2019 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -45,7 +45,6 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
@@ -58,7 +57,6 @@ import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.internal.ChangeModuleDeploymentPropertyCommand;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.ide.eclipse.as.wtp.ui.util.FormDataUtility;
@@ -153,9 +151,10 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 		Label comboLabel = new Label(wrapper1, SWT.NULL);
 		comboLabel.setText(Messages.EditorDeploymentPageFilterBy);
 		filterCombo = new Combo(wrapper1, SWT.READ_ONLY);
-		filterCombo.setItems(getViewerFilterTypes());
-		filterCombo.select(0);
-		
+		String[] items = getViewerFilterTypes();
+		filterCombo.setItems(items);
+		filterCombo.select(getDeploymentTypeFilterIndex(getDefaultDeploymentTypeFilter()));
+
 		filterText = new Text(wrapper, SWT.SINGLE |SWT.BORDER);
 		
 		refreshLink = new Button(wrapper, SWT.PUSH);
@@ -603,5 +602,17 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 	
 	public Control[] getEnablementImmuneWidgets() {
 		return new Control[]{filterCombo, filterText, refreshLink};
+	}
+	
+	private int getDeploymentTypeFilterIndex(String item) {
+		int index = Arrays.asList(filterCombo.getItems()).indexOf(item);
+		if (index == -1) {
+			return 0;
+		}
+		return index;
+	}
+	
+	protected String getDefaultDeploymentTypeFilter() {
+		return ALL;
 	}
 }
