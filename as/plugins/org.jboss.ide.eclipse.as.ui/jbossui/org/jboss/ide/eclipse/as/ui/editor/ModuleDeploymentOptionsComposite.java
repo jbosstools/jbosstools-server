@@ -15,6 +15,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -153,8 +154,10 @@ public class ModuleDeploymentOptionsComposite extends Composite implements Prope
 		Label comboLabel = new Label(wrapper1, SWT.NULL);
 		comboLabel.setText(Messages.EditorDeploymentPageFilterBy);
 		filterCombo = new Combo(wrapper1, SWT.READ_ONLY);
-		filterCombo.setItems(getViewerFilterTypes());
-		filterCombo.select(0);
+		String[] viewerFilterTypes = getViewerFilterTypes();
+		filterCombo.setItems(viewerFilterTypes);
+		List<String> filterTypes = Arrays.asList(viewerFilterTypes);
+		filterCombo.select(filterTypes.indexOf(DEPLOYED));
 		
 		filterText = new Text(wrapper, SWT.SINGLE |SWT.BORDER);
 		
