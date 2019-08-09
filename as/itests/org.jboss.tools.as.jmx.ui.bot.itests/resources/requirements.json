@@ -6,6 +6,11 @@
 			"family": "WILDFLY"
 		},
 		{
+			"runtime": "${jbosstools.test.wildfly.17.home}",
+			"version": "17",
+			"family": "WILDFLY"
+		},
+		{
 			"runtime": "${jbosstools.test.eap.7.2.home}",
 			"version": "7.2",
 			"family": "EAP",
