@@ -111,7 +111,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 				<!-- Do not download all runtimes if only testing one runtime - eap compatibility testing -->
 				<property>
 					<name>test.profile</name>
-					<value>!eap7x-compatibility</value>
+					<value>!eap-team-compatibility</value>
 				</property>
 			</activation>
 			<properties>
