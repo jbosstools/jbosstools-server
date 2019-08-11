@@ -5,7 +5,6 @@ Bundle-SymbolicName: org.jboss.tools.as.ui.bot.itests
 Bundle-Version: 3.8.0.qualifier
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: jar
-Bundle-Localization: plugin
 Bundle-Vendor: Red Hat
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.ui,
@@ -127,4 +126,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jst.ejb.ui,
  org.apache.commons.lang
 Bundle-Activator: org.jboss.tools.as.ui.bot.itests.Activator
+Automatic-Module-Name: org.jboss.tools.as.ui.bot.itests
 
