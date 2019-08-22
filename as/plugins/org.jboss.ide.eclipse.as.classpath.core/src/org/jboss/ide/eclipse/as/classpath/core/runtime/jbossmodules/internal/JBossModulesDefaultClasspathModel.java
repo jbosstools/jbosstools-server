@@ -39,7 +39,7 @@ public class JBossModulesDefaultClasspathModel extends InternalRuntimeClasspathM
 			IJBossToolingConstants.WILDFLY_110, IJBossToolingConstants.WILDFLY_120, IJBossToolingConstants.WILDFLY_130,
 			IJBossToolingConstants.WILDFLY_140, IJBossToolingConstants.WILDFLY_150, IJBossToolingConstants.WILDFLY_160,
 			IJBossToolingConstants.WILDFLY_170,
-			IJBossToolingConstants.EAP_71, IJBossToolingConstants.EAP_72});
+			IJBossToolingConstants.EAP_71, IJBossToolingConstants.EAP_72, IJBossToolingConstants.EAP_73});
 	// NEW_SERVER_ADAPTER
 
 	private IRuntimePathProvider[] getDefaultJBossModulesEntries(IRuntimeType rtt) {

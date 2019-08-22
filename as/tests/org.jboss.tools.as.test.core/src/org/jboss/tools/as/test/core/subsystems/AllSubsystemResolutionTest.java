@@ -120,7 +120,8 @@ public class AllSubsystemResolutionTest extends TestCase {
 				IJBossToolingConstants.SERVER_EAP_61,
 				IJBossToolingConstants.SERVER_EAP_70,
 				IJBossToolingConstants.SERVER_EAP_71,
-				IJBossToolingConstants.SERVER_EAP_72
+				IJBossToolingConstants.SERVER_EAP_72,
+				IJBossToolingConstants.SERVER_EAP_73
 				//NEW_SERVER_ADAPTER 
 		};
 		String[] as7Modes = new String[]{"local", "rse", null, "local.mgmt", "rse.mgmt"};

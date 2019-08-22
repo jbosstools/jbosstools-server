@@ -31,6 +31,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossEAP
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossEAP70ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossEAP71ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossEAP72ExtendedProperties;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossEAP73ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.Wildfly100ExtendedProperties;
@@ -114,6 +115,8 @@ public class ExtendedServerPropertiesAdapterFactory implements IAdapterFactory, 
 				return new JBossEAP71ExtendedProperties(adaptable);
 			if( SERVER_EAP_72.equals(typeId) || EAP_72.equals(typeId))
 				return new JBossEAP72ExtendedProperties(adaptable);
+			if( SERVER_EAP_73.equals(typeId) || EAP_73.equals(typeId))
+				return new JBossEAP73ExtendedProperties(adaptable);
 
 			if( SERVER_WILDFLY_80.equals(typeId) || WILDFLY_80.equals(typeId))
 				return new Wildfly80ExtendedProperties(adaptable);

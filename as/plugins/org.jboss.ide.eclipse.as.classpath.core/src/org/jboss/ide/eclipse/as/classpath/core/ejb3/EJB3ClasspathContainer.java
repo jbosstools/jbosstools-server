@@ -171,6 +171,8 @@ public class EJB3ClasspathContainer
 				case EAP_61:
 				case EAP_70:
 				case EAP_71:
+				case EAP_72:
+				case EAP_73:
 					ret = getEap61Jars(homePath);
 					break;
 				default:
