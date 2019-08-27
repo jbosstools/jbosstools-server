@@ -50,10 +50,11 @@ public interface IJBossToolingConstants {
 	public static final String EAP_70 = "org.jboss.ide.eclipse.as.runtime.eap.70"; //$NON-NLS-1$
 	public static final String EAP_71 = "org.jboss.ide.eclipse.as.runtime.eap.71"; //$NON-NLS-1$
 	public static final String EAP_72 = "org.jboss.ide.eclipse.as.runtime.eap.72"; //$NON-NLS-1$
+	public static final String EAP_73 = "org.jboss.ide.eclipse.as.runtime.eap.73"; //$NON-NLS-1$
 	public static final String[] ALL_JBOSS_RUNTIMES = new String[] {
 		AS_32,AS_40,AS_42,AS_50,AS_51,AS_60,AS_70,AS_71,
 		WILDFLY_80,WILDFLY_90,WILDFLY_100,WILDFLY_110,WILDFLY_120,WILDFLY_130,WILDFLY_140,WILDFLY_150,WILDFLY_160,WILDFLY_170,
-		EAP_43,EAP_50,EAP_60, EAP_61, EAP_70, EAP_71, EAP_72
+		EAP_43,EAP_50,EAP_60, EAP_61, EAP_70, EAP_71, EAP_72, EAP_73
 	};
 	// NEW_SERVER_ADAPTER Add the new runtime constant above this line
 	
@@ -80,11 +81,12 @@ public interface IJBossToolingConstants {
 	public static final String SERVER_EAP_70 = "org.jboss.ide.eclipse.as.eap.70"; //$NON-NLS-1$
 	public static final String SERVER_EAP_71 = "org.jboss.ide.eclipse.as.eap.71"; //$NON-NLS-1$
 	public static final String SERVER_EAP_72 = "org.jboss.ide.eclipse.as.eap.72"; //$NON-NLS-1$
+	public static final String SERVER_EAP_73 = "org.jboss.ide.eclipse.as.eap.73"; //$NON-NLS-1$
 	public static final String[] ALL_JBOSS_SERVERS = new String[] {
 		SERVER_AS_32,SERVER_AS_40,SERVER_AS_42,SERVER_AS_50,SERVER_AS_51,
 		SERVER_AS_60,SERVER_AS_70,SERVER_AS_71,
 		SERVER_WILDFLY_80,SERVER_WILDFLY_90,SERVER_WILDFLY_100,SERVER_WILDFLY_110,SERVER_WILDFLY_120,SERVER_WILDFLY_130,SERVER_WILDFLY_140,SERVER_WILDFLY_150,SERVER_WILDFLY_160,
-		SERVER_EAP_43,SERVER_EAP_50,SERVER_EAP_60, SERVER_EAP_61, SERVER_EAP_70, SERVER_EAP_71, SERVER_EAP_72
+		SERVER_EAP_43,SERVER_EAP_50,SERVER_EAP_60, SERVER_EAP_61, SERVER_EAP_70, SERVER_EAP_71, SERVER_EAP_72, SERVER_EAP_73
 	};
 	// NEW_SERVER_ADAPTER Add the new server id above this line
 	
@@ -114,6 +116,7 @@ public interface IJBossToolingConstants {
 	public static final String V7_0 = "7.0"; //$NON-NLS-1$
 	public static final String V7_1 = "7.1"; //$NON-NLS-1$
 	public static final String V7_2 = "7.2"; //$NON-NLS-1$
+	public static final String V7_3 = "7.3"; //$NON-NLS-1$
 	public static final String V8_0 = "8.0"; //$NON-NLS-1$
 	
 	// LEGACY - unused. Previously: Add the new version string above this line

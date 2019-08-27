@@ -398,6 +398,23 @@
             stopTimeout="450000"
             supportsRemoteHosts="true"/>
 
+      <serverType
+            behaviourClass="org.jboss.tools.as.core.server.controllable.internal.DeployableServerBehavior"
+            class="org.jboss.ide.eclipse.as.core.server.internal.v7.Wildfly8Server"
+            description="%jboss.eap.version.73.description"
+            hasConfiguration="false"
+            id="org.jboss.ide.eclipse.as.eap.73"
+            initialState="stopped"
+            launchConfigId="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
+            launchModes="run,debug,profile"
+            name="%jboss.eap.version.73.name"
+            runtime="false"
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.eap.73"
+            startBeforePublish="false"
+            startTimeout="450000"
+            stopTimeout="450000"
+            supportsRemoteHosts="true"/>
+
      <!-- NEW_SERVER_ADAPTER Add the new server type above this line -->
    </extension>
 
@@ -801,7 +818,6 @@
           <moduleType types="jboss.osgi" versions="1.0"/>
       </runtimeType>
 
-
       <runtimeType
              vendor="%enterpriseProviderName"
              class="org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss71ServerRuntime"
@@ -823,6 +839,29 @@
           <moduleType types="bpel.module" versions="1.1, 2.0"/>
           <moduleType types="jboss.osgi" versions="1.0"/>
       </runtimeType>
+
+      <runtimeType
+             vendor="%enterpriseProviderName"
+             class="org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss71ServerRuntime"
+             description="%jboss.eap.version.73.description"
+             name="%jboss.eap.version.73.runtime.name"
+             id="org.jboss.ide.eclipse.as.runtime.eap.73"
+             version="7.3">
+          <moduleType types="jst.appclient" versions="5.0, 6.0,7.0,8.0"/>
+          <moduleType types="wst.web" versions="1.0,1.2,1.3,1.4"/>
+          <moduleType types="jst.web" versions="2.2, 2.3, 2.4, 2.5, 3.0, 3.1, 4.0"/>
+          <moduleType types="jst.ejb" versions="1.0, 1.1, 2.0, 2.1, 3.0, 3.1, 3.2"/>
+          <moduleType types="jst.ear" versions="1.2, 1.3, 1.4, 5.0, 6.0,7.0,8.0"/>
+          <moduleType types="jst.connector" versions="1.0, 1.5, 1.6,1.7"/>
+	      <moduleType types="jst.utility" versions="1.0"/>
+          <moduleType types="jboss.package" versions="1.0"/>
+          <moduleType types="jboss.singlefile" versions="1.0"/>
+          <moduleType types="jst.jboss.sar" versions="1.0"/>
+          <moduleType types="jbt.bpel.module" versions="1.1, 2.0"/>
+          <moduleType types="bpel.module" versions="1.1, 2.0"/>
+          <moduleType types="jboss.osgi" versions="1.0"/>
+      </runtimeType>
+
       <!-- NEW_SERVER_ADAPTER Add the new Runtime type above this line -->
    </extension>
 
@@ -1049,6 +1088,10 @@
             runtimeTypeId="org.jboss.ide.eclipse.as.runtime.eap.72"
             runtime-component="org.jboss.ide.eclipse.eap.runtime.component"
             version="7.2"/>
+      <runtimeFacetMapping
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.eap.73"
+            runtime-component="org.jboss.ide.eclipse.eap.runtime.component"
+            version="7.3"/>
       <!-- NEW_SERVER_ADAPTER Add the new runtime to runtime-component mapping above this line -->
    </extension>
 
@@ -1098,6 +1141,9 @@
       		<runtime-component-version
             	type="org.jboss.ide.eclipse.eap.runtime.component"
             	version="7.2"/>
+      		<runtime-component-version
+            	type="org.jboss.ide.eclipse.eap.runtime.component"
+            	version="7.3"/>
             	<!-- NEW_SERVER_ADAPTER Add the new server type above this line -->     
    			<supported>
         		<runtime-component
@@ -1186,6 +1232,20 @@
         		<runtime-component
          			id="org.jboss.ide.eclipse.eap.runtime.component"
          			version="7.2"/>
+		       <facet id="wst.web"  version="1.0"/>
+		       <facet id="jst.web"  version="2.2,2.3,2.4,2.5,3.0,3.1,4.0"/>
+		       <facet id="jst.java" version="5.0,6.0,1.7,1.8,9,10,11"/>
+		       <facet id="jst.utility" version="1.0"/>
+		       <facet id="jst.connector" version="1.0,1.5,1.6,1.7"/>
+		       <facet id="jst.ejb" version="2.0,2.1,3.0,3.1,3.2"/>
+		       <facet id="jst.ear" version="1.2,1.3,1.4,5.0,6.0,7.0,8.0"/>
+		       <facet id="jst.appclient" version="1.2,1.3,1.4,5.0,6.0,7.0,8.0"/>
+		       <facet id="jst.webfragment" version="3.0,3.1,4.0"/>
+     		</supported>
+   			<supported>
+        		<runtime-component
+         			id="org.jboss.ide.eclipse.eap.runtime.component"
+         			version="7.3"/>
 		       <facet id="wst.web"  version="1.0"/>
 		       <facet id="jst.web"  version="2.2,2.3,2.4,2.5,3.0,3.1,4.0"/>
 		       <facet id="jst.java" version="5.0,6.0,1.7,1.8,9,10,11"/>
@@ -1595,6 +1655,11 @@
       
       <default-facets>
           <runtime-component id="org.jboss.ide.eclipse.eap.runtime.component" version="7.2"></runtime-component>
+          <facet id="jst.java" version="1.8"></facet>
+      </default-facets>
+
+      <default-facets>
+          <runtime-component id="org.jboss.ide.eclipse.eap.runtime.component" version="7.3"></runtime-component>
           <facet id="jst.java" version="1.8"></facet>
       </default-facets>
       <!-- NEW_SERVER_ADAPTER Add the new default facet for a new runtime above this line -->

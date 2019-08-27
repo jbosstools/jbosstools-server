@@ -441,6 +441,7 @@
 						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.eap.70"></test>
 						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.eap.71"></test>
 						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.eap.72"></test>
+						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.eap.73"></test>
 						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.wildfly.80"></test>
 						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.wildfly.90"></test>
 						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.wildfly.100"></test>

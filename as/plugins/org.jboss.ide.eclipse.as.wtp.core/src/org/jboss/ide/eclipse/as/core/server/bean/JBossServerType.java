@@ -55,6 +55,7 @@ public class JBossServerType extends ServerBeanType implements IJBossToolingCons
 	public static final JBossServerType EAP70 = new ServerBeanTypeEAP70();
 	public static final JBossServerType EAP71 = new ServerBeanTypeEAP71();
 	public static final JBossServerType EAP72 = new ServerBeanTypeEAP72();
+	public static final JBossServerType EAP73 = new ServerBeanTypeEAP73();
 	
 	public static final JBossServerType JPP6 = new ServerBeanTypeJPP6();
 	
@@ -88,6 +89,7 @@ public class JBossServerType extends ServerBeanType implements IJBossToolingCons
 		JBossServerType.EAP70,
 		JBossServerType.EAP71,
 		JBossServerType.EAP72,
+		JBossServerType.EAP73,
 		JBossServerType.WILDFLY90, 
 		JBossServerType.WILDFLY90_WEB,
 		JBossServerType.WILDFLY100,
