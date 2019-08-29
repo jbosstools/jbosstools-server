@@ -42,6 +42,7 @@ public class ParameterUtils {
 	public static final String JBOSS_EAP_70_HOME = TestConstants.JBOSS_EAP_70_HOME;
 	public static final String JBOSS_EAP_71_HOME = TestConstants.JBOSS_EAP_71_HOME;
 	public static final String JBOSS_EAP_72_HOME = TestConstants.JBOSS_EAP_72_HOME;
+	public static final String JBOSS_EAP_73_HOME = TestConstants.JBOSS_EAP_73_HOME;
 	// NEW_SERVER_ADAPTER
 	
 	public static HashMap<String,String> serverHomeToRuntimeType = new HashMap<String, String>();
@@ -67,6 +68,7 @@ public class ParameterUtils {
 		serverHomeToRuntimeType.put(JBOSS_EAP_70_HOME, IJBossToolingConstants.EAP_70);
 		serverHomeToRuntimeType.put(JBOSS_EAP_71_HOME, IJBossToolingConstants.EAP_71);
 		serverHomeToRuntimeType.put(JBOSS_EAP_72_HOME, IJBossToolingConstants.EAP_72);
+		serverHomeToRuntimeType.put(JBOSS_EAP_73_HOME, IJBossToolingConstants.EAP_73);
 		// NEW_SERVER_ADAPTER
 	}
 	
