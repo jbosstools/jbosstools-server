@@ -40,6 +40,7 @@ public class PomServerConstants {
 	public static final String JBOSS_EAP_70_HOME="jbosstools.test.jboss.home.eap.7.0";
 	public static final String JBOSS_EAP_71_HOME="jbosstools.test.jboss.home.eap.7.1";
 	public static final String JBOSS_EAP_72_HOME="jbosstools.test.jboss.home.eap.7.2";
+	public static final String JBOSS_EAP_73_HOME="jbosstools.test.jboss.home.eap.7.3";
 	// NEW_SERVER_ADAPTER
 
 	public static final String[] PUBLIC = new String[]{
@@ -59,7 +60,7 @@ public class PomServerConstants {
 			JBOSS_150_HOME, JBOSS_160_HOME, JBOSS_170_HOME,
 			JBOSS_EAP_43_HOME, JBOSS_EAP_50_HOME, JBOSS_EAP_60_HOME, JBOSS_EAP_61_HOME, 
 			JBOSS_EAP_62_HOME, JBOSS_EAP_63_HOME, JBOSS_EAP_70_HOME, JBOSS_EAP_71_HOME,
-			JBOSS_EAP_72_HOME
+			JBOSS_EAP_72_HOME, JBOSS_EAP_73_HOME
 	};
 	// NEW_SERVER_ADAPTER
 
