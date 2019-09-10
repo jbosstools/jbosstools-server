@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Red Hat, Inc.
+ * Copyright (c) 2014-2019 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -83,7 +83,10 @@ public class CatalogValidationTest extends TestCase {
 		expectedErrors.put("module-1_5.xsd", 4);
 		expectedErrors.put("xmldsig-core-schema.xsd", 4);
 		// wildfly-client_1_0.xml requires additional namespaces to have functional child elements ootb
-		expectedErrors.put("wildfly-client_1_0.xsd", 1); 
+		expectedErrors.put("wildfly-client_1_0.xsd", 1);
+		// seems the generator does not support groups
+		expectedErrors.put("wildfly-distributable-web_1_0.xsd", 1);
+		expectedErrors.put("wildfly-distributable-web_2_0.xsd", 1);
 	}
 	
 	private static ArrayList<String> noRootElement = new ArrayList<String>();
@@ -95,6 +98,7 @@ public class CatalogValidationTest extends TestCase {
 		noRootElement.add("jboss-common_7_1.xsd");
 		noRootElement.add("jboss-common_8_0.xsd");
 		noRootElement.add("xml.xsd");
+		noRootElement.add("wildfly-credential-reference_1_0.xsd");
 	}
 	
 	@Parameters
