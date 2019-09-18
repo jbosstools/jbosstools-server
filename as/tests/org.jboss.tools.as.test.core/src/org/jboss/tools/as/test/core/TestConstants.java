@@ -37,6 +37,7 @@ public class TestConstants {
 	public static final String JBOSS_WF_150_HOME = System.getProperty("jbosstools.test.jboss.home.15.0", "C:\\apps\\jboss\\jboss-wildfly-15.0.0.GA\\");
 	public static final String JBOSS_WF_160_HOME = System.getProperty("jbosstools.test.jboss.home.16.0", "C:\\apps\\jboss\\jboss-wildfly-16.0.0.GA\\");
 	public static final String JBOSS_WF_170_HOME = System.getProperty("jbosstools.test.jboss.home.17.0", "C:\\apps\\jboss\\jboss-wildfly-17.0.0.GA\\");
+	public static final String JBOSS_WF_180_HOME = System.getProperty("jbosstools.test.jboss.home.18.0", "C:\\apps\\jboss\\jboss-wildfly-18.0.0.GA\\");
 	public static final String JBOSS_EAP_43_HOME = System.getProperty("jbosstools.test.jboss.home.eap.4.3", "C:\\apps\\jboss\\jboss-eap-4.3.0.GA\\");
 	public static final String JBOSS_EAP_50_HOME = System.getProperty("jbosstools.test.jboss.home.eap.5.0", "C:\\apps\\jboss\\jboss-eap-5.0.0.GA\\");
 	public static final String JBOSS_EAP_60_HOME = System.getProperty("jbosstools.test.jboss.home.eap.6.0", "C:\\apps\\jboss\\jboss-eap-6.0.0.GA\\");
@@ -77,6 +78,7 @@ public class TestConstants {
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_WILDFLY_150, JBOSS_WF_150_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_WILDFLY_160, JBOSS_WF_160_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_WILDFLY_170, JBOSS_WF_170_HOME);
+		serverTypeToHome.put(IJBossToolingConstants.SERVER_WILDFLY_180, JBOSS_WF_180_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_43, JBOSS_EAP_43_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_50, JBOSS_EAP_50_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_60, JBOSS_EAP_60_HOME);
