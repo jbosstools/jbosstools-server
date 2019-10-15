@@ -330,6 +330,7 @@
 		<uri name="urn:jboss:domain:messaging-activemq:5.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-messaging-activemq_5_0.xsd"/>
 		<uri name="urn:jboss:domain:messaging-activemq:6.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-messaging-activemq_6_0.xsd"/>
 		<uri name="urn:jboss:domain:messaging-activemq:7.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-messaging-activemq_7_0.xsd"/>
+		<uri name="urn:jboss:domain:messaging-activemq:8.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-messaging-activemq_8_0.xsd"/>
 		<uri name="urn:jboss:domain:messaging:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-messaging_1_0.xsd"/>
 		<uri name="urn:jboss:domain:messaging:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-messaging_1_1.xsd"/>
 		<uri name="urn:jboss:domain:messaging:1.2" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-messaging_1_2.xsd"/>
