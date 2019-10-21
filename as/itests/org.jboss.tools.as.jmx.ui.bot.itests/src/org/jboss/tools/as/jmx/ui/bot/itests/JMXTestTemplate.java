@@ -37,12 +37,22 @@ public abstract class JMXTestTemplate {
 	protected static final String JAVA_APP = "RunApp";
 	
 	private static Process processCompile;
-	
 	private static Process processRun;
+	private static final String JAVA_VERSION_STR;
+	private static final Double JAVA_VERSION;
 
 	protected static final Path JAVA_FOLDER = Paths.get(System.getProperty("user.dir"), "projects");
 	
 	private static Logger log = Logger.getLogger(JMXTestTemplate.class);
+	
+	static {
+		JAVA_VERSION_STR = System.getProperty("java.version");
+		JAVA_VERSION = Double.parseDouble(JAVA_VERSION_STR.substring(0, JAVA_VERSION_STR.indexOf(".") + 1));
+	}
+	
+	public static boolean isJavaLE8() {
+		return JAVA_VERSION <= 1.8;
+	}
 	
 	public static void runJavaApp() {
 		try {	

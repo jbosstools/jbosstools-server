@@ -133,7 +133,7 @@ public class JMXConnection extends AbstractJMXConnection {
 			List<String> path = new LinkedList<>();
 			path.addAll(Arrays.asList(getItem().getPath()));
 			path.add(MBEANS);
-			new WaitUntil(new TreeContainsItem(getItem().getParent(), path.toArray(new String[0])), TimePeriod.MEDIUM);
+			new WaitUntil(new TreeContainsItem(getItem().getParent(), path.toArray(new String[0])), TimePeriod.DEFAULT);
 			return item.getItem(MBEANS);
 		} else {
 			throw new JMXException("Connection " + getLabel().getName() + " is not connected");
