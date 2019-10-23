@@ -83,7 +83,7 @@ public class ServerRuntimeUIConstants {
 	public static final String[] ALL_DOWNLOADS = Stream
 			.concat(Arrays.stream(FREE_DOWNLOADS), Arrays.stream(ZERO_DOLLAR)).toArray(String[]::new);
 
-	public static final String[] SMOKETEST_DOWNLOADS = new String[] { JBEAP_720, JBEAP_730, WF_18_0_0};
+	public static final String[] SMOKETEST_DOWNLOADS = new String[] { JBEAP_720, WF_18_0_0};
 
 	private static HashMap<String, ModelWrapper> expectations = null;
 

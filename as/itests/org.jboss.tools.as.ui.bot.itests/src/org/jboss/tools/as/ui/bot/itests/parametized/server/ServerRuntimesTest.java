@@ -1,3 +1,13 @@
+ /*******************************************************************************
+ * Copyright (c) 2007-2019 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v 1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributor:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.tools.as.ui.bot.itests.parametized.server;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -9,13 +19,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.eclipse.reddeer.common.util.Display;
-import org.eclipse.reddeer.eclipse.jdt.debug.ui.jres.JREsPreferencePage;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
 import org.eclipse.reddeer.junit.internal.runner.ParameterizedRequirementsRunnerFactory;
 import org.eclipse.reddeer.junit.runner.RedDeerSuite;
 import org.eclipse.reddeer.swt.impl.text.LabeledText;
 import org.eclipse.reddeer.workbench.handler.WorkbenchShellHandler;
-import org.eclipse.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
 import org.eclipse.ui.PlatformUI;
 import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServer;
 import org.jboss.tools.as.ui.bot.itests.AbstractTest;
@@ -124,24 +132,6 @@ public class ServerRuntimesTest extends AbstractTest {
     	removeJRE("JRE6");
     	removeJRE("JRE7");
     	removeJRE("JRE8");
-    }
-    
-    public static void removeJRE(String name) {
-		WorkbenchPreferenceDialog dialog = new WorkbenchPreferenceDialog();
-		dialog.open();
-		JREsPreferencePage page = new JREsPreferencePage(dialog);
-		dialog.select(page);
-		page.deleteJRE(name);
-		dialog.ok();
-    }
-    
-    private static void addJRE(String name, String path) {
-		WorkbenchPreferenceDialog dialog = new WorkbenchPreferenceDialog();
-		dialog.open();
-		JREsPreferencePage page = new JREsPreferencePage(dialog);
-		dialog.select(page);
-		page.addJRE(path, name);
-		dialog.ok();
     }
 
     private String runtimeString;
