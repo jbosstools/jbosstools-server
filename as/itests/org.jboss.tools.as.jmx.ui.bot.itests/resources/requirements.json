@@ -1,8 +1,8 @@
 {
 	"org.jboss.ide.eclipse.as.reddeer.server.requirement.ServerRequirement.JBossServer": [
 		{
-			"runtime": "${jbosstools.test.wildfly.16.home}",
-			"version": "16",
+			"runtime": "${jbosstools.test.wildfly.18.home}",
+			"version": "18",
 			"family": "WILDFLY"
 		},
 		{
@@ -13,17 +13,27 @@
 		{
 			"runtime": "${jbosstools.test.eap.7.2.home}",
 			"version": "7.2",
+			"family": "EAP"
+		},
+		{
+			"runtime": "${jbosstools.test.eap.7.2.home}",
+			"version": "7.2",
 			"family": "EAP",
 			"remote": {
 				"serverHome": "${jbosstools.test.eap.7.2.home}",
 				"serverHost": "LOCALHOST",
 				"systemType": "Local"
 			}
-		},
+        },
 		{
-			"runtime": "${jbosstools.test.eap.7.2.home}",
-			"version": "7.2",
-			"family": "EAP"
+			"runtime": "${jbosstools.test.wildfly.18.home}",
+			"version": "18",
+			"family": "WILDFLY",
+			"remote": {
+				"serverHome": "${jbosstools.test.wildfly.18.home}",
+				"serverHost": "LOCALHOST",
+				"systemType": "Local"
+			}
 		}
 	]
 }

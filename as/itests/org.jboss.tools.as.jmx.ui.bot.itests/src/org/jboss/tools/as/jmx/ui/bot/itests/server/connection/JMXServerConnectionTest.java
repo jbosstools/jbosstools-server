@@ -21,41 +21,42 @@ import org.junit.Test;
 
 /**
  * Test class covering Server Connections functionality
+ * 
  * @author odockal
  *
  */
-@JBossServer(state=ServerRequirementState.PRESENT, cleanup=true)
+@JBossServer(state = ServerRequirementState.PRESENT, cleanup = true)
 public class JMXServerConnectionTest extends JMXServerTestTemplate {
-	
+
 	@RequirementRestriction
 	public static RequirementMatcher getRestrictionMatcher() {
-	  return new RequirementMatcher(JBossServer.class, "remote", new IsNull<Object>());
+		return new RequirementMatcher(JBossServer.class, "remote", new IsNull<Object>());
 	}
-	
+
 	@Before
 	public void setupServer() {
 		setUpView();
-		
+
 		server = getServer(serverConfig.getServerName());
 		serverItem = view.getServerConnectionsItem();
 	}
-	
+
 	@After
 	public void tearDownServer() {
 		stopServer();
 	}
-	
+
 	@Test
 	public void testJMXServerConnection() {
 		verifyJMXServerConnection(serverConfig.getServerName());
 	}
-	
+
 	@Test
 	public void testServerOperation() {
 		startServer();
 		getServerJMXConnection();
 		connection.connect();
-		
+
 		verifyServerOperation(verifyRunScanOperation(openOperationsPage(connection)));
 	}
 

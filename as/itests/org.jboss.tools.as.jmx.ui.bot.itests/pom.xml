@@ -15,13 +15,13 @@
 	<properties>
 		<maven.test.failure.ignore>true</maven.test.failure.ignore>
 		<rd.config>${project.build.directory}/classes/requirements.json</rd.config>
-		<systemProperties>-Drd.config=${rd.config} -Dusage_reporting_enabled=false -Djbosstools.test.wildfly.16.home=${jbosstools.test.wildfly.16.home} -Djbosstools.test.wildfly.17.home=${jbosstools.test.wildfly.17.home} -Djbosstools.test.eap.7.2.home=${jbosstools.test.eap.7.2.home} -Dusername=${username} -Dpassword=${password} -Dremote.system.type=${remote.system.type}</systemProperties>
+		<systemProperties>-Drd.config=${rd.config} -Dusage_reporting_enabled=false -Djbosstools.test.wildfly.18.home=${jbosstools.test.wildfly.18.home} -Djbosstools.test.wildfly.17.home=${jbosstools.test.wildfly.17.home} -Djbosstools.test.eap.7.2.home=${jbosstools.test.eap.7.2.home} -Dusername=${username} -Dpassword=${password} -Dremote.system.type=${remote.system.type}</systemProperties>
 		<surefire.timeout>14400</surefire.timeout>
 		<username></username>
 		<password></password>
 		<server.host></server.host>
 		<remote.system.type></remote.system.type>
-		<jbosstools.test.wildfly.16.home>${requirementsDirectory}/wildfly-16.0.0.Final</jbosstools.test.wildfly.16.home>
+		<jbosstools.test.wildfly.18.home>${requirementsDirectory}/wildfly-18.0.0.Final</jbosstools.test.wildfly.18.home>
 		<jbosstools.test.wildfly.17.home>${requirementsDirectory}/wildfly-17.0.0.Final</jbosstools.test.wildfly.17.home>
 		<jbosstools.test.eap.7.2.home>${requirementsDirectory}/jboss-eap-7.2</jbosstools.test.eap.7.2.home>
 		<suiteClass>org.jboss.tools.as.jmx.ui.bot.itests.JMXAllTests</suiteClass>
@@ -34,7 +34,7 @@
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>wildfly-16</id>
+						<id>wildfly-18</id>
 						<phase>pre-integration-test</phase>
 						<goals>
 							<goal>unpack</goal>
@@ -45,7 +45,7 @@
 								<artifactItem>
 									<groupId>org.wildfly</groupId>
 									<artifactId>wildfly-dist</artifactId>
-									<version>16.0.0.Final</version>
+									<version>18.0.0.Final</version>
 									<type>zip</type>
 								</artifactItem>
 							</artifactItems>

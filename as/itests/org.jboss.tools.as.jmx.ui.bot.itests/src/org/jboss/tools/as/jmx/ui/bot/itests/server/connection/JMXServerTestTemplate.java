@@ -22,6 +22,7 @@ import org.eclipse.reddeer.common.wait.WaitUntil;
 import org.eclipse.reddeer.common.wait.WaitWhile;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.Server;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
+import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersViewEnums.ServerState;
 import org.eclipse.reddeer.junit.requirement.inject.InjectRequirement;
 import org.eclipse.reddeer.swt.api.Button;
 import org.eclipse.reddeer.swt.api.TreeItem;
@@ -62,7 +63,10 @@ public abstract class JMXServerTestTemplate extends JMXTestTemplate {
 	}
 
 	public void stopServer() {
-		getServer(serverConfig.getServerName()).stop();
+		Server server = getServer(serverConfig.getServerName());
+		if (server.getLabel().getState() != ServerState.STOPPED) {
+			server.stop();
+		}
 	}
 	
 	public Server getServer(String name) {
