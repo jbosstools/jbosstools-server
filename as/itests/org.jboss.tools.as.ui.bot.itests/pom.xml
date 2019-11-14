@@ -14,10 +14,21 @@
 	<properties>
 		<surefire.timeout>14400</surefire.timeout>
 		<suiteClass>org.jboss.tools.as.ui.bot.itests.AllTestsSuite</suiteClass>
+		<additionalProperties>-Drd.config=${rd.config}</additionalProperties>
+		<rd.config>${project.build.directory}/classes/jre.json</rd.config>
 	</properties>
 
 
 	<build>
+		<resources>
+			<resource>
+				<directory>requirements</directory>
+				<includes>
+					<include>**</include>
+				</includes>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
