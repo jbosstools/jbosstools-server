@@ -51,12 +51,6 @@
 							</artifactItems>
 						</configuration>
 					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
 					<execution>
 						<id>wildfly-17</id>
 						<phase>pre-integration-test</phase>
