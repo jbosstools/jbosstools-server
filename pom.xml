@@ -13,7 +13,7 @@
 	<packaging>pom</packaging>
 	<name>jbosstools-server</name>
 	<properties>
-                <enforceFailOnUIDependencyInCore>true</enforceFailOnUIDependencyInCore>
+		<enforceFailOnUIDependencyInCore>true</enforceFailOnUIDependencyInCore>
 		<tycho.scmUrl>scm:git:https://github.com/jbosstools/jbosstools-server.git</tycho.scmUrl>
 		<sonar.test.inclusions>**/*Test.*,**/test/**/*,**/*AllTests*,**/*AllBotTests*,**/*TestSuite*</sonar.test.inclusions>
 		<!-- timeout in seconds; 3000s = 50m -->
