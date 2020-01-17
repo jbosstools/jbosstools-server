@@ -45,10 +45,10 @@ import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.internal.utils.ProjectRuntimeUtil;
 import org.jboss.tools.as.test.core.internal.utils.ResourceUtils;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
+import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
 import org.jboss.tools.as.test.core.internal.utils.wtp.CreateProjectOperationsUtility;
 import org.jboss.tools.as.test.core.internal.utils.wtp.JavaEEFacetConstants;
 import org.jboss.tools.as.test.core.internal.utils.wtp.OperationTestCase;
-import org.jboss.tools.as.test.core.parametized.server.ServerParameterUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,7 +60,7 @@ import org.junit.runners.Parameterized.Parameters;
 public class ProjectRuntimeClasspathTest extends TestCase {
 	@Parameters(name = "{0}")
 	 public static Collection<Object[]> data() {
-		 return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerTypeParamterers());
+		 return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerTypeParameters());
 	 }
 	 
 	private static final String PROJECT_ROOT_NAME = "basicwebproject";

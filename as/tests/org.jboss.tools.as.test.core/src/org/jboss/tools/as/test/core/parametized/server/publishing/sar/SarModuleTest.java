@@ -27,8 +27,8 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.ui.mbeans.project.JBossSARModuleFactory;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
+import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
 import org.jboss.tools.as.test.core.internal.utils.wtp.JavaEEFacetConstants;
-import org.jboss.tools.as.test.core.parametized.server.ServerParameterUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,7 +50,7 @@ public class SarModuleTest extends TestCase {
 	@Parameters(name = "{0}")
 	public static Collection<Object[]> data() {
 		ArrayList<Object> list = new ArrayList<Object>();
-		list.addAll(Arrays.asList(ServerParameterUtils.getAllJBossServerTypeParamterers()));
+		list.addAll(Arrays.asList(ServerParameterUtils.getAllJBossServerTypeParameters()));
 		list.remove(IJBossToolingConstants.SERVER_AS_32);
 		return ServerParameterUtils.asCollection(list.toArray(new Object[list.size()]));
 	}

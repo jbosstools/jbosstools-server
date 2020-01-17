@@ -24,7 +24,7 @@ import org.jboss.ide.eclipse.as.classpath.core.ejb3.EJB30SupportVerifier;
 import org.jboss.ide.eclipse.as.classpath.core.ejb3.EJB3ClasspathContainer;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
-import org.jboss.tools.as.test.core.parametized.server.ServerParameterUtils;
+import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +45,7 @@ public class EJB3SupportVerifierTest extends TestCase {
 	private IServer server;
 	@Parameters(name = "{0}")
 	public static Collection<Object[]> data() {
-		 return ServerParameterUtils.asCollection(ServerParameterUtils.getAllJBossServerTypeParamterers());
+		 return ServerParameterUtils.asCollection(ServerParameterUtils.getAllJBossServerTypeParameters());
 	}
 	
 	private static HashMap<String, Boolean> expected; 

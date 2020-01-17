@@ -41,6 +41,15 @@ public class ServerParameterUtils {
 		}
 		return ret;
 	}
+	
+	public static Collection<Object[]> asCollection(String[] items) {
+		ArrayList<Object[]> ret = new ArrayList<Object[]>();
+		for( int i = 0; i < items.length; i++ ) {
+			ret.add(new Object[]{items[i]});
+		}
+		return ret;
+	}
+	
 	public static final String SKIP_PRIVATE_REQUIREMENTS = 
 			"org.jboss.tools.tests.skipPrivateRequirements";
 	public static boolean skipPrivateRequirements() {
@@ -53,12 +62,6 @@ public class ServerParameterUtils {
 		ArrayList<Object> l = new ArrayList<Object>(Arrays.asList(getJBossServerTypeParameters()));
 		l.addAll(Arrays.asList(ServerCreationTestUtils.TEST_SERVER_TYPES_TO_MOCK));
 		return (String[]) l.toArray(new String[l.size()]);
-	}
-
-	
-	@Deprecated
-	public static Object[] getJBossServerTypeParamterers() {
-		return getJBossServerTypeParameters();
 	}
 
 	public static String[] getJBossServerTypeParameters() {

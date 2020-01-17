@@ -18,6 +18,7 @@ import junit.framework.TestCase;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.jboss.tools.as.runtimes.integration.util.RuntimeMatcher;
 import org.jboss.tools.as.test.core.ASMatrixTests;
+import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
 import org.jboss.tools.runtime.core.RuntimeCoreActivator;
 import org.jboss.tools.runtime.core.model.DownloadRuntime;
 import org.junit.After;

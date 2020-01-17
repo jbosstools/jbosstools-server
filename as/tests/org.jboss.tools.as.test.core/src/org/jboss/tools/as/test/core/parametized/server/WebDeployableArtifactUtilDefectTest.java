@@ -35,6 +35,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossLaunchAdapter;
 import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.internal.utils.ResourceUtils;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
+import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
 import org.jboss.tools.as.test.core.internal.utils.wtp.CreateProjectOperationsUtility;
 import org.jboss.tools.as.test.core.internal.utils.wtp.JavaEEFacetConstants;
 import org.jboss.tools.as.test.core.internal.utils.wtp.OperationTestCase;
@@ -49,7 +50,7 @@ public class WebDeployableArtifactUtilDefectTest extends TestCase {
 	@Parameters(name = "{0}")
 	public static Collection<Object[]> data() {
 		ArrayList<Object[]> options = new ArrayList<Object[]>();
-		Collection<Object[]> all = ServerParameterUtils.asCollection(ServerParameterUtils.getAllJBossServerTypeParamterers());
+		Collection<Object[]> all = ServerParameterUtils.asCollection(ServerParameterUtils.getAllJBossServerTypeParameters());
 		options.addAll(all);
 		// add a null option for no server
 		options.add(new Object[]{null});
