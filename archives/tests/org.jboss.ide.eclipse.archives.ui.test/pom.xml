@@ -4,14 +4,12 @@
 	<parent>
 		<groupId>org.jboss.tools.archives</groupId>
 		<artifactId>tests</artifactId>
-		<version>3.6.202-SNAPSHOT</version>
+		<version>3.6.203-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jboss.tools.archives.tests</groupId>
 	<artifactId>org.jboss.ide.eclipse.archives.ui.test</artifactId> 
 	<packaging>eclipse-test-plugin</packaging>
 	<properties>
-		<coverage.filter>org.jboss.ide.eclipse.archives.ui*</coverage.filter>
-		<emma.instrument.bundles>org.jboss.ide.eclipse.archives.ui</emma.instrument.bundles>
 		<suiteClass>org.jboss.ide.eclipse.archives.ui.test.ArchivesAllBotTests</suiteClass>
 	</properties>
 	
