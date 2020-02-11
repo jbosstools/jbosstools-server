@@ -88,6 +88,53 @@ public class GeneratePluginXmlCatalog {
 		}
 	}
 	
+	private static String[] getExcludedXSD() {
+		return new String[] {
+				"application_1_4.xsd",
+				"ejb-jar_2_1.xsd",
+				"j2ee_1_4.xsd",
+				"j2ee_jaxrpc_mapping_1_1.xsd",
+				"j2ee_web_services_1_1.xsd",
+				"j2ee_web_services_client_1_1.xsd",
+				"jsp_2_0.xsd",
+				"web-app_2_4.xsd",
+				"web-jsptaglibrary_2_0.xsd",
+				"ejb-jar_3_0.xsd",
+				"ejb-jar_3_1.xsd",
+				"javaee_web_services_1_2.xsd",
+				"javaee_web_services_1_3.xsd",
+				"javaee_web_services_client_1_2.xsd",
+				"javaee_web_services_client_1_3.xsd",
+				"jsp_2_1.xsd",
+				"jsp_2_2.xsd",
+				"web-app_2_5.xsd",
+				"web-app_3_0.xsd",
+				"web-common_3_0.xsd",
+				"web-facesconfig_1_2.xsd",
+				"web-fragment_3_0.xsd",
+				"web-jsptaglibrary_2_1.xsd",
+				"persistence_1_0.xsd",
+				"persistence_2_0.xsd",
+				"orm_1_0.xsd",
+				"ejb-jar_3_2.xsd",
+				"javaee_web_services_1_4.xsd",
+				"javaee_web_services_client_1_4.xsd",
+				"jsp_2_3.xsd",
+				"web-app_3_1.xsd",
+				"web-app_4_0.xsd",
+				"web-common_3_1.xsd",
+				"web-common_4_0.xsd",
+				"web-facelettaglibrary_2_2.xsd",
+				"web-facelettaglibrary_2_3.xsd",
+				"web-facesconfig_2_2.xsd",
+				"web-fragment_3_1.xsd",
+				"web-fragment_4_0.xsd",
+				"web-partialresponse_2_2.xsd",
+				"web-partialresponse_2_3.xsd", 
+				".gitignore"
+		};
+	}
+	
 	private static void runXSDs(boolean printEntries) {
 		String rootdir = System.getProperty(PLUGIN_ROOT_DIR);
 		if( rootdir == null ) {
@@ -103,14 +150,16 @@ public class GeneratePluginXmlCatalog {
 				return o1.getName().compareTo(o2.getName());
 			}
 		});
+		List<String> excluded = Arrays.asList(getExcludedXSD());
 		for( File f : all) {
-			if( !f.getName().equalsIgnoreCase(".gitignore")) { //$NON-NLS-1$
-				XSDObject o = new XSDObject(f);
-				if( o.valid ) {
-					xsdObjs.add(o);
-				} else {
-					errors.add(f + " is invalid: " + (o.validException == null ? "null" : o.validException.getMessage())); //$NON-NLS-1$  //$NON-NLS-2$
-				}
+			if( excluded.contains(f.getName()))
+				continue;
+			
+			XSDObject o = new XSDObject(f);
+			if( o.valid ) {
+				xsdObjs.add(o);
+			} else {
+				errors.add(f + " is invalid: " + (o.validException == null ? "null" : o.validException.getMessage())); //$NON-NLS-1$  //$NON-NLS-2$
 			}
 		}
 		
