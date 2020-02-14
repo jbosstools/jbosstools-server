@@ -68,17 +68,16 @@ public class ServerRuntimeUIConstants {
 
 	
 	public static final String[] LATEST_MAJORS_FREE_DOWNLOADS = new String[] {
-			GATE_IN_3_6, JBAS_423, JBAS_510, JBAS_600, JBAS_711, 
-			WF_821, WF_902, WF_10_1_0, WF_11_0_0, WF_12_0_0, WF_13_0_0, WF_14_0_0, WF_15_0_0, WF_16_0_0, WF_17_0_0, WF_18_0_0};
+			WF_17_0_0, WF_18_0_0};
 
 	
 	public static final String[] FREE_DOWNLOADS = new String[] {
-			WF_821, WF_902, WF_10_1_0, WF_11_0_0, WF_12_0_0, WF_13_0_0, WF_14_0_0, WF_15_0_0, WF_16_0_0, WF_17_0_0, WF_18_0_0}; // 
+			WF_17_0_0, WF_18_0_0}; // 
 
 //	public static final String[] MANUAL_DOWNLOAD = new String[]{JPP_600,JBEAP_600, JBEAP_601};
 
 	public static final String[] ZERO_DOLLAR = new String[] { 
-			JBEAP_640, JBEAP_700, JBEAP_710, JBEAP_720, JBEAP_730};
+			JBEAP_700, JBEAP_710, JBEAP_720, JBEAP_730};
 
 	public static final String[] ALL_DOWNLOADS = Stream
 			.concat(Arrays.stream(FREE_DOWNLOADS), Arrays.stream(ZERO_DOLLAR)).toArray(String[]::new);

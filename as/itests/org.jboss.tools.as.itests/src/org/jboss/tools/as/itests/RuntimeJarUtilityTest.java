@@ -24,7 +24,7 @@ import org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
-import org.jboss.tools.as.test.core.parametized.server.ServerParameterUtils;
+import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

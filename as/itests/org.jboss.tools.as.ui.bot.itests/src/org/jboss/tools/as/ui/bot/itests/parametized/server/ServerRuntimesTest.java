@@ -22,6 +22,7 @@ import org.eclipse.reddeer.common.util.Display;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
 import org.eclipse.reddeer.junit.internal.runner.ParameterizedRequirementsRunnerFactory;
 import org.eclipse.reddeer.junit.runner.RedDeerSuite;
+import org.eclipse.reddeer.requirements.jre.JRERequirement.JRE;
 import org.eclipse.reddeer.swt.impl.text.LabeledText;
 import org.eclipse.reddeer.workbench.handler.WorkbenchShellHandler;
 import org.eclipse.ui.PlatformUI;
@@ -81,6 +82,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 
 @RunWith(RedDeerSuite.class)
+@JRE(cleanup=true)
 @UseParametersRunnerFactory(ParameterizedRequirementsRunnerFactory.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)//first acquireAndDetect, then detect, then operate
 @DisableSecureStorage
@@ -108,32 +110,10 @@ public class ServerRuntimesTest extends AbstractTest {
 	} 
     
     @BeforeClass
-    public static void addJREs() {
-    	String jre6 =  System.getProperty("jbosstools.test.jre.6");
-    	String jre7 =  System.getProperty("jbosstools.test.jre.7");
-    	String jre8 =  System.getProperty("jbosstools.test.jre.8");
-    	if( jre6 == null || jre6.isEmpty() || !(new File(jre6)).exists()) {
-    		throw new RuntimeException("Expected requirement JRE-6 is not set, is empty, or does not exist. Please set via system property -Djbosstools.test.jre.6");
-    	}
-    	if( jre7 == null || jre7.isEmpty() || !(new File(jre7)).exists()) {
-    		throw new RuntimeException("Expected requirement JRE-7 is not set, is empty, or does not exist. Please set via system property -Djbosstools.test.jre.7");
-    	}
-    	if( jre8 == null || jre8.isEmpty() || !(new File(jre8)).exists()) {
-    		throw new RuntimeException("Expected requirement JRE-8 is not set, is empty, or does not exist. Please set via system property -Djbosstools.test.jre.8");
-    	}
-    	addJRE("JRE6",jre6);
-    	addJRE("JRE7",jre7);
-    	addJRE("JRE8",jre8);
+    public static void deleteRuntimesAddedByRuntimeDetection() {
     	deleteRuntimes();
     }
     
-    @AfterClass
-    public static void removeJREs() {
-    	removeJRE("JRE6");
-    	removeJRE("JRE7");
-    	removeJRE("JRE8");
-    }
-
     private String runtimeString;
     private boolean dlType;
 

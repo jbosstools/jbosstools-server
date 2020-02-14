@@ -18,6 +18,7 @@ import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

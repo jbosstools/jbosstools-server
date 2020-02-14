@@ -26,7 +26,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
-import org.jboss.tools.as.test.core.parametized.server.ServerParameterUtils;
+import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,7 +49,7 @@ public class CreateServerCheckDefaultsTest extends TestCase {
 	private IServer server;
 	@Parameters(name = "{0}")
 	public static Collection<Object[]> data() {
-		 return ServerParameterUtils.asCollection(ServerParameterUtils.getAllJBossServerTypeParamterers());
+		 return ServerParameterUtils.asCollection(ServerParameterUtils.getAllJBossServerTypeParameters());
 	}
 	 
 	public CreateServerCheckDefaultsTest(String serverType) {

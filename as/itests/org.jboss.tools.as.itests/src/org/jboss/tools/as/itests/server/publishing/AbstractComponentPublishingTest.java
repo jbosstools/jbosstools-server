@@ -19,7 +19,7 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.tools.as.test.core.internal.utils.MatrixUtils;
 import org.jboss.tools.as.test.core.internal.utils.ResourceUtils;
-import org.jboss.tools.as.test.core.parametized.server.ServerParameterUtils;
+import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
 import org.jboss.tools.as.test.core.parametized.server.publishing.AbstractPublishingTest;
 
 public class AbstractComponentPublishingTest extends AbstractPublishingTest {

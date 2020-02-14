@@ -24,6 +24,7 @@ import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
+import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +45,7 @@ public class CreateRuntimeTwiceTest extends TestCase {
 	private IServer server;
 	@Parameters(name = "{0}")
 	public static Collection<Object[]> data() {
-		 return ServerParameterUtils.asCollection(ServerParameterUtils.getAllJBossServerTypeParamterers());
+		 return ServerParameterUtils.asCollection(ServerParameterUtils.getAllJBossServerTypeParameters());
 	}
 	 
 	public CreateRuntimeTwiceTest(String serverType) {

@@ -21,14 +21,8 @@ public class VerifyJREFlagsTest extends TestCase {
 		if( ParameterUtils.isSingleRuntime()) {
 			String home = ParameterUtils.getSingleRuntimeHome();
 			assertNotNull(home);
-			String rtType = ParameterUtils.serverHomeToRuntimeType.get(home);
-			if( JREParameterUtils.requiresJava8(rtType)) {
-				JREParameterUtils.verifyJava8HomeSet();
-			} else {
-				JREParameterUtils.verifyJava7HomeSet();
-			}
+			JREParameterUtils.verifyJava8HomeSet();
 		} else {
-			JREParameterUtils.verifyJava7HomeSet();
 			JREParameterUtils.verifyJava8HomeSet();
 		}
 	}

@@ -23,7 +23,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAda
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
-import org.jboss.tools.as.test.core.parametized.server.ServerParameterUtils;
+import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

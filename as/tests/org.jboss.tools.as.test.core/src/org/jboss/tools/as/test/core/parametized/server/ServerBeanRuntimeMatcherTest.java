@@ -25,6 +25,7 @@ import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.tools.as.runtimes.integration.util.RuntimeMatcher;
 import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
+import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

@@ -47,7 +47,7 @@ import org.jboss.tools.as.test.core.internal.utils.IOUtil;
 import org.jboss.tools.as.test.core.internal.utils.MatrixUtils;
 import org.jboss.tools.as.test.core.internal.utils.ResourceUtils;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
-import org.jboss.tools.as.test.core.parametized.server.ServerParameterUtils;
+import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
 import org.jboss.tools.test.util.JobUtils;
 import org.junit.After;
 import org.junit.AfterClass;

@@ -108,6 +108,8 @@ public class ParameterUtils {
 		paths.add(JBOSS_WILDFLY_140_HOME);
 		paths.add(JBOSS_WILDFLY_150_HOME);
 		paths.add(JBOSS_WILDFLY_160_HOME);
+		paths.add(JBOSS_WILDFLY_170_HOME);
+		paths.add(JBOSS_WILDFLY_180_HOME);
 		if( !skipReqs ) {
 			paths.add(JBOSS_EAP_60_HOME);
 			paths.add(JBOSS_EAP_61_HOME);
@@ -116,6 +118,7 @@ public class ParameterUtils {
 			paths.add(JBOSS_EAP_70_HOME);
 			paths.add(JBOSS_EAP_71_HOME);
 			paths.add(JBOSS_EAP_72_HOME);
+			paths.add(JBOSS_EAP_73_HOME);
 		}
 		// NEW_SERVER_ADAPTER
 		return paths.toArray(new String[paths.size()]);
@@ -139,9 +142,12 @@ public class ParameterUtils {
 		paths.add(JBOSS_WILDFLY_140_HOME);
 		paths.add(JBOSS_WILDFLY_150_HOME);
 		paths.add(JBOSS_WILDFLY_160_HOME);
+		paths.add(JBOSS_WILDFLY_170_HOME);
+		paths.add(JBOSS_WILDFLY_180_HOME);
 		if( !skipReqs ) {
 			paths.add(JBOSS_EAP_71_HOME);
 			paths.add(JBOSS_EAP_72_HOME);
+			paths.add(JBOSS_EAP_73_HOME);
 		}
 		// NEW_SERVER_ADAPTER
 		return paths.toArray(new String[paths.size()]);

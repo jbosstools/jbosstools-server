@@ -24,6 +24,7 @@ import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.internal.utils.ProjectRuntimeUtil;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
+import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
 import org.jboss.tools.as.test.core.internal.utils.wtp.CreateProjectOperationsUtility;
 import org.jboss.tools.as.test.core.internal.utils.wtp.JavaEEFacetConstants;
 import org.jboss.tools.as.test.core.internal.utils.wtp.OperationTestCase;
@@ -41,7 +42,7 @@ public class Ear50CreationTest extends Assert {
 
 	 @Parameters(name = "{0}")
 	 public static Collection<Object[]> data() {
-		 return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerTypeParamterers());
+		 return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerTypeParameters());
 	 }
 	 
 	 private String serverType;
