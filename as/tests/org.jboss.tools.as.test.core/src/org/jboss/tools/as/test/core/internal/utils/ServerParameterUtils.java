@@ -13,6 +13,7 @@ package org.jboss.tools.as.test.core.internal.utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
@@ -29,6 +30,17 @@ public class ServerParameterUtils {
 	public static final String DEPLOY_PERMOD_DEFAULT = "permod_default";
 	public static final String DEPLOY_PERMOD_ABS = "permod_absolute";
 	public static final String DEPLOY_PERMOD_REL = "permod_relative";
+	
+	protected static final List<String> TESTED_SERVERS = new ArrayList<String>();
+	
+	static {
+		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_WILDFLY_170);
+		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_WILDFLY_180);
+		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_EAP_70);
+		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_EAP_71); 
+		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_EAP_72); 
+		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_EAP_73);
+	}
 	
 
 	// Turn an array [item1, item2, item3] into a collection of 1-length items
@@ -69,8 +81,8 @@ public class ServerParameterUtils {
 		ArrayList<String> jbservers = new ArrayList<String>();
 		for( int i = 0; i < IJBossToolingConstants.ALL_JBOSS_SERVERS.length; i++ ) {
 			// we're not skipping reqs, or, we are skipping AND it doesn't start with eap, then add
-			if( !skipReqs || !IJBossToolingConstants.ALL_JBOSS_SERVERS[i].startsWith(IJBossToolingConstants.EAP_SERVER_PREFIX)) {
-				jbservers.add(IJBossToolingConstants.ALL_JBOSS_SERVERS[i]);
+			if( (!skipReqs || !IJBossToolingConstants.ALL_JBOSS_SERVERS[i].startsWith(IJBossToolingConstants.EAP_SERVER_PREFIX)) && TESTED_SERVERS.contains(IJBossToolingConstants.ALL_JBOSS_SERVERS[i])) {
+					jbservers.add(IJBossToolingConstants.ALL_JBOSS_SERVERS[i]);
 			}
 		}
 		return (String[]) jbservers.toArray(new String[jbservers.size()]);
