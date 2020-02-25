@@ -8,17 +8,22 @@ import org.jboss.ide.eclipse.as.core.Messages;
 
 public class ServerNamingUtility {
 	public static String getNextShortServerName(IServerType type) {
-		if( type.getId().startsWith(IJBossToolingConstants.EAP_SERVER_PREFIX)) {
-			String name = type.getName();
-			String base = name.replace("JBoss Enterprise Application Platform", "JBoss EAP");  //$NON-NLS-1$//$NON-NLS-2$
-			return getDefaultServerName(base);
-		}
-		return getDefaultServerName(type.getName());
+		String b1 = type.getName();
+		// We haven't been shortening this in a long time... through an error. So don't change it
+		//String b2 = b1.replace("Red Hat JBoss Enterprise Application Platform", "JBoss EAP");  //$NON-NLS-1$//$NON-NLS-2$
+		String base = performNameReplacements(b1);
+		return getDefaultServerName(base);
+	}
+	
+	public static String performNameReplacements(String base) {
+		base = base.replace(" (End Of Life)", "");
+		base = base.replace(" (Tech Preview)", "");
+		return base;
 	}
 	
 	
 	public static String getDefaultServerName(IRuntime rt) {
-		String runtimeName = rt.getName();
+		String runtimeName = performNameReplacements(rt.getName());
 		String base = null;
 		if( runtimeName == null || runtimeName.equals("")) { //$NON-NLS-1$
 			IRuntimeType rtt = rt.getRuntimeType();
@@ -30,6 +35,7 @@ public class ServerNamingUtility {
 	}
 	
 	public static String getDefaultServerName( String base) {
+		base = performNameReplacements(base);
 		if( ServerUtil.findServer(base) == null ) return base;
 		int i = 2;
 		while( ServerUtil.findServer(
