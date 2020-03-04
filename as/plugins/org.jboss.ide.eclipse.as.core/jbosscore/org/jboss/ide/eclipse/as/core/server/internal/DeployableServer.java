@@ -57,14 +57,20 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	public void setDefaults(IProgressMonitor monitor) {
 		// on setDefaults, set both defaults and updates / overrides
 		setAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, true);
+		setDefaultName();
+	}
+	
+	private void setDefaultName() {
 		IRuntime rt = getServer().getRuntime();
 		String name = rt != null ?  ServerNamingUtility.getDefaultServerName(rt) : ServerNamingUtility.getNextShortServerName(getServer().getServerType());
 		getServerWorkingCopy().setName(name);
 	}
-	
 	public void newServerDetailsChanged(IProgressMonitor monitor) {
-		// Change only what's necessary to respond to a change of the server host or runtime during new server wizard
-		// We change nothing in this case
+		// Change only what's necessary to respond to a change of the server host 
+		// or runtime during new server wizard. This sometimes gets called after
+		// the default server name has been set up, and WTP will try to override the 
+		// name with their own generated name, so let's set our name back to our chosen format
+		setDefaultName();
 	}
 	
 	public void importRuntimeConfiguration(IRuntime runtime, IProgressMonitor monitor) throws CoreException {
