@@ -1,3 +1,13 @@
+/******************************************************************************* 
+ * Copyright (c) 2020 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/
 package org.jboss.ide.eclipse.as.core.util;
 
 import org.eclipse.osgi.util.NLS;
@@ -11,19 +21,23 @@ public class ServerNamingUtility {
 		String b1 = type.getName();
 		// We haven't been shortening this in a long time... through an error. So don't change it
 		//String b2 = b1.replace("Red Hat JBoss Enterprise Application Platform", "JBoss EAP");  //$NON-NLS-1$//$NON-NLS-2$
-		String base = performNameReplacements(b1);
+		String base = performReplacementsForShortName(b1);
 		return getDefaultServerName(base);
 	}
 	
-	public static String performNameReplacements(String base) {
+	public static String performReplacementsForShortName(String base) {
 		base = base.replace(" (End Of Life)", "");
 		base = base.replace(" (Tech Preview)", "");
+		if( base.contains("Enterprise Application Platform")) {
+			base = base.replace("Enterprise Application Platform", "EAP");
+		}
+		
 		return base;
 	}
 	
 	
 	public static String getDefaultServerName(IRuntime rt) {
-		String runtimeName = performNameReplacements(rt.getName());
+		String runtimeName = performReplacementsForShortName(rt.getName());
 		String base = null;
 		if( runtimeName == null || runtimeName.equals("")) { //$NON-NLS-1$
 			IRuntimeType rtt = rt.getRuntimeType();
@@ -35,7 +49,7 @@ public class ServerNamingUtility {
 	}
 	
 	public static String getDefaultServerName( String base) {
-		base = performNameReplacements(base);
+		base = performReplacementsForShortName(base);
 		if( ServerUtil.findServer(base) == null ) return base;
 		int i = 2;
 		while( ServerUtil.findServer(
