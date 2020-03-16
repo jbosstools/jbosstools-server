@@ -15,6 +15,7 @@ import org.eclipse.reddeer.swt.impl.shell.DefaultShell;
 import org.eclipse.reddeer.swt.impl.text.DefaultText;
 import org.eclipse.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
 import org.jboss.tools.as.ui.bot.itests.AbstractTest;
+import org.jboss.tools.as.ui.bot.itests.parametized.server.ServerRuntimeUIConstants;
 import org.jboss.tools.as.ui.bot.itests.reddeer.util.DisableSecureStorageRequirement.DisableSecureStorage;
 import org.jboss.tools.common.util.PlatformUtil;
 import org.junit.Test;
@@ -40,7 +41,7 @@ public class InvalidCredentialProductDownloadTest extends AbstractTest {
 		RuntimeDownloadTestUtility util = new RuntimeDownloadTestUtility();
 		util.invokeDownloadRuntimesWizard();
 
-		util.processSelectingRuntime("JBoss EAP 7.0.0");
+		util.processSelectingRuntime(ServerRuntimeUIConstants.JBEAP_700);
 		util.processInsertingCredentials("Invalid username", "Invalid password");
 		new WaitWhile(new ValidatingCredentialsProgressBarIsRunning());
 		

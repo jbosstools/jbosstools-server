@@ -54,9 +54,9 @@ public class ServerRuntimeUIConstants {
 	public static final String JBEAP_620 = "JBoss EAP 6.2.0";
 	public static final String JBEAP_630 = "JBoss EAP 6.3.0";
 	public static final String JBEAP_640 = "JBoss EAP 6.4.0";
-	public static final String JBEAP_700 = "JBoss EAP 7.0.0";
-	public static final String JBEAP_710 = "JBoss EAP 7.1.0";
-	public static final String JBEAP_720 = "JBoss EAP 7.2.0";
+	public static final String JBEAP_700 = "Red Hat JBoss EAP 7.0.0";
+	public static final String JBEAP_710 = "Red Hat JBoss EAP 7.1.0";
+	public static final String JBEAP_720 = "Red Hat JBoss EAP 7.2.0";
 	public static final String JBEAP_730 = "JBoss EAP 7.3.0";
 	public static final String JPP_610 = "JBoss Portal Platform 6.1.0";
 
