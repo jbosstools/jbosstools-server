@@ -79,12 +79,12 @@ public class JEEClasspathContainerTest extends TestCase {
 		try {
 			IJavaProject jproject = JavaCore.create(project);
 			IPath path = new Path(containerPath);
-			verifyContainerEntries(path, jproject, expectedEntries);
 			verifyRawClasspathCount(jproject, ORIGINAL_ENTRIES);
 			verifyNotIncludedEntry(jproject, path);
 			int beforeRawCount = jproject.getRawClasspath().length;
 			int beforeResolvedCount = jproject.getResolvedClasspath(true).length;
 			addContainer(jproject, path);
+			verifyContainerEntries(path, jproject, expectedEntries);
 			assertEquals(beforeRawCount+1, jproject.getRawClasspath().length);
 			assertEquals(beforeResolvedCount+expectedEntries, jproject.getResolvedClasspath(true).length);
 			beforeRawCount = jproject.getRawClasspath().length;
@@ -102,8 +102,9 @@ public class JEEClasspathContainerTest extends TestCase {
 	}
 
 	protected void verifyContainerEntries(IPath path, IJavaProject jproject, int expected) throws JavaModelException {
+		System.out.println(jproject.getProject().getWorkspace().getRoot().getLocation().toOSString() + jproject.getProject().getFullPath());
 		IClasspathContainer cpc = JavaCore.getClasspathContainer(path, jproject);
-		IClasspathEntry[] entries = cpc.getClasspathEntries();
+		IClasspathEntry[] entries = cpc == null ? new IClasspathEntry[0] : cpc.getClasspathEntries();
 		assertEquals("Received unexpected number of entries", expected, entries.length );
 	}
 	
@@ -126,6 +127,9 @@ public class JEEClasspathContainerTest extends TestCase {
 		tmp.addAll(Arrays.asList(jproject.getRawClasspath()));
 		tmp.add(JavaCore.newContainerEntry(path));
 		jproject.setRawClasspath((IClasspathEntry[]) tmp.toArray(new IClasspathEntry[tmp.size()]), null);
+		
+		IClasspathEntry[] check = jproject.getRawClasspath();
+		System.out.println(check);
 	}
 	
 	protected void removeContainer(IJavaProject jproject, IPath path) throws JavaModelException {

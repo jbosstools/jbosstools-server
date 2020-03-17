@@ -151,6 +151,7 @@
       <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossClasspathProviderAdapterFactory"/>
       <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
 	</adapter>
+	<adapter>
       <runtime-component
             id="org.jboss.ide.eclipse.as.runtime.wildfly.component" version="13.0"/>
       <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossClasspathProviderAdapterFactory"/>
@@ -183,6 +184,12 @@
     <adapter>
       <runtime-component
             id="org.jboss.ide.eclipse.as.runtime.wildfly.component" version="18.0"/>
+      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossClasspathProviderAdapterFactory"/>
+      <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
+    </adapter>
+    <adapter>
+      <runtime-component
+            id="org.jboss.ide.eclipse.as.runtime.wildfly.component" version="19.0"/>
       <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossClasspathProviderAdapterFactory"/>
       <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
     </adapter>
