@@ -51,6 +51,10 @@ public class JBossModulesDefaultClasspathModel extends InternalRuntimeClasspathM
 		if( wf11Plus.contains(rttId)) 
 			return getDefaultWF11JBossModulesEntries();
 		// NEW_SERVER_ADAPTER
+		if( rtt.getId().equals(IJBossToolingConstants.WILDFLY_190)) {
+			return getDefaultWF11JBossModulesEntries();
+		}
+
 		return getDefaultJBossModulesEntries();
 	}
 

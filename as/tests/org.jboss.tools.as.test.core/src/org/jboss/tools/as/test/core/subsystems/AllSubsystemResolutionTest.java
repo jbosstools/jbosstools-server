@@ -112,6 +112,7 @@ public class AllSubsystemResolutionTest extends TestCase {
 				IJBossToolingConstants.SERVER_WILDFLY_110,
 				IJBossToolingConstants.SERVER_WILDFLY_120,
 				IJBossToolingConstants.SERVER_WILDFLY_130,
+				IJBossToolingConstants.SERVER_WILDFLY_190,
 				IJBossToolingConstants.SERVER_WILDFLY_140,
 				IJBossToolingConstants.SERVER_WILDFLY_150,
 				IJBossToolingConstants.SERVER_WILDFLY_160,

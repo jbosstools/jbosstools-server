@@ -23,6 +23,7 @@ public class ParameterUtils {
 	
 	public static final String JBOSS_WILDFLY_170_HOME = TestConstants.JBOSS_WF_170_HOME;
 	public static final String JBOSS_WILDFLY_180_HOME = TestConstants.JBOSS_WF_180_HOME;
+	public static final String JBOSS_WILDFLY_190_HOME = TestConstants.JBOSS_WF_190_HOME;
 	public static final String JBOSS_EAP_70_HOME = TestConstants.JBOSS_EAP_70_HOME;
 	public static final String JBOSS_EAP_71_HOME = TestConstants.JBOSS_EAP_71_HOME;
 	public static final String JBOSS_EAP_72_HOME = TestConstants.JBOSS_EAP_72_HOME;
@@ -33,6 +34,7 @@ public class ParameterUtils {
 	static {
 		serverHomeToRuntimeType.put(JBOSS_WILDFLY_170_HOME, IJBossToolingConstants.WILDFLY_170);
 		serverHomeToRuntimeType.put(JBOSS_WILDFLY_180_HOME, IJBossToolingConstants.WILDFLY_180);
+		serverHomeToRuntimeType.put(JBOSS_WILDFLY_190_HOME, IJBossToolingConstants.WILDFLY_190);
 		serverHomeToRuntimeType.put(JBOSS_EAP_70_HOME, IJBossToolingConstants.EAP_70);
 		serverHomeToRuntimeType.put(JBOSS_EAP_71_HOME, IJBossToolingConstants.EAP_71);
 		serverHomeToRuntimeType.put(JBOSS_EAP_72_HOME, IJBossToolingConstants.EAP_72);
@@ -63,6 +65,7 @@ public class ParameterUtils {
 		ArrayList<String> paths = new ArrayList<String>();
 		paths.add(JBOSS_WILDFLY_170_HOME);
 		paths.add(JBOSS_WILDFLY_180_HOME);
+		paths.add(JBOSS_WILDFLY_190_HOME);
 		if( !skipReqs ) {
 			paths.add(JBOSS_EAP_70_HOME);
 			paths.add(JBOSS_EAP_71_HOME);
@@ -87,6 +90,7 @@ public class ParameterUtils {
 		ArrayList<String> paths = new ArrayList<String>();
 		paths.add(JBOSS_WILDFLY_170_HOME);
 		paths.add(JBOSS_WILDFLY_180_HOME);
+		paths.add(JBOSS_WILDFLY_190_HOME);
 		if( !skipReqs ) {
 			paths.add(JBOSS_EAP_71_HOME);
 			paths.add(JBOSS_EAP_72_HOME);
