@@ -4,7 +4,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 	<parent>
 		<groupId>org.jboss.tools</groupId>
 		<artifactId>as</artifactId>
-		<version>3.9.1-SNAPSHOT</version>
+		<version>3.9.101-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jboss.tools.as</groupId>
 	<artifactId>itests</artifactId>
@@ -21,6 +21,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<enforceFailOnUIDependencyInCore>false</enforceFailOnUIDependencyInCore>
 		<jbosstools.test.jboss.home.17.0>${requirementsDirectory}/wildfly-17.0.0.Final</jbosstools.test.jboss.home.17.0>
 		<jbosstools.test.jboss.home.18.0>${requirementsDirectory}/wildfly-18.0.0.Final</jbosstools.test.jboss.home.18.0>
+		<jbosstools.test.jboss.home.19.0>${requirementsDirectory}/wildfly-19.0.0.Beta3</jbosstools.test.jboss.home.19.0>
 		<jbosstools.test.jboss.home.eap.7.0>${requirementsDirectory}/jboss-eap-7.0</jbosstools.test.jboss.home.eap.7.0>
 		<jbosstools.test.jboss.home.eap.7.1>${requirementsDirectory}/jboss-eap-7.1</jbosstools.test.jboss.home.eap.7.1>
 		<jbosstools.test.jboss.home.eap.7.2>${requirementsDirectory}/jboss-eap-7.2</jbosstools.test.jboss.home.eap.7.2>
@@ -30,7 +31,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<!-- skipPrivateRequirements and skipTestsWithPrivateRequirements are inherited from parent pom -->
 		<runtimes.suite.scope>smoke</runtimes.suite.scope>
 		<!-- jbosstools.test.jre.7 is defined in root pom for convenience of reuse -->
-		<systemProperties> -Djbosstools.test.jre.6=${jbosstools.test.jre.6}  -Djbosstools.test.jre.7=${jbosstools.test.jre.7}  -Djbosstools.test.jre.8=${jbosstools.test.jre.8} -Djbosstools.test.jboss.home.17.0=${jbosstools.test.jboss.home.17.0} -Djbosstools.test.jboss.home.18.0=${jbosstools.test.jboss.home.18.0} -Djbosstools.test.jboss.home.eap.7.0=${jbosstools.test.jboss.home.eap.7.0} -Djbosstools.test.jboss.home.eap.7.1=${jbosstools.test.jboss.home.eap.7.1} -Djbosstools.test.jboss.home.eap.7.2=${jbosstools.test.jboss.home.eap.7.2} -Djbosstools.test.jboss.home.eap.7.3=${jbosstools.test.jboss.home.eap.7.3} -Dorg.jboss.tools.tests.skipPrivateRequirements=${skipPrivateRequirements} -Dorg.jboss.tools.tests.skipTestsWithPrivateRequirements=${skipTestsWithPrivateRequirements} -Djboss.org.username=${jboss.org.username} -Djboss.org.password=${jboss.org.password} -Djbosstools.test.singleruntime.location=${jbosstools.test.singleruntime.location} -Druntimes.suite.scope=${runtimes.suite.scope} ${additionalProperties}</systemProperties>
+		<systemProperties> -Djbosstools.test.jre.6=${jbosstools.test.jre.6}  -Djbosstools.test.jre.7=${jbosstools.test.jre.7}  -Djbosstools.test.jre.8=${jbosstools.test.jre.8} -Djbosstools.test.jboss.home.17.0=${jbosstools.test.jboss.home.17.0} -Djbosstools.test.jboss.home.18.0=${jbosstools.test.jboss.home.18.0}  -Djbosstools.test.jboss.home.19.0=${jbosstools.test.jboss.home.19.0} -Djbosstools.test.jboss.home.eap.7.0=${jbosstools.test.jboss.home.eap.7.0} -Djbosstools.test.jboss.home.eap.7.1=${jbosstools.test.jboss.home.eap.7.1} -Djbosstools.test.jboss.home.eap.7.2=${jbosstools.test.jboss.home.eap.7.2} -Djbosstools.test.jboss.home.eap.7.3=${jbosstools.test.jboss.home.eap.7.3} -Dorg.jboss.tools.tests.skipPrivateRequirements=${skipPrivateRequirements} -Dorg.jboss.tools.tests.skipTestsWithPrivateRequirements=${skipTestsWithPrivateRequirements} -Djboss.org.username=${jboss.org.username} -Djboss.org.password=${jboss.org.password} -Djbosstools.test.singleruntime.location=${jbosstools.test.singleruntime.location} -Druntimes.suite.scope=${runtimes.suite.scope} ${additionalProperties}</systemProperties>
 	</properties>
 
 	<build>
@@ -200,6 +201,20 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 									<skip>${skipTestsOrITests}</skip>
 								</configuration>
 							</execution>
+							<execution>
+								<id>install-wildfly-19.0.0.Beta3</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>wget</goal>
+								</goals>
+								<configuration>
+									<url>https://download.jboss.org/wildfly/19.0.0.Beta3/wildfly-19.0.0.Beta3.zip</url>
+									<sha1>51b24a1e92f4e93cb50d188bfe951c2aa6675c1e</sha1>
+									<unpack>true</unpack>
+									<skip>${skipTestsOrITests}</skip>
+								</configuration>
+							</execution>
+
 						</executions>
 					</plugin>
 				</plugins>
