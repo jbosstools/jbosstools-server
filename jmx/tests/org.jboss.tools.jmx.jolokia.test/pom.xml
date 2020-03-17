@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.jboss.tools.jmx</groupId>
 		<artifactId>tests</artifactId>
-		<version>1.10.7-SNAPSHOT</version>
+		<version>1.10.8-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jboss.tools.jmx.tests</groupId>
 	<artifactId>org.jboss.tools.jmx.jolokia.test</artifactId>

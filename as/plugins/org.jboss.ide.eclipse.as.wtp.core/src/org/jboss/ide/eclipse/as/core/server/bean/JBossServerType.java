@@ -41,6 +41,7 @@ public class JBossServerType extends ServerBeanType implements IJBossToolingCons
 	public static final JBossServerType WILDFLY120 = new ServerBeanTypeWildfly120();
 	public static final JBossServerType WILDFLY120_WEB = new ServerBeanTypeWildfly120Web();
 
+
 	public static final JBossServerType WILDFLY130 = new ServerBeanTypeWildfly130();
 	public static final JBossServerType WILDFLY130_WEB = new ServerBeanTypeWildfly130Web();
 	public static final JBossServerType WILDFLY140 = new ServerBeanTypeWildfly140();
@@ -53,6 +54,8 @@ public class JBossServerType extends ServerBeanType implements IJBossToolingCons
 	public static final JBossServerType WILDFLY170_WEB = new ServerBeanTypeWildfly170Web();
 	public static final JBossServerType WILDFLY180 = new ServerBeanTypeWildfly180();
 	public static final JBossServerType WILDFLY180_WEB = new ServerBeanTypeWildfly180Web();
+	public static final JBossServerType WILDFLY190 = new ServerBeanTypeWildfly190();
+	public static final JBossServerType WILDFLY190_WEB = new ServerBeanTypeWildfly190Web();
 
 	public static final JBossServerType EAP70 = new ServerBeanTypeEAP70();
 	public static final JBossServerType EAP71 = new ServerBeanTypeEAP71();
@@ -106,6 +109,7 @@ public class JBossServerType extends ServerBeanType implements IJBossToolingCons
 		JBossServerType.WILDFLY160,JBossServerType.WILDFLY160_WEB,
 		JBossServerType.WILDFLY170,JBossServerType.WILDFLY170_WEB,
 		JBossServerType.WILDFLY180,JBossServerType.WILDFLY180_WEB,
+		JBossServerType.WILDFLY190,JBossServerType.WILDFLY190_WEB,
 		JBossServerType.WILDFLY80, 
 		JBossServerType.FSW6,
 		JBossServerType.EAP61,

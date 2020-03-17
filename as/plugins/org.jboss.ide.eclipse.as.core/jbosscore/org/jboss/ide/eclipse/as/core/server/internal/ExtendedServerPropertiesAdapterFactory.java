@@ -43,6 +43,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.Wildfly1
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.Wildfly160ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.Wildfly170ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.Wildfly180ExtendedProperties;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.Wildfly190ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.Wildfly80ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.Wildfly90ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -119,6 +120,7 @@ public class ExtendedServerPropertiesAdapterFactory implements IAdapterFactory, 
 			if( SERVER_EAP_73.equals(typeId) || EAP_73.equals(typeId))
 				return new JBossEAP73ExtendedProperties(adaptable);
 
+
 			if( SERVER_WILDFLY_80.equals(typeId) || WILDFLY_80.equals(typeId))
 				return new Wildfly80ExtendedProperties(adaptable);
 			if( SERVER_WILDFLY_90.equals(typeId) || WILDFLY_90.equals(typeId))
@@ -141,6 +143,8 @@ public class ExtendedServerPropertiesAdapterFactory implements IAdapterFactory, 
 				return new Wildfly170ExtendedProperties(adaptable);
 			if( SERVER_WILDFLY_180.equals(typeId) || WILDFLY_180.equals(typeId))
 				return new Wildfly180ExtendedProperties(adaptable);
+			if( SERVER_WILDFLY_190.equals(typeId) || WILDFLY_190.equals(typeId))
+				return new Wildfly190ExtendedProperties(adaptable);
 
 			// NEW_SERVER_ADAPTER
 			
