@@ -112,12 +112,12 @@
 		<dependency>
 			<groupId>org.jboss.tools.as.plugins</groupId>
 			<artifactId>org.jboss.ide.eclipse.as.ui.mbeans</artifactId>
-			<version>3.9.0-SNAPSHOT</version>
+			<version>${plugins.version.as}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.tools.as.plugins</groupId>
 			<artifactId>org.jboss.ide.eclipse.as.wtp.core</artifactId>
-			<version>3.9.0-SNAPSHOT</version>
+			<version>${plugins.version.as}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.tools.as.plugins</groupId>
