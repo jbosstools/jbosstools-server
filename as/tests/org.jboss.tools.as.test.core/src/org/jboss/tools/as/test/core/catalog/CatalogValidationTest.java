@@ -87,6 +87,8 @@ public class CatalogValidationTest extends TestCase {
 		// seems the generator does not support groups
 		expectedErrors.put("wildfly-distributable-web_1_0.xsd", 1);
 		expectedErrors.put("wildfly-distributable-web_2_0.xsd", 1);
+		// Generation doesn't create required child elements sometimes. 
+		expectedErrors.put("jboss-ejb-iiop_1_0.xsd", 1);
 	}
 	
 	private static ArrayList<String> noRootElement = new ArrayList<String>();
