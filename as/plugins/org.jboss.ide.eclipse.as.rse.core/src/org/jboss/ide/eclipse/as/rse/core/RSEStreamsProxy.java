@@ -3,6 +3,7 @@ package org.jboss.ide.eclipse.as.rse.core;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.model.IStreamsProxy;
@@ -38,19 +39,19 @@ public class RSEStreamsProxy implements IStreamsProxy, IStreamsProxy2 {
 	 * of the given system process.
 	 *
 	 * @param process system process to create a streams proxy on
-	 * @param encoding the process's encoding or <code>null</code> if default
+	 * @param charset stream charset or <code>null</code> if default
 	 */
-	public RSEStreamsProxy(InputStream sysout, InputStream syserr, OutputStream sysin, String encoding) {
+	public RSEStreamsProxy(InputStream sysout, InputStream syserr, OutputStream sysin, Charset charset) {
 		if( sysout != null ) {
-			fOutputMonitor= new OSMonitor(sysout, encoding);
+			fOutputMonitor= new OSMonitor(sysout, charset);
 			fOutputMonitor.startMonitoring();
 		}
 		if( syserr != null ) {
-			fErrorMonitor= new OSMonitor(syserr, encoding);
+			fErrorMonitor= new OSMonitor(syserr, charset);
 			fErrorMonitor.startMonitoring();
 		}
 		if( sysin != null ) {
-			fInputMonitor= new InputStreamMonitor(sysin, encoding);
+			fInputMonitor= new InputStreamMonitor(sysin, charset);
 			fInputMonitor.startMonitoring();
 		}
 	}
@@ -134,9 +135,8 @@ public class RSEStreamsProxy implements IStreamsProxy, IStreamsProxy2 {
      * Dumb super class has everything protected instead of public
      */
     private static class OSMonitor extends OutputStreamMonitor {
-		public OSMonitor(InputStream stream, String encoding) {
-			super(stream, encoding);
-			// TODO Auto-generated constructor stub
+		public OSMonitor(InputStream stream, Charset charset) {
+			super(stream, charset);
 		}
 		public void startMonitoring() {
 			super.startMonitoring();
