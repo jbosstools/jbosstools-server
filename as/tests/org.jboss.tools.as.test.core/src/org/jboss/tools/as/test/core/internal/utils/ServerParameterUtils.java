@@ -36,10 +36,12 @@ public class ServerParameterUtils {
 	static {
 		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_WILDFLY_170);
 		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_WILDFLY_180);
+		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_WILDFLY_190);
 		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_EAP_70);
 		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_EAP_71); 
 		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_EAP_72); 
 		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_EAP_73);
+		// NEW_SERVER_ADAPTER Add the new runtime constant above this line
 	}
 	
 

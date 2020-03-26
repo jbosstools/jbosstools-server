@@ -425,20 +425,24 @@ public class ServerCreationTestUtils extends Assert {
 		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
 	}
 
-	private static IPath createWildfly190MockServerDirectory(String name, String serverTypeId, String serverJar) {
-		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 19.0.0.xyz\n"; 
-		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
-	}
-
 	private static IPath createWildfly180MockServerDirectory(String name, String serverTypeId, String serverJar) {
 		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 18.0.0.xyz\n"; 
 		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
 	}
+	private static IPath createWildfly190MockServerDirectory(String name, String serverTypeId, String serverJar) {
+		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 19.0.0.xyz\n"; 
+		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, "main", manString);
+	}
+
 
 	private static IPath createWildfly90PlusMockServerDirectory(String name, String serverTypeId, String serverJar, String manifestString) {
+		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, "wildfly-full", manifestString);
+	}
+	private static IPath createWildfly90PlusMockServerDirectory(String name, String serverTypeId, String serverJar, String slot, String manifestString) {
+
 		IPath loc = mockedServers.append(name);
 		createAS7xProductStructure(loc, true, serverJar, null, null);
-		IPath productDir = loc.append("modules/system/layers/base/org/jboss/as/product/wildfly-full/dir/META-INF/");
+		IPath productDir = loc.append("modules/system/layers/base/org/jboss/as/product/" + slot + "/dir/META-INF/");
 		productDir.toFile().mkdirs();
 		try {
 			IOUtil.setContents(new File(productDir.toFile(), "manifest.mf"), manifestString);

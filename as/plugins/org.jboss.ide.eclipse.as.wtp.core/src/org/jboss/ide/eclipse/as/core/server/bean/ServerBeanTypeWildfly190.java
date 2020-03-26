@@ -35,7 +35,7 @@ public class ServerBeanTypeWildfly190 extends JBossServerType {
 		@Override
 		public String getFullVersion(File location, File systemFile) {
 			String vers = ServerBeanType.getManifestPropFromJBossModulesFolder(new File[]{new File(location, "modules")}, 
-					"org.jboss.as.product", "wildfly-full/dir/META-INF", WF_100_RELEASE_MANIFEST_KEY);
+					"org.jboss.as.product", "main/dir/META-INF", WF_100_RELEASE_MANIFEST_KEY);
 			if( vers != null && vers.startsWith("19.")) {
 				return vers;
 			}
