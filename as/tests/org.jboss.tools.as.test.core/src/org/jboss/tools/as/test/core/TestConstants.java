@@ -38,7 +38,7 @@ public class TestConstants {
 	public static final String JBOSS_WF_160_HOME = System.getProperty("jbosstools.test.jboss.home.16.0", "C:\\apps\\jboss\\jboss-wildfly-16.0.0.GA\\");
 	public static final String JBOSS_WF_170_HOME = System.getProperty("jbosstools.test.jboss.home.17.0", "C:\\apps\\jboss\\jboss-wildfly-17.0.0.GA\\");
 	public static final String JBOSS_WF_180_HOME = System.getProperty("jbosstools.test.jboss.home.18.0", "C:\\apps\\jboss\\jboss-wildfly-18.0.0.GA\\");
-	public static final String JBOSS_WF_190_HOME = System.getProperty("jbosstools.test.jboss.home.198.0", "C:\\apps\\jboss\\jboss-wildfly-19.0.0.GA\\");
+	public static final String JBOSS_WF_190_HOME = System.getProperty("jbosstools.test.jboss.home.19.0", "C:\\apps\\jboss\\jboss-wildfly-19.0.0.GA\\");
 	public static final String JBOSS_EAP_43_HOME = System.getProperty("jbosstools.test.jboss.home.eap.4.3", "C:\\apps\\jboss\\jboss-eap-4.3.0.GA\\");
 	public static final String JBOSS_EAP_50_HOME = System.getProperty("jbosstools.test.jboss.home.eap.5.0", "C:\\apps\\jboss\\jboss-eap-5.0.0.GA\\");
 	public static final String JBOSS_EAP_60_HOME = System.getProperty("jbosstools.test.jboss.home.eap.6.0", "C:\\apps\\jboss\\jboss-eap-6.0.0.GA\\");
