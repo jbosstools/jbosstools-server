@@ -21,7 +21,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<enforceFailOnUIDependencyInCore>false</enforceFailOnUIDependencyInCore>
 		<jbosstools.test.jboss.home.17.0>${requirementsDirectory}/wildfly-17.0.0.Final</jbosstools.test.jboss.home.17.0>
 		<jbosstools.test.jboss.home.18.0>${requirementsDirectory}/wildfly-18.0.0.Final</jbosstools.test.jboss.home.18.0>
-		<jbosstools.test.jboss.home.19.0>${requirementsDirectory}/wildfly-19.0.0.Beta3</jbosstools.test.jboss.home.19.0>
+		<jbosstools.test.jboss.home.19.0>${requirementsDirectory}/wildfly-19.0.0.Final</jbosstools.test.jboss.home.19.0>
 		<jbosstools.test.jboss.home.eap.7.0>${requirementsDirectory}/jboss-eap-7.0</jbosstools.test.jboss.home.eap.7.0>
 		<jbosstools.test.jboss.home.eap.7.1>${requirementsDirectory}/jboss-eap-7.1</jbosstools.test.jboss.home.eap.7.1>
 		<jbosstools.test.jboss.home.eap.7.2>${requirementsDirectory}/jboss-eap-7.2</jbosstools.test.jboss.home.eap.7.2>
@@ -202,14 +202,14 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 								</configuration>
 							</execution>
 							<execution>
-								<id>install-wildfly-19.0.0.Beta3</id>
+								<id>install-wildfly-19.0.0.Final</id>
 								<phase>pre-integration-test</phase>
 								<goals>
 									<goal>wget</goal>
 								</goals>
 								<configuration>
-									<url>https://download.jboss.org/wildfly/19.0.0.Beta3/wildfly-19.0.0.Beta3.zip</url>
-									<sha1>51b24a1e92f4e93cb50d188bfe951c2aa6675c1e</sha1>
+									<url>https://download.jboss.org/wildfly/19.0.0.Final/wildfly-19.0.0.Final.zip</url>
+									<sha1>38085d0d9c31440c1cdb587cc2d7ee9f974e115c</sha1>
 									<unpack>true</unpack>
 									<skip>${skipTestsOrITests}</skip>
 								</configuration>
