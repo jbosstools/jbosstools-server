@@ -58,11 +58,11 @@
 			</activation>
 			<properties>
 				<test.class>org.jboss.tools.as.ui.bot.itests.EAPTestsSuite</test.class>
-				<jbosstools.test.jboss-server.home>jboss-eap-7.2</jbosstools.test.jboss-server.home>
-				<jbosstools.test.single.runtime.server.identification>JBoss EAP 7.2.0</jbosstools.test.single.runtime.server.identification>
+				<jbosstools.test.jboss-server.home>jboss-eap-7.3</jbosstools.test.jboss-server.home>
+				<jbosstools.test.single.runtime.server.identification>JBoss EAP 7.3.0</jbosstools.test.single.runtime.server.identification>
 				<jbosstools.test.single.runtime.product.slot>eap</jbosstools.test.single.runtime.product.slot>
 				<jbosstools.test.single.runtime.product.release.name>JBoss EAP</jbosstools.test.single.runtime.product.release.name>
-				<jbosstools.test.single.runtime.server.adapter.label>Red Hat JBoss Enterprise Application Platform 7.2</jbosstools.test.single.runtime.server.adapter.label>
+				<jbosstools.test.single.runtime.server.adapter.label>Red Hat JBoss Enterprise Application Platform 7.3</jbosstools.test.single.runtime.server.adapter.label>
 				<additionalProperties>-Djbosstools.test.single.runtime.location=${requirementsDirectory}/${jbosstools.test.jboss-server.home} -Djbosstools.test.single.runtime.server.identification=${jbosstools.test.single.runtime.server.identification} -Djbosstools.test.single.runtime.product.slot=${jbosstools.test.single.runtime.product.slot} -Djbosstools.test.single.runtime.product.release.name=${jbosstools.test.single.runtime.product.release.name} -Djbosstools.test.single.runtime.server.adapter.label=${jbosstools.test.single.runtime.server.adapter.label} -Drd.config=${rd.config}</additionalProperties>
 				<rd.config>${project.build.directory}/classes/jre.json</rd.config>
 			</properties>
@@ -102,29 +102,6 @@
 							<appArgLine>-pluginCustomization ${basedir}/pluginCustomization.ini</appArgLine>
 							<testClass>${test.class}</testClass>
 							<useUIThread>false</useUIThread>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-
-		<profile>
-			<id>check-pr</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.eclipse.tycho</groupId>
-						<artifactId>target-platform-configuration</artifactId>
-						<configuration>
-							<dependency-resolution>
-								<extraRequirements>
-									<requirement>
-										<type>p2-installable-unit</type>
-										<id>org.jboss.ide.eclipse.as.feature.feature.group</id>
-										<versionRange>0.0.0</versionRange>
-									</requirement>
-								</extraRequirements>
-							</dependency-resolution>
 						</configuration>
 					</plugin>
 				</plugins>
