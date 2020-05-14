@@ -66,19 +66,23 @@ public class ModuleSlot {
 	}
 	
 	public IPath[] getJars(IPath modulesFolder) {
+		return getJarsInternal(modulesFolder, this);
+	}
+	
+	protected IPath[] getJarsInternal(IPath modulesFolder, ModuleSlot ms) {
 		File[] layeredPaths = LayeredModulePathFactory.resolveLayeredModulePath(modulesFolder.toFile());
 		for( int i = 0; i < layeredPaths.length; i++ ) {
 			IPath lay = new Path(layeredPaths[i].getAbsolutePath());
-			File layeredPath = new File(lay.append(getPath()).toOSString());
+			File layeredPath = new File(lay.append(ms.getPath()).toOSString());
 			if( layeredPath.exists()) {
-				return getJarsFrom(layeredPath, modulesFolder);
+				return getJarsFromLayer(layeredPath, modulesFolder, ms);
 			}
 		}
 		return new IPath[0];
 	}
 
 	
-	private IPath[] getJarsFrom(File layeredPath, IPath modulesFolder) {
+	protected IPath[] getJarsFromLayer(File layeredPath, IPath modulesFolder, ModuleSlot ms) {
 		ArrayList<IPath> list = new ArrayList<IPath>();
 		File[] children = layeredPath.listFiles();
 		for( int i = 0; i < children.length; i++ ) {
@@ -89,9 +93,9 @@ public class ModuleSlot {
 		if( list.size() == 0 ) {
 			// Odds are high this is a module-alias, so we should check. 
 			File modulexml = new File(layeredPath, "module.xml"); //$NON-NLS-1$
-			String alias = new ModuleAliasUtil().getAlias(modulexml);
-			if( alias != null ) {
-				return new ModuleSlot(alias).getJars(modulesFolder);
+			ModuleSlot alias = new ModuleAliasUtil().getAliasModuleSlot(modulexml);
+			if( alias != null && !alias.equals(ms)) {
+				return getJarsInternal(modulesFolder, alias);
 			}
 		}
 		

@@ -18,7 +18,8 @@ import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.tools.foundation.core.xml.XMLMemento;
 
 public class ModuleAliasUtil {
-	public String getAlias(File moduleXml) {
+	
+	public ModuleSlot getAliasModuleSlot(File moduleXml) {
 		if( moduleXml.exists()) {
 			try {
 				String contents = FileUtil.getContents(moduleXml);
@@ -27,16 +28,25 @@ public class ModuleAliasUtil {
 					if( memento != null ) {
 						String nodeName = memento.getNodeName();
 						if( "module-alias".equals(nodeName)) { //$NON-NLS-1$
-							String targName = memento.getString("target-name"); //$NON-NLS-1$
-							if( targName != null )
-								return targName;
+							String targetName = memento.getString("target-name"); //$NON-NLS-1$
+							String targetSlot = memento.getString("target-slot");//$NON-NLS-1$
+							
+							if( !isEmpty(targetName)) {
+								return isEmpty(targetSlot) ? new ModuleSlot(targetName) 
+										: new ModuleSlot(targetName, targetSlot);
+							}
 						}
 					}
 				}
+				
 			} catch(IOException ce) {
 				// Ignore
 			}
 		}
 		return null;
+	}
+	
+	private boolean isEmpty(String s) {
+		return s == null || s.length() == 0;
 	}
 }
