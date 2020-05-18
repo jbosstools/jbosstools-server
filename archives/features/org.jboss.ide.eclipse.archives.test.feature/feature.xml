@@ -2,7 +2,7 @@
 <feature 
    id="org.jboss.ide.eclipse.archives.test.feature" 
    label="JBoss Tools - Tests - Archives" 
-   version="3.6.304.qualifier" 
+   version="3.6.305.qualifier" 
    provider-name="%providerName"
    license-feature="org.jboss.tools.foundation.license.feature"
    license-feature-version="0.0.0">
