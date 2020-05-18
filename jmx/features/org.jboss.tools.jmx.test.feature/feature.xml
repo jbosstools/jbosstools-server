@@ -2,7 +2,7 @@
 <feature 
    id="org.jboss.tools.jmx.test.feature" 
    label="%featureName" 
-   version="1.10.108.qualifier" 
+   version="1.10.109.qualifier" 
    provider-name="%featureProvider" 
    license-feature="org.jboss.tools.foundation.license.feature"
    license-feature-version="0.0.0"
