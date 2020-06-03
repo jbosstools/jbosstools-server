@@ -19,7 +19,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
 	<properties>
 		<enforceFailOnUIDependencyInCore>false</enforceFailOnUIDependencyInCore>
-		<jbosstools.test.jboss.home.17.0>${requirementsDirectory}/wildfly-17.0.0.Final</jbosstools.test.jboss.home.17.0>
 		<jbosstools.test.jboss.home.18.0>${requirementsDirectory}/wildfly-18.0.0.Final</jbosstools.test.jboss.home.18.0>
 		<jbosstools.test.jboss.home.19.0>${requirementsDirectory}/wildfly-19.0.0.Final</jbosstools.test.jboss.home.19.0>
 		<jbosstools.test.jboss.home.eap.7.0>${requirementsDirectory}/jboss-eap-7.0</jbosstools.test.jboss.home.eap.7.0>
@@ -31,7 +30,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<!-- skipPrivateRequirements and skipTestsWithPrivateRequirements are inherited from parent pom -->
 		<runtimes.suite.scope>smoke</runtimes.suite.scope>
 		<!-- jbosstools.test.jre.7 is defined in root pom for convenience of reuse -->
-		<systemProperties> -Djbosstools.test.jre.6=${jbosstools.test.jre.6}  -Djbosstools.test.jre.7=${jbosstools.test.jre.7}  -Djbosstools.test.jre.8=${jbosstools.test.jre.8} -Djbosstools.test.jboss.home.17.0=${jbosstools.test.jboss.home.17.0} -Djbosstools.test.jboss.home.18.0=${jbosstools.test.jboss.home.18.0}  -Djbosstools.test.jboss.home.19.0=${jbosstools.test.jboss.home.19.0} -Djbosstools.test.jboss.home.eap.7.0=${jbosstools.test.jboss.home.eap.7.0} -Djbosstools.test.jboss.home.eap.7.1=${jbosstools.test.jboss.home.eap.7.1} -Djbosstools.test.jboss.home.eap.7.2=${jbosstools.test.jboss.home.eap.7.2} -Djbosstools.test.jboss.home.eap.7.3=${jbosstools.test.jboss.home.eap.7.3} -Dorg.jboss.tools.tests.skipPrivateRequirements=${skipPrivateRequirements} -Dorg.jboss.tools.tests.skipTestsWithPrivateRequirements=${skipTestsWithPrivateRequirements} -Djboss.org.username=${jboss.org.username} -Djboss.org.password=${jboss.org.password} -Djbosstools.test.singleruntime.location=${jbosstools.test.singleruntime.location} -Druntimes.suite.scope=${runtimes.suite.scope} ${additionalProperties}</systemProperties>
+		<systemProperties> -Djbosstools.test.jre.6=${jbosstools.test.jre.6}  -Djbosstools.test.jre.7=${jbosstools.test.jre.7}  -Djbosstools.test.jre.8=${jbosstools.test.jre.8} -Djbosstools.test.jboss.home.18.0=${jbosstools.test.jboss.home.18.0}  -Djbosstools.test.jboss.home.19.0=${jbosstools.test.jboss.home.19.0} -Djbosstools.test.jboss.home.eap.7.0=${jbosstools.test.jboss.home.eap.7.0} -Djbosstools.test.jboss.home.eap.7.1=${jbosstools.test.jboss.home.eap.7.1} -Djbosstools.test.jboss.home.eap.7.2=${jbosstools.test.jboss.home.eap.7.2} -Djbosstools.test.jboss.home.eap.7.3=${jbosstools.test.jboss.home.eap.7.3} -Dorg.jboss.tools.tests.skipPrivateRequirements=${skipPrivateRequirements} -Dorg.jboss.tools.tests.skipTestsWithPrivateRequirements=${skipTestsWithPrivateRequirements} -Djboss.org.username=${jboss.org.username} -Djboss.org.password=${jboss.org.password} -Djbosstools.test.singleruntime.location=${jbosstools.test.singleruntime.location} -Druntimes.suite.scope=${runtimes.suite.scope} ${additionalProperties}</systemProperties>
 	</properties>
 
 	<build>
@@ -173,19 +172,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 									<md5>3dba80cc1be17b00cb901441111886f3</md5>
 									<unpack>true</unpack>
 									<skip>${skipTestsWithPrivateRequirements}</skip>
-								</configuration>
-							</execution>
-							<execution>
-								<id>install-wildfly-17.0.0.Final</id>
-								<phase>pre-integration-test</phase>
-								<goals>
-									<goal>wget</goal>
-								</goals>
-								<configuration>
-									<url>http://download.jboss.org/wildfly/17.0.0.Final/wildfly-17.0.0.Final.zip</url>
-									<md5>56d9dc8054d767845fefca7730c661da</md5>
-									<unpack>true</unpack>
-									<skip>${skipTestsOrITests}</skip>
 								</configuration>
 							</execution>
 							<execution>
