@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.jboss.tools.as.jmx.ui.bot.itests
 Bundle-Version: 3.9.102.qualifier
 Bundle-Vendor: Red Hat
 Require-Bundle: org.junit,
- org.eclipse.reddeer.go;bundle-version="[2.1.0,3.0.0)",
+ org.eclipse.reddeer.go,
  org.jboss.ide.eclipse.as.reddeer,
  org.jboss.tools.jmx.reddeer
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
