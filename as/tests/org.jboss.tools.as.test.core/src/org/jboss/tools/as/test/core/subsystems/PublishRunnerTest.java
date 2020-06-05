@@ -303,7 +303,7 @@ public class PublishRunnerTest extends TestCase {
 		private void checkCancel(IProgressMonitor monitor) throws CoreException {
 			callCount++;
 			if( canceled ) {
-				throw new CoreException(new Status(IStatus.ERROR, null,
+				throw new CoreException(new Status(IStatus.ERROR, (String) null,
 						"Monitor is already canceled. This should not be called"));
 			}
 			if( cancelAfterFirstAction ) {
