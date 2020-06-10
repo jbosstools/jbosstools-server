@@ -6,31 +6,31 @@
 			"family": "WILDFLY"
 		},
 		{
-			"runtime": "${jbosstools.test.wildfly.17.home}",
-			"version": "17",
+			"runtime": "${jbosstools.test.wildfly.19.home}",
+			"version": "19",
 			"family": "WILDFLY"
 		},
 		{
-			"runtime": "${jbosstools.test.eap.7.2.home}",
-			"version": "7.2",
+			"runtime": "${jbosstools.test.eap.7.3.home}",
+			"version": "7.3",
 			"family": "EAP"
 		},
 		{
-			"runtime": "${jbosstools.test.eap.7.2.home}",
-			"version": "7.2",
+			"runtime": "${jbosstools.test.eap.7.3.home}",
+			"version": "7.3",
 			"family": "EAP",
 			"remote": {
-				"serverHome": "${jbosstools.test.eap.7.2.home}",
+				"serverHome": "${jbosstools.test.eap.7.3.home}",
 				"serverHost": "LOCALHOST",
 				"systemType": "Local"
 			}
         },
 		{
-			"runtime": "${jbosstools.test.wildfly.18.home}",
-			"version": "18",
+			"runtime": "${jbosstools.test.wildfly.19.home}",
+			"version": "19",
 			"family": "WILDFLY",
 			"remote": {
-				"serverHome": "${jbosstools.test.wildfly.18.home}",
+				"serverHome": "${jbosstools.test.wildfly.19.home}",
 				"serverHost": "LOCALHOST",
 				"systemType": "Local"
 			}

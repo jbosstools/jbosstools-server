@@ -24,6 +24,7 @@ public class JMXConnectionItem extends AbstractJMXConnection {
 	}
 	
 	public List<JMXConnection> getConnections() {
+		activate();
 		List<JMXConnection> list = new ArrayList<>();
 		for (TreeItem item : this.item.getItems()) {
 			list.add(new JMXConnection(item));

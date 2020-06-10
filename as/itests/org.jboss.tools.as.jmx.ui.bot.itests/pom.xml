@@ -15,80 +15,21 @@
 	<properties>
 		<maven.test.failure.ignore>true</maven.test.failure.ignore>
 		<rd.config>${project.build.directory}/classes/requirements.json</rd.config>
-		<systemProperties>-Drd.config=${rd.config} -Dusage_reporting_enabled=false -Djbosstools.test.wildfly.18.home=${jbosstools.test.wildfly.18.home} -Djbosstools.test.wildfly.17.home=${jbosstools.test.wildfly.17.home} -Djbosstools.test.eap.7.2.home=${jbosstools.test.eap.7.2.home} -Dusername=${username} -Dpassword=${password} -Dremote.system.type=${remote.system.type}</systemProperties>
+		<skipPrivateRequirements>false</skipPrivateRequirements>
+		<systemProperties>-Drd.config=${rd.config} -Dusage_reporting_enabled=false -Djbosstools.test.wildfly.18.home=${jbosstools.test.wildfly.18.home} -Djbosstools.test.wildfly.19.home=${jbosstools.test.wildfly.19.home} -Djbosstools.test.eap.7.3.home=${jbosstools.test.eap.7.3.home} -Dusername=${username} -Dpassword=${password} -Dremote.system.type=${remote.system.type}</systemProperties>
 		<surefire.timeout>14400</surefire.timeout>
 		<username></username>
 		<password></password>
 		<server.host></server.host>
 		<remote.system.type></remote.system.type>
-		<jbosstools.test.wildfly.18.home>${requirementsDirectory}/wildfly-18.0.0.Final</jbosstools.test.wildfly.18.home>
-		<jbosstools.test.wildfly.17.home>${requirementsDirectory}/wildfly-17.0.0.Final</jbosstools.test.wildfly.17.home>
-		<jbosstools.test.eap.7.2.home>${requirementsDirectory}/jboss-eap-7.2</jbosstools.test.eap.7.2.home>
+		<jbosstools.test.wildfly.18.home>${jbosstools.test.jboss.home.18.0}</jbosstools.test.wildfly.18.home>
+		<jbosstools.test.wildfly.19.home>${jbosstools.test.jboss.home.19.0}</jbosstools.test.wildfly.19.home>
+		<jbosstools.test.eap.7.3.home>${jbosstools.test.jboss.home.eap.7.3}</jbosstools.test.eap.7.3.home>
 		<suiteClass>org.jboss.tools.as.jmx.ui.bot.itests.JMXAllTests</suiteClass>
 	</properties>
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>wildfly-18</id>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>unpack</goal>
-						</goals>
-						<configuration>
-							<skip>${skipTests}</skip>
-							<artifactItems>
-								<artifactItem>
-									<groupId>org.wildfly</groupId>
-									<artifactId>wildfly-dist</artifactId>
-									<version>18.0.0.Final</version>
-									<type>zip</type>
-								</artifactItem>
-							</artifactItems>
-						</configuration>
-					</execution>
-					<execution>
-						<id>wildfly-17</id>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>unpack</goal>
-						</goals>
-						<configuration>
-							<skip>${skipTests}</skip>
-							<artifactItems>
-								<artifactItem>
-									<groupId>org.wildfly</groupId>
-									<artifactId>wildfly-dist</artifactId>
-									<version>17.0.0.Final</version>
-									<type>zip</type>
-								</artifactItem>
-							</artifactItems>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>com.googlecode.maven-download-plugin</groupId>
-				<artifactId>download-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>install-eap-7.2</id>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>wget</goal>
-						</goals>
-						<configuration>
-							<url>http://download-node-02.eng.bos.redhat.com/released/jboss/eap7/7.2.0/jboss-eap-7.2.0.zip</url>
-							<md5>c06ac5dd62547d9982dea970c1b379f6</md5>
-							<unpack>true</unpack>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
