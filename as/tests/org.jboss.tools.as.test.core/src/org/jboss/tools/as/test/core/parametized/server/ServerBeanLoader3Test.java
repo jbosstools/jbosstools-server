@@ -83,12 +83,14 @@ public class ServerBeanLoader3Test extends TestCase {
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_110, new Data(JBossServerType.WILDFLY110, "11.0"));
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_120, new Data(JBossServerType.WILDFLY120, "12.0"));
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_130, new Data(JBossServerType.WILDFLY130, "13.0"));
+		expected.put(IJBossToolingConstants.SERVER_WILDFLY_130, new Data(JBossServerType.WILDFLY130, "13.0"));
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_140, new Data(JBossServerType.WILDFLY140, "14.0"));
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_150, new Data(JBossServerType.WILDFLY150, "15.0"));
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_160, new Data(JBossServerType.WILDFLY160, "16.0"));
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_170, new Data(JBossServerType.WILDFLY170, "17.0"));
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_180, new Data(JBossServerType.WILDFLY180, "18.0"));
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_190, new Data(JBossServerType.WILDFLY190, "19.0"));
+		expected.put(IJBossToolingConstants.SERVER_WILDFLY_200, new Data(JBossServerType.WILDFLY200, "20.0"));
 		expected.put(IJBossToolingConstants.SERVER_EAP_43, new Data(JBossServerType.EAP_STD, IJBossToolingConstants.V4_3));
 		expected.put(IJBossToolingConstants.SERVER_EAP_50, new Data(JBossServerType.EAP_STD, IJBossToolingConstants.V5_1));
 		expected.put(IJBossToolingConstants.SERVER_EAP_60, new Data(JBossServerType.EAP6, IJBossToolingConstants.V6_0));

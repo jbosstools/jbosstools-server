@@ -302,6 +302,7 @@ public class XPathModel extends UnitedServerListener {
 		rtToPortsFile.put(IConstants.WILDFLY_80, getURLFor(DEFAULT_PROPS_80));
 		rtToPortsFile.put(IConstants.WILDFLY_90, getURLFor(DEFAULT_PROPS_80));
 		rtToPortsFile.put(IConstants.WILDFLY_100, getURLFor(DEFAULT_PROPS_80));
+		rtToPortsFile.put(IConstants.WILDFLY_200, getURLFor(DEFAULT_PROPS_80));
 		rtToPortsFile.put(IConstants.WILDFLY_190, getURLFor(DEFAULT_PROPS_80));
 		rtToPortsFile.put(IConstants.WILDFLY_110, getURLFor(DEFAULT_PROPS_80));
 		rtToPortsFile.put(IConstants.WILDFLY_120, getURLFor(DEFAULT_PROPS_80));
