@@ -60,7 +60,7 @@ public class RSEStreamsProxy implements IStreamsProxy, IStreamsProxy2 {
 			fErrorMonitor.startMonitoring();
 		}
 		if( sysin != null ) {
-			fInputMonitor= new InputStreamMonitor(sysin, charset);
+			fInputMonitor= new InputStreamMonitor(sysin, charset.name()); // TODO UNDO THIS CHANGE
 			fInputMonitor.startMonitoring();
 		}
 	}
@@ -145,7 +145,7 @@ public class RSEStreamsProxy implements IStreamsProxy, IStreamsProxy2 {
      */
     private static class OSMonitor extends OutputStreamMonitor {
 		public OSMonitor(InputStream stream, Charset charset) {
-			super(stream, charset);
+			super(stream, charset.name()); // TODO UNDO THIS CHANGE
 		}
 		public void startMonitoring() {
 			super.startMonitoring();

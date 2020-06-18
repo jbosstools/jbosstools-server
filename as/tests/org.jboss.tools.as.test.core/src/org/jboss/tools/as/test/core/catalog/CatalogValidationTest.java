@@ -101,6 +101,7 @@ public class CatalogValidationTest extends TestCase {
 		noRootElement.add("jboss-common_8_0.xsd");
 		noRootElement.add("xml.xsd");
 		noRootElement.add("wildfly-credential-reference_1_0.xsd");
+		noRootElement.add("wildfly-credential-reference_1_1.xsd");
 	}
 	
 	@Parameters
