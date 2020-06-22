@@ -21,8 +21,6 @@ import org.jboss.tools.as.test.core.TestConstants;
 
 public class ParameterUtils {
 	
-	public static final String JBOSS_WILDFLY_170_HOME = TestConstants.JBOSS_WF_170_HOME;
-	public static final String JBOSS_WILDFLY_180_HOME = TestConstants.JBOSS_WF_180_HOME;
 	public static final String JBOSS_WILDFLY_190_HOME = TestConstants.JBOSS_WF_190_HOME;
 	public static final String JBOSS_WILDFLY_200_HOME = TestConstants.JBOSS_WF_200_HOME;
 	public static final String JBOSS_EAP_70_HOME = TestConstants.JBOSS_EAP_70_HOME;
@@ -33,8 +31,6 @@ public class ParameterUtils {
 	
 	public static HashMap<String,String> serverHomeToRuntimeType = new HashMap<String, String>();
 	static {
-		serverHomeToRuntimeType.put(JBOSS_WILDFLY_170_HOME, IJBossToolingConstants.WILDFLY_170);
-		serverHomeToRuntimeType.put(JBOSS_WILDFLY_180_HOME, IJBossToolingConstants.WILDFLY_180);
 		serverHomeToRuntimeType.put(JBOSS_WILDFLY_190_HOME, IJBossToolingConstants.WILDFLY_190);
 		serverHomeToRuntimeType.put(JBOSS_WILDFLY_200_HOME, IJBossToolingConstants.WILDFLY_200);
 		serverHomeToRuntimeType.put(JBOSS_EAP_70_HOME, IJBossToolingConstants.EAP_70);
@@ -65,8 +61,6 @@ public class ParameterUtils {
 	public static Object[] getAS7ServerHomes() {
 		boolean skipReqs = skipPrivateRequirements();
 		ArrayList<String> paths = new ArrayList<String>();
-		paths.add(JBOSS_WILDFLY_170_HOME);
-		paths.add(JBOSS_WILDFLY_180_HOME);
 		paths.add(JBOSS_WILDFLY_190_HOME);
 		paths.add(JBOSS_WILDFLY_200_HOME);
 		if( !skipReqs ) {
@@ -91,8 +85,6 @@ public class ParameterUtils {
 	public static Object[] getAllIncrementalMgmtDeploymentHomes() {
 		boolean skipReqs = skipPrivateRequirements();
 		ArrayList<String> paths = new ArrayList<String>();
-		paths.add(JBOSS_WILDFLY_170_HOME);
-		paths.add(JBOSS_WILDFLY_180_HOME);
 		paths.add(JBOSS_WILDFLY_190_HOME);
 		paths.add(JBOSS_WILDFLY_200_HOME);
 		if( !skipReqs ) {
