@@ -19,21 +19,15 @@ public enum JBoss7ServerState {
 	STARTING, RUNNING, RESTART_REQUIRED;
 
 	public static JBoss7ServerState valueOfIgnoreCase(String stateString) {
-		JBoss7ServerState matchingState = null;
-		if (stateString != null && stateString.length() > 0) {
-			for (JBoss7ServerState availableState : values()) {
-				if (stateString.equalsIgnoreCase(availableState.name())) {
-					matchingState = availableState;
-					break;
-				}
-			}
-		}
-		if (matchingState == null) {
-			throw new IllegalArgumentException(MessageFormat.format(
-					"No JBoss7ServerState enum for string {0}",
-					stateString));
-		}
-
-		return matchingState;
+		if( STARTING.name().equalsIgnoreCase(stateString))
+			return STARTING;
+		if( RUNNING.name().equalsIgnoreCase(stateString))
+			return RUNNING;
+		if( "restart-required".equalsIgnoreCase(stateString))
+			return RESTART_REQUIRED;
+		
+		throw new IllegalArgumentException(MessageFormat.format(
+				"No JBoss7ServerState enum for string {0}",
+				stateString));
 	}
 }
