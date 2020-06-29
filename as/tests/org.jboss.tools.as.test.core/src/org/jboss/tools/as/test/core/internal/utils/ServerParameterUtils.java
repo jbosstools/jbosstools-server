@@ -34,9 +34,8 @@ public class ServerParameterUtils {
 	protected static final List<String> TESTED_SERVERS = new ArrayList<String>();
 	
 	static {
-		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_WILDFLY_170);
-		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_WILDFLY_180);
 		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_WILDFLY_190);
+		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_WILDFLY_200);
 		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_EAP_70);
 		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_EAP_71); 
 		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_EAP_72); 
