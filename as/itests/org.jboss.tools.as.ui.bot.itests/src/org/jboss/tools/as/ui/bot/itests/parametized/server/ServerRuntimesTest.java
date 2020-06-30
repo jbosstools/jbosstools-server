@@ -52,12 +52,10 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
  * This test is trying to optimize and clean up the huge number of tests that were here. 
  * 
  * Pre-reqs:
- *   1) -Djbosstools.test.jre.6={java6home}
- *   2) -Djbosstools.test.jre.7={java7home}
- *   3) -Djbosstools.test.jre.8={java8home}
- *   4) -Djboss.org.username={yourusername}
- *   5) -Djboss.org.password={hunter2}
- *   6) -Druntimes.suite.scope={smoke | latestMajors | allFree | all}
+ *   1) -Djbosstools.test.jre.8={java8home}
+ *   2) -Djboss.org.username={yourusername}
+ *   3) -Djboss.org.password={hunter2}
+ *   4) -Druntimes.suite.scope={smoke | latestMajors | allFree | all}
  *   
  *  Items 4 and 5 are optional and only necessary if testing runtimes that 
  *  require $0 subscription. 

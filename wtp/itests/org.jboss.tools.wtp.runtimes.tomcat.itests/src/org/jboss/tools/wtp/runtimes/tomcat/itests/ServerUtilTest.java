@@ -29,9 +29,9 @@ public class ServerUtilTest extends AbstractTomcatDetectionTest {
 		RuntimeInitializerUtil.initializeRuntimesFromFolder(new File(REQUIREMENTS_DIR), new NullProgressMonitor());
 		IServer[] servers = ServerCore.getServers();
 		assertEquals("foo", ServerUtils.getUniqueServerName("foo")); //$NON-NLS-1$ //$NON-NLS-2$
-		assertEquals(TOMCAT_6 + " (2)", ServerUtils.getUniqueServerName(TOMCAT_6)); //$NON-NLS-1$
 		assertEquals(TOMCAT_7 + " (2)", ServerUtils.getUniqueServerName(TOMCAT_7)); //$NON-NLS-1$
 		assertEquals(TOMCAT_8 + " (2)", ServerUtils.getUniqueServerName(TOMCAT_8)); //$NON-NLS-1$
+		assertEquals(TOMCAT_9 + " (2)", ServerUtils.getUniqueServerName(TOMCAT_9)); //$NON-NLS-1$
     	assertEquals(UNEXPECTED_RUNTIME_COUNT_ERROR + " : " + toString(servers), 3, servers.length); //$NON-NLS-1$
 	}
 }

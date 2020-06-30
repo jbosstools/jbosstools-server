@@ -49,6 +49,7 @@ public class TomcatRuntimeDetectorDelegate extends AbstractRuntimeDetectorDelega
 	@SuppressWarnings("nls")
 	protected static final String[] runtimeTypes = new String[] {
 		//Put most recent versions first, to avoid traversing the whole list while creating working copies in #getRuntimeWorkingCopyFromDir()
+		"org.eclipse.jst.server.tomcat.runtime.90",
 		"org.eclipse.jst.server.tomcat.runtime.80",
 		"org.eclipse.jst.server.tomcat.runtime.70",
 		"org.eclipse.jst.server.tomcat.runtime.60",
@@ -69,6 +70,7 @@ public class TomcatRuntimeDetectorDelegate extends AbstractRuntimeDetectorDelega
 		environmentMap.put("org.eclipse.jst.server.tomcat.runtime.60", EnvironmentsManager.getDefault().getEnvironment(IExecutionEnvironmentConstants.EXEC_ENV_J2SE15));//$NON-NLS-1$
 		environmentMap.put("org.eclipse.jst.server.tomcat.runtime.70", EnvironmentsManager.getDefault().getEnvironment(IExecutionEnvironmentConstants.EXEC_ENV_JavaSE16));//$NON-NLS-1$
 		environmentMap.put("org.eclipse.jst.server.tomcat.runtime.80", EnvironmentsManager.getDefault().getEnvironment(IExecutionEnvironmentConstants.EXEC_ENV_JavaSE17));//$NON-NLS-1$
+		environmentMap.put("org.eclipse.jst.server.tomcat.runtime.90", EnvironmentsManager.getDefault().getEnvironment(IExecutionEnvironmentConstants.EXEC_ENV_JavaSE18));//$NON-NLS-1$
 	}
 	
 	
