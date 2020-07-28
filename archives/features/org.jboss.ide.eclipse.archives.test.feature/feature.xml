@@ -1,28 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<feature 
-   id="org.jboss.ide.eclipse.archives.test.feature" 
-   label="JBoss Tools - Tests - Archives" 
-   version="3.6.305.qualifier" 
-   provider-name="%providerName"
-   license-feature="org.jboss.tools.foundation.license.feature"
-   license-feature-version="0.0.0">
+<feature
+      id="org.jboss.ide.eclipse.archives.test.feature"
+      label="JBoss Tools - Tests - Archives"
+      version="3.6.306.qualifier"
+      provider-name="%providerName"
+      license-feature="org.jboss.tools.foundation.license.feature"
+      license-feature-version="0.0.0">
 
    <description url="http://www.jboss.org/tools">
-       %description
+      %description
    </description>
+
    <copyright>
-       %copyright
+      %copyright
    </copyright>
+
    <license url="%licenseURL">
-       %license
+      %license
    </license>
 
+   <includes
+         id="org.jboss.tools.archives.scanner.feature"
+         version="0.0.0"/>
 
+   <plugin
+         id="org.jboss.tools.archives.reddeer"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
 
-   <includes id="org.jboss.tools.archives.scanner.feature" version="0.0.0"/>
+   <plugin
+         id="org.jboss.ide.eclipse.archives.test"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
 
-   <plugin id="org.jboss.tools.archives.reddeer" download-size="0" install-size="0" version="0.0.0" />
-   <plugin id="org.jboss.ide.eclipse.archives.test" download-size="0" install-size="0" version="0.0.0" />
-   <plugin id="org.jboss.ide.eclipse.archives.ui.test" download-size="0" install-size="0" version="0.0.0" />
+   <plugin
+         id="org.jboss.ide.eclipse.archives.ui.test"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
 
 </feature>
