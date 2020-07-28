@@ -3,3 +3,4 @@ target/
 pmd-eclipse.log
 .settings
 .project
+.classpath
