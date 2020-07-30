@@ -26,13 +26,15 @@ public class VerifyJREFlagsTest extends TestCase {
 	public void tearDown() {
 	}
 	
-	public void testJavaHomesSet() throws RuntimeException {
+	public void testJavaHomesSet() {
 		if( ParameterUtils.isSingleRuntime()) {
 			String home = ParameterUtils.getSingleRuntimeHome();
 			assertNotNull(home);
 			JREParameterUtils.verifyJava8HomeSet();
+			JREParameterUtils.verifyJava11HomeSet();
 		} else {
 			JREParameterUtils.verifyJava8HomeSet();
+			JREParameterUtils.verifyJava11HomeSet();
 		}
 	}
 }
