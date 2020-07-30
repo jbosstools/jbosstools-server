@@ -27,7 +27,6 @@ import org.junit.Assert;
 
 public class JREParameterUtils extends Assert {
 
-	private static final String JRE7_SYSPROP = "jbosstools.test.jre.7";
 	private static final String JRE8_SYSPROP = "jbosstools.test.jre.8";
 
 	public static IExecutionEnvironment getRequiredExecEnv(String runtimeType) {
@@ -41,47 +40,32 @@ public class JREParameterUtils extends Assert {
 	public static boolean requiresJava8(String runtimeType) {
 		return "JavaSE-1.8".equals(getRequiredExecEnv(runtimeType).getId());
 	}
-	public static boolean requiresJava7(String runtimeType) {
-		return "JavaSE-1.7".equals(getRequiredExecEnv(runtimeType).getId());
-	}
-	public static boolean requiresJava6(String runtimeType) {
-		return "JavaSE-1.6".equals(getRequiredExecEnv(runtimeType).getId());
-	}
-	public static String getJavaHome(String rtType, String serverHome) {
+
+	public static String getJavaHome(String serverHome) {
 		// We have some with java8 requirements. 
 		ServerBeanLoader sb = new ServerBeanLoader(new File(serverHome));
 		String version = sb.getFullServerVersion();
 		System.out.println("**** ____  server version is " + version);
-		if( requiresJava8(rtType)) {
-			return getJavaHome(serverHome, JRE8_SYSPROP, "JavaSE-1.8");
-		}
-		// For all older, use j7
-		return getJavaHome(serverHome, JRE7_SYSPROP, "JavaSE-1.7");
+		return getJavaHome(serverHome, JRE8_SYSPROP, "JavaSE-1.8");
 	}
 	
 	public static String getJavaHome(String serverHome, String sysprop, String javaVersion) {
 		System.out.println("Getting java version for server: " + serverHome);
 		String java = System.getProperty(sysprop);
-		if( java == null ) {
-			fail("Launching " + serverHome + " requires a " + javaVersion + ", which has not been provided via the " + sysprop + " system property");
+		if (java == null) {
+			fail("Launching " + serverHome + " requires a " + javaVersion + ", which has not been provided via the "
+					+ sysprop + " system property");
 		}
 
-		if( !new File(java).exists()) {
+		if (!new File(java).exists()) {
 			fail("Java Home " + java + " provided by the " + sysprop + " system property does not exist.");
 		}
 
-		if( sysprop.equals(JRE7_SYSPROP)) {
-			verifyJava7HomeSet();
-		} else if( sysprop.equals(JRE8_SYSPROP)) {
+		if (sysprop.equals(JRE8_SYSPROP)) {
 			verifyJava8HomeSet();
 		}
-		
-		return java;
-	}
-	
 
-	public static void verifyJava7HomeSet() throws RuntimeException {
-		internalJavaHomeSet(getJava7Home(), JRE7_SYSPROP, "Java 7", "1.7.");
+		return java;
 	}
 	
 	public static void verifyJava8HomeSet() throws RuntimeException {
@@ -127,12 +111,6 @@ public class JREParameterUtils extends Assert {
 		String java = System.getProperty(JRE8_SYSPROP);
 		return java;
 	}
-	
-	public static String getJava7Home() {
-		String java = System.getProperty(JRE7_SYSPROP);
-		return java;
-	}
-
 	
 	public static String getVersion(String[] arr) {
 		if( arr == null || arr.length == 0 )

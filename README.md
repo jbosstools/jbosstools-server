@@ -35,20 +35,20 @@ To build _Server Tools_ requires specific versions of Java (1.8) and
 
 Unit and integration tests for Server Tools (such as org.jboss.tools.as.management.itests) require the following path to Java 7 Home folder be defined via commandline:
 
-	mvn verify -Djbosstools.test.jre.7=/path/to/jre7
+	mvn verify -Djbosstools.test.jre.8=/path/to/jre8
 
 If not defined, you'll get this error:
 
 	junit.framework.AssertionFailedError: Java Home 
-	provided by the jbosstools.test.jre.7 system property does not exist.
+	provided by the jbosstools.test.jre.8 system property does not exist.
 
 This command will run the build, including tests and integration tests:
 
-    $ mvn clean verify -Djbosstools.test.jre.7=/path/to/jre7
+    $ mvn clean verify -Djbosstools.test.jre.8=/path/to/jre8
 
 If you want to run the build and run unit tests, but not integration tests, you can run:
 
-    $ mvn clean verify -DskipITests -Djbosstools.test.jre.7=/path/to/jre7
+    $ mvn clean verify -DskipITests -Djbosstools.test.jre.8=/path/to/jre8
 
 If you just want to check if things compile/build, and run no tests at all, you can run:
 

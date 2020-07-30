@@ -51,11 +51,7 @@ public class TestConstants {
 	public static final String JBOSS_EAP_72_HOME = System.getProperty("jbosstools.test.jboss.home.eap.7.2", "C:\\apps\\jboss\\jboss-eap-7.2.0.GA\\");
 	public static final String JBOSS_EAP_73_HOME = System.getProperty("jbosstools.test.jboss.home.eap.7.3", "C:\\apps\\jboss\\jboss-eap-7.3.0.GA\\");
 		// NEW_SERVER_ADAPTER
-	
-	public static final String JRE_14_HOME = System.getProperty("jbosstools.test.jre.1.4", "C:\\apps\\java\\jre1.4\\");
-	public static final String JRE_5_HOME = System.getProperty("jbosstools.test.jre.5", "C:\\apps\\java\\jre5.0\\");
-	public static final String JRE_6_HOME = System.getProperty("jbosstools.test.jre.6", "C:\\apps\\java\\jre6.0\\");
-	public static final String JRE_7_HOME = System.getProperty("jbosstools.test.jre.7", "C:\\apps\\java\\jre7.0\\");
+
 	public static final String JRE_8_HOME = System.getProperty("jbosstools.test.jre.8", "C:\\apps\\java\\jre8.0\\");
 
 	public static final String JBOSS_AS_HOME = System.getProperty("jbosstools.test.jboss.home", JBOSS_AS_42_HOME);

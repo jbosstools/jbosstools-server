@@ -63,9 +63,9 @@ public class TomcatDetectionTest extends AbstractTomcatDetectionTest {
 			runtimeMap.put(iRuntime.getName(),iRuntime);
 		}
 		
-		assertNotNull(runtimeMap.get(TOMCAT_6 +" Runtime"));
 		assertNotNull(runtimeMap.get(TOMCAT_7 +" Runtime"));
 		assertNotNull(runtimeMap.get(TOMCAT_8 +" Runtime"));
+		assertNotNull(runtimeMap.get(TOMCAT_9 +" Runtime"));
 		assertEquals(UNEXPECTED_RUNTIME_COUNT_ERROR + ": " + toString(runtimes), 3, runtimes.length);
 
 		IServer[] servers = ServerCore.getServers();
@@ -75,9 +75,9 @@ public class TomcatDetectionTest extends AbstractTomcatDetectionTest {
 			serverMap.put(iServer.getName(), iServer);
 		}
 		
-		assertNotNull(serverMap.get(TOMCAT_6));
 		assertNotNull(serverMap.get(TOMCAT_7));
 		assertNotNull(serverMap.get(TOMCAT_8));
+		assertNotNull(serverMap.get(TOMCAT_9));
 		assertEquals(3, servers.length);
 	}
 }

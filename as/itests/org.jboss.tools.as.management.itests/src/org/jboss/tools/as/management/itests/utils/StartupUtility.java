@@ -52,7 +52,7 @@ public class StartupUtility extends Assert {
 		}
 
 		HashMap<String, String> map = new HashMap<String, String>();
-		map.put("JAVA_HOME", JREParameterUtils.getJavaHome(rtType, homeDir));
+		map.put("JAVA_HOME", JREParameterUtils.getJavaHome(homeDir));
 
 		String[] envList = convertEnvironment(map);
 		Process p = null;
@@ -107,7 +107,7 @@ public class StartupUtility extends Assert {
 		this.homeDir = homeDir;
 		setRuntimeType(ParameterUtils.serverHomeToRuntimeType.get(homeDir));
 
-		String javaHome = JREParameterUtils.getJavaHome(getRuntimeType(), homeDir);
+		String javaHome = JREParameterUtils.getJavaHome(homeDir);
 
 		setPort(ManagementPortTestUtility.getManagementPort(homeDir, javaHome));
 		assertTrue("Management port for server " + homeDir + " must not be -1", getPort() != -1);
