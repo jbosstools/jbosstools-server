@@ -28,6 +28,7 @@ import org.junit.Assert;
 public class JREParameterUtils extends Assert {
 
 	private static final String JRE8_SYSPROP = "jbosstools.test.jre.8";
+	private static final String JRE11_SYSPROP = "jbosstools.test.jre.11";
 
 	public static IExecutionEnvironment getRequiredExecEnv(String runtimeType) {
 		IRuntimeType type = ServerCore.findRuntimeType(runtimeType);
@@ -39,6 +40,10 @@ public class JREParameterUtils extends Assert {
 
 	public static boolean requiresJava8(String runtimeType) {
 		return "JavaSE-1.8".equals(getRequiredExecEnv(runtimeType).getId());
+	}
+	
+	public static boolean requiresJava11(String runtimeType) {
+		return "JavaSE-11".equals(getRequiredExecEnv(runtimeType).getId());
 	}
 
 	public static String getJavaHome(String serverHome) {
@@ -64,11 +69,19 @@ public class JREParameterUtils extends Assert {
 		if (sysprop.equals(JRE8_SYSPROP)) {
 			verifyJava8HomeSet();
 		}
+		
+		if (sysprop.equals(JRE11_SYSPROP)) {
+			verifyJava11HomeSet();
+		}
 
 		return java;
 	}
 	
-	public static void verifyJava8HomeSet() throws RuntimeException {
+	public static void verifyJava11HomeSet() {
+		internalJavaHomeSet(getJava11Home(), JRE11_SYSPROP, "Java 11", "11");
+	}
+	
+	public static void verifyJava8HomeSet() {
 		internalJavaHomeSet(getJava8Home(), JRE8_SYSPROP, "Java 8", "1.8.");
 	}
 	
@@ -107,9 +120,12 @@ public class JREParameterUtils extends Assert {
 		assertTrue(versionError,versionString.startsWith(versionPrefix));
 	}
 	
+	public static String getJava11Home() {
+		return System.getProperty(JRE11_SYSPROP);
+	}
+	
 	public static String getJava8Home() {
-		String java = System.getProperty(JRE8_SYSPROP);
-		return java;
+		return System.getProperty(JRE8_SYSPROP);
 	}
 	
 	public static String getVersion(String[] arr) {
