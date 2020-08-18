@@ -12,6 +12,7 @@ package org.jboss.tools.as.test.core.classpath;
 
 import org.jboss.tools.as.test.core.classpath.modules.JBossModulesClasspathTest;
 import org.jboss.tools.as.test.core.classpath.modules.LayeredModulePathFactoryTest;
+import org.jboss.tools.as.test.core.classpath.modules.ModuleSlotStackOverflowDefectTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -20,7 +21,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
 	JEEClasspathContainerTest.class,
 	LayeredModulePathFactoryTest.class,
-	JBossModulesClasspathTest.class
+	JBossModulesClasspathTest.class,
+	ModuleSlotStackOverflowDefectTest.class
 })
 public class ClasspathSuite {
 }
