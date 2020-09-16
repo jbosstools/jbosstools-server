@@ -184,7 +184,7 @@ public class StandardRSEStartLaunchDelegate extends
 		IControllableServerBehavior beh = JBossServerBehaviorUtils.getControllableBehavior(server);
 		try {
 			ServerShellModel model = RSEHostShellModel.getInstance().getModel(server);
-			IHostShell shell = model.createStartupShell("/", command, new String[] {}, sysoutOutListener, new NullProgressMonitor());
+			IHostShell shell = model.createStartupShell("/", command, null, sysoutOutListener, new NullProgressMonitor());
 			addShellOutputListener(shell, beh, dp);
 			String getPidCommand = "echo \"" + ECHO_KEY_DISCOVER_PID + DELIMETER + server.getId() + DELIMETER + "\"$!";
 			shell.writeToShell(getPidCommand);

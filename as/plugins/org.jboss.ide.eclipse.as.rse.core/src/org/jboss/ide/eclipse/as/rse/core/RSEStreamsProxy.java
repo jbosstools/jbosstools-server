@@ -60,7 +60,7 @@ public class RSEStreamsProxy implements IStreamsProxy, IStreamsProxy2 {
 			fErrorMonitor.startMonitoring();
 		}
 		if( sysin != null ) {
-			fInputMonitor= new InputStreamMonitor(sysin, charset.name()); // TODO UNDO THIS CHANGE
+			fInputMonitor= new InputStreamMonitor(sysin, charset == null ? Charset.defaultCharset().name() : charset.name()); 
 			fInputMonitor.startMonitoring();
 		}
 	}
