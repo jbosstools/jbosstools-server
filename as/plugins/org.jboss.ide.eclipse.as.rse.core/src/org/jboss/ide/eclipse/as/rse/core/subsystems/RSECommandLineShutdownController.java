@@ -32,7 +32,7 @@ public class RSECommandLineShutdownController extends CommandLineShutdownControl
 	@Override
 	protected IStatus executeShutdownCommand(String shutdownCommand) throws CoreException {
 		ServerShellModel model = RSEHostShellModel.getInstance().getModel(getServer());
-		int ret = model.executeRemoteCommandGetStatus("/", shutdownCommand, new String[]{}, new NullProgressMonitor(), 10000, true);
+		int ret = model.executeRemoteCommandGetStatus("/", shutdownCommand, null, new NullProgressMonitor(), 10000, true);
 		if( ret == -1 || ret == 0 ) {
 			// either a shutdown success or a failure on the part of the tools to accurately discover the exit code
 			// proceed as normal

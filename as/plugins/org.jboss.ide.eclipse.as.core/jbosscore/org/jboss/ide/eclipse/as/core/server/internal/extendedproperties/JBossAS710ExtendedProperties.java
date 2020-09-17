@@ -55,8 +55,9 @@ public class JBossAS710ExtendedProperties extends JBossAS7ExtendedProperties imp
 	}
 	
 	@Override
-	public String getJBossAdminScript() {
-		return IJBossRuntimeResourceConstants.AS_71_MANAGEMENT_SCRIPT;
+	public String getJBossAdminScript(boolean windows) {
+		return windows ?  IJBossRuntimeResourceConstants.AS_71_MANAGEMENT_SCRIPT_WIN :
+			 IJBossRuntimeResourceConstants.AS_71_MANAGEMENT_SCRIPT;
 	}
 	
 	/**

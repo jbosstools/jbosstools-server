@@ -112,9 +112,12 @@ public class JBossAS7ExtendedProperties extends JBossExtendedProperties implemen
 		return new LocalJBoss7DeploymentScannerAdditions();
 	}
 
-	
-	public String getJBossAdminScript() {
-		return IJBossRuntimeResourceConstants.AS_70_MANAGEMENT_SCRIPT;
+	/**
+	 * @since 3.9
+	 */
+	public String getJBossAdminScript(boolean windows) {
+		return windows ? IJBossRuntimeResourceConstants.AS_70_MANAGEMENT_SCRIPT_WIN :
+			IJBossRuntimeResourceConstants.AS_70_MANAGEMENT_SCRIPT;
 	}
 	
 	public int getFileStructure() {

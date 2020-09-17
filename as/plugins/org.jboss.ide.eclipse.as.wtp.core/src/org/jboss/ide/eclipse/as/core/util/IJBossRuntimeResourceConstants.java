@@ -120,4 +120,6 @@ public interface IJBossRuntimeResourceConstants {
 	
 	public static final String AS_70_MANAGEMENT_SCRIPT = "jboss-admin.sh"; //$NON-NLS-1$
 	public static final String AS_71_MANAGEMENT_SCRIPT = "jboss-cli.sh"; //$NON-NLS-1$
+	public static final String AS_70_MANAGEMENT_SCRIPT_WIN = "jboss-admin.bat"; //$NON-NLS-1$
+	public static final String AS_71_MANAGEMENT_SCRIPT_WIN = "jboss-cli.bat"; //$NON-NLS-1$
 }

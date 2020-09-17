@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.ServerDelegate;
@@ -101,9 +102,10 @@ public class RSEJBoss7LaunchConfigurator implements ILaunchConfigConfigurator {
 	}
 	
 	protected String getManagementScript(IServer server) {
+		boolean winHost = RSEUtils.connectedToWindowsHost(server);
 		JBossExtendedProperties props = (JBossExtendedProperties)server.loadAdapter(JBossExtendedProperties.class, null);
 		if( props instanceof JBossAS7ExtendedProperties ) {
-			return ((JBossAS7ExtendedProperties)props).getJBossAdminScript();
+			return ((JBossAS7ExtendedProperties)props).getJBossAdminScript(winHost);
 		}
 		// Return a sensible default
 		return IJBossRuntimeResourceConstants.AS_70_MANAGEMENT_SCRIPT;
