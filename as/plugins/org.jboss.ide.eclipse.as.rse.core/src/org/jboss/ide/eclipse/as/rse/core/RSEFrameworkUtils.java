@@ -16,6 +16,7 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.rse.core.RSECorePlugin;
 import org.eclipse.rse.core.model.IHost;
@@ -92,6 +93,9 @@ public class RSEFrameworkUtils {
 		String sysType = host.getSystemType().getId();
 		if( sysType.equals("org.eclipse.rse.systemtype.windows"))
 			return true;
+		if (sysType.equals("org.eclipse.rse.systemtype.local")) {
+		  return Platform.getOS().equals(Platform.OS_WIN32);
+		}
 		ISubSystem[] systems = RSECorePlugin.getTheSystemRegistry().getSubSystems(host);
 		for( int i = 0; i < systems.length; i++ ) {
 			if( systems[i].getConfigurationId().equals("dstore.windows.files"))
