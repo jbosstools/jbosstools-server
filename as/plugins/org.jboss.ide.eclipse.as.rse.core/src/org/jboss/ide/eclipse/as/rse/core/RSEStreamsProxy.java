@@ -52,11 +52,11 @@ public class RSEStreamsProxy implements IStreamsProxy, IStreamsProxy2 {
 	 */
 	public RSEStreamsProxy(InputStream sysout, InputStream syserr, OutputStream sysin, Charset charset) {
 		if( sysout != null ) {
-			fOutputMonitor= new OSMonitor(sysout, charset);
+			fOutputMonitor= new OSMonitor(sysout, charset == null ? Charset.defaultCharset() : charset);
 			fOutputMonitor.startMonitoring();
 		}
 		if( syserr != null ) {
-			fErrorMonitor= new OSMonitor(syserr, charset);
+			fErrorMonitor= new OSMonitor(syserr, charset == null ? Charset.defaultCharset() : charset);
 			fErrorMonitor.startMonitoring();
 		}
 		if( sysin != null ) {
