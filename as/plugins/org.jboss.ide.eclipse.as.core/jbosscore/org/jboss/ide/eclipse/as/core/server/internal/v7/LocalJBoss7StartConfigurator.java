@@ -60,6 +60,7 @@ public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurato
 		getProperties().setHost(getHost(jbossServer, jbossRuntime), launchConfig);
 		getProperties().setServerHome(getServerHome(jbossRuntime), jbossRuntime, launchConfig);
 		getProperties().setServerFlag(getSupportsServerFlag(jbossRuntime), jbossRuntime, launchConfig);
+		getProperties().setOrClearJava9Flags(jbossRuntime, launchConfig);
 		getProperties().setJreContainer(getJreContainerPath(jbossRuntime), launchConfig);
 		getProperties().setEndorsedDir(getEndorsedDir(jbossRuntime), launchConfig);
 		getProperties().setJavaLibPath(getJavaLibraryPath(jbossRuntime), launchConfig);

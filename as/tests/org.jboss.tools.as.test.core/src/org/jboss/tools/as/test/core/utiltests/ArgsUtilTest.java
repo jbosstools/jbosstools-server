@@ -153,4 +153,12 @@ public class ArgsUtilTest extends TestCase {
 		String set = ArgsUtil.setFlag(cleared, "-ser3");
 		assertEquals("-Dsome.name=yes -Darg2=no -ser3", set);
 	}
+	
+	public void testClear() {
+		String original = "-Xms1303m -Xmx1303m -Dorg.jboss.logmanager.nocolor=true --add-exports=java.base/sun.nio.ch=ALL-UNNAMED --add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED --add-exports=jdk.unsupported/sun.reflect=ALL-UNNAMED --add-modules=java.se -Djboss.bind.address.management=localhost";
+		String replaced = ArgsUtil.setArg(original, null, "--add-exports", null);
+		String replaced2 = ArgsUtil.setArg(replaced, null, "--add-modules", null);
+		assertEquals("-Xms1303m -Xmx1303m -Dorg.jboss.logmanager.nocolor=true -Djboss.bind.address.management=localhost", replaced2.trim());
+	}
+	
 }
