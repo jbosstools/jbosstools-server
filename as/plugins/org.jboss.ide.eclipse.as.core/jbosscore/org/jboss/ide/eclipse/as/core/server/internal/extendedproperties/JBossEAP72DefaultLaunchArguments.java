@@ -27,19 +27,31 @@ JBossEAP70DefaultLaunchArguments {
 		super(rt);
 	}
 	
-	protected String getJava9VMArgs() {
-		String suffix = "";
+	public static String getJava9VMArgsConditional(IRuntime rt) {
+		if( isVmJava9(rt)) 
+			return getJava9VMArgsDefault();
+		return "";
+	}
+	public static boolean isVmJava9(IRuntime rt) {
 		try {
-			IJBossServerRuntime jbossRuntime = RuntimeUtils.checkedGetJBossServerRuntime(getRuntime());
+			IJBossServerRuntime jbossRuntime = RuntimeUtils.checkedGetJBossServerRuntime(rt);
 			IVMInstall vmInstall = jbossRuntime.getVM();
 			int[] versionIDs = JavaUtilities.getMajorMinor(JavaUtilities.getJavaVersionVMInstall(vmInstall));
 			if (versionIDs.length > 0 && versionIDs[0] >= 9) {
-				suffix = " --add-exports=java.base/sun.nio.ch=ALL-UNNAMED --add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED --add-exports=jdk.unsupported/sun.reflect=ALL-UNNAMED --add-modules=java.se";
+				return true;
 			}
 		} catch (CoreException e) {
 			throw new RuntimeException(e);
 		}
-		return suffix;
+		return false;
+	}
+	
+	public static String getJava9VMArgsDefault() {
+		return " --add-exports=java.base/sun.nio.ch=ALL-UNNAMED --add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED --add-exports=jdk.unsupported/sun.reflect=ALL-UNNAMED --add-modules=java.se";
+	}
+	
+	protected String getJava9VMArgs() {
+		return getJava9VMArgsConditional(getRuntime());
 	}
 	
 	@Override
