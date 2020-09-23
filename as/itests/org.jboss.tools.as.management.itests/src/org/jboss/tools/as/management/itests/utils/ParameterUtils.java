@@ -22,21 +22,23 @@ import org.jboss.tools.as.test.core.TestConstants;
 public class ParameterUtils {
 	
 	public static final String JBOSS_WILDFLY_190_HOME = TestConstants.JBOSS_WF_190_HOME;
-	public static final String JBOSS_WILDFLY_200_HOME = TestConstants.JBOSS_WF_200_HOME;
 	public static final String JBOSS_EAP_70_HOME = TestConstants.JBOSS_EAP_70_HOME;
 	public static final String JBOSS_EAP_71_HOME = TestConstants.JBOSS_EAP_71_HOME;
 	public static final String JBOSS_EAP_72_HOME = TestConstants.JBOSS_EAP_72_HOME;
 	public static final String JBOSS_EAP_73_HOME = TestConstants.JBOSS_EAP_73_HOME;
+	public static final String JBOSS_WILDFLY_200_HOME = TestConstants.JBOSS_WF_200_HOME;
+	public static final String JBOSS_WILDFLY_210_HOME = TestConstants.JBOSS_WF_210_HOME;
 	// NEW_SERVER_ADAPTER
 	
 	public static HashMap<String,String> serverHomeToRuntimeType = new HashMap<String, String>();
 	static {
 		serverHomeToRuntimeType.put(JBOSS_WILDFLY_190_HOME, IJBossToolingConstants.WILDFLY_190);
-		serverHomeToRuntimeType.put(JBOSS_WILDFLY_200_HOME, IJBossToolingConstants.WILDFLY_200);
 		serverHomeToRuntimeType.put(JBOSS_EAP_70_HOME, IJBossToolingConstants.EAP_70);
 		serverHomeToRuntimeType.put(JBOSS_EAP_71_HOME, IJBossToolingConstants.EAP_71);
 		serverHomeToRuntimeType.put(JBOSS_EAP_72_HOME, IJBossToolingConstants.EAP_72);
 		serverHomeToRuntimeType.put(JBOSS_EAP_73_HOME, IJBossToolingConstants.EAP_73);
+		serverHomeToRuntimeType.put(JBOSS_WILDFLY_200_HOME, IJBossToolingConstants.WILDFLY_200);
+		serverHomeToRuntimeType.put(JBOSS_WILDFLY_210_HOME, IJBossToolingConstants.WILDFLY_210);
 		// NEW_SERVER_ADAPTER
 	}
 	
@@ -63,6 +65,7 @@ public class ParameterUtils {
 		ArrayList<String> paths = new ArrayList<String>();
 		paths.add(JBOSS_WILDFLY_190_HOME);
 		paths.add(JBOSS_WILDFLY_200_HOME);
+		paths.add(JBOSS_WILDFLY_210_HOME);
 		if( !skipReqs ) {
 			paths.add(JBOSS_EAP_70_HOME);
 			paths.add(JBOSS_EAP_71_HOME);
@@ -87,6 +90,7 @@ public class ParameterUtils {
 		ArrayList<String> paths = new ArrayList<String>();
 		paths.add(JBOSS_WILDFLY_190_HOME);
 		paths.add(JBOSS_WILDFLY_200_HOME);
+		paths.add(JBOSS_WILDFLY_210_HOME);
 		if( !skipReqs ) {
 			paths.add(JBOSS_EAP_71_HOME);
 			paths.add(JBOSS_EAP_72_HOME);

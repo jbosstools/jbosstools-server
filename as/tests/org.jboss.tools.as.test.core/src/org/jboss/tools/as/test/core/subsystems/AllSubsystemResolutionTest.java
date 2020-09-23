@@ -104,28 +104,29 @@ public class AllSubsystemResolutionTest extends TestCase {
 		ret.addAll(MatrixUtils.toMatrix(new Object[][]{jbossServers, modes, getSubsystemsForJBossServers()}));
 		
 		String[] as7Servers = new String[]{
-				IJBossToolingConstants.SERVER_AS_70,
-				IJBossToolingConstants.SERVER_AS_71,
-				IJBossToolingConstants.SERVER_WILDFLY_80,
-				IJBossToolingConstants.SERVER_WILDFLY_90,
-				IJBossToolingConstants.SERVER_WILDFLY_100,
-				IJBossToolingConstants.SERVER_WILDFLY_110,
-				IJBossToolingConstants.SERVER_WILDFLY_120,
-				IJBossToolingConstants.SERVER_WILDFLY_130,
-				IJBossToolingConstants.SERVER_WILDFLY_140,
-				IJBossToolingConstants.SERVER_WILDFLY_150,
-				IJBossToolingConstants.SERVER_WILDFLY_160,
-				IJBossToolingConstants.SERVER_WILDFLY_170,
-				IJBossToolingConstants.SERVER_WILDFLY_180,
-				IJBossToolingConstants.SERVER_WILDFLY_190,
-				IJBossToolingConstants.SERVER_WILDFLY_200,
-				IJBossToolingConstants.SERVER_EAP_60,
-				IJBossToolingConstants.SERVER_EAP_61,
-				IJBossToolingConstants.SERVER_EAP_70,
-				IJBossToolingConstants.SERVER_EAP_71,
-				IJBossToolingConstants.SERVER_EAP_72,
-				IJBossToolingConstants.SERVER_EAP_73
 				//NEW_SERVER_ADAPTER 
+				IJBossToolingConstants.SERVER_WILDFLY_210,
+				IJBossToolingConstants.SERVER_WILDFLY_200,
+				IJBossToolingConstants.SERVER_WILDFLY_190,
+				IJBossToolingConstants.SERVER_EAP_73,
+				IJBossToolingConstants.SERVER_EAP_72,
+				IJBossToolingConstants.SERVER_EAP_71,
+				IJBossToolingConstants.SERVER_EAP_70,
+				IJBossToolingConstants.SERVER_WILDFLY_180,
+				IJBossToolingConstants.SERVER_WILDFLY_170,
+				IJBossToolingConstants.SERVER_WILDFLY_160,
+				IJBossToolingConstants.SERVER_WILDFLY_150,
+				IJBossToolingConstants.SERVER_WILDFLY_140,
+				IJBossToolingConstants.SERVER_WILDFLY_130,
+				IJBossToolingConstants.SERVER_WILDFLY_120,
+				IJBossToolingConstants.SERVER_WILDFLY_110,
+				IJBossToolingConstants.SERVER_WILDFLY_100,
+				IJBossToolingConstants.SERVER_WILDFLY_90,
+				IJBossToolingConstants.SERVER_WILDFLY_80,
+				IJBossToolingConstants.SERVER_EAP_61,
+				IJBossToolingConstants.SERVER_EAP_60,
+				IJBossToolingConstants.SERVER_AS_71,
+				IJBossToolingConstants.SERVER_AS_70
 		};
 		String[] as7Modes = new String[]{"local", "rse", null, "local.mgmt", "rse.mgmt"};
 		ret.addAll(MatrixUtils.toMatrix(new Object[][]{as7Servers, as7Modes, getSubsystemsForJBossServers()}));

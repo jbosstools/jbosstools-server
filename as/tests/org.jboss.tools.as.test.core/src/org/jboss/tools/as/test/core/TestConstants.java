@@ -39,7 +39,6 @@ public class TestConstants {
 	public static final String JBOSS_WF_170_HOME = System.getProperty("jbosstools.test.jboss.home.17.0", "C:\\apps\\jboss\\jboss-wildfly-17.0.0.GA\\");
 	public static final String JBOSS_WF_180_HOME = System.getProperty("jbosstools.test.jboss.home.18.0", "C:\\apps\\jboss\\jboss-wildfly-18.0.0.GA\\");
 	public static final String JBOSS_WF_190_HOME = System.getProperty("jbosstools.test.jboss.home.19.0", "C:\\apps\\jboss\\jboss-wildfly-19.0.0.GA\\");
-	public static final String JBOSS_WF_200_HOME = System.getProperty("jbosstools.test.jboss.home.20.0", "C:\\apps\\jboss\\jboss-wildfly-20.0.0.GA\\");
 	public static final String JBOSS_EAP_43_HOME = System.getProperty("jbosstools.test.jboss.home.eap.4.3", "C:\\apps\\jboss\\jboss-eap-4.3.0.GA\\");
 	public static final String JBOSS_EAP_50_HOME = System.getProperty("jbosstools.test.jboss.home.eap.5.0", "C:\\apps\\jboss\\jboss-eap-5.0.0.GA\\");
 	public static final String JBOSS_EAP_60_HOME = System.getProperty("jbosstools.test.jboss.home.eap.6.0", "C:\\apps\\jboss\\jboss-eap-6.0.0.GA\\");
@@ -50,7 +49,9 @@ public class TestConstants {
 	public static final String JBOSS_EAP_71_HOME = System.getProperty("jbosstools.test.jboss.home.eap.7.1", "C:\\apps\\jboss\\jboss-eap-7.1.0.GA\\");
 	public static final String JBOSS_EAP_72_HOME = System.getProperty("jbosstools.test.jboss.home.eap.7.2", "C:\\apps\\jboss\\jboss-eap-7.2.0.GA\\");
 	public static final String JBOSS_EAP_73_HOME = System.getProperty("jbosstools.test.jboss.home.eap.7.3", "C:\\apps\\jboss\\jboss-eap-7.3.0.GA\\");
-		// NEW_SERVER_ADAPTER
+	public static final String JBOSS_WF_200_HOME = System.getProperty("jbosstools.test.jboss.home.20.0", "C:\\apps\\jboss\\jboss-wildfly-20.0.0.GA\\");
+	public static final String JBOSS_WF_210_HOME = System.getProperty("jbosstools.test.jboss.home.21.0", "C:\\apps\\jboss\\jboss-wildfly-21.0.0.GA\\");
+	// NEW_SERVER_ADAPTER
 
 	public static final String JRE_8_HOME = System.getProperty("jbosstools.test.jre.8", "C:\\apps\\java\\jre8.0\\");
 
@@ -78,7 +79,6 @@ public class TestConstants {
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_WILDFLY_170, JBOSS_WF_170_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_WILDFLY_180, JBOSS_WF_180_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_WILDFLY_190, JBOSS_WF_190_HOME);
-		serverTypeToHome.put(IJBossToolingConstants.SERVER_WILDFLY_200, JBOSS_WF_200_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_43, JBOSS_EAP_43_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_50, JBOSS_EAP_50_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_60, JBOSS_EAP_60_HOME);
@@ -87,6 +87,7 @@ public class TestConstants {
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_71, JBOSS_EAP_71_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_72, JBOSS_EAP_72_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_73, JBOSS_EAP_73_HOME);
+		serverTypeToHome.put(IJBossToolingConstants.SERVER_WILDFLY_210, JBOSS_WF_210_HOME);
 		// NEW_SERVER_ADAPTER
 	}
 	

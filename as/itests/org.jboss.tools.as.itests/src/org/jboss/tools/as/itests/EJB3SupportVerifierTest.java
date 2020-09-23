@@ -52,36 +52,38 @@ public class EJB3SupportVerifierTest extends TestCase {
 	static {
 		expected = new HashMap<String, Boolean>();
 		expected.put(IJBossToolingConstants.DEPLOY_ONLY_SERVER, false);
-		expected.put(IJBossToolingConstants.SERVER_AS_32, false);
-		expected.put(IJBossToolingConstants.SERVER_AS_40, false);
-		expected.put(IJBossToolingConstants.SERVER_AS_42, true);
-		expected.put(IJBossToolingConstants.SERVER_AS_50, true);
-		expected.put(IJBossToolingConstants.SERVER_AS_51, true);
-		expected.put(IJBossToolingConstants.SERVER_AS_60, true);
-		expected.put(IJBossToolingConstants.SERVER_AS_70, true);
-		expected.put(IJBossToolingConstants.SERVER_AS_71, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_80, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_90, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_100, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_110, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_120, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_130, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_140, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_150, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_160, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_170, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_180, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_200, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_190, true);
-		expected.put(IJBossToolingConstants.SERVER_EAP_43, true);
-		expected.put(IJBossToolingConstants.SERVER_EAP_50, true);
-		expected.put(IJBossToolingConstants.SERVER_EAP_60, true);
-		expected.put(IJBossToolingConstants.SERVER_EAP_61, true);
-		expected.put(IJBossToolingConstants.SERVER_EAP_70, true);
+		// NEW_SERVER_ADAPTER
+
+		expected.put(IJBossToolingConstants.SERVER_WILDFLY_210, true);
 		expected.put(IJBossToolingConstants.SERVER_EAP_71, true);
 		expected.put(IJBossToolingConstants.SERVER_EAP_72, true);
 		expected.put(IJBossToolingConstants.SERVER_EAP_73, true);
-		// NEW_SERVER_ADAPTER
+		expected.put(IJBossToolingConstants.SERVER_WILDFLY_200, true);
+		expected.put(IJBossToolingConstants.SERVER_WILDFLY_190, true);
+		expected.put(IJBossToolingConstants.SERVER_WILDFLY_180, true);
+		expected.put(IJBossToolingConstants.SERVER_WILDFLY_170, true);
+		expected.put(IJBossToolingConstants.SERVER_WILDFLY_160, true);
+		expected.put(IJBossToolingConstants.SERVER_WILDFLY_150, true);
+		expected.put(IJBossToolingConstants.SERVER_WILDFLY_140, true);
+		expected.put(IJBossToolingConstants.SERVER_EAP_70, true);
+		expected.put(IJBossToolingConstants.SERVER_EAP_61, true);
+		expected.put(IJBossToolingConstants.SERVER_EAP_60, true);
+		expected.put(IJBossToolingConstants.SERVER_EAP_50, true);
+		expected.put(IJBossToolingConstants.SERVER_EAP_43, true);
+		expected.put(IJBossToolingConstants.SERVER_WILDFLY_130, true);
+		expected.put(IJBossToolingConstants.SERVER_WILDFLY_120, true);
+		expected.put(IJBossToolingConstants.SERVER_WILDFLY_110, true);
+		expected.put(IJBossToolingConstants.SERVER_WILDFLY_100, true);
+		expected.put(IJBossToolingConstants.SERVER_WILDFLY_90, true);
+		expected.put(IJBossToolingConstants.SERVER_WILDFLY_80, true);
+		expected.put(IJBossToolingConstants.SERVER_AS_71, true);
+		expected.put(IJBossToolingConstants.SERVER_AS_70, true);
+		expected.put(IJBossToolingConstants.SERVER_AS_60, true);
+		expected.put(IJBossToolingConstants.SERVER_AS_51, true);
+		expected.put(IJBossToolingConstants.SERVER_AS_50, true);
+		expected.put(IJBossToolingConstants.SERVER_AS_42, true);
+		expected.put(IJBossToolingConstants.SERVER_AS_40, false);
+		expected.put(IJBossToolingConstants.SERVER_AS_32, false);
 	}
 	 
 	public EJB3SupportVerifierTest(String serverType) {

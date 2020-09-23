@@ -169,8 +169,9 @@ public class EJB3ClasspathContainer
                 case WILDFLY_160:
                 case WILDFLY_170:
                 case WILDFLY_180:
-                             case WILDFLY_190:
-                             case WILDFLY_200:
+                case WILDFLY_190:
+                case WILDFLY_200:
+                case WILDFLY_210:
 				case EAP_61:
 				case EAP_70:
 				case EAP_71:

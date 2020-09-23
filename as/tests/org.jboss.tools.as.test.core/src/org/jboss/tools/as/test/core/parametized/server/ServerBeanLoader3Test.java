@@ -82,7 +82,7 @@ public class ServerBeanLoader3Test extends TestCase {
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_100, new Data(JBossServerType.WILDFLY100, "10.0"));
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_110, new Data(JBossServerType.WILDFLY110, "11.0"));
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_120, new Data(JBossServerType.WILDFLY120, "12.0"));
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_130, new Data(JBossServerType.WILDFLY130, "13.0"));
+		expected.put(IJBossToolingConstants.SERVER_WILDFLY_210, new Data(JBossServerType.WILDFLY210, "21.0"));
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_130, new Data(JBossServerType.WILDFLY130, "13.0"));
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_140, new Data(JBossServerType.WILDFLY140, "14.0"));
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_150, new Data(JBossServerType.WILDFLY150, "15.0"));
