@@ -17,6 +17,8 @@ package org.jboss.ide.eclipse.as.core.util;
 public interface IJBossToolingConstants {
 	/* Server runtime types */
 	public static final String WILDFLY_130 = "org.jboss.ide.eclipse.as.runtime.wildfly.130"; //-NLS-1$
+	public static final String WILDFLY_210 = "org.jboss.ide.eclipse.as.runtime.wildfly.210"; //-NLS-1$
+	public static final String SERVER_WILDFLY_210 = "org.jboss.ide.eclipse.as.wildfly.210"; //-NLS-1$
 	public static final String WILDFLY_200 = "org.jboss.ide.eclipse.as.runtime.wildfly.200"; //-NLS-1$
 	public static final String SERVER_WILDFLY_200 = "org.jboss.ide.eclipse.as.wildfly.200"; //-NLS-1$
 	public static final String SERVER_WILDFLY_130 = "org.jboss.ide.eclipse.as.wildfly.130"; //-NLS-1$
@@ -96,7 +98,7 @@ public interface IJBossToolingConstants {
 		SERVER_WILDFLY_80,SERVER_WILDFLY_90,SERVER_WILDFLY_100,SERVER_WILDFLY_110,
 		SERVER_WILDFLY_120,SERVER_WILDFLY_130,SERVER_WILDFLY_140,SERVER_WILDFLY_150,
 		SERVER_WILDFLY_160,SERVER_WILDFLY_170,SERVER_WILDFLY_180,SERVER_WILDFLY_190,
-		SERVER_WILDFLY_200,
+		SERVER_WILDFLY_200,SERVER_WILDFLY_210,
 		SERVER_EAP_43,SERVER_EAP_50,SERVER_EAP_60, SERVER_EAP_61, 
 		SERVER_EAP_70, SERVER_EAP_71, SERVER_EAP_72, SERVER_EAP_73
 	};

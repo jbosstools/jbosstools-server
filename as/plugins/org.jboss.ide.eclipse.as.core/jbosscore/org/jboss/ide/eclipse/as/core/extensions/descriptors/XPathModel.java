@@ -282,6 +282,25 @@ public class XPathModel extends UnitedServerListener {
 	private static final String BASEDIR_SUFFIX = "_BASEDIR";//$NON-NLS-1$
 
 	static {
+		// TODO NEW_SERVER_ADAPTER Add the new server ID to port mapping file above this line 
+
+		rtToPortsFile.put(IConstants.EAP_71, getURLFor(DEFAULT_PROPS_80));
+		rtToPortsFile.put(IConstants.EAP_72, getURLFor(DEFAULT_PROPS_80));
+		rtToPortsFile.put(IConstants.EAP_73, getURLFor(DEFAULT_PROPS_80));
+		rtToPortsFile.put(IConstants.WILDFLY_210, getURLFor(DEFAULT_PROPS_80));
+		rtToPortsFile.put(IConstants.WILDFLY_200, getURLFor(DEFAULT_PROPS_80));
+		rtToPortsFile.put(IConstants.WILDFLY_190, getURLFor(DEFAULT_PROPS_80));
+		rtToPortsFile.put(IConstants.WILDFLY_180, getURLFor(DEFAULT_PROPS_80));
+		rtToPortsFile.put(IConstants.WILDFLY_170, getURLFor(DEFAULT_PROPS_80));
+		rtToPortsFile.put(IConstants.WILDFLY_160, getURLFor(DEFAULT_PROPS_80));
+		rtToPortsFile.put(IConstants.WILDFLY_150, getURLFor(DEFAULT_PROPS_80));
+		rtToPortsFile.put(IConstants.WILDFLY_140, getURLFor(DEFAULT_PROPS_80));
+		rtToPortsFile.put(IConstants.WILDFLY_130, getURLFor(DEFAULT_PROPS_80));
+		rtToPortsFile.put(IConstants.WILDFLY_120, getURLFor(DEFAULT_PROPS_80));
+		rtToPortsFile.put(IConstants.WILDFLY_110, getURLFor(DEFAULT_PROPS_80));
+		rtToPortsFile.put(IConstants.WILDFLY_100, getURLFor(DEFAULT_PROPS_80));
+		rtToPortsFile.put(IConstants.WILDFLY_90, getURLFor(DEFAULT_PROPS_80));
+		rtToPortsFile.put(IConstants.WILDFLY_80, getURLFor(DEFAULT_PROPS_80));
 		rtToPortsFile = new HashMap<String, URL>();
 		rtToPortsFile.put(IConstants.AS_32, getURLFor(DEFAULT_PROPS_32));
 		rtToPortsFile.put(IConstants.AS_40, getURLFor(DEFAULT_PROPS_40));
@@ -296,23 +315,6 @@ public class XPathModel extends UnitedServerListener {
 		rtToPortsFile.put(IConstants.EAP_60, getURLFor(DEFAULT_PROPS_71));
 		rtToPortsFile.put(IConstants.EAP_61, getURLFor(DEFAULT_PROPS_71));
 		rtToPortsFile.put(IConstants.EAP_70, getURLFor(DEFAULT_PROPS_80));
-		rtToPortsFile.put(IConstants.EAP_71, getURLFor(DEFAULT_PROPS_80));
-		rtToPortsFile.put(IConstants.EAP_72, getURLFor(DEFAULT_PROPS_80));
-		rtToPortsFile.put(IConstants.EAP_73, getURLFor(DEFAULT_PROPS_80));
-		rtToPortsFile.put(IConstants.WILDFLY_80, getURLFor(DEFAULT_PROPS_80));
-		rtToPortsFile.put(IConstants.WILDFLY_90, getURLFor(DEFAULT_PROPS_80));
-		rtToPortsFile.put(IConstants.WILDFLY_100, getURLFor(DEFAULT_PROPS_80));
-		rtToPortsFile.put(IConstants.WILDFLY_200, getURLFor(DEFAULT_PROPS_80));
-		rtToPortsFile.put(IConstants.WILDFLY_190, getURLFor(DEFAULT_PROPS_80));
-		rtToPortsFile.put(IConstants.WILDFLY_110, getURLFor(DEFAULT_PROPS_80));
-		rtToPortsFile.put(IConstants.WILDFLY_120, getURLFor(DEFAULT_PROPS_80));
-		rtToPortsFile.put(IConstants.WILDFLY_130, getURLFor(DEFAULT_PROPS_80));
-		rtToPortsFile.put(IConstants.WILDFLY_140, getURLFor(DEFAULT_PROPS_80));
-		rtToPortsFile.put(IConstants.WILDFLY_150, getURLFor(DEFAULT_PROPS_80));
-		rtToPortsFile.put(IConstants.WILDFLY_160, getURLFor(DEFAULT_PROPS_80));
-		rtToPortsFile.put(IConstants.WILDFLY_170, getURLFor(DEFAULT_PROPS_80));
-		rtToPortsFile.put(IConstants.WILDFLY_180, getURLFor(DEFAULT_PROPS_80));
-		// TODO NEW_SERVER_ADAPTER Add the new server ID to port mapping file above this line 
 	}
 	
 	/**
