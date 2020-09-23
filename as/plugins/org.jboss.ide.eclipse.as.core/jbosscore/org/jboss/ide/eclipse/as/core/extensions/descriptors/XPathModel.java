@@ -283,6 +283,7 @@ public class XPathModel extends UnitedServerListener {
 
 	static {
 		// TODO NEW_SERVER_ADAPTER Add the new server ID to port mapping file above this line 
+		rtToPortsFile = new HashMap<String, URL>();
 
 		rtToPortsFile.put(IConstants.EAP_71, getURLFor(DEFAULT_PROPS_80));
 		rtToPortsFile.put(IConstants.EAP_72, getURLFor(DEFAULT_PROPS_80));
@@ -301,7 +302,6 @@ public class XPathModel extends UnitedServerListener {
 		rtToPortsFile.put(IConstants.WILDFLY_100, getURLFor(DEFAULT_PROPS_80));
 		rtToPortsFile.put(IConstants.WILDFLY_90, getURLFor(DEFAULT_PROPS_80));
 		rtToPortsFile.put(IConstants.WILDFLY_80, getURLFor(DEFAULT_PROPS_80));
-		rtToPortsFile = new HashMap<String, URL>();
 		rtToPortsFile.put(IConstants.AS_32, getURLFor(DEFAULT_PROPS_32));
 		rtToPortsFile.put(IConstants.AS_40, getURLFor(DEFAULT_PROPS_40));
 		rtToPortsFile.put(IConstants.AS_42, getURLFor(DEFAULT_PROPS_42));
