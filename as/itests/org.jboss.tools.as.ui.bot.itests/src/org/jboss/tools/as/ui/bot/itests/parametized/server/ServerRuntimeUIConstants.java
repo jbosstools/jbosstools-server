@@ -59,6 +59,7 @@ public class ServerRuntimeUIConstants {
 	public static final String WF_18_0_0 = "WildFly 18.0.0 Final";
 	public static final String WF_19_0_0 = "WildFly 19.0.0 Final";
 	public static final String WF_20_0_0 = "WildFly 20.0.0 Final";
+	public static final String WF_21_0_0 = "WildFly 21.0.0 Final";
 
 	// Requires credentials
 	// public static final String JBEAP_610 = "JBoss EAP 6.1.0";
@@ -79,11 +80,11 @@ public class ServerRuntimeUIConstants {
 
 	
 	public static final String[] LATEST_MAJORS_FREE_DOWNLOADS = new String[] {
-			WF_19_0_0, WF_20_0_0};
+			WF_19_0_0, WF_20_0_0, WF_21_0_0};
 
 	
 	public static final String[] FREE_DOWNLOADS = new String[] {
-			WF_19_0_0, WF_20_0_0}; // 
+			WF_19_0_0, WF_20_0_0, WF_21_0_0}; // 
 
 //	public static final String[] MANUAL_DOWNLOAD = new String[]{JPP_600,JBEAP_600, JBEAP_601};
 
@@ -93,7 +94,7 @@ public class ServerRuntimeUIConstants {
 	public static final String[] ALL_DOWNLOADS = Stream
 			.concat(Arrays.stream(FREE_DOWNLOADS), Arrays.stream(ZERO_DOLLAR)).toArray(String[]::new);
 
-	public static final String[] SMOKETEST_DOWNLOADS = new String[] { JBEAP_730, WF_20_0_0};
+	public static final String[] SMOKETEST_DOWNLOADS = new String[] { JBEAP_730, WF_20_0_0, WF_21_0_0};
 
 	private static HashMap<String, ModelWrapper> expectations = null;
 
@@ -136,6 +137,7 @@ public class ServerRuntimeUIConstants {
 		addEntry(WF_18_0_0, 	"WildFly 18.0",			"18.0", "WildFly", 	"wildfly-18.0.0.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(WF_19_0_0, 	"WildFly 19.0",			"19.0", "WildFly", 	"wildfly-19.0.0.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(WF_20_0_0, 	"WildFly 20.0",			"20.0", "WildFly", 	"wildfly-20.0.0.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
+		addEntry(WF_21_0_0, 	"WildFly 21.0",			"21.0", "WildFly", 	"wildfly-21.0.0.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(JBEAP_610, 	"Red Hat JBoss EAP 6.1", "6.1",	"EAP", 		"jboss-eap-6.1", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, as7EditorPorts());
 		addEntry(JBEAP_620, 	"Red Hat JBoss EAP 6.2", "6.2",	"EAP", 		"jboss-eap-6.2", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, as7EditorPorts());
 		addEntry(JBEAP_630, 	"Red Hat JBoss EAP 6.3", "6.3",	"EAP",		"jboss-eap-6.3", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, as7EditorPorts());
