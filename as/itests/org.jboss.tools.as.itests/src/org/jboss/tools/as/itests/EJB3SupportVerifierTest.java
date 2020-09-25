@@ -53,7 +53,7 @@ public class EJB3SupportVerifierTest extends TestCase {
 		expected = new HashMap<String, Boolean>();
 		expected.put(IJBossToolingConstants.DEPLOY_ONLY_SERVER, false);
 		// NEW_SERVER_ADAPTER
-
+		// AUTOGEN_SERVER_ADAPTER_CHUNK
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_210, true);
 		expected.put(IJBossToolingConstants.SERVER_EAP_71, true);
 		expected.put(IJBossToolingConstants.SERVER_EAP_72, true);

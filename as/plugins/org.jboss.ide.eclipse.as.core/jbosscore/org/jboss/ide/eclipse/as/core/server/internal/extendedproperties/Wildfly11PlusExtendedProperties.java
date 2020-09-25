@@ -16,13 +16,16 @@ import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 
-public class Wildfly130ExtendedProperties extends JBossAS710ExtendedProperties {
-	public Wildfly130ExtendedProperties(IAdaptable obj) {
+public class Wildfly11PlusExtendedProperties extends JBossAS710ExtendedProperties {
+	private String rtVersionString;
+
+	public Wildfly11PlusExtendedProperties(IAdaptable obj, String rtVersionString) {
 		super(obj);
+		this.rtVersionString = rtVersionString;
 	}
 	@Override
 	public String getRuntimeTypeVersionString() {
-		return "13.0"; //$NON-NLS-1$
+		return rtVersionString;
 	}
 	
 	@Override
@@ -60,5 +63,14 @@ public class Wildfly130ExtendedProperties extends JBossAS710ExtendedProperties {
 	@Override
 	public boolean allowExplodedModulesInEars() {
 		return true;
+	}
+	
+
+	/**
+	 * Wildfly 11 appears to work through java 9 to varying degrees
+	 */
+	@Override
+	public IExecutionEnvironment getMaximumExecutionEnvironment() {
+		return null;
 	}
 }

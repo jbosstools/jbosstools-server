@@ -34,40 +34,40 @@ public class JBossServerType extends ServerBeanType implements IJBossToolingCons
 	public static final JBossServerType WILDFLY80 = new ServerBeanTypeWildfly80();
 	public static final JBossServerType WILDFLY90 = new ServerBeanTypeWildfly90();
 	public static final JBossServerType WILDFLY90_WEB = new ServerBeanTypeWildfly90Web();
-	public static final JBossServerType WILDFLY100 = new ServerBeanTypeWildfly100();
-	public static final JBossServerType WILDFLY100_WEB = new ServerBeanTypeWildfly100Web();
-	public static final JBossServerType WILDFLY110 = new ServerBeanTypeWildfly110();
-	public static final JBossServerType WILDFLY110_WEB = new ServerBeanTypeWildfly110Web();
-	public static final JBossServerType WILDFLY120 = new ServerBeanTypeWildfly120();
-	public static final JBossServerType WILDFLY120_WEB = new ServerBeanTypeWildfly120Web();
+	public static final JBossServerType WILDFLY100 = new ServerBeanTypeWildfly10Plus("10.0", IJBossToolingConstants.SERVER_WILDFLY_100);
+	public static final JBossServerType WILDFLY100_WEB = new ServerBeanTypeWildfly10PlusWeb("10.0", IJBossToolingConstants.SERVER_WILDFLY_100);
+	public static final JBossServerType WILDFLY110 = new ServerBeanTypeWildfly10Plus("11.0", IJBossToolingConstants.SERVER_WILDFLY_110);
+	public static final JBossServerType WILDFLY110_WEB = new ServerBeanTypeWildfly10PlusWeb("11.0", IJBossToolingConstants.SERVER_WILDFLY_110);
+	public static final JBossServerType WILDFLY120 = new ServerBeanTypeWildfly10Plus("12.0", IJBossToolingConstants.SERVER_WILDFLY_120);
+	public static final JBossServerType WILDFLY120_WEB = new ServerBeanTypeWildfly10PlusWeb("12.0", IJBossToolingConstants.SERVER_WILDFLY_120);
+	public static final JBossServerType WILDFLY130 = new ServerBeanTypeWildfly10Plus("13.0", IJBossToolingConstants.SERVER_WILDFLY_130);
+	public static final JBossServerType WILDFLY130_WEB = new ServerBeanTypeWildfly10PlusWeb("13.0", IJBossToolingConstants.SERVER_WILDFLY_130);
+	public static final JBossServerType WILDFLY140 = new ServerBeanTypeWildfly10Plus("14.0", IJBossToolingConstants.SERVER_WILDFLY_140);
+	public static final JBossServerType WILDFLY140_WEB = new ServerBeanTypeWildfly10PlusWeb("14.0", IJBossToolingConstants.SERVER_WILDFLY_140);
+	public static final JBossServerType WILDFLY150 = new ServerBeanTypeWildfly10Plus("15.0", IJBossToolingConstants.SERVER_WILDFLY_150);
+	public static final JBossServerType WILDFLY150_WEB = new ServerBeanTypeWildfly10PlusWeb("15.0", IJBossToolingConstants.SERVER_WILDFLY_150);
+	public static final JBossServerType WILDFLY160 = new ServerBeanTypeWildfly10Plus("16.0", IJBossToolingConstants.SERVER_WILDFLY_160);
+	public static final JBossServerType WILDFLY160_WEB = new ServerBeanTypeWildfly10PlusWeb("16.0", IJBossToolingConstants.SERVER_WILDFLY_160);
+	public static final JBossServerType WILDFLY170 = new ServerBeanTypeWildfly10Plus("17.0", IJBossToolingConstants.SERVER_WILDFLY_170);
+	public static final JBossServerType WILDFLY170_WEB = new ServerBeanTypeWildfly10PlusWeb("17.0", IJBossToolingConstants.SERVER_WILDFLY_170);
+	public static final JBossServerType WILDFLY180 = new ServerBeanTypeWildfly10Plus("18.0", IJBossToolingConstants.SERVER_WILDFLY_180);
+	public static final JBossServerType WILDFLY180_WEB = new ServerBeanTypeWildfly10PlusWeb("18.0", IJBossToolingConstants.SERVER_WILDFLY_180);
+	public static final JBossServerType WILDFLY190 = new ServerBeanTypeWildfly10Plus("19.0", IJBossToolingConstants.SERVER_WILDFLY_190, "main");
+	public static final JBossServerType WILDFLY190_WEB = new ServerBeanTypeWildfly10PlusWeb("19.0", IJBossToolingConstants.SERVER_WILDFLY_190);
+	public static final JBossServerType WILDFLY200 = new ServerBeanTypeWildfly10Plus("20.0", IJBossToolingConstants.SERVER_WILDFLY_200, "main");
+	public static final JBossServerType WILDFLY200_WEB = new ServerBeanTypeWildfly10PlusWeb("20.0", IJBossToolingConstants.SERVER_WILDFLY_200);
+	public static final JBossServerType WILDFLY210 = new ServerBeanTypeWildfly10Plus("21.0", IJBossToolingConstants.SERVER_WILDFLY_210, "main");
+	public static final JBossServerType WILDFLY210_WEB = new ServerBeanTypeWildfly10PlusWeb("21.0", IJBossToolingConstants.SERVER_WILDFLY_210);
+
+	public static final JBossServerType EAP70 = new ServerBeanTypeEAP7Plus("7.0", IJBossToolingConstants.SERVER_EAP_70);
+	public static final JBossServerType EAP71 = new ServerBeanTypeEAP7Plus("7.1", IJBossToolingConstants.SERVER_EAP_71);
+	public static final JBossServerType EAP72 = new ServerBeanTypeEAP7Plus("7.2", IJBossToolingConstants.SERVER_EAP_72);
+	public static final JBossServerType EAP73 = new ServerBeanTypeEAP7Plus("7.3", IJBossToolingConstants.SERVER_EAP_73);
+	// AUTOGEN_SERVER_ADAPTER_CHUNK
 
 
 
 
-	public static final JBossServerType WILDFLY130 = new ServerBeanTypeWildfly130();
-	public static final JBossServerType WILDFLY130_WEB = new ServerBeanTypeWildfly130Web();
-	public static final JBossServerType WILDFLY140 = new ServerBeanTypeWildfly140();
-	public static final JBossServerType WILDFLY140_WEB = new ServerBeanTypeWildfly140Web();
-	public static final JBossServerType WILDFLY150 = new ServerBeanTypeWildfly150();
-	public static final JBossServerType WILDFLY150_WEB = new ServerBeanTypeWildfly150Web();
-	public static final JBossServerType WILDFLY160 = new ServerBeanTypeWildfly160();
-	public static final JBossServerType WILDFLY160_WEB = new ServerBeanTypeWildfly160Web();
-	public static final JBossServerType WILDFLY170 = new ServerBeanTypeWildfly170();
-	public static final JBossServerType WILDFLY170_WEB = new ServerBeanTypeWildfly170Web();
-	public static final JBossServerType WILDFLY180 = new ServerBeanTypeWildfly180();
-	public static final JBossServerType WILDFLY180_WEB = new ServerBeanTypeWildfly180Web();
-	public static final JBossServerType WILDFLY190 = new ServerBeanTypeWildfly190();
-	public static final JBossServerType WILDFLY190_WEB = new ServerBeanTypeWildfly190Web();
-	public static final JBossServerType WILDFLY200 = new ServerBeanTypeWildfly200();
-	public static final JBossServerType WILDFLY200_WEB = new ServerBeanTypeWildfly200Web();
-	public static final JBossServerType WILDFLY210 = new ServerBeanTypeWildfly210();
-	public static final JBossServerType WILDFLY210_WEB = new ServerBeanTypeWildfly210Web();
-
-	public static final JBossServerType EAP70 = new ServerBeanTypeEAP70();
-	public static final JBossServerType EAP71 = new ServerBeanTypeEAP71();
-	public static final JBossServerType EAP72 = new ServerBeanTypeEAP72();
-	public static final JBossServerType EAP73 = new ServerBeanTypeEAP73();
-	
 	public static final JBossServerType JPP6 = new ServerBeanTypeJPP6();
 	
 	/**
@@ -101,6 +101,7 @@ public class JBossServerType extends ServerBeanType implements IJBossToolingCons
 		JBossServerType.EAP71,
 		JBossServerType.EAP72,
 		JBossServerType.EAP73,
+		// AUTOGEN_SERVER_ADAPTER_CHUNK
 		JBossServerType.WILDFLY90, 
 		JBossServerType.WILDFLY90_WEB,
 		JBossServerType.WILDFLY100,
@@ -118,6 +119,10 @@ public class JBossServerType extends ServerBeanType implements IJBossToolingCons
 		JBossServerType.WILDFLY190,JBossServerType.WILDFLY190_WEB,
 		JBossServerType.WILDFLY200,JBossServerType.WILDFLY200_WEB,
 		JBossServerType.WILDFLY210,JBossServerType.WILDFLY210_WEB,
+		// AUTOGEN_SERVER_ADAPTER_CHUNK
+
+
+
 		JBossServerType.WILDFLY80, 
 		JBossServerType.FSW6,
 		JBossServerType.EAP61,

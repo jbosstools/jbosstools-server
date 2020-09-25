@@ -101,7 +101,7 @@
 
 
     <!-- jboss-modules style servers -->
-	
+	<!-- AUTOGEN_SERVER_ADAPTER_CHUNK -->
 	<adapter>
       <runtime-component
             id="org.jboss.ide.eclipse.as.runtime.wildfly.component" version="21.0"/>

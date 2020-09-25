@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.jboss.tools.as.test.core.subsystems;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -54,30 +56,20 @@ public class DefaultPollerResolutionTest extends TestCase {
 		String[] modes = new String[]{"local", "rse", null};
 		Collection<Object[]> ret = MatrixUtils.toMatrix(new Object[][]{allServers, modes});
 		
-		String[] as7Servers = new String[]{
-				//NEW_SERVER_ADAPTER 
-				IJBossToolingConstants.SERVER_WILDFLY_200,
-				IJBossToolingConstants.SERVER_WILDFLY_190,
-				IJBossToolingConstants.SERVER_EAP_73,
-				IJBossToolingConstants.SERVER_EAP_72,
-				IJBossToolingConstants.SERVER_WILDFLY_180,
-				IJBossToolingConstants.SERVER_WILDFLY_170,
-				IJBossToolingConstants.SERVER_WILDFLY_160,
-				IJBossToolingConstants.SERVER_WILDFLY_150,
-				IJBossToolingConstants.SERVER_WILDFLY_140,
-				IJBossToolingConstants.SERVER_WILDFLY_130,
-				IJBossToolingConstants.SERVER_WILDFLY_120,
-				IJBossToolingConstants.SERVER_WILDFLY_110,
-				IJBossToolingConstants.SERVER_WILDFLY_100,
-				IJBossToolingConstants.SERVER_WILDFLY_90,
-				IJBossToolingConstants.SERVER_WILDFLY_80,
-				IJBossToolingConstants.SERVER_EAP_71,
-				IJBossToolingConstants.SERVER_EAP_70,
-				IJBossToolingConstants.SERVER_AS_71,
-				IJBossToolingConstants.SERVER_AS_70,
-				IJBossToolingConstants.SERVER_EAP_61,
-				IJBossToolingConstants.SERVER_EAP_60
-		};
+		String[] EXCLUDED = new String[] {
+				IJBossToolingConstants.SERVER_AS_32,
+				IJBossToolingConstants.SERVER_AS_40,
+				IJBossToolingConstants.SERVER_AS_42,
+				IJBossToolingConstants.SERVER_AS_50,
+				IJBossToolingConstants.SERVER_AS_51,
+				IJBossToolingConstants.SERVER_AS_60,
+				IJBossToolingConstants.SERVER_EAP_43,
+				IJBossToolingConstants.SERVER_EAP_50
+			};
+
+		ArrayList<String> toTest = new ArrayList<String>(Arrays.asList(IJBossToolingConstants.ALL_JBOSS_SERVERS));
+		toTest.removeAll(Arrays.asList(EXCLUDED));
+		String[] as7Servers = (String[]) toTest.toArray(new String[toTest.size()]);
 		String[] as7Modes = new String[]{"local.mgmt", "rse.mgmt"};
 		ret.addAll(MatrixUtils.toMatrix(new Object[][]{as7Servers, as7Modes}));
 		return ret;

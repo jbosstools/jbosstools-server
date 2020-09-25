@@ -12,44 +12,54 @@ package org.jboss.ide.eclipse.as.core.server.bean;
 
 import java.io.File;
 
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-
-public class ServerBeanTypeWildfly140Web extends JBossServerType {
+public class ServerBeanTypeWildfly10Plus extends JBossServerType {
 	private static final String WF_100_RELEASE_MANIFEST_KEY = "JBoss-Product-Release-Version"; //$NON-NLS-1$
-	public ServerBeanTypeWildfly140Web() {
+	public ServerBeanTypeWildfly10Plus(String version4Char, String serverTypeId) {
+		this(version4Char, serverTypeId, "wildfly-full");
+	}
+	public ServerBeanTypeWildfly10Plus(String version4Char, String serverTypeId, String productFolder) {
 		super(
-				"WildFly-Web", //$NON-NLS-1$
+				"WildFly", //$NON-NLS-1$
 				"WildFly Application Server", //$NON-NLS-1$
 				asPath("modules","system","layers","base",
 						"org","jboss","as","server","main"),
-				new String[]{"14.0"}, new Wildfly100WebServerTypeCondition());
+				new String[]{version4Char}, 
+				new ServerBeanTypeWildfly10PlusCondition(version4Char, serverTypeId, productFolder));
 	}
-	
-	@Override
 	protected String getServerTypeBaseName() {
 		return getId();
 	}
 	
-	public static class Wildfly100WebServerTypeCondition extends AbstractCondition {
+	public static class ServerBeanTypeWildfly10PlusCondition extends AbstractCondition {
 		
+		private String version4Char;
+		private String serverTypeId;
+		private String productFolder;
+		public ServerBeanTypeWildfly10PlusCondition(String version4Char, 
+				String serverTypeId, String productFolder) {
+			this.version4Char = version4Char;
+			this.serverTypeId = serverTypeId;
+			this.productFolder = productFolder;
+		}
+
+
 		@Override
 		public String getFullVersion(File location, File systemFile) {
 			String vers = ServerBeanType.getManifestPropFromJBossModulesFolder(new File[]{new File(location, "modules")}, 
-					"org.jboss.as.product", "wildfly-web/dir/META-INF", WF_100_RELEASE_MANIFEST_KEY);
-			if( vers != null && vers.startsWith("14.")) {
+					"org.jboss.as.product", productFolder + "/dir/META-INF", WF_100_RELEASE_MANIFEST_KEY);
+			if( vers != null && vers.startsWith(version4Char.substring(0,3))) {
 				return vers;
 			}
 			return null;
 		}
 
-		@Override
+		
 		public boolean isServerRoot(File location) {
 			return getFullVersion(location, null) != null;
 		}
 		
-		@Override
 		public String getServerTypeId(String version) {	
-			return IJBossToolingConstants.SERVER_WILDFLY_140;
+			return serverTypeId;
 		}
 	}
 }

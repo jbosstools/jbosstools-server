@@ -2802,4 +2802,6 @@
        <facet id="jst.webfragment" version="3.0,3.1,4.0"/>
      </supported>
    </extension>
+   
+   <!-- AUTOGEN_SERVER_ADAPTER_CHUNK -->
 </plugin>

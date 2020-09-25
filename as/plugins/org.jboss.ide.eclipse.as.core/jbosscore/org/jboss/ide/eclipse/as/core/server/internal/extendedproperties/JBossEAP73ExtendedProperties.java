@@ -17,12 +17,14 @@ import org.jboss.ide.eclipse.as.core.server.IDefaultLaunchArguments;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 
 public class JBossEAP73ExtendedProperties extends JBossAS710ExtendedProperties {
-	public JBossEAP73ExtendedProperties(IAdaptable obj) {
+	private String rtVersion;
+	public JBossEAP73ExtendedProperties(IAdaptable obj, String rtVersion) {
 		super(obj);
+		this.rtVersion = rtVersion;
 	}
 	@Override
 	public String getRuntimeTypeVersionString() {
-		return "7.3"; //$NON-NLS-1$
+		return rtVersion;
 	}
 	
 	@Override
