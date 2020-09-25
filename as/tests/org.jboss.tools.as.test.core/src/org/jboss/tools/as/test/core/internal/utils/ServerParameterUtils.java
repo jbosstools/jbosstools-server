@@ -34,13 +34,15 @@ public class ServerParameterUtils {
 	protected static final List<String> TESTED_SERVERS = new ArrayList<String>();
 	
 	static {
+		// AUTOGEN_SERVER_ADAPTER_CHUNK
 		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_WILDFLY_190);
 		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_WILDFLY_200);
 		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_WILDFLY_210);
-		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_EAP_70);
+		// AUTOGEN_SERVER_ADAPTER_CHUNK
 		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_EAP_71); 
 		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_EAP_72); 
 		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_EAP_73);
+		// AUTOGEN_SERVER_ADAPTER_CHUNK
 		// NEW_SERVER_ADAPTER Add the new runtime constant above this line
 	}
 	
@@ -83,7 +85,8 @@ public class ServerParameterUtils {
 		ArrayList<String> jbservers = new ArrayList<String>();
 		for( int i = 0; i < IJBossToolingConstants.ALL_JBOSS_SERVERS.length; i++ ) {
 			// we're not skipping reqs, or, we are skipping AND it doesn't start with eap, then add
-			if( (!skipReqs || !IJBossToolingConstants.ALL_JBOSS_SERVERS[i].startsWith(IJBossToolingConstants.EAP_SERVER_PREFIX)) && TESTED_SERVERS.contains(IJBossToolingConstants.ALL_JBOSS_SERVERS[i])) {
+			if( (!skipReqs || !IJBossToolingConstants.ALL_JBOSS_SERVERS[i].startsWith(IJBossToolingConstants.EAP_SERVER_PREFIX)) 
+					&& TESTED_SERVERS.contains(IJBossToolingConstants.ALL_JBOSS_SERVERS[i])) {
 					jbservers.add(IJBossToolingConstants.ALL_JBOSS_SERVERS[i]);
 			}
 		}

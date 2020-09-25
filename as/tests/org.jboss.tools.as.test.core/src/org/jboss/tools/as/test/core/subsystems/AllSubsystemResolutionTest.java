@@ -10,9 +10,9 @@
  ******************************************************************************/
 package org.jboss.tools.as.test.core.subsystems;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-
-import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -46,6 +46,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import junit.framework.TestCase;
 
 
 /**
@@ -103,33 +105,23 @@ public class AllSubsystemResolutionTest extends TestCase {
 		Collection<Object[]> ret = MatrixUtils.toMatrix(new Object[][]{allServers, modes, subsystems});
 		ret.addAll(MatrixUtils.toMatrix(new Object[][]{jbossServers, modes, getSubsystemsForJBossServers()}));
 		
-		String[] as7Servers = new String[]{
-				//NEW_SERVER_ADAPTER 
-				IJBossToolingConstants.SERVER_WILDFLY_210,
-				IJBossToolingConstants.SERVER_WILDFLY_200,
-				IJBossToolingConstants.SERVER_WILDFLY_190,
-				IJBossToolingConstants.SERVER_EAP_73,
-				IJBossToolingConstants.SERVER_EAP_72,
-				IJBossToolingConstants.SERVER_EAP_71,
-				IJBossToolingConstants.SERVER_EAP_70,
-				IJBossToolingConstants.SERVER_WILDFLY_180,
-				IJBossToolingConstants.SERVER_WILDFLY_170,
-				IJBossToolingConstants.SERVER_WILDFLY_160,
-				IJBossToolingConstants.SERVER_WILDFLY_150,
-				IJBossToolingConstants.SERVER_WILDFLY_140,
-				IJBossToolingConstants.SERVER_WILDFLY_130,
-				IJBossToolingConstants.SERVER_WILDFLY_120,
-				IJBossToolingConstants.SERVER_WILDFLY_110,
-				IJBossToolingConstants.SERVER_WILDFLY_100,
-				IJBossToolingConstants.SERVER_WILDFLY_90,
-				IJBossToolingConstants.SERVER_WILDFLY_80,
-				IJBossToolingConstants.SERVER_EAP_61,
-				IJBossToolingConstants.SERVER_EAP_60,
-				IJBossToolingConstants.SERVER_AS_71,
-				IJBossToolingConstants.SERVER_AS_70
-		};
+		
+		String[] EXCLUDED = new String[] {
+				IJBossToolingConstants.SERVER_AS_32,
+				IJBossToolingConstants.SERVER_AS_40,
+				IJBossToolingConstants.SERVER_AS_42,
+				IJBossToolingConstants.SERVER_AS_50,
+				IJBossToolingConstants.SERVER_AS_51,
+				IJBossToolingConstants.SERVER_AS_60,
+				IJBossToolingConstants.SERVER_EAP_43,
+				IJBossToolingConstants.SERVER_EAP_50
+			};
+
+		ArrayList<String> toTest = new ArrayList<String>(Arrays.asList(IJBossToolingConstants.ALL_JBOSS_SERVERS));
+		toTest.removeAll(Arrays.asList(EXCLUDED));
+		String[] toTestArr = (String[]) toTest.toArray(new String[toTest.size()]);
 		String[] as7Modes = new String[]{"local", "rse", null, "local.mgmt", "rse.mgmt"};
-		ret.addAll(MatrixUtils.toMatrix(new Object[][]{as7Servers, as7Modes, getSubsystemsForJBossServers()}));
+		ret.addAll(MatrixUtils.toMatrix(new Object[][]{toTestArr, as7Modes, getSubsystemsForJBossServers()}));
 		return ret;
 	}
 	 

@@ -35,17 +35,8 @@ import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossEAP
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.Wildfly100ExtendedProperties;
-import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.Wildfly110ExtendedProperties;
-import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.Wildfly120ExtendedProperties;
-import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.Wildfly130ExtendedProperties;
-import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.Wildfly140ExtendedProperties;
-import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.Wildfly150ExtendedProperties;
-import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.Wildfly160ExtendedProperties;
-import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.Wildfly170ExtendedProperties;
-import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.Wildfly180ExtendedProperties;
-import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.Wildfly190ExtendedProperties;
-import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.Wildfly200ExtendedProperties;
-import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.Wildfly210ExtendedProperties;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.Wildfly11PlusExtendedProperties;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.Wildfly15PlusExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.Wildfly80ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.Wildfly90ExtendedProperties;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -90,30 +81,31 @@ public class ExtendedServerPropertiesAdapterFactory implements IAdapterFactory, 
 		if( typeId != null ) {
 			
 			// NEW_SERVER_ADAPTER
+			// AUTOGEN_SERVER_ADAPTER_CHUNK
 			if( SERVER_WILDFLY_210.equals(typeId) || WILDFLY_210.equals(typeId))
-				return new Wildfly210ExtendedProperties(adaptable);
+				return new Wildfly15PlusExtendedProperties(adaptable, "21.0");
 			if( SERVER_EAP_73.equals(typeId) || EAP_73.equals(typeId))
-				return new JBossEAP73ExtendedProperties(adaptable);
+				return new JBossEAP73ExtendedProperties(adaptable, "7.3");
 			if( SERVER_WILDFLY_200.equals(typeId) || WILDFLY_200.equals(typeId))
-				return new Wildfly200ExtendedProperties(adaptable);
+				return new Wildfly15PlusExtendedProperties(adaptable, "20.0");
 			if( SERVER_WILDFLY_190.equals(typeId) || WILDFLY_190.equals(typeId))
-				return new Wildfly190ExtendedProperties(adaptable);
+				return new Wildfly15PlusExtendedProperties(adaptable, "19.0");
 			if( SERVER_WILDFLY_180.equals(typeId) || WILDFLY_180.equals(typeId))
-				return new Wildfly180ExtendedProperties(adaptable);
+				return new Wildfly15PlusExtendedProperties(adaptable, "18.0");
 			if( SERVER_WILDFLY_170.equals(typeId) || WILDFLY_170.equals(typeId))
-				return new Wildfly170ExtendedProperties(adaptable);
+				return new Wildfly15PlusExtendedProperties(adaptable, "17.0");
 			if( SERVER_WILDFLY_160.equals(typeId) || WILDFLY_160.equals(typeId))
-				return new Wildfly160ExtendedProperties(adaptable);
+				return new Wildfly15PlusExtendedProperties(adaptable, "16.0");
 			if( SERVER_WILDFLY_150.equals(typeId) || WILDFLY_150.equals(typeId))
-				return new Wildfly150ExtendedProperties(adaptable);
+				return new Wildfly15PlusExtendedProperties(adaptable, "15.0");
 			if( SERVER_WILDFLY_140.equals(typeId) || WILDFLY_140.equals(typeId))
-				return new Wildfly140ExtendedProperties(adaptable);
+				return new Wildfly11PlusExtendedProperties(adaptable,"14.0");
 			if( SERVER_WILDFLY_130.equals(typeId) || WILDFLY_130.equals(typeId))
-				return new Wildfly130ExtendedProperties(adaptable);
+				return new Wildfly11PlusExtendedProperties(adaptable,"13.0");
 			if( SERVER_WILDFLY_120.equals(typeId) || WILDFLY_120.equals(typeId))
-				return new Wildfly120ExtendedProperties(adaptable);
+				return new Wildfly11PlusExtendedProperties(adaptable,"12.0");
 			if( SERVER_WILDFLY_110.equals(typeId) || WILDFLY_110.equals(typeId))
-				return new Wildfly110ExtendedProperties(adaptable);
+				return new Wildfly11PlusExtendedProperties(adaptable,"11.0");
 			if( SERVER_WILDFLY_100.equals(typeId) || WILDFLY_100.equals(typeId))
 				return new Wildfly100ExtendedProperties(adaptable);
 			if( SERVER_WILDFLY_90.equals(typeId) || WILDFLY_90.equals(typeId))

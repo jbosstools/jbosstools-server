@@ -12,30 +12,37 @@ package org.jboss.ide.eclipse.as.core.server.bean;
 
 import java.io.File;
 
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-
-public class ServerBeanTypeWildfly110Web extends JBossServerType {
+public class ServerBeanTypeWildfly10PlusWeb extends JBossServerType {
 	private static final String WF_100_RELEASE_MANIFEST_KEY = "JBoss-Product-Release-Version"; //$NON-NLS-1$
-	public ServerBeanTypeWildfly110Web() {
+	public ServerBeanTypeWildfly10PlusWeb(String vers4Char, String serverTypeId) {
 		super(
 				"WildFly-Web", //$NON-NLS-1$
 				"WildFly Application Server", //$NON-NLS-1$
 				asPath("modules","system","layers","base",
 						"org","jboss","as","server","main"),
-				new String[]{"11.0"}, new Wildfly100WebServerTypeCondition());
+				new String[]{vers4Char}, new ServerBeanTypeWildfly10PlusWebCondition(vers4Char, serverTypeId));
 	}
 	
 	protected String getServerTypeBaseName() {
 		return getId();
 	}
 	
-	public static class Wildfly100WebServerTypeCondition extends AbstractCondition {
+	public static class ServerBeanTypeWildfly10PlusWebCondition extends AbstractCondition {
 		
+		private String vers4Char;
+		private String serverTypeId;
+
+		public ServerBeanTypeWildfly10PlusWebCondition(String vers4Char, String serverTypeId) {
+			this.vers4Char = vers4Char;
+			this.serverTypeId = serverTypeId;
+		}
+
+
 		@Override
 		public String getFullVersion(File location, File systemFile) {
 			String vers = ServerBeanType.getManifestPropFromJBossModulesFolder(new File[]{new File(location, "modules")}, 
 					"org.jboss.as.product", "wildfly-web/dir/META-INF", WF_100_RELEASE_MANIFEST_KEY);
-			if( vers != null && vers.startsWith("11.")) {
+			if( vers != null && vers.startsWith(vers4Char.substring(0,3))) {
 				return vers;
 			}
 			return null;
@@ -47,7 +54,7 @@ public class ServerBeanTypeWildfly110Web extends JBossServerType {
 		}
 		
 		public String getServerTypeId(String version) {	
-			return IJBossToolingConstants.SERVER_WILDFLY_110;
+			return serverTypeId;
 		}
 	}
 }

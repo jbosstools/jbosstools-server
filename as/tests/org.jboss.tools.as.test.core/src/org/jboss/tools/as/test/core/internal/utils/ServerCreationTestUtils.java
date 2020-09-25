@@ -50,43 +50,7 @@ public class ServerCreationTestUtils extends Assert {
 	private static HashMap<String, String> asSystemJar = new HashMap<String, String>();
 	private static HashMap<String, String> serverRuntimeMap = new HashMap<String, String>();
 	private static final String twiddle_suffix = ".mf.twiddle.jar";
-	private static final String twiddle_3_2_8 = "3.2.8" + twiddle_suffix;
-	private static final String twiddle_4_0_5 = "4.0.5" + twiddle_suffix;
-	private static final String twiddle_4_2_3 = "4.2.3" + twiddle_suffix;
-	private static final String twiddle_5_0_0 = "5.0.0" + twiddle_suffix;
-	private static final String twiddle_5_0_1 = "5.0.1" + twiddle_suffix;
-	private static final String twiddle_5_1_0 = "5.1.0" + twiddle_suffix;
-	private static final String twiddle_6_0_0 = "6.0.0" + twiddle_suffix;
-	private static final String as_server_7_0_jar = "7.0.0.mf.jboss-as-server.jar";
-	private static final String as_server_7_1_jar = "7.1.0.mf.jboss-as-server.jar";
-	private static final String wildfly_8_0_jar = "wf8.0.0.mf.jboss-as-server.jar";
-	private static final String wildfly_9_0_jar = "wf9.0.0.mf.jboss-as-server.jar";
-	private static final String wildfly_10_0_jar = "wf10.0.0.mf.jboss-as-server.jar";
-	private static final String wildfly_11_0_jar = "wf11.0.0.mf.jboss-as-server.jar";
-	private static final String wildfly_12_0_jar = "wf12.0.0.mf.jboss-as-server.jar";
-	private static final String wildfly_13_0_jar = "wf13.0.0.mf.jboss-as-server.jar";
-	private static final String wildfly_14_0_jar = "wf14.0.0.mf.jboss-as-server.jar";
-	private static final String wildfly_15_0_jar = "wf15.0.0.mf.jboss-as-server.jar";
-	private static final String wildfly_16_0_jar = "wf16.0.0.mf.jboss-as-server.jar";
-	private static final String wildfly_17_0_jar = "wf17.0.0.mf.jboss-as-server.jar";
-	private static final String wildfly_18_0_jar = "wf18.0.0.mf.jboss-as-server.jar";
-	private static final String wildfly_19_0_jar = "wf19.0.0.mf.jboss-as-server.jar";
-	private static final String wildfly_20_0_jar = "wf20.0.0.mf.jboss-as-server.jar";
-	private static final String wildfly_21_0_jar = "wf21.0.0.mf.jboss-as-server.jar";
-	private static final String twiddle_eap_4_3 = "eap4.3" + twiddle_suffix;
-	private static final String twiddle_eap_5_0 = "eap5.0" + twiddle_suffix;
-	private static final String twiddle_eap_5_1 = "eap5.1" + twiddle_suffix;
-	private static final String eap_server_6_0_jar = "eap6.0.0.mf.jboss-as-server.jar";
 	private static final String eap_server_6_1_jar = "eap6.1.0.mf.jboss-as-server.jar";
-	private static final String eap_server_7_0_jar = "eap7.0.0.mf.jboss-as-server.jar";
-	private static final String eap_server_7_1_jar = "eap7.1.0.mf.jboss-as-server.jar";
-	private static final String eap_server_7_2_jar = "eap7.2.0.mf.jboss-as-server.jar";
-	private static final String eap_server_7_3_jar = "eap7.3.0.mf.jboss-as-server.jar";
-	private static final String jpp_server_6_0_jar = "jpp6.0.0.mf.jboss-as-server.jar";
-	private static final String jpp_server_6_1_jar = "jpp6.1.0.mf.jboss-as-server.jar";
-	private static final String gatein_3_4_0_jar = "gatein3.4.0.mf.jboss-as7-integration.jar";
-	private static final String run_jar = "run.jar";
-	private static final String service_xml = "service.xml";
 	
 	// ADDITIONAL NON_DEFAULT SERVER TYPES TO TEST
 	public static final String TEST_SERVER_TYPE_GATEIN_34 = "TEST_SERVER_TYPE_GATEIN_34";
@@ -109,41 +73,42 @@ public class ServerCreationTestUtils extends Assert {
 	};
 	
 	static {
-		asSystemJar.put(IJBossToolingConstants.SERVER_AS_32, twiddle_3_2_8);
-		asSystemJar.put(IJBossToolingConstants.SERVER_AS_40, twiddle_4_0_5);
-		asSystemJar.put(IJBossToolingConstants.SERVER_AS_42, twiddle_4_2_3);
-		asSystemJar.put(IJBossToolingConstants.SERVER_AS_50, twiddle_5_0_0);
-		asSystemJar.put(IJBossToolingConstants.SERVER_AS_51, twiddle_5_1_0);
-		asSystemJar.put(IJBossToolingConstants.SERVER_AS_60, twiddle_6_0_0);
-		asSystemJar.put(IJBossToolingConstants.SERVER_AS_70, as_server_7_0_jar);
-		asSystemJar.put(IJBossToolingConstants.SERVER_AS_71, as_server_7_1_jar);
-		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_80, wildfly_8_0_jar);
-		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_90, wildfly_9_0_jar);
-		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_100, wildfly_10_0_jar);
-		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_110, wildfly_11_0_jar);
-		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_120, wildfly_12_0_jar);
-		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_130, wildfly_13_0_jar);
-		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_140, wildfly_14_0_jar);
-		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_150, wildfly_15_0_jar);
-		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_160, wildfly_16_0_jar);
-		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_170, wildfly_17_0_jar);
-		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_180, wildfly_18_0_jar);
-		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_190, wildfly_19_0_jar);
-		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_200, wildfly_20_0_jar);
-		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_210, wildfly_21_0_jar);
-		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_43, twiddle_eap_4_3);
-		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_50, twiddle_eap_5_1);
-		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_60, eap_server_6_0_jar);
-		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_61, eap_server_6_1_jar);
-		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_70, eap_server_7_0_jar);
-		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_71, eap_server_7_1_jar);
-		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_72, eap_server_7_2_jar);
-		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_73, eap_server_7_3_jar);
 		asSystemJar.put(TEST_SERVER_TYPE_EAP_65, eap_server_6_1_jar);
-		asSystemJar.put(TEST_SERVER_TYPE_JPP_60, jpp_server_6_0_jar);
-		asSystemJar.put(TEST_SERVER_TYPE_JPP_61, jpp_server_6_1_jar);
+		asSystemJar.put(TEST_SERVER_TYPE_JPP_60, "jpp6.0.0.mf.jboss-as-server.jar");
+		asSystemJar.put(TEST_SERVER_TYPE_JPP_61, "jpp6.1.0.mf.jboss-as-server.jar");
 		asSystemJar.put(TEST_SERVER_TYPE_WONKA_1, eap_server_6_1_jar);
-		asSystemJar.put(TEST_SERVER_TYPE_GATEIN_34, gatein_3_4_0_jar);
+		asSystemJar.put(TEST_SERVER_TYPE_GATEIN_34, "gatein3.4.0.mf.jboss-as7-integration.jar");
+		asSystemJar.put(IJBossToolingConstants.SERVER_AS_32, "3.2.8" + twiddle_suffix);
+		asSystemJar.put(IJBossToolingConstants.SERVER_AS_40, "4.0.5" + twiddle_suffix);
+		asSystemJar.put(IJBossToolingConstants.SERVER_AS_42, "4.2.3" + twiddle_suffix);
+		asSystemJar.put(IJBossToolingConstants.SERVER_AS_50, "5.0.0" + twiddle_suffix);
+		asSystemJar.put(IJBossToolingConstants.SERVER_AS_51, "5.1.0" + twiddle_suffix);
+		asSystemJar.put(IJBossToolingConstants.SERVER_AS_60, "6.0.0" + twiddle_suffix);
+		asSystemJar.put(IJBossToolingConstants.SERVER_AS_70, "7.0.0.mf.jboss-as-server.jar");
+		asSystemJar.put(IJBossToolingConstants.SERVER_AS_71,  "7.1.0.mf.jboss-as-server.jar");
+		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_80, "wf8.0.0.mf.jboss-as-server.jar");
+		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_90,  "wf9.0.0.mf.jboss-as-server.jar");
+		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_100, "wf10.0.0.mf.jboss-as-server.jar");
+		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_43, "eap4.3" + twiddle_suffix);
+		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_50, "eap5.1" + twiddle_suffix);
+		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_60, "eap6.0.0.mf.jboss-as-server.jar");
+		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_61, "eap6.1.0.mf.jboss-as-server.jar");
+		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_70, "eap7.0.0.mf.jboss-as-server.jar");
+		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_110, "wf11.0.0.mf.jboss-as-server.jar");
+		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_120, "wf12.0.0.mf.jboss-as-server.jar");
+		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_130, "wf13.0.0.mf.jboss-as-server.jar");
+		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_140, "wf14.0.0.mf.jboss-as-server.jar");
+		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_150, "wf15.0.0.mf.jboss-as-server.jar");
+		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_160, "wf16.0.0.mf.jboss-as-server.jar");
+		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_170, "wf17.0.0.mf.jboss-as-server.jar");
+		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_180, "wf18.0.0.mf.jboss-as-server.jar");
+		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_190, "wf19.0.0.mf.jboss-as-server.jar");
+		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_200, "wf20.0.0.mf.jboss-as-server.jar");
+		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_210, "wf21.0.0.mf.jboss-as-server.jar");
+		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_71, "eap7.1.0.mf.jboss-as-server.jar");
+		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_72, "eap7.2.0.mf.jboss-as-server.jar");
+		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_73, "eap7.3.0.mf.jboss-as-server.jar");
+		// AUTOGEN_SERVER_ADAPTER_CHUNK
 		// NEW_SERVER_ADAPTER Add the new runtime constant above this line
 		
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_AS_32, IJBossToolingConstants.AS_32);
@@ -156,6 +121,10 @@ public class ServerCreationTestUtils extends Assert {
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_AS_71, IJBossToolingConstants.AS_71);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_WILDFLY_80, IJBossToolingConstants.WILDFLY_80);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_WILDFLY_90, IJBossToolingConstants.WILDFLY_90);
+		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_43, IJBossToolingConstants.EAP_43);
+		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_50, IJBossToolingConstants.EAP_50);
+		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_60, IJBossToolingConstants.EAP_60);
+		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_61, IJBossToolingConstants.EAP_61);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_WILDFLY_100, IJBossToolingConstants.WILDFLY_100);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_WILDFLY_110, IJBossToolingConstants.WILDFLY_110);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_WILDFLY_120, IJBossToolingConstants.WILDFLY_120);
@@ -168,14 +137,11 @@ public class ServerCreationTestUtils extends Assert {
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_WILDFLY_190, IJBossToolingConstants.WILDFLY_190);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_WILDFLY_200, IJBossToolingConstants.WILDFLY_200);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_WILDFLY_210, IJBossToolingConstants.WILDFLY_210);
-		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_43, IJBossToolingConstants.EAP_43);
-		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_50, IJBossToolingConstants.EAP_50);
-		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_60, IJBossToolingConstants.EAP_60);
-		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_61, IJBossToolingConstants.EAP_61);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_70, IJBossToolingConstants.EAP_70);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_71, IJBossToolingConstants.EAP_71);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_72, IJBossToolingConstants.EAP_72);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_73, IJBossToolingConstants.EAP_73);
+		// AUTOGEN_SERVER_ADAPTER_CHUNK
 		// NEW_SERVER_ADAPTER Add the new runtime constant above this line
 		
 		
@@ -212,42 +178,28 @@ public class ServerCreationTestUtils extends Assert {
 			serverDir = createEAP6StyleMockServerDirectory(name, serverType, asSystemJar.get(serverType));
 		} else if( IJBossToolingConstants.SERVER_EAP_61.equals(serverType)) {
 			serverDir = createAS72EAP61StyleMockServerDirectory(name, serverType, asSystemJar.get(serverType));
-		} else if( IJBossToolingConstants.SERVER_EAP_70.equals(serverType)) {
-			serverDir = createEAP70StyleMockServerDirectory(name, serverType, asSystemJar.get(serverType));
-		} else if( IJBossToolingConstants.SERVER_EAP_71.equals(serverType)) {
-			serverDir = createEAP71StyleMockServerDirectory(name, serverType, asSystemJar.get(serverType));
-		} else if( IJBossToolingConstants.SERVER_EAP_72.equals(serverType)) {
-			serverDir = createEAP72StyleMockServerDirectory(name, serverType, asSystemJar.get(serverType));
-		} else if( IJBossToolingConstants.SERVER_EAP_73.equals(serverType)) {
-			serverDir = createEAP73StyleMockServerDirectory(name, serverType, asSystemJar.get(serverType));
+		} else if( serverType.startsWith(IJBossToolingConstants.EAP_SERVER_PREFIX)) {
+			String version = serverType.substring(IJBossToolingConstants.EAP_SERVER_PREFIX.length());
+			String major = version.substring(0, version.length() - 1);
+			String minor = version.substring(version.length() - 1);
+			String newVersion = major + "." + minor + ".0.GA";
+			IPath loc = mockedServers.append(name);
+			String manString = "JBoss-Product-Release-Name: JBoss EAP\nJBoss-Product-Release-Version: " + newVersion + "\nJBoss-Product-Console-Slot: eap";
+			createAS7xProductStructure(loc, true, asSystemJar.get(serverType), "eap", manString);
+			serverDir = loc;
 		} else if( IJBossToolingConstants.SERVER_WILDFLY_80.equals(serverType)) {
 			serverDir = createWildfly80MockServerDirectory(name, serverType, asSystemJar.get(serverType));
-		} else if( IJBossToolingConstants.SERVER_WILDFLY_90.equals(serverType)) {
-			serverDir = createWildfly90MockServerDirectory(name, serverType, asSystemJar.get(serverType));
-		} else if( IJBossToolingConstants.SERVER_WILDFLY_100.equals(serverType)) {
-			serverDir = createWildfly100MockServerDirectory(name, serverType, asSystemJar.get(serverType));
-		} else if( IJBossToolingConstants.SERVER_WILDFLY_110.equals(serverType)) {
-			serverDir = createWildfly110MockServerDirectory(name, serverType, asSystemJar.get(serverType));
-		} else if( IJBossToolingConstants.SERVER_WILDFLY_120.equals(serverType)) {
-			serverDir = createWildfly120MockServerDirectory(name, serverType, asSystemJar.get(serverType));
-		} else if( IJBossToolingConstants.SERVER_WILDFLY_130.equals(serverType)) {
-			serverDir = createWildfly130MockServerDirectory(name, serverType, asSystemJar.get(serverType));
-		} else if( IJBossToolingConstants.SERVER_WILDFLY_140.equals(serverType)) {
-			serverDir = createWildfly140MockServerDirectory(name, serverType, asSystemJar.get(serverType));
-		} else if( IJBossToolingConstants.SERVER_WILDFLY_150.equals(serverType)) {
-			serverDir = createWildfly150MockServerDirectory(name, serverType, asSystemJar.get(serverType));
-		} else if( IJBossToolingConstants.SERVER_WILDFLY_160.equals(serverType)) {
-			serverDir = createWildfly160MockServerDirectory(name, serverType, asSystemJar.get(serverType));
-		} else if( IJBossToolingConstants.SERVER_WILDFLY_170.equals(serverType)) {
-			serverDir = createWildfly170MockServerDirectory(name, serverType, asSystemJar.get(serverType));
-		} else if( IJBossToolingConstants.SERVER_WILDFLY_180.equals(serverType)) {
-			serverDir = createWildfly180MockServerDirectory(name, serverType, asSystemJar.get(serverType));
-		} else if( IJBossToolingConstants.SERVER_WILDFLY_190.equals(serverType)) {
-			serverDir = createWildfly190MockServerDirectory(name, serverType, asSystemJar.get(serverType));
-		} else if( IJBossToolingConstants.SERVER_WILDFLY_200.equals(serverType)) {
-			serverDir = createWildfly200MockServerDirectory(name, serverType, asSystemJar.get(serverType));
-		} else if( IJBossToolingConstants.SERVER_WILDFLY_210.equals(serverType)) {
-			serverDir = createWildfly210MockServerDirectory(name, serverType, asSystemJar.get(serverType));
+		} else if( serverType.startsWith(IJBossToolingConstants.SERVER_AS_PREFIX)) {
+			// wfly 9 through 20+++
+			String version = serverType.substring(IJBossToolingConstants.WF_SERVER_PREFIX.length());
+			String major = version.substring(0, version.length() - 1);
+			String minor = version.substring(version.length() - 1);
+			String newVersion = major + "." + minor + ".0.GA";
+			String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: " + newVersion + "\n";
+			if( Integer.parseInt(major) >= 19 )
+				serverDir = createWildfly90PlusMockServerDirectory(name, serverType, asSystemJar.get(serverType), "main", manString);
+			else 
+				serverDir = createWildfly90PlusMockServerDirectory(name, serverType, asSystemJar.get(serverType), manString);
 		} else if( TEST_SERVER_TYPE_GATEIN_34.equals(serverType)) {
 			serverDir = createGateIn34MockServerDirectory(name);
 		} else if( TEST_SERVER_TYPE_GATEIN_35.equals(serverType)) {
@@ -389,69 +341,69 @@ public class ServerCreationTestUtils extends Assert {
 		createAS7xProductStructure(loc, true, serverJar, null, null);
 		return loc;
 	}
-	
-	private static IPath createWildfly90MockServerDirectory(String name, String serverTypeId, String serverJar) {
-		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 9.0.0.Beta2\n";
-		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
-	}
-
-	private static IPath createWildfly100MockServerDirectory(String name, String serverTypeId, String serverJar) {
-		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 10.0.0.Final\n";
-		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
-	}
-	
-	private static IPath createWildfly110MockServerDirectory(String name, String serverTypeId, String serverJar) {
-		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 11.0.0.Alpha1-SNAPSHOT\n"; 
-		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
-	}
-
-	private static IPath createWildfly120MockServerDirectory(String name, String serverTypeId, String serverJar) {
-		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 12.0.0.Alpha1-SNAPSHOT\n"; 
-		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
-	}
-
-	private static IPath createWildfly130MockServerDirectory(String name, String serverTypeId, String serverJar) {
-		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 13.0.0.xyz\n"; 
-		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
-	}
-
-	private static IPath createWildfly140MockServerDirectory(String name, String serverTypeId, String serverJar) {
-		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 14.0.0.xyz\n"; 
-		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
-	}
-
-	private static IPath createWildfly150MockServerDirectory(String name, String serverTypeId, String serverJar) {
-		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 15.0.0.xyz\n"; 
-		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
-	}
-
-	private static IPath createWildfly160MockServerDirectory(String name, String serverTypeId, String serverJar) {
-		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 16.0.0.xyz\n"; 
-		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
-	}
-
-	private static IPath createWildfly170MockServerDirectory(String name, String serverTypeId, String serverJar) {
-		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 17.0.0.xyz\n"; 
-		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
-	}
-
-	private static IPath createWildfly180MockServerDirectory(String name, String serverTypeId, String serverJar) {
-		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 18.0.0.xyz\n"; 
-		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
-	}
-	private static IPath createWildfly190MockServerDirectory(String name, String serverTypeId, String serverJar) {
-		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 19.0.0.xyz\n"; 
-		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, "main", manString);
-	}
-	private static IPath createWildfly200MockServerDirectory(String name, String serverTypeId, String serverJar) {
-		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 20.0.0.xyz\n"; 
-		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, "main", manString);
-	}
-
-	private static IPath createWildfly210MockServerDirectory(String name, String serverTypeId, String serverJar) {
-		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 21.0.0.xyz\n"; 
-		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, "main", manString);
-	}
+//	
+//	private static IPath createWildfly90MockServerDirectory(String name, String serverTypeId, String serverJar) {
+//		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 9.0.0.Beta2\n";
+//		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
+//	}
+//
+//	private static IPath createWildfly100MockServerDirectory(String name, String serverTypeId, String serverJar) {
+//		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 10.0.0.Final\n";
+//		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
+//	}
+//	
+//	private static IPath createWildfly110MockServerDirectory(String name, String serverTypeId, String serverJar) {
+//		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 11.0.0.Alpha1-SNAPSHOT\n"; 
+//		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
+//	}
+//
+//	private static IPath createWildfly120MockServerDirectory(String name, String serverTypeId, String serverJar) {
+//		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 12.0.0.Alpha1-SNAPSHOT\n"; 
+//		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
+//	}
+//
+//	private static IPath createWildfly130MockServerDirectory(String name, String serverTypeId, String serverJar) {
+//		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 13.0.0.xyz\n"; 
+//		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
+//	}
+//
+//	private static IPath createWildfly140MockServerDirectory(String name, String serverTypeId, String serverJar) {
+//		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 14.0.0.xyz\n"; 
+//		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
+//	}
+//
+//	private static IPath createWildfly150MockServerDirectory(String name, String serverTypeId, String serverJar) {
+//		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 15.0.0.xyz\n"; 
+//		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
+//	}
+//
+//	private static IPath createWildfly160MockServerDirectory(String name, String serverTypeId, String serverJar) {
+//		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 16.0.0.xyz\n"; 
+//		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
+//	}
+//
+//	private static IPath createWildfly170MockServerDirectory(String name, String serverTypeId, String serverJar) {
+//		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 17.0.0.xyz\n"; 
+//		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
+//	}
+//
+//	private static IPath createWildfly180MockServerDirectory(String name, String serverTypeId, String serverJar) {
+//		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 18.0.0.xyz\n"; 
+//		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, manString);
+//	}
+//	private static IPath createWildfly190MockServerDirectory(String name, String serverTypeId, String serverJar) {
+//		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 19.0.0.xyz\n"; 
+//		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, "main", manString);
+//	}
+//	private static IPath createWildfly200MockServerDirectory(String name, String serverTypeId, String serverJar) {
+//		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 20.0.0.xyz\n"; 
+//		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, "main", manString);
+//	}
+//
+//	private static IPath createWildfly210MockServerDirectory(String name, String serverTypeId, String serverJar) {
+//		String manString = "JBoss-Product-Release-Name: WildFly Full\nJBoss-Product-Release-Version: 21.0.0.xyz\n"; 
+//		return createWildfly90PlusMockServerDirectory(name, serverTypeId, serverJar, "main", manString);
+//	}
 
 
 	private static IPath createWildfly90PlusMockServerDirectory(String name, String serverTypeId, String serverJar, String manifestString) {

@@ -39,7 +39,12 @@ public class JBossModulesDefaultClasspathModel extends InternalRuntimeClasspathM
 			IJBossToolingConstants.WILDFLY_110, IJBossToolingConstants.WILDFLY_120, IJBossToolingConstants.WILDFLY_130,
 			IJBossToolingConstants.WILDFLY_140, IJBossToolingConstants.WILDFLY_150, IJBossToolingConstants.WILDFLY_160,
 			IJBossToolingConstants.WILDFLY_170, IJBossToolingConstants.WILDFLY_180,
-			IJBossToolingConstants.EAP_71, IJBossToolingConstants.EAP_72, IJBossToolingConstants.EAP_73});
+			IJBossToolingConstants.EAP_71, IJBossToolingConstants.EAP_72, IJBossToolingConstants.EAP_73,
+			IJBossToolingConstants.WILDFLY_190,
+			IJBossToolingConstants.WILDFLY_200,
+			IJBossToolingConstants.WILDFLY_210,
+			// AUTOGEN_SERVER_ADAPTER_CHUNK
+	});
 	// NEW_SERVER_ADAPTER
 
 	private IRuntimePathProvider[] getDefaultJBossModulesEntries(IRuntimeType rtt) {
@@ -50,19 +55,6 @@ public class JBossModulesDefaultClasspathModel extends InternalRuntimeClasspathM
 			return getDefaultJEE8JBossModulesEntries();
 		if( wf11Plus.contains(rttId)) 
 			return getDefaultWF11JBossModulesEntries();
-		// NEW_SERVER_ADAPTER
-		if( rtt.getId().equals(IJBossToolingConstants.WILDFLY_210)) {
-			return getDefaultWF11JBossModulesEntries();
-		}
-
-		if( rtt.getId().equals(IJBossToolingConstants.WILDFLY_200)) {
-			return getDefaultWF11JBossModulesEntries();
-		}
-
-		if( rtt.getId().equals(IJBossToolingConstants.WILDFLY_190)) {
-			return getDefaultWF11JBossModulesEntries();
-		}
-
 		return getDefaultJBossModulesEntries();
 	}
 
