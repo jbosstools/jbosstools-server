@@ -17,8 +17,10 @@ import static org.junit.Assert.fail;
 
 import org.eclipse.reddeer.common.logging.Logger;
 import org.eclipse.reddeer.common.wait.TimePeriod;
+import org.eclipse.reddeer.common.wait.WaitUntil;
 import org.eclipse.reddeer.common.wait.WaitWhile;
 import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
+import org.eclipse.reddeer.eclipse.condition.ProjectExists;
 import org.eclipse.reddeer.eclipse.jdt.ui.wizards.JavaProjectWizard;
 import org.eclipse.reddeer.eclipse.jdt.ui.wizards.NewJavaProjectWizardPageOne;
 import org.eclipse.reddeer.eclipse.ui.navigator.resources.ProjectExplorer;
@@ -123,6 +125,7 @@ public class ArchivesTestBase{
 	private static void addRemoveArchivesSupport(String projectName, boolean add) {
 		ProjectExplorer pe = new ProjectExplorer();
 		pe.open();
+		new WaitUntil(new ProjectExists(projectName, pe), TimePeriod.DEFAULT);
 		pe.getProject(projectName).select();
 		if (add) {
 			new ContextMenuItem("Configure", "Add Project Archives Support").select();
