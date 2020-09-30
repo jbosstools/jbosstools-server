@@ -79,6 +79,8 @@ public class TestConstants {
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_WILDFLY_170, JBOSS_WF_170_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_WILDFLY_180, JBOSS_WF_180_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_WILDFLY_190, JBOSS_WF_190_HOME);
+		serverTypeToHome.put(IJBossToolingConstants.SERVER_WILDFLY_200, JBOSS_WF_200_HOME);
+		serverTypeToHome.put(IJBossToolingConstants.SERVER_WILDFLY_210, JBOSS_WF_210_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_43, JBOSS_EAP_43_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_50, JBOSS_EAP_50_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_60, JBOSS_EAP_60_HOME);
@@ -87,7 +89,6 @@ public class TestConstants {
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_71, JBOSS_EAP_71_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_72, JBOSS_EAP_72_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_73, JBOSS_EAP_73_HOME);
-		serverTypeToHome.put(IJBossToolingConstants.SERVER_WILDFLY_210, JBOSS_WF_210_HOME);
 		// NEW_SERVER_ADAPTER
 	}
 	
