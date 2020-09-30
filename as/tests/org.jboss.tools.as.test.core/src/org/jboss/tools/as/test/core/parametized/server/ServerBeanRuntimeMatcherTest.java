@@ -94,7 +94,7 @@ public class ServerBeanRuntimeMatcherTest extends TestCase {
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_180, new Data(JBossServerType.WILDFLY180, "18.0"));
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_190, new Data(JBossServerType.WILDFLY190, "19.0"));
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_200, new Data(JBossServerType.WILDFLY200, "20.0"));
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_210, new Data(JBossServerType.WILDFLY140, "21.0"));
+		expected.put(IJBossToolingConstants.SERVER_WILDFLY_210, new Data(JBossServerType.WILDFLY210, "21.0"));
 		expected.put(IJBossToolingConstants.SERVER_EAP_43, new Data(JBossServerType.EAP_STD, IJBossToolingConstants.V4_3));
 		expected.put(IJBossToolingConstants.SERVER_EAP_50, new Data(JBossServerType.EAP_STD, IJBossToolingConstants.V5_1));
 		expected.put(IJBossToolingConstants.SERVER_EAP_60, new Data(JBossServerType.EAP6, IJBossToolingConstants.V6_0));
