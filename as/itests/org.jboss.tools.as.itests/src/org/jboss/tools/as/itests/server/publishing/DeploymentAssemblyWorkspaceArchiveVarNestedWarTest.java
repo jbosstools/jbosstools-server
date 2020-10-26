@@ -36,7 +36,7 @@ public class DeploymentAssemblyWorkspaceArchiveVarNestedWarTest extends Deployme
 	private static String PROJECT_NESTED_PREFIX = "q35War";
 	private static String PROJECT_PREFIX = "q35Ear";
 	private static int PROJECT_ID = 1;
-	@Parameters
+	@Parameters(name = "{0} {1} {4} {5}")
 	public static Collection<Object[]> params() {
 		return componentJarData();
 	}
