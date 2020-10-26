@@ -25,7 +25,6 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerUtil;
-import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.tools.as.test.core.internal.utils.ResourceUtils;
 import org.jboss.tools.as.test.core.internal.utils.classpath.WorkspaceTestUtil;
@@ -47,7 +46,7 @@ import org.junit.runners.Parameterized.Parameters;
 public class RepublishDefectTest extends AbstractPublishingTest {
 	public static int count = 1;
 	
-	@Parameters
+	@Parameters(name = "{0} {1}")
 	public static Collection<Object[]> params() {
 		return minimalData();
 	}

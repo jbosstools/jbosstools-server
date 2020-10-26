@@ -26,7 +26,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.model.IModuleFile;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory;
 import org.jboss.tools.as.test.core.internal.utils.MatrixUtils;
 import org.jboss.tools.as.test.core.internal.utils.ResourceUtils;
@@ -50,7 +49,7 @@ public class SingleDeployableFileTest extends AbstractPublishingTest {
 	public static int count = 0;
 	
 	
-	@Parameters
+	@Parameters(name = "{0} {1} {4}")
 	public static Collection<Object[]> params() {
 		Object[] servers = ServerParameterUtils.getPublishServerTypes();
 		Object[] zipOption = ServerParameterUtils.getServerZipOptions();

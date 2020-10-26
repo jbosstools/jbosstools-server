@@ -44,7 +44,7 @@ public class DeploymentAssemblyArchivePathVarTest extends AbstractComponentPubli
 
 	private static String PROJECT_PREFIX = "pEar";
 	private static int PROJECT_ID = 1;
-	@Parameters
+	@Parameters(name = "{0} {1} {4} {5}")
 	public static Collection<Object[]> params() {
 		return componentJarData();
 	}

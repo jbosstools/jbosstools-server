@@ -46,7 +46,7 @@ public class SingleDeployableFolderTest extends AbstractPublishingTest {
 	public static final String PROJECT_ROOT_NAME = "SingleDeployableFolderTest";
 	public static int count = 0;
 
-	@Parameters
+	@Parameters(name = "{0} {1}")
 	public static Collection<Object[]> params() {
 		Object[] servers = ServerParameterUtils.getPublishServerTypes();
 		Object[] zipOption = ServerParameterUtils.getServerZipOptions();

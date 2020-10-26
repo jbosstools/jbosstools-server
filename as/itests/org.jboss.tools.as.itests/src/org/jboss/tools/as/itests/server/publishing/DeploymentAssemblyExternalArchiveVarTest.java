@@ -29,7 +29,7 @@ public class DeploymentAssemblyExternalArchiveVarTest extends DeploymentAssembly
 
 	private static String PROJECT_PREFIX = "qEar";
 	private static int PROJECT_ID = 1;
-	@Parameters
+	@Parameters(name = "{0} {1} {4} {5}")
 	public static Collection<Object[]> params() {
 		return componentJarData();
 	}
