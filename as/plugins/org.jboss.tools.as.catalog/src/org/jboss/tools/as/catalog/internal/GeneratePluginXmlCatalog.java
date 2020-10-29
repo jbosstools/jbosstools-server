@@ -161,8 +161,10 @@ public class GeneratePluginXmlCatalog {
 		});
 		List<String> excluded = Arrays.asList(getExcludedXSD());
 		for( File f : all) {
-			if( excluded.contains(f.getName()))
-				continue;
+			if( excluded.contains(f.getName())) {
+				f.delete();
+				continue;				
+			}
 			
 			XSDObject o = new XSDObject(f);
 			if( o.valid ) {
