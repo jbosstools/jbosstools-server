@@ -11,12 +11,12 @@
 package org.jboss.tools.archives.reddeer.archives.ui;
 
 import org.eclipse.reddeer.common.wait.WaitWhile;
+import org.eclipse.reddeer.eclipse.ui.navigator.resources.AbstractExplorer;
 import org.eclipse.reddeer.eclipse.ui.navigator.resources.ProjectExplorer;
 import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
 import org.eclipse.reddeer.swt.api.TreeItem;
 import org.eclipse.reddeer.swt.impl.menu.ContextMenuItem;
 import org.eclipse.reddeer.swt.impl.tree.DefaultTreeItem;
-import org.jboss.tools.archives.reddeer.archives.ui.NewJarDialog;
 import org.jboss.tools.archives.reddeer.component.Archive;
 /**
  * Simulates Project Archives explorer which is maintaned in
@@ -25,7 +25,7 @@ import org.jboss.tools.archives.reddeer.component.Archive;
  * @author jjankovi
  *
  */
-public class ProjectArchivesExplorer {
+public class ProjectArchivesExplorer extends AbstractExplorer {
 
 	private ProjectExplorer projectExplorer = new ProjectExplorer();
 	private TreeItem explorer = null;
@@ -33,9 +33,14 @@ public class ProjectArchivesExplorer {
 	
 	private static final String PROJECT_ARCHIVES_NODE = "Project Archives";
 	
+	public ProjectArchivesExplorer() {
+		super("Project Archives");
+	}
 	
 	public ProjectArchivesExplorer(String project) {
+		super("Project Archives");
 		openExplorer(project);
+		this.open();
 		explorer.expand();
 	}
 	
@@ -47,7 +52,9 @@ public class ProjectArchivesExplorer {
 	}
 	
 	public NewJarDialog newJarArchive() {
+		this.open();
 		explorer.select();
+		this.activate();
 		new ContextMenuItem("New Archive", "JAR").select();
 		return new NewJarDialog();
 		

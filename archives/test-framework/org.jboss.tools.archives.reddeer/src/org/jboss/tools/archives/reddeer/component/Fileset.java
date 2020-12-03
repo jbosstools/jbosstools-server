@@ -12,14 +12,15 @@ package org.jboss.tools.archives.reddeer.component;
 
 import org.eclipse.reddeer.common.exception.RedDeerException;
 import org.eclipse.reddeer.common.wait.WaitWhile;
-import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
 import org.eclipse.reddeer.swt.api.Shell;
 import org.eclipse.reddeer.swt.api.TreeItem;
 import org.eclipse.reddeer.swt.condition.ShellIsAvailable;
 import org.eclipse.reddeer.swt.impl.button.PushButton;
 import org.eclipse.reddeer.swt.impl.menu.ContextMenuItem;
 import org.eclipse.reddeer.swt.impl.shell.DefaultShell;
+import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
 import org.jboss.tools.archives.reddeer.archives.ui.FilesetDialog;
+import org.jboss.tools.archives.reddeer.archives.ui.ProjectArchivesExplorer;
 
 /**
  * Fileset retrieved from Project Archives view/explorer
@@ -40,14 +41,13 @@ public class Fileset {
 	}
 	
 	public FilesetDialog editFileset() {
-		fileset.select();
+		activateAndSelect();
 		new ContextMenuItem("Edit Fileset").select();
 		return new FilesetDialog();
 	}
 	
 	public void deleteFileset(boolean withContextMenuItem) {
-		fileset.select();
-		
+		activateAndSelect();
 		new ContextMenuItem("Delete Fileset").select();
 		try {
 			Shell s = new DefaultShell("Delete selected nodes?");
@@ -57,6 +57,11 @@ public class Fileset {
 			//do nothing here
 		}
 		new WaitWhile(new JobIsRunning());
+	}
+	
+	private void activateAndSelect() {
+		new ProjectArchivesExplorer().activate();
+		fileset.select();
 	}
 	
 }

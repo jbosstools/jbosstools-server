@@ -67,6 +67,8 @@ public class ArchivesTestBase{
 	}
 	
 	protected ProjectArchivesExplorer explorerForProject(String projectName) {
+		ProjectArchivesExplorer archivesExplorer = new ProjectArchivesExplorer();
+		archivesExplorer.open();
 		return new ProjectArchivesExplorer(projectName);
 	}
 	

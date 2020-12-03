@@ -17,6 +17,7 @@ import org.eclipse.reddeer.common.exception.RedDeerException;
 import org.eclipse.reddeer.common.logging.Logger;
 import org.eclipse.reddeer.common.wait.WaitWhile;
 import org.jboss.tools.archives.reddeer.archives.ui.NewJarDialog;
+import org.jboss.tools.archives.reddeer.archives.ui.ProjectArchivesExplorer;
 
 /**
  * Archive Project accessible via Project Archives view
@@ -63,6 +64,7 @@ public class ArchiveProject {
 	}
 	
 	public void selectArchive(){
+		new ProjectArchivesExplorer().open();
 		archiveProject.select();
 	}
 	
