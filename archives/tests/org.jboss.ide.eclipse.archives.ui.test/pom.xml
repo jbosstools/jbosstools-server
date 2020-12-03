@@ -22,6 +22,7 @@
 					<useUIThread>false</useUIThread>
 					<testSuite>org.jboss.tools.archives.ui.bot.test</testSuite>
 					<testClass>${suiteClass}</testClass>
+					<skip>${skipITests}</skip>
 				</configuration>
 			</plugin>
 		</plugins>
