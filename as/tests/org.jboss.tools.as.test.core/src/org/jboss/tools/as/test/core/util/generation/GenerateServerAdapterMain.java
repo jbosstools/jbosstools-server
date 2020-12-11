@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2020 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.tools.as.test.core.util.generation;
 
 import java.io.File;
@@ -26,10 +36,14 @@ public class GenerateServerAdapterMain {
 		File f = new File("").getCanonicalFile();
 		File jbtServer = f.getParentFile().getParentFile().getParentFile();
 		
-		String oldVersion = "73";
-		String newVersion = "74";
-		boolean type = TYPE_EAP;
-		
+//		String oldVersion = "73";
+//		String newVersion = "74";
+//		boolean type = TYPE_EAP;
+
+		String oldVersion = "210";
+		String newVersion = "220";
+		boolean type = TYPE_WFLY;
+
 		if( type == TYPE_WFLY ) {
 			runWildFly(jbtServer, oldVersion, newVersion);
 		} else {

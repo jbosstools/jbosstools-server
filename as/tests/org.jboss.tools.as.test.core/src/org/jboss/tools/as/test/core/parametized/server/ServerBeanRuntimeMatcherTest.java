@@ -110,6 +110,7 @@ public class ServerBeanRuntimeMatcherTest extends TestCase {
 		expected.put(ServerCreationTestUtils.TEST_SERVER_TYPE_JPP_60, new Data(JBossServerType.JPP6, "6.0"));
 		expected.put(ServerCreationTestUtils.TEST_SERVER_TYPE_JPP_61, new Data(JBossServerType.JPP61, "6.1", "JPP"));
 		expected.put(ServerCreationTestUtils.TEST_SERVER_TYPE_WONKA_1, new Data(JBossServerType.UNKNOWN_AS72_PRODUCT, "1.0", "WONKA"));
+		expected.put(IJBossToolingConstants.SERVER_WILDFLY_220, new Data(JBossServerType.WILDFLY220, "22.0"));
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
 		// NEW_SERVER_ADAPTER
 	}

@@ -201,14 +201,27 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 								</configuration>
 							</execution>
 							<execution>
-								<id>install-wildfly-21.0.0.Final</id>
+								<id>install-wildfly-21.0.1.Final</id>
 								<phase>pre-integration-test</phase>
 								<goals>
 									<goal>wget</goal>
 								</goals>
 								<configuration>
-									<url>https://download.jboss.org/wildfly/21.0.0.Beta1/wildfly-21.0.0.Beta1.zip</url>
-									<sha1>75121a331295e5cbdabce9b8060dfbc09727615a</sha1>
+									<url>https://download.jboss.org/wildfly/21.0.1.Final/wildfly-21.0.1.Final.zip</url>
+									<sha1>a36fc5c7eebe692ce642970bc5f7d328e2d36256</sha1>
+									<unpack>true</unpack>
+									<skip>${skipTestsOrITests}</skip>
+								</configuration>
+							</execution>
+							<execution>
+								<id>install-wildfly-22.0.0.Alpha1</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>wget</goal>
+								</goals>
+								<configuration>
+									<url>https://download.jboss.org/wildfly/22.0.0.Alpha1/wildfly-preview-22.0.0.Alpha1.zip</url>
+									<sha1>b40e2d04b2def08bad772358bc8a64ba40c756cc</sha1>
 									<unpack>true</unpack>
 									<skip>${skipTestsOrITests}</skip>
 								</configuration>

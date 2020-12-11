@@ -63,7 +63,10 @@ public class JBossServerType extends ServerBeanType implements IJBossToolingCons
 	public static final JBossServerType EAP71 = new ServerBeanTypeEAP7Plus("7.1", IJBossToolingConstants.SERVER_EAP_71);
 	public static final JBossServerType EAP72 = new ServerBeanTypeEAP7Plus("7.2", IJBossToolingConstants.SERVER_EAP_72);
 	public static final JBossServerType EAP73 = new ServerBeanTypeEAP7Plus("7.3", IJBossToolingConstants.SERVER_EAP_73);
+	public static final JBossServerType WILDFLY220 = new ServerBeanTypeWildfly10Plus("22.0", IJBossToolingConstants.SERVER_WILDFLY_220, "main");
+	public static final JBossServerType WILDFLY220_WEB = new ServerBeanTypeWildfly10PlusWeb("22.0", IJBossToolingConstants.SERVER_WILDFLY_220);
 	// AUTOGEN_SERVER_ADAPTER_CHUNK
+
 
 
 
@@ -102,6 +105,7 @@ public class JBossServerType extends ServerBeanType implements IJBossToolingCons
 		JBossServerType.EAP72,
 		JBossServerType.EAP73,
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
+
 		JBossServerType.WILDFLY90, 
 		JBossServerType.WILDFLY90_WEB,
 		JBossServerType.WILDFLY100,
@@ -120,6 +124,7 @@ public class JBossServerType extends ServerBeanType implements IJBossToolingCons
 		JBossServerType.WILDFLY200,JBossServerType.WILDFLY200_WEB,
 		JBossServerType.WILDFLY210,JBossServerType.WILDFLY210_WEB,
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
+
 
 
 
@@ -162,3 +167,23 @@ public class JBossServerType extends ServerBeanType implements IJBossToolingCons
 		return "JBoss " + getId();
 	}
 }
+JBossServerType.WILDFLY220, JBossServerType.WILDFLY220_WEB,
+		// AUTOGEN_SERVER_ADAPTER_CHUNK
+		JBossServerType.WILDFLY90, 
+		JBossServerType.WILDFLY90_WEB,
+		JBossServerType.WILDFLY100,
+		JBossServerType.WILDFLY100_WEB,
+		JBossServerType.WILDFLY110,
+		JBossServerType.WILDFLY110_WEB,
+		JBossServerType.WILDFLY120,
+		JBossServerType.WILDFLY120_WEB,
+		JBossServerType.WILDFLY130,JBossServerType.WILDFLY130_WEB,
+		JBossServerType.WILDFLY140,JBossServerType.WILDFLY140_WEB,
+		JBossServerType.WILDFLY150,JBossServerType.WILDFLY150_WEB,
+		JBossServerType.WILDFLY160,JBossServerType.WILDFLY160_WEB,
+		JBossServerType.WILDFLY170,JBossServerType.WILDFLY170_WEB,
+		JBossServerType.WILDFLY180,JBossServerType.WILDFLY180_WEB,
+		JBossServerType.WILDFLY190,JBossServerType.WILDFLY190_WEB,
+		JBossServerType.WILDFLY200,JBossServerType.WILDFLY200_WEB,
+		JBossServerType.WILDFLY210,JBossServerType.WILDFLY210_WEB,
+		

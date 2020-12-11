@@ -51,6 +51,7 @@ public class TestConstants {
 	public static final String JBOSS_EAP_73_HOME = System.getProperty("jbosstools.test.jboss.home.eap.7.3", "C:\\apps\\jboss\\jboss-eap-7.3.0.GA\\");
 	public static final String JBOSS_WF_200_HOME = System.getProperty("jbosstools.test.jboss.home.20.0", "C:\\apps\\jboss\\jboss-wildfly-20.0.0.GA\\");
 	public static final String JBOSS_WF_210_HOME = System.getProperty("jbosstools.test.jboss.home.21.0", "C:\\apps\\jboss\\jboss-wildfly-21.0.0.GA\\");
+	public static final String JBOSS_WF_220_HOME = System.getProperty("jbosstools.test.jboss.home.22.0", "C:\\apps\\jboss\\jboss-wildfly-22.0.0.GA\\");
 	// AUTOGEN_SERVER_ADAPTER_CHUNK
 	// NEW_SERVER_ADAPTER
 
@@ -90,6 +91,7 @@ public class TestConstants {
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_71, JBOSS_EAP_71_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_72, JBOSS_EAP_72_HOME);
 		serverTypeToHome.put(IJBossToolingConstants.SERVER_EAP_73, JBOSS_EAP_73_HOME);
+		serverTypeToHome.put(IJBossToolingConstants.SERVER_WILDFLY_220, JBOSS_WF_220_HOME);
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
 		// NEW_SERVER_ADAPTER
 	}
