@@ -82,6 +82,8 @@ public class ExtendedServerPropertiesAdapterFactory implements IAdapterFactory, 
 			
 			// NEW_SERVER_ADAPTER
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
+			if( SERVER_WILDFLY_220.equals(typeId) || WILDFLY_220.equals(typeId))
+				return new Wildfly15PlusExtendedProperties(adaptable, "22.0");
 			if( SERVER_WILDFLY_210.equals(typeId) || WILDFLY_210.equals(typeId))
 				return new Wildfly15PlusExtendedProperties(adaptable, "21.0");
 			if( SERVER_EAP_73.equals(typeId) || EAP_73.equals(typeId))
