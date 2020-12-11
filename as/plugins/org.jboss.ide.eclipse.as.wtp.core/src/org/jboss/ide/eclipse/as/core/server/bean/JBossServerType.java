@@ -123,6 +123,7 @@ public class JBossServerType extends ServerBeanType implements IJBossToolingCons
 		JBossServerType.WILDFLY190,JBossServerType.WILDFLY190_WEB,
 		JBossServerType.WILDFLY200,JBossServerType.WILDFLY200_WEB,
 		JBossServerType.WILDFLY210,JBossServerType.WILDFLY210_WEB,
+		JBossServerType.WILDFLY220,JBossServerType.WILDFLY220_WEB,
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
 
 
@@ -167,23 +168,4 @@ public class JBossServerType extends ServerBeanType implements IJBossToolingCons
 		return "JBoss " + getId();
 	}
 }
-JBossServerType.WILDFLY220, JBossServerType.WILDFLY220_WEB,
-		// AUTOGEN_SERVER_ADAPTER_CHUNK
-		JBossServerType.WILDFLY90, 
-		JBossServerType.WILDFLY90_WEB,
-		JBossServerType.WILDFLY100,
-		JBossServerType.WILDFLY100_WEB,
-		JBossServerType.WILDFLY110,
-		JBossServerType.WILDFLY110_WEB,
-		JBossServerType.WILDFLY120,
-		JBossServerType.WILDFLY120_WEB,
-		JBossServerType.WILDFLY130,JBossServerType.WILDFLY130_WEB,
-		JBossServerType.WILDFLY140,JBossServerType.WILDFLY140_WEB,
-		JBossServerType.WILDFLY150,JBossServerType.WILDFLY150_WEB,
-		JBossServerType.WILDFLY160,JBossServerType.WILDFLY160_WEB,
-		JBossServerType.WILDFLY170,JBossServerType.WILDFLY170_WEB,
-		JBossServerType.WILDFLY180,JBossServerType.WILDFLY180_WEB,
-		JBossServerType.WILDFLY190,JBossServerType.WILDFLY190_WEB,
-		JBossServerType.WILDFLY200,JBossServerType.WILDFLY200_WEB,
-		JBossServerType.WILDFLY210,JBossServerType.WILDFLY210_WEB,
 		
