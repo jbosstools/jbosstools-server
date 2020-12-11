@@ -40,8 +40,8 @@ public class GenerateServerAdapterMain {
 //		String newVersion = "74";
 //		boolean type = TYPE_EAP;
 
-		String oldVersion = "210";
-		String newVersion = "220";
+		String oldVersion = "220";
+		String newVersion = "230";
 		boolean type = TYPE_WFLY;
 
 		if( type == TYPE_WFLY ) {
@@ -450,12 +450,10 @@ public class GenerateServerAdapterMain {
 		out.append(CHUNK_DELIM_JAVA);
 		out.append("\n");
 		out.append(asChunks[2]);
+		out.append("JBossServerType.WILDFLY" + majorMinor + ",JBossServerType.WILDFLY" + majorMinor + "_WEB,\n\t\t");
 		out.append(CHUNK_DELIM_JAVA);
 		out.append("\n");
 		out.append(asChunks[3]);
-		out.append("JBossServerType.WILDFLY" + majorMinor + ", JBossServerType.WILDFLY" + majorMinor + "_WEB,\n\t\t");
-		out.append(CHUNK_DELIM_JAVA);
-		out.append(asChunks[2]);
 		Files.write(source, out.toString().getBytes());
 		
 	}
