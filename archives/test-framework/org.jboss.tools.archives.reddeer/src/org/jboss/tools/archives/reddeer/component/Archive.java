@@ -20,6 +20,7 @@ import org.eclipse.reddeer.swt.impl.shell.DefaultShell;
 import org.eclipse.reddeer.swt.impl.tree.DefaultTree;
 import org.eclipse.reddeer.swt.keyboard.KeyboardFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.reddeer.common.wait.TimePeriod;
 import org.eclipse.reddeer.common.wait.WaitUntil;
 import org.eclipse.reddeer.common.wait.WaitWhile;
 import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
@@ -52,44 +53,45 @@ public class Archive {
 	}
 	
 	public NewJarDialog newJarArchive() {
-		archive.select();
+		activateAndSelect();
 		new ContextMenuItem("New Archive", "JAR").select();
 		return new NewJarDialog();
 		
 	}
 	
 	public NewFolderDialog newFolder() {
-		archive.select();
+		activateAndSelect();
 		new ContextMenuItem("New Folder").select();
 		return new NewFolderDialog();
 	}
 	
 	public FilesetDialog newFileset() {
-		archive.select();
+		activateAndSelect();
 		new ContextMenuItem("New Fileset").select();
 		return new FilesetDialog();
 	}
 	
 	public LibFilesetDialog newUserLibraryFileset() {
-		archive.select();
+		activateAndSelect();
 		new ContextMenuItem("New User Library Fileset").select();
 		return new LibFilesetDialog();
 	}
 	
 	public void buildArchiveFull() {
+		new ProjectArchivesExplorer().activate();
 		archive.select();
 		new ContextMenuItem("Build Archive (Full)").select();
 		new WaitWhile(new JobIsRunning());
 	}
 	
 	public EditArchiveDialog editArchive() {
-		archive.select();
+		activateAndSelect();
 		new ContextMenuItem("Edit Archive").select();
 		return new EditArchiveDialog();
 	}
 	
 	public void deleteArchive(boolean withContextMenuItem) {
-		archive.select();
+		activateAndSelect();
 		if (withContextMenuItem) {
 			new ContextMenuItem("Delete Archive").select();
 		} else {
@@ -142,7 +144,12 @@ public class Archive {
 			new WaitUntil(new TreeContainsItem(archive.getParent(), archiveProject.getText(), archive.getText(), item));
 		} else {
 			new ProjectArchivesExplorer(archiveProject.getText());
-			new WaitUntil(new TreeContainsItem(new DefaultTree(), archiveProject.getText(), "Project Archives", archive.getText(), item));
+			new WaitUntil(new TreeContainsItem(new DefaultTree(), archiveProject.getText(), archive.getText(), item), TimePeriod.MEDIUM);
 		}
+	}
+	
+	private void activateAndSelect() {
+		new ProjectArchivesExplorer().activate();
+		archive.select();
 	}
 }

@@ -35,6 +35,7 @@ public class ProjectArchivesView extends WorkbenchView {
 	}
 	
 	public ArchiveProject getProject(String projectName) {
+		this.activate();
 		return new ArchiveProject(new DefaultTreeItem(projectName));
 	}
 	

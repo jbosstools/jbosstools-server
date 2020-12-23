@@ -20,6 +20,7 @@ import org.eclipse.reddeer.swt.impl.button.PushButton;
 import org.eclipse.reddeer.swt.impl.menu.ContextMenuItem;
 import org.eclipse.reddeer.swt.impl.shell.DefaultShell;
 import org.jboss.tools.archives.reddeer.archives.jdt.integration.LibFilesetDialog;
+import org.jboss.tools.archives.reddeer.archives.ui.ProjectArchivesView;
 
 /**
  * User library fileset retrieved from Project Archives view/explorer
@@ -40,14 +41,13 @@ public class UserLibraryFileset {
 	}
 	
 	public LibFilesetDialog editUserLibraryFileset() {
-		userLibrary.select();
+		activateAndSelect();
 		new ContextMenuItem("Edit Fileset").select();
 		return new LibFilesetDialog();
 	}
 	
 	public void deleteUserLibraryFileset(boolean withContextMenuItem) {
-		userLibrary.select();
-		
+		activateAndSelect();
 		new ContextMenuItem("Delete Fileset").select();
 		try {
 			Shell s = new DefaultShell("Delete selected nodes?");
@@ -57,6 +57,11 @@ public class UserLibraryFileset {
 			//do nothing here
 		}
 		new WaitWhile(new JobIsRunning());
+	}
+	
+	private void activateAndSelect() {
+		new ProjectArchivesView().activate();
+		userLibrary.select();
 	}
 	
 }

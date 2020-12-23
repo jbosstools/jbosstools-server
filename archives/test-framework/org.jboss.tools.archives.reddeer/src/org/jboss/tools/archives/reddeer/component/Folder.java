@@ -12,17 +12,18 @@ package org.jboss.tools.archives.reddeer.component;
 
 import org.eclipse.reddeer.common.exception.RedDeerException;
 import org.eclipse.reddeer.common.wait.WaitWhile;
-import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
 import org.eclipse.reddeer.swt.api.Shell;
 import org.eclipse.reddeer.swt.api.TreeItem;
 import org.eclipse.reddeer.swt.condition.ShellIsAvailable;
 import org.eclipse.reddeer.swt.impl.button.PushButton;
 import org.eclipse.reddeer.swt.impl.menu.ContextMenuItem;
 import org.eclipse.reddeer.swt.impl.shell.DefaultShell;
+import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
 import org.jboss.tools.archives.reddeer.archives.jdt.integration.LibFilesetDialog;
 import org.jboss.tools.archives.reddeer.archives.ui.FilesetDialog;
 import org.jboss.tools.archives.reddeer.archives.ui.NewFolderDialog;
 import org.jboss.tools.archives.reddeer.archives.ui.NewJarDialog;
+import org.jboss.tools.archives.reddeer.archives.ui.ProjectArchivesExplorer;
 
 /**
  * Folder retrieved from Project Archives view/explorer
@@ -43,37 +44,37 @@ public class Folder {
 	}
 	
 	public NewJarDialog newJarArchive() {
-		folder.select();
+		activateAndSelect();
 		new ContextMenuItem("New Archive", "JAR").select();
 		return new NewJarDialog();
 	}
 	
 	public NewFolderDialog newFolder() {
-		folder.select();
+		activateAndSelect();
 		new ContextMenuItem("New Folder").select();
 		return new NewFolderDialog();
 	}
 	
 	public FilesetDialog newFileset() {
-		folder.select();
+		activateAndSelect();
 		new ContextMenuItem("New Fileset").select();
 		return new FilesetDialog();
 	}
 	
 	public LibFilesetDialog newUserLibraryFileset() {
-		folder.select();
+		activateAndSelect();
 		new ContextMenuItem("New User Library Fileset").select();
 		return new LibFilesetDialog();
 	}
 	
 	public NewFolderDialog editFolder() {
-		folder.select();
+		activateAndSelect();
 		new ContextMenuItem("Edit Folder").select();
 		return new NewFolderDialog();
 	}
 	
 	public void deleteFolder(boolean withContextMenuItem) {
-		folder.select();
+		activateAndSelect();
 		new ContextMenuItem("Delete Folder").select();
 		try {
 			Shell s = new DefaultShell("Delete selected nodes?");
@@ -83,6 +84,11 @@ public class Folder {
 			//do nothing here
 		}
 		new WaitWhile(new JobIsRunning());
+	}
+	
+	private void activateAndSelect() {
+		new ProjectArchivesExplorer().activate();
+		folder.select();
 	}
 	
 	public Folder getFolder(String folderName) {
