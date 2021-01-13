@@ -56,9 +56,9 @@ public class ServerAdaptersTest extends AbstractTest {
 	@Parameters(name = "{0}")
 	public static ArrayList<String> data() {
 		ArrayList<String> list = new ArrayList<String>();
-		list.add("WildFly 19");
 		list.add("WildFly 20");
 		list.add("WildFly 21");
+		list.add("WildFly 22");
 		list.add("Red Hat JBoss Enterprise Application Platform 7.0");
 		list.add("Red Hat JBoss Enterprise Application Platform 7.1");
 		list.add("Red Hat JBoss Enterprise Application Platform 7.2");
