@@ -176,19 +176,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 								</configuration>
 							</execution>
 							<execution>
-								<id>install-wildfly-19.0.0.Final</id>
-								<phase>pre-integration-test</phase>
-								<goals>
-									<goal>wget</goal>
-								</goals>
-								<configuration>
-									<url>https://download.jboss.org/wildfly/19.0.0.Final/wildfly-19.0.0.Final.zip</url>
-									<sha1>38085d0d9c31440c1cdb587cc2d7ee9f974e115c</sha1>
-									<unpack>true</unpack>
-									<skip>${skipTestsOrITests}</skip>
-								</configuration>
-							</execution>
-							<execution>
 								<id>install-wildfly-20.0.0.Final</id>
 								<phase>pre-integration-test</phase>
 								<goals>
@@ -215,18 +202,33 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 								</configuration>
 							</execution>
 							<execution>
-								<id>install-wildfly-22.0.0.Final</id>
+								<id>install-wildfly-22.0.1.Final</id>
 								<phase>pre-integration-test</phase>
 								<goals>
 									<goal>wget</goal>
 								</goals>
 								<configuration>
-									<url>https://download.jboss.org/wildfly/22.0.0.Beta1/wildfly-preview-22.0.0.Beta1.zip</url>
-									<sha1>43adbd23367c94d14359dc0b76812f224d1ec2a9</sha1>
+									<url>https://download.jboss.org/wildfly/22.0.1.Final/wildfly-22.0.1.Final.zip</url>
+									<sha1>e165512de8fd86d6e2148606199027385cf968d1</sha1>
 									<unpack>true</unpack>
 									<skip>${skipTestsOrITests}</skip>
 								</configuration>
 							</execution>
+<!--
+							<execution>
+								<id>install-wildfly-23.0.0.Final</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>wget</goal>
+								</goals>
+								<configuration>
+									<url>https://download.jboss.org/wildfly/23.0.0.Final/wildfly-23.0.0.Final.zip</url>
+									<sha1>TODO</sha1>
+									<unpack>true</unpack>
+									<skip>${skipTestsOrITests}</skip>
+								</configuration>
+							<execution>
+-->
 						</executions>
 					</plugin>
 				</plugins>
