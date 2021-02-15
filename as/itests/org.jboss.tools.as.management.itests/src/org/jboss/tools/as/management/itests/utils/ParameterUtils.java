@@ -27,9 +27,9 @@ public class ParameterUtils {
 	public static final String JBOSS_EAP_72_HOME = TestConstants.JBOSS_EAP_72_HOME;
 	public static final String JBOSS_EAP_73_HOME = TestConstants.JBOSS_EAP_73_HOME;
 	// AUTOGEN_SERVER_ADAPTER_CHUNK
-	public static final String JBOSS_WILDFLY_200_HOME = TestConstants.JBOSS_WF_200_HOME;
 	public static final String JBOSS_WILDFLY_210_HOME = TestConstants.JBOSS_WF_210_HOME;
 	public static final String JBOSS_WF_220_HOME = TestConstants.JBOSS_WF_220_HOME;
+	public static final String JBOSS_WF_230_HOME = TestConstants.JBOSS_WF_230_HOME;
 	// AUTOGEN_SERVER_ADAPTER_CHUNK
 	
 	public static HashMap<String,String> serverHomeToRuntimeType = new HashMap<String, String>();
@@ -40,9 +40,9 @@ public class ParameterUtils {
 		serverHomeToRuntimeType.put(JBOSS_EAP_72_HOME, IJBossToolingConstants.EAP_72);
 		serverHomeToRuntimeType.put(JBOSS_EAP_73_HOME, IJBossToolingConstants.EAP_73);
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
-		serverHomeToRuntimeType.put(JBOSS_WILDFLY_200_HOME, IJBossToolingConstants.WILDFLY_200);
 		serverHomeToRuntimeType.put(JBOSS_WILDFLY_210_HOME, IJBossToolingConstants.WILDFLY_210);
 		serverHomeToRuntimeType.put(JBOSS_WF_220_HOME, IJBossToolingConstants.WILDFLY_220);
+		serverHomeToRuntimeType.put(JBOSS_WF_230_HOME, IJBossToolingConstants.WILDFLY_230);
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
 	}
 	
@@ -68,9 +68,9 @@ public class ParameterUtils {
 		boolean skipReqs = skipPrivateRequirements();
 		ArrayList<String> paths = new ArrayList<String>();
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
-		paths.add(JBOSS_WILDFLY_200_HOME);
 		paths.add(JBOSS_WILDFLY_210_HOME);
 		paths.add(JBOSS_WF_220_HOME);
+		paths.add(JBOSS_WF_230_HOME);
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
 		if( !skipReqs ) {
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
@@ -96,9 +96,9 @@ public class ParameterUtils {
 		boolean skipReqs = skipPrivateRequirements();
 		ArrayList<String> paths = new ArrayList<String>();
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
-		paths.add(JBOSS_WILDFLY_200_HOME);
 		paths.add(JBOSS_WILDFLY_210_HOME);
 		paths.add(JBOSS_WF_220_HOME);
+		paths.add(JBOSS_WF_230_HOME);
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
 		if( !skipReqs ) {
 			// AUTOGEN_SERVER_ADAPTER_CHUNK

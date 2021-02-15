@@ -46,6 +46,8 @@ public interface IJBossToolingConstants {
 	public static final String EAP_73 = "org.jboss.ide.eclipse.as.runtime.eap.73"; //$NON-NLS-1$
 	public static final String SERVER_EAP_73 = "org.jboss.ide.eclipse.as.eap.73"; //$NON-NLS-1$
 	// AUTOGEN_SERVER_ADAPTER_CHUNK
+	public static final String WILDFLY_230 = "org.jboss.ide.eclipse.as.runtime.wildfly.230"; //$NON-NLS-1$
+	public static final String SERVER_WILDFLY_230 = "org.jboss.ide.eclipse.as.wildfly.230"; //$NON-NLS-1$
 	public static final String WILDFLY_220 = "org.jboss.ide.eclipse.as.runtime.wildfly.220"; //$NON-NLS-1$
 	public static final String SERVER_WILDFLY_220 = "org.jboss.ide.eclipse.as.wildfly.220"; //$NON-NLS-1$
 	public static final String WILDFLY_210 = "org.jboss.ide.eclipse.as.runtime.wildfly.210"; //-NLS-1$
@@ -99,6 +101,7 @@ public interface IJBossToolingConstants {
 			WILDFLY_180,WILDFLY_190,WILDFLY_200,WILDFLY_210,
 			EAP_43,EAP_50,EAP_60, EAP_61, EAP_70, EAP_71, EAP_72, EAP_73,
 			WILDFLY_220,
+			WILDFLY_230,
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
 	};
 	// NEW_SERVER_ADAPTER Add the new runtime constant above this line
@@ -118,6 +121,7 @@ public interface IJBossToolingConstants {
 		SERVER_WILDFLY_210,
 		SERVER_EAP_73,
 		SERVER_WILDFLY_220,
+		SERVER_WILDFLY_230,
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
 	};
 	// NEW_SERVER_ADAPTER Add the new server id above this line
