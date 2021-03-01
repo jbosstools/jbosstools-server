@@ -1,26 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ JBoss, Home of Professional Open Source.
-  ~ Copyright 2018, Red Hat, Inc., and individual contributors
-  ~ as indicated by the @author tags. See the copyright.txt file in the
-  ~ distribution for a full listing of individual contributors.
-  ~
-  ~ This is free software; you can redistribute it and/or modify it
-  ~ under the terms of the GNU Lesser General Public License as
-  ~ published by the Free Software Foundation; either version 2.1 of
-  ~ the License, or (at your option) any later version.
-  ~
-  ~ This software is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-  ~ Lesser General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Lesser General Public
-  ~ License along with this software; if not, write to the Free
-  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
-  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
-  -->
-
+~ JBoss, Home of Professional Open Source
+~ Copyright 2019, Red Hat, Inc., and individual contributors as indicated
+~ by the @authors tag.
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+-->
 <xsd:schema xmlns="http://www.w3.org/2001/XMLSchema"
             targetNamespace="http://www.jboss.com/xml/ns/javaee"
             xmlns:javaee="http://xmlns.jcp.org/xml/ns/javaee"
@@ -28,13 +23,13 @@
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
-            version="12.0">
+            version="14.1">
 
     <xsd:annotation>
         <xsd:documentation>
             <![CDATA[
 
-	This is the XML Schema for the WildFly 12.0 web application deployment descriptor.
+	This is the XML Schema for the WildFly 14.0 web application deployment descriptor.
 	The deployment descriptor must be named "WEB-INF/jboss-web.xml" in
 	the WAR file.  All JBoss Web deployment descriptors must indicate
 	the JBoss schema by using the Java EE namespace:
@@ -45,8 +40,8 @@
 
         <jboss-web xmlns="http://www.jboss.com/xml/ns/javaee"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://www.jboss.com/xml/ns/javaee https://www.jboss.org/j2ee/schema/jboss-web_12_0.xsd"
-           version="12.0">
+           xsi:schemaLocation="http://www.jboss.com/xml/ns/javaee https://www.jboss.org/schema/jbossas/jboss-web_14_0.xsd"
+           version="14.0">
 
 	       ...
 
@@ -56,7 +51,7 @@
 	the schema using the xsi:schemaLocation attribute for the
 	Java EE namespace with the following location:
 
-	https://www.jboss.org/j2ee/schema/jboss-web_12_0.xsd
+	https://www.jboss.org/j2ee/schema/jboss-web_14_0.xsd
 
 	]]>
         </xsd:documentation>
@@ -74,9 +69,8 @@
         </xsd:documentation>
     </xsd:annotation>
 
-
-    <xsd:import namespace="http://xmlns.jcp.org/xml/ns/javaee" schemaLocation="https://www.jboss.org/schema/jbossas/web-app_3_1.xsd"/>
-    <xsd:include schemaLocation="https://www.jboss.org/schema/jbossas/jboss-common_7_0.xsd"/>
+    <xsd:import namespace="http://xmlns.jcp.org/xml/ns/javaee" schemaLocation="https://www.jboss.org/schema/jbossas/web-app_4_0.xsd"/>
+    <xsd:include schemaLocation="https://www.jboss.org/schema/jbossas/jboss-common_8_1.xsd"/>
 
     <xsd:element name="jboss-web" type="jboss:jboss-webType">
         <xsd:annotation>
@@ -88,7 +82,7 @@
 
     <xsd:simpleType name="jboss-web-versionType">
         <xsd:restriction base="xsd:token">
-            <xsd:enumeration value="12.0"/>
+            <xsd:enumeration value="14.0"/>
         </xsd:restriction>
     </xsd:simpleType>
 
@@ -112,7 +106,7 @@
             <xsd:element name="session-config" type="javaee:session-configType" minOccurs="0" maxOccurs="1"/>
             <xsd:element name="http-handler" type="jboss:httpHandlerType" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="overlay" type="jboss:overlayType" minOccurs="0" maxOccurs="unbounded"/>
-            <xsd:element name="security-domain" type="jboss:security-domainType" minOccurs="0"/>
+            <xsd:element name="security-domain" type="jboss:web-security-domainType" minOccurs="0"/>
             <xsd:element name="security-role" type="jboss:security-roleType" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="jacc-star-role-allow" type="jboss:jacc-star-role-allowType" minOccurs="0" maxOccurs="1"/>
             <xsd:element name="jacc-context-id" type="jboss:jacc-context-idType" minOccurs="0" maxOccurs="1"/>
@@ -136,7 +130,6 @@
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
-            <xsd:element name="replication-config" type="jboss:replication-configType" minOccurs="0" maxOccurs="1"/>
             <xsd:element name="distinct-name" type="jboss:distinct-nameType" minOccurs="0" maxOccurs="1"/>
             <xsd:element name="symbolic-linking-enabled" type="jboss:symbolic-linked-allowedType" minOccurs="0" maxOccurs="1"/>
             <xsd:element name="proactive-authentication" type="jboss:proactive-authenticationType" minOccurs="0" maxOccurs="1"/>
@@ -244,7 +237,7 @@
         </xsd:simpleContent>
     </xsd:complexType>
 
-    <xsd:complexType name="security-domainType">
+    <xsd:complexType name="web-security-domainType">
         <xsd:annotation>
             <xsd:documentation>
                 The name of a security-domain that will be used to authenticate and authorize users.
@@ -331,7 +324,7 @@
             </xsd:documentation>
         </xsd:annotation>
         <xsd:simpleContent>
-            <xsd:restriction base="javaee:generic-booleanType"/>
+            <xsd:extension base="xsd:boolean"/>
         </xsd:simpleContent>
     </xsd:complexType>
 
@@ -426,79 +419,6 @@
         </xsd:annotation>
         <xsd:simpleContent>
             <xsd:restriction base="javaee:string"/>
-        </xsd:simpleContent>
-    </xsd:complexType>
-
-    <xsd:complexType name="replication-configType">
-        <xsd:annotation>
-            <xsd:documentation>
-                <![CDATA[
-
-            HTTP Session clustering configuration (optional tags)
-
-            ]]>
-            </xsd:documentation>
-        </xsd:annotation>
-
-        <xsd:sequence>
-            <xsd:element name="cache-name" type="xsd:string" minOccurs="0">
-                <xsd:annotation>
-                    <xsd:documentation>
-                        <![CDATA[
-
-                    Clustering only: Specifies the name of the Infinispan container and cache in which to store session data.
-
-                    Default value, if not explicitly set, is determined by the application server.
-
-                    To use a specific cache within a cache container, use the form "container.cache".
-                    If unqualified, the default cache of the specified container is used.
-
-                    e.g. <cache-name>web</cache-name>
-                         <cache-name>web.dist</cache-name>
-
-                    ]]>
-                    </xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-            <xsd:element name="replication-granularity" type="jboss:replication-granularityType" minOccurs="0" default="SESSION">
-                <xsd:annotation>
-                    <xsd:documentation>
-                        <![CDATA[
-
-                    Clustering only: Determines the session replication granularity level.
-                    Possible values are:
-                            1 - "SESSION" (default)
-                            2 - "ATTRIBUTE"
-
-                    Using SESSION granularity, all session attributes are replicated if any were modified within
-                    the scope of a request. This policy is required if an object reference is shared by multiple
-                    session attributes. However, this can be inefficient if session attributes are sufficiently
-                    large and/org are modified infrequently, since all attributes must be replicated regardless
-                    of  whether they were modified or not.
-
-                    Using ATTRIBUTE granularity, only those attributes that were modified within the scope of a
-                    request are replicated. This policy is not appropriate if an object reference is shared by
-                    multiple session attributes. This can be more efficient than SESSION granularity if the
-                    session attributes are sufficiently large and/or modified infrequently.
-
-                    Examples:
-                          <replication-granularity>SESSION</replication-granularity>
-                       or
-                          <replication-granularity>ATTRIBUTE</replication-granularity>
-
-                    ]]>
-                    </xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-        </xsd:sequence>
-    </xsd:complexType>
-
-    <xsd:complexType name="replication-granularityType">
-        <xsd:simpleContent>
-            <xsd:restriction base="javaee:string">
-                <xsd:enumeration value="SESSION"/>
-                <xsd:enumeration value="ATTRIBUTE"/>
-            </xsd:restriction>
         </xsd:simpleContent>
     </xsd:complexType>
 
