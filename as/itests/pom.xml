@@ -214,7 +214,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 									<skip>${skipTestsOrITests}</skip>
 								</configuration>
 							</execution>
-<!--
 							<execution>
 								<id>install-wildfly-23.0.0.Final</id>
 								<phase>pre-integration-test</phase>
@@ -222,13 +221,12 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 									<goal>wget</goal>
 								</goals>
 								<configuration>
-									<url>https://download.jboss.org/wildfly/23.0.0.Final/wildfly-23.0.0.Final.zip</url>
-									<sha1>TODO</sha1>
+									<url>https://download.jboss.org/wildfly/23.0.0.Beta1/wildfly-23.0.0.Beta1.zip</url>
+									<sha1>05d18a1e2081623b01d9701c4ee179804c9573f5</sha1>
 									<unpack>true</unpack>
 									<skip>${skipTestsOrITests}</skip>
 								</configuration>
 							<execution>
--->
 						</executions>
 					</plugin>
 				</plugins>
