@@ -11,10 +11,9 @@
 package org.jboss.tools.as.ui.bot.itests.parametized.server;
 
 public class PomServerConstants {
-	public static final String JBOSS_190_HOME="jbosstools.test.jboss.home.19.0";
-	public static final String JBOSS_200_HOME="jbosstools.test.jboss.home.20.0";
 	public static final String JBOSS_210_HOME="jbosstools.test.jboss.home.21.0";
 	public static final String JBOSS_220_HOME="jbosstools.test.jboss.home.22.0";
+	public static final String JBOSS_230_HOME="jbosstools.test.jboss.home.23.0";
 	public static final String JBOSS_EAP_70_HOME="jbosstools.test.jboss.home.eap.7.0";
 	public static final String JBOSS_EAP_71_HOME="jbosstools.test.jboss.home.eap.7.1";
 	public static final String JBOSS_EAP_72_HOME="jbosstools.test.jboss.home.eap.7.2";
@@ -22,12 +21,12 @@ public class PomServerConstants {
 	// NEW_SERVER_ADAPTER
 
 	public static final String[] PUBLIC = new String[]{
-			JBOSS_200_HOME, JBOSS_210_HOME, JBOSS_220_HOME
+			JBOSS_210_HOME, JBOSS_220_HOME, JBOSS_230_HOME
 	};
 	// NEW_SERVER_ADAPTER
 
 	public static final String[] ALL = new String[]{
-			JBOSS_200_HOME, JBOSS_210_HOME, JBOSS_220_HOME,
+			JBOSS_210_HOME, JBOSS_220_HOME, JBOSS_230_HOME,
 			JBOSS_EAP_70_HOME, JBOSS_EAP_71_HOME,
 			JBOSS_EAP_72_HOME, JBOSS_EAP_73_HOME
 	};
