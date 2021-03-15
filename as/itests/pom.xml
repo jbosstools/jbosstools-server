@@ -22,15 +22,14 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<jbosstools.test.jboss.home.21.0>${requirementsDirectory}/wildfly-21.0.1.Final</jbosstools.test.jboss.home.21.0>
 		<jbosstools.test.jboss.home.22.0>${requirementsDirectory}/wildfly-22.0.1.Final</jbosstools.test.jboss.home.22.0>
 		<jbosstools.test.jboss.home.23.0>${requirementsDirectory}/wildfly-23.0.0.Beta1</jbosstools.test.jboss.home.23.0>
-		<jbosstools.test.jboss.home.eap.7.0>${requirementsDirectory}/jboss-eap-7.0</jbosstools.test.jboss.home.eap.7.0>
-		<jbosstools.test.jboss.home.eap.7.1>${requirementsDirectory}/jboss-eap-7.1</jbosstools.test.jboss.home.eap.7.1>
 		<jbosstools.test.jboss.home.eap.7.2>${requirementsDirectory}/jboss-eap-7.2</jbosstools.test.jboss.home.eap.7.2>
 		<jbosstools.test.jboss.home.eap.7.3>${requirementsDirectory}/jboss-eap-7.3</jbosstools.test.jboss.home.eap.7.3>
+		<jbosstools.test.jboss.home.eap.7.4>${requirementsDirectory}/jboss-eap-7.4</jbosstools.test.jboss.home.eap.7.4>
 
 		<additionalProperties></additionalProperties>
 		<!-- skipPrivateRequirements and skipTestsWithPrivateRequirements are inherited from parent pom -->
 		<runtimes.suite.scope>smoke</runtimes.suite.scope>
-		<systemProperties>-Djbosstools.test.jre.8=${jbosstools.test.jre.8} -Djbosstools.test.jre.11=${jbosstools.test.jre.11} -Djbosstools.test.jboss.home.21.0=${jbosstools.test.jboss.home.21.0} -Djbosstools.test.jboss.home.22.0=${jbosstools.test.jboss.home.22.0} -Djbosstools.test.jboss.home.23.0=${jbosstools.test.jboss.home.23.0} -Djbosstools.test.jboss.home.eap.7.1=${jbosstools.test.jboss.home.eap.7.1} -Djbosstools.test.jboss.home.eap.7.2=${jbosstools.test.jboss.home.eap.7.2} -Djbosstools.test.jboss.home.eap.7.3=${jbosstools.test.jboss.home.eap.7.3} -Dorg.jboss.tools.tests.skipPrivateRequirements=${skipPrivateRequirements} -Dorg.jboss.tools.tests.skipTestsWithPrivateRequirements=${skipTestsWithPrivateRequirements} -Djboss.org.username=${jboss.org.username} -Djboss.org.password=${jboss.org.password} -Djbosstools.test.singleruntime.location=${jbosstools.test.singleruntime.location} -Druntimes.suite.scope=${runtimes.suite.scope} ${additionalProperties}</systemProperties>
+		<systemProperties>-Djbosstools.test.jre.8=${jbosstools.test.jre.8} -Djbosstools.test.jre.11=${jbosstools.test.jre.11} -Djbosstools.test.jboss.home.21.0=${jbosstools.test.jboss.home.21.0} -Djbosstools.test.jboss.home.22.0=${jbosstools.test.jboss.home.22.0} -Djbosstools.test.jboss.home.23.0=${jbosstools.test.jboss.home.23.0} -Djbosstools.test.jboss.home.eap.7.2=${jbosstools.test.jboss.home.eap.7.2} -Djbosstools.test.jboss.home.eap.7.3=${jbosstools.test.jboss.home.eap.7.3} -Djbosstools.test.jboss.home.eap.7.4=${jbosstools.test.jboss.home.eap.7.4} -Dorg.jboss.tools.tests.skipPrivateRequirements=${skipPrivateRequirements} -Dorg.jboss.tools.tests.skipTestsWithPrivateRequirements=${skipTestsWithPrivateRequirements} -Djboss.org.username=${jboss.org.username} -Djboss.org.password=${jboss.org.password} -Djbosstools.test.singleruntime.location=${jbosstools.test.singleruntime.location} -Druntimes.suite.scope=${runtimes.suite.scope} ${additionalProperties}</systemProperties>
 	</properties>
 
 	<build>
@@ -123,19 +122,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 						<artifactId>download-maven-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>install-eap-7.1.0</id>
-								<phase>pre-integration-test</phase>
-								<goals>
-									<goal>wget</goal>
-								</goals>
-								<configuration>
-									<url>http://download-node-02.eng.bos.redhat.com/released/jboss/eap7/7.1.0/jboss-eap-7.1.0.zip</url>
-									<md5>9f608e6603a8db05316e6effd5440fca</md5>
-									<unpack>true</unpack>
-									<skip>${skipTestsWithPrivateRequirements}</skip>
-								</configuration>
-							</execution>
-							<execution>
 								<id>install-eap-7.2.0</id>
 								<phase>pre-integration-test</phase>
 								<goals>
@@ -157,6 +143,19 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 								<configuration>
 									<url>http://download-node-02.eng.bos.redhat.com/released/jboss/eap7/7.3.0/jboss-eap-7.3.0.zip</url>
 									<md5>3dba80cc1be17b00cb901441111886f3</md5>
+									<unpack>true</unpack>
+									<skip>${skipTestsWithPrivateRequirements}</skip>
+								</configuration>
+							</execution>
+							<execution>
+								<id>install-eap-7.4.0</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>wget</goal>
+								</goals>
+								<configuration>
+									<url>http://download-node-02.eng.bos.redhat.com/released/jboss/eap7/7.4.0-Beta/jboss-eap-7.4.0.Beta.zip</url>
+									<md5>db6665dd4068200db502f83fa11772ba</md5>
 									<unpack>true</unpack>
 									<skip>${skipTestsWithPrivateRequirements}</skip>
 								</configuration>

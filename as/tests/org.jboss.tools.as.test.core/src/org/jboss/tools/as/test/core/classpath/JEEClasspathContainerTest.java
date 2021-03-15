@@ -24,8 +24,6 @@ package org.jboss.tools.as.test.core.classpath;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import junit.framework.TestCase;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -37,7 +35,9 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
-import org.jboss.tools.jmx.core.test.util.TestProjectProvider;
+import org.jboss.tools.test.util.TestProjectProvider;
+
+import junit.framework.TestCase;
 
 /**
  * This class tests the jee classpath containers

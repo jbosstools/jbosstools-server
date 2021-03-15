@@ -36,13 +36,13 @@ public class GenerateServerAdapterMain {
 		File f = new File("").getCanonicalFile();
 		File jbtServer = f.getParentFile().getParentFile().getParentFile();
 		
-//		String oldVersion = "73";
-//		String newVersion = "74";
-//		boolean type = TYPE_EAP;
+		String oldVersion = "73";
+		String newVersion = "74";
+		boolean type = TYPE_EAP;
 
-		String oldVersion = "220";
-		String newVersion = "230";
-		boolean type = TYPE_WFLY;
+//		String oldVersion = "220";
+//		String newVersion = "230";
+//		boolean type = TYPE_WFLY;
 
 		if( type == TYPE_WFLY ) {
 			runWildFly(jbtServer, oldVersion, newVersion);

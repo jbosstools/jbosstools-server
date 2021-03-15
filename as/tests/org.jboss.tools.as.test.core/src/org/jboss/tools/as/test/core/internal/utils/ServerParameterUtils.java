@@ -39,9 +39,9 @@ public class ServerParameterUtils {
 		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_WILDFLY_220);
 		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_WILDFLY_230);
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
-		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_EAP_71); 
 		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_EAP_72); 
 		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_EAP_73);
+		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_EAP_74);
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
 		// NEW_SERVER_ADAPTER Add the new runtime constant above this line
 	}

@@ -45,6 +45,7 @@ public class JBossModulesDefaultClasspathModel extends InternalRuntimeClasspathM
 			IJBossToolingConstants.WILDFLY_210,
 			IJBossToolingConstants.WILDFLY_220,
 			IJBossToolingConstants.WILDFLY_230,
+			IJBossToolingConstants.EAP_74,
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
 	});
 	// NEW_SERVER_ADAPTER

@@ -30,8 +30,8 @@ import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.tools.as.test.core.internal.utils.ResourceUtils;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
-import org.jboss.tools.jmx.core.test.util.TestProjectProvider;
 import org.jboss.tools.test.util.JobUtils;
+import org.jboss.tools.test.util.TestProjectProvider;
 import org.junit.Before;
 import org.junit.Test;
 
