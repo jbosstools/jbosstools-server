@@ -110,6 +110,7 @@ public class ServerCreationTestUtils extends Assert {
 		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_73, "eap7.3.0.mf.jboss-as-server.jar");
 		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_220, "wf21.0.0.mf.jboss-as-server.jar");
 		asSystemJar.put(IJBossToolingConstants.SERVER_WILDFLY_230, "wf21.0.0.mf.jboss-as-server.jar");
+		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_74, "eap7.3.0.mf.jboss-as-server.jar");
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
 		// NEW_SERVER_ADAPTER Add the new runtime constant above this line
 		
@@ -145,6 +146,7 @@ public class ServerCreationTestUtils extends Assert {
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_73, IJBossToolingConstants.EAP_73);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_WILDFLY_220, IJBossToolingConstants.WILDFLY_220);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_WILDFLY_230, IJBossToolingConstants.WILDFLY_230);
+		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_74, IJBossToolingConstants.EAP_74);
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
 		// NEW_SERVER_ADAPTER Add the new runtime constant above this line
 		

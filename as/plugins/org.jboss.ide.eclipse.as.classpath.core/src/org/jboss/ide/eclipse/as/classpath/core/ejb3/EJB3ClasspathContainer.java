@@ -179,6 +179,7 @@ public class EJB3ClasspathContainer
                 case WILDFLY_210:
                 case WILDFLY_220:
                 case WILDFLY_230:
+                case EAP_74:
                 // AUTOGEN_SERVER_ADAPTER_CHUNK
 					ret = getEap61Jars(homePath);
 					break;

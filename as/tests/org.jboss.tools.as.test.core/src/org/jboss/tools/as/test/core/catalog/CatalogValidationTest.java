@@ -103,6 +103,13 @@ public class CatalogValidationTest extends TestCase {
 		noRootElement.add("xml.xsd");
 		noRootElement.add("wildfly-credential-reference_1_0.xsd");
 		noRootElement.add("wildfly-credential-reference_1_1.xsd");
+		//2021-03 upstream does not seem to handle correctly DTD
+		noRootElement.add("jboss-web_4_0.dtd");
+		noRootElement.add("jboss-web_4_2.dtd");
+		noRootElement.add("jboss-web_5_0.dtd");
+		noRootElement.add("jboss_4_0.dtd");
+		noRootElement.add("jboss_4_2.dtd");
+		noRootElement.add("jboss_5_0.dtd");
 	}
 	
 	@Parameters
@@ -211,7 +218,7 @@ public class CatalogValidationTest extends TestCase {
 		} catch(Exception e ) {
 			e.printStackTrace();
 			System.out.println("Failure validating catalog entry " + new Path(n.getURI()).lastSegment() + ",  " + e.getMessage());
-			fail(e.getMessage());
+			fail(e.getMessage() + " " + n.getURI());
 		} finally {
 			if( file != null ) {
 				try {

@@ -15,7 +15,7 @@
 	<properties>
 		<sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 		<enforceExcludePatternExtras>|plugins.version.*</enforceExcludePatternExtras>
-		<plugins.version.archives>3.6.307-SNAPSHOT</plugins.version.archives>
+		<plugins.version.archives>3.6.308-SNAPSHOT</plugins.version.archives>
 		<plugins.version.as>3.9.105-SNAPSHOT</plugins.version.as>
 		<plugins.version.jmx>1.10.111-SNAPSHOT</plugins.version.jmx>
 		<plugins.version.wtp>1.3.206-SNAPSHOT</plugins.version.wtp>
