@@ -61,7 +61,7 @@ public class ServerRuntimeUIConstants {
 	public static final String WF_20_0_0 = "WildFly 20.0.0 Final";
 	public static final String WF_21_0_0 = "WildFly 21.0.0 Final";
 	public static final String WF_22_0_0 = "WildFly 22.0.0 Final";
-	public static final String WF_23_0_0 = "WildFly 23.0.0 Beta1";
+	public static final String WF_23_0_0 = "WildFly 23.0.0 Final";
 
 	// Requires credentials
 	// public static final String JBEAP_610 = "JBoss EAP 6.1.0";
@@ -72,6 +72,7 @@ public class ServerRuntimeUIConstants {
 	public static final String JBEAP_710 = "Red Hat JBoss EAP 7.1.0";
 	public static final String JBEAP_720 = "Red Hat JBoss EAP 7.2.0";
 	public static final String JBEAP_730 = "Red Hat JBoss EAP 7.3.0";
+	public static final String JBEAP_740 = "Red Hat JBoss EAP 7.4.0";
 	public static final String JPP_610 = "JBoss Portal Platform 6.1.0";
 
 	
@@ -91,7 +92,7 @@ public class ServerRuntimeUIConstants {
 //	public static final String[] MANUAL_DOWNLOAD = new String[]{JPP_600,JBEAP_600, JBEAP_601};
 
 	public static final String[] ZERO_DOLLAR = new String[] { 
-			JBEAP_700, JBEAP_710, JBEAP_720, JBEAP_730};
+			JBEAP_700, JBEAP_710, JBEAP_720, JBEAP_730, JBEAP_740};
 
 	public static final String[] ALL_DOWNLOADS = Stream
 			.concat(Arrays.stream(FREE_DOWNLOADS), Arrays.stream(ZERO_DOLLAR)).toArray(String[]::new);
@@ -150,6 +151,7 @@ public class ServerRuntimeUIConstants {
 		addEntry(JBEAP_710, 	"Red Hat JBoss EAP 7.1", "7.1",	"EAP", 		"jboss-eap-7.1", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(JBEAP_720, 	"Red Hat JBoss EAP 7.2", "7.2",	"EAP", 		"jboss-eap-7.2", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(JBEAP_730, 	"Red Hat JBoss EAP 7.3", "7.3",	"EAP", 		"jboss-eap-7.3", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
+		addEntry(JBEAP_740, 	"Red Hat JBoss EAP 7.4", "7.4",	"EAP", 		"jboss-eap-7.4", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(JPP_610, 		"JBoss Portal 6.1",		"6.1", "JPP", 		"jboss-jpp-6.1", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, as7EditorPorts());
 		
 		

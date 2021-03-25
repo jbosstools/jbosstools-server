@@ -63,6 +63,7 @@ public class ServerAdaptersTest extends AbstractTest {
 		list.add("Red Hat JBoss Enterprise Application Platform 7.1");
 		list.add("Red Hat JBoss Enterprise Application Platform 7.2");
 		list.add("Red Hat JBoss Enterprise Application Platform 7.3");
+		list.add("Red Hat JBoss Enterprise Application Platform 7.4 (Tech Preview)");
 
 		return list;
 	}
