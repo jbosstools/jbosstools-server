@@ -221,7 +221,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 								</goals>
 								<configuration>
 									<url>https://download.jboss.org/wildfly/23.0.0.Final/wildfly-23.0.0.Final.zip</url>
-									<sha1>8c6744f6ed323e1728aacce6d4935de307d7d571</sha1>
+									<sha1>83e165f34eb85d593117aa51bb4a24ceb6ce8a53</sha1>
 									<unpack>true</unpack>
 									<skip>${skipTestsOrITests}</skip>
 								</configuration>
