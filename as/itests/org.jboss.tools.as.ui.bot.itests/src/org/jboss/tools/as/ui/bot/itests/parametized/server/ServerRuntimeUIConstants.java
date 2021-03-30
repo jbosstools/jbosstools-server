@@ -61,7 +61,7 @@ public class ServerRuntimeUIConstants {
 	public static final String WF_20_0_0 = "WildFly 20.0.0 Final";
 	public static final String WF_21_0_0 = "WildFly 21.0.0 Final";
 	public static final String WF_22_0_0 = "WildFly 22.0.0 Final";
-	public static final String WF_23_0_0 = "WildFly 23.0.0 Beta1";
+	public static final String WF_23_0_0 = "WildFly 23.0.0 Final";
 
 	// Requires credentials
 	// public static final String JBEAP_610 = "JBoss EAP 6.1.0";
@@ -72,6 +72,7 @@ public class ServerRuntimeUIConstants {
 	public static final String JBEAP_710 = "Red Hat JBoss EAP 7.1.0";
 	public static final String JBEAP_720 = "Red Hat JBoss EAP 7.2.0";
 	public static final String JBEAP_730 = "Red Hat JBoss EAP 7.3.0";
+	public static final String JBEAP_740 = "Red Hat JBoss EAP 7.4.0 (Tech Preview)";
 	public static final String JPP_610 = "JBoss Portal Platform 6.1.0";
 
 	
@@ -82,21 +83,21 @@ public class ServerRuntimeUIConstants {
 
 	
 	public static final String[] LATEST_MAJORS_FREE_DOWNLOADS = new String[] {
-			WF_21_0_0, WF_22_0_0, WF_23_0_0, };
+			WF_21_0_0, WF_22_0_0, WF_23_0_0 };
 
 	
 	public static final String[] FREE_DOWNLOADS = new String[] {
-			WF_21_0_0, WF_22_0_0, WF_23_0_0, }; 
+			WF_21_0_0, WF_22_0_0, WF_23_0_0 }; 
 
 //	public static final String[] MANUAL_DOWNLOAD = new String[]{JPP_600,JBEAP_600, JBEAP_601};
 
 	public static final String[] ZERO_DOLLAR = new String[] { 
-			JBEAP_700, JBEAP_710, JBEAP_720, JBEAP_730};
+			JBEAP_700, JBEAP_710, JBEAP_720, JBEAP_730, JBEAP_740};
 
 	public static final String[] ALL_DOWNLOADS = Stream
 			.concat(Arrays.stream(FREE_DOWNLOADS), Arrays.stream(ZERO_DOLLAR)).toArray(String[]::new);
 
-	public static final String[] SMOKETEST_DOWNLOADS = new String[] { JBEAP_730, WF_22_0_0};
+	public static final String[] SMOKETEST_DOWNLOADS = new String[] { JBEAP_730, WF_23_0_0};
 
 	private static HashMap<String, ModelWrapper> expectations = null;
 
@@ -141,7 +142,7 @@ public class ServerRuntimeUIConstants {
 		addEntry(WF_20_0_0, 	"WildFly 20.0",			"20.0", "WildFly", 	"wildfly-20.0.0.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(WF_21_0_0, 	"WildFly 21.0",			"21.0", "WildFly", 	"wildfly-21.0.1.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(WF_22_0_0, 	"WildFly 22.0",			"22.0", "WildFly", 	"wildfly-22.0.0.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
-		addEntry(WF_23_0_0, 	"WildFly 23.0",			"23.0", "WildFly", 	"wildfly-23.0.0.Beta1",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
+		addEntry(WF_23_0_0, 	"WildFly 23.0",			"23.0", "WildFly", 	"wildfly-23.0.0.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(JBEAP_610, 	"Red Hat JBoss EAP 6.1", "6.1",	"EAP", 		"jboss-eap-6.1", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, as7EditorPorts());
 		addEntry(JBEAP_620, 	"Red Hat JBoss EAP 6.2", "6.2",	"EAP", 		"jboss-eap-6.2", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, as7EditorPorts());
 		addEntry(JBEAP_630, 	"Red Hat JBoss EAP 6.3", "6.3",	"EAP",		"jboss-eap-6.3", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, as7EditorPorts());
@@ -150,6 +151,7 @@ public class ServerRuntimeUIConstants {
 		addEntry(JBEAP_710, 	"Red Hat JBoss EAP 7.1", "7.1",	"EAP", 		"jboss-eap-7.1", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(JBEAP_720, 	"Red Hat JBoss EAP 7.2", "7.2",	"EAP", 		"jboss-eap-7.2", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(JBEAP_730, 	"Red Hat JBoss EAP 7.3", "7.3",	"EAP", 		"jboss-eap-7.3", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
+		addEntry(JBEAP_740, 	"Red Hat JBoss EAP 7.4 (Tech Preview)", "7.4",	"EAP", 		"jboss-eap-7.4", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(JPP_610, 		"JBoss Portal 6.1",		"6.1", "JPP", 		"jboss-jpp-6.1", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, as7EditorPorts());
 		
 		
