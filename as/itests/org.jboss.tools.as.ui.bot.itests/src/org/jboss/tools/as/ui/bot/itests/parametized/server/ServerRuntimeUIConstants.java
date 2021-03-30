@@ -72,7 +72,7 @@ public class ServerRuntimeUIConstants {
 	public static final String JBEAP_710 = "Red Hat JBoss EAP 7.1.0";
 	public static final String JBEAP_720 = "Red Hat JBoss EAP 7.2.0";
 	public static final String JBEAP_730 = "Red Hat JBoss EAP 7.3.0";
-	public static final String JBEAP_740 = "Red Hat JBoss EAP 7.4.0";
+	public static final String JBEAP_740 = "Red Hat JBoss EAP 7.4.0 (Tech Preview)";
 	public static final String JPP_610 = "JBoss Portal Platform 6.1.0";
 
 	
@@ -140,7 +140,7 @@ public class ServerRuntimeUIConstants {
 		addEntry(WF_18_0_0, 	"WildFly 18.0",			"18.0", "WildFly", 	"wildfly-18.0.0.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(WF_19_0_0, 	"WildFly 19.0",			"19.0", "WildFly", 	"wildfly-19.0.0.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(WF_20_0_0, 	"WildFly 20.0",			"20.0", "WildFly", 	"wildfly-20.0.0.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
-		addEntry(WF_21_0_0, 	"WildFly 21.0",			"21.0", "WildFly", 	"wildfly-21.0.0.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
+		addEntry(WF_21_0_0, 	"WildFly 21.0",			"21.0", "WildFly", 	"wildfly-21.0.1.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(WF_22_0_0, 	"WildFly 22.0",			"22.0", "WildFly", 	"wildfly-22.0.0.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(WF_23_0_0, 	"WildFly 23.0",			"23.0", "WildFly", 	"wildfly-23.0.0.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(JBEAP_610, 	"Red Hat JBoss EAP 6.1", "6.1",	"EAP", 		"jboss-eap-6.1", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, as7EditorPorts());
@@ -151,7 +151,7 @@ public class ServerRuntimeUIConstants {
 		addEntry(JBEAP_710, 	"Red Hat JBoss EAP 7.1", "7.1",	"EAP", 		"jboss-eap-7.1", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(JBEAP_720, 	"Red Hat JBoss EAP 7.2", "7.2",	"EAP", 		"jboss-eap-7.2", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(JBEAP_730, 	"Red Hat JBoss EAP 7.3", "7.3",	"EAP", 		"jboss-eap-7.3", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
-		addEntry(JBEAP_740, 	"Red Hat JBoss EAP 7.4", "7.4",	"EAP", 		"jboss-eap-7.4", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
+		addEntry(JBEAP_740, 	"Red Hat JBoss EAP 7.4 (Tech Preview)", "7.4",	"EAP", 		"jboss-eap-7.4", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(JPP_610, 		"JBoss Portal 6.1",		"6.1", "JPP", 		"jboss-jpp-6.1", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, as7EditorPorts());
 		
 		
