@@ -36,12 +36,12 @@ public class GenerateServerAdapterMain {
 		File f = new File("").getCanonicalFile();
 		File jbtServer = f.getParentFile().getParentFile().getParentFile();
 		
-		String oldVersion = "73";
-		String newVersion = "74";
+		String oldVersion = "74";
+		String newVersion = "75";
 		boolean type = TYPE_EAP;
 
-//		String oldVersion = "220";
-//		String newVersion = "230";
+//		String oldVersion = "230";
+//		String newVersion = "240";
 //		boolean type = TYPE_WFLY;
 
 		if( type == TYPE_WFLY ) {
@@ -83,10 +83,13 @@ public class GenerateServerAdapterMain {
 		addToParameterUtils(jbtServerRoot, TYPE_WFLY, newVersion);
 		addToServerParameterUtils(jbtServerRoot, TYPE_WFLY, newVersion);
 		addToServerCreationTestUtils(jbtServerRoot, TYPE_WFLY, newVersion);
+		
+		addToPomServerConstantsWfly(jbtServerRoot, newVersion);
+		addToServerAdaptersTestWfly(jbtServerRoot, newVersion);
+		addToServerRuntimeUIConstantsWfly(jbtServerRoot, newVersion);
 	}
 
 	private void runEAP(File jbtServerRoot, String oldVersion, String newVersion) throws IOException {
-		// TODO Auto-generated method stub
 		String oldServerId = "org.jboss.ide.eclipse.as.eap." + oldVersion;
 		String newServerId = "org.jboss.ide.eclipse.as.eap." + newVersion;
 		String toolingConstantsServerKey = getServerToolingConstant(TYPE_EAP, newVersion);
@@ -114,9 +117,132 @@ public class GenerateServerAdapterMain {
 		addToAsCorePluginPropertiesEAP(jbtServerRoot, newVersion);
 		addToAsCorePluginXmlEAPImpl(jbtServerRoot, newVersion);
 		addToJbossServerTypeEAP(jbtServerRoot, newVersion);
+		
+		addToPomServerConstantsEAP(jbtServerRoot, newVersion);
+		addToServerAdaptersTestEAP(jbtServerRoot, newVersion);
+		addToServerRuntimeUIConstantsEAP(jbtServerRoot, newVersion);
+	}
+	public static final String JBEAP_730 = "Red Hat JBoss EAP 7.3.0";
+	private void addToServerRuntimeUIConstantsEAP(File jbtServerRoot, String newVersion) throws IOException {
+		// TODO Auto-generated method stub
+		String path = "as/itests/org.jboss.tools.as.ui.bot.itests/src/org/jboss/tools/as/ui/bot/itests/parametized/server/ServerRuntimeUIConstants.java";
+		Path source = jbtServerRoot.toPath().resolve(path);
+		
+		String customDelim = CHUNK_DELIM_JAVA + "\n";
+		String[] asChunks = readFileAsChunksJava(source, customDelim);
+		String char2 = newVersion.substring(0,2);
+		String eapxy0 = "JBEAP_" + char2 + "0";
+		String majorMinor = getMajorDotMinor(newVersion);
+		
+		
+		String chunk1Addition = "public static final String JBEAP_" + char2 + "0 = \"Red Hat JBoss EAP " + getMajorDotMinor(newVersion) + ".0\";\n\t";
+		asChunks[1] = asChunks[1] + chunk1Addition;
+		asChunks[7] = asChunks[7] + eapxy0 + ",\n\t\t\t";
+		asChunks[9] = "\t\t\t" + eapxy0 + "," + 
+					asChunks[9].substring(asChunks[9].indexOf("\n"));
+		
+		
+		String chunk11Addition = "addEntry(" + eapxy0 + ", 	\"Red Hat JBoss EAP " 
+				+ majorMinor + " (Tech Preview)\", \"" + majorMinor + "\",	\"EAP\", 		\"jboss-eap-" + majorMinor + 
+				"\", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());\n\t\t";
+		asChunks[11] = asChunks[11] + chunk11Addition;
+		String out = String.join(customDelim, Arrays.asList(asChunks));
+		Files.write(source, out.toString().getBytes());
+	}
+	private void addToServerRuntimeUIConstantsWfly(File jbtServerRoot, String newVersion) throws IOException {
+		// TODO Auto-generated method stub
+		String path = "as/itests/org.jboss.tools.as.ui.bot.itests/src/org/jboss/tools/as/ui/bot/itests/parametized/server/ServerRuntimeUIConstants.java";
+		Path source = jbtServerRoot.toPath().resolve(path);
+		
+		String customDelim = CHUNK_DELIM_JAVA + "\n";
+		String[] asChunks = readFileAsChunksJava(source, customDelim);
+		String char2 = newVersion.substring(0,2);
+		String chunk0Addition = "public static final String WF_" + char2 + "_0_0 = \"WildFly " + char2 + ".0.0 Final\";\n\t";
+		asChunks[0] = asChunks[0] + chunk0Addition;
+		asChunks[3] = asChunks[3] + "WF_" + char2 + "_0_0,\n\t\t\t";
+		asChunks[5] = asChunks[5] + "WF_" + char2 + "_0_0,\n\t\t\t";
+		asChunks[9] = asChunks[9].substring(0, asChunks[9].indexOf("\n")) + "\n\t\t\tWF_" + char2 + "_0_0,\n\t\t\t";
+		
+		String chunk10Addition = "addEntry(WF_" + char2 + "_0_0, 	\"WildFly " + char2 + 
+					".0\",			\"" + char2 + ".0\", \"WildFly\", 	\"wildfly-" + char2 + 
+					".0.0.Final\",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());\n\t\t";
+		asChunks[10] = asChunks[10] + chunk10Addition;
+		String out = String.join(customDelim, Arrays.asList(asChunks));
+		Files.write(source, out.toString().getBytes());
 	}
 
 
+	private void addToPomServerConstantsEAP(File jbtServerRoot, String newVersion) throws IOException {
+		String path = "as/itests/org.jboss.tools.as.ui.bot.itests/src/org/jboss/tools/as/ui/bot/itests/parametized/server/PomServerConstants.java";
+		Path source = jbtServerRoot.toPath().resolve(path);
+		
+		String customDelim = CHUNK_DELIM_JAVA + "\n";
+		String[] asChunks = readFileAsChunksJava(source, customDelim);
+		
+		String eapHome = asChunks[2];
+		String nextLine = "public static final String JBOSS_EAP_" + newVersion + "_HOME=\"jbosstools.test.jboss.home.eap." + getMajorDotMinor(newVersion) + "\";";
+		asChunks[2] = eapHome + nextLine + "\n\t";
+
+		String all7 = "JBOSS_EAP_" + newVersion + "_HOME,\n\t\t\t";
+		asChunks[7] = asChunks[7] + all7;
+		String out = String.join(customDelim, Arrays.asList(asChunks));
+		Files.write(source, out.toString().getBytes());
+	}
+
+	private void addToPomServerConstantsWfly(File jbtServerRoot, String newVersion) throws IOException {
+		String path = "as/itests/org.jboss.tools.as.ui.bot.itests/src/org/jboss/tools/as/ui/bot/itests/parametized/server/PomServerConstants.java";
+		Path source = jbtServerRoot.toPath().resolve(path);
+		
+		String customDelim = CHUNK_DELIM_JAVA + "\n";
+		String[] asChunks = readFileAsChunksJava(source, customDelim);
+		
+		String flyHome = asChunks[1];
+		String nextLine = "public static final String JBOSS_" + newVersion + "_HOME=\"jbosstools.test.jboss.home." + getMajorDotMinor(newVersion) + "\";";
+		asChunks[1] = flyHome + nextLine + "\n\t";
+
+		String all4 = "JBOSS_" + newVersion + "_HOME,\n\t\t\t";
+		asChunks[4] = asChunks[4] + all4;
+
+		String all6 = "JBOSS_" + newVersion + "_HOME,\n\t\t\t";
+		asChunks[6] = asChunks[6] + all6;
+
+		String out = String.join(customDelim, Arrays.asList(asChunks));
+		Files.write(source, out.toString().getBytes());
+	}
+	
+	private void addToServerAdaptersTestWfly(File jbtServerRoot, String newVersion) throws IOException {
+		String path = "as/itests/org.jboss.tools.as.ui.bot.itests/src/org/jboss/tools/as/ui/bot/itests/parametized/server/ServerAdaptersTest.java";
+		Path source = jbtServerRoot.toPath().resolve(path);
+		
+		String customDelim = CHUNK_DELIM_JAVA + "\n";
+		String[] asChunks = readFileAsChunksJava(source, customDelim);
+		
+		String char2 = newVersion.substring(0,2);
+		String char3 = newVersion;
+		String char4 = newVersion.substring(0,2) + "." + newVersion.substring(2);
+
+		String flyHome = asChunks[1];
+		String nextLine = "list.add(\"WildFly " + char2 + "\");\n\t\t";
+		asChunks[1] = flyHome + nextLine;
+
+		String out = String.join(customDelim, Arrays.asList(asChunks));
+		Files.write(source, out.toString().getBytes());
+	}
+
+	private void addToServerAdaptersTestEAP(File jbtServerRoot, String newVersion) throws IOException {
+		String path = "as/itests/org.jboss.tools.as.ui.bot.itests/src/org/jboss/tools/as/ui/bot/itests/parametized/server/ServerAdaptersTest.java";
+		Path source = jbtServerRoot.toPath().resolve(path);
+		
+		String customDelim = CHUNK_DELIM_JAVA + "\n";
+		String[] asChunks = readFileAsChunksJava(source, customDelim);
+		
+		String flyHome = asChunks[2];
+		String nextLine = "list.add(\"Red Hat JBoss Enterprise Application Platform " + getMajorDotMinor(newVersion) + "\");\n\t\t";
+		asChunks[2] = flyHome + nextLine;
+
+		String out = String.join(customDelim, Arrays.asList(asChunks));
+		Files.write(source, out.toString().getBytes());
+	}
 
 	private void addToServerParameterUtils(File jbtServerRoot, boolean type, String newVersion) throws IOException {
 		// TODO Auto-generated method stub
