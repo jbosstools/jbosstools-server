@@ -762,4 +762,55 @@
 		</component>
 	</extension>
 
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="org.jboss.ide.eclipse.as.ui.wildflyjar.WildflyJarLaunchConfigurationTabGroup"
+            id="org.jboss.ide.eclipse.as.ui.wildflyjar.WildflyJarLaunchConfigurationTabGroup"
+            type="org.jboss.tools.as.core.server.wildflyjar.WildflyJarLaunchConfiguration">
+      </launchConfigurationTabGroup>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            configTypeID="org.jboss.tools.as.core.server.wildflyjar.WildflyJarLaunchConfiguration"
+            id="org.jboss.ide.eclipse.as.ui.wildflyjar.WildflyJarLaunchConfigurationImage"
+            icon="$nl$/icons/wildfly_icon_16.png">
+      </launchConfigurationTypeImage>
+   </extension>
+   
+   
+   <extension point="org.eclipse.debug.ui.launchShortcuts">
+   <shortcut
+         id="org.jboss.ide.eclipse.as.ui.wildflyjar.runAsWildflyJar"
+         label="Wildfly Jar..."
+         description="Run this project using the wildfly-jar maven build plugin"
+         modes="run, debug, profile"
+         path="aaa"
+         icon="$nl$/icons/wildfly_icon_16.png"
+         class="org.jboss.ide.eclipse.as.ui.wildflyjar.RunAsWildflyJar">
+      <contextualLaunch>
+        <enablement>
+           <with variable="selection">
+             <count value="1"/>
+             <iterate>
+                <test property="org.jboss.ide.eclipse.as.ui.wildflyjar.isWildflyJar" value="true"/>
+             </iterate>
+           </with>
+         </enablement>
+      </contextualLaunch>
+      <configurationType
+           id="org.jboss.tools.as.core.server.wildflyjar.WildflyJarLaunchConfiguration">
+      </configurationType>
+   </shortcut>
+</extension>
+<extension point="org.eclipse.core.expressions.propertyTesters">
+   <propertyTester
+      id="org.jboss.ide.eclipse.as.ui.wildflyjar.propertyTester"
+      namespace="org.jboss.ide.eclipse.as.ui.wildflyjar"
+      properties="isWildflyJar"
+      type="java.lang.Object"
+      class="org.jboss.ide.eclipse.as.ui.wildflyjar.WildflyJarPropertyTester">
+   </propertyTester>
+</extension>   
 </plugin>
