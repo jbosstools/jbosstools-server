@@ -96,7 +96,9 @@ public abstract class AbstractStacksDownloadRuntimesProvider implements IDownloa
 					IRuntimeType rtType = ServerCore.findRuntimeType(wtpRT);
 					if( rtType != null ) {
 						DownloadRuntime dr = createDownloadRuntime(workingRT, wtpRT, category);
-						list.add(dr);
+						if( dr != null ) {
+							list.add(dr);
+						}
 					}
 				}
 			}
@@ -107,9 +109,12 @@ public abstract class AbstractStacksDownloadRuntimesProvider implements IDownloa
 	
 	private DownloadRuntime createDownloadRuntime(org.jboss.jdf.stacks.model.Runtime workingRT, String wtpRT, String category) {
 		// We can make a DL out of this
+		String dlUrl = getDownloadURL(workingRT);
+		if( dlUrl == null )
+			return null;
+		
 		String fileSize = workingRT.getLabels().getProperty(LABEL_FILE_SIZE);
 		String license = workingRT.getLicense();
-		String dlUrl = getDownloadURL(workingRT);
 		String id = workingRT.getId();
 		String legacyId = getLegacyId(id);
 		String effectiveId = legacyId == null ? id : legacyId;
@@ -162,7 +167,6 @@ public abstract class AbstractStacksDownloadRuntimesProvider implements IDownloa
 		// First look for an override for this specific OS
 		String os = Platform.getOS();
 		Object o = workingRT.getLabels().get("additionalDownloadURLs");
-		String firstPossibleDL = null;
 		if( o instanceof Map ) {
 			Map m = (Map)o;
 			Iterator i = m.keySet().iterator();
@@ -172,15 +176,12 @@ public abstract class AbstractStacksDownloadRuntimesProvider implements IDownloa
 					// current impl looks for an exact match... we may need to update this
 					// to a soft match, like users running on hpux should match linux
 					return (String)m.get(iNext);
-				} else if( firstPossibleDL == null ) {
-					firstPossibleDL = (String)m.get(iNext);
 				}
 			}
 		}
 		String dlUrl = workingRT.getDownloadUrl();
 		if( dlUrl == null ) {
-			// So that at least something can get downloaded if its not an exact match
-			return firstPossibleDL;
+			return null;
 		}
 		return dlUrl;
 	}
