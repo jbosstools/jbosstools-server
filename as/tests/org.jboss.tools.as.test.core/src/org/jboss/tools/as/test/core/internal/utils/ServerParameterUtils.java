@@ -35,9 +35,9 @@ public class ServerParameterUtils {
 	
 	static {
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
-		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_WILDFLY_210);
 		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_WILDFLY_220);
 		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_WILDFLY_230);
+		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_WILDFLY_240);
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
 		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_EAP_72); 
 		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_EAP_73);
