@@ -12,6 +12,8 @@ package org.jboss.ide.eclipse.as.core.server.bean;
 
 import java.io.File;
 
+import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanTypeWildfly10Plus.ServerBeanTypeWildfly10PlusCondition;
+
 public class ServerBeanTypeWildfly10PlusWeb extends JBossServerType {
 	private static final String WF_100_RELEASE_MANIFEST_KEY = "JBoss-Product-Release-Version"; //$NON-NLS-1$
 	public ServerBeanTypeWildfly10PlusWeb(String vers4Char, String serverTypeId) {
@@ -42,12 +44,8 @@ public class ServerBeanTypeWildfly10PlusWeb extends JBossServerType {
 		public String getFullVersion(File location, File systemFile) {
 			String vers = ServerBeanType.getManifestPropFromJBossModulesFolder(new File[]{new File(location, "modules")}, 
 					"org.jboss.as.product", "wildfly-web/dir/META-INF", WF_100_RELEASE_MANIFEST_KEY);
-			if( vers != null && vers.startsWith(vers4Char.substring(0,3))) {
-				return vers;
-			}
-			return null;
+			return ServerBeanTypeWildfly10PlusCondition.getFullVersionWildFly10Impl(vers, this.vers4Char, this.serverTypeId);
 		}
-
 		
 		public boolean isServerRoot(File location) {
 			return getFullVersion(location, null) != null;
