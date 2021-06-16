@@ -104,6 +104,12 @@
 	<!-- AUTOGEN_SERVER_ADAPTER_CHUNK -->
 	<adapter>
       <runtime-component
+	            id="org.jboss.ide.eclipse.as.runtime.wildfly.component" version="24.0"/>
+      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossClasspathProviderAdapterFactory"/>
+      <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
+	</adapter>
+	<adapter>
+      <runtime-component
 	            id="org.jboss.ide.eclipse.eap.runtime.component" version="7.4"/>
       <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.internal.JBossClasspathProviderAdapterFactory"/>
       <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
