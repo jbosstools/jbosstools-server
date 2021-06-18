@@ -107,6 +107,7 @@
 
 
 
+
 <!-- XSD -->
 		<uri name="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/oasis-200401-wss-wssecurity-utility-1.0.xsd"/>
 		<uri name="http://java.sun.com/xml/ns/javaee" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb3-spec-2_0.xsd"/>
@@ -152,10 +153,10 @@
 		<uri name="http://www.jboss.org/j2ee/schema/jboss_5_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss_5_0.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jboss_5_1.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss_5_1.xsd"/>
 		<uri name="http://www.jboss.org/j2ee/schema/jbossws-web-services_1_0.xsd" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jbossws-web-services_1_0.xsd"/>
+		<uri name="http://www.jboss.org/xml/ns/jbxb" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jbxb_1_0.xsd"/>
 		<uri name="http://www.w3.org/2000/09/xmldsig#" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/xmldsig-core-schema.xsd"/>
 		<uri name="http://www.w3.org/2005/08/addressing" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/ws-addr.xsd"/>
 		<uri name="http://www.w3.org/XML/1998/namespace" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/xml.xsd"/>
-		<uri name="https://www.jboss.org/xml/ns/jbxb" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jbxb_1_0.xsd"/>
 		<uri name="urn:clustering:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb-clustering_1_0.xsd"/>
 		<uri name="urn:clustering:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb-clustering_1_1.xsd"/>
 		<uri name="urn:container-interceptors:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb-container-interceptors_1_0.xsd"/>
@@ -172,6 +173,7 @@
 		<uri name="urn:elytron:client:1.4" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/elytron-client-1_4.xsd"/>
 		<uri name="urn:elytron:client:1.5" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/elytron-client-1_5.xsd"/>
 		<uri name="urn:elytron:client:1.6" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/elytron-client-1_6.xsd"/>
+		<uri name="urn:elytron:client:1.7" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/elytron-client-1_7.xsd"/>
 		<uri name="urn:iiop" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb-iiop_1_0.xsd"/>
 		<uri name="urn:iiop" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb-iiop_1_1.xsd"/>
 		<uri name="urn:iiop" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-ejb-iiop_1_2.xsd"/>
@@ -214,6 +216,7 @@
 		<uri name="urn:jboss:domain:14.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-config_14_0.xsd"/>
 		<uri name="urn:jboss:domain:15.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-config_15_0.xsd"/>
 		<uri name="urn:jboss:domain:16.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-config_16_0.xsd"/>
+		<uri name="urn:jboss:domain:17.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-config_17_0.xsd"/>
 		<uri name="urn:jboss:domain:2.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-config_2_0.xsd"/>
 		<uri name="urn:jboss:domain:2.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-config_2_1.xsd"/>
 		<uri name="urn:jboss:domain:2.2" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-config_2_2.xsd"/>
@@ -285,6 +288,7 @@
 		<uri name="urn:jboss:domain:infinispan:10.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-infinispan_10_0.xsd"/>
 		<uri name="urn:jboss:domain:infinispan:11.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-infinispan_11_0.xsd"/>
 		<uri name="urn:jboss:domain:infinispan:12.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-infinispan_12_0.xsd"/>
+		<uri name="urn:jboss:domain:infinispan:13.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-infinispan_13_0.xsd"/>
 		<uri name="urn:jboss:domain:infinispan:2.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-infinispan_2_0.xsd"/>
 		<uri name="urn:jboss:domain:infinispan:3.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-infinispan_3_0.xsd"/>
 		<uri name="urn:jboss:domain:infinispan:4.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/jboss-as-infinispan_4_0.xsd"/>
@@ -431,6 +435,7 @@
 		<uri name="urn:jboss:domain:transactions:3.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-txn_3_0.xsd"/>
 		<uri name="urn:jboss:domain:transactions:4.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-txn_4_0.xsd"/>
 		<uri name="urn:jboss:domain:transactions:5.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-txn_5_0.xsd"/>
+		<uri name="urn:jboss:domain:transactions:6.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-txn_6_0.xsd"/>
 		<uri name="urn:jboss:domain:undertow:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-undertow_1_0.xsd"/>
 		<uri name="urn:jboss:domain:undertow:1.1" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-undertow_1_1.xsd"/>
 		<uri name="urn:jboss:domain:undertow:1.2" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-undertow_1_2.xsd"/>
@@ -519,6 +524,7 @@
 		<uri name="urn:wildfly:elytron:11.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-elytron_11_0.xsd"/>
 		<uri name="urn:wildfly:elytron:12.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-elytron_12_0.xsd"/>
 		<uri name="urn:wildfly:elytron:13.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-elytron_13_0.xsd"/>
+		<uri name="urn:wildfly:elytron:14.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-elytron_14_0.xsd"/>
 		<uri name="urn:wildfly:elytron:2.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-elytron_2_0.xsd"/>
 		<uri name="urn:wildfly:elytron:3.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-elytron_3_0.xsd"/>
 		<uri name="urn:wildfly:elytron:4.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-elytron_4_0.xsd"/>
@@ -543,6 +549,7 @@
 		<uri name="urn:wildfly:microprofile-reactive-messaging-smallrye:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-microprofile-reactive-messaging-smallrye_1_0.xsd"/>
 		<uri name="urn:wildfly:microprofile-reactive-streams-operators-smallrye:1.0" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/wildfly-microprofile-reactive-streams-operators-smallrye_1_0.xsd"/>
 		<uri name="urn:xnio:3.5" uri="platform:/plugin/org.jboss.tools.as.catalog/schema/xsd/xnio_3_5.xsd"/>
+
        </catalogContribution>
    </extension>
 </plugin>

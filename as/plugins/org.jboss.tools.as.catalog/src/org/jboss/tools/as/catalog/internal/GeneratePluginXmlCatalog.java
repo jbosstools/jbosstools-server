@@ -49,11 +49,11 @@ public class GeneratePluginXmlCatalog {
 			sb.append("\n         point=\"org.eclipse.wst.xml.core.catalogContributions\">"); //$NON-NLS-1$
 			sb.append("\n       <catalogContribution>"); //$NON-NLS-1$
 			
-			sb.append("\n<!-- DTDs -->"); //$NON-NLS-1$
+			sb.append("\n<!-- DTDs -->\n"); //$NON-NLS-1$
 			String ret = runDTDs(true);
 			sb.append(ret);
 			
-			sb.append("\n\n\n<!-- XSD -->"); //$NON-NLS-1$
+			sb.append("\n\n\n<!-- XSD -->\n"); //$NON-NLS-1$
 			String ret2 = runXSDs(true);
 			sb.append(ret2);
 			
