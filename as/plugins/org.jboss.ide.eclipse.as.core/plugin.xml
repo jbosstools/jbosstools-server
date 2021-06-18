@@ -3093,4 +3093,17 @@
      </supported>
    </extension>
 <!-- AUTOGEN_SERVER_ADAPTER_CHUNK -->
+
+
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="org.jboss.tools.as.core.server.wildflyjar.WildflyJarLaunchConfigurationDelegate"
+            id="org.jboss.tools.as.core.server.wildflyjar.WildflyJarLaunchConfiguration"
+            sourceLocatorId="org.eclipse.m2e.launching.MavenSourceLocator"
+            sourcePathComputerId="org.eclipse.m2e.launching.MavenSourceComputer"
+            modes="run, debug"
+            name="WildFly Jar">
+      </launchConfigurationType>
+   </extension>
 </plugin>
