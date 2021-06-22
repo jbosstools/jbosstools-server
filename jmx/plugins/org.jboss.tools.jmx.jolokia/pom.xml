@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.jboss.tools.jmx</groupId>
 		<artifactId>plugins</artifactId>
-		<version>1.10.112-SNAPSHOT</version>
+		<version>1.10.200-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.jboss.tools.jmx.plugins</groupId>
@@ -19,7 +19,7 @@
 	<properties>
 		<jolokia.client.version>1.4.0</jolokia.client.version>
 		<json.simple.version>1.1.1</json.simple.version>
-		<httpcomponents.version>4.5.2</httpcomponents.version>
+		<httpcomponents.version>4.5.13</httpcomponents.version>
 		<httpcore.version>4.4.5</httpcore.version>
 		<logging.version>1.1.1</logging.version>
 	</properties>
