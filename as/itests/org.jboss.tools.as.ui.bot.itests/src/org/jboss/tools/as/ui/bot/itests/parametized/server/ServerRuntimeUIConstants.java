@@ -90,8 +90,6 @@ public class ServerRuntimeUIConstants {
 	
 	public static final String[] LATEST_MAJORS_FREE_DOWNLOADS = new String[] {
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
-			WF_21_0_0, 
-			WF_22_0_0, 
 			WF_23_0_0,
 			WF_24_0_0,
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
@@ -100,8 +98,6 @@ public class ServerRuntimeUIConstants {
 	
 	public static final String[] FREE_DOWNLOADS = new String[] {
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
-			WF_21_0_0, 
-			WF_22_0_0, 
 			WF_23_0_0,
 			WF_24_0_0,
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
