@@ -19,9 +19,6 @@
 	<properties>
 		<jolokia.client.version>1.4.0</jolokia.client.version>
 		<json.simple.version>1.1.1</json.simple.version>
-		<httpcomponents.version>4.5.13</httpcomponents.version>
-		<httpcore.version>4.4.5</httpcore.version>
-		<logging.version>1.1.1</logging.version>
 	</properties>
 
 	<build>
@@ -55,25 +52,6 @@
 							<groupId>com.googlecode.json-simple</groupId>
 							<artifactId>json-simple</artifactId>
 							<version>${json.simple.version}</version>
-						</artifactItem>
-
-
-						<artifactItem>
-							<groupId>org.apache.httpcomponents</groupId>
-							<artifactId>httpclient</artifactId>
-							<version>${httpcomponents.version}</version>
-						</artifactItem>
-						<artifactItem>
-							<groupId>org.apache.httpcomponents</groupId>
-							<artifactId>httpcore</artifactId>
-							<version>${httpcore.version}</version>
-						</artifactItem>
-
-
-						<artifactItem>
-							<groupId>commons-logging</groupId>
-							<artifactId>commons-logging</artifactId>
-							<version>${logging.version}</version>
 						</artifactItem>
 					</artifactItems>
 					<useBaseVersion>true</useBaseVersion>

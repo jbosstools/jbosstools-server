@@ -16,7 +16,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.debug.ui,
  org.apache.commons.codec;bundle-version="1.6.0",
  org.apache.httpcomponents.httpclient,
- org.apache.httpcomponents.httpcore
+ org.apache.httpcomponents.httpcore,
+ org.apache.commons.logging
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
@@ -24,8 +25,6 @@ Eclipse-LazyStart: true
 Import-Package: org.eclipse.ui.views.properties.tabbed
 Bundle-Activator: org.jboss.tools.jmx.jolokia.internal.Activator
 Bundle-ClassPath: .,
- lib/commons-logging-1.1.1.jar,
- lib/httpcore-4.4.5.jar,
  lib/json-simple-1.1.1.jar,
  lib/jolokia-client-java-1.4.0.jar,
  lib/jolokia-core-1.4.0.jar
