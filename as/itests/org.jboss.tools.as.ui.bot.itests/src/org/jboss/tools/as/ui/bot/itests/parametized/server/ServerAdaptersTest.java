@@ -57,10 +57,8 @@ public class ServerAdaptersTest extends AbstractTest {
 	public static ArrayList<String> data() {
 		ArrayList<String> list = new ArrayList<String>();
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
-		list.add("WildFly 21");
-		list.add("WildFly 22");
 		list.add("WildFly 23");
-		list.add("WildFly 24");
+		list.add("WildFly 24+");
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
 		list.add("Red Hat JBoss Enterprise Application Platform 7.0");
 		list.add("Red Hat JBoss Enterprise Application Platform 7.1");
@@ -138,6 +136,7 @@ public class ServerAdaptersTest extends AbstractTest {
 			String version = server.split(" ")[1];
 			homeFlag = Arrays.stream(PomServerConstants.getJBossHomeFlags()).filter(x -> x.contains(version))
 					.findFirst().orElse(null);
+			homeFlag = homeFlag.replaceAll("\\+","");
 		} else {
 			String version = server.split(" ")[6];
 			homeFlag = Arrays.stream(PomServerConstants.getJBossHomeFlags()).filter(x -> (x.contains(version) && x.contains("eap")))
