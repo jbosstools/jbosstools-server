@@ -4,7 +4,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 	<parent>
 		<groupId>org.jboss.tools</groupId>
 		<artifactId>as</artifactId>
-		<version>3.9.106-SNAPSHOT</version>
+		<version>3.9.107-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jboss.tools.as</groupId>
 	<artifactId>itests</artifactId>
@@ -180,8 +180,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 									<goal>wget</goal>
 								</goals>
 								<configuration>
-									<url>http://download-node-02.eng.bos.redhat.com/released/jboss/eap7/7.4.0-Beta/jboss-eap-7.4.0.Beta.zip</url>
-									<md5>db6665dd4068200db502f83fa11772ba</md5>
+									<url>http://download-node-02.eng.bos.redhat.com/released/jboss/eap7/7.4.0/jboss-eap-7.4.0.zip</url>
+									<md5>feddc39d58a29b1ed9791121a77e8b49</md5>
 									<unpack>true</unpack>
 									<skip>${skipTestsWithPrivateRequirements}</skip>
 								</configuration>

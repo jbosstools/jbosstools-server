@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jboss.tools</groupId>
 		<artifactId>as</artifactId>
-		<version>3.9.106-SNAPSHOT</version>
+		<version>3.9.107-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jboss.tools.as</groupId>
 	<artifactId>features</artifactId>
