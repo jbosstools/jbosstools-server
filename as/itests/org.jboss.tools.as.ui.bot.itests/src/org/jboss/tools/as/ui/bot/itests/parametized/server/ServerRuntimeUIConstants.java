@@ -75,7 +75,7 @@ public class ServerRuntimeUIConstants {
 	public static final String JBEAP_710 = "Red Hat JBoss EAP 7.1.0";
 	public static final String JBEAP_720 = "Red Hat JBoss EAP 7.2.0";
 	public static final String JBEAP_730 = "Red Hat JBoss EAP 7.3.0";
-	public static final String JBEAP_740 = "Red Hat JBoss EAP 7.4.0 (Tech Preview)";
+	public static final String JBEAP_740 = "Red Hat JBoss EAP 7.4.0";
 	// AUTOGEN_SERVER_ADAPTER_CHUNK
 
 	
@@ -120,7 +120,7 @@ public class ServerRuntimeUIConstants {
 
 	public static final String[] SMOKETEST_DOWNLOADS = new String[] {
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
-			JBEAP_730, 
+			JBEAP_740, 
 			WF_24_0_0,
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
 	};
@@ -179,7 +179,7 @@ public class ServerRuntimeUIConstants {
 		addEntry(JBEAP_710, 	"Red Hat JBoss EAP 7.1", "7.1",	"EAP", 		"jboss-eap-7.1", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(JBEAP_720, 	"Red Hat JBoss EAP 7.2", "7.2",	"EAP", 		"jboss-eap-7.2", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(JBEAP_730, 	"Red Hat JBoss EAP 7.3", "7.3",	"EAP", 		"jboss-eap-7.3", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
-		addEntry(JBEAP_740, 	"Red Hat JBoss EAP 7.4 (Tech Preview)", "7.4",	"EAP", 		"jboss-eap-7.4", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
+		addEntry(JBEAP_740, 	"Red Hat JBoss EAP 7.4", "7.4",	"EAP", 		"jboss-eap-7.4", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
 		
 		addEntry(JPP_610, 		"JBoss Portal 6.1",		"6.1", "JPP", 		"jboss-jpp-6.1", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, as7EditorPorts());

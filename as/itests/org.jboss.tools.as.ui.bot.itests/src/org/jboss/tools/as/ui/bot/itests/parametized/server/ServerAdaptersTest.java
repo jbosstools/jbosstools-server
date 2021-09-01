@@ -64,7 +64,7 @@ public class ServerAdaptersTest extends AbstractTest {
 		list.add("Red Hat JBoss Enterprise Application Platform 7.1");
 		list.add("Red Hat JBoss Enterprise Application Platform 7.2");
 		list.add("Red Hat JBoss Enterprise Application Platform 7.3");
-		list.add("Red Hat JBoss Enterprise Application Platform 7.4 (Tech Preview)");
+		list.add("Red Hat JBoss Enterprise Application Platform 7.4");
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
 
 		return list;
@@ -133,7 +133,7 @@ public class ServerAdaptersTest extends AbstractTest {
 	private String getServerHome(String server) {
 		String homeFlag;
 		if (server.contains("WildFly")) {
-			String version = server.split(" ")[1];
+			String version = server.split(" ")[1].replaceAll("\\+","");
 			homeFlag = Arrays.stream(PomServerConstants.getJBossHomeFlags()).filter(x -> x.contains(version))
 					.findFirst().orElse(null);
 			homeFlag = homeFlag.replaceAll("\\+","");
