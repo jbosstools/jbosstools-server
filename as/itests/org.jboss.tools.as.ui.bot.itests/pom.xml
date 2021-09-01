@@ -107,5 +107,31 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>SmokeTestsSuite</id>
+			<activation>
+				<property>
+					<name>test.profile</name>
+					<value>smoke</value>
+				</property>
+			</activation>
+			<properties>
+				<test.class>org.jboss.tools.as.ui.bot.itests.SmokeTestsSuite</test.class>
+				<rd.config>${project.build.directory}/classes/wildfly-requirement.json</rd.config>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>tycho-surefire-plugin</artifactId>
+						<configuration>
+							<appArgLine>-pluginCustomization ${basedir}/pluginCustomization.ini</appArgLine>
+							<testClass>${test.class}</testClass>
+							<useUIThread>false</useUIThread>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 </project>
