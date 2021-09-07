@@ -25,6 +25,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.EapWildflyJavaVersionFlagUtil;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossEAP72DefaultLaunchArguments;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
@@ -172,18 +173,23 @@ public class JBossLaunchConfigProperties {
 	}
 
 	
-	public void setOrClearJava9Flags(IJBossServerRuntime runtime,
+	public void setOrClearJavaVersionFlags(IJBossServerRuntime runtime,
 			ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
 		String args = getVMArguments(launchConfig);
-		String j9DefaultArgs = JBossEAP72DefaultLaunchArguments.getJava9VMArgsDefault().trim();
-		boolean isVmJ9 = JBossEAP72DefaultLaunchArguments.isVmJava9(runtime.getRuntime());
-		String newArgs = "";
-		if( isVmJ9 && !args.contains(j9DefaultArgs)) {
-			newArgs = args + IJBossRuntimeConstants.SPACE + j9DefaultArgs;
-		} else if( !isVmJ9 && args.contains(j9DefaultArgs)) {
-			newArgs = args.replace(j9DefaultArgs, "");
+		boolean is16 = EapWildflyJavaVersionFlagUtil.isVmJava16(runtime.getRuntime()); 
+		boolean is9 = EapWildflyJavaVersionFlagUtil.isVmJava9(runtime.getRuntime());
+		if( !is16) {
+			args = args.replace(EapWildflyJavaVersionFlagUtil.getJava16VMArgsDefault(), "");
 		}
-		setVmArguments(newArgs, launchConfig);
+		if( !is9) {
+			args = args.replace(EapWildflyJavaVersionFlagUtil.getJava9VMArgsDefault(), "");
+		}
+		
+		String versionArgs = EapWildflyJavaVersionFlagUtil.getJavaVersionVMArgs(runtime.getRuntime());
+		if( !args.contains(versionArgs)) {
+			args = args + IJBossRuntimeConstants.SPACE + versionArgs;
+		}
+		setVmArguments(args, launchConfig);
 	}
 
 	/**

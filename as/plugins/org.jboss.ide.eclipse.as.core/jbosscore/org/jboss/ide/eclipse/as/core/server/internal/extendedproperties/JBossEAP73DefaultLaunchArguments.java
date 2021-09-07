@@ -23,12 +23,8 @@ public class JBossEAP73DefaultLaunchArguments extends JBossEAP70DefaultLaunchArg
 		super(rt);
 	}
 	
-	protected String getJava9VMArgs() {
-		return JBossEAP72DefaultLaunchArguments.getJava9VMArgsConditional(getRuntime());
-	}
-	
 	@Override
 	public String getStartDefaultVMArgs() {
-		return super.getStartDefaultVMArgs() + getJava9VMArgs();
+		return super.getStartDefaultVMArgs() + EapWildflyJavaVersionFlagUtil.getJavaVersionVMArgs(getRuntime());
 	}
 }
