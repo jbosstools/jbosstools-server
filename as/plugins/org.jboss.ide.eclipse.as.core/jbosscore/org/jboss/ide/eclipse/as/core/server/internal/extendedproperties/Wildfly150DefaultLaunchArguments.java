@@ -21,13 +21,9 @@ public class Wildfly150DefaultLaunchArguments extends
 	public Wildfly150DefaultLaunchArguments(IRuntime rt) {
 		super(rt);
 	}
-
-	protected String getJava9VMArgs() {
-		return JBossEAP72DefaultLaunchArguments.getJava9VMArgsConditional(getRuntime());
-	}
 	
 	@Override
 	public String getStartDefaultVMArgs() {
-		return super.getStartDefaultVMArgs() + getJava9VMArgs();
+		return super.getStartDefaultVMArgs() + EapWildflyJavaVersionFlagUtil.getJavaVersionVMArgs(getRuntime());
 	}
 }
