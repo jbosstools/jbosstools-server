@@ -14,17 +14,26 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.List;
+
 import org.eclipse.reddeer.common.exception.WaitTimeoutExpiredException;
 import org.eclipse.reddeer.common.wait.WaitUntil;
 import org.eclipse.reddeer.eclipse.condition.BrowserContainsText;
+import org.eclipse.reddeer.eclipse.debug.ui.views.launch.LaunchView;
+import org.eclipse.reddeer.eclipse.ui.console.ConsoleView;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.Server;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
 import org.eclipse.reddeer.junit.runner.RedDeerSuite;
 import org.eclipse.reddeer.requirements.server.ServerRequirementState;
 import org.eclipse.reddeer.swt.api.Browser;
+import org.eclipse.reddeer.swt.api.MenuItem;
+import org.eclipse.reddeer.swt.api.TreeItem;
 import org.eclipse.reddeer.swt.impl.browser.InternalBrowser;
 import org.eclipse.reddeer.swt.impl.menu.ContextMenu;
 import org.jboss.ide.eclipse.as.reddeer.server.requirement.ServerRequirement.JBossServer;
+import org.jboss.tools.jmx.reddeer.core.JMXConnection;
+import org.jboss.tools.jmx.reddeer.core.JMXConnectionItem;
+import org.jboss.tools.jmx.reddeer.ui.view.JMXNavigatorView;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,36 +69,205 @@ public class ShowInContextMenuTest {
 		sv.close();
 	}
 	
+	
+	//Stopped server check
+	
 	@Test
 	public void showInWebBrowserIsDisabledOnStoppedServer(){
-		assertFalse("Web Browser option in Show In context menu is active even though server is stopped",
-				new ContextMenu().getItem("Show In", "Web Browser").isEnabled());
+		assertFalse(errorMsg("Web Browser", false), isEnabled("Web Browser"));
+	}
+	
+	@Test
+	public void showInConsoleIsDisabledOnStoppedServer() {
+		assertFalse(errorMsg("Console", false), isEnabled("Console"));
+	}
+	
+	@Test
+	public void showInDebugIsDisabledOnStoppedServer() {
+		assertFalse(errorMsg("Debug", false), isEnabled("Debug"));
+	}
+	
+	@Test
+	public void showInJMXNavigatorIsDisabledOnStoppedServer() {
+		assertFalse(errorMsg("JMX Navigator", false), isEnabled("JMX Navigator"));
+	}
+	
+	@Test
+	public void showInFileBrowserIsEnabledOnStoppedServer() {
+		assertTrue("File Browser option in Show In context menu is inactive. Should be alway active.", 
+				isEnabled("File Browser"));
+	}
+	
+	@Test
+	public void showInWebManagementConsoleIsHiddenOnDisabledServer() {
+		assertFalse("Web Management Console is shown in context menu, but should not be.", isInContextMenu());
+	}
+	
+	//Running server check
+	
+	@Test
+	public void showInWebBrowserIsEnabledOnRunningServer() {
+		startAndSelectServer();
+		
+		assertTrue(errorMsg("Web Browser", true), isEnabled("Web Browser"));
+	} 
+	
+	@Test
+	public void showInConsoleIsEnabledOnRunningServer() {
+		startAndSelectServer();
+		
+		assertTrue(errorMsg("Console", true), isEnabled("Console"));
+	}
+	
+	@Test
+	public void showInDebugIsEnabledOnRunningServer() {
+		startAndSelectServer();
+		
+		assertTrue(errorMsg("Debug", true), isEnabled("Debug"));
 	}
 	
 	
 	@Test
-	public void showInWebBrowserIsEnabled() {
-		if(!server.getLabel().getState().isRunningState()) {
-			server.start();
-		}
+	public void showInJMXNavigatorIsEnabledOnRunningServer() {
+		startAndSelectServer();
 		
-		sv.open();
-		server = sv.getServer("WildFly 24+ Server");
+		assertTrue(errorMsg("JMX Navigator", true), isEnabled("JMX Navigator"));
+	}
+	
+	@Test
+	public void showInFileBrowserIsEnabledOnRunningServer() {
+		startAndSelectServer();
 		
-		assertTrue("Web Browser option in Show In context menu is inactive even though server is running",
-				new ContextMenu().getItem("Show In", "Web Browser").isEnabled());
+		assertTrue("File Browser option in Show In context menu is inactive. Should be alway active.",
+				isEnabled("File Browser"));
+	}
+	
+	@Test
+	public void showInWebManagementConsoleIsShownOnRunningServer() {
+		startAndSelectServer();
+		
+		assertTrue("Web Management Console is missing from the context menu", isInContextMenu());
 	} 
+	
+	//Options do what are they supposed to do
+	
 	@Test
 	public void showInWebBrowserOpensProperPage() throws InterruptedException {
+		startAndSelectServer();
+		
+		selectItem("Web Browser");
+		
+		testBrowser();
+	}
+	
+	@Test
+	public void showInWebManagementConsoleOpensProperPage() throws InterruptedException {
+		startAndSelectServer();
+		
+		selectItem("Web Management Console");
+		
+		testBrowser();
+	}
+	
+	@Test
+	public void showInConsoleOpensProperPage() {
+		startAndSelectServer();
+		
+		selectItem("Console");
+		
+		ConsoleView cv = new ConsoleView();
+		
+		assertTrue("Console does not contain proper text: It has " + cv.getConsoleText(),
+				cv.getConsoleText().contains("wildfly"));
+	}
+	
+	@Test
+	public void showInDebugOpensProperPage() {
+		startAndSelectServer();
+		
+		selectItem("Debug");
+		
+		sv.open();
+		server.select();
+		
+		selectItem("Debug");
+		
+		LaunchView dv = new LaunchView();
+			
+		boolean containsWildfly = false;
+		
+		for (TreeItem item : dv.getSelectedItem().getParent().getAllItems()) {
+			if (item.getText().contains("WildFly")) {
+				containsWildfly = true;
+				break;
+			}
+		}
+		
+		assertTrue("Debug View does not contain WildFly server", containsWildfly);
+	}
+	
+	@Test
+	public void showInJMXNavigatorOpensProperPage() {
+		startAndSelectServer();
+		
+		selectItem("JMX Navigator");
+		
+		JMXNavigatorView jmx = new JMXNavigatorView();
+		
+		JMXConnectionItem jmxConnectionsItem = jmx.getServerConnectionsItem();
+		
+		boolean containsWildfly = false;
+		
+		for (JMXConnection connection : jmxConnectionsItem.getConnections()) {
+			if (connection.getLabel().getName().contains("WildFly")){
+				containsWildfly = true;
+				break;
+			}
+		}
+		
+		assertTrue("JMX Navigator does not contain WildFly server", containsWildfly);
+	}
+	
+	//Methods for simpler code
+	
+	private void startAndSelectServer() {
 		if(!server.getLabel().getState().isRunningState()) {
 			server.start();
 		}
 		
 		sv.open();
 		server = sv.getServer("WildFly 24+ Server");
+	}
+	
+	private void selectItem(String item) {
+		new ContextMenu().getItem("Show In",item).select();
+	}
+	
+	private boolean isEnabled(String item) {
+		return new ContextMenu().getItem("Show In", item).isEnabled();
+	}
+	
+	private String errorMsg(String option, boolean state) {
+		String status = (state) ? "active" : "inactive";
+		String reverseStatus = (state) ? "inactive" : "active";
 		
-		new ContextMenu().getItem("Show In", "Web Browser").select();
+		return option + " option in Show in context menu is " + status + ". Should be " + reverseStatus + ".";
+	}
+	
+	private boolean isInContextMenu() {
+		List<MenuItem> items = new ContextMenu().getItem("Show In").getChildItems();
+		boolean isInMenu = false;
 		
+		for (MenuItem item : items) {
+			if (item.getText().contains("Web Management Console")) {
+				isInMenu = true;
+			}
+		}
+		
+		return isInMenu;
+	}
+	
+	private void testBrowser() {
 		Browser browser = new InternalBrowser();
 		
 		try {
@@ -98,6 +276,5 @@ public class ShowInContextMenuTest {
 		} catch (WaitTimeoutExpiredException exc) {
 			fail("Web browser does not contain proper text: It has " + browser.getText());
 		}
-
 	}
 }
