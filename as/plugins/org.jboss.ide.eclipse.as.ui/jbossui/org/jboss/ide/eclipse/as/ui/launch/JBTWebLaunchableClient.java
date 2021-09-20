@@ -34,6 +34,7 @@ import org.jboss.ide.eclipse.as.core.server.IServerModuleStateVerifier;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossLaunchAdapter.JBTCustomHttpLaunchable;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
+import org.jboss.tools.foundation.ui.util.BrowserUtility;
 
 public class JBTWebLaunchableClient extends ClientDelegate {
 
@@ -129,6 +130,7 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 	private static final String BROWSER_COULD_NOT_OPEN_BROWSER = "Unable to open web browser"; //$NON-NLS-1$
 	public static void checkedCreateInternalBrowser(String url, String browserId, String pluginId, ILog log) {
 		try {
+			BrowserUtility.allowNonHttpsRedirects();
 			openUrl(url, PlatformUI.getWorkbench().getBrowserSupport().createBrowser(IWorkbenchBrowserSupport.LOCATION_BAR | IWorkbenchBrowserSupport.NAVIGATION_BAR, browserId, null, null), pluginId, log);
 		} catch (PartInitException e) {
 			IStatus errorStatus = createErrorStatus(pluginId, BROWSER_COULD_NOT_OPEN_BROWSER, e, url);
