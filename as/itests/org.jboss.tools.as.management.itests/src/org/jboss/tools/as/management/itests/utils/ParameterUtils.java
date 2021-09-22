@@ -27,7 +27,6 @@ public class ParameterUtils {
 	public static final String JBOSS_EAP_73_HOME = TestConstants.JBOSS_EAP_73_HOME;
 	public static final String JBOSS_EAP_74_HOME = TestConstants.JBOSS_EAP_74_HOME;
 	// AUTOGEN_SERVER_ADAPTER_CHUNK
-	public static final String JBOSS_WF_220_HOME = TestConstants.JBOSS_WF_220_HOME;
 	public static final String JBOSS_WF_230_HOME = TestConstants.JBOSS_WF_230_HOME;
 	public static final String JBOSS_WF_240_HOME = TestConstants.JBOSS_WF_240_HOME;
 	// AUTOGEN_SERVER_ADAPTER_CHUNK
@@ -40,7 +39,6 @@ public class ParameterUtils {
 		serverHomeToRuntimeType.put(JBOSS_EAP_73_HOME, IJBossToolingConstants.EAP_73);
 		serverHomeToRuntimeType.put(JBOSS_EAP_74_HOME, IJBossToolingConstants.EAP_74);
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
-		serverHomeToRuntimeType.put(JBOSS_WF_220_HOME, IJBossToolingConstants.WILDFLY_220);
 		serverHomeToRuntimeType.put(JBOSS_WF_230_HOME, IJBossToolingConstants.WILDFLY_230);
 		serverHomeToRuntimeType.put(JBOSS_WF_240_HOME, IJBossToolingConstants.WILDFLY_240);
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
@@ -68,7 +66,6 @@ public class ParameterUtils {
 		boolean skipReqs = skipPrivateRequirements();
 		ArrayList<String> paths = new ArrayList<String>();
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
-		paths.add(JBOSS_WF_220_HOME);
 		paths.add(JBOSS_WF_230_HOME);
 		paths.add(JBOSS_WF_240_HOME);
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
@@ -96,7 +93,6 @@ public class ParameterUtils {
 		boolean skipReqs = skipPrivateRequirements();
 		ArrayList<String> paths = new ArrayList<String>();
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
-		paths.add(JBOSS_WF_220_HOME);
 		paths.add(JBOSS_WF_230_HOME);
 		paths.add(JBOSS_WF_240_HOME);
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
