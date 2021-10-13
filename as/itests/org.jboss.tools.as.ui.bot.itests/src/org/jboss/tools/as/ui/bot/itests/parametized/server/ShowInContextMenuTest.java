@@ -256,15 +256,14 @@ public class ShowInContextMenuTest {
 	
 	private boolean isInContextMenu() {
 		List<MenuItem> items = new ContextMenu().getItem("Show In").getChildItems();
-		boolean isInMenu = false;
 		
 		for (MenuItem item : items) {
 			if (item.getText().contains("Web Management Console")) {
-				isInMenu = true;
+				return true;
 			}
 		}
 		
-		return isInMenu;
+		return false;
 	}
 	
 	private void testBrowser() {
