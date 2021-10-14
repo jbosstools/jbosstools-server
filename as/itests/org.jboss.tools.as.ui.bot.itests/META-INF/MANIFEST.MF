@@ -127,4 +127,6 @@ Require-Bundle: org.eclipse.ui,
  org.apache.commons.lang
 Bundle-Activator: org.jboss.tools.as.ui.bot.itests.Activator
 Automatic-Module-Name: org.jboss.tools.as.ui.bot.itests
+Import-Package: org.jboss.tools.jmx.reddeer.core,
+ org.jboss.tools.jmx.reddeer.ui.view
 
