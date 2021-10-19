@@ -1,28 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<feature 
-   id="org.jboss.ide.eclipse.as.test.feature" 
-   label="%featureName" 
-   version="3.9.200.qualifier" 
-   license-feature="org.jboss.tools.foundation.license.feature"
-   license-feature-version="0.0.0"
-   provider-name="%providerName">
-
+<feature
+      id="org.jboss.ide.eclipse.as.test.feature"
+      label="%featureName"
+      version="3.9.200.qualifier"
+      provider-name="%providerName"
+      license-feature="org.jboss.tools.foundation.license.feature"
+      license-feature-version="0.0.0">
 
    <description url="http://www.jboss.org/tools">
-       %description
+      %description
    </description>
+
    <copyright>
-       %copyright
+      %copyright
    </copyright>
+
    <license url="%licenseURL">
-       %license
+      %license
    </license>
 
+   <plugin
+         id="org.jboss.tools.jmx.core.test"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
 
-   	<plugin id="org.jboss.tools.jmx.core.test" download-size="0" install-size="0" version="0.0.0" />
-	<plugin id="org.jboss.ide.eclipse.as.reddeer" download-size="0" install-size="0" version="0.0.0" />
-	<plugin id="org.jboss.tools.as.test.core" download-size="0" install-size="0" version="0.0.0" />
-	<plugin id="org.jboss.tools.as.itests" download-size="0" install-size="0" version="0.0.0" />
-	<plugin id="org.jboss.tools.as.management.itests" download-size="0" install-size="0" version="0.0.0" unpack="false" />
-	<plugin id="org.jboss.tools.as.ui.bot.itests" download-size="0" install-size="0" version="0.0.0" />
+   <plugin
+         id="org.jboss.ide.eclipse.as.reddeer"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.jboss.tools.as.test.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.jboss.tools.as.itests"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.jboss.tools.as.management.itests"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.jboss.tools.as.ui.bot.itests"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.jboss.tools.jmx.reddeer"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 </feature>
