@@ -11,6 +11,8 @@
 package org.jboss.tools.as.ui.bot.itests;
 
 import org.eclipse.reddeer.junit.runner.RedDeerSuite;
+import org.jboss.tools.as.ui.bot.itests.parametized.server.ServerAdaptersTest;
+import org.jboss.tools.as.ui.bot.itests.parametized.server.ServerRuntimesTest;
 import org.jboss.tools.as.ui.bot.itests.parametized.server.ShowInContextMenuTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -21,7 +23,9 @@ import org.junit.runners.Suite;
  */
 @RunWith(RedDeerSuite.class)
 @Suite.SuiteClasses({ 
-	ShowInContextMenuTest.class
+	ShowInContextMenuTest.class,
+	ServerRuntimesTest.class,
+	ServerAdaptersTest.class
 })
 
 public class SmokeTestsSuite {
