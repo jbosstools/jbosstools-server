@@ -57,8 +57,8 @@ public class ServerAdaptersTest extends AbstractTest {
 	public static ArrayList<String> data() {
 		ArrayList<String> list = new ArrayList<String>();
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
-		list.add("WildFly 23");
-		list.add("WildFly 24+");
+		list.add("WildFly 24");
+		list.add("WildFly 25");
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
 		list.add("Red Hat JBoss Enterprise Application Platform 7.0");
 		list.add("Red Hat JBoss Enterprise Application Platform 7.1");
@@ -89,7 +89,7 @@ public class ServerAdaptersTest extends AbstractTest {
 
 			NewServerWizardPage sp = new NewServerWizardPage(serverW);
 
-			sp.selectType(getFamily(server), server);
+			sp.selectType(getFamily(server), getServerName(server));
 
 			serverW.next();
 
@@ -119,6 +119,14 @@ public class ServerAdaptersTest extends AbstractTest {
 			return EAP_FAMILY;
 		}
 	}
+	
+	private String getServerName(String server) {
+		if (server.contains("WildFly")) {
+			return "WildFly 24+";
+		} else {
+			return server;
+		}
+	}
 
 	protected void setupRuntime(NewServerWizard wizard) {
 		JBossRuntimeWizardPage rp = new JBossRuntimeWizardPage(wizard);
@@ -133,10 +141,9 @@ public class ServerAdaptersTest extends AbstractTest {
 	private String getServerHome(String server) {
 		String homeFlag;
 		if (server.contains("WildFly")) {
-			String version = server.split(" ")[1].replaceAll("\\+","");
+			String version = server.split(" ")[1];
 			homeFlag = Arrays.stream(PomServerConstants.getJBossHomeFlags()).filter(x -> x.contains(version))
 					.findFirst().orElse(null);
-			homeFlag = homeFlag.replaceAll("\\+","");
 		} else {
 			String version = server.split(" ")[6];
 			homeFlag = Arrays.stream(PomServerConstants.getJBossHomeFlags()).filter(x -> (x.contains(version) && x.contains("eap")))
