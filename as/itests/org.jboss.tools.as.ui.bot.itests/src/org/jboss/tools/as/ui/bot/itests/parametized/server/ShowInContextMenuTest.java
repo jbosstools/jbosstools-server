@@ -12,11 +12,10 @@ package org.jboss.tools.as.ui.bot.itests.parametized.server;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.List;
 
-import org.eclipse.reddeer.common.exception.WaitTimeoutExpiredException;
+import org.eclipse.reddeer.common.wait.TimePeriod;
 import org.eclipse.reddeer.common.wait.WaitUntil;
 import org.eclipse.reddeer.eclipse.condition.BrowserContainsText;
 import org.eclipse.reddeer.eclipse.debug.ui.views.launch.LaunchView;
@@ -24,12 +23,17 @@ import org.eclipse.reddeer.eclipse.ui.console.ConsoleView;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.Server;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
 import org.eclipse.reddeer.junit.runner.RedDeerSuite;
+import org.eclipse.reddeer.requirements.closeeditors.CloseAllEditorsRequirement.CloseAllEditors;
 import org.eclipse.reddeer.requirements.server.ServerRequirementState;
 import org.eclipse.reddeer.swt.api.Browser;
 import org.eclipse.reddeer.swt.api.MenuItem;
 import org.eclipse.reddeer.swt.api.TreeItem;
+import org.eclipse.reddeer.swt.condition.PageIsLoaded;
 import org.eclipse.reddeer.swt.impl.browser.InternalBrowser;
 import org.eclipse.reddeer.swt.impl.menu.ContextMenu;
+import org.eclipse.reddeer.workbench.core.exception.WorkbenchCoreLayerException;
+import org.eclipse.reddeer.workbench.impl.editor.DefaultEditor;
+import org.jboss.ide.eclipse.as.reddeer.server.requirement.InternalBrowserRequirement.UseInternalBrowser;
 import org.jboss.ide.eclipse.as.reddeer.server.requirement.ServerRequirement.JBossServer;
 import org.jboss.tools.jmx.reddeer.core.JMXConnection;
 import org.jboss.tools.jmx.reddeer.core.JMXConnectionItem;
@@ -47,6 +51,8 @@ import org.junit.runner.RunWith;
  * TODO: Add more tests for Show In context menu options
  */
 @RunWith(RedDeerSuite.class)
+@CloseAllEditors
+@UseInternalBrowser
 @JBossServer(state=ServerRequirementState.PRESENT)
 public class ShowInContextMenuTest {
 	
@@ -67,8 +73,12 @@ public class ShowInContextMenuTest {
 			server.stop();
 		}
 		sv.close();
+		try {
+			new DefaultEditor().close();
+		} catch (WorkbenchCoreLayerException exc) {
+			// no editor opened
+		}
 	}
-	
 	
 	//Stopped server check
 	
@@ -157,7 +167,7 @@ public class ShowInContextMenuTest {
 		
 		selectItem("Web Browser");
 		
-		testBrowser();
+		testBrowser("WildFly");
 	}
 	
 	@Test
@@ -166,7 +176,7 @@ public class ShowInContextMenuTest {
 		
 		selectItem("Web Management Console");
 		
-		testBrowser();
+		testBrowser("Management Console");
 	}
 	
 	@Test
@@ -266,14 +276,10 @@ public class ShowInContextMenuTest {
 		return false;
 	}
 	
-	private void testBrowser() {
+	private void testBrowser(String text) {
+		new WaitUntil(new BrowserContainsText(text), TimePeriod.MEDIUM, false);
 		Browser browser = new InternalBrowser();
-		
-		try {
-			new WaitUntil(new BrowserContainsText("WildFly"));
-			
-		} catch (WaitTimeoutExpiredException exc) {
-			fail("Web browser does not contain proper text: It has " + browser.getText());
-		}
+		String browserText = browser.getText();
+		assertTrue("Web browser does not contain proper text: It has " + browserText, browserText.contains(text));
 	}
 }
