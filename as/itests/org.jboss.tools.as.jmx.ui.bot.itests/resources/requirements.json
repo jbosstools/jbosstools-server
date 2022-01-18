@@ -1,12 +1,12 @@
 {
 	"org.jboss.ide.eclipse.as.reddeer.server.requirement.ServerRequirement.JBossServer": [
 		{
-			"runtime": "${jbosstools.test.wildfly.23.home}",
-			"version": "23",
+			"runtime": "${jbosstools.test.wildfly.25.home}",
+			"version": "24+",
 			"family": "WILDFLY"
 		},
 		{
-			"runtime": "${jbosstools.test.wildfly.24.home}",
+			"runtime": "${jbosstools.test.wildfly.26.home}",
 			"version": "24+",
 			"family": "WILDFLY"
 		},
@@ -26,11 +26,11 @@
 			}
         },
 		{
-			"runtime": "${jbosstools.test.wildfly.24.home}",
+			"runtime": "${jbosstools.test.wildfly.26.home}",
 			"version": "24+",
 			"family": "WILDFLY",
 			"remote": {
-				"serverHome": "${jbosstools.test.wildfly.24.home}",
+				"serverHome": "${jbosstools.test.wildfly.26.home}",
 				"serverHost": "LOCALHOST",
 				"systemType": "Local"
 			}
