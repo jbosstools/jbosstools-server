@@ -34,7 +34,8 @@ Require-Bundle: org.apache.ant;bundle-version="1.7.1",
  org.jboss.tools.foundation.core;bundle-version="1.1.0",
  org.jboss.tools.jmx.core;bundle-version="1.6.0";visibility:=reexport,
  org.eclipse.jdt.debug;bundle-version="3.8.100",
- org.jboss.tools.common.jdt.debug;bundle-version="3.10.2"
+ org.jboss.tools.common.jdt.debug;bundle-version="3.10.2",
+ org.eclipse.m2e.launching
 Bundle-ActivationPolicy: lazy
 Export-Package: org.jboss.ide.eclipse.as.core,
  org.jboss.ide.eclipse.as.core.extensions.descriptors,
@@ -59,7 +60,8 @@ Export-Package: org.jboss.ide.eclipse.as.core,
  org.jboss.tools.as.core.server.controllable.subsystems,
  org.jboss.tools.as.core.server.controllable.subsystems.internal;x-friends:="org.jboss.tools.as.test.core,org.jboss.ide.eclipse.as.ui",
  org.jboss.tools.as.core.server.controllable.systems,
- org.jboss.tools.as.core.server.controllable.util
+ org.jboss.tools.as.core.server.controllable.util,
+ org.jboss.tools.as.core.server.wildflyjar
 Bundle-ClassPath: dom4j-1.6.1.jar,
  jaxen-1.1-beta-6.jar,
  getopt.jar,
