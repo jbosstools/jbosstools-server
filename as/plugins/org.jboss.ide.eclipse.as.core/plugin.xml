@@ -9,6 +9,17 @@
    <extension-point id="behaviourExtension" name="org.jboss.ide.eclipse.as.core.behaviourExtension" schema="schema/behaviourExtension.exsd"/>
    <extension-point id="jmxRunner" name="org.jboss.ide.eclipse.as.core.jmxRunner" schema="schema/jmxRunner.exsd"/>
 
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="org.jboss.ide.eclipse.as.core.eap.xp.EapXpLaunchConfigurationDelegate"
+            id="org.jboss.ide.eclipse.as.core.eapxp.EapXpLaunchConfigurationDelegate"
+            modes="run, debug"
+            name="Standalone Web Application">
+      </launchConfigurationType>
+   </extension>>
+
+
    <!-- Moving deloy-only into its own area -->
    <extension
          point="org.eclipse.wst.server.core.serverTypes">
