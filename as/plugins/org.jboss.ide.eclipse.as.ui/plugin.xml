@@ -75,11 +75,10 @@
 	<extension point="org.eclipse.debug.ui.launchConfigurationTabGroups">
 		<launchConfigurationTabGroup
 			class="org.jboss.ide.eclipse.as.ui.launch.JBossLaunchConfigurationTabGroup"
-			description="%jbossLaunchconfigurationTabGroupDescription" id="org.jboss.ide.eclipse.as.core.jbossLaunchTabGroup"
+			description="%jbossLaunchconfigurationTabGroupDescription" 
+			id="org.jboss.ide.eclipse.as.core.jbossLaunchTabGroup"
 			type="org.jboss.ide.eclipse.as.core.server.startupConfiguration" />
 	</extension>
-
-
 
 	<extension point="org.eclipse.wst.server.ui.serverImages">
 		<image icon="$nl$/icons/J2EEModule16.gif" id="org.jboss.ide.eclipse.as.ui.packagedProject.image"
@@ -679,6 +678,15 @@
 
 
 
+	<extension point="org.eclipse.ui.trace.traceComponents">
+		<component id="org.jboss.ide.eclipse.as.core" label="JBoss AS, WildFly &amp; EAP Server Tools - Core Plug-in">
+			<bundle consumed="true" name="org.jboss.ide.eclipse.as.core"/>
+		</component>
+		<component id="org.jboss.ide.eclipse.as.wtp.core" label="JBoss Server Adapter Core Framework">
+			<bundle consumed="true" name="org.jboss.ide.eclipse.as.wtp.core"/>
+		</component>
+	</extension>
+
 
 	<extension
 		point="org.jboss.ide.eclipse.as.wtp.ui.ServerProfileWizardFragments">
@@ -690,6 +698,9 @@
 		</wizardFragment>
 	</extension>
 
+
+<!-- Commands and menu items -->
+
 	<extension point="org.eclipse.core.expressions.propertyTesters">
 		<propertyTester
 			class="org.jboss.ide.eclipse.as.ui.actions.DeployablePropertyTester"
@@ -697,7 +708,14 @@
 			namespace="org.jboss.ide.eclipse.as.ui" properties="deployable"
 			type="org.eclipse.core.resources.IResource">
 		</propertyTester>
+		<propertyTester
+			class="org.jboss.ide.eclipse.as.ui.eapxp.EapXpProjectPropertyTester"
+			id="org.jboss.ide.eclipse.as.ui.eapxp.EapXpProjectPropertyTester"
+			namespace="org.jboss.ide.eclipse.as.ui" properties="eapxp"
+			type="org.eclipse.core.resources.IResource">
+		</propertyTester>
 	</extension>
+	
 
 	<extension point="org.eclipse.ui.commands">
 		<command categoryId="org.eclipse.ui.category.file"
@@ -707,6 +725,11 @@
 		<command categoryId="org.eclipse.ui.category.file"
 			description="%MakeUndeployable" id="org.jboss.ide.eclipse.as.ui.actions.undeploy"
 			name="%MakeUndeployable">
+		</command>
+		<command categoryId="org.eclipse.debug.ui.category.run"
+			description="Standalone Web Application" 
+			id="org.jboss.ide.eclipse.as.ui.eapxp.run.command"
+			name="Standalone Web Application">
 		</command>
 	</extension>
 
@@ -737,6 +760,18 @@
 				</with>
 			</activeWhen>
 		</handler>
+		<handler class="org.jboss.ide.eclipse.as.ui.eapxp.RunAsXpProjectHandler"
+			commandId="org.jboss.ide.eclipse.as.ui.eapxp.run.command">
+			<activeWhen>
+				<with variable="selection">
+					<iterate ifEmpty="false" operator="and">
+						<adapt type="org.eclipse.core.resources.IResource">
+							<test property="org.jboss.ide.eclipse.as.ui.eapxp"/>
+						</adapt>
+					</iterate>
+				</with>
+			</activeWhen>
+		</handler>
 	</extension>
 
 	<extension point="org.eclipse.ui.menus">
@@ -754,14 +789,33 @@
 			</command>
 		</menuContribution>
 	</extension>
-	
-	<extension point="org.eclipse.ui.trace.traceComponents">
-		<component id="org.jboss.ide.eclipse.as.core" label="JBoss AS, WildFly &amp; EAP Server Tools - Core Plug-in">
-			<bundle consumed="true" name="org.jboss.ide.eclipse.as.core"/>
-		</component>
-		<component id="org.jboss.ide.eclipse.as.wtp.core" label="JBoss Server Adapter Core Framework">
-			<bundle consumed="true" name="org.jboss.ide.eclipse.as.wtp.core"/>
-		</component>
+	<extension point="org.eclipse.debug.ui.launchShortcuts">
+	   <shortcut
+	         id="org.jboss.ide.eclipse.as.ui.eapxp.run.command.shortcut"
+	         label="Standalone Web Application Test"
+	         description="Standalone Web Application Test"
+	         modes="run, debug"
+	         path="aa"
+	         icon="icons/J2EEModule16.gif"
+	         class="org.jboss.ide.eclipse.as.ui.eapxp.RunAsXpProjectHandler">
+	      <contextualLaunch>
+	        <enablement>
+	           <with variable="selection">
+	             <count value="1"/>
+	             <iterate>
+	                <test property="org.jboss.ide.eclipse.as.ui.eapxp" value="true"/>
+	             </iterate>
+	           </with>
+	         </enablement>
+	        <contextLabel
+	           mode="run"
+	           label="Standalone Web Application"/>
+	      </contextualLaunch>
+	      <configurationType
+	           id="org.jboss.ide.eclipse.as.core.eapxp.EapXpLaunchConfigurationDelegate">
+	      </configurationType>
+	   </shortcut>
 	</extension>
+	
 
 </plugin>

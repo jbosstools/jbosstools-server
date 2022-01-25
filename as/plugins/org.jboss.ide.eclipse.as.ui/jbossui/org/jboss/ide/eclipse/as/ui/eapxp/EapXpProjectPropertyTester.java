@@ -8,26 +8,24 @@
  * Contributors:
  * Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.ui.actions;
+package org.jboss.ide.eclipse.as.ui.eapxp;
 
 import org.eclipse.core.expressions.PropertyTester;
-import org.eclipse.core.resources.IResource;
-import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory;
+import org.eclipse.core.resources.IProject;
+import org.jboss.ide.eclipse.as.core.eap.xp.ProjectUtils;
 
-public class DeployablePropertyTester extends PropertyTester {
+public class EapXpProjectPropertyTester extends PropertyTester {
+
+	public EapXpProjectPropertyTester() {
+		// TODO Auto-generated constructor stub
+	}
 
 	@Override
-	/**
-	 * method checks if IResource is deployable
-	 * 
-	 * @parameters receiver - IResource property - not using expectedValue - not
-	 *             using
-	 */
 	public boolean test(Object receiver, String property, Object[] args, Object expectedValue) {
-		if (!(receiver instanceof IResource)
-				|| SingleDeployableFactory.findModule(((IResource) receiver).getFullPath()) == null)
-			return true;
-		return false;
+		if( !(receiver instanceof IProject)) {
+			return false;
+		}
+		return ProjectUtils.isJBossXpProject((IProject)receiver);
 	}
 
 }
