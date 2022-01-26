@@ -792,8 +792,8 @@
 	<extension point="org.eclipse.debug.ui.launchShortcuts">
 	   <shortcut
 	         id="org.jboss.ide.eclipse.as.ui.eapxp.run.command.shortcut"
-	         label="Standalone Web Application Test"
-	         description="Standalone Web Application Test"
+	         label="Standalone Web Application"
+	         description="Standalone Web Application"
 	         modes="run, debug"
 	         path="aa"
 	         icon="icons/J2EEModule16.gif"
