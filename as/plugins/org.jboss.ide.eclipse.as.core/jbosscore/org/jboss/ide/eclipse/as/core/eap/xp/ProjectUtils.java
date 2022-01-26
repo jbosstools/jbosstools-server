@@ -72,6 +72,7 @@ public class ProjectUtils {
 	    	}
 			Plugin plugin = facade.getMavenProject(new NullProgressMonitor()).getPlugin("org.wildfly.plugins:wildfly-jar-maven-plugin");
 			if (plugin != null) {
+				Object o = plugin.getConfiguration();
 	    		return true;
 			}
 	    } catch( Exception e ) {
