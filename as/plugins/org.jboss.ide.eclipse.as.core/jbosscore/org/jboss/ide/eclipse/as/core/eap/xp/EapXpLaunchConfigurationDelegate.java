@@ -31,6 +31,7 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.eclipse.debug.core.model.IProcess;
@@ -44,32 +45,44 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 public class EapXpLaunchConfigurationDelegate implements ILaunchConfigurationDelegate {
 	public static final String TYPE = "org.jboss.ide.eclipse.as.core.eapxp.EapXpLaunchConfigurationDelegate";
 	
-	private static final String JWDP_HANDSHAKE = "JDWP-Handshake";
+	private static String DEFAULT_PROFILE = "bootable-jar"; 
+	//private static final String JWDP_HANDSHAKE = "JDWP-Handshake";
+	
 
 	@Override
 	public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
 			throws CoreException {
 		final IProject project = getProject(configuration);
 	    IProjectConfigurationManager projectManager = MavenPlugin.getProjectConfigurationManager();
-	    String activeProfiles = "bootable-jar";
+	    String activeProfiles = DEFAULT_PROFILE;
 	    try {
 	    	activeProfiles = projectManager.getResolverConfiguration(project).getSelectedProfiles();
 	    } catch(Exception e) {
 	    }
-		IMavenProjectFacade facade = MavenPlugin.getMavenProjectRegistry().create( project, new NullProgressMonitor() );		
-		ILaunchConfigurationWorkingCopy packageConfig = MavenToolSupport.getConfiguration(project);
+	    if( activeProfiles == null || activeProfiles.length() == 0 )
+	    	activeProfiles = DEFAULT_PROFILE;
+	    if( !activeProfiles.contains(DEFAULT_PROFILE))
+	    	activeProfiles = activeProfiles + "," + DEFAULT_PROFILE;
+	    
+		IMavenProjectFacade facade = MavenPlugin.getMavenProjectRegistry().create( project, new NullProgressMonitor() );
+		if( facade == null ) {
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Cannot launch non-maven project"));
+		}
+		ILaunchConfigurationWorkingCopy packageConfig = getConfiguration(project);
 		packageConfig.setAttribute(MavenLaunchConstants.ATTR_GOALS, "wildfly-jar:dev-watch");
 		packageConfig.setAttribute(MavenLaunchConstants.ATTR_PROFILES, activeProfiles);
 		ILaunch buildLaunch = packageConfig.launch("run", new NullProgressMonitor());
 	}
 
-	protected void copy(ILaunch source, ILaunch target) {
-		for (IDebugTarget t : source.getDebugTargets()) {
-			target.addDebugTarget(t);
-		}
-		for (IProcess p : source.getProcesses()) {
-			target.addProcess(p);
-		}
+
+	public static ILaunchConfigurationWorkingCopy getConfiguration(IProject project) throws CoreException {
+		ILaunchConfigurationType launchConfigurationType = DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType(MavenLaunchConstants.LAUNCH_CONFIGURATION_TYPE_ID);
+		ILaunchConfigurationWorkingCopy launchConfiguration = launchConfigurationType.newInstance(null, project.getName() + "__Maven__");
+		launchConfiguration.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, "${workspace_loc:/" + project.getName() + "}");
+		launchConfiguration.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, new HashMap<>());
+		launchConfiguration.setAttribute(IJavaLaunchConfigurationConstants.ATTR_JRE_CONTAINER_PATH, ProjectUtils.getJREEntry(project));
+		launchConfiguration.setAttribute(MavenLaunchConstants.ATTR_WORKSPACE_RESOLUTION, true);
+		return launchConfiguration;
 	}
 	
 	public static boolean isMavenProject(IProject project) {
@@ -80,11 +93,28 @@ public class EapXpLaunchConfigurationDelegate implements ILaunchConfigurationDel
 		}
 	}
 
+	private IProject getProject(ILaunchConfiguration configuration) throws CoreException {
+		String projectName = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME,
+				(String) null);
+		return ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+	}
+	/*
+	 
+	
+	protected void copy(ILaunch source, ILaunch target) {
+		for (IDebugTarget t : source.getDebugTargets()) {
+			target.addDebugTarget(t);
+		}
+		for (IProcess p : source.getProcesses()) {
+			target.addProcess(p);
+		}
+	}
+	
 	private ILaunch createRemoteJavaDebugConfiguration(ILaunchConfiguration configuration, int port,
 			IProgressMonitor monitor) throws CoreException {
 		waitForPortAvailable(port, monitor);
 		IProject project = getProject(configuration);
-		String name = "EapXP remote " + project.getName();
+		String name = "Standalone web application remote " + project.getName();
 		ILaunchConfigurationType launchConfigurationType = DebugPlugin.getDefault().getLaunchManager()
 				.getLaunchConfigurationType(ID_REMOTE_JAVA_APPLICATION);
 		ILaunchConfigurationWorkingCopy launchConfiguration = launchConfigurationType.newInstance(null, name);
@@ -99,11 +129,6 @@ public class EapXpLaunchConfigurationDelegate implements ILaunchConfigurationDel
 		return launchConfiguration.launch("debug", monitor);
 	}
 
-	private IProject getProject(ILaunchConfiguration configuration) throws CoreException {
-		String projectName = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME,
-				(String) null);
-		return ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-	}
 
 	private void waitForPortAvailable(int port, IProgressMonitor monitor) throws CoreException {
 		long start = System.currentTimeMillis();
@@ -125,4 +150,5 @@ public class EapXpLaunchConfigurationDelegate implements ILaunchConfigurationDel
 		}
 		throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Can't connect to JVM"));
 	}
+	*/
 }
