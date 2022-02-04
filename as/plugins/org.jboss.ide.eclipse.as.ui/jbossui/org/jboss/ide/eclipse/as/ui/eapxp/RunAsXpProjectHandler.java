@@ -66,7 +66,7 @@ public class RunAsXpProjectHandler extends AbstractHandler implements ILaunchSho
 					@Override
 					protected IStatus run(IProgressMonitor monitor) {
 						try {
-							ILaunch launch = lc.launch("debug", new NullProgressMonitor());
+							ILaunch launch = lc.launch(mode, new NullProgressMonitor());
 							return Status.OK_STATUS;
 						} catch(CoreException ce) {
 							return new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, ce.getMessage(), ce);
