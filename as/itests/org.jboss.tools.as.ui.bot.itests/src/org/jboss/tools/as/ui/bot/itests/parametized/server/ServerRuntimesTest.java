@@ -18,9 +18,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.eclipse.reddeer.common.matcher.VersionMatcher;
 import org.eclipse.reddeer.common.util.Display;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
+import org.eclipse.reddeer.junit.annotation.RequirementRestriction;
 import org.eclipse.reddeer.junit.internal.runner.ParameterizedRequirementsRunnerFactory;
+import org.eclipse.reddeer.junit.requirement.matcher.RequirementMatcher;
 import org.eclipse.reddeer.junit.runner.RedDeerSuite;
 import org.eclipse.reddeer.requirements.jre.JRERequirement.JRE;
 import org.eclipse.reddeer.swt.impl.text.LabeledText;
@@ -105,8 +108,13 @@ public class ServerRuntimesTest extends AbstractTest {
 			}	
 		}	
 		return pathsModified;
-	} 
-    
+	}
+
+	@RequirementRestriction
+	public static RequirementMatcher getRestrictionMatcher() {
+	  return new RequirementMatcher(JRE.class, "version", new VersionMatcher("1.8"));
+	}
+
     @BeforeClass
     public static void deleteRuntimesAddedByRuntimeDetection() {
     	deleteRuntimes();

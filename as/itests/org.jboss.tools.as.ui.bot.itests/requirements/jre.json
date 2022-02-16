@@ -4,6 +4,16 @@
 			"name": "openjdk-1.8",
 			"version": "1.8",
 			"path": "${jbosstools.test.jre.8}"
+		},
+		{
+			"name": "openjdk-11",
+			"version": "11",
+			"path": "${jbosstools.test.jre.11}"
+		},
+		{
+			"name": "openjdk-17",
+			"version": "17",
+			"path": "${jbosstools.test.jre.17}"
 		}
 	],
 	"org.jboss.ide.eclipse.as.reddeer.server.requirement.ServerRequirement.JBossServer": [
@@ -13,4 +23,4 @@
 			"family": "WILDFLY"
 		}
 	]
-} 
+}
