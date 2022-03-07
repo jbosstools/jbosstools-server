@@ -13,7 +13,10 @@ package org.jboss.tools.as.ui.bot.itests.server;
 import java.io.File;
 import java.util.ArrayList;
 
+import org.eclipse.reddeer.common.matcher.VersionMatcher;
+import org.eclipse.reddeer.junit.annotation.RequirementRestriction;
 import org.eclipse.reddeer.junit.internal.runner.ParameterizedRequirementsRunnerFactory;
+import org.eclipse.reddeer.junit.requirement.matcher.RequirementMatcher;
 import org.eclipse.reddeer.junit.runner.RedDeerSuite;
 import org.eclipse.reddeer.requirements.jre.JRERequirement.JRE;
 import org.jboss.tools.as.ui.bot.itests.parametized.server.ServerAdaptersTest;
@@ -40,6 +43,11 @@ public class SingleServerAdaptersTest extends ServerAdaptersTest {
 		ArrayList<String> list = new ArrayList<String>();
 		list.add(System.getProperty("jbosstools.test.single.runtime.server.adapter.label"));
 		return list;
+	}
+
+	@RequirementRestriction
+	public static RequirementMatcher getRestrictionMatcher() {
+	  return new RequirementMatcher(JRE.class, "version", new VersionMatcher("1.8"));
 	}
 
 	public SingleServerAdaptersTest(String server) {
