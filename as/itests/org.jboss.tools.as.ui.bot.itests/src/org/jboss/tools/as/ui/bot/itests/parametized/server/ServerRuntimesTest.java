@@ -20,6 +20,7 @@ import java.util.Collection;
 
 import org.eclipse.reddeer.common.matcher.VersionMatcher;
 import org.eclipse.reddeer.common.util.Display;
+import org.eclipse.reddeer.direct.preferences.Preferences;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
 import org.eclipse.reddeer.junit.annotation.RequirementRestriction;
 import org.eclipse.reddeer.junit.internal.runner.ParameterizedRequirementsRunnerFactory;
@@ -117,6 +118,7 @@ public class ServerRuntimesTest extends AbstractTest {
 
     @BeforeClass
     public static void deleteRuntimesAddedByRuntimeDetection() {
+    	Preferences.set("org.eclipse.debug.ui", "Console.limitConsoleOutput", "false");
     	deleteRuntimes();
     }
     

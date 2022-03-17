@@ -19,6 +19,7 @@ import org.eclipse.reddeer.common.logging.Logger;
 import org.eclipse.reddeer.common.matcher.VersionMatcher;
 import org.eclipse.reddeer.common.wait.AbstractWait;
 import org.eclipse.reddeer.common.wait.TimePeriod;
+import org.eclipse.reddeer.direct.preferences.Preferences;
 import org.eclipse.reddeer.eclipse.wst.server.ui.wizard.NewServerWizard;
 import org.eclipse.reddeer.eclipse.wst.server.ui.wizard.NewServerWizardPage;
 import org.eclipse.reddeer.junit.annotation.RequirementRestriction;
@@ -76,6 +77,7 @@ private final Logger LOGGER = Logger.getLogger(this.getClass());
 
 	@BeforeClass
 	public static void prepareWorkspace() {
+		Preferences.set("org.eclipse.debug.ui", "Console.limitConsoleOutput", "false");
 		deleteRuntimes();
 	}
 

@@ -15,8 +15,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import org.eclipse.reddeer.common.exception.WaitTimeoutExpiredException;
+import org.eclipse.reddeer.common.matcher.RegexMatcher;
 import org.eclipse.reddeer.common.wait.TimePeriod;
 import org.eclipse.reddeer.common.wait.WaitUntil;
+import org.eclipse.reddeer.common.wait.WaitWhile;
+import org.eclipse.reddeer.direct.preferences.Preferences;
 import org.eclipse.reddeer.eclipse.condition.BrowserContainsText;
 import org.eclipse.reddeer.eclipse.debug.ui.views.launch.LaunchView;
 import org.eclipse.reddeer.eclipse.ui.console.ConsoleView;
@@ -30,9 +34,15 @@ import org.eclipse.reddeer.swt.api.MenuItem;
 import org.eclipse.reddeer.swt.api.TreeItem;
 import org.eclipse.reddeer.swt.condition.PageIsLoaded;
 import org.eclipse.reddeer.swt.impl.browser.InternalBrowser;
+import org.eclipse.reddeer.swt.impl.ctab.DefaultCTabFolder;
 import org.eclipse.reddeer.swt.impl.menu.ContextMenu;
+import org.eclipse.reddeer.swt.impl.menu.ContextMenuItem;
+import org.eclipse.reddeer.swt.impl.toolbar.DefaultToolBar;
+import org.eclipse.reddeer.swt.impl.toolbar.DefaultToolItem;
+import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
 import org.eclipse.reddeer.workbench.core.exception.WorkbenchCoreLayerException;
 import org.eclipse.reddeer.workbench.impl.editor.DefaultEditor;
+import org.eclipse.wst.server.ui.internal.view.servers.ServersView;
 import org.jboss.ide.eclipse.as.reddeer.server.requirement.InternalBrowserRequirement.UseInternalBrowser;
 import org.jboss.ide.eclipse.as.reddeer.server.requirement.ServerRequirement.JBossServer;
 import org.jboss.tools.jmx.reddeer.core.JMXConnection;
@@ -61,6 +71,7 @@ public class ShowInContextMenuTest {
 	
 	@Before
 	public void selectServer() {
+		Preferences.set("org.eclipse.debug.ui", "Console.limitConsoleOutput", "false");
 		sv = new ServersView2();
 		sv.open();
 		server = sv.getServer("WildFly 24+ Server");
@@ -69,9 +80,19 @@ public class ShowInContextMenuTest {
 	
 	@After
 	public void cleanUp() {
+		new WaitWhile(new JobIsRunning(), TimePeriod.LONG);
 		if(server.getLabel().getState().isRunningState()) {
-			server.stop();
+			new ConsoleView().activate();
+			new ConsoleView().terminateConsole();
+			new ServersView2().activate();
 		}
+		new WaitWhile(new JobIsRunning(), TimePeriod.LONG);
+		if(server.getLabel().getState().isRunningState()) {
+			new ConsoleView().activate();
+			new ConsoleView().terminateConsole();
+			new ServersView2().activate();
+		}
+		new WaitWhile(new JobIsRunning(), TimePeriod.LONG);
 		sv.close();
 		try {
 			new DefaultEditor().close();
