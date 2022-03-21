@@ -104,7 +104,10 @@ public class RSEHostShellModel {
 			this.listener = listener;
 			resetStartupShell();
 			IServer s = ServerCore.findServer(serverId);
-			IShellService service = findShellService(s);			
+			IShellService service = findShellService(s);		
+			if( environment == null ) {
+				environment = new String[0];
+			}
 			try {
 				IHostShell hs = service.launchShell(initialWorkingDirectory, environment, new NullProgressMonitor());
 				startupShell = hs;
@@ -133,6 +136,9 @@ public class RSEHostShellModel {
 					throws CoreException {
 			IServer s = ServerCore.findServer(serverId);
 			IShellService service = findShellService(s);
+			if( environment == null ) {
+				environment = new String[0];
+			}
 			try {
 				if( singleUseShell == null || !singleUseShell.isActive()) {
 					singleUseShell = service.launchShell(initialWorkingDirectory, environment, monitor);
