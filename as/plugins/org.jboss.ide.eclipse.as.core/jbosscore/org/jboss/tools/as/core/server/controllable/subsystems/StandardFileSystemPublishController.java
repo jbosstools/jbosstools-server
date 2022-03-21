@@ -742,6 +742,7 @@ public class StandardFileSystemPublishController extends AbstractSubsystemContro
 				DeploymentMarkerUtils.removeDeployedMarker(archiveDestination, controller);
 				DeploymentMarkerUtils.removeDeployFailedMarker(archiveDestination, controller);
 				DeploymentMarkerUtils.createDoDeployMarker(archiveDestination, controller);
+				DeploymentMarkerUtils.createDoDeployMarker(archiveDestination, controller);
 			}
 		} catch(CoreException ce) {
 			JBossServerCorePlugin.log(ce);
