@@ -16,6 +16,7 @@ import java.io.File;
 import java.util.List;
 
 import org.eclipse.reddeer.common.util.Display;
+import org.eclipse.reddeer.direct.preferences.Preferences;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.Server;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
 import org.eclipse.reddeer.junit.runner.RedDeerSuite;
@@ -137,6 +138,7 @@ public class SingleServerRuntimeTest {
 
 	@BeforeClass
 	public static void beforeClass() {
+		Preferences.set("org.eclipse.debug.ui", "Console.limitConsoleOutput", "false");
 		ServersView2 serversView = new ServersView2();
 		serversView.open();
 		serversView.getServers();
