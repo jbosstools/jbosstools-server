@@ -20,6 +20,7 @@ import org.eclipse.reddeer.direct.preferences.Preferences;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.Server;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
 import org.eclipse.reddeer.junit.runner.RedDeerSuite;
+import org.eclipse.reddeer.requirements.browser.InternalBrowserRequirement.UseInternalBrowser;
 import org.eclipse.ui.PlatformUI;
 import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServer;
 import org.jboss.tools.as.ui.bot.itests.Activator;
@@ -48,6 +49,7 @@ import org.junit.runners.MethodSorters;
 @RunWith(RedDeerSuite.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING) // first acquireAndDetect, then detect, then operate
 @DisableSecureStorage
+@UseInternalBrowser
 public class SingleServerRuntimeTest {
 
 	private String location;
