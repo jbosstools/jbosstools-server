@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 Red Hat, Inc. 
+ * Copyright (c) 2020-2022 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the
  * Eclipse Public License v2.0 which accompanies this distribution, 
@@ -33,13 +33,15 @@ import org.jboss.ide.eclipse.as.reddeer.server.wizard.page.NewServerAdapterPage.
 import org.jboss.ide.eclipse.as.reddeer.server.wizard.page.NewServerRSIWizardPage;
 import org.jboss.ide.eclipse.as.reddeer.server.wizard.page.NewServerWizardPageWithErrorCheck;
 import org.eclipse.reddeer.requirements.server.ServerRequirementState;
+import org.eclipse.reddeer.eclipse.exception.EclipseLayerException;
+import org.eclipse.reddeer.eclipse.rse.ui.view.System;
 
 import static org.junit.Assert.assertTrue;
 
 
 /**
  * 
- * @author psrna, Radoslav Rabara
+ * @author psrna, Radoslav Rabara, Ondrej Dockal
  *
  */
 
@@ -142,15 +144,19 @@ public class ServerRequirement extends AbstractServerRequirement implements Conf
 		sview.open();
 		RSEMainNewConnectionWizard connW = sview.newConnection();
 		RSENewConnectionWizardSelectionPage sp = new RSENewConnectionWizardSelectionPage(connW);
-		sp.selectSystemType(getSystemTypeFromString(config.getRemote().getSystemType()));
+		RemoteServerConfiguration remote = config.getRemote();
+		sp.selectSystemType(getSystemTypeFromString(remote.getSystemType()));
 		connW.next();
 		RSEDefaultNewConnectionWizardMainPage mp = new RSEDefaultNewConnectionWizardMainPage(connW);
-		mp.setHostName(config.getRemote().getServerHost());
+		mp.setHostName(remote.getServerHost());
+		if (remote.getServerHostName() != null) {
+			mp.setConnectionName(remote.getServerHostName());
+		}
 		connW.finish();
 		
-		if (getSystemTypeFromString(config.getRemote().getSystemType()) == SystemType.SSH_ONLY) {
-			org.eclipse.reddeer.eclipse.rse.ui.view.System system = sview.getSystem(config.getRemote().getServerHost());
-			system.connect(config.getRemote().getUsername(), config.getRemote().getPassword());
+		if (getSystemTypeFromString(remote.getSystemType()) == SystemType.SSH_ONLY) {
+			org.eclipse.reddeer.eclipse.rse.ui.view.System system = sview.getSystem(remote.getServerHost());
+			system.connect(remote.getUsername(), remote.getPassword());
 					
 			assertTrue(system.isConnected());
 		}
@@ -221,10 +227,26 @@ public class ServerRequirement extends AbstractServerRequirement implements Conf
 
 	@Override
 	public void cleanUp() {
-		if(server.cleanup() && config != null){
+		if (server.cleanup() && config != null){
 			removeServerAndRuntime();
 		}
+		if (server.cleanup() && config.getRemote() != null) {
+			removeRemoteConnection();
+		}
 		
+	}
+	
+	public void removeRemoteConnection() {
+		SystemViewPart sview = new SystemViewPart();
+		sview.open();
+		RemoteServerConfiguration localConfig = config.getRemote();
+		String host = localConfig.getServerHostName() != null ? localConfig.getServerHostName() : localConfig.getServerHost();
+		try {
+			System system = sview.getSystem(host);
+			system.delete();
+		} catch (EclipseLayerException exc) {
+			// no such remote system exists
+		}
 	}
 
 	@Override
