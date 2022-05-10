@@ -15,7 +15,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 
 import org.jboss.ide.eclipse.archives.ui.test.bot.ArchivesTestBase;
-import org.eclipse.reddeer.direct.preferences.Preferences;
 import org.eclipse.reddeer.eclipse.jst.ejb.ui.project.facet.EjbProjectFirstPage;
 import org.eclipse.reddeer.eclipse.jst.ejb.ui.project.facet.EjbProjectWizard;
 import org.eclipse.reddeer.eclipse.jst.servlet.ui.project.facet.WebProjectFirstPage;
@@ -48,7 +47,6 @@ public class VariousProjectsArchiving extends ArchivesTestBase {
 	
 	@BeforeClass
 	public static void setup() {
-		Preferences.set("org.eclipse.debug.ui", "Console.limitConsoleOutput", "false");
 		AbstractTest.deleteRuntimes();
 		File f = Activator.getDownloadFolder(SMOKETEST_TYPE);
 		if( !f.exists() || f.list() == null || f.list().length == 0 ) {

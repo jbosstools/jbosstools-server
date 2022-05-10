@@ -15,8 +15,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.eclipse.reddeer.common.exception.WaitTimeoutExpiredException;
-import org.eclipse.reddeer.common.matcher.RegexMatcher;
 import org.eclipse.reddeer.common.wait.TimePeriod;
 import org.eclipse.reddeer.common.wait.WaitUntil;
 import org.eclipse.reddeer.common.wait.WaitWhile;
@@ -27,29 +25,24 @@ import org.eclipse.reddeer.eclipse.ui.console.ConsoleView;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.Server;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
 import org.eclipse.reddeer.junit.runner.RedDeerSuite;
+import org.eclipse.reddeer.requirements.browser.InternalBrowserRequirement.UseInternalBrowser;
 import org.eclipse.reddeer.requirements.closeeditors.CloseAllEditorsRequirement.CloseAllEditors;
 import org.eclipse.reddeer.requirements.server.ServerRequirementState;
 import org.eclipse.reddeer.swt.api.Browser;
 import org.eclipse.reddeer.swt.api.MenuItem;
 import org.eclipse.reddeer.swt.api.TreeItem;
-import org.eclipse.reddeer.swt.condition.PageIsLoaded;
 import org.eclipse.reddeer.swt.impl.browser.InternalBrowser;
-import org.eclipse.reddeer.swt.impl.ctab.DefaultCTabFolder;
 import org.eclipse.reddeer.swt.impl.menu.ContextMenu;
-import org.eclipse.reddeer.swt.impl.menu.ContextMenuItem;
-import org.eclipse.reddeer.swt.impl.toolbar.DefaultToolBar;
-import org.eclipse.reddeer.swt.impl.toolbar.DefaultToolItem;
 import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
 import org.eclipse.reddeer.workbench.core.exception.WorkbenchCoreLayerException;
 import org.eclipse.reddeer.workbench.impl.editor.DefaultEditor;
-import org.eclipse.wst.server.ui.internal.view.servers.ServersView;
-import org.jboss.ide.eclipse.as.reddeer.server.requirement.InternalBrowserRequirement.UseInternalBrowser;
 import org.jboss.ide.eclipse.as.reddeer.server.requirement.ServerRequirement.JBossServer;
 import org.jboss.tools.jmx.reddeer.core.JMXConnection;
 import org.jboss.tools.jmx.reddeer.core.JMXConnectionItem;
 import org.jboss.tools.jmx.reddeer.ui.view.JMXNavigatorView;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -69,9 +62,13 @@ public class ShowInContextMenuTest {
 	private ServersView2 sv;
 	private Server server;
 	
+	@BeforeClass
+	public static void setup() {
+		Preferences.set("org.eclipse.debug.ui", "Console.limitConsoleOutput", "false");
+	}
+	
 	@Before
 	public void selectServer() {
-		Preferences.set("org.eclipse.debug.ui", "Console.limitConsoleOutput", "false");
 		sv = new ServersView2();
 		sv.open();
 		server = sv.getServer("WildFly 24+ Server");
