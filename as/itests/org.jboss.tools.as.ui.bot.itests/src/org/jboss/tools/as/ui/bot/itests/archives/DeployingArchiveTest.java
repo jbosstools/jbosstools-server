@@ -14,6 +14,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.List;
 
+import org.eclipse.reddeer.direct.preferences.Preferences;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.Server;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
 import org.eclipse.reddeer.eclipse.wst.server.ui.wizard.ModifyModulesDialog;
@@ -54,6 +55,7 @@ public class DeployingArchiveTest extends ArchivesTestBase {
 	
 	@BeforeClass
 	public static void setup() {
+		Preferences.set("org.eclipse.debug.ui", "Console.limitConsoleOutput", "false");
 		deleteRuntimes();
 		createJavaProject(projectName);
 		addArchivesSupport(projectName);

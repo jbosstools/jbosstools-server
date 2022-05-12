@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Path;
 import org.eclipse.reddeer.common.wait.WaitWhile;
+import org.eclipse.reddeer.direct.preferences.Preferences;
 import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
 import org.eclipse.reddeer.junit.internal.runner.ParameterizedRequirementsRunnerFactory;
 import org.eclipse.reddeer.junit.runner.RedDeerSuite;
@@ -58,6 +59,7 @@ public class RuntimeDetectionDuplicatesTest extends TestCase {
     
     @BeforeClass
     public static void prepare() {
+    	Preferences.set("org.eclipse.debug.ui", "Console.limitConsoleOutput", "false");
     	AbstractTest.deleteRuntimes();
     }
     

@@ -17,6 +17,7 @@ import java.util.Arrays;
 import org.eclipse.reddeer.common.exception.RedDeerException;
 import org.eclipse.reddeer.common.logging.Logger;
 import org.eclipse.reddeer.common.matcher.VersionMatcher;
+import org.eclipse.reddeer.direct.preferences.Preferences;
 import org.eclipse.reddeer.eclipse.wst.server.ui.wizard.NewServerWizard;
 import org.eclipse.reddeer.eclipse.wst.server.ui.wizard.NewServerWizardPage;
 import org.eclipse.reddeer.junit.annotation.RequirementRestriction;
@@ -80,6 +81,7 @@ public class ServerAdaptersTest extends AbstractTest {
 
 	@BeforeClass
 	public static void prepareWorkspace() {
+		Preferences.set("org.eclipse.debug.ui", "Console.limitConsoleOutput", "false");
 		deleteRuntimes();
 	}
 
