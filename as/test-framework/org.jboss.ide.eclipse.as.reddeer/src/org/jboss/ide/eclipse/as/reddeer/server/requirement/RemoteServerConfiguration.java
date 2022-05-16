@@ -16,6 +16,7 @@ public class RemoteServerConfiguration {
 	
 	public String serverHome;
 	public String serverHost;
+	public String serverHostName;
 	public String username;
 	public String password;
 	public String systemType;
@@ -46,9 +47,15 @@ public class RemoteServerConfiguration {
 	}
 	public String getServerHost() {
 		return serverHost;
+	}	
+	public String getServerHostName() {
+		return serverHostName;
 	}
 	public void setServerHost(String serverHost) {
 		this.serverHost = serverHost;
+	}	
+	public void setServerHostName(String serverHostName) {
+		this.serverHostName = serverHostName;
 	}
 
 }
