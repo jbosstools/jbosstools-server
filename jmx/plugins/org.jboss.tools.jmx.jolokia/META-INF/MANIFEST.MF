@@ -32,4 +32,5 @@ Export-Package: org.jboss.tools.jmx.jolokia,
  org.jboss.tools.jmx.jolokia.internal.connection;x-friends:="org.jboss.tools.jmx.jolokia.test",
  org.jolokia.client;x-friends:="org.jboss.tools.jmx.jolokia.test",
  org.jolokia.client.request;x-friends:="org.jboss.tools.jmx.jolokia.test",
+ org.jolokia.http,
  org.json.simple;x-friends:="org.jboss.tools.jmx.jolokia.test"
