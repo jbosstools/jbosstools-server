@@ -148,7 +148,7 @@ public class RSEStreamsProxy implements IStreamsProxy, IStreamsProxy2 {
 			super(stream, charset.name()); // TODO UNDO THIS CHANGE
 		}
 		public void startMonitoring() {
-			super.startMonitoring();
+			super.startMonitoring("Output Stream Monitor");
 		}
 		public void close() {
 			super.close();

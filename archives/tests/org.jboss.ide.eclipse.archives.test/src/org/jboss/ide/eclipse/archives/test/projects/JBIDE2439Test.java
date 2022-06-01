@@ -68,7 +68,7 @@ public class JBIDE2439Test extends TestCase {
 
 				public boolean visit(IResource resource) throws CoreException {
 					if( resource instanceof IFile ) {
-						if( !resource.getFullPath().toString().contains(".svn"))
+						if( !(resource.getFullPath().toString().contains(".svn") || resource.getFullPath().toString().contains(".settings")))
 							list.add(resource);
 					}
 					return true;
