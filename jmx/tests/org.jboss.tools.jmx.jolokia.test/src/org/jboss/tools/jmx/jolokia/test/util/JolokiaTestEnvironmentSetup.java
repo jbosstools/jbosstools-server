@@ -31,6 +31,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.security.Constraint;
+import org.eclipse.jetty.websocket.server.config.JettyWebSocketServletContainerInitializer;
 import org.jboss.tools.jmx.jolokia.internal.connection.JolokiaMBeanServerConnection;
 import org.jboss.tools.jmx.jolokia.test.JolokiaTestPlugin;
 import org.jolokia.client.BasicAuthenticator;
@@ -74,10 +75,12 @@ public class JolokiaTestEnvironmentSetup {
 			int port = EnvTestUtil.getFreePort();
 			jettyServer = new Server(port);
 			SecurityHandler securityHandler = createSecurityHandler();
-			ServletContextHandler jettyContext = new ServletContextHandler(jettyServer, "/", null, securityHandler, null, null);
+			ServletContextHandler jettyContext = new ServletContextHandler(jettyServer, "/"); //, null, securityHandler, null, null);
 			ServletHolder holder = new ServletHolder(new AgentServlet());
 			holder.setInitParameter("dispatcherClasses", "org.jolokia.jsr160.Jsr160RequestDispatcher");
 			jettyContext.addServlet(holder, "/j4p/*");
+			
+			JettyWebSocketServletContainerInitializer.configure(jettyContext, null);
 
 			jettyServer.start();
 			j4pUrl = "http://localhost:" + port + "/j4p";

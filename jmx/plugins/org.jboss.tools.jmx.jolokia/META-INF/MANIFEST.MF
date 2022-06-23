@@ -19,7 +19,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.httpcomponents.httpcore,
  org.apache.commons.logging
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Eclipse-LazyStart: true
 Import-Package: javax.servlet;version="4.0.0",
@@ -28,8 +28,9 @@ Import-Package: javax.servlet;version="4.0.0",
 Bundle-Activator: org.jboss.tools.jmx.jolokia.internal.Activator
 Bundle-ClassPath: .,
  lib/json-simple-1.1.1.jar,
- lib/jolokia-client-java-1.4.0.jar,
- lib/jolokia-core-1.4.0.jar
+ lib/jolokia-client-java-1.7.1.jar,
+ lib/jolokia-core-1.7.1.jar,
+ lib/jolokia-jsr160-1.7.1.jar
 Export-Package: org.jboss.tools.jmx.jolokia,
  org.jboss.tools.jmx.jolokia.internal.connection;x-friends:="org.jboss.tools.jmx.jolokia.test",
  org.jolokia.client;x-friends:="org.jboss.tools.jmx.jolokia.test",
