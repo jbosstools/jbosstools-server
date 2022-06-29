@@ -107,6 +107,18 @@ public class ArchivesActionProvider extends CommonActionProvider {
 		if( ProjectArchivesCommonView.ID.equals(siteId))
 			viewerControl.addKeyListener(deleteKeyListener);
 	}
+	
+	public void dispose() {
+		super.dispose();
+		for( int i = 0; i < newPackageActions.length; i++ ) {
+			try {
+				newPackageActions[i].dispose();
+			} catch(Throwable t) {
+				// ignore
+			}
+		}
+	}
+
 
 	public void fillContextMenu(IMenuManager manager) {
 		if (getContext() != null) {

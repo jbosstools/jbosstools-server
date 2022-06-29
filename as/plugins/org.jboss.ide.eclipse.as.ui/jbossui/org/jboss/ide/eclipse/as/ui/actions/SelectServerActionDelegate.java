@@ -51,7 +51,8 @@ public class SelectServerActionDelegate implements IWorkbenchWindowPulldownDeleg
 	private Image profileImage = ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_START_PROFILE).createImage();
 	private Image stopImage = ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_STOP).createImage();
 	private Image publishImage = ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_PUBLISH).createImage();
-	
+	private Map<String, Image> imageMap = new HashMap<String, Image>();
+
 	@Override
 	public void init(IWorkbenchWindow window) {
 		this.window = window;
@@ -192,7 +193,6 @@ public class SelectServerActionDelegate implements IWorkbenchWindowPulldownDeleg
 		
 	}
 	
-	private Map<String, Image> imageMap = new HashMap<String, Image>();
 	private Image getImage(IServerType st) {
 		if( st == null || st.getId() == null )
 			return null;
@@ -233,5 +233,15 @@ public class SelectServerActionDelegate implements IWorkbenchWindowPulldownDeleg
 		while(images.hasNext()) {
 			images.next().dispose();
 		}
+		if( startImage != null && !startImage.isDisposed())
+			startImage.dispose();
+		if( debugImage != null && !debugImage.isDisposed())
+			debugImage.dispose();
+		if( profileImage != null && !profileImage.isDisposed())
+			profileImage.dispose();
+		if( stopImage != null && !stopImage.isDisposed())
+			stopImage.dispose();
+		if( publishImage != null && !publishImage.isDisposed())
+			publishImage.dispose();
 	}
 }

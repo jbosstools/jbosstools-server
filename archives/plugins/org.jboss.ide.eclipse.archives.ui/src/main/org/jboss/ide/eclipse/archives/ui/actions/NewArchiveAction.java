@@ -54,7 +54,7 @@ public class NewArchiveAction {
 			iconURL = bundle.getEntry(iconPath);
 		}
 		icon = ImageDescriptor.createFromURL(iconURL);
-		iconImage = icon.createImage();
+		iconImage = null;
 	}
 
 	public IActionDelegate getAction() {
@@ -66,6 +66,8 @@ public class NewArchiveAction {
 	}
 
 	public Image getIcon() {
+		if( iconImage == null || iconImage.isDisposed())
+			iconImage = icon.createImage();
 		return iconImage;
 	}
 
@@ -78,6 +80,10 @@ public class NewArchiveAction {
 	}
 
 	protected void finalize() throws Throwable {
+		iconImage.dispose();
+	}
+	
+	public void dispose() throws Throwable {
 		iconImage.dispose();
 	}
 
