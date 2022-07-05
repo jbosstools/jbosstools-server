@@ -11,7 +11,6 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -31,6 +30,7 @@ import org.jboss.tools.jmx.jvmmonitor.internal.ui.RefreshJob;
 import org.jboss.tools.jmx.jvmmonitor.internal.ui.actions.PreferencesAction;
 import org.jboss.tools.jmx.jvmmonitor.internal.ui.actions.RefreshAction;
 import org.jboss.tools.jmx.jvmmonitor.internal.ui.actions.ToggleOrientationAction;
+import org.jboss.tools.jmx.jvmmonitor.internal.ui.properties.AbstractJvmPropertySection;
 import org.jboss.tools.jmx.jvmmonitor.internal.ui.properties.AbstractSashForm;
 import org.jboss.tools.jmx.jvmmonitor.internal.ui.properties.StackTraceViewer;
 import org.jboss.tools.jmx.jvmmonitor.ui.Activator;
@@ -266,14 +266,12 @@ public class SWTResourcesPage extends AbstractSashForm {
      *            The tool bar manager
      */
     void addToolBarActions(IToolBarManager manager) {
-        if (manager.find("separator2") == null) { //$NON-NLS-1$
-            manager.insertAfter("defaults", new Separator("separator2")); //$NON-NLS-1$ //$NON-NLS-2$
+    	AbstractJvmPropertySection.ensureNamedSeparatorAddedToToolbar(manager, "separator2");
+        if (manager.find(clearSWTResourceAction.getId()) == null) {
+            manager.insertBefore("separator2", clearSWTResourceAction); //$NON-NLS-1$
         }
         if (manager.find(refreshAction.getId()) == null) {
-            manager.insertAfter("defaults", refreshAction); //$NON-NLS-1$
-        }
-        if (manager.find(clearSWTResourceAction.getId()) == null) {
-            manager.insertAfter("defaults", clearSWTResourceAction); //$NON-NLS-1$
+            manager.insertBefore("separator2", refreshAction); //$NON-NLS-1$
         }
     }
 
