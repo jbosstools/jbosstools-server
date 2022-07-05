@@ -480,4 +480,12 @@ public class ArchivesActionProvider extends CommonActionProvider {
 	private Shell getShell() {
 		return site.getShell();
 	}
+	
+	@Override
+	public void dispose() {
+		for (NewArchiveAction action : newPackageActions) {
+			action.dispose();
+		}
+		super.dispose();
+	}
 }

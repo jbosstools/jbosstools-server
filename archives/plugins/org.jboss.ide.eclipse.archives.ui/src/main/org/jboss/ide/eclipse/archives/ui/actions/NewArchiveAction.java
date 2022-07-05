@@ -77,7 +77,7 @@ public class NewArchiveAction {
 		return label;
 	}
 
-	protected void finalize() throws Throwable {
+	public void dispose() {
 		iconImage.dispose();
 	}
 
