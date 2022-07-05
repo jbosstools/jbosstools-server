@@ -233,5 +233,10 @@ public class SelectServerActionDelegate implements IWorkbenchWindowPulldownDeleg
 		while(images.hasNext()) {
 			images.next().dispose();
 		}
+		debugImage.dispose();
+		profileImage.dispose();
+		publishImage.dispose();
+		startImage.dispose();
+		stopImage.dispose();
 	}
 }
