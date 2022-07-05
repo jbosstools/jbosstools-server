@@ -164,11 +164,9 @@ public class OverviewSection extends AbstractJvmPropertySection {
      */
     @Override
     protected void addToolBarActions(IToolBarManager manager) {
-        if (manager.find("separator") == null) { //$NON-NLS-1$
-            manager.insertAfter("defaults", new Separator("separator")); //$NON-NLS-1$ //$NON-NLS-2$
-        }
+        ensureSeparatorAddedToToolbar(manager);
         if (manager.find(refreshAction.getId()) == null) {
-            manager.insertAfter("defaults", refreshAction); //$NON-NLS-1$
+            manager.insertBefore("separator", refreshAction); //$NON-NLS-1$
         }
     }
 

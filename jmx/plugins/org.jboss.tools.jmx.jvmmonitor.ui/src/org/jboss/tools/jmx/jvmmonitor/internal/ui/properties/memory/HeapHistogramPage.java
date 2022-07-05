@@ -48,6 +48,7 @@ import org.jboss.tools.jmx.jvmmonitor.internal.ui.actions.ConfigureColumnsAction
 import org.jboss.tools.jmx.jvmmonitor.internal.ui.actions.CopyAction;
 import org.jboss.tools.jmx.jvmmonitor.internal.ui.actions.OpenDeclarationAction;
 import org.jboss.tools.jmx.jvmmonitor.internal.ui.actions.RefreshAction;
+import org.jboss.tools.jmx.jvmmonitor.internal.ui.properties.AbstractJvmPropertySection;
 import org.jboss.tools.jmx.jvmmonitor.ui.Activator;
 
 /**
@@ -283,23 +284,21 @@ public class HeapHistogramPage extends Composite implements
      *            The tool bar manager
      */
     void addToolBarActions(IToolBarManager manager) {
-        if (manager.find("separator") == null) { //$NON-NLS-1$
-            manager.insertAfter("defaults", new Separator("separator")); //$NON-NLS-1$ //$NON-NLS-2$
-        }
+    	AbstractJvmPropertySection.ensureSeparatorAddedToToolbar(manager);
         if (manager.find(refreshAction.getId()) == null) {
-            manager.insertAfter("defaults", refreshAction); //$NON-NLS-1$
-        }
-        if (manager.find(garbageCollectorAction.getId()) == null) {
-            manager.insertAfter("defaults", garbageCollectorAction); //$NON-NLS-1$
-        }
-        if (manager.find(clearHeapDeltaAction.getId()) == null) {
-            manager.insertAfter("defaults", clearHeapDeltaAction); //$NON-NLS-1$
-        }
-        if (manager.find(dumpHeapAction.getId()) == null) {
-            manager.insertAfter("defaults", dumpHeapAction); //$NON-NLS-1$
+            manager.insertBefore("separator", refreshAction); //$NON-NLS-1$
         }
         if (manager.find(dumpHprofAction.getId()) == null) {
-            manager.insertAfter("defaults", dumpHprofAction); //$NON-NLS-1$
+            manager.insertBefore("separator", dumpHprofAction); //$NON-NLS-1$
+        }
+        if (manager.find(dumpHeapAction.getId()) == null) {
+            manager.insertBefore("separator", dumpHeapAction); //$NON-NLS-1$
+        }
+        if (manager.find(clearHeapDeltaAction.getId()) == null) {
+            manager.insertBefore("separator", clearHeapDeltaAction); //$NON-NLS-1$
+        }
+        if (manager.find(garbageCollectorAction.getId()) == null) {
+            manager.insertBefore("separator", garbageCollectorAction); //$NON-NLS-1$
         }
     }
 

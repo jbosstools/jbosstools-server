@@ -213,20 +213,18 @@ public class CpuSection extends AbstractJvmPropertySection implements
         suspendCpuProfilingAction.setEnabled(false);
         resumeCpuProfilingAction.setEnabled(false);
         clearCpuProfilingDataAction.setEnabled(false);
-        if (manager.find("separator") == null) { //$NON-NLS-1$
-            manager.insertAfter("defaults", new Separator("separator")); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-        if (manager.find(clearCpuProfilingDataAction.getId()) == null) {
-            manager.insertAfter("defaults", clearCpuProfilingDataAction); //$NON-NLS-1$
-        }
-        if (manager.find(suspendCpuProfilingAction.getId()) == null) {
-            manager.insertAfter("defaults", suspendCpuProfilingAction); //$NON-NLS-1$
+        ensureSeparatorAddedToToolbar(manager);
+        if (manager.find(dumpCpuProfilingDataAction.getId()) == null) {
+            manager.insertBefore("separator", dumpCpuProfilingDataAction); //$NON-NLS-1$
         }
         if (manager.find(resumeCpuProfilingAction.getId()) == null) {
-            manager.insertAfter("defaults", resumeCpuProfilingAction); //$NON-NLS-1$
+            manager.insertBefore("separator", resumeCpuProfilingAction); //$NON-NLS-1$
         }
-        if (manager.find(dumpCpuProfilingDataAction.getId()) == null) {
-            manager.insertAfter("defaults", dumpCpuProfilingDataAction); //$NON-NLS-1$
+        if (manager.find(suspendCpuProfilingAction.getId()) == null) {
+            manager.insertBefore("separator", suspendCpuProfilingAction); //$NON-NLS-1$
+        }
+        if (manager.find(clearCpuProfilingDataAction.getId()) == null) {
+            manager.insertBefore("separator", clearCpuProfilingDataAction); //$NON-NLS-1$
         }
     }
 

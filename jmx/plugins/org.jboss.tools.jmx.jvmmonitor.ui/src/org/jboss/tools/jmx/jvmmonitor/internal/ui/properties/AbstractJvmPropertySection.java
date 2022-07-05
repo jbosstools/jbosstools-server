@@ -14,6 +14,7 @@ import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.StatusLineContributionItem;
 import org.eclipse.jface.util.Util;
 import org.eclipse.jface.viewers.ISelection;
@@ -209,6 +210,20 @@ abstract public class AbstractJvmPropertySection extends
         activateSection();
     }
 
+    public static void ensureSeparatorAddedToToolbar(IToolBarManager manager) {
+    	ensureNamedSeparatorAddedToToolbar(manager, "separator");
+    }
+    public static void ensureNamedSeparatorAddedToToolbar(IToolBarManager manager, String name) {
+    	boolean noDefaults = manager.find("defaults") == null;
+        if (manager.find(name) == null) { //$NON-NLS-1$
+        	if( noDefaults ) {
+        		manager.add(new Separator(name));
+        	} else {
+                manager.insertAfter("defaults", new Separator(name)); //$NON-NLS-1$ //$NON-NLS-2$
+        	}
+        }
+    }
+    
     /*
      * @see IJvmModelChangeListener#jvmModelChanged(JvmModelEvent)
      */

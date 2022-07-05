@@ -129,14 +129,12 @@ public class ThreadsSection extends AbstractJvmPropertySection {
      */
     @Override
     protected void addToolBarActions(IToolBarManager manager) {
-        if (manager.find(refreshAction.getId()) == null) {
-            manager.insertAfter("defaults", new Separator("separator")); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-        if (manager.find(refreshAction.getId()) == null) {
-            manager.insertAfter("defaults", refreshAction); //$NON-NLS-1$
-        }
+        ensureSeparatorAddedToToolbar(manager);
         if (manager.find(dumpThreadsAction.getId()) == null) {
-            manager.insertAfter("defaults", dumpThreadsAction); //$NON-NLS-1$
+            manager.insertBefore("separator", dumpThreadsAction); //$NON-NLS-1$
+        }
+        if (manager.find(refreshAction.getId()) == null) {
+            manager.insertBefore("separator", refreshAction); //$NON-NLS-1$
         }
     }
 

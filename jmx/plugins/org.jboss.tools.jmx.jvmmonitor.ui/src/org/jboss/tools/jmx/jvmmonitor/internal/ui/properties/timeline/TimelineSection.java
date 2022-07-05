@@ -207,17 +207,15 @@ public class TimelineSection extends AbstractJvmPropertySection {
      */
     @Override
     protected void addToolBarActions(IToolBarManager manager) {
-        if (manager.find("separator") == null) { //$NON-NLS-1$
-            manager.insertAfter("defaults", new Separator("separator")); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-        if (manager.find(refreshAction.getId()) == null) {
-            manager.insertAfter("defaults", refreshAction); //$NON-NLS-1$
+        ensureSeparatorAddedToToolbar(manager);
+        if (manager.find(newChartAction.getId()) == null) {
+            manager.insertBefore("separator", newChartAction); //$NON-NLS-1$
         }
         if (manager.find(clearAction.getId()) == null) {
-            manager.insertAfter("defaults", clearAction); //$NON-NLS-1$
+            manager.insertBefore("separator", clearAction); //$NON-NLS-1$
         }
-        if (manager.find(newChartAction.getId()) == null) {
-            manager.insertAfter("defaults", newChartAction); //$NON-NLS-1$
+        if (manager.find(refreshAction.getId()) == null) {
+            manager.insertBefore("separator", refreshAction); //$NON-NLS-1$
         }
     }
 
