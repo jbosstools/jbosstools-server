@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jboss.tools.as</groupId>
 		<artifactId>plugins</artifactId>
-		<version>3.9.400-SNAPSHOT</version>
+		<version>3.9.500-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jboss.tools.archives.plugins</groupId>
 	<artifactId>org.jboss.ide.eclipse.archives.webtools</artifactId> 
