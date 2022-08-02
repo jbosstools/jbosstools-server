@@ -60,6 +60,7 @@ public class CreatingArchiveTest extends ArchivesTestBase {
 		NewJarDialog dialog = explorer.newJarArchive();
 		createArchive(dialog, ARCHIVE_STANDARD_2, true);
 		assertArchiveIsInExplorer(explorer, ARCHIVE_STANDARD_2_PATH);
+		explorer = new ProjectArchivesExplorer(projectName);
 		dialog = explorer.newJarArchive();
 		createArchive(dialog, ARCHIVE_NO_COMPRESSION_2, false);
 		assertArchiveIsInExplorer(explorer, ARCHIVE_NO_COMPRESSION_2_PATH);
