@@ -61,10 +61,10 @@ public class ServerRuntimeUIConstants {
 	public static final String WF_20_0_0 = "WildFly 20.0.0 Final";
 	public static final String WF_21_0_0 = "WildFly 21.0.0 Final";
 	public static final String WF_22_0_0 = "WildFly 22.0.0 Final";
-	public static final String WF_23_0_0 = "WildFly 23.0.0 Final";
+	public static final String WF_23_0_2 = "WildFly 23.0.2 Final";
 	public static final String WF_24_0_0 = "WildFly 24.0.0 Final";
-	public static final String WF_25_0_0 = "WildFly 25.0.1 Final";
-	public static final String WF_26_0_0 = "WildFly 26.0.0 Final";
+	public static final String WF_25_0_1 = "WildFly 25.0.1 Final";
+	public static final String WF_26_1_1 = "WildFly 26.1.1 Final";
 	// AUTOGEN_SERVER_ADAPTER_CHUNK
 
 
@@ -78,6 +78,7 @@ public class ServerRuntimeUIConstants {
 	public static final String JBEAP_720 = "Red Hat JBoss EAP 7.2.0";
 	public static final String JBEAP_730 = "Red Hat JBoss EAP 7.3.0";
 	public static final String JBEAP_740 = "Red Hat JBoss EAP 7.4.0";
+	public static final String JBEAP_746 = "Red Hat JBoss EAP 7.4.6";
 	// AUTOGEN_SERVER_ADAPTER_CHUNK
 
 	
@@ -92,16 +93,16 @@ public class ServerRuntimeUIConstants {
 	
 	public static final String[] LATEST_MAJORS_FREE_DOWNLOADS = new String[] {
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
-			WF_25_0_0,
-			WF_26_0_0,
+			WF_25_0_1,
+			WF_26_1_1,
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
 	};
 
 	
 	public static final String[] FREE_DOWNLOADS = new String[] {
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
-			WF_25_0_0,
-			WF_26_0_0,
+			WF_25_0_1,
+			WF_26_1_1,
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
 	}; 
 
@@ -123,7 +124,7 @@ public class ServerRuntimeUIConstants {
 	public static final String[] SMOKETEST_DOWNLOADS = new String[] {
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
 			JBEAP_740, 
-			WF_26_0_0,
+			WF_26_1_1,
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
 	};
 
@@ -170,10 +171,10 @@ public class ServerRuntimeUIConstants {
 		addEntry(WF_20_0_0, 	"WildFly 20.0",			"20.0", "WildFly", 	"wildfly-20.0.0.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(WF_21_0_0, 	"WildFly 21.0",			"21.0", "WildFly", 	"wildfly-21.0.1.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(WF_22_0_0, 	"WildFly 22.0",			"22.0", "WildFly", 	"wildfly-22.0.0.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
-		addEntry(WF_23_0_0, 	"WildFly 23.0",			"23.0", "WildFly", 	"wildfly-23.0.0.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
+		addEntry(WF_23_0_2, 	"WildFly 23.0",			"23.0", "WildFly", 	"wildfly-23.0.2.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(WF_24_0_0, 	"WildFly 24.0",			"24.0", "WildFly", 	"wildfly-24.0.0.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
-		addEntry(WF_25_0_0, 	"WildFly 25.0",			"25.0", "WildFly", 	"wildfly-25.0.1.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
-		addEntry(WF_26_0_0, 	"WildFly 26.0",			"26.0", "WildFly", 	"wildfly-26.0.0.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
+		addEntry(WF_25_0_1, 	"WildFly 25.0",			"25.0", "WildFly", 	"wildfly-25.0.1.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
+		addEntry(WF_26_1_1, 	"WildFly 26.1",			"26.1", "WildFly", 	"wildfly-26.1.1.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
 		addEntry(JBEAP_610, 	"Red Hat JBoss EAP 6.1", "6.1",	"EAP", 		"jboss-eap-6.1", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, as7EditorPorts());
 		addEntry(JBEAP_620, 	"Red Hat JBoss EAP 6.2", "6.2",	"EAP", 		"jboss-eap-6.2", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, as7EditorPorts());
@@ -184,6 +185,7 @@ public class ServerRuntimeUIConstants {
 		addEntry(JBEAP_720, 	"Red Hat JBoss EAP 7.2", "7.2",	"EAP", 		"jboss-eap-7.2", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(JBEAP_730, 	"Red Hat JBoss EAP 7.3", "7.3",	"EAP", 		"jboss-eap-7.3", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(JBEAP_740, 	"Red Hat JBoss EAP 7.4", "7.4",	"EAP", 		"jboss-eap-7.4", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
+		addEntry(JBEAP_746, 	"Red Hat JBoss EAP 7.4.6","7.4","EAP", 	    "jboss-eap-7.4", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
 		
 		addEntry(JPP_610, 		"JBoss Portal 6.1",		"6.1", "JPP", 		"jboss-jpp-6.1", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, as7EditorPorts());

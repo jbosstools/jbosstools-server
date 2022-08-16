@@ -20,7 +20,12 @@ import org.eclipse.reddeer.direct.preferences.Preferences;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.Server;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
 import org.eclipse.reddeer.junit.runner.RedDeerSuite;
+import org.eclipse.reddeer.requirements.jre.JRERequirement.JRE;
 import org.eclipse.reddeer.requirements.browser.InternalBrowserRequirement.UseInternalBrowser;
+import org.eclipse.reddeer.common.matcher.VersionMatcher;
+import org.eclipse.reddeer.junit.annotation.RequirementRestriction;
+import org.eclipse.reddeer.junit.internal.runner.ParameterizedRequirementsRunnerFactory;
+import org.eclipse.reddeer.junit.requirement.matcher.RequirementMatcher;
 import org.eclipse.ui.PlatformUI;
 import org.jboss.ide.eclipse.as.reddeer.server.view.JBossServer;
 import org.jboss.tools.as.ui.bot.itests.Activator;
@@ -37,6 +42,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 /**
  * This test is trying to optimize and clean up the huge number of tests that
@@ -47,6 +53,8 @@ import org.junit.runners.MethodSorters;
  */
 
 @RunWith(RedDeerSuite.class)
+@JRE(cleanup = true, setDefault = true)
+@UseParametersRunnerFactory(ParameterizedRequirementsRunnerFactory.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING) // first acquireAndDetect, then detect, then operate
 @DisableSecureStorage
 @UseInternalBrowser
@@ -56,6 +64,11 @@ public class SingleServerRuntimeTest {
 	private String serverName;
 	private String serverIdentification;
 
+	@RequirementRestriction
+	public static RequirementMatcher getRestrictionMatcher() {
+	  return new RequirementMatcher(JRE.class, "version", new VersionMatcher("11"));
+	}
+	
 	public SingleServerRuntimeTest() {
 		location = System.getProperty("jbosstools.test.single.runtime.location");
 		serverIdentification = System.getProperty("jbosstools.test.single.runtime.server.identification");
@@ -101,7 +114,7 @@ public class SingleServerRuntimeTest {
 				"jsp-project", ".war");
 		String depString = ServerRuntimeUIConstants.getDeployString(serverIdentification, "jsp-project",
 				".war");
-
+		
 		checkCountAndGetServerName();
 		OperateServerTemplate operate = new OperateServerTemplate(serverName);
 		operate.setUp();

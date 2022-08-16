@@ -47,7 +47,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
  *
  */
 @RunWith(RedDeerSuite.class)
-@JRE(cleanup=true)
+@JRE(cleanup=true, setDefault = true)
 @UseParametersRunnerFactory(ParameterizedRequirementsRunnerFactory.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ServerAdaptersTest extends AbstractTest {

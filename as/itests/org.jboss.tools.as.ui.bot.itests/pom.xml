@@ -59,7 +59,7 @@
 			<properties>
 				<test.class>org.jboss.tools.as.ui.bot.itests.EAPTestsSuite</test.class>
 				<jbosstools.test.jboss-server.home>jboss-eap-7.4</jbosstools.test.jboss-server.home>
-				<jbosstools.test.single.runtime.server.identification>Red Hat JBoss EAP 7.4.0</jbosstools.test.single.runtime.server.identification>
+				<jbosstools.test.single.runtime.server.identification>Red Hat JBoss EAP 7.4.6</jbosstools.test.single.runtime.server.identification>
 				<jbosstools.test.single.runtime.product.slot>eap</jbosstools.test.single.runtime.product.slot>
 				<jbosstools.test.single.runtime.product.release.name>JBoss EAP</jbosstools.test.single.runtime.product.release.name>
 				<jbosstools.test.single.runtime.server.adapter.label>Red Hat JBoss Enterprise Application Platform 7.4</jbosstools.test.single.runtime.server.adapter.label>
