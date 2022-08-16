@@ -23,7 +23,7 @@
 		<server.host></server.host>
 		<remote.system.type></remote.system.type>
 		<jbosstools.test.wildfly.25.home>${jbosstools.test.jboss.home.25.0}</jbosstools.test.wildfly.25.home>
-		<jbosstools.test.wildfly.26.home>${jbosstools.test.jboss.home.26.0}</jbosstools.test.wildfly.26.home>
+		<jbosstools.test.wildfly.26.home>${jbosstools.test.jboss.home.26.1}</jbosstools.test.wildfly.26.home>
 		<jbosstools.test.eap.7.4.home>${jbosstools.test.jboss.home.eap.7.4}</jbosstools.test.eap.7.4.home>
 		<suiteClass>org.jboss.tools.as.jmx.ui.bot.itests.JMXAllTests</suiteClass>
 	</properties>

@@ -13,7 +13,7 @@ package org.jboss.tools.as.ui.bot.itests.parametized.server;
 public class PomServerConstants {
 	// AUTOGEN_SERVER_ADAPTER_CHUNK
 	public static final String JBOSS_250_HOME="jbosstools.test.jboss.home.25.0";
-	public static final String JBOSS_260_HOME="jbosstools.test.jboss.home.26.0";
+	public static final String JBOSS_261_HOME="jbosstools.test.jboss.home.26.1";
 	// AUTOGEN_SERVER_ADAPTER_CHUNK
 	public static final String JBOSS_EAP_70_HOME="jbosstools.test.jboss.home.eap.7.0";
 	public static final String JBOSS_EAP_71_HOME="jbosstools.test.jboss.home.eap.7.1";
@@ -26,7 +26,7 @@ public class PomServerConstants {
 	public static final String[] PUBLIC = new String[]{
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
 			JBOSS_250_HOME,
-			JBOSS_260_HOME,
+			JBOSS_261_HOME,
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
 	};
 	// NEW_SERVER_ADAPTER
@@ -34,7 +34,7 @@ public class PomServerConstants {
 	public static final String[] ALL = new String[]{
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
 			JBOSS_250_HOME,
-			JBOSS_260_HOME,
+			JBOSS_261_HOME,
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
 			JBOSS_EAP_70_HOME, 
 			JBOSS_EAP_71_HOME,

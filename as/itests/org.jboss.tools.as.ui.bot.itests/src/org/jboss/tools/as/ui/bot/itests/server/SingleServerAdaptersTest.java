@@ -33,7 +33,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
  *
  */
 @RunWith(RedDeerSuite.class)
-@JRE(cleanup = true)
+@JRE(cleanup = true, setDefault = true)
 @UseParametersRunnerFactory(ParameterizedRequirementsRunnerFactory.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SingleServerAdaptersTest extends ServerAdaptersTest {
@@ -47,7 +47,7 @@ public class SingleServerAdaptersTest extends ServerAdaptersTest {
 
 	@RequirementRestriction
 	public static RequirementMatcher getRestrictionMatcher() {
-	  return new RequirementMatcher(JRE.class, "version", new VersionMatcher("1.8"));
+	  return new RequirementMatcher(JRE.class, "version", new VersionMatcher("11"));
 	}
 
 	public SingleServerAdaptersTest(String server) {
