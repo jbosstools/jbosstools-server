@@ -9,4 +9,9 @@
 	<groupId>org.jboss.tools.as.itests</groupId>
 	<artifactId>org.jboss.tools.as.management.itests</artifactId> 
 	<packaging>eclipse-test-plugin</packaging>
+	
+	<properties>
+		<!-- fix for java17, see https://issues.redhat.com/browse/JBIDE-28284 -->
+		<additionalProperties>--add-opens java.base/java.security=ALL-UNNAMED</additionalProperties>
+	</properties>
 </project>
