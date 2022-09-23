@@ -17,17 +17,24 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 
+import org.eclipse.reddeer.common.exception.WaitTimeoutExpiredException;
+import org.eclipse.reddeer.common.logging.Logger;
 import org.eclipse.reddeer.common.wait.TimePeriod;
 import org.eclipse.reddeer.common.wait.WaitUntil;
 import org.eclipse.reddeer.common.wait.WaitWhile;
+import org.eclipse.reddeer.eclipse.ui.console.ConsoleView;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.Server;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersViewEnums.ServerState;
 import org.eclipse.reddeer.junit.requirement.inject.InjectRequirement;
 import org.eclipse.reddeer.swt.api.Button;
+import org.eclipse.reddeer.swt.api.MenuItem;
 import org.eclipse.reddeer.swt.api.TreeItem;
 import org.eclipse.reddeer.swt.condition.ShellIsAvailable;
 import org.eclipse.reddeer.swt.impl.button.PushButton;
+import org.eclipse.reddeer.swt.impl.menu.ContextMenu;
+import org.eclipse.reddeer.swt.impl.shell.DefaultShell;
+import org.eclipse.swt.widgets.Shell;
 import org.jboss.ide.eclipse.as.reddeer.server.requirement.ServerRequirement;
 import org.jboss.tools.as.jmx.ui.bot.itests.JMXTestTemplate;
 import org.jboss.tools.jmx.reddeer.core.JMXConnection;
@@ -40,6 +47,8 @@ public abstract class JMXServerTestTemplate extends JMXTestTemplate {
 
 	protected JMXConnectionItem serverItem;
 	protected Server server;
+	
+	private static final Logger log = Logger.getLogger(RemoteServerJMXConnectionTest.class);
 	
 	@InjectRequirement
 	protected static ServerRequirement serverConfig;
@@ -65,8 +74,39 @@ public abstract class JMXServerTestTemplate extends JMXTestTemplate {
 	public void stopServer() {
 		Server server = getServer(serverConfig.getServerName());
 		if (server.getLabel().getState() != ServerState.STOPPED) {
-			server.stop();
+			try {
+				server.stop();
+			} catch (WaitTimeoutExpiredException exc) {
+				log.error(exc.getMessage() + ", Server cannot be stopped, terminating");
+				// workaround for 
+				ShellIsAvailable shell = new ShellIsAvailable("Terminate Server");
+				new WaitUntil(shell, false);
+				if (shell.getResult() != null) {
+					processShell(shell.getResult());
+				}
+				terminateServer(server);
+				if (server.getLabel().getState().isRunningState()) {
+					terminateServer(server);
+				}
+			}
 		}
+	}
+	
+	private void terminateServer(Server server) {
+		ServersView2 view = new ServersView2();
+		view.open();
+		server.select();
+		MenuItem item = new ContextMenu().getItem("Show In", "Console");
+		if (item.isEnabled()) {
+			item.select();
+			new ConsoleView().terminateConsole();
+		}
+	}
+	
+	private void processShell(Shell shell) {
+		DefaultShell dialog = new DefaultShell(shell);
+		new PushButton("Cancel").click();
+		new WaitWhile(new ShellIsAvailable(dialog), false);
 	}
 	
 	public Server getServer(String name) {

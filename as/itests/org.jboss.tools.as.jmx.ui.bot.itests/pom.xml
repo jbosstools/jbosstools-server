@@ -16,14 +16,14 @@
 		<maven.test.failure.ignore>true</maven.test.failure.ignore>
 		<rd.config>${project.build.directory}/classes/requirements.json</rd.config>
 		<skipPrivateRequirements>false</skipPrivateRequirements>
-		<systemProperties>-Drd.config=${rd.config} -Dusage_reporting_enabled=false -Djbosstools.test.wildfly.25.home=${jbosstools.test.wildfly.25.home} -Djbosstools.test.wildfly.26.home=${jbosstools.test.wildfly.26.home} -Djbosstools.test.eap.7.4.home=${jbosstools.test.eap.7.4.home} -Dusername=${username} -Dpassword=${password} -Dremote.system.type=${remote.system.type}</systemProperties>
+		<systemProperties>-Drd.config=${rd.config} -Dusage_reporting_enabled=false -Djbosstools.test.wildfly.26.home=${jbosstools.test.wildfly.26.home} -Djbosstools.test.wildfly.27.home=${jbosstools.test.wildfly.27.home} -Djbosstools.test.eap.7.4.home=${jbosstools.test.eap.7.4.home} -Dusername=${username} -Dpassword=${password} -Dremote.system.type=${remote.system.type}</systemProperties>
 		<surefire.timeout>14400</surefire.timeout>
 		<username></username>
 		<password></password>
 		<server.host></server.host>
 		<remote.system.type></remote.system.type>
-		<jbosstools.test.wildfly.25.home>${jbosstools.test.jboss.home.25.0}</jbosstools.test.wildfly.25.home>
 		<jbosstools.test.wildfly.26.home>${jbosstools.test.jboss.home.26.1}</jbosstools.test.wildfly.26.home>
+		<jbosstools.test.wildfly.27.home>${jbosstools.test.jboss.home.27.0}</jbosstools.test.wildfly.27.home>
 		<jbosstools.test.eap.7.4.home>${jbosstools.test.jboss.home.eap.7.4}</jbosstools.test.eap.7.4.home>
 		<suiteClass>org.jboss.tools.as.jmx.ui.bot.itests.JMXAllTests</suiteClass>
 	</properties>
