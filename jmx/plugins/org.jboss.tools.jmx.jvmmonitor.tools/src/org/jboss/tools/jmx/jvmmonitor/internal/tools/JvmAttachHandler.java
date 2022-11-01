@@ -219,10 +219,7 @@ public class JvmAttachHandler implements IJvmAttachHandler,
         try {
             return getLocalConnectorAddressInternal(monitoredVm, pid);
         } catch (JvmCoreException e) {
-            String message = NLS.bind(
-                    Messages.getLocalConnectorAddressFailedMsg, pid);
-            Activator.log(IStatus.WARNING, message, e);
-            return null;
+        	throw e;
         }
     }
 

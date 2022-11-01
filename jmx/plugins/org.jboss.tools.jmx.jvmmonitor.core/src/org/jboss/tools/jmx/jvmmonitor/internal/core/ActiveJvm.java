@@ -442,7 +442,8 @@ public class ActiveJvm extends AbstractJvm implements IActiveJvm {
     private void initialize() throws JvmCoreException {
     	if( monitoredVm != null ) {
     		String url = getLocalConnectorAddress(monitoredVm, getPid());
-    		initialize(url, getPid());
+    		if( url != null )
+    			initialize(url, getPid());
     	}
     }
     
