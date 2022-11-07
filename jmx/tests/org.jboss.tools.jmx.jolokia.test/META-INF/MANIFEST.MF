@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %BundleName
 Bundle-SymbolicName: org.jboss.tools.jmx.jolokia.test
-Bundle-Version: 1.10.301.qualifier
+Bundle-Version: 1.10.302.qualifier
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-Vendor: %BundleProvider

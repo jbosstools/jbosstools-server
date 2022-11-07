@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.jboss.tools.jmx</groupId>
 		<artifactId>test-framework</artifactId>
-		<version>1.10.301-SNAPSHOT</version>
+		<version>1.10.302-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jboss.tools.jmx.tests</groupId>
 	<artifactId>org.jboss.tools.jmx.reddeer</artifactId>
