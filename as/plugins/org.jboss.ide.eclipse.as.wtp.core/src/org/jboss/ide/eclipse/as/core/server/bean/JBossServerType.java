@@ -70,7 +70,9 @@ public class JBossServerType extends ServerBeanType implements IJBossToolingCons
 	public static final JBossServerType EAP74 = new ServerBeanTypeEAP7Plus("7.4", IJBossToolingConstants.SERVER_EAP_74);
 	public static final JBossServerType WILDFLY240 = new ServerBeanTypeWildfly10Plus("24.0", IJBossToolingConstants.SERVER_WILDFLY_240, "main");
 	public static final JBossServerType WILDFLY240_WEB = new ServerBeanTypeWildfly10PlusWeb("24.0", IJBossToolingConstants.SERVER_WILDFLY_240);
+	public static final JBossServerType EAP80 = new ServerBeanTypeEAP7Plus("8.0", IJBossToolingConstants.SERVER_EAP_80);
 	// AUTOGEN_SERVER_ADAPTER_CHUNK
+
 
 
 
@@ -113,7 +115,9 @@ public class JBossServerType extends ServerBeanType implements IJBossToolingCons
 		JBossServerType.EAP72,
 		JBossServerType.EAP73,
 		JBossServerType.EAP74, 
+		JBossServerType.EAP80, 
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
+
 
 
 
@@ -139,6 +143,7 @@ public class JBossServerType extends ServerBeanType implements IJBossToolingCons
 		JBossServerType.WILDFLY230,JBossServerType.WILDFLY230_WEB,
 		JBossServerType.WILDFLY240,JBossServerType.WILDFLY240_WEB,
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
+
 
 
 

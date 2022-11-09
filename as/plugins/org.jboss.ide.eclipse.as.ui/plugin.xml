@@ -458,7 +458,9 @@
 						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.wildfly.230"></test>
 						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.eap.74"></test>
 						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.wildfly.240"></test>
+						<test property="org.eclipse.wst.server.ui.serverType" value="org.jboss.ide.eclipse.as.eap.80"></test>
 						<!-- AUTOGEN_SERVER_ADAPTER_CHUNK -->
+
 
 
 

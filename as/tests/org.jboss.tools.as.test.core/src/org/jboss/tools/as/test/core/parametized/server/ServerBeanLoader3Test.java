@@ -110,6 +110,7 @@ public class ServerBeanLoader3Test extends TestCase {
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_230, new Data(JBossServerType.WILDFLY230, "23.0"));
 		expected.put(IJBossToolingConstants.SERVER_EAP_74, new Data(JBossServerType.EAP74, "7.4"));
 		expected.put(IJBossToolingConstants.SERVER_WILDFLY_240, new Data(JBossServerType.WILDFLY240, "24.0"));
+		expected.put(IJBossToolingConstants.SERVER_EAP_80, new Data(JBossServerType.EAP80, "8.0"));
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
 		// NEW_SERVER_ADAPTER
 	}

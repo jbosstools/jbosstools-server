@@ -27,7 +27,6 @@ public class GenerateServerAdapterMain {
 	private static final boolean TYPE_WFLY = true;
 	private static final boolean TYPE_EAP = false;
 	
-	
 	public static void main(String[] args ) throws IOException {
 		new GenerateServerAdapterMain().run();
 	}
@@ -40,9 +39,9 @@ public class GenerateServerAdapterMain {
 //		String newVersion = "75";
 //		boolean type = TYPE_EAP;
 
-		String oldVersion = "230";
-		String newVersion = "240";
-		boolean type = TYPE_WFLY;
+		String oldVersion = "74";
+		String newVersion = "80";
+		boolean type = TYPE_EAP;
 
 		if( type == TYPE_WFLY ) {
 			runWildFly(jbtServer, oldVersion, newVersion);
@@ -122,7 +121,6 @@ public class GenerateServerAdapterMain {
 		addToServerAdaptersTestEAP(jbtServerRoot, newVersion);
 		addToServerRuntimeUIConstantsEAP(jbtServerRoot, newVersion);
 	}
-	public static final String JBEAP_730 = "Red Hat JBoss EAP 7.3.0";
 	private void addToServerRuntimeUIConstantsEAP(File jbtServerRoot, String newVersion) throws IOException {
 		// TODO Auto-generated method stub
 		String path = "as/itests/org.jboss.tools.as.ui.bot.itests/src/org/jboss/tools/as/ui/bot/itests/parametized/server/ServerRuntimeUIConstants.java";
