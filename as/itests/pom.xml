@@ -28,10 +28,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<jbosstools.test.jboss.home.eap.7.2>${requirementsDirectory}/jboss-eap-7.2</jbosstools.test.jboss.home.eap.7.2>
 		<jbosstools.test.jboss.home.eap.7.3>${requirementsDirectory}/jboss-eap-7.3</jbosstools.test.jboss.home.eap.7.3>
 		<jbosstools.test.jboss.home.eap.7.4>${requirementsDirectory}/jboss-eap-7.4</jbosstools.test.jboss.home.eap.7.4>
+		<jbosstools.test.jboss.home.eap.8.0>${requirementsDirectory}/jboss-eap-8.0</jbosstools.test.jboss.home.eap.8.0>
 		<additionalProperties></additionalProperties>
 		<!-- skipPrivateRequirements and skipTestsWithPrivateRequirements are inherited from parent pom -->
 		<runtimes.suite.scope>smoke</runtimes.suite.scope>
-		<systemProperties>-Djbosstools.test.jre.8=${jbosstools.test.jre.8} -Djbosstools.test.jre.11=${jbosstools.test.jre.11} -Djbosstools.test.jre.17=${jbosstools.test.jre.17} -Djbosstools.test.jboss.home.23.0=${jbosstools.test.jboss.home.23.0} -Djbosstools.test.jboss.home.24.0=${jbosstools.test.jboss.home.24.0} -Djbosstools.test.jboss.home.25.0=${jbosstools.test.jboss.home.25.0} -Djbosstools.test.jboss.home.26.1=${jbosstools.test.jboss.home.26.1}  -Djbosstools.test.jboss.home.eap.7.0=${jbosstools.test.jboss.home.eap.7.0} -Djbosstools.test.jboss.home.eap.7.1=${jbosstools.test.jboss.home.eap.7.1} -Djbosstools.test.jboss.home.eap.7.2=${jbosstools.test.jboss.home.eap.7.2} -Djbosstools.test.jboss.home.eap.7.3=${jbosstools.test.jboss.home.eap.7.3} -Djbosstools.test.jboss.home.eap.7.4=${jbosstools.test.jboss.home.eap.7.4} -Dorg.jboss.tools.tests.skipPrivateRequirements=${skipPrivateRequirements} -Dorg.jboss.tools.tests.skipTestsWithPrivateRequirements=${skipTestsWithPrivateRequirements} -Djboss.org.username=${jboss.org.username} -Djboss.org.password=${jboss.org.password} -Djbosstools.test.singleruntime.location=${jbosstools.test.singleruntime.location} -Druntimes.suite.scope=${runtimes.suite.scope} ${additionalProperties}</systemProperties>
+		<systemProperties>-Djbosstools.test.jre.8=${jbosstools.test.jre.8} -Djbosstools.test.jre.11=${jbosstools.test.jre.11} -Djbosstools.test.jre.17=${jbosstools.test.jre.17} -Djbosstools.test.jboss.home.23.0=${jbosstools.test.jboss.home.23.0} -Djbosstools.test.jboss.home.24.0=${jbosstools.test.jboss.home.24.0} -Djbosstools.test.jboss.home.25.0=${jbosstools.test.jboss.home.25.0} -Djbosstools.test.jboss.home.26.1=${jbosstools.test.jboss.home.26.1}  -Djbosstools.test.jboss.home.eap.7.0=${jbosstools.test.jboss.home.eap.7.0} -Djbosstools.test.jboss.home.eap.7.1=${jbosstools.test.jboss.home.eap.7.1} -Djbosstools.test.jboss.home.eap.7.2=${jbosstools.test.jboss.home.eap.7.2} -Djbosstools.test.jboss.home.eap.7.3=${jbosstools.test.jboss.home.eap.7.3} -Djbosstools.test.jboss.home.eap.7.4=${jbosstools.test.jboss.home.eap.7.4} -Djbosstools.test.jboss.home.eap.8.0=${jbosstools.test.jboss.home.eap.8.0} -Dorg.jboss.tools.tests.skipPrivateRequirements=${skipPrivateRequirements} -Dorg.jboss.tools.tests.skipTestsWithPrivateRequirements=${skipTestsWithPrivateRequirements} -Djboss.org.username=${jboss.org.username} -Djboss.org.password=${jboss.org.password} -Djbosstools.test.singleruntime.location=${jbosstools.test.singleruntime.location} -Druntimes.suite.scope=${runtimes.suite.scope} ${additionalProperties}</systemProperties>
 	</properties>
 
 	<build>
@@ -184,6 +185,19 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 								<configuration>
 									<url>http://download-node-02.eng.bos.redhat.com/released/jboss/eap7/7.4.0/jboss-eap-7.4.0.zip</url>
 									<md5>feddc39d58a29b1ed9791121a77e8b49</md5>
+									<unpack>true</unpack>
+									<skip>${skipTestsWithPrivateRequirements}</skip>
+								</configuration>
+							</execution>
+							<execution>
+								<id>install-eap-8.0.0</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>wget</goal>
+								</goals>
+								<configuration>
+									<url>https://prod-jenkins-csb-eap.apps.ocp-c1.prod.psi.redhat.com/job/EAP-8.0.x/job/jboss-eap-8.0.x-build-test-release/1157/artifact/stage/jboss-eap-8.0.0.Beta-20221109.zip</url>
+									<md5>b8dca92238afe6c634117a7671e5ce50</md5>
 									<unpack>true</unpack>
 									<skip>${skipTestsWithPrivateRequirements}</skip>
 								</configuration>

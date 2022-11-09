@@ -46,7 +46,10 @@ public class JBossModulesDefaultClasspathModel extends InternalRuntimeClasspathM
 			IJBossToolingConstants.WILDFLY_220,
 			IJBossToolingConstants.WILDFLY_230,
 			IJBossToolingConstants.EAP_74,
+	});
+	private static List<String> wf27Plus = Arrays.asList(new String[] {
 			IJBossToolingConstants.WILDFLY_240,
+			IJBossToolingConstants.EAP_80,
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
 	});
 	// NEW_SERVER_ADAPTER
@@ -59,11 +62,53 @@ public class JBossModulesDefaultClasspathModel extends InternalRuntimeClasspathM
 			return getDefaultJEE8JBossModulesEntries();
 		if( wf11Plus.contains(rttId)) 
 			return getDefaultWF11JBossModulesEntries();
+		if( wf27Plus.contains(rttId)) 
+			return getDefaultWF27JBossModulesEntries();
 		return getDefaultJBossModulesEntries();
 	}
 
 
 
+
+	private IRuntimePathProvider[] getDefaultWF27JBossModulesEntries() {
+		ArrayList<String> all = new ArrayList<String>();
+		all.addAll(Arrays.asList(getDefaultJEE8JBossModulesEntryKeys()));
+		
+		all.add("org.wildfly.common"); //$NON-NLS-1$
+		all.add("org.wildfly.security.elytron-private"); //$NON-NLS-1$
+		all.add("jakarta.resource.api"); //$NON-NLS-1$
+		all.add("jakarta.activation.api"); //$NON-NLS-1$
+		all.add("jakarta.el.api"); //$NON-NLS-1$
+		all.add("jakarta.transaction.api"); //$NON-NLS-1$
+		all.add("jakarta.ws.rs.api"); //$NON-NLS-1$
+		all.add("jakarta.mail.api"); //$NON-NLS-1$
+		all.add("jakarta.websocket.api"); //$NON-NLS-1$
+		all.add("jakarta.persistence.api"); //$NON-NLS-1$
+		all.add("jakarta.annotation.api"); //$NON-NLS-1$
+		all.add("jakarta.batch.api"); //$NON-NLS-1$
+		all.add("jakarta.faces.api"); //$NON-NLS-1$
+		all.add("jakarta.json.bind.api"); //$NON-NLS-1$
+		all.add("jakarta.json.api"); //$NON-NLS-1$
+		all.add("jakarta.xml.bind.api"); //$NON-NLS-1$
+		all.add("jakarta.xml.ws.api"); //$NON-NLS-1$
+		all.add("jakarta.xml.soap.api"); //$NON-NLS-1$
+		all.add("jakarta.ejb.api"); //$NON-NLS-1$
+		all.add("jakarta.enterprise.concurrent.api"); //$NON-NLS-1$
+		all.add("jakarta.enterprise.api"); //$NON-NLS-1$
+		all.add("jakarta.servlet.jstl.api"); //$NON-NLS-1$
+		all.add("jakarta.servlet.jsp.api"); //$NON-NLS-1$ //$NON-NLS-1$
+		all.add("jakarta.servlet.api"); //$NON-NLS-1$
+		all.add("jakarta.inject.api"); //$NON-NLS-1$
+		all.add("jakarta.validation.api"); //$NON-NLS-1$
+		all.add("jakarta.jms.api"); //$NON-NLS-1$
+		all.add("jakarta.interceptor.api"); //$NON-NLS-1$
+		all.add("jakarta.security.jacc.api"); //$NON-NLS-1$
+		all.add("jakarta.security.enterprise.api"); //$NON-NLS-1$
+		all.add("jakarta.security.auth.message.api"); //$NON-NLS-1$
+
+		String[] allString = (String[]) all.toArray(new String[all.size()]);
+		return toRuntimePathProvider(allString);
+	}
 	
 	private IRuntimePathProvider[] getDefaultWF11JBossModulesEntries() {
 		ArrayList<String> all = new ArrayList<String>();

@@ -20,6 +20,7 @@ public class PomServerConstants {
 	public static final String JBOSS_EAP_72_HOME="jbosstools.test.jboss.home.eap.7.2";
 	public static final String JBOSS_EAP_73_HOME="jbosstools.test.jboss.home.eap.7.3";
 	public static final String JBOSS_EAP_74_HOME="jbosstools.test.jboss.home.eap.7.4";
+	public static final String JBOSS_EAP_80_HOME="jbosstools.test.jboss.home.eap.8.0";
 	// AUTOGEN_SERVER_ADAPTER_CHUNK
 	// NEW_SERVER_ADAPTER
 
@@ -41,6 +42,7 @@ public class PomServerConstants {
 			JBOSS_EAP_72_HOME, 
 			JBOSS_EAP_73_HOME,
 			JBOSS_EAP_74_HOME,
+			JBOSS_EAP_80_HOME,
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
 	};
 	// NEW_SERVER_ADAPTER
