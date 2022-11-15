@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %BundleName
 Bundle-SymbolicName: org.jboss.tools.as.jmx.ui.bot.itests
-Bundle-Version: 3.9.500.qualifier
+Bundle-Version: 3.9.501.qualifier
 Bundle-Vendor: Red Hat
 Require-Bundle: org.junit,
  org.eclipse.reddeer.go,

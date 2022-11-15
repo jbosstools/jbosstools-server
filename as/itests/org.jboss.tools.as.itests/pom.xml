@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jboss.tools.as</groupId>
 		<artifactId>itests</artifactId>
-		<version>3.9.500-SNAPSHOT</version>
+		<version>3.9.501-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jboss.tools.as.itests</groupId>
 	<artifactId>org.jboss.tools.as.itests</artifactId> 
