@@ -75,6 +75,7 @@ public class JBossModulesDefaultClasspathModel extends InternalRuntimeClasspathM
 		all.addAll(Arrays.asList(getDefaultJEE8JBossModulesEntryKeys()));
 		
 		all.add("org.wildfly.common"); //$NON-NLS-1$
+		all.add("org.wildfly.security.elytron-base"); //$NON-NLS-1$
 		all.add("org.wildfly.security.elytron-private"); //$NON-NLS-1$
 		all.add("jakarta.resource.api"); //$NON-NLS-1$
 		all.add("jakarta.activation.api"); //$NON-NLS-1$
@@ -116,6 +117,7 @@ public class JBossModulesDefaultClasspathModel extends InternalRuntimeClasspathM
 		
 		all.add("org.wildfly.common"); //$NON-NLS-1$
 		all.add("org.wildfly.security.elytron-private"); //$NON-NLS-1$
+		all.add("org.wildfly.security.elytron-base"); //$NON-NLS-1$
 		
 		String[] allString = (String[]) all.toArray(new String[all.size()]);
 		return toRuntimePathProvider(allString);
