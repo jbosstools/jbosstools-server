@@ -169,6 +169,7 @@ public class JBossModulesDefaultClasspathModel extends InternalRuntimeClasspathM
 			"javax.jws.api",//$NON-NLS-1$
 			"javax.mail.api",//$NON-NLS-1$
 			"javax.management.j2ee.api",//$NON-NLS-1$
+			"javax.orb.api", //$NON-NLS-1$
 			"javax.persistence.api",//$NON-NLS-1$
 			"javax.resource.api",//$NON-NLS-1$
 			"javax.rmi.api",//$NON-NLS-1$
