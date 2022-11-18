@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jboss.tools.as</groupId>
 		<artifactId>plugins</artifactId>
-		<version>3.9.501-SNAPSHOT</version>
+		<version>3.10.0-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jboss.tools.as.plugins</groupId>
 	<artifactId>org.jboss.ide.eclipse.as.classpath.ui</artifactId> 
