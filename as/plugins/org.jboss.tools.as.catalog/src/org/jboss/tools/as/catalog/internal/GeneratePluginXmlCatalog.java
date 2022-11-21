@@ -40,6 +40,16 @@ public class GeneratePluginXmlCatalog {
 		if( mode == null )
 			mode = MODE_GENERATE;
 		
+
+		File f = new File(new File("."), "plugin.xml");
+		byte[] preExisting = new byte[0];
+		try {
+			preExisting = Files.readAllBytes(f.toPath());
+		} catch(IOException ioe) {
+			ioe.printStackTrace();
+		}
+		String preExistingString = new String(preExisting);
+		System.out.println("Beginning. Existing file has length " + preExistingString.length());
 		if( mode.equals(MODE_GENERATE)) {
 			StringBuffer sb = new StringBuffer();
 			sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"); //$NON-NLS-1$
@@ -50,11 +60,11 @@ public class GeneratePluginXmlCatalog {
 			sb.append("\n       <catalogContribution>"); //$NON-NLS-1$
 			
 			sb.append("\n<!-- DTDs -->\n"); //$NON-NLS-1$
-			String ret = runDTDs(true);
+			String ret = runDTDs(true, preExistingString);
 			sb.append(ret);
 			
 			sb.append("\n\n\n<!-- XSD -->\n"); //$NON-NLS-1$
-			String ret2 = runXSDs(true);
+			String ret2 = runXSDs(true, preExistingString);
 			sb.append(ret2);
 			
 			sb.append("\n       </catalogContribution>"); //$NON-NLS-1$
@@ -63,18 +73,18 @@ public class GeneratePluginXmlCatalog {
 			
 			
 
-			File f = new File(new File("."), "plugin.xml");
 			try {
 				Files.write(f.toPath(), sb.toString().getBytes());
 			} catch(IOException ioe) {
 				ioe.printStackTrace();
 			}
 
-			
+			System.out.println("Done.");
 		} else if( mode.equals(MODE_DEBUG)){
-			System.out.println(runDTDs(false));
-			System.out.println(runXSDs(false));
+			System.out.println(runDTDs(false, preExistingString));
+			System.out.println(runXSDs(false, preExistingString));
 			runXSDErrors();
+			System.out.println("Done.");
 		} else {
 			System.out.println("Usage: java -Dplugin.root.dir=/path/to/jbosstools-server/as/plugins/org.jboss.tools.as.catalog org.\\"); //$NON-NLS-1$
 			System.out.println("       -Doutput.mode=[generateCatalog | showErrors]"); //$NON-NLS-1$
@@ -159,7 +169,7 @@ public class GeneratePluginXmlCatalog {
 		};
 	}
 	
-	private static String runXSDs(boolean printEntries) {
+	private static String runXSDs(boolean printEntries, String preExistingString) {
 		String rootdir = System.getProperty(PLUGIN_ROOT_DIR);
 		if( rootdir == null ) {
 			rootdir = ""; //$NON-NLS-1$
@@ -197,13 +207,22 @@ public class GeneratePluginXmlCatalog {
 			}
 		});
 		
+		String oldUriFolder = "http://www.jboss.org/j2ee/schema/";
+		String newUriFolder = "http://www.jboss.org/schema/jbossas/";
+
 		StringBuffer sb = new StringBuffer();
 		if( printEntries ) {
 			Iterator<XSDObject> dtdIt = xsdObjs.iterator();
 			while(dtdIt.hasNext()) {
 				XSDObject o = dtdIt.next();
 				if( o.valid ) {
-					sb.append(o.toString());
+					String toAdd = o.toString();
+					String withOldFolder = toAdd.replace(newUriFolder, oldUriFolder);
+					if( preExistingString.contains(withOldFolder)) {
+						sb.append(withOldFolder);
+					} else {
+						sb.append(toAdd);
+					}
 					sb.append("\n");
 				}
 			}
@@ -258,15 +277,17 @@ public class GeneratePluginXmlCatalog {
 			int subEnd = contents.indexOf("\"", subStart+1); //$NON-NLS-1$
 			uri = contents.substring(subStart+1, subEnd);
 			
+			String oldUriFolder = "http://www.jboss.org/j2ee/schema";
+			String newUriFolder = "http://www.jboss.org/schema/jbossas/";
 			if( "http://www.jboss.com/xml/ns/javaee".equals(uri)) { //$NON-NLS-1$
-				uri = "http://www.jboss.org/j2ee/schema/" + file.getName(); //$NON-NLS-1$
+				uri = newUriFolder + file.getName(); //$NON-NLS-1$
 			}
 			
 			return uri;
 		}
 	}
 	
-	private static String runDTDs(boolean printEntry) {
+	private static String runDTDs(boolean printEntry, String preExistingString) {
 		String rootdir = System.getProperty(PLUGIN_ROOT_DIR);
 		if( rootdir == null ) {
 			rootdir = ""; //$NON-NLS-1$
