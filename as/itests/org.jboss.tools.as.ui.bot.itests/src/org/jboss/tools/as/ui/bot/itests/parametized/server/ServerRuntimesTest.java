@@ -191,13 +191,15 @@ public class ServerRuntimesTest extends AbstractTest {
     	DetectRuntimeTemplate.detectRuntime(getDownloadPath().getAbsolutePath(), ServerRuntimeUIConstants.getRuntimesForDownloadable(runtimeString));
     	DetectRuntimeTemplate.removePath(getDownloadPath().getAbsolutePath());
     	String serverName = ServerRuntimeUIConstants.getServerName(runtimeString);
+    	boolean usesJakartaProject = ServerRuntimeUIConstants.usesJakartaNamespaceDeployments(runtimeString);
+    	String projectZip = usesJakartaProject ? "projects/jsp-project.zip" : "projects/jsp-project_old.zip"; 
     	OperateServerTemplate operate = new OperateServerTemplate(serverName);
     	operate.setUp();
     	try {
     		operate.startServerSafe();
     		DeployJSPProjectTemplate djsppt = new DeployJSPProjectTemplate();
     		djsppt.clearConsole();
-    		djsppt.importProject("jsp-project", "projects/jsp-project.zip", serverName + " Runtime");
+    		djsppt.importProject("jsp-project", projectZip, serverName + " Runtime");
     		
     		String depString = ServerRuntimeUIConstants.getDeployString(runtimeString, "jsp-project", ".war");
     		djsppt.deployProject("jsp-project", serverName, depString);

@@ -85,7 +85,18 @@ public class ServerRuntimeUIConstants {
 	
 	public static final String JPP_610 = "JBoss Portal Platform 6.1.0";
 
-	
+	// Constants like this should only be added when the list is no longer expected to change
+	public static final String[] RUNTIMES_USING_JAVAX_DEPLOYMENT = new String[] {
+			GATE_IN_3_6,	JBAS_328,	JBAS_405,	JBAS_423,	JBAS_501,	JBAS_510,	
+			JBAS_600,	JBAS_701,	JBAS_702,	JBAS_710,	JBAS_711,	JBEAP_610,	
+			WF_800,	WF_810,	WF_820,	WF_821,	WF_900,WF_901,	WF_902,	WF_10_0_0,	
+			WF_10_1_0,	WF_11_0_0,	WF_12_0_0,	WF_13_0_0,	WF_14_0_0,	WF_15_0_0,	
+			WF_16_0_0,	WF_17_0_0,	WF_18_0_0,	WF_19_0_0,	WF_20_0_0,	WF_21_0_0,	
+			WF_22_0_0,	WF_23_0_2,	WF_24_0_0,	WF_25_0_1,	WF_26_1_1,	
+			JBEAP_610,	JBEAP_620,	JBEAP_630,	JBEAP_640,	JBEAP_700,	JBEAP_710,	
+			JBEAP_720,	JBEAP_730,	JBEAP_740,	JBEAP_746,	JBEAP_800
+	};
+
 	// Manual Downloads
 //	public static final String JPP_600 = "JBoss Portal Platform 6.0.0";
 //	public static final String JBEAP_600 = "JBoss EAP 6.0.0";
@@ -203,6 +214,9 @@ public class ServerRuntimeUIConstants {
 
 	}
 
+	public static boolean usesJakartaNamespaceDeployments(String dlrtKey) {
+		return Arrays.asList(RUNTIMES_USING_JAVAX_DEPLOYMENT).contains(dlrtKey) ? false : true;
+	}
 	
 	public static EditorPort[] legacyEditorPorts() {
 		return new EditorPort[] { new EditorPort("Web", "8080"), new EditorPort("JNDI", "1099")};
