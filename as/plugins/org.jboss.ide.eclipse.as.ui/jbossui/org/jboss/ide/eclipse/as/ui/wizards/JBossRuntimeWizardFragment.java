@@ -170,7 +170,7 @@ public class JBossRuntimeWizardFragment extends RuntimeWizardFragment {
 	protected void saveJreInRuntime(IRuntimeWorkingCopy wc) {
 		IJBossServerRuntime srt = (IJBossServerRuntime) wc.loadAdapter(
 				IJBossServerRuntime.class, new NullProgressMonitor());
-		if( srt != null ) {
+		if( srt != null && jreComposite != null) {
 			IExecutionEnvironment selectedEnv = jreComposite.getSelectedExecutionEnvironment();
 			IVMInstall selectedVM = jreComposite.getSelectedVM();
 			srt.setVM(selectedVM);
