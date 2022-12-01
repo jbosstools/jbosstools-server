@@ -197,8 +197,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 									<goal>wget</goal>
 								</goals>
 								<configuration>
-									<url>https://prod-jenkins-csb-eap.apps.ocp-c1.prod.psi.redhat.com/job/EAP-8.0.x/job/jboss-eap-8.0.x-build-test-release/1157/artifact/stage/jboss-eap-8.0.0.Beta-20221109.zip</url>
-									<md5>b8dca92238afe6c634117a7671e5ce50</md5>
+									<url>http://download.hosts.prod.upshift.rdu2.redhat.com/devel/candidates/middleware/eap/JBEAP-8.0.0.Beta-CR1/jboss-eap-8.0.0.Beta-CR1.zip</url>
+									<md5>25c796ae8704762fca87fc26ce6fc91d</md5>
 									<unpack>true</unpack>
 									<skip>${skipTestsWithPrivateRequirements}</skip>
 								</configuration>
