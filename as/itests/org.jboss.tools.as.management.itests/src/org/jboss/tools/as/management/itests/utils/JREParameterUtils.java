@@ -51,12 +51,18 @@ public class JREParameterUtils extends Assert {
 		ServerBeanLoader sb = new ServerBeanLoader(new File(serverHome));
 		String version = sb.getFullServerVersion();
 		System.out.println("**** ____  server version is " + version);
+		
+		String rtType = ParameterUtils.serverHomeToRuntimeType.get(serverHome);
+		if( requiresJava11(rtType) ) {
+			return getJavaHome(serverHome, JRE11_SYSPROP, "JavaSE-11");
+		}
 		return getJavaHome(serverHome, JRE8_SYSPROP, "JavaSE-1.8");
 	}
 	
 	public static String getJavaHome(String serverHome, String sysprop, String javaVersion) {
-		System.out.println("Getting java version for server: " + serverHome);
+		System.out.println("Getting java version for server: " + serverHome + " using sysprop " + sysprop);
 		String java = System.getProperty(sysprop);
+		System.out.println("Returned java is " + java);
 		if (java == null) {
 			fail("Launching " + serverHome + " requires a " + javaVersion + ", which has not been provided via the "
 					+ sysprop + " system property");
