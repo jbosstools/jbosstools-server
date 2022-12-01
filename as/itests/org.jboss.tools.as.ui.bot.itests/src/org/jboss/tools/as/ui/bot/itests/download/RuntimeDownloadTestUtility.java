@@ -195,6 +195,20 @@ public final class RuntimeDownloadTestUtility extends RuntimeDetectionUtility {
 		}
 
 	}
+
+	public void downloadRuntimePreferredMethod(String runtime) {
+		if( mustUseCredentials(runtime)) 
+			downloadRuntimeWithCredentials(getUsername(), getPassword(), runtime, 1);
+		else
+			downloadRuntimeNoCredentials(runtime);
+	}
+	
+	public static boolean mustUseCredentials(String runtime) {
+		if (runtime.contains("EAP") && !runtime.contains("NOCRED")) {
+			return true;
+		}
+		return false;		
+	}
 	
 	public void downloadRuntimeWithCredentials(String runtime) {
 		downloadRuntimeWithCredentials(getUsername(), getPassword(), runtime, 1);

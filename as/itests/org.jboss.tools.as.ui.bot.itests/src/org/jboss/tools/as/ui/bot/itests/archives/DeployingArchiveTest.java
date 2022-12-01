@@ -65,7 +65,7 @@ public class DeployingArchiveTest extends ArchivesTestBase {
 		File f = Activator.getDownloadFolder(SMOKETEST_TYPE);
 		if( !f.exists() || f.list() == null || f.list().length == 0 ) {
 	        RuntimeDownloadTestUtility util = new RuntimeDownloadTestUtility(f);
-	    	util.downloadRuntimeWithCredentials(SMOKETEST_TYPE);
+	    	util.downloadRuntimePreferredMethod(SMOKETEST_TYPE);
 		} else {
 	    	DetectRuntimeTemplate.detectRuntime(f.getAbsolutePath(), 
 	    			ServerRuntimeUIConstants.getRuntimesForDownloadable(SMOKETEST_TYPE));
@@ -93,12 +93,13 @@ public class DeployingArchiveTest extends ArchivesTestBase {
 	public void testDeployingArchiveWithView() {
 		view = viewForProject(projectName);
 		Archive archive	= view.getProject(projectName).getArchive(PATH_ARCHIVE_1);
-		fillPublishDialog(archive.publishToServer(), false, false);
+		ArchivePublishDialog dialog = archive.publishToServer(true);
+		fillPublishDialog(dialog, false, false);
 		assertArchiveIsDeployed(projectName + "/" + ARCHIVE_NAME_1);
 		removeArchiveFromServer(projectName + "/" + ARCHIVE_NAME_1);
 		view = viewForProject(projectName);
 		fillPublishDialog(archive.editPublishSettings(), true, false);
-		archive.publishToServer();
+		archive.publishToServer(false);
 		assertArchiveIsDeployed(projectName + "/" + ARCHIVE_NAME_1);
 	}
 
@@ -106,19 +107,31 @@ public class DeployingArchiveTest extends ArchivesTestBase {
 	public void testDeployingArchiveWithExplorer() {
 		ProjectArchivesExplorer explorer = explorerForProject(projectName);
 		Archive archive = explorer.getArchive(PATH_ARCHIVE_2);
-		fillPublishDialog(archive.publishToServer(), false, false);
+		// Publish once, keep both boxes unchecked
+		ArchivePublishDialog dialog = archive.publishToServer(true);
+		fillPublishDialog(dialog, false, false);
 		assertArchiveIsDeployed(projectName + "/" + ARCHIVE_NAME_2);
 		removeArchiveFromServer(projectName + "/" + ARCHIVE_NAME_2);
 		explorer = explorerForProject(projectName);
 		archive = explorer.getArchive(PATH_ARCHIVE_2);
+		
+		// Publish a second time, expect the dialog to appear again
+		dialog = archive.publishToServer(true);
+		fillPublishDialog(dialog, false, false);
+		
+		// Edit the publish settings
 		fillPublishDialog(archive.editPublishSettings(), true, false);
 		explorer = explorerForProject(projectName);
 		archive = explorer.getArchive(PATH_ARCHIVE_2);
-		archive.publishToServer();
+		archive.publishToServer(false);
 		assertArchiveIsDeployed(projectName + "/" + ARCHIVE_NAME_2);
 	}
 	
 	private void fillPublishDialog(ArchivePublishDialog dialog, boolean alwaysPublish, boolean autodeploy) {
+		if( dialog == null ) {
+			throw new IllegalArgumentException(
+					"ArchivePublishDialog is null. No action can be taken.");
+		}
 		if (!alwaysPublish && autodeploy) {
 			throw new IllegalArgumentException(
 					"Cannot autodeploy without always publish option checked");

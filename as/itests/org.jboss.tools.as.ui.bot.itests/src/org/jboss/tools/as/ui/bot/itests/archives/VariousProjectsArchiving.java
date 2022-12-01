@@ -51,7 +51,7 @@ public class VariousProjectsArchiving extends ArchivesTestBase {
 		File f = Activator.getDownloadFolder(SMOKETEST_TYPE);
 		if( !f.exists() || f.list() == null || f.list().length == 0 ) {
 	        RuntimeDownloadTestUtility util = new RuntimeDownloadTestUtility(f);
-	        util.downloadRuntimeWithCredentials(SMOKETEST_TYPE);
+	        util.downloadRuntimePreferredMethod(SMOKETEST_TYPE);
 		} else {
 	    	DetectRuntimeTemplate.detectRuntime(f.getAbsolutePath(), 
 	    			ServerRuntimeUIConstants.getRuntimesForDownloadable(SMOKETEST_TYPE));
