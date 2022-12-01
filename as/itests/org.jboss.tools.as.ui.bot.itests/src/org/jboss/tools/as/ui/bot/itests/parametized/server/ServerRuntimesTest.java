@@ -101,12 +101,10 @@ public class ServerRuntimesTest extends AbstractTest {
 		ArrayList<Object[]> pathsModified = new ArrayList<Object[]>();
 		for(Object[] object:paths) {
 			String server = (String) object[0];
-			if (server.contains("EAP")) {
-				Object[] modified = { object[0], false};
-				pathsModified.add(modified);
-			} else {
-				pathsModified.add(object);
-			}	
+			boolean mustUseCredentials = RuntimeDownloadTestUtility.mustUseCredentials(server);
+			boolean free = ((Boolean)object[1]).booleanValue() && !mustUseCredentials;
+			Object[] modified = { object[0], free};
+			pathsModified.add(modified);
 		}	
 		return pathsModified;
 	}

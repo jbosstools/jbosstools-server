@@ -10,6 +10,9 @@
  ******************************************************************************/
 package org.jboss.tools.archives.reddeer.component;
 
+import org.eclipse.reddeer.common.wait.TimePeriod;
+import org.eclipse.reddeer.common.wait.WaitUntil;
+import org.eclipse.reddeer.common.wait.WaitWhile;
 import org.eclipse.reddeer.swt.api.Shell;
 import org.eclipse.reddeer.swt.api.TreeItem;
 import org.eclipse.reddeer.swt.condition.ShellIsAvailable;
@@ -19,11 +22,8 @@ import org.eclipse.reddeer.swt.impl.menu.ContextMenuItem;
 import org.eclipse.reddeer.swt.impl.shell.DefaultShell;
 import org.eclipse.reddeer.swt.impl.tree.DefaultTree;
 import org.eclipse.reddeer.swt.keyboard.KeyboardFactory;
-import org.eclipse.swt.SWT;
-import org.eclipse.reddeer.common.wait.TimePeriod;
-import org.eclipse.reddeer.common.wait.WaitUntil;
-import org.eclipse.reddeer.common.wait.WaitWhile;
 import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
+import org.eclipse.swt.SWT;
 import org.jboss.tools.archives.reddeer.archives.jdt.integration.LibFilesetDialog;
 import org.jboss.tools.archives.reddeer.archives.ui.ArchivePublishDialog;
 import org.jboss.tools.archives.reddeer.archives.ui.EditArchiveDialog;
@@ -104,15 +104,21 @@ public class Archive {
 	}
 	
 	public ArchivePublishDialog publishToServer() {
+		return publishToServer(true);
+	}
+
+	public ArchivePublishDialog publishToServer(boolean expectDialog) {
 		archive.select();
 		new ContextMenuItem("Publish To Server").select();
-		if (new DefaultShell().getText().equals("Archive Publish Settings")) {
+		if( expectDialog ) {
+			// If this fails it will throw an exception
+			new WaitUntil(new ShellIsAvailable("Archive Publish Settings"), TimePeriod.LONG);
 			return new ArchivePublishDialog();
 		}
 		new WaitWhile(new JobIsRunning());
 		return null;
 	}
-	
+
 	public ArchivePublishDialog editPublishSettings() {
 		archive.select();
 		new ContextMenuItem("Edit publish settings...").select();
