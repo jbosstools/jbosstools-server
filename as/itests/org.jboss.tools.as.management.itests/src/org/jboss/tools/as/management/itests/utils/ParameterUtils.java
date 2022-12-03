@@ -20,7 +20,6 @@ import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.tools.as.test.core.TestConstants;
 
 public class ParameterUtils {
-	
 	// AUTOGEN_SERVER_ADAPTER_CHUNK
 	public static final String JBOSS_EAP_72_HOME = TestConstants.JBOSS_EAP_72_HOME;
 	public static final String JBOSS_EAP_73_HOME = TestConstants.JBOSS_EAP_73_HOME;
@@ -30,6 +29,12 @@ public class ParameterUtils {
 	public static final String JBOSS_WF_230_HOME = TestConstants.JBOSS_WF_230_HOME;
 	public static final String JBOSS_WF_240_HOME = TestConstants.JBOSS_WF_240_HOME;
 	// AUTOGEN_SERVER_ADAPTER_CHUNK
+	
+
+	public static final String[] JAVAX_PACKAGE_RUNTIMES = new String[] {
+			JBOSS_WF_230_HOME, JBOSS_WF_240_HOME, JBOSS_EAP_72_HOME, 
+			JBOSS_EAP_73_HOME, JBOSS_EAP_74_HOME
+	};
 	
 	public static HashMap<String,String> serverHomeToRuntimeType = new HashMap<String, String>();
 	static {
@@ -71,8 +76,6 @@ public class ParameterUtils {
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
 		if( !skipReqs ) {
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
-			paths.add(JBOSS_EAP_72_HOME);
-			paths.add(JBOSS_EAP_73_HOME);
 			paths.add(JBOSS_EAP_74_HOME);
 			paths.add(JBOSS_EAP_80_HOME);
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
