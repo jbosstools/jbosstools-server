@@ -125,27 +125,6 @@ public class AS7ManagerIntegrationTest extends AssertUtility {
 		}
 	}
 
-	// TODO This test is an issue with upstream. 
-	// https://issues.jboss.org/browse/AS7-6779
-
-//	@Test
-//	// doesnt work eap6.1
-//	public void canReplaceWar() throws Exception {
-//		File warFile = AS7ManagerTestUtils.getWarFile(AS7ManagerTestUtils.MINIMALISTIC_WAR);
-//		File warFile2 = AS7ManagerTestUtils.getWarFile(AS7ManagerTestUtils.GWT_HELLOWORLD_WAR);
-//		String name = warFile.getName();
-//		try {
-//			AS7ManagerTestUtils.waitUntilFinished(manager.deploy(name, warFile));
-//			AS7ManagerTestUtils.waitUntilFinished(manager.replace(name, warFile2));
-//			String response = AS7ManagerTestUtils.waitForRespose(
-//					"minimalistic", AS7ManagerTestUtils.LOCALHOST, AS7ManagerTestUtils.WEB_PORT);
-//			assertTrue(response != null
-//					&& response.indexOf("GWT") >= 0);
-//		} finally {
-//			AS7ManagerTestUtils.quietlyUndeploy(name, manager);
-//		}
-//	}
-
 	@Test
 	public void getEnabledStateIfDeploymentIsDeployed() throws URISyntaxException, IOException, JBoss7ManangerException {
 		String deploymentName = "testDeployment";

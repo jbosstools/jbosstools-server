@@ -47,7 +47,6 @@ import static org.mockito.Mockito.*;
  */
 public class AS7ManagerTestUtils {
 
-	public static final String GWT_HELLOWORLD_WAR = "gwt-helloworld.war";
 	public static final String MINIMALISTIC_WAR = "minimalistic.war";
 
 	public static final String LOCALHOST = "localhost";

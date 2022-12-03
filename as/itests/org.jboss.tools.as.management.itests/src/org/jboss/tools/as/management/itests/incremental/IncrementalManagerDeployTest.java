@@ -20,6 +20,7 @@ import java.net.HttpURLConnection;
 import java.net.SocketException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -117,23 +118,27 @@ public class IncrementalManagerDeployTest extends AssertUtility {
 	public void tearDown() {
 	}
 	
+	protected boolean useJavax() {
+		return Arrays.asList(ParameterUtils.JAVAX_PACKAGE_RUNTIMES).contains(this.homeDir);
+	}
+	
 	protected File getBundleFile(String name) throws Exception {
-		String path = "incrementalmgmt/" + name;
-		File f = AS7ManagerTestUtils.getBundleFile(path);
-		return f;
+		return AS7ManagerTestUtils.getBundleFile(name);
 	}
 	
 	@Test
     public void runExplodedTest() throws Exception {
+		String warPrefix = useJavax() ? "incrementalmgmt/javaxWar/" : "incrementalmgmt/jakartaWar/";
         undeploy("out.war", true);
         IJBoss7DeploymentResult result = deploy("out.war",
-        		getBundleFile("out_with_jar.war"),
+        		getBundleFile(warPrefix + "out_with_jar.war"),
                 new String[]{"out.war", "out.war/WEB-INF/lib/UtilOne.jar"}, true);
         IStatus s = result.getStatus();
+        System.out.println("[runExplodedTest] Deploy status: " + s.toString());
         assertTrue(s.isOK());
 
         String contents = waitForRespose("out/TigerServ", "localhost", 8080);
-        System.out.println(contents);
+        System.out.println("Contents:\n" + contents);
         if (!contents.startsWith("Served jar:")) {
             System.out.println("Failed expected output prefix");
             throw new Exception("Failed");
@@ -145,43 +150,53 @@ public class IncrementalManagerDeployTest extends AssertUtility {
         try {
             undeploy("out.war", true);
 
-            IJBoss7DeploymentResult result = deploy("out.war",
-            		getBundleFile("out_with_jar.war"),
+    		String warPrefix = useJavax() ? "incrementalmgmt/javaxWar/" : "incrementalmgmt/jakartaWar/";
+    		File outWithJarFile = getBundleFile(warPrefix + "out_with_jar.war");
+            System.out.println("[runIncrementalTest] File to deploy is: " + outWithJarFile.getAbsolutePath());
+            IJBoss7DeploymentResult result = deploy("out.war", outWithJarFile,
                     new String[]{"out.war"}, true);
-            assertTrue(result.getStatus().isOK());
+            IStatus s = result.getStatus();
+            System.out.println("[runIncrementalTest] Deploy status 1: " + s.toString());
+            assertTrue(s.isOK());
             String contents = waitForRespose("out/TigerServ", "localhost", 8080);
-            System.out.println(contents);
+            System.out.println("Contents:\n" + contents);
             if (!contents.startsWith("Served jar:")) {
                 System.out.println("Failed expected output");
                 throw new Exception("Failed");
             }
 
-            
-            String changedFile = getBundleFile("TigerServ_change1.class").getAbsolutePath();
+            String warClasses = warPrefix + "classes/";
+            String changedFile = getBundleFile(warClasses + "TigerServ_modified.class").getAbsolutePath();
             IncrementalManagementModel m = new IncrementalManagementModel();
             Map<String, String> changedContent = new HashMap<String, String>();
             List<String> removedContent = new ArrayList<String>();
             changedContent.put("WEB-INF/classes/my/pak/TigerServ.class",
             		changedFile);
             m.setDeploymentChanges("out.war", changedContent, removedContent);
-            incrementalPublish("out.war", m, true);
+            IJBoss7DeploymentResult r1 = incrementalPublish("out.war", m, true);
+            IStatus r1s = r1.getStatus();
+            System.out.println("[runIncrementalTest] incrementalPublish status: " + r1s.toString());
 
             contents = waitForRespose("out/TigerServ", "localhost", 8080);
-            System.out.println(contents);
+            System.out.println("Contents:\n" + contents);
             if (!contents.startsWith("Served with:")) {
                 System.out.println("Failed expected output");
                 throw new Exception("Failed");
             }
 
             // Do a full publish with a war that has a nested jar
-            undeploy("out.war", true);
+            IJBoss7DeploymentResult undeployStatus1 = undeploy("out.war", true);
+            System.out.println("[runIncrementalTest] undeploy status 1: " + undeployStatus1.getStatus().toString());
+
 
             result = deploy("out.war",
-            		getBundleFile("out_with_jar.war"),
+            		getBundleFile(warPrefix + "out_with_jar.war"),
                     new String[]{"out.war"}, true);
-            assertTrue(result.getStatus().isOK());
+            IStatus s2 = result.getStatus();
+            System.out.println("[runIncrementalTest] Deploy status 2: " + s.toString());
+            assertTrue(s2.isOK());
             contents = waitForRespose("out/TigerServ", "localhost", 8080);
-            System.out.println(contents);
+            System.out.println("Contents:\n" + contents);
             if (!contents.startsWith("Served jar:")) {
                 System.out.println("Failed expected output prefix");
                 throw new Exception("Failed");
@@ -225,14 +240,16 @@ public class IncrementalManagerDeployTest extends AssertUtility {
         changedContent = new HashMap<>();
         removedContent = new ArrayList<>();
 
-        String changedFile = getBundleFile("UtilModel_Change1.class").getAbsolutePath();
+        String changedFile = getBundleFile("incrementalmgmt/util/classes/UtilModel_modified.class").getAbsolutePath();
         changedContent.put("util/pak/UtilModel.class", changedFile);
         m.addSubDeploymentChanges("out.war", "WEB-INF/lib/UtilOne.jar", changedContent, removedContent);
         
         IJBoss7DeploymentResult r = incrementalPublish("out.war", m, true);
-        assertTrue(r.getStatus().isOK());
+        IStatus s = r.getStatus();
+        System.out.println("[incrementalPublishGetServletContents] status: " + s.toString());
+        assertTrue(s.isOK());
         String contents = waitForRespose("out/TigerServ", "localhost", 8080);
-        System.out.println(contents);
+        System.out.println("[incrementalPublishGetServletContents] Contents:\n" + contents);
         return contents;
 	}
     
