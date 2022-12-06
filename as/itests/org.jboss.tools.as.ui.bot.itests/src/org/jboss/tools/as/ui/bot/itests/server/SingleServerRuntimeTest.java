@@ -122,7 +122,12 @@ public class SingleServerRuntimeTest {
 		DeployJSPProjectTemplate djsppt = new DeployJSPProjectTemplate();
 		djsppt.clearConsole();
 		JBossServer jbs = djsppt.getServer(serverName);
-		djsppt.importProject("jsp-project", "projects/jsp-project.zip", serverName + " Runtime");
+
+		String serverFullName = ServerRuntimeUIConstants.getServerName(serverIdentification);
+        boolean usesJakartaProject = ServerRuntimeUIConstants.usesJakartaNamespaceDeployments(serverFullName);
+        String projectZip = usesJakartaProject ? "projects/jsp-project.zip" : "projects/jsp-project_old.zip";
+
+        djsppt.importProject("jsp-project", projectZip, serverName + " Runtime");
 
 		djsppt.deployProject("jsp-project", serverName, depString);
 

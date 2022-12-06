@@ -29,7 +29,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<jbosstools.test.jboss.home.eap.7.3>${requirementsDirectory}/jboss-eap-7.3</jbosstools.test.jboss.home.eap.7.3>
 		<jbosstools.test.jboss.home.eap.7.4>${requirementsDirectory}/jboss-eap-7.4</jbosstools.test.jboss.home.eap.7.4>
 		<jbosstools.test.jboss.home.eap.8.0>${requirementsDirectory}/jboss-eap-8.0</jbosstools.test.jboss.home.eap.8.0>
-		<jbosstools.test.stacks.url>https://raw.githubusercontent.com/jboss-developer/jboss-stacks/1.0.0.Final/stacks.yaml</jbosstools.test.stacks.url>
+		<jbosstools.test.stacks.url></jbosstools.test.stacks.url>
 		<additionalProperties></additionalProperties>
 		<!-- skipPrivateRequirements and skipTestsWithPrivateRequirements are inherited from parent pom -->
 		<runtimes.suite.scope>smoke</runtimes.suite.scope>
