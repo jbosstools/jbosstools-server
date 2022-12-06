@@ -328,12 +328,13 @@ public class LayeredPathProviderFragment extends WizardFragment {
 						}
 					} else {
 						File[] kids = working.listFiles();
-						for( int i = 0; i < kids.length; i++ ) {
-							findSlots(collector, kids[i], root, ignored);
+						if( kids != null ) {
+							for( int i = 0; i < kids.length; i++ ) {
+								findSlots(collector, kids[i], root, ignored);
+							}
 						}
 					}
 				}
-
 			};
 			loading.put(rtType, j);
 			j.schedule();
