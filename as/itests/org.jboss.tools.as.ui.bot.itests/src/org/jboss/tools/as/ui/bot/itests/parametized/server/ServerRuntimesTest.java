@@ -139,7 +139,7 @@ public class ServerRuntimesTest extends AbstractTest {
     	if( dlType == SuiteConstants.FREE) {
     		util.downloadRuntimeNoCredentials(runtimeString);
     	} else {
-    		util.downloadRuntimeWithCredentials(runtimeString);
+    		util.downloadRuntimePreferredMethod(runtimeString);
     	}
     }
     

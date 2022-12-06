@@ -23,8 +23,8 @@ import org.eclipse.reddeer.common.wait.TimePeriod;
 import org.eclipse.reddeer.common.wait.WaitUntil;
 import org.eclipse.reddeer.common.wait.WaitWhile;
 import org.eclipse.reddeer.core.exception.CoreLayerException;
-import org.eclipse.reddeer.core.matcher.WithTextMatcher;
 import org.eclipse.reddeer.eclipse.condition.ConsoleHasNoChange;
+import org.eclipse.reddeer.eclipse.condition.ConsoleHasText;
 import org.eclipse.reddeer.eclipse.exception.EclipseLayerException;
 import org.eclipse.reddeer.eclipse.ui.console.ConsoleView;
 import org.eclipse.reddeer.eclipse.wst.server.ui.RuntimePreferencePage;
@@ -153,11 +153,20 @@ public class OperateServerTemplate {
 	}
 
 	public void restartServer() {
+	    consoleView.open();
+        try {
+            consoleView.clearConsole();
+        } catch(CoreLayerException ex) {
+            //swallow - console is empty
+        }
+        
 		try {
 			serversView.getServer(getServerName()).restart();
+	        new WaitUntil(new ConsoleHasText("started in"), TimePeriod.getCustom(30));
 		} catch (WaitTimeoutExpiredException ex){
 			//try it once again
 			serversView.getServer(getServerName()).restart();
+            new WaitUntil(new ConsoleHasText("started in"), TimePeriod.getCustom(30));
 		}
 		tryServerProcessNotTerminated();
 		final String state = "Started";
@@ -167,7 +176,6 @@ public class OperateServerTemplate {
 		assertNoException("Restarting server");
 		assertNoError("Restarting server");
 		assertServerState("Restarting server", state);
-
 	}
 
 	public void stopServer() {
