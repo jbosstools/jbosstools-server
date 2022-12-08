@@ -39,9 +39,9 @@ public class GenerateServerAdapterMain {
 //		String newVersion = "75";
 //		boolean type = TYPE_EAP;
 
-		String oldVersion = "74";
-		String newVersion = "80";
-		boolean type = TYPE_EAP;
+		String oldVersion = "240";
+		String newVersion = "270";
+		boolean type = TYPE_WFLY;
 
 		if( type == TYPE_WFLY ) {
 			runWildFly(jbtServer, oldVersion, newVersion);

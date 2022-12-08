@@ -63,6 +63,7 @@ public class ServerAdaptersTest extends AbstractTest {
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
 		list.add("WildFly 25");
 		list.add("WildFly 26");
+		list.add("WildFly 27");
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
 		list.add("Red Hat JBoss Enterprise Application Platform 7.0");
 		list.add("Red Hat JBoss Enterprise Application Platform 7.1");

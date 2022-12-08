@@ -46,9 +46,10 @@ public class JBInitialSelectionProvider extends InitialSelectionProvider impleme
 
 	// NEW_SERVER_ADAPTER - Do the newest defaults need to be set? 
 	// AUTOGEN_SERVER_ADAPTER_CHUNK
-	private static final String LATEST_JBT_SERVER = IJBossToolingConstants.SERVER_EAP_80;
-	private static final String LATEST_JBT_RUNTIME = IJBossToolingConstants.EAP_80;
+	private static final String LATEST_JBT_SERVER = IJBossToolingConstants.SERVER_WILDFLY_270;
+	private static final String LATEST_JBT_RUNTIME = IJBossToolingConstants.WILDFLY_270;
 	// AUTOGEN_SERVER_ADAPTER_CHUNK
+
 
 
 

@@ -65,6 +65,7 @@ public class ServerRuntimeUIConstants {
 	public static final String WF_24_0_0 = "WildFly 24.0.0 Final";
 	public static final String WF_25_0_1 = "WildFly 25.0.1 Final";
 	public static final String WF_26_1_1 = "WildFly 26.1.1 Final";
+	public static final String WF_27_0_0 = "WildFly 27.0.0 Final";
 	// AUTOGEN_SERVER_ADAPTER_CHUNK
 
 
@@ -107,6 +108,7 @@ public class ServerRuntimeUIConstants {
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
 			WF_25_0_1,
 			WF_26_1_1,
+			WF_27_0_0,
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
 	};
 
@@ -115,6 +117,7 @@ public class ServerRuntimeUIConstants {
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
 			WF_25_0_1,
 			WF_26_1_1,
+			WF_27_0_0,
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
 	}; 
 
@@ -137,7 +140,7 @@ public class ServerRuntimeUIConstants {
 	public static final String[] SMOKETEST_DOWNLOADS = new String[] {
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
 			JBEAP_800,
-			WF_26_1_1,
+			WF_27_0_0,
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
 	};
 
@@ -188,6 +191,7 @@ public class ServerRuntimeUIConstants {
 		addEntry(WF_24_0_0, 	"WildFly 24.0",			"24.0", "WildFly", 	"wildfly-24.0.0.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(WF_25_0_1, 	"WildFly 25.0",			"25.0", "WildFly", 	"wildfly-25.0.1.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		addEntry(WF_26_1_1, 	"WildFly 26.1",			"26.1", "WildFly", 	"wildfly-26.1.1.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
+		addEntry(WF_27_0_0, 	"WildFly 27.0",			"27.0", "WildFly", 	"wildfly-27.0.0.Final",			STANDARD_DEPLOY, STANDARD_UNDEPLOY, wfEditorPorts());
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
 		addEntry(JBEAP_610, 	"Red Hat JBoss EAP 6.1", "6.1",	"EAP", 		"jboss-eap-6.1", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, as7EditorPorts());
 		addEntry(JBEAP_620, 	"Red Hat JBoss EAP 6.2", "6.2",	"EAP", 		"jboss-eap-6.2", 				STANDARD_DEPLOY, STANDARD_UNDEPLOY, as7EditorPorts());
