@@ -18,7 +18,6 @@ import static org.junit.Assert.fail;
 import org.eclipse.reddeer.common.condition.AbstractWaitCondition;
 import org.eclipse.reddeer.common.exception.WaitTimeoutExpiredException;
 import org.eclipse.reddeer.common.logging.Logger;
-import org.eclipse.reddeer.common.matcher.RegexMatcher;
 import org.eclipse.reddeer.common.wait.TimePeriod;
 import org.eclipse.reddeer.common.wait.WaitUntil;
 import org.eclipse.reddeer.common.wait.WaitWhile;
@@ -33,7 +32,6 @@ import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
 import org.eclipse.reddeer.swt.api.Shell;
 import org.eclipse.reddeer.swt.condition.ShellIsAvailable;
 import org.eclipse.reddeer.swt.impl.button.PushButton;
-import org.eclipse.reddeer.swt.impl.menu.ContextMenuItem;
 import org.eclipse.reddeer.swt.impl.shell.DefaultShell;
 import org.eclipse.reddeer.workbench.core.condition.JobIsRunning;
 import org.eclipse.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
@@ -180,17 +178,15 @@ public class OperateServerTemplate {
 
 	public void stopServer() {
 		new WaitUntil(new JobIsRunning(),TimePeriod.LONG, false);
-		serversView.getServer(getServerName()).select();
+		serversView.open();
+		Server actualServer = serversView.getServer(getServerName());
+		actualServer.setServerStateChangeTimeout(TimePeriod.getCustom(30));
 		try {
-			serversView.getServer(getServerName()).setServerStateChangeTimeout(TimePeriod.LONG);
-			serversView.getServer(getServerName()).stop();
+            actualServer.stop();
 		} catch (WaitTimeoutExpiredException ex) {
 			//try to stop server once again
-			serversView.open();
-			serversView.getServer(getServerName()).setServerStateChangeTimeout(TimePeriod.LONG);
-			serversView.getServer(getServerName()).select();
-			new ContextMenuItem(new RegexMatcher("Stop.*")).select();
-			new WaitUntil(new JobIsRunning(),TimePeriod.LONG);
+            serversView.open();
+		    actualServer.stop();
 		}
 		tryServerProcessNotTerminated();
 		final String state = "Stopped";
