@@ -50,6 +50,7 @@ public class JBossModulesDefaultClasspathModel extends InternalRuntimeClasspathM
 	private static List<String> wf27Plus = Arrays.asList(new String[] {
 			IJBossToolingConstants.WILDFLY_240,
 			IJBossToolingConstants.EAP_80,
+			IJBossToolingConstants.WILDFLY_270,
 			// AUTOGEN_SERVER_ADAPTER_CHUNK
 	});
 	// NEW_SERVER_ADAPTER
