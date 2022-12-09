@@ -10,15 +10,14 @@
  ******************************************************************************/
 package org.jboss.tools.as.test.core.utiltests;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Matchers.*;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
@@ -30,7 +29,6 @@ import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IFilesystemController;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.IServerDetailsController;
 import org.jboss.tools.as.core.server.controllable.systems.IDeploymentOptionsController;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 
 import junit.framework.TestCase;
 
