@@ -554,6 +554,29 @@ public class CreateProjectOperationsUtility {
      * @return a Web Data Model with the appropriate properties set
      */
     public static IDataModel getWebDataModel(String projName, String earName, String contextRoot, String contentDir, String javaSrcDir, IProjectFacetVersion version, boolean createDD){
+    	return getWebDataModel(projName, earName, contextRoot, contentDir, javaSrcDir, version, createDD, JavaEEFacetConstants.JAVA_5);
+    }
+    
+    /**
+     * Creates and returns a Web Data Model with the given name and of the given version.
+     * Can also be used to specify none default context root, content directory, and/or
+     * the java source directory.
+     * If earName is not null then Web will be added to the EAR with earName, and if appropriate
+     * with or without a deployment descriptor.
+     * 
+     * @param projName name of the project to create
+     * @param earName name of the ear to add the project too, if NULL then don't add to an EAR
+     * @param contextRoot the context root to use for this  project, use default if NULL
+     * @param contentDir the content directory to use for this project, use default if NULL
+     * @param javaSrcDir the java source directory to use for this project, use default if NULL
+     * @param version version of Web to use
+     * @param createDD only used if version is JEE5, if true then create DD else don't
+     * @param javaFacet the java facet to use
+     * @return a Web Data Model with the appropriate properties set
+     */
+    public static IDataModel getWebDataModel(String projName, String earName, String contextRoot, String contentDir, 
+    		String javaSrcDir, IProjectFacetVersion version, boolean createDD,
+    		IProjectFacetVersion javaFacet){
     	IDataModel dm = DataModelFactory.createDataModel(new WebFacetProjectCreationDataModelProvider());
     	dm.setProperty(IFacetProjectCreationDataModelProperties.FACET_PROJECT_NAME, projName);
     	
@@ -591,7 +614,7 @@ public class CreateProjectOperationsUtility {
 //    	}
 //    	else{    		
             IDataModel javaFacetModel = facetMap.getFacetDataModel(IJ2EEFacetConstants.JAVA);
-            javaFacetModel.setProperty(IFacetDataModelProperties.FACET_VERSION, JavaEEFacetConstants.JAVA_5);
+            javaFacetModel.setProperty(IFacetDataModelProperties.FACET_VERSION, javaFacet);
 //    	}
     	
     	return dm;

@@ -44,6 +44,11 @@ import org.jboss.tools.foundation.core.expressions.ExpressionResolver;
  *
  */
 public class JBossExtendedProperties extends ServerExtendedProperties {
+	public static enum DEPLOYMENT_JAVA_NAMESPACE {
+		DEPLOYMENT_NAMESPACE_JAVAX,
+		DEPLOYMENT_NAMESPACE_JAKARTA
+	}
+	
 	public JBossExtendedProperties(IAdaptable adaptable) {
 		super(adaptable);
 	}
@@ -232,5 +237,8 @@ public class JBossExtendedProperties extends ServerExtendedProperties {
 	public boolean allowExplodedModulesInEars() {
 		return false;
 	}
-
+	
+	public DEPLOYMENT_JAVA_NAMESPACE getDeploymentJavaNamespace() {
+		return DEPLOYMENT_JAVA_NAMESPACE.DEPLOYMENT_NAMESPACE_JAVAX;
+	}
 }

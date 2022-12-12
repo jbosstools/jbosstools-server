@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
@@ -26,7 +27,10 @@ import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractDeploymentScannerAdditions;
+import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.JMXServerDeploymentScannerAdditions;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties.DEPLOYMENT_JAVA_NAMESPACE;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7DeploymentScannerAdditions;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -58,7 +62,7 @@ public class DeploymentScannerAdditionsTest extends TestCase  {
 	
 	@Parameters(name = "{0}")
 	public static Collection<Object[]> data() {
-		 return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerTypeParameters());
+		return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerTypeParameters());
 	}
 	
 	public DeploymentScannerAdditionsTest(String serverType) {
@@ -119,6 +123,10 @@ public class DeploymentScannerAdditionsTest extends TestCase  {
 		try {
 			// Create the server
 			IServer s = ServerCreationTestUtils.createMockServerWithRuntime(serverType, serverType);
+			JBossExtendedProperties props = ExtendedServerPropertiesAdapterFactory.getJBossExtendedProperties(s);
+			DEPLOYMENT_JAVA_NAMESPACE ns = props.getDeploymentJavaNamespace();
+			IProjectFacetVersion webfacet = ns == DEPLOYMENT_JAVA_NAMESPACE.DEPLOYMENT_NAMESPACE_JAVAX ? JavaEEFacetConstants.WEB_24 : JavaEEFacetConstants.WEB_50;
+			IProjectFacetVersion javafacet = ns == DEPLOYMENT_JAVA_NAMESPACE.DEPLOYMENT_NAMESPACE_JAVAX ? JavaEEFacetConstants.JAVA_8 : JavaEEFacetConstants.JAVA_11;
 			IServerWorkingCopy wc = s.createWorkingCopy();
 			wc.setAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, IDeployableServer.DEPLOY_METADATA);
 			s = wc.save(true, null);
@@ -127,7 +135,7 @@ public class DeploymentScannerAdditionsTest extends TestCase  {
 			projNum++;
 			String projName = "Project" + projNum;
 			IDataModel dm = CreateProjectOperationsUtility.getWebDataModel(projName, 
-					null, null, null, null, JavaEEFacetConstants.WEB_24, false);
+					null, null, null, null, webfacet, false, javafacet);
 			try {
 				OperationTestCase.runAndVerify(dm);
 			} catch(Exception e) {
