@@ -37,7 +37,7 @@ public class JavaEEFacetConstants {
 	public static final IProjectFacetVersion WEB_23 = WEB_FACET.getVersion("2.3"); //$NON-NLS-1$
 	public static final IProjectFacetVersion WEB_24 = WEB_FACET.getVersion("2.4"); //$NON-NLS-1$
 	public static final IProjectFacetVersion WEB_25 = WEB_FACET.getVersion("2.5"); //$NON-NLS-1$
-	//public static final IProjectFacetVersion WEB_30 = WEB_FACET.getVersion("3.0"); //$NON-NLS-1$
+	public static final IProjectFacetVersion WEB_50 = WEB_FACET.getVersion("5.0"); //$NON-NLS-1$
 	
 	public static final IProjectFacet CONNECTOR_FACET = ProjectFacetsManager.getProjectFacet(IModuleConstants.JST_CONNECTOR_MODULE); //$NON-NLS-1$
 	public static final IProjectFacetVersion CONNECTOR_1 = CONNECTOR_FACET.getVersion("1.0"); //$NON-NLS-1$
@@ -57,6 +57,7 @@ public class JavaEEFacetConstants {
 	public static final IProjectFacet JAVA_FACET = ProjectFacetsManager.getProjectFacet(IModuleConstants.JST_JAVA); //$NON-NLS-1$
 	public static final IProjectFacetVersion JAVA_13 = JAVA_FACET.getVersion("1.3"); //$NON-NLS-1$
 	public static final IProjectFacetVersion JAVA_14 = JAVA_FACET.getVersion("1.4"); //$NON-NLS-1$
-	public static final IProjectFacetVersion JAVA_5 = JAVA_FACET.getVersion("5.0"); //$NON-NLS-1$
-	//public static final IProjectFacetVersion JAVA_6 = JAVA_FACET.getVersion("6.0"); //$NON-NLS-1$
+	public static final IProjectFacetVersion JAVA_5 = JAVA_FACET.getVersion("1.5"); //$NON-NLS-1$
+	public static final IProjectFacetVersion JAVA_8 = JAVA_FACET.getVersion("1.8"); //$NON-NLS-1$
+	public static final IProjectFacetVersion JAVA_11 = JAVA_FACET.getVersion("11"); //$NON-NLS-1$
 }
