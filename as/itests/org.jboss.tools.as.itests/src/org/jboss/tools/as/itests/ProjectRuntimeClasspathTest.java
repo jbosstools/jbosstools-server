@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -38,9 +36,13 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.validation.ValidationFramework;
+import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties.DEPLOYMENT_JAVA_NAMESPACE;
 import org.jboss.tools.as.test.core.ASMatrixTests;
 import org.jboss.tools.as.test.core.internal.utils.ProjectRuntimeUtil;
 import org.jboss.tools.as.test.core.internal.utils.ResourceUtils;
@@ -55,6 +57,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import junit.framework.TestCase;
 
 @RunWith(value = Parameterized.class)
 public class ProjectRuntimeClasspathTest extends TestCase {
@@ -79,12 +83,17 @@ public class ProjectRuntimeClasspathTest extends TestCase {
 	
 	@Before
 	public void setUp() throws Exception {
+		server = ServerCreationTestUtils.createServerWithRuntime(serverType, getClass().getName() + serverType);
+		JBossExtendedProperties props = ExtendedServerPropertiesAdapterFactory.getJBossExtendedProperties(server);
+		DEPLOYMENT_JAVA_NAMESPACE ns = props.getDeploymentJavaNamespace();
+		IProjectFacetVersion webfacet = ns == DEPLOYMENT_JAVA_NAMESPACE.DEPLOYMENT_NAMESPACE_JAVAX ? JavaEEFacetConstants.WEB_24 : JavaEEFacetConstants.WEB_50;
+		IProjectFacetVersion javafacet = ns == DEPLOYMENT_JAVA_NAMESPACE.DEPLOYMENT_NAMESPACE_JAVAX ? JavaEEFacetConstants.JAVA_8 : JavaEEFacetConstants.JAVA_11;
+
 		ValidationFramework.getDefault().suspendAllValidation(true);
 		IDataModel dm = CreateProjectOperationsUtility.getWebDataModel(projectName, 
-				null, null, null, null, JavaEEFacetConstants.WEB_24, true);
+				null, null, null, null, webfacet, true, javafacet);
 		project = createSingleProject(dm, projectName);
 		project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-		server = ServerCreationTestUtils.createServerWithRuntime(serverType, getClass().getName() + serverType);
 	}
 	protected IProject createSingleProject(IDataModel dm, String name) throws Exception {
 		OperationTestCase.runAndVerify(dm);
