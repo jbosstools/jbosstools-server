@@ -18,8 +18,8 @@
 	],
 	"org.jboss.ide.eclipse.as.reddeer.server.requirement.ServerRequirement.JBossServer": [
 		{
-			"runtime": "${jbosstools.test.jboss.home.26.1}",
-			"version": "24+",
+			"runtime": "${jbosstools.test.jboss.home.27.0}",
+			"version": "27",
 			"family": "WILDFLY"
 		}
 	]

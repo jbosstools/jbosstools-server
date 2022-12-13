@@ -64,8 +64,8 @@ private final Logger LOGGER = Logger.getLogger(this.getClass());
 	public static ArrayList<String> data() {
 		ArrayList<String> list = new ArrayList<String>();
 
-		list.add("WildFly 26");
-		list.add("Red Hat JBoss Enterprise Application Platform 7.4");
+		list.add("WildFly 27");
+		list.add("Red Hat JBoss Enterprise Application Platform 8.0");
 
 		return list;
 	}

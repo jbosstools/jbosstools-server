@@ -18,15 +18,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.eclipse.reddeer.common.matcher.VersionMatcher;
 import org.eclipse.reddeer.common.util.Display;
 import org.eclipse.reddeer.direct.preferences.Preferences;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
-import org.eclipse.reddeer.junit.annotation.RequirementRestriction;
 import org.eclipse.reddeer.junit.internal.runner.ParameterizedRequirementsRunnerFactory;
-import org.eclipse.reddeer.junit.requirement.matcher.RequirementMatcher;
 import org.eclipse.reddeer.junit.runner.RedDeerSuite;
-import org.eclipse.reddeer.requirements.jre.JRERequirement.JRE;
 import org.eclipse.reddeer.swt.impl.text.LabeledText;
 import org.eclipse.reddeer.workbench.handler.WorkbenchShellHandler;
 import org.eclipse.ui.PlatformUI;
@@ -84,7 +80,6 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 
 @RunWith(RedDeerSuite.class)
-@JRE(cleanup=true, setDefault = true)
 @UseParametersRunnerFactory(ParameterizedRequirementsRunnerFactory.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)//first acquireAndDetect, then detect, then operate
 @DisableSecureStorage
@@ -109,15 +104,12 @@ public class ServerRuntimesTest extends AbstractTest {
 		return pathsModified;
 	}
 
-	@RequirementRestriction
-	public static RequirementMatcher getRestrictionMatcher() {
-	  return new RequirementMatcher(JRE.class, "version", new VersionMatcher("1.8"));
-	}
-
     @BeforeClass
     public static void deleteRuntimesAddedByRuntimeDetection() {
     	Preferences.set("org.eclipse.debug.ui", "Console.limitConsoleOutput", "false");
     	deleteRuntimes();
+    	addDeleteJRE("openjdk-11" ,"jbosstools.test.jre.11", false);
+    	addDeleteJRE("openjdk-1.8" ,"jbosstools.test.jre.8", false);
     }
     
     private String runtimeString;
@@ -234,7 +226,7 @@ public class ServerRuntimesTest extends AbstractTest {
     @AfterClass
     public static void postClass() {
     	new RuntimeDownloadTestUtility(Activator.getStateFolder().toFile()).clean(true);
+        addDeleteJRE("openjdk-11" ,"jbosstools.test.jre.11", true);
+        addDeleteJRE("openjdk-1.8" ,"jbosstools.test.jre.8", true);
     }
-        
-
 }
