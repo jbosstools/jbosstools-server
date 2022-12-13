@@ -14,12 +14,16 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.List;
 
+import org.eclipse.reddeer.common.matcher.VersionMatcher;
 import org.eclipse.reddeer.direct.preferences.Preferences;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.Server;
 import org.eclipse.reddeer.eclipse.wst.server.ui.cnf.ServersView2;
 import org.eclipse.reddeer.eclipse.wst.server.ui.wizard.ModifyModulesDialog;
 import org.eclipse.reddeer.eclipse.wst.server.ui.wizard.ModifyModulesPage;
+import org.eclipse.reddeer.junit.annotation.RequirementRestriction;
+import org.eclipse.reddeer.junit.requirement.matcher.RequirementMatcher;
 import org.eclipse.reddeer.junit.runner.RedDeerSuite;
+import org.eclipse.reddeer.requirements.jre.JRERequirement.JRE;
 import org.eclipse.reddeer.swt.api.TreeItem;
 import org.eclipse.reddeer.swt.impl.tree.DefaultTree;
 import org.jboss.ide.eclipse.archives.ui.test.bot.ArchivesTestBase;
@@ -42,6 +46,7 @@ import org.junit.runner.RunWith;
  *
  */
 @RunWith(RedDeerSuite.class)
+@JRE(cleanup=true, setDefault=true)
 public class DeployingArchiveTest extends ArchivesTestBase {
 	private static String SMOKETEST_TYPE = ServerRuntimeUIConstants.SMOKETEST_DOWNLOADS[0];
 
@@ -52,6 +57,10 @@ public class DeployingArchiveTest extends ArchivesTestBase {
 	private static final String PATH_ARCHIVE_1 = ARCHIVE_NAME_1 + PATH_SUFFIX;
 	private static final String PATH_ARCHIVE_2 = ARCHIVE_NAME_2 + PATH_SUFFIX;	
 	
+    @RequirementRestriction
+    public static RequirementMatcher getRestrictionMatcher() {
+      return new RequirementMatcher(JRE.class, "version", new VersionMatcher("11"));
+    }
 	
 	@BeforeClass
 	public static void setup() {

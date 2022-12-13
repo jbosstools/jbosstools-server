@@ -15,13 +15,17 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 
 import org.jboss.ide.eclipse.archives.ui.test.bot.ArchivesTestBase;
+import org.eclipse.reddeer.common.matcher.VersionMatcher;
 import org.eclipse.reddeer.eclipse.jst.ejb.ui.project.facet.EjbProjectFirstPage;
 import org.eclipse.reddeer.eclipse.jst.ejb.ui.project.facet.EjbProjectWizard;
 import org.eclipse.reddeer.eclipse.jst.servlet.ui.project.facet.WebProjectFirstPage;
 import org.eclipse.reddeer.eclipse.jst.servlet.ui.project.facet.WebProjectWizard;
 import org.eclipse.reddeer.eclipse.ui.views.log.LogMessage;
 import org.eclipse.reddeer.eclipse.ui.views.log.LogView;
+import org.eclipse.reddeer.junit.annotation.RequirementRestriction;
+import org.eclipse.reddeer.junit.requirement.matcher.RequirementMatcher;
 import org.eclipse.reddeer.junit.runner.RedDeerSuite;
+import org.eclipse.reddeer.requirements.jre.JRERequirement.JRE;
 import org.jboss.tools.as.ui.bot.itests.AbstractTest;
 import org.jboss.tools.as.ui.bot.itests.Activator;
 import org.jboss.tools.as.ui.bot.itests.download.RuntimeDownloadTestUtility;
@@ -42,8 +46,14 @@ import org.junit.runner.RunWith;
  *
  */
 @RunWith(RedDeerSuite.class)
+@JRE(cleanup=true, setDefault=true)
 public class VariousProjectsArchiving extends ArchivesTestBase {
 	private static String SMOKETEST_TYPE = ServerRuntimeUIConstants.SMOKETEST_DOWNLOADS[0];
+	
+	@RequirementRestriction
+    public static RequirementMatcher getRestrictionMatcher() {
+      return new RequirementMatcher(JRE.class, "version", new VersionMatcher("11"));
+    }
 	
 	@BeforeClass
 	public static void setup() {

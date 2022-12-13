@@ -14,12 +14,16 @@ import java.io.File;
 import java.util.ArrayList;
 
 import org.eclipse.reddeer.common.matcher.VersionMatcher;
+import org.eclipse.reddeer.direct.preferences.Preferences;
 import org.eclipse.reddeer.junit.annotation.RequirementRestriction;
 import org.eclipse.reddeer.junit.internal.runner.ParameterizedRequirementsRunnerFactory;
 import org.eclipse.reddeer.junit.requirement.matcher.RequirementMatcher;
 import org.eclipse.reddeer.junit.runner.RedDeerSuite;
 import org.eclipse.reddeer.requirements.jre.JRERequirement.JRE;
+import org.eclipse.reddeer.workbench.handler.WorkbenchShellHandler;
 import org.jboss.tools.as.ui.bot.itests.parametized.server.ServerAdaptersTest;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -45,6 +49,12 @@ public class SingleServerAdaptersTest extends ServerAdaptersTest {
 		return list;
 	}
 
+   @BeforeClass
+    public static void prepareWorkspace() {
+        Preferences.set("org.eclipse.debug.ui", "Console.limitConsoleOutput", "false");
+        deleteRuntimes();
+    }
+
 	@RequirementRestriction
 	public static RequirementMatcher getRestrictionMatcher() {
 	  return new RequirementMatcher(JRE.class, "version", new VersionMatcher("11"));
@@ -57,5 +67,10 @@ public class SingleServerAdaptersTest extends ServerAdaptersTest {
 	protected File getDownloadPath() {
 		return new File(System.getProperty("jbosstools.test.single.runtime.location"));
 	}
+
+   @AfterClass
+    public static void closeAll() {
+        WorkbenchShellHandler.getInstance().closeAllNonWorbenchShells();
+    }
 
 }
