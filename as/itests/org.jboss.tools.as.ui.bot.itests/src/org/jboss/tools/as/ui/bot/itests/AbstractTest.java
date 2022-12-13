@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.tools.as.ui.bot.itests;
 
+import org.eclipse.reddeer.eclipse.jdt.debug.ui.jres.JREsPreferencePage;
 import org.eclipse.reddeer.eclipse.wst.server.ui.RuntimePreferencePage;
 import org.eclipse.reddeer.workbench.handler.WorkbenchShellHandler;
 import org.eclipse.reddeer.workbench.ui.dialogs.WorkbenchPreferenceDialog;
@@ -36,4 +37,19 @@ public abstract class AbstractTest {
 		runtimePreferencePage.removeAllRuntimes();
 		preferences.ok();
 	}
+	
+	public static void addDeleteJRE(String jreName, String jreEnvironmentName, boolean delete) {
+        String jrePath = System.getProperty(jreEnvironmentName);
+
+        WorkbenchPreferenceDialog dialog = new WorkbenchPreferenceDialog();
+        dialog.open();
+        JREsPreferencePage page = new JREsPreferencePage(dialog);
+        dialog.select(page);    
+        if (delete) {
+            page.deleteJRE(jreName);
+        } else {
+            page.addJRE(jrePath, jreName);
+        }
+        dialog.ok();
+    }
 }

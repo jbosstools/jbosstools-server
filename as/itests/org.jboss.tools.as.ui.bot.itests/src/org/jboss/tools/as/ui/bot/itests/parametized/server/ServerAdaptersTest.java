@@ -16,15 +16,11 @@ import java.util.Arrays;
 
 import org.eclipse.reddeer.common.exception.RedDeerException;
 import org.eclipse.reddeer.common.logging.Logger;
-import org.eclipse.reddeer.common.matcher.VersionMatcher;
 import org.eclipse.reddeer.direct.preferences.Preferences;
 import org.eclipse.reddeer.eclipse.wst.server.ui.wizard.NewServerWizard;
 import org.eclipse.reddeer.eclipse.wst.server.ui.wizard.NewServerWizardPage;
-import org.eclipse.reddeer.junit.annotation.RequirementRestriction;
 import org.eclipse.reddeer.junit.internal.runner.ParameterizedRequirementsRunnerFactory;
-import org.eclipse.reddeer.junit.requirement.matcher.RequirementMatcher;
 import org.eclipse.reddeer.junit.runner.RedDeerSuite;
-import org.eclipse.reddeer.requirements.jre.JRERequirement.JRE;
 import org.eclipse.reddeer.workbench.handler.WorkbenchShellHandler;
 import org.jboss.ide.eclipse.as.reddeer.server.wizard.page.JBossRuntimeWizardPage;
 import org.jboss.ide.eclipse.as.reddeer.server.wizard.page.NewServerAdapterPage;
@@ -47,7 +43,6 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
  *
  */
 @RunWith(RedDeerSuite.class)
-@JRE(cleanup=true, setDefault = true)
 @UseParametersRunnerFactory(ParameterizedRequirementsRunnerFactory.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ServerAdaptersTest extends AbstractTest {
@@ -61,7 +56,6 @@ public class ServerAdaptersTest extends AbstractTest {
 	public static ArrayList<String> data() {
 		ArrayList<String> list = new ArrayList<String>();
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
-		list.add("WildFly 25");
 		list.add("WildFly 26");
 		list.add("WildFly 27");
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
@@ -75,16 +69,13 @@ public class ServerAdaptersTest extends AbstractTest {
 
 		return list;
 	}
-	
-	@RequirementRestriction
-	public static RequirementMatcher getRestrictionMatcher() {
-	  return new RequirementMatcher(JRE.class, "version", new VersionMatcher("1.8"));
-	}
 
 	@BeforeClass
 	public static void prepareWorkspace() {
 		Preferences.set("org.eclipse.debug.ui", "Console.limitConsoleOutput", "false");
 		deleteRuntimes();
+		addDeleteJRE("openjdk-11" ,"jbosstools.test.jre.11", false);
+		addDeleteJRE("openjdk-1.8" ,"jbosstools.test.jre.8", false);
 	}
 
 	private String server;
@@ -134,6 +125,9 @@ public class ServerAdaptersTest extends AbstractTest {
 	
 	private String getServerName(String server) {
 		if (server.contains("WildFly")) {
+		    if (server.contains("27")) {
+		        return "WildFly 27";
+		    }
 			return "WildFly 24+";
 		} else {
 			return server;
@@ -172,5 +166,7 @@ public class ServerAdaptersTest extends AbstractTest {
 	@AfterClass
 	public static void closeAll() {
 		WorkbenchShellHandler.getInstance().closeAllNonWorbenchShells();
+		addDeleteJRE("openjdk-11" ,"jbosstools.test.jre.11", true);
+        addDeleteJRE("openjdk-1.8" ,"jbosstools.test.jre.8", true);
 	}
 }
