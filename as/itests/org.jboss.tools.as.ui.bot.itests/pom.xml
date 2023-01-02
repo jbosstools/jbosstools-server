@@ -117,7 +117,7 @@
 			</activation>
 			<properties>
 				<test.class>org.jboss.tools.as.ui.bot.itests.SmokeTestsSuite</test.class>
-				<rd.config>${project.build.directory}/classes/wildfly-requirement.json</rd.config>
+				<rd.config>${project.build.directory}/classes/jre.json</rd.config>
 			</properties>
 			<build>
 				<plugins>
