@@ -80,7 +80,7 @@ public class ServerRuntimeUIConstants {
 	public static final String JBEAP_730 = "Red Hat JBoss EAP 7.3.0";
 	public static final String JBEAP_740 = "Red Hat JBoss EAP 7.4.0";
 	public static final String JBEAP_746 = "Red Hat JBoss EAP 7.4.6";
-	public static final String JBEAP_800 = "Red Hat JBoss EAP 8.0.0 NOCRED";
+	public static final String JBEAP_800 = "Red Hat JBoss EAP 8.0.0 Beta";
 	// AUTOGEN_SERVER_ADAPTER_CHUNK
 
 	
