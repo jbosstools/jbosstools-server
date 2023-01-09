@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: AS Runtime UI Bot Tests
 Bundle-SymbolicName: org.jboss.tools.as.ui.bot.itests
-Bundle-Version: 3.10.0.qualifier
+Bundle-Version: 3.10.1.qualifier
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: jar
 Bundle-Vendor: Red Hat
