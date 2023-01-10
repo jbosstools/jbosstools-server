@@ -98,7 +98,10 @@ public class CatalogMissingEntriesTest extends TestCase {
 			one = all.nextElement();
 			IPath p = new Path(one.getPath());
 			if( p.segmentCount() == 3 ) {
-				if( !p.lastSegment().equalsIgnoreCase(".gitignore"))
+				boolean ignored = false;
+				if( p.lastSegment().equalsIgnoreCase(".gitignore")) ignored = true;
+				if( one.getPath().equalsIgnoreCase("/schema/controller/src/")) ignored = true;
+				if( !ignored)
 					list.add(one.getPath());
 			}
 		}
