@@ -14,10 +14,9 @@
 	<properties>
 		<surefire.timeout>14400</surefire.timeout>
 		<suiteClass>org.jboss.tools.as.ui.bot.itests.AllTestsSuite</suiteClass>
-		<additionalProperties>-Drd.config=${rd.config}</additionalProperties>
+		<additionalProperties>-Drd.config=${rd.config} --add-opens java.base/java.security=ALL-UNNAMED</additionalProperties>
 		<rd.config>${project.build.directory}/classes/jre.json</rd.config>
 	</properties>
-
 
 	<build>
 		<resources>

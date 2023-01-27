@@ -681,7 +681,7 @@
 	</extension>
 
 
-
+<!--
 	<extension point="org.eclipse.ui.trace.traceComponents">
 		<component id="org.jboss.ide.eclipse.as.core" label="JBoss AS, WildFly &amp; EAP Server Tools - Core Plug-in">
 			<bundle consumed="true" name="org.jboss.ide.eclipse.as.core"/>
@@ -690,7 +690,7 @@
 			<bundle consumed="true" name="org.jboss.ide.eclipse.as.wtp.core"/>
 		</component>
 	</extension>
-
+-->
 
 	<extension
 		point="org.jboss.ide.eclipse.as.wtp.ui.ServerProfileWizardFragments">
