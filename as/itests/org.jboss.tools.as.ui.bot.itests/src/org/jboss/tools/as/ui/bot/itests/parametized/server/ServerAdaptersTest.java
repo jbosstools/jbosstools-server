@@ -124,14 +124,7 @@ public class ServerAdaptersTest extends AbstractTest {
 	}
 	
 	private String getServerName(String server) {
-		if (server.contains("WildFly")) {
-		    if (server.contains("27")) {
-		        return "WildFly 27";
-		    }
-			return "WildFly 24+";
-		} else {
-			return server;
-		}
+		return AbstractTest.getServerNameForServerString(server);
 	}
 
 	protected void setupRuntime(NewServerWizard wizard) {

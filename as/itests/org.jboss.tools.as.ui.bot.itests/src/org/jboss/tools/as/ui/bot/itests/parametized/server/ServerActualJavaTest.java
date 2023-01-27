@@ -138,11 +138,7 @@ private final Logger LOGGER = Logger.getLogger(this.getClass());
 	}
 
 	private String getServerName(String server) {
-		if (server.contains("WildFly")) {
-			return "WildFly 24+";
-		} else {
-			return server;
-		}
+		return AbstractTest.getServerNameForServerString(server);
 	}
 
 	protected void setupRuntime(NewServerWizard wizard) {

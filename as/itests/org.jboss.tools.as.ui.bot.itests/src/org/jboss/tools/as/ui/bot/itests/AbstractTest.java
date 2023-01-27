@@ -52,4 +52,17 @@ public abstract class AbstractTest {
         }
         dialog.ok();
     }
+	
+	// TODO this function may need to be changed in the future
+	// # NEW_SERVER_ADAPTER
+	public static String getServerNameForServerString(String server) {
+		if (server.contains("WildFly")) {
+		    if (server.contains("27")) {
+		        return "WildFly 27";
+		    }
+			return "WildFly 24+";
+		} else {
+			return server;
+		}
+	}
 }
