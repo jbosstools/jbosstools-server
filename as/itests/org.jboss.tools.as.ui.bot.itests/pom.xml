@@ -62,7 +62,7 @@
 				<jbosstools.test.single.runtime.product.slot>eap</jbosstools.test.single.runtime.product.slot>
 				<jbosstools.test.single.runtime.product.release.name>JBoss EAP</jbosstools.test.single.runtime.product.release.name>
 				<jbosstools.test.single.runtime.server.adapter.label>Red Hat JBoss Enterprise Application Platform 7.4</jbosstools.test.single.runtime.server.adapter.label>
-				<additionalProperties>-Djbosstools.test.single.runtime.location=${requirementsDirectory}/${jbosstools.test.jboss-server.home} -Djbosstools.test.single.runtime.server.identification=${jbosstools.test.single.runtime.server.identification} -Djbosstools.test.single.runtime.product.slot=${jbosstools.test.single.runtime.product.slot} -Djbosstools.test.single.runtime.product.release.name=${jbosstools.test.single.runtime.product.release.name} -Djbosstools.test.single.runtime.server.adapter.label=${jbosstools.test.single.runtime.server.adapter.label} -Drd.config=${rd.config}</additionalProperties>
+				<additionalProperties>-Djbosstools.test.single.runtime.location=${requirementsDirectory}/${jbosstools.test.jboss-server.home} -Djbosstools.test.single.runtime.server.identification=${jbosstools.test.single.runtime.server.identification} -Djbosstools.test.single.runtime.product.slot=${jbosstools.test.single.runtime.product.slot} -Djbosstools.test.single.runtime.product.release.name=${jbosstools.test.single.runtime.product.release.name} -Djbosstools.test.single.runtime.server.adapter.label=${jbosstools.test.single.runtime.server.adapter.label} -Drd.config=${rd.config} --add-opens java.base/java.security=ALL-UNNAMED</additionalProperties>
 				<rd.config>${project.build.directory}/classes/jre.json</rd.config>
 			</properties>
 			<build>
