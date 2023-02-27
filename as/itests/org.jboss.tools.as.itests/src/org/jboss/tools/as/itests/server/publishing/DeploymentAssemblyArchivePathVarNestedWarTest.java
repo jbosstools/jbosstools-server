@@ -22,6 +22,7 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.tools.as.test.core.internal.utils.ResourceUtils;
 import org.jboss.tools.as.test.core.internal.utils.wtp.CreateProjectOperationsUtility;
 import org.jboss.tools.as.test.core.internal.utils.wtp.JavaEEFacetConstants;
@@ -37,7 +38,7 @@ public class DeploymentAssemblyArchivePathVarNestedWarTest extends DeploymentAss
 	private static int PROJECT_ID = 1;
 	@Parameters(name = "{0} {1} {4} {5}")
 	public static Collection<Object[]> params() {
-		return componentJarData();
+		return computeServersForProjectStructureTests();
 	}
 	public DeploymentAssemblyArchivePathVarNestedWarTest(String serverType, String zip,
 			String deployLoc, String perMod, String refName, String refFolder) {

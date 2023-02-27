@@ -23,7 +23,9 @@ import java.util.Scanner;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.jboss.ide.eclipse.as.core.util.ThreadUtils;
+import org.eclipse.wst.server.core.IRuntimeType;
+import org.eclipse.wst.server.core.IServerType;
+import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.management.core.IAS7ManagementDetails;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerServiceProxy;
@@ -35,7 +37,10 @@ import org.junit.Assert;
 public class StartupUtility extends Assert {
 
 	public static Process runServer(String homeDir) {
-		String rtType = ParameterUtils.serverHomeToRuntimeType.get(homeDir);
+		String serverType = ParameterUtils.getServerType(homeDir);
+		IServerType st = ServerCore.findServerType(serverType);
+		IRuntimeType rtt = st.getRuntimeType();
+		String rtType = rtt.getId();
 		System.out.println("Running server " + homeDir + " with rtType = " + rtType);
 		String scriptName = null;
 		String cmd = null;
@@ -105,7 +110,11 @@ public class StartupUtility extends Assert {
 
 	public void setHomeDir(String homeDir) {
 		this.homeDir = homeDir;
-		setRuntimeType(ParameterUtils.serverHomeToRuntimeType.get(homeDir));
+		String serverType = ParameterUtils.getServerType(homeDir);
+		IServerType st = ServerCore.findServerType(serverType);
+		IRuntimeType rtt = st.getRuntimeType();
+		String rtType = rtt.getId();
+		setRuntimeType(rtType);
 
 		String javaHome = JREParameterUtils.getJavaHome(homeDir);
 

@@ -13,9 +13,12 @@ package org.jboss.tools.as.test.core.internal.utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.LatestServerUtility;
+import org.jboss.tools.as.test.core.TestConstants;
 
 public class ServerParameterUtils {
 
@@ -31,20 +34,31 @@ public class ServerParameterUtils {
 	public static final String DEPLOY_PERMOD_ABS = "permod_absolute";
 	public static final String DEPLOY_PERMOD_REL = "permod_relative";
 	
-	protected static final List<String> TESTED_SERVERS = new ArrayList<String>();
-	
+	protected static final List<String> TESTED_SERVER_TYPES = new ArrayList<String>();	
 	static {
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
-		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_WILDFLY_240);
-		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_WILDFLY_270);
+		TESTED_SERVER_TYPES.add(IJBossToolingConstants.SERVER_WILDFLY_240);
+		TESTED_SERVER_TYPES.add(IJBossToolingConstants.SERVER_WILDFLY_270);
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
-		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_EAP_73);
-		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_EAP_74);
-		TESTED_SERVERS.add(IJBossToolingConstants.SERVER_EAP_80);
+		TESTED_SERVER_TYPES.add(IJBossToolingConstants.SERVER_EAP_74);
+		TESTED_SERVER_TYPES.add(IJBossToolingConstants.SERVER_EAP_80);
 		// AUTOGEN_SERVER_ADAPTER_CHUNK
 		// NEW_SERVER_ADAPTER Add the new runtime constant above this line
 	}
+
 	
+	protected static final List<String> TESTED_SERVER_HOMES = new ArrayList<String>();	
+	static {
+		// AUTOGEN_SERVER_ADAPTER_CHUNK
+		TESTED_SERVER_HOMES.add(TestConstants.JBOSS_WF_260_HOME);
+		TESTED_SERVER_HOMES.add(TestConstants.JBOSS_WF_270_HOME);
+		// AUTOGEN_SERVER_ADAPTER_CHUNK
+		TESTED_SERVER_HOMES.add(TestConstants.JBOSS_EAP_74_HOME);
+		TESTED_SERVER_HOMES.add(TestConstants.JBOSS_EAP_80_HOME);
+		// AUTOGEN_SERVER_ADAPTER_CHUNK
+		// NEW_SERVER_ADAPTER Add the new runtime constant above this line
+	}
+
 
 	// Turn an array [item1, item2, item3] into a collection of 1-length items
 	// ie new Collection<Object[]>() { new Object[]{item1}, new Object[]{item2}, new Object[]{item3}};
@@ -82,15 +96,32 @@ public class ServerParameterUtils {
 	public static String[] getJBossServerTypeParameters() {
 		boolean skipReqs = skipPrivateRequirements();
 		ArrayList<String> jbservers = new ArrayList<String>();
-		for( int i = 0; i < IJBossToolingConstants.ALL_JBOSS_SERVERS.length; i++ ) {
+		String[] toTest = (String[]) TESTED_SERVER_TYPES.toArray(new String[TESTED_SERVER_TYPES.size()]);
+		for( int i = 0; i < toTest.length; i++ ) {
 			// we're not skipping reqs, or, we are skipping AND it doesn't start with eap, then add
-			if( (!skipReqs || !IJBossToolingConstants.ALL_JBOSS_SERVERS[i].startsWith(IJBossToolingConstants.EAP_SERVER_PREFIX)) 
-					&& TESTED_SERVERS.contains(IJBossToolingConstants.ALL_JBOSS_SERVERS[i])) {
-					jbservers.add(IJBossToolingConstants.ALL_JBOSS_SERVERS[i]);
-			}
+			boolean dontSkip = (!skipReqs || !toTest[i].startsWith(IJBossToolingConstants.EAP_SERVER_PREFIX));
+			if( dontSkip ) 
+				jbservers.add(toTest[i]);
 		}
 		return (String[]) jbservers.toArray(new String[jbservers.size()]);
 	}
+	
+	public static String[] getJBossServerHomeParameters() {
+		boolean skipReqs = skipPrivateRequirements();
+		ArrayList<String> ret = new ArrayList<String>();
+		String[] toTest = (String[]) TESTED_SERVER_HOMES.toArray(new String[TESTED_SERVER_HOMES.size()]);
+		HashMap<String, String> map = TestConstants.serverHomeDirToServerType();
+		for( int i = 0; i < toTest.length; i++ ) {
+			String home = toTest[i];
+			String serverType = map.get(home);
+			// we're not skipping reqs, or, we are skipping AND it doesn't start with eap, then add
+			boolean dontSkip = (!skipReqs || !serverType.startsWith(IJBossToolingConstants.EAP_SERVER_PREFIX));
+			if( dontSkip ) 
+				ret.add(toTest[i]);
+		}
+		return (String[]) ret.toArray(new String[ret.size()]);
+	}
+
 	
 	@Deprecated
 	public static String[] getAllJBossServerTypeParamterers() {
@@ -108,10 +139,11 @@ public class ServerParameterUtils {
 	 * Return the most common DIFFERENT server types where impl may matter
 	 */
 	public static String[] getPublishServerTypes() {
-		return new String[] { 
-				IJBossToolingConstants.DEPLOY_ONLY_SERVER,
-				IJBossToolingConstants.SERVER_AS_60, IJBossToolingConstants.SERVER_AS_71
-		};
+//		return new String[] { 
+//				IJBossToolingConstants.DEPLOY_ONLY_SERVER,
+//				IJBossToolingConstants.SERVER_AS_60, IJBossToolingConstants.SERVER_AS_71
+//		};
+		return new String[] { LatestServerUtility.findLatestWildflyServerTypeId()};
 	}
 	
 	public static String[] getServerZipOptions() {

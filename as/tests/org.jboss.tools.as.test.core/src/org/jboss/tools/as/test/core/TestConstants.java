@@ -11,6 +11,8 @@
 package org.jboss.tools.as.test.core;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
@@ -56,6 +58,7 @@ public class TestConstants {
 	public static final String JBOSS_EAP_74_HOME = System.getProperty("jbosstools.test.jboss.home.eap.7.4", "C:\\apps\\jboss\\jboss-eap-7.4.0.GA\\");
 	public static final String JBOSS_WF_240_HOME = System.getProperty("jbosstools.test.jboss.home.24.0", "C:\\apps\\jboss\\jboss-wildfly-24.0.0.GA\\");
 	public static final String JBOSS_EAP_80_HOME = System.getProperty("jbosstools.test.jboss.home.eap.8.0", "C:\\apps\\jboss\\jboss-eap-8.0.0.GA\\");
+	public static final String JBOSS_WF_260_HOME = System.getProperty("jbosstools.test.jboss.home.26.1", "C:\\apps\\jboss\\jboss-wildfly-26.1.0.GA\\");
 	public static final String JBOSS_WF_270_HOME = System.getProperty("jbosstools.test.jboss.home.27.0", "C:\\apps\\jboss\\jboss-wildfly-27.0.0.GA\\");
 	// AUTOGEN_SERVER_ADAPTER_CHUNK
 	// NEW_SERVER_ADAPTER
@@ -106,7 +109,28 @@ public class TestConstants {
 		// NEW_SERVER_ADAPTER
 	}
 	
+	public static HashMap<String, String> serverHomeDirToServerType() {
+		HashMap<String,String> tmp = new HashMap<>();
+		Iterator<String> i = serverTypeToHome.keySet().iterator();
+		while(i.hasNext()) {
+			String type = i.next();
+			String home = serverTypeToHome.get(type);
+			if( home != null && !home.isEmpty())
+				tmp.put(home, type);
+		}
+		
+		// Manually add new runtimes with no unique runtime type 
+		// NEW_SERVER_ADAPTER
+		tmp.put(JBOSS_WF_260_HOME, IJBossToolingConstants.SERVER_WILDFLY_240);
+		return tmp;
+	}
+
 	public static String getServerHome(String serverTypeId) {
 		return serverTypeToHome.get(serverTypeId);
+	}
+	
+	public static String[] getAllServerHomes(String serverTypeId) {
+		Set<String> ret = serverHomeDirToServerType().keySet();
+		return (String[]) ret.toArray(new String[ret.size()]);
 	}
 }

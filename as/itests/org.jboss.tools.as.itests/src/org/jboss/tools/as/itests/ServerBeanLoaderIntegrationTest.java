@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
+import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.tools.as.test.core.TestConstants;
 import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
@@ -39,11 +40,13 @@ import org.junit.runners.Parameterized.Parameters;
 public class ServerBeanLoaderIntegrationTest extends ServerBeanLoader3Test {
 	@Parameters(name = "{0}")
 	 public static Collection<Object[]> data() {
-		 return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerTypeParametersPlusAdditionalMocks());
+		 return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerHomeParameters());
 	 }
 
-	public ServerBeanLoaderIntegrationTest(String serverType) {
-		super(serverType);
+	private String serverHome;
+	public ServerBeanLoaderIntegrationTest(String serverHome) {
+		super(TestConstants.serverHomeDirToServerType().get(serverHome));
+		this.serverHome = serverHome;
 	}
 	
 	@Before
@@ -56,7 +59,7 @@ public class ServerBeanLoaderIntegrationTest extends ServerBeanLoader3Test {
 	 */
 	@Test
 	public void testServerBeanLoaderFromRuntimes() {
-		String fLoc = TestConstants.getServerHome(serverType);
+		String fLoc = this.serverHome;
 		if( fLoc == null ) {
 			if( Arrays.asList(IJBossToolingConstants.ALL_JBOSS_SERVERS).contains(serverType)) {
 				// This type should be tested but has no server-home, so fail
@@ -66,9 +69,16 @@ public class ServerBeanLoaderIntegrationTest extends ServerBeanLoader3Test {
 			return;
 		}
 		Data p = expected.get(serverType);
-		inner_testServerBeanLoaderForFolder(new File(fLoc), p.type, p.version, p.overrideId);
 		if( p.type.equals(JBossServerType.EAP_STD)) {
 			inner_testServerBeanLoaderForFolder(new File(fLoc).getParentFile(), JBossServerType.EAP, p.version, p.overrideId);
 		}
+		String folderName = new File(fLoc).getName();
+		String majorMinor = "0.0";
+		if( serverType.startsWith(IJBossToolingConstants.WF_SERVER_PREFIX)) {
+			majorMinor = ServerBeanLoader.getMajorMinorVersion(folderName.substring("wildfly-".length()));
+		} else if( serverType.startsWith(IJBossToolingConstants.EAP_SERVER_PREFIX)) {
+			majorMinor = ServerBeanLoader.getMajorMinorVersion(folderName.substring("jboss-eap-".length()));
+		}
+		inner_testServerBeanLoaderForFolder(new File(fLoc), p.type, majorMinor, p.overrideId);
 	}
 }

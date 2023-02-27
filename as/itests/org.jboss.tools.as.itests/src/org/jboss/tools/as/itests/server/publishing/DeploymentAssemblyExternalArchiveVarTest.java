@@ -31,7 +31,7 @@ public class DeploymentAssemblyExternalArchiveVarTest extends DeploymentAssembly
 	private static int PROJECT_ID = 1;
 	@Parameters(name = "{0} {1} {4} {5}")
 	public static Collection<Object[]> params() {
-		return componentJarData();
+		return computeServersForProjectStructureTests();
 	}
 	public DeploymentAssemblyExternalArchiveVarTest(String serverType, String zip,
 			String deployLoc, String perMod, String refName, String refFolder) {

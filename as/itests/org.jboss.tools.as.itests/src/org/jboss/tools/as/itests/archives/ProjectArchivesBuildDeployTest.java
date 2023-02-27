@@ -60,6 +60,11 @@ import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 import org.jboss.tools.as.itests.Activator;
 import org.jboss.tools.test.util.JobUtils;
 
+/**
+ * This test really isn't worth very much.  
+ * @author rob
+ *
+ */
 @SuppressWarnings("nls")
 public class ProjectArchivesBuildDeployTest extends TestCase {
 	private static final String VALUE_PREFIX = "value";

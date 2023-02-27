@@ -8,12 +8,11 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.as.itests;
+package org.jboss.tools.as.itests.server.mock;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-
-import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -32,6 +31,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import junit.framework.TestCase;
+
 /**
  * This class will test properties of a default created server and runtime 
  * for properties that should never be null.
@@ -48,50 +49,14 @@ public class EJB3SupportVerifierTest extends TestCase {
 		 return ServerParameterUtils.asCollection(ServerParameterUtils.getAllJBossServerTypeParameters());
 	}
 	
-	private static HashMap<String, Boolean> expected; 
+	private static ArrayList<String> nonEjb3Types;
 	static {
-		expected = new HashMap<String, Boolean>();
-		expected.put(IJBossToolingConstants.DEPLOY_ONLY_SERVER, false);
-		// NEW_SERVER_ADAPTER
-		// AUTOGEN_SERVER_ADAPTER_CHUNK
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_270, true);
-		expected.put(IJBossToolingConstants.SERVER_EAP_80, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_240, true);
-		expected.put(IJBossToolingConstants.SERVER_EAP_74, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_230, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_220, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_210, true);
-		expected.put(IJBossToolingConstants.SERVER_EAP_71, true);
-		expected.put(IJBossToolingConstants.SERVER_EAP_72, true);
-		expected.put(IJBossToolingConstants.SERVER_EAP_73, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_200, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_190, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_180, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_170, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_160, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_150, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_140, true);
-		expected.put(IJBossToolingConstants.SERVER_EAP_70, true);
-		expected.put(IJBossToolingConstants.SERVER_EAP_61, true);
-		expected.put(IJBossToolingConstants.SERVER_EAP_60, true);
-		expected.put(IJBossToolingConstants.SERVER_EAP_50, true);
-		expected.put(IJBossToolingConstants.SERVER_EAP_43, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_130, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_120, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_110, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_100, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_90, true);
-		expected.put(IJBossToolingConstants.SERVER_WILDFLY_80, true);
-		expected.put(IJBossToolingConstants.SERVER_AS_71, true);
-		expected.put(IJBossToolingConstants.SERVER_AS_70, true);
-		expected.put(IJBossToolingConstants.SERVER_AS_60, true);
-		expected.put(IJBossToolingConstants.SERVER_AS_51, true);
-		expected.put(IJBossToolingConstants.SERVER_AS_50, true);
-		expected.put(IJBossToolingConstants.SERVER_AS_42, true);
-		expected.put(IJBossToolingConstants.SERVER_AS_40, false);
-		expected.put(IJBossToolingConstants.SERVER_AS_32, false);
+		nonEjb3Types = new ArrayList<String>();
+		nonEjb3Types.add(IJBossToolingConstants.SERVER_AS_40);
+		nonEjb3Types.add(IJBossToolingConstants.SERVER_AS_32);
+		nonEjb3Types.add(IJBossToolingConstants.DEPLOY_ONLY_SERVER);
 	}
-	 
+	
 	public EJB3SupportVerifierTest(String serverType) {
 		this.serverType = serverType;
 	}
@@ -108,10 +73,9 @@ public class EJB3SupportVerifierTest extends TestCase {
 	
 	@Test
 	public void testEJB30Support() {
-		if( expected.get(serverType) == null )
-			fail("Test needs to be updated for new server type");
+		boolean shouldSupportEjb3 = !nonEjb3Types.contains(serverType);
 		boolean supported = EJB30SupportVerifier.verify(server.getRuntime());
-		assertEquals(new Boolean(supported), new Boolean(expected.get(serverType)));
+		assertEquals("Error on servertype " + serverType, Boolean.valueOf(supported), Boolean.valueOf(shouldSupportEjb3));
 		IPath containerPath = new Path(EJB3ClasspathContainer.CONTAINER_ID).append(server.getName());
 		EJB3ClasspathContainer container = new EJB3ClasspathContainer(containerPath, null);
 		IClasspathEntry[] entries = container.getClasspathEntries();

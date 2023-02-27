@@ -38,7 +38,7 @@ public class DeploymentAssemblyWorkspaceArchiveVarTest extends DeploymentAssembl
 	private static int PROJECT_ID = 1;
 	@Parameters(name = "{0} {1} {4} {5}")
 	public static Collection<Object[]> params() {
-		return componentJarData();
+		return computeServersForProjectStructureTests();
 	}
 	public DeploymentAssemblyWorkspaceArchiveVarTest(String serverType, String zip,
 			String deployLoc, String perMod, String refName, String refFolder) {

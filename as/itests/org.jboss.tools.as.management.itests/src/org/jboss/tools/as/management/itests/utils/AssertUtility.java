@@ -11,7 +11,7 @@ package org.jboss.tools.as.management.itests.utils;
 
 import java.lang.reflect.Array;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class AssertUtility extends Assert {
 	   public static boolean areArraysEqual(Object o1, Object o2) {
