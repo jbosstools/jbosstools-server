@@ -12,9 +12,10 @@ package org.jboss.tools.as.management.itests;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import junit.framework.Assert;
-
 import org.eclipse.core.runtime.Path;
+import org.eclipse.wst.server.core.IRuntimeType;
+import org.eclipse.wst.server.core.IServerType;
+import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.core.JBoss7ManagerServiceProxy;
 import org.jboss.tools.as.management.itests.utils.AS7ManagerTestUtils;
@@ -23,6 +24,7 @@ import org.jboss.tools.as.management.itests.utils.StartupUtility;
 import org.jboss.tools.as.test.core.internal.utils.MatrixUtils;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -61,7 +63,15 @@ public class AS7ManagementServiceStartupShutdownTest extends Assert {
 	public void before() {
 		assertNotNull(homeDir);
 		assertTrue(new Path(homeDir).toFile().exists());
-		String rtType = ParameterUtils.serverHomeToRuntimeType.get(homeDir);
+		String serverType = ParameterUtils.getServerType(homeDir);
+		assertNotNull("server type id for homedir " + homeDir + " is null", serverType);
+		IServerType st = ServerCore.findServerType(serverType);
+		assertNotNull("server type for homedir " + homeDir + " is null", st);
+		
+		IRuntimeType rtt = st.getRuntimeType();
+		assertNotNull("runtime type for homedir " + homeDir + " is null", rtt);
+		
+		String rtType = rtt.getId();
 		assertNotNull(rtType);
 		IJBoss7ManagerService service = AS7ManagerTestUtils.findService(rtType);
 		assertNotNull("Management Service for runtime type " + rtType + " not found.", service);

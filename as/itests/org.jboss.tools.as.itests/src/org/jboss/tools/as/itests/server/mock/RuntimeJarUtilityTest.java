@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.as.itests;
+package org.jboss.tools.as.itests.server.mock;
 
 import java.util.Collection;
 import java.util.HashMap;

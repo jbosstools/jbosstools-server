@@ -39,7 +39,7 @@ public class DeploymentAssemblyWorkspaceArchiveVarWarTest extends DeploymentAsse
 	
 	@Parameters(name = "{0} {1} {4} {5}")
 	public static Collection<Object[]> params() {
-		return componentJarData();
+		return computeServersForProjectStructureTests();
 	}
 	public DeploymentAssemblyWorkspaceArchiveVarWarTest(String serverType, String zip,
 			String deployLoc, String perMod, String refName, String refFolder) {

@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.wst.server.core.IRuntimeType;
+import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
@@ -51,8 +52,10 @@ public class JREParameterUtils extends Assert {
 		ServerBeanLoader sb = new ServerBeanLoader(new File(serverHome));
 		String version = sb.getFullServerVersion();
 		System.out.println("**** ____  server version is " + version);
-		
-		String rtType = ParameterUtils.serverHomeToRuntimeType.get(serverHome);
+		String serverType = ParameterUtils.getServerType(serverHome);
+		IServerType st = ServerCore.findServerType(serverType);
+		IRuntimeType rtt = st.getRuntimeType();
+		String rtType = rtt.getId();
 		if( requiresJava11(rtType) ) {
 			return getJavaHome(serverHome, JRE11_SYSPROP, "JavaSE-11");
 		}

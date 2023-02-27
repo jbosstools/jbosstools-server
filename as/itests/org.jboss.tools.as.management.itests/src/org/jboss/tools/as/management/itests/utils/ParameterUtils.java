@@ -10,44 +10,20 @@
  ******************************************************************************/
 package org.jboss.tools.as.management.itests.utils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 
-import org.eclipse.wst.server.core.IServerType;
-import org.eclipse.wst.server.core.ServerCore;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.tools.as.test.core.TestConstants;
+import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
 
 public class ParameterUtils {
-	// AUTOGEN_SERVER_ADAPTER_CHUNK
-	public static final String JBOSS_EAP_72_HOME = TestConstants.JBOSS_EAP_72_HOME;
-	public static final String JBOSS_EAP_73_HOME = TestConstants.JBOSS_EAP_73_HOME;
-	public static final String JBOSS_EAP_74_HOME = TestConstants.JBOSS_EAP_74_HOME;
-	public static final String JBOSS_EAP_80_HOME = TestConstants.JBOSS_EAP_80_HOME;
-	// AUTOGEN_SERVER_ADAPTER_CHUNK
-	public static final String JBOSS_WF_240_HOME = TestConstants.JBOSS_WF_240_HOME;
-	public static final String JBOSS_WF_270_HOME = TestConstants.JBOSS_WF_270_HOME;
-	// AUTOGEN_SERVER_ADAPTER_CHUNK
-	
 
-	public static final String[] JAVAX_PACKAGE_RUNTIMES = new String[] {
-			JBOSS_WF_240_HOME, JBOSS_EAP_72_HOME, 
-			JBOSS_EAP_73_HOME, JBOSS_EAP_74_HOME
+	// AUTOGEN_SERVER_ADAPTER_CHUNK
+	public static final String[] JAVAX_PACKAGE_RUNTIME_HOMES = new String[] {
+			TestConstants.JBOSS_WF_260_HOME,
+			TestConstants.JBOSS_EAP_73_HOME, TestConstants.JBOSS_EAP_74_HOME
 	};
+	// AUTOGEN_SERVER_ADAPTER_CHUNK
 	
-	public static HashMap<String,String> serverHomeToRuntimeType = new HashMap<String, String>();
-	static {
-		// AUTOGEN_SERVER_ADAPTER_CHUNK
-		serverHomeToRuntimeType.put(JBOSS_EAP_72_HOME, IJBossToolingConstants.EAP_72);
-		serverHomeToRuntimeType.put(JBOSS_EAP_73_HOME, IJBossToolingConstants.EAP_73);
-		serverHomeToRuntimeType.put(JBOSS_EAP_74_HOME, IJBossToolingConstants.EAP_74);
-		serverHomeToRuntimeType.put(JBOSS_EAP_80_HOME, IJBossToolingConstants.EAP_80);
-		// AUTOGEN_SERVER_ADAPTER_CHUNK
-		serverHomeToRuntimeType.put(JBOSS_WF_240_HOME, IJBossToolingConstants.WILDFLY_240);
-		serverHomeToRuntimeType.put(JBOSS_WF_270_HOME, IJBossToolingConstants.WILDFLY_270);
-		// AUTOGEN_SERVER_ADAPTER_CHUNK
-	}
 	
 	public static final String SKIP_PRIVATE_REQUIREMENTS =  "org.jboss.tools.tests.skipPrivateRequirements";
 	public static boolean skipPrivateRequirements() {
@@ -57,30 +33,12 @@ public class ParameterUtils {
 	}
 	
 	public static final String getServerType(String serverHome) {
-		String rtType = serverHomeToRuntimeType.get(serverHome);
-		IServerType[] all = ServerCore.getServerTypes();
-		for( int i = 0; i < all.length; i++ ) {
-			if( all[i].getRuntimeType().getId().equals(rtType)) {
-				return all[i].getId();
-			}
-		}
-		return null;
+		String serverType = TestConstants.serverHomeDirToServerType().get(serverHome);
+		return serverType;
 	}
 	
 	public static Object[] getAS7ServerHomes() {
-		boolean skipReqs = skipPrivateRequirements();
-		ArrayList<String> paths = new ArrayList<String>();
-		// AUTOGEN_SERVER_ADAPTER_CHUNK
-		paths.add(JBOSS_WF_240_HOME);
-		paths.add(JBOSS_WF_270_HOME);
-		// AUTOGEN_SERVER_ADAPTER_CHUNK
-		if( !skipReqs ) {
-			// AUTOGEN_SERVER_ADAPTER_CHUNK
-			paths.add(JBOSS_EAP_74_HOME);
-			paths.add(JBOSS_EAP_80_HOME);
-			// AUTOGEN_SERVER_ADAPTER_CHUNK
-		}
-		return paths.toArray(new String[paths.size()]);
+		return 	ServerParameterUtils.getJBossServerHomeParameters();
 	}
 	
 	public static Object[] getIncrementalMgmtDeploymentHomes() {
@@ -93,20 +51,7 @@ public class ParameterUtils {
 	}
 	
 	public static Object[] getAllIncrementalMgmtDeploymentHomes() {
-		boolean skipReqs = skipPrivateRequirements();
-		ArrayList<String> paths = new ArrayList<String>();
-		// AUTOGEN_SERVER_ADAPTER_CHUNK
-		paths.add(JBOSS_WF_240_HOME);
-		paths.add(JBOSS_WF_270_HOME);
-		// AUTOGEN_SERVER_ADAPTER_CHUNK
-		if( !skipReqs ) {
-			// AUTOGEN_SERVER_ADAPTER_CHUNK
-			paths.add(JBOSS_EAP_73_HOME);
-			paths.add(JBOSS_EAP_74_HOME);
-			paths.add(JBOSS_EAP_80_HOME);
-			// AUTOGEN_SERVER_ADAPTER_CHUNK
-		}
-		return paths.toArray(new String[paths.size()]);
+		return getAS7ServerHomes();
 	}
 	
 	

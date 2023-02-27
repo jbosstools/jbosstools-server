@@ -25,7 +25,7 @@ import org.eclipse.wst.server.core.IServerLifecycleListener;
 import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.ui.internal.viewers.InitialSelectionProvider;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.LatestServerUtility;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.osgi.service.prefs.BackingStoreException;
 
@@ -44,34 +44,24 @@ public class JBInitialSelectionProvider extends InitialSelectionProvider impleme
 	private static final String DEFAULT_INITIAL_SERVER_TYPE = "DEFAULT_SERVER_TYPE"; //$NON-NLS-1$
 	private static final String DEFAULT_INITIAL_RUNTIME_TYPE = "DEFAULT_RUNTIME_TYPE"; //$NON-NLS-1$
 
-	// NEW_SERVER_ADAPTER - Do the newest defaults need to be set? 
-	// AUTOGEN_SERVER_ADAPTER_CHUNK
-	private static final String LATEST_JBT_SERVER = IJBossToolingConstants.SERVER_WILDFLY_270;
-	private static final String LATEST_JBT_RUNTIME = IJBossToolingConstants.WILDFLY_270;
-	// AUTOGEN_SERVER_ADAPTER_CHUNK
-
-
-
-
-
-
-	
 	public JBInitialSelectionProvider() {
 	}
 
 
 	public IServerType getDefaultServerType() {
 		IEclipsePreferences defaults = DefaultScope.INSTANCE.getNode(JBossServerUIPlugin.PLUGIN_ID);
-		String newestJBoss = defaults.get(DEFAULT_INITIAL_SERVER_TYPE, LATEST_JBT_SERVER);
-		return ServerCore.findServerType(newestJBoss);
-	}
-
-	public IRuntimeType getDefaultRuntimeType() {
-		IEclipsePreferences defaults = DefaultScope.INSTANCE.getNode(JBossServerUIPlugin.PLUGIN_ID);
-		String newestJBoss = defaults.get(DEFAULT_INITIAL_RUNTIME_TYPE, LATEST_JBT_RUNTIME);
-		return ServerCore.findRuntimeType(newestJBoss);
+		String newestJBoss = defaults.get(DEFAULT_INITIAL_SERVER_TYPE, 
+				LatestServerUtility.findLatestWildflyServerTypeId());
+		return newestJBoss == null ? null : ServerCore.findServerType(newestJBoss);
 	}
 	
+	public IRuntimeType getDefaultRuntimeType() {
+		IEclipsePreferences defaults = DefaultScope.INSTANCE.getNode(JBossServerUIPlugin.PLUGIN_ID);
+		String newestJBoss = defaults.get(DEFAULT_INITIAL_RUNTIME_TYPE, 
+				LatestServerUtility.findLatestWildflyRuntimeTypeId());
+		return newestJBoss == null ? null : ServerCore.findRuntimeType(newestJBoss);
+	}
+
 	@Override
 	public IRuntimeType getInitialSelection(IRuntimeType[] runtimeTypes) {
 		return (IRuntimeType)getInitialSelection(runtimeTypes, LAST_RUNTIME_TYPE_CREATED_KEY, true, getDefaultRuntimeType());

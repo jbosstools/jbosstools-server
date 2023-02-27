@@ -27,7 +27,7 @@ public class DeploymentAssemblyArchivePathVarWarTest extends DeploymentAssemblyA
 	private static int PROJECT_ID = 1;
 	@Parameters(name = "{0} {1} {4} {5}")
 	public static Collection<Object[]> params() {
-		return componentJarData();
+		return computeServersForProjectStructureTests();
 	}
 
 	public DeploymentAssemblyArchivePathVarWarTest(String serverType, String zip,

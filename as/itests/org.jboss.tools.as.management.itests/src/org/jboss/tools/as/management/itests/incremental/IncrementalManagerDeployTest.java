@@ -29,6 +29,9 @@ import java.util.Map;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.wst.server.core.IRuntimeType;
+import org.eclipse.wst.server.core.IServerType;
+import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.management.core.IAS7ManagementDetails;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
@@ -85,7 +88,10 @@ public class IncrementalManagerDeployTest extends AssertUtility {
 	public void before()  throws IOException  {
 		assertNotNull(homeDir);
 		assertTrue(new Path(homeDir).toFile().exists());
-		String rtType = ParameterUtils.serverHomeToRuntimeType.get(homeDir);
+		String serverType = ParameterUtils.getServerType(homeDir);
+		IServerType st = ServerCore.findServerType(serverType);
+		IRuntimeType rtt = st.getRuntimeType();
+		String rtType = rtt.getId();
 		assertNotNull(rtType);
 		IJBoss7ManagerService service2 = AS7ManagerTestUtils.findService(rtType);
 		assertNotNull("Management Service for runtime type " + rtType + " not found.", service2);
@@ -119,7 +125,7 @@ public class IncrementalManagerDeployTest extends AssertUtility {
 	}
 	
 	protected boolean useJavax() {
-		return Arrays.asList(ParameterUtils.JAVAX_PACKAGE_RUNTIMES).contains(this.homeDir);
+		return Arrays.asList(ParameterUtils.JAVAX_PACKAGE_RUNTIME_HOMES).contains(this.homeDir);
 	}
 	
 	protected File getBundleFile(String name) throws Exception {

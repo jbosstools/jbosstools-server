@@ -18,6 +18,9 @@ import java.util.Collection;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.wst.server.core.IRuntimeType;
+import org.eclipse.wst.server.core.IServerType;
+import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.server.v7.management.AS7ManagementDetails;
 import org.jboss.ide.eclipse.as.management.core.IAS7ManagementDetails;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
@@ -77,7 +80,15 @@ public class AS7ManagerIntegrationTest extends AssertUtility {
 	public void before()  throws IOException  {
 		assertNotNull(homeDir);
 		assertTrue(new Path(homeDir).toFile().exists());
-		String rtType = ParameterUtils.serverHomeToRuntimeType.get(homeDir);
+		String serverType = ParameterUtils.getServerType(homeDir);
+		assertNotNull("server type id for homedir " + homeDir + " is null", serverType);
+		IServerType st = ServerCore.findServerType(serverType);
+		assertNotNull("server type for homedir " + homeDir + " is null", st);
+		
+		IRuntimeType rtt = st.getRuntimeType();
+		assertNotNull("runtime type for homedir " + homeDir + " is null", rtt);
+		
+		String rtType = rtt.getId();
 		assertNotNull(rtType);
 		IJBoss7ManagerService service2 = AS7ManagerTestUtils.findService(rtType);
 		assertNotNull("Management Service for runtime type " + rtType + " not found.", service2);

@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.tools.as.test.core.internal.utils.MatrixUtils;
 import org.jboss.tools.as.test.core.internal.utils.ResourceUtils;
@@ -23,6 +24,9 @@ import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
 import org.jboss.tools.as.test.core.parametized.server.publishing.AbstractPublishingTest;
 
 public class AbstractComponentPublishingTest extends AbstractPublishingTest {
+	public static Collection<Object[]> computeServersForProjectStructureTests() {
+		return componentJarData(new String[] {IJBossToolingConstants.SERVER_AS_71}, false);
+	}
 	public static Collection<Object[]> componentJarData() {
 		return componentJarData(false);
 	}
@@ -31,6 +35,9 @@ public class AbstractComponentPublishingTest extends AbstractPublishingTest {
 	}
 	public static Collection<Object[]> componentJarData(boolean complete) {
 		Object[] servers = ServerParameterUtils.getPublishServerTypes();
+		return componentJarData(servers, complete);
+	}
+	public static Collection<Object[]> componentJarData(Object[] servers, boolean complete) {
 		Object[] zipOption = ServerParameterUtils.getServerZipOptions();
 		Object[] defaultDeployLoc = ServerParameterUtils.getDefaultDeployOptions();
 		Object[] perModOverrides = ServerParameterUtils.getPerModuleOverrideOptions();
