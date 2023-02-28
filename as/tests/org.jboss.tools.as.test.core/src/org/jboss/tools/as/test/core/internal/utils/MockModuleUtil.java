@@ -34,11 +34,17 @@ public class MockModuleUtil {
 	public static MockModule createMockWebModule() {
 		return createMockWebModule("jst.web", "WebProj");
 	}
+	public static MockModule createMockWebModule5() {
+		return createMockWebModule("jst.web", "WebProj", "5.0");
+	}
 	public static MockModule createMockWebModule(String name) {
 		return createMockWebModule("jst.web", name);
 	}
 	public static MockModule createMockWebModule(final String id, final String name ) {
 		return createMockModule(id, name, "jst.web", "jst.web", "2.5");
+	}
+	public static MockModule createMockWebModule(final String id, final String name, final String version ) {
+		return createMockModule(id, name, "jst.web", "jst.web", version);
 	}
 	public static MockModule createMockUtilModule() {
 		return createMockUtilModule("jst.utility", "UtilProj");

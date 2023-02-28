@@ -20,7 +20,6 @@ import java.net.HttpURLConnection;
 import java.net.SocketException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +31,9 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.ServerCore;
+import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties.DEPLOYMENT_JAVA_NAMESPACE;
 import org.jboss.ide.eclipse.as.management.core.IAS7ManagementDetails;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.management.core.IJBoss7ManagerService;
@@ -78,7 +80,8 @@ public class IncrementalManagerDeployTest extends AssertUtility {
 	}
 	
 	private String homeDir;
-	IncrementalDeploymentManagerService service;
+	private IncrementalDeploymentManagerService service;
+	private IServerType st;
 	public IncrementalManagerDeployTest(String home) {
 		homeDir = home;
 	}
@@ -89,7 +92,7 @@ public class IncrementalManagerDeployTest extends AssertUtility {
 		assertNotNull(homeDir);
 		assertTrue(new Path(homeDir).toFile().exists());
 		String serverType = ParameterUtils.getServerType(homeDir);
-		IServerType st = ServerCore.findServerType(serverType);
+		st = ServerCore.findServerType(serverType);
 		IRuntimeType rtt = st.getRuntimeType();
 		String rtType = rtt.getId();
 		assertNotNull(rtType);
@@ -125,7 +128,8 @@ public class IncrementalManagerDeployTest extends AssertUtility {
 	}
 	
 	protected boolean useJavax() {
-		return Arrays.asList(ParameterUtils.JAVAX_PACKAGE_RUNTIME_HOMES).contains(this.homeDir);
+		JBossExtendedProperties props = (JBossExtendedProperties) new ExtendedServerPropertiesAdapterFactory().getExtendedProperties(this.st);
+		return props.getDeploymentJavaNamespace() == DEPLOYMENT_JAVA_NAMESPACE.DEPLOYMENT_NAMESPACE_JAVAX;
 	}
 	
 	protected File getBundleFile(String name) throws Exception {
