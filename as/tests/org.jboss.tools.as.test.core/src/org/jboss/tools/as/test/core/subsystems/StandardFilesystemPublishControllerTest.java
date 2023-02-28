@@ -27,11 +27,14 @@ import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.ExtendedServerPropertiesAdapterFactory;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties;
+import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.JBossExtendedProperties.DEPLOYMENT_JAVA_NAMESPACE;
 import org.jboss.ide.eclipse.as.core.server.internal.extendedproperties.ServerExtendedProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.DeploymentMarkerUtils;
 import org.jboss.ide.eclipse.as.core.util.ModuleResourceUtil;
 import org.jboss.tools.as.core.server.controllable.subsystems.StandardFileSystemPublishController;
 import org.jboss.tools.as.test.core.ASMatrixTests;
+import org.jboss.tools.as.test.core.TestConstants;
 import org.jboss.tools.as.test.core.internal.utils.IOUtil;
 import org.jboss.tools.as.test.core.internal.utils.MockModule;
 import org.jboss.tools.as.test.core.internal.utils.MockModuleUtil;
@@ -457,10 +460,19 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 		return leafs;
 	}
 	
+	protected boolean useJavax() {
+		JBossExtendedProperties props = ExtendedServerPropertiesAdapterFactory.getJBossExtendedProperties(this.server);
+		DEPLOYMENT_JAVA_NAMESPACE ns = props.getDeploymentJavaNamespace();
+		if( ns == DEPLOYMENT_JAVA_NAMESPACE.DEPLOYMENT_NAMESPACE_JAVAX )
+			return true;
+		return false;
+	}
+
+	
 	private MockModule[] createSimpleMockWebModule() throws Exception {
 		IPath underlying = setUnderlyingVersion(1);
 		// Create a custom mock project structure
-		MockModule m = MockModuleUtil.createMockWebModule();
+		MockModule m = createMockWebModuleWithVersion();
 		IPath[] leafs = getLeafPaths();
 		IModuleResource[] all = MockModuleUtil.createMockResources(leafs, new IPath[0], underlying.toFile());
 		m.setMembers(all);
@@ -471,7 +483,7 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 	private MockModule[] createSimpleMockBinaryWebModule() throws Exception {
 		IPath underlying = setUnderlyingVersion(1);
 		// Create a custom mock project structure
-		MockModule m = MockModuleUtil.createMockWebModule();
+		MockModule m = createMockWebModuleWithVersion();
 		IPath[] leafs = new IPath[]{new Path("some.war")};
 		IModuleResource[] all = MockModuleUtil.createMockResources(leafs, new IPath[0], underlying.toFile());
 		m.setMembers(all);
@@ -481,7 +493,7 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 
 	private MockModule[] createUtilInWebMockModule() throws Exception {
 		IPath underlying = setUnderlyingVersion(1);
-		MockModule web = MockModuleUtil.createMockWebModule();
+		MockModule web = createMockWebModuleWithVersion();
 		MockModule util = MockModuleUtil.createMockUtilModule();
 		
 		String utilWithSuffix = util.getName() + ".jar";
@@ -507,7 +519,7 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 	private MockModule[] createDifferentURIBinaryUtilInWebMockModule(
 			String utilFileName, String utilNestedName) throws Exception {
 		IPath underlying = setUnderlyingVersion(1);
-		MockModule web = MockModuleUtil.createMockWebModule();
+		MockModule web = createMockWebModuleWithVersion();
 		MockModule util = MockModuleUtil.createMockUtilModule();
 		util.setBinary(true);
 		
@@ -535,7 +547,7 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 	private MockModule[] createUtilInWebInEarMockModule() throws Exception {
 		IPath underlying = setUnderlyingVersion(1);
 		MockModule ear = MockModuleUtil.createMockEarModule();
-		MockModule web = MockModuleUtil.createMockWebModule();
+		MockModule web = createMockWebModuleWithVersion();
 		MockModule util = MockModuleUtil.createMockUtilModule();
 		
 		String utilWithSuffix = util.getName() + ".jar";
@@ -560,6 +572,10 @@ public class StandardFilesystemPublishControllerTest extends AbstractPublishingT
 		web.setMembers(webResources);
 		util.setMembers(utilResources);
 		return utilInWebInEar;
+	}
+
+	private MockModule createMockWebModuleWithVersion() {
+		return useJavax() ? MockModuleUtil.createMockWebModule() :  MockModuleUtil.createMockWebModule5();
 	}
 
 	protected void verifyListRelativePath(IPath root, List<IPath> list, boolean exists) {

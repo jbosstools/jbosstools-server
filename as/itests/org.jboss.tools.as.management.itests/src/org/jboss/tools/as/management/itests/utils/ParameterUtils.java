@@ -16,14 +16,6 @@ import org.jboss.tools.as.test.core.TestConstants;
 import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
 
 public class ParameterUtils {
-
-	// AUTOGEN_SERVER_ADAPTER_CHUNK
-	public static final String[] JAVAX_PACKAGE_RUNTIME_HOMES = new String[] {
-			TestConstants.JBOSS_WF_260_HOME,
-			TestConstants.JBOSS_EAP_73_HOME, TestConstants.JBOSS_EAP_74_HOME
-	};
-	// AUTOGEN_SERVER_ADAPTER_CHUNK
-	
 	
 	public static final String SKIP_PRIVATE_REQUIREMENTS =  "org.jboss.tools.tests.skipPrivateRequirements";
 	public static boolean skipPrivateRequirements() {
