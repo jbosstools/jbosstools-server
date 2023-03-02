@@ -12,7 +12,6 @@ package org.jboss.tools.as.itests;
 
 import org.jboss.tools.as.itests.archives.ProjectArchivesBuildDeployTest;
 import org.jboss.tools.as.itests.server.mock.CreateServerCheckDefaultsTest;
-import org.jboss.tools.as.itests.server.mock.EJB3SupportVerifierTest;
 import org.jboss.tools.as.itests.server.mock.ProjectRuntimeClasspathTest;
 import org.jboss.tools.as.itests.server.mock.RuntimeJarUtilityTest;
 import org.jboss.tools.as.itests.server.publishing.PublishingSuite;

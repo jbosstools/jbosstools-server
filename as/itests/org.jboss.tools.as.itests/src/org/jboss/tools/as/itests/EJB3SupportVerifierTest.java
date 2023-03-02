@@ -8,11 +8,11 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.as.itests.server.mock;
+package org.jboss.tools.as.itests;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -22,6 +22,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.classpath.core.ejb3.EJB30SupportVerifier;
 import org.jboss.ide.eclipse.as.classpath.core.ejb3.EJB3ClasspathContainer;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.tools.as.test.core.TestConstants;
 import org.jboss.tools.as.test.core.internal.utils.ServerCreationTestUtils;
 import org.jboss.tools.as.test.core.internal.utils.ServerParameterUtils;
 import org.junit.After;
@@ -44,9 +45,10 @@ import junit.framework.TestCase;
 public class EJB3SupportVerifierTest extends TestCase {
 	private String serverType;
 	private IServer server;
+	private String serverHome;
 	@Parameters(name = "{0}")
 	public static Collection<Object[]> data() {
-		 return ServerParameterUtils.asCollection(ServerParameterUtils.getAllJBossServerTypeParameters());
+		 return ServerParameterUtils.asCollection(ServerParameterUtils.getJBossServerHomeParameters());
 	}
 	
 	private static ArrayList<String> nonEjb3Types;
@@ -57,13 +59,15 @@ public class EJB3SupportVerifierTest extends TestCase {
 		nonEjb3Types.add(IJBossToolingConstants.DEPLOY_ONLY_SERVER);
 	}
 	
-	public EJB3SupportVerifierTest(String serverType) {
-		this.serverType = serverType;
+	public EJB3SupportVerifierTest(String serverHome) {
+		this.serverHome = serverHome;
 	}
 	
 	@Before
 	public void setUp() throws CoreException {
-		server = ServerCreationTestUtils.createServerWithRuntime(serverType, getClass().getName() + serverType);
+		this.serverType = TestConstants.serverHomeDirToServerType().get(serverHome);
+		this.server = ServerCreationTestUtils.createServerWithRuntime(this.serverType, 
+				getClass().getName() + this.serverType, new File(this.serverHome));
 	}
 
 	@After
