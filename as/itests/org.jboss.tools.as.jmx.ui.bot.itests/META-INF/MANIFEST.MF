@@ -10,6 +10,8 @@ Require-Bundle: org.junit,
  org.jboss.tools.jmx.reddeer,
  org.jboss.ide.eclipse.as.jmx.integration,
  org.jboss.ide.eclipse.as.rse.ui,
- org.jboss.tools.jmx.local
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+ org.jboss.tools.jmx.local,
+ org.jboss.ide.eclipse.as.management.wf11,
+ org.jboss.ide.eclipse.as.management.core
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Eclipse-BundleShape: jar
