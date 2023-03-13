@@ -32,7 +32,9 @@ public class ServerConsoleContainsNoExceptionMatcher extends TypeSafeMatcher<Con
 			".*Remote connection failed: java.io.IOException: An established connection was aborted by the software in your host.*",
 			".*XNIO001007: .*XNIO007007: Thread is terminating",
 			".*java.io.FileNotFoundException:.*",
-			".*expandExceptionLogs.*"};
+			".*expandExceptionLogs.*",
+			".*UT005090: Unexpected failure: java.lang.IllegalStateException: UT000131: Buffer pool is closed.*", // https://issues.redhat.com/browse/JBIDE-28890
+			".*XNIO001007: A channel event listener threw an exception: java.lang.IllegalStateException: UT000131: Buffer pool is closed.*"}; // https://issues.redhat.com/browse/JBIDE-28890
 
 	private static final Logger log = Logger.getLogger(ServerConsoleContainsNoExceptionMatcher.class);
 
