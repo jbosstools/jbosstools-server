@@ -58,7 +58,7 @@ public abstract class AbstractTest {
 	public static String getServerNameForServerString(String server) {
 		if (server.contains("WildFly")) {
 		    if (server.contains("27")) {
-		        return "WildFly 27";
+		        return "WildFly 27+";
 		    }
 			return "WildFly 24+";
 		} else {
