@@ -62,7 +62,7 @@ public class JavaMonitorPerspectiveFactory implements IPerspectiveFactory {
         layout.addShowViewShortcut(ID_JVM_EXPLORER);
         layout.addShowViewShortcut(IPageLayout.ID_PROP_SHEET);
         layout.addShowViewShortcut(IPageLayout.ID_OUTLINE);
-        layout.addShowViewShortcut(IPageLayout.ID_RES_NAV);
+        layout.addShowViewShortcut(IPageLayout.ID_PROJECT_EXPLORER);
         layout.addShowViewShortcut(JavaUI.ID_PACKAGES);
 
         layout.addPerspectiveShortcut(JavaUI.ID_PERSPECTIVE);
