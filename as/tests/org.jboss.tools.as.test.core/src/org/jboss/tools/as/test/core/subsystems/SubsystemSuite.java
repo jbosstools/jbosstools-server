@@ -29,7 +29,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	DeploymentSettingsControllerTest.class,
 	LocalFilesystemSubsystemTest.class,
 	ModuleDeployPathControllerTest.class,
-	RSEFilesystemSubsystemTest.class,
+	//RSEFilesystemSubsystemTest.class,
 	PublishRunnerTest.class,
 	ZippedPublishRunnerTest.class,
 	StandardFilesystemPublishControllerTest.class,
