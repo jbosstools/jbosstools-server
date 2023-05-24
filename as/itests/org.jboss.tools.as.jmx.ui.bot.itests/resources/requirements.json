@@ -7,7 +7,7 @@
 		},
 		{
 			"runtime": "${jbosstools.test.wildfly.27.home}",
-			"version": "27",
+			"version": "27+",
 			"family": "WILDFLY"
 		},
 		{
@@ -37,7 +37,7 @@
 		},
 		{
 			"runtime": "${jbosstools.test.wildfly.27.home}",
-			"version": "27",
+			"version": "27+",
 			"family": "WILDFLY",
 			"remote": {
 				"serverHome": "${jbosstools.test.wildfly.27.home}",
