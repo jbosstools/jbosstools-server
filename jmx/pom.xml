@@ -10,7 +10,7 @@
 	<groupId>org.jboss.tools</groupId>
 	<artifactId>jmx</artifactId>
 	<name>jmx.all</name>
-	<version>1.10.302-SNAPSHOT</version>
+	<version>1.10.400-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>plugins</module>
