@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
+import org.jboss.ide.eclipse.as.wtp.core.server.behavior.ServerProfileModel;
 import org.jboss.tools.foundation.core.plugin.BaseCorePlugin;
 import org.jboss.tools.foundation.core.plugin.log.IPluginLog;
 import org.jboss.tools.foundation.core.plugin.log.StatusFactory;
@@ -39,6 +40,7 @@ public class ASWTPToolsPlugin extends BaseCorePlugin {
 	private static ASWTPToolsPlugin plugin;
 
 	private UsageEventType newServerEventType;
+	private UsageEventType newRemoteServerEventType;
 	
 	
 	/**
@@ -60,13 +62,21 @@ public class ASWTPToolsPlugin extends BaseCorePlugin {
 			protected IStatus run(IProgressMonitor monitor) {
 				newServerEventType = new UsageEventType(USAGE_COMPONENT_NAME, UsageEventType.getVersion(ASWTPToolsPlugin.this), 
 						null, UsageEventType.NEW_ACTION, Messages.UsageEventTypeServerIDLabelDescription, 
-						UsageEventType.SUCCESFULL_FAILED_VALUE_DESCRIPTION);
-				
+						Messages.UsageEventTypeServerIDLabelDescription);
 				UsageReporter.getInstance().registerEvent(newServerEventType);
 
+				newRemoteServerEventType = new UsageEventType(USAGE_COMPONENT_NAME, UsageEventType.getVersion(ASWTPToolsPlugin.this), 
+						null, "new_remote", Messages.UsageEventTypeServerIDLabelDescription, 
+						Messages.UsageEventTypeServerIDLabelDescription);
+				UsageReporter.getInstance().registerEvent(newRemoteServerEventType);
+
+				
 				UnitedServerListenerManager.getDefault().addListener(new UnitedServerListener() {
 					public void serverAdded(IServer server) {
 						UsageReporter.getInstance().trackEvent(newServerEventType.event(server.getServerType().getId()));
+						if( ServerProfileModel.getProfile(server).equals("rse")) {
+							UsageReporter.getInstance().trackEvent(newRemoteServerEventType.event(server.getServerType().getId()));
+						}
 					}
 					public boolean canHandleServer(IServer server) {
 						return true;
