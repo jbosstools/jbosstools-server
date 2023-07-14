@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name.0
 Bundle-SymbolicName: org.jboss.ide.eclipse.as.ui.mbeans;singleton:=true
-Bundle-Version: 3.10.2.qualifier
+Bundle-Version: 3.10.3.qualifier
 Bundle-Activator: org.jboss.ide.eclipse.as.ui.mbeans.Activator
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui;bundle-version="3.7.0",
@@ -37,9 +37,9 @@ Require-Bundle: org.eclipse.ui;bundle-version="3.7.0",
  org.eclipse.wst.web.ui;bundle-version="1.1.400",
  org.eclipse.wst.common.modulecore.ui;bundle-version="1.0.100",
  org.eclipse.wst.common.frameworks.ui;bundle-version="1.2.100",
- org.jboss.ide.eclipse.as.core;bundle-version="[3.0.0,4.0.0)",
- org.jboss.ide.eclipse.as.wtp.core;bundle-version="[3.0.0,4.0.0)",
- org.jboss.ide.eclipse.as.ui;bundle-version="[3.0.0,4.0.0)"
+ org.jboss.ide.eclipse.as.core;bundle-version="[3.0.0,4.5.2)",
+ org.jboss.ide.eclipse.as.wtp.core;bundle-version="[3.0.0,4.5.2)",
+ org.jboss.ide.eclipse.as.ui;bundle-version="[3.0.0,4.5.2)"
 Bundle-ActivationPolicy: lazy
 Export-Package: org.jboss.ide.eclipse.as.ui.mbeans.editors.proposals,
  org.jboss.ide.eclipse.as.ui.mbeans.project
