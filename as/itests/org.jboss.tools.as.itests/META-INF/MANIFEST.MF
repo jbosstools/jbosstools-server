@@ -4,17 +4,17 @@ Bundle-Name: %BundleName
 Bundle-Vendor: %BundleVendor
 Bundle-Localization: plugin
 Bundle-SymbolicName: org.jboss.tools.as.itests
-Bundle-Version: 3.10.2.qualifier
+Bundle-Version: 3.10.3.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Require-Bundle: org.jboss.ide.eclipse.as.core;bundle-version="[3.1.1,4.0.0)",
+Require-Bundle: org.jboss.ide.eclipse.as.core;bundle-version="[3.1.1,4.5.2)",
  org.junit;bundle-version="[4.8.1,5.0.0)",
  org.eclipse.core.runtime;bundle-version="[3.7.0,4.0.0)",
- org.jboss.ide.eclipse.as.management.core;bundle-version="[3.0.0,4.0.0)",
- org.jboss.tools.as.test.core;bundle-version="[3.0.0,4.0.0)",
+ org.jboss.ide.eclipse.as.management.core;bundle-version="[3.0.0,4.5.2)",
+ org.jboss.tools.as.test.core;bundle-version="[3.0.0,4.5.2)",
  org.eclipse.wst.server.core;bundle-version="1.4.100",
  org.eclipse.jdt.launching;bundle-version="3.7.0",
- org.jboss.ide.eclipse.as.management.as7;bundle-version="[3.0.0,4.0.0)",
- org.jboss.ide.eclipse.as.management.wildfly9;bundle-version="[3.0.0,4.0.0)",
+ org.jboss.ide.eclipse.as.management.as7;bundle-version="[3.0.0,4.5.2)",
+ org.jboss.ide.eclipse.as.management.wildfly9;bundle-version="[3.0.0,4.5.2)",
  org.eclipse.debug.core;bundle-version="3.9.0",
  org.jboss.ide.eclipse.archives.core;bundle-version="3.5.0",
  org.jboss.ide.eclipse.archives.jdt.integration;bundle-version="3.5.0",

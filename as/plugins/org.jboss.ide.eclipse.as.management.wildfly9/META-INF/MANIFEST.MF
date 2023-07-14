@@ -2,10 +2,10 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JBoss WildFly Management API
 Bundle-SymbolicName: org.jboss.ide.eclipse.as.management.wildfly9
-Bundle-Version: 3.10.2.qualifier
+Bundle-Version: 3.10.3.qualifier
 Bundle-Activator: org.jboss.ide.eclipse.as.internal.management.wildfly9.Wildfly9ManagementActivator
 Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.7.0,4.0.0)",
- org.jboss.ide.eclipse.as.management.core;bundle-version="[3.0.0,4.0.0)"
+ org.jboss.ide.eclipse.as.management.core;bundle-version="[3.0.0,4.5.2)"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
