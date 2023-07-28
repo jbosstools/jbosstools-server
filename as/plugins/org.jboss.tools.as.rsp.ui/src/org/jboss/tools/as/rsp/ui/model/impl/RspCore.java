@@ -332,7 +332,7 @@ public class RspCore implements IRspCore {
     @Override
     public CompletableFuture<String> promptString(IRsp rsp, StringPrompt stringPrompt) {
         final String[] ret = new String[1];
-        UIHelper.executeInUI(() -> {
+        UIHelper.executeInUISync(() -> {
             StringPromptDialog spd = new StringPromptDialog(rsp, stringPrompt);
             int result = spd.open();
             if( result == Window.OK) {

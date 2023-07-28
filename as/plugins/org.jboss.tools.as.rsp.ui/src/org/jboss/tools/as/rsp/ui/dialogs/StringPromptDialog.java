@@ -33,7 +33,6 @@ public class StringPromptDialog extends TitleAreaDialog {
         super(Display.getDefault().getActiveShell());
         this.rsp = rsp;
         this.stringPrompt = stringPrompt;
-        setTitle("Prompt from " + rsp.getRspType().getName());
     }
 
 
@@ -47,6 +46,7 @@ public class StringPromptDialog extends TitleAreaDialog {
 //				: Messages.EditorCPD_DefaultDescription);
 //		getShell().setText(info.shellTitle != null ? info.shellTitle
 //				: Messages.EditorCPD_DefaultShellTitle);
+        setTitle("Prompt from " + rsp.getRspType().getName());
 		return c;
 	}
     

@@ -19,4 +19,7 @@ public class UIHelper {
     public static void executeInUI(Runnable runnable) {
         Display.getDefault().asyncExec(runnable);
     }
+    public static void executeInUISync(Runnable runnable) {
+        Display.getDefault().syncExec(runnable);
+    }
 }
