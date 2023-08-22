@@ -14,5 +14,5 @@ package org.jboss.tools.as.rsp.ui.model;
  * Creates IRspStateController for a given IRspType
  */
 public interface IRspStateControllerProvider {
-        public IRspStateController createController(IRspType rspServerType);
+	public IRspStateController createController(IRspType rspServerType);
 }

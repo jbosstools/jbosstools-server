@@ -14,9 +14,10 @@ package org.jboss.tools.as.rsp.ui.model;
  * Listeners to the primary model for this extension
  */
 public interface IRspCoreChangeListener {
-    /**
-     * Respond to model changes in the given object or its parents / children.
-     * @param item
-     */
-    public void modelChanged(Object item);
+	/**
+	 * Respond to model changes in the given object or its parents / children.
+	 * 
+	 * @param item
+	 */
+	public void modelChanged(Object item);
 }

@@ -83,7 +83,7 @@ public class NewServerDialog extends TitleAreaDialog implements ModifyListener {
 	private void createUI(Composite main) {
 		Composite nameComposite = new Composite(main, SWT.BORDER);
 		nameComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		nameComposite.setLayout(new GridLayout(2,false));
+		nameComposite.setLayout(new GridLayout(2, false));
 		Label nameLabel = new Label(nameComposite, SWT.NONE);
 		nameLabel.setText("Server Name: ");
 		this.nameField = new Text(nameComposite, SWT.BORDER);
@@ -105,18 +105,18 @@ public class NewServerDialog extends TitleAreaDialog implements ModifyListener {
 				try {
 					CreateServerResponse result = client.getServerProxy().createServer(csa).get();
 
-	                  if (!result.getStatus().isOK()) {
-	                      UIHelper.executeInUI(() -> {
-	                    	  setMessage(result.getStatus().getMessage(), IMessageProvider.ERROR);
-	                          getOkButton().setEnabled(true);
-	                      });
-	                  } else {
-	                      UIHelper.executeInUI(() -> { 
-	                  		setReturnCode(OK);
-	                		close();
-	                   	  });
-	                  }
-					
+					if (!result.getStatus().isOK()) {
+						UIHelper.executeInUI(() -> {
+							setMessage(result.getStatus().getMessage(), IMessageProvider.ERROR);
+							getOkButton().setEnabled(true);
+						});
+					} else {
+						UIHelper.executeInUI(() -> {
+							setReturnCode(OK);
+							close();
+						});
+					}
+
 					// TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_SERVER_CREATE,
 					// typeId, result.getStatus());
 				} catch (InterruptedException | ExecutionException e) {

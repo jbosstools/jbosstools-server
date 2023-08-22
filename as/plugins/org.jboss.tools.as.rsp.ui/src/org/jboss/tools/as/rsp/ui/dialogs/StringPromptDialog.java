@@ -25,38 +25,31 @@ import org.jboss.tools.as.rsp.ui.model.IRsp;
 import org.jboss.tools.rsp.api.dao.StringPrompt;
 
 public class StringPromptDialog extends TitleAreaDialog {
-    private IRsp rsp;
-    private StringPrompt stringPrompt;
-    private String fieldVal = "";
+	private IRsp rsp;
+	private StringPrompt stringPrompt;
+	private String fieldVal = "";
 
-    public StringPromptDialog(IRsp rsp, StringPrompt stringPrompt) {
-        super(Display.getDefault().getActiveShell());
-        this.rsp = rsp;
-        this.stringPrompt = stringPrompt;
-    }
-
+	public StringPromptDialog(IRsp rsp, StringPrompt stringPrompt) {
+		super(Display.getDefault().getActiveShell());
+		this.rsp = rsp;
+		this.stringPrompt = stringPrompt;
+	}
 
 	protected Control createDialogArea(Composite parent) {
-		Composite c = (Composite)super.createDialogArea(parent);
+		Composite c = (Composite) super.createDialogArea(parent);
 		Composite main = new Composite(c, SWT.BORDER);
 		main.setLayoutData(new GridData(GridData.FILL_BOTH));
 		main.setLayout(new GridLayout(1, true));
 		createUI(main);
-//		setMessage(info.description != null ? info.description
-//				: Messages.EditorCPD_DefaultDescription);
-//		getShell().setText(info.shellTitle != null ? info.shellTitle
-//				: Messages.EditorCPD_DefaultShellTitle);
-        setTitle("Prompt from " + rsp.getRspType().getName());
+		setTitle("Prompt from " + rsp.getRspType().getName());
 		return c;
 	}
-    
-    
-    private void createUI(Composite main) {
-		// TODO Auto-generated method stub
+
+	private void createUI(Composite main) {
 		Label l = new Label(main, SWT.NONE);
 		l.setText(stringPrompt.getPrompt());
 		int textType = SWT.BORDER;
-		if( stringPrompt.isSecret()) {
+		if (stringPrompt.isSecret()) {
 			textType = textType | SWT.PASSWORD;
 		}
 		Text t = new Text(main, textType);
@@ -67,8 +60,7 @@ public class StringPromptDialog extends TitleAreaDialog {
 		});
 	}
 
-
-    public String getText() {
-        return fieldVal;
-    }
+	public String getText() {
+		return fieldVal;
+	}
 }

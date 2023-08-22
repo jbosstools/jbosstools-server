@@ -24,7 +24,7 @@ public class RspUiActivator extends BaseUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.jboss.tools.rsp.ui"; //$NON-NLS-1$
-	
+
 	// Usage detection
 	public static final String USAGE_COMPONENT_NAME = "server"; //$NON-NLS-1$
 
@@ -33,8 +33,7 @@ public class RspUiActivator extends BaseUIPlugin {
 
 	private UsageEventType newServerEventType;
 	private UsageEventType newRemoteServerEventType;
-	
-	
+
 	/**
 	 * The constructor
 	 */
@@ -43,12 +42,14 @@ public class RspUiActivator extends BaseUIPlugin {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
+	 * 
+	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.
+	 * BundleContext)
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		
+
 //		newServerEventType = new UsageEventType(USAGE_COMPONENT_NAME, UsageEventType.getVersion(ASWTPToolsPlugin.this), 
 //				null, UsageEventType.NEW_ACTION, Messages.UsageEventTypeServerIDLabelDescription, 
 //				Messages.UsageEventTypeServerIDLabelDescription);
@@ -57,7 +58,9 @@ public class RspUiActivator extends BaseUIPlugin {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
+	 * 
+	 * @see
+	 * org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
@@ -73,30 +76,28 @@ public class RspUiActivator extends BaseUIPlugin {
 		return plugin;
 	}
 
+	public static void log(IStatus status) {
+		getDefault().getLog().log(status);
+	}
 
-    public static void log(IStatus status) {
-        getDefault().getLog().log(status);
-    }
+	public static void log(int severity, String message, Throwable e) {
+		log(new Status(severity, PLUGIN_ID, 0, message, e));
+	}
 
-    public static void log(int severity, String message, Throwable e) {
-        log(new Status(severity, PLUGIN_ID, 0, message, e));
-    }
-    
+	public static void log(Throwable e) {
+		log(e.getMessage(), e);
+	}
 
-    public static void log(Throwable e) {
-    	log(e.getMessage(), e);
-    }
-
-    public static void log(String message, Throwable e) {
-        log(IStatus.ERROR, message, e);
-    }
+	public static void log(String message, Throwable e) {
+		log(IStatus.ERROR, message, e);
+	}
 
 	/**
-	 * Get the IPluginLog for this plugin. This method 
-	 * helps to make logging easier, for example:
+	 * Get the IPluginLog for this plugin. This method helps to make logging easier,
+	 * for example:
 	 * 
-	 *     FoundationCorePlugin.pluginLog().logError(etc)
-	 *  
+	 * FoundationCorePlugin.pluginLog().logError(etc)
+	 * 
 	 * @return IPluginLog object
 	 */
 	public static IPluginLog pluginLog() {
@@ -105,6 +106,7 @@ public class RspUiActivator extends BaseUIPlugin {
 
 	/**
 	 * Get a status factory for this plugin
+	 * 
 	 * @return status factory
 	 */
 	public static StatusFactory statusFactory() {
@@ -114,7 +116,7 @@ public class RspUiActivator extends BaseUIPlugin {
 	protected BaseUISharedImages createSharedImages() {
 		return new RspSharedImages(getBundle());
 	}
-	
+
 	private static class RspSharedImages extends BaseUISharedImages {
 		public RspSharedImages(Bundle pluginBundle) {
 			super(pluginBundle);
@@ -139,4 +141,3 @@ public class RspUiActivator extends BaseUIPlugin {
 	}
 
 }
-	

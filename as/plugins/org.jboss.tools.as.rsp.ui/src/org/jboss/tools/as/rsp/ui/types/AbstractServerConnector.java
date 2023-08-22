@@ -91,7 +91,7 @@ public abstract class AbstractServerConnector {
 	protected Image loadIcon(String id) {
 		return RspUiActivator.getDefault().getSharedImages().image(id);
 	}
-	
+
 	protected IServerIconProvider createIconProvider() {
 		return new IServerIconProvider() {
 			@Override

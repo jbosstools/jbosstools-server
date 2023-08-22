@@ -16,10 +16,11 @@ import org.eclipse.swt.widgets.Display;
  * Simple util to run stuff in UI thread
  */
 public class UIHelper {
-    public static void executeInUI(Runnable runnable) {
-        Display.getDefault().asyncExec(runnable);
-    }
-    public static void executeInUISync(Runnable runnable) {
-        Display.getDefault().syncExec(runnable);
-    }
+	public static void executeInUI(Runnable runnable) {
+		Display.getDefault().asyncExec(runnable);
+	}
+
+	public static void executeInUISync(Runnable runnable) {
+		Display.getDefault().syncExec(runnable);
+	}
 }

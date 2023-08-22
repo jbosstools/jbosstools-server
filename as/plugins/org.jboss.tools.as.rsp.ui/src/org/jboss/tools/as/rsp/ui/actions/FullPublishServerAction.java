@@ -22,5 +22,5 @@ public class FullPublishServerAction extends IncrementalPublishServerAction {
 	protected void singleSelectionActionPerformed(Object selected) {
 		singleSelectionActionPerformed(selected, ServerManagementAPIConstants.PUBLISH_FULL);
 	}
-	
+
 }

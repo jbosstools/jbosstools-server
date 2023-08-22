@@ -24,61 +24,62 @@ public class DownloadRspAction extends AbstractTreeAction {
 		super(provider, "Download / Update RSP");
 	}
 
-    @Override
-    protected boolean isEnabled(Object[] o2) {
-        Object o = (o2 != null && o2.length == 1 ? o2[0] : null);
-        boolean isRSP = o instanceof IRsp;
-        if( !isRSP )
-            return false;
+	@Override
+	protected boolean isEnabled(Object[] o2) {
+		Object o = (o2 != null && o2.length == 1 ? o2[0] : null);
+		boolean isRSP = o instanceof IRsp;
+		if (!isRSP)
+			return false;
 
-        boolean downloadMissing = ((IRsp)o).getState() == IRspCore.IJServerState.MISSING;
-        if( downloadMissing )
-            return true;
+		boolean downloadMissing = ((IRsp) o).getState() == IRspCore.IJServerState.MISSING;
+		if (downloadMissing)
+			return true;
 
-        IRsp server = (IRsp)o;
-        String installed = server.getInstalledVersion();
-        String latest = server.getLatestVersion();
-        if( server.getLatestVersion() == null)
-            return false;
+		IRsp server = (IRsp) o;
+		String installed = server.getInstalledVersion();
+		String latest = server.getLatestVersion();
+		if (server.getLatestVersion() == null)
+			return false;
 
-        if( !server.exists() || installed == null ||
-                VersionComparatorUtil.isGreaterThan(latest, installed.trim())) {
-            return true;
-        }
+		if (!server.exists() || installed == null || VersionComparatorUtil.isGreaterThan(latest, installed.trim())) {
+			return true;
+		}
 
-        return false;
-    }
-    protected boolean isVisible(Object[] o) {
-        return safeSingleItemClass(o, IRsp.class);
-    }
+		return false;
+	}
 
-    @Override
-    protected void singleSelectionActionPerformed(Object selected) {
-        if( selected instanceof IRsp) {
-            IRsp server = (IRsp)selected;
-            String installed = server.getInstalledVersion();
-            String latest = server.getLatestVersion();
-            if( !server.exists() || installed == null || VersionComparatorUtil.isGreaterThan(latest, installed.trim())) {
-                String home = server.getRspType().getServerHome();
-                new Thread("Updating RSP " + server.getRspType().getName()) {
-                    public void run() {
-                        deleteDirectory(RspTypeImpl.getServerTypeInstallLocation(server.getRspType()));
+	protected boolean isVisible(Object[] o) {
+		return safeSingleItemClass(o, IRsp.class);
+	}
+
+	@Override
+	protected void singleSelectionActionPerformed(Object selected) {
+		if (selected instanceof IRsp) {
+			IRsp server = (IRsp) selected;
+			String installed = server.getInstalledVersion();
+			String latest = server.getLatestVersion();
+			if (!server.exists() || installed == null
+					|| VersionComparatorUtil.isGreaterThan(latest, installed.trim())) {
+				String home = server.getRspType().getServerHome();
+				new Thread("Updating RSP " + server.getRspType().getName()) {
+					public void run() {
+						deleteDirectory(RspTypeImpl.getServerTypeInstallLocation(server.getRspType()));
 //                        TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_DOWNLOAD_RSP,
 //                                server.getRspType().getId(), (Status)null, null, new String[]{"version"}, new String[]{latest});
-                        server.download();
-                    }
-                }.start();
-            }
-        }
-    }
+						server.download();
+					}
+				}.start();
+			}
+		}
+	}
 
-    boolean deleteDirectory(File directoryToBeDeleted) {
-        File[] allContents = directoryToBeDeleted.listFiles();
-        if (allContents != null) {
-            for (File file : allContents) {
-                deleteDirectory(file);
-            }
-        }
-        return directoryToBeDeleted.delete();
-    }
+	boolean deleteDirectory(File directoryToBeDeleted) {
+		File[] allContents = directoryToBeDeleted.listFiles();
+		if (allContents != null) {
+			for (File file : allContents) {
+				deleteDirectory(file);
+			}
+		}
+		return directoryToBeDeleted.delete();
+	}
 }

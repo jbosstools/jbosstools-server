@@ -19,32 +19,36 @@ import org.jboss.tools.as.rsp.ui.model.impl.RspCore;
 
 public class RSPNavigator extends CommonNavigator implements IRspCoreChangeListener {
 	public static final String VIEW_ID = "org.jboss.tools.as.rsp.ui.internal.views.navigator.RSPNavigator"; //$NON-NLS-1$
+
 	public RSPNavigator() {
 		super();
 		RspCore.getDefault().addChangeListener(this);
 	}
+
 	protected IAdaptable getInitialInput() {
 		return this;
 	}
+
 	public void createPartControl(Composite aParent) {
 		fillActionBars();
 		super.createPartControl(aParent);
 	}
-	
+
 	public void fillActionBars() {
 //	    getViewSite().getActionBars().getToolBarManager().add(new NewConnectionAction());
 //	    getViewSite().getActionBars().getToolBarManager().add(new Separator());
 //	    getViewSite().getActionBars().updateActionBars();
 	}
-	
-    public String getContributorId() {
-        return VIEW_ID;
-    }
+
+	public String getContributorId() {
+		return VIEW_ID;
+	}
+
 	@Override
 	public void modelChanged(Object item) {
 		Display.getDefault().asyncExec(() -> {
-			//System.out.println("Refreshing " + item);
-			getCommonViewer().refresh(item);	
+			// System.out.println("Refreshing " + item);
+			getCommonViewer().refresh(item);
 		});
 	}
 }

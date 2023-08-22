@@ -11,8 +11,8 @@
 package org.jboss.tools.as.rsp.ui.dialogs;
 
 public interface IWorkflowItemListener {
-    /**
-     *     The panel has been updated, ie, user has filled in a selection or text
-      */
-    public void panelChanged();
+	/**
+	 * The panel has been updated, ie, user has filled in a selection or text
+	 */
+	public void panelChanged();
 }

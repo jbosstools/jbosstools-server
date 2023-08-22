@@ -24,64 +24,64 @@ import org.jboss.tools.rsp.api.dao.StopServerAttributes;
 
 public class TerminateServerAction extends AbstractTreeAction {
 	private static final String ERROR_TERMINATE_SERVER = "Error terminating server";
-    public TerminateServerAction(ISelectionProvider provider) {
+
+	public TerminateServerAction(ISelectionProvider provider) {
 		super(provider, "Terminate Server");
 	}
 
-    @Override
-    protected boolean isVisible(Object[] o) {
-        return safeSingleItemClass(o, ServerStateWrapper.class);
-    }
+	@Override
+	protected boolean isVisible(Object[] o) {
+		return safeSingleItemClass(o, ServerStateWrapper.class);
+	}
 
-    @Override
-    protected boolean isEnabled(Object[] o) {
-        if( o != null && o.length > 0 && o[0] instanceof ServerStateWrapper) {
-            int state = ((ServerStateWrapper)o[0]).getServerState().getState();
-            return state != ServerManagementAPIConstants.STATE_STOPPED;
-        }
-        return false;
-    }
+	@Override
+	protected boolean isEnabled(Object[] o) {
+		if (o != null && o.length > 0 && o[0] instanceof ServerStateWrapper) {
+			int state = ((ServerStateWrapper) o[0]).getServerState().getState();
+			return state != ServerManagementAPIConstants.STATE_STOPPED;
+		}
+		return false;
+	}
 
-    @Override
-    protected void singleSelectionActionPerformed(Object selected) {
-        if( selected instanceof ServerStateWrapper) {
-            ServerStateWrapper sel = (ServerStateWrapper)selected;
-            RspClientLauncher client = RspCore.getDefault().getClient(sel.getRsp());
-            StopServerAttributes ssa = new StopServerAttributes(sel.getServerState().getServer().getId(), true);
-            try {
-                Status stat = client.getServerProxy().stopServerAsync(ssa).get();
+	@Override
+	protected void singleSelectionActionPerformed(Object selected) {
+		if (selected instanceof ServerStateWrapper) {
+			ServerStateWrapper sel = (ServerStateWrapper) selected;
+			RspClientLauncher client = RspCore.getDefault().getClient(sel.getRsp());
+			StopServerAttributes ssa = new StopServerAttributes(sel.getServerState().getServer().getId(), true);
+			try {
+				Status stat = client.getServerProxy().stopServerAsync(ssa).get();
 //                TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_SERVER_STOP, serverType, stat, null,
 //                        new String[]{"force"}, new String[]{Boolean.toString(true)});
-                if( !stat.isOK()) {
-                    statusError(stat, ERROR_TERMINATE_SERVER);
-                }
-            } catch (InterruptedException | ExecutionException ex) {
+				if (!stat.isOK()) {
+					statusError(stat, ERROR_TERMINATE_SERVER);
+				}
+			} catch (InterruptedException | ExecutionException ex) {
 //                TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_SERVER_STOP, serverType, null, ex,
 //                        new String[]{"force"}, new String[]{Boolean.toString(true)});
-                apiError(ex, ERROR_TERMINATE_SERVER);
-            }
-        }
-    }
-    
+				apiError(ex, ERROR_TERMINATE_SERVER);
+			}
+		}
+	}
 
-    public static void terminateServer(IRsp rsp, String id) throws DebugException {
+	public static void terminateServer(IRsp rsp, String id) throws DebugException {
 		new Thread("Terminating RSP Server: " + id) {
 			public void run() {
 				RspClientLauncher client = RspCore.getDefault().getClient(rsp);
-	            StopServerAttributes ssa = new StopServerAttributes(id, true);
-	            try {
-	                Status stat = client.getServerProxy().stopServerAsync(ssa).get();
+				StopServerAttributes ssa = new StopServerAttributes(id, true);
+				try {
+					Status stat = client.getServerProxy().stopServerAsync(ssa).get();
 //	                TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_SERVER_STOP, serverType, stat, null,
 //	                        new String[]{"force"}, new String[]{Boolean.toString(true)});
-	                if( !stat.isOK()) {
-	                    statusError(stat, ERROR_TERMINATE_SERVER);
-	                }
-	            } catch (InterruptedException | ExecutionException ex) {
+					if (!stat.isOK()) {
+						statusError(stat, ERROR_TERMINATE_SERVER);
+					}
+				} catch (InterruptedException | ExecutionException ex) {
 //	                TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_SERVER_STOP, serverType, null, ex,
 //	                        new String[]{"force"}, new String[]{Boolean.toString(true)});
-	                apiError(ex, ERROR_TERMINATE_SERVER);
-	            }
+					apiError(ex, ERROR_TERMINATE_SERVER);
+				}
 			}
 		}.start();
-    }
+	}
 }

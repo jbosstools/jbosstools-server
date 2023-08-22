@@ -20,17 +20,17 @@ import org.jboss.tools.rsp.api.dao.WorkflowResponseItem;
 
 public class WorkflowItemsPanel {
 
-  private WorkflowResponseItem[] items;
-  private String title;
-  private Map<String, Object> values;
-	public WorkflowItemsPanel(Composite parent, int style,
-			WorkflowResponseItem[] items, String title,
+	private WorkflowResponseItem[] items;
+	private String title;
+	private Map<String, Object> values;
+
+	public WorkflowItemsPanel(Composite parent, int style, WorkflowResponseItem[] items, String title,
 			Map<String, Object> values, IWorkflowItemListener listener) {
 		this.items = items;
 		this.title = title;
 		this.values = values;
 		Group g = new Group(parent, style);
-		g.setLayout(new GridLayout(1,true));
+		g.setLayout(new GridLayout(1, true));
 		if (title != null) {
 			g.setText(title);
 		}

@@ -191,7 +191,7 @@ public class RemoteServerProcess implements IProcess {
 
 	public void setComplete(boolean b) {
 		this.complete = b;
-		if( b ) {
+		if (b) {
 			fireTerminateEvent();
 		}
 	}

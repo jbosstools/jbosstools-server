@@ -14,17 +14,19 @@ package org.jboss.tools.as.rsp.ui.model;
  * Controls the state for an RSP
  */
 public interface IRspStateController {
-    /**
-     * Start the RSP and alert the callback to changes in the state
-     * @param callback
-     * @return
-     */
-    public ServerConnectionInfo start(IRspStartCallback callback) throws StartupFailedException;
+	/**
+	 * Start the RSP and alert the callback to changes in the state
+	 * 
+	 * @param callback
+	 * @return
+	 */
+	public ServerConnectionInfo start(IRspStartCallback callback) throws StartupFailedException;
 
-    /**
-     * Terminate the rsp and alert the callback to changes in the state
-     * @param callback
-     */
-    public void terminate(IRspStartCallback callback);
+	/**
+	 * Terminate the rsp and alert the callback to changes in the state
+	 * 
+	 * @param callback
+	 */
+	public void terminate(IRspStartCallback callback);
 
 }

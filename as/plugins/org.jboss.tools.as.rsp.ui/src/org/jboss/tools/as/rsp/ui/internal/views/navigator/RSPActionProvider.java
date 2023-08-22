@@ -15,7 +15,6 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
-import org.eclipse.ui.actions.SelectionProviderAction;
 import org.eclipse.ui.navigator.CommonActionProvider;
 import org.eclipse.ui.navigator.CommonViewer;
 import org.eclipse.ui.navigator.ICommonActionExtensionSite;
@@ -49,26 +48,25 @@ public class RSPActionProvider extends CommonActionProvider {
 	private CreateServerAction createServerAction;
 	private DownloadServerAction downloadServerAction;
 	private DeleteServerAction deleteServerAction;
-	
+
 	private StartServerAction startServerAction;
 	private RestartServerAction restartServerAction;
 	private StartServerDebugAction startDebugServerAction;
 	private RestartServerDebugAction restartDebugServerAction;
-	
-	
+
 	private FullPublishServerAction fullPublishServerAction;
 	private IncrementalPublishServerAction incrementalPublishServerAction;
 	private StopServerAction stopServerAction;
 	private TerminateServerAction terminateServerAction;
-	
+
 	private AddDeploymentAction addDeploymentAction;
 	private RemoveDeploymentAction removeDeploymentAction;
-	
+
 	private EditServerAction editServerAction;
 	private ServerActionAction serverActionAction;
-	
+
 	public RSPActionProvider() {
-			super();
+		super();
 	}
 
 	public void init(ICommonActionExtensionSite aSite) {
@@ -112,7 +110,7 @@ public class RSPActionProvider extends CommonActionProvider {
 		if (site instanceof ICommonViewerWorkbenchSite) {
 			ICommonViewerWorkbenchSite wsSite = (ICommonViewerWorkbenchSite) site;
 			selection = (IStructuredSelection) wsSite.getSelectionProvider().getSelection();
-			
+
 			optionallyAdd(menu, downloadRspAction);
 			optionallyAdd(menu, startRspAction);
 			optionallyAdd(menu, stopRspAction);
@@ -140,33 +138,9 @@ public class RSPActionProvider extends CommonActionProvider {
 	}
 
 	private void optionallyAdd(IMenuManager menu, AbstractTreeAction action) {
-		if( action.getShouldShow()) {
+		if (action.getShouldShow()) {
 			menu.add(action);
 		}
 		action.setEnabled(action.getShouldEnable());
-	}
-	
-	public class ExampleAction extends SelectionProviderAction {
-		private IStructuredSelection previousSelection;
-
-		public ExampleAction(ISelectionProvider sp) {
-			super(sp, "Action Name");
-			selectionChanged(sp.getSelection());
-		}
-
-		public void selectionChanged(IStructuredSelection sel) {
-			if (sel.size() == 0 || sel.size() > 1) {
-				setEnabled(false);
-				return;
-			}
-			setEnabled(true);
-			super.selectionChanged(sel);
-		}
-
-
-		@Override
-		public void run() {
-			// do nothing
-		}
 	}
 }

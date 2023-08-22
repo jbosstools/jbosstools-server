@@ -24,55 +24,56 @@ import org.jboss.tools.rsp.api.dao.Status;
 
 public class RemoveDeploymentAction extends AbstractTreeAction {
 	private static final String ERROR_REMOVING_DEPLOYMENT = "Error removing deployment";
-    public RemoveDeploymentAction(ISelectionProvider provider) {
+
+	public RemoveDeploymentAction(ISelectionProvider provider) {
 		super(provider, "Remove Deployment");
 	}
 
+	@Override
+	protected boolean isVisible(Object[] o) {
+		return safeSingleItemClass(o, DeployableStateWrapper.class);
+	}
 
-    @Override
-    protected boolean isVisible(Object[] o) {
-        return safeSingleItemClass(o, DeployableStateWrapper.class);
-    }
+	@Override
+	protected boolean isEnabled(Object[] o) {
+		return safeSingleItemClass(o, DeployableStateWrapper.class);
+	}
 
-    @Override
-    protected boolean isEnabled(Object[] o) {
-        return safeSingleItemClass(o, DeployableStateWrapper.class);
-    }
+	@Override
+	protected void singleSelectionActionPerformed(Object selected) {
+		if (selected instanceof DeployableStateWrapper) {
+			DeployableStateWrapper wrap = (DeployableStateWrapper) selected;
+			ServerDeployableReference sdr = getServerDeployableReference(wrap);
+			IRsp rsp = wrap.getServerState().getRsp();
+			RSPServer rspServer = RspCore.getDefault().getClient(rsp).getServerProxy();
+			new Thread("Remove Deployment") {
+				public void run() {
+					actionPerformedThread(rspServer, sdr);
+				}
+			}.start();
+		}
+	}
 
-    @Override
-    protected void singleSelectionActionPerformed(Object selected) {
-        if( selected instanceof DeployableStateWrapper) {
-            DeployableStateWrapper wrap = (DeployableStateWrapper)selected;
-            ServerDeployableReference sdr = getServerDeployableReference(wrap);
-            IRsp rsp = wrap.getServerState().getRsp();
-            RSPServer rspServer = RspCore.getDefault().getClient(rsp).getServerProxy();
-            new Thread("Remove Deployment") {
-                public void run() {
-                    actionPerformedThread(rspServer, sdr);
-                }
-            }.start();
-        }
-    }
+	protected void actionPerformedThread(RSPServer rspServer, ServerDeployableReference sdr) {
+		try {
+			Status stat = rspServer.removeDeployable(sdr).get();
+			// TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_DEPLOYMENT_REMOVE,
+			// sdr.getServer().getType().getId(), stat);
+			if (stat == null || !stat.isOK()) {
+				statusError(stat, ERROR_REMOVING_DEPLOYMENT);
+			}
+		} catch (InterruptedException | ExecutionException ex) {
+			// TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_DEPLOYMENT_REMOVE,
+			// sdr.getServer().getType().getId(), ex);
+			apiError(ex, ERROR_REMOVING_DEPLOYMENT);
+		}
+	}
 
-    protected void actionPerformedThread(RSPServer rspServer, ServerDeployableReference sdr) {
-        try {
-            Status stat = rspServer.removeDeployable(sdr).get();
-            //TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_DEPLOYMENT_REMOVE, sdr.getServer().getType().getId(), stat);
-            if( stat == null || !stat.isOK()) {
-                statusError(stat, ERROR_REMOVING_DEPLOYMENT);
-            }
-        } catch (InterruptedException | ExecutionException ex) {
-            //TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_DEPLOYMENT_REMOVE, sdr.getServer().getType().getId(), ex);
-            apiError(ex, ERROR_REMOVING_DEPLOYMENT);
-        }
-    }
-
-    public static ServerDeployableReference getServerDeployableReference(DeployableStateWrapper wrap) {
-        DeployableState ds = wrap.getDeployableState();
-        ServerHandle sh = wrap.getServerState().getServerState().getServer();
-        ServerDeployableReference sdr = new ServerDeployableReference(sh, ds.getReference());
-        return sdr;
-    }
-
+	public static ServerDeployableReference getServerDeployableReference(DeployableStateWrapper wrap) {
+		DeployableState ds = wrap.getDeployableState();
+		ServerHandle sh = wrap.getServerState().getServerState().getServer();
+		ServerDeployableReference sdr = new ServerDeployableReference(sh, ds.getReference());
+		return sdr;
+	}
 
 }

@@ -16,30 +16,31 @@ import org.jboss.tools.as.rsp.ui.model.IRspCore;
 import org.jboss.tools.as.rsp.ui.model.impl.RspCore;
 
 public class StopRspAction extends AbstractTreeAction {
-    public StopRspAction(ISelectionProvider provider) {
+	public StopRspAction(ISelectionProvider provider) {
 		super(provider, "Stop RSP");
 	}
 
 	@Override
-    protected boolean isVisible(Object[] o) {
-        return safeSingleItemClass(o, IRsp.class);
-    }
+	protected boolean isVisible(Object[] o) {
+		return safeSingleItemClass(o, IRsp.class);
+	}
 
-    @Override
-    protected boolean isEnabled(Object[] o) {
-        return safeSingleItemClass(o, IRsp.class) && ((IRsp)o[0]).getState() != IRspCore.IJServerState.STOPPED && ((IRsp)o[0]).exists();
-    }
+	@Override
+	protected boolean isEnabled(Object[] o) {
+		return safeSingleItemClass(o, IRsp.class) && ((IRsp) o[0]).getState() != IRspCore.IJServerState.STOPPED
+				&& ((IRsp) o[0]).exists();
+	}
 
-    @Override
-    protected void singleSelectionActionPerformed(Object selected) {
-        if( selected instanceof IRsp) {
-            IRsp server = (IRsp)selected;
-            new Thread("Stop RSP Server: " + server.getRspType().getId()) {
-                public void run() {
-                    RspCore.getDefault().stopServer(server);
-                }
-            }.start();
-        }
-    }
+	@Override
+	protected void singleSelectionActionPerformed(Object selected) {
+		if (selected instanceof IRsp) {
+			IRsp server = (IRsp) selected;
+			new Thread("Stop RSP Server: " + server.getRspType().getId()) {
+				public void run() {
+					RspCore.getDefault().stopServer(server);
+				}
+			}.start();
+		}
+	}
 
 }

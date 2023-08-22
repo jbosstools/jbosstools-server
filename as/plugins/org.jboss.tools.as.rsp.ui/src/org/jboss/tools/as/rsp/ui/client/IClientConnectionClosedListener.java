@@ -14,5 +14,5 @@ package org.jboss.tools.as.rsp.ui.client;
  * Listen to client close events
  */
 public interface IClientConnectionClosedListener {
-    public void connectionClosed();
+	public void connectionClosed();
 }

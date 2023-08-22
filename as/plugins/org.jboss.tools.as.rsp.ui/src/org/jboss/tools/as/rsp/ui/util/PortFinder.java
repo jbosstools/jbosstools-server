@@ -18,44 +18,44 @@ import java.net.Socket;
  * Find a free port in some range
  */
 public class PortFinder {
-    public static int nextFreePort(int from, int to) {
-        for( int port = from; port < to; port ++ ) {
-            if (isLocalPortFree(port)) {
-                return port;
-            }
-        }
-        return -1;
-    }
+	public static int nextFreePort(int from, int to) {
+		for (int port = from; port < to; port++) {
+			if (isLocalPortFree(port)) {
+				return port;
+			}
+		}
+		return -1;
+	}
 
-    public static boolean isLocalPortFree(int port) {
-        try {
-            new ServerSocket(port).close();
-            return true;
-        } catch (IOException e) {
-            return false;
-        }
-    }
+	public static boolean isLocalPortFree(int port) {
+		try {
+			new ServerSocket(port).close();
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
+	}
 
-    public static void waitForServer(String host, int port, int timeout) {
-        long endTime = System.currentTimeMillis() + timeout;
-        while( System.currentTimeMillis() < endTime) {
-            try {
-                Socket socket = new Socket(host, port);
-                try {
-                    socket.close();
-                } catch (IOException ioe) {
-                    // ignore
-                }
-                return;
-            } catch (IOException e) {
-                // ignore
-            }
-            try {
-                Thread.sleep(200);
-            } catch(InterruptedException ie) {
-                Thread.interrupted();
-                return;
-            }
-        }
-    }
+	public static void waitForServer(String host, int port, int timeout) {
+		long endTime = System.currentTimeMillis() + timeout;
+		while (System.currentTimeMillis() < endTime) {
+			try {
+				Socket socket = new Socket(host, port);
+				try {
+					socket.close();
+				} catch (IOException ioe) {
+					// ignore
+				}
+				return;
+			} catch (IOException e) {
+				// ignore
+			}
+			try {
+				Thread.sleep(200);
+			} catch (InterruptedException ie) {
+				Thread.interrupted();
+				return;
+			}
+		}
+	}
 }

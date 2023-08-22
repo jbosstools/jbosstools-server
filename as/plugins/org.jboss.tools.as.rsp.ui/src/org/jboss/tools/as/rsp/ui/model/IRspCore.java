@@ -10,117 +10,137 @@
  ******************************************************************************/
 package org.jboss.tools.as.rsp.ui.model;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.jboss.tools.as.rsp.ui.client.RspClientLauncher;
 import org.jboss.tools.as.rsp.ui.model.impl.RspImpl;
-import org.jboss.tools.rsp.api.dao.*;
-
-import java.util.concurrent.CompletableFuture;
+import org.jboss.tools.rsp.api.dao.JobHandle;
+import org.jboss.tools.rsp.api.dao.JobProgress;
+import org.jboss.tools.rsp.api.dao.JobRemoved;
+import org.jboss.tools.rsp.api.dao.MessageBoxNotification;
+import org.jboss.tools.rsp.api.dao.ServerHandle;
+import org.jboss.tools.rsp.api.dao.ServerProcess;
+import org.jboss.tools.rsp.api.dao.ServerProcessOutput;
+import org.jboss.tools.rsp.api.dao.ServerState;
+import org.jboss.tools.rsp.api.dao.StringPrompt;
 
 /**
  * Represents the primary model for the UI tooling
  */
 public interface IRspCore {
 
-    /*
-    Events from clients
-     */
-    void jobAdded(IRsp rsp, JobHandle jobHandle);
+	/*
+	 * Events from clients
+	 */
+	void jobAdded(IRsp rsp, JobHandle jobHandle);
 
-    void jobRemoved(IRsp rsp, JobRemoved jobRemoved);
+	void jobRemoved(IRsp rsp, JobRemoved jobRemoved);
 
-    void jobChanged(IRsp rsp, JobProgress jobProgress);
+	void jobChanged(IRsp rsp, JobProgress jobProgress);
 
-    CompletableFuture<String> promptString(IRsp rsp, StringPrompt stringPrompt);
+	CompletableFuture<String> promptString(IRsp rsp, StringPrompt stringPrompt);
 
-    void messageBox(IRsp rsp, MessageBoxNotification messageBoxNotification);
+	void messageBox(IRsp rsp, MessageBoxNotification messageBoxNotification);
 
-    void serverAdded(IRsp rsp, ServerHandle serverHandle);
+	void serverAdded(IRsp rsp, ServerHandle serverHandle);
 
-    void serverRemoved(IRsp rsp, ServerHandle serverHandle);
+	void serverRemoved(IRsp rsp, ServerHandle serverHandle);
 
-    void serverAttributesChanged(IRsp rsp, ServerHandle serverHandle);
+	void serverAttributesChanged(IRsp rsp, ServerHandle serverHandle);
 
-    void serverStateChanged(IRsp rsp, ServerState serverState);
+	void serverStateChanged(IRsp rsp, ServerState serverState);
 
-    void serverProcessCreated(IRsp rsp, ServerProcess serverProcess);
-    void serverProcessTerminated(IRsp rsp, ServerProcess serverProcess);
-    void serverProcessOutputAppended(IRsp rsp, ServerProcessOutput serverProcessOutput);
+	void serverProcessCreated(IRsp rsp, ServerProcess serverProcess);
 
+	void serverProcessTerminated(IRsp rsp, ServerProcess serverProcess);
 
-    public enum IJServerState {
-        MISSING,
-        STOPPING,
-        STOPPED,
-        STARTING,
-        STARTED
-    }
+	void serverProcessOutputAppended(IRsp rsp, ServerProcessOutput serverProcessOutput);
 
-    public void startServer(IRsp server);
-    public void stopServer(IRsp server);
-    public void stateUpdated(RspImpl rspServer);
+	public enum IJServerState {
+		MISSING, STOPPING, STOPPED, STARTING, STARTED
+	}
 
-    /**
-     * Some element in the tree has been updated.
-     * May be null. If null, update the root element
-     * @param o
-     */
-    public void modelUpdated(Object o);
+	public void startServer(IRsp server);
 
-    /**
-     * Add a listener to respond to model changes
-     * @param listener
-     */
-    public void addChangeListener(IRspCoreChangeListener listener);
-    /**
-     * Remove a listener to respond to model changes
-     * @param listener
-     */
-    public void removeChangeListener(IRspCoreChangeListener listener);
+	public void stopServer(IRsp server);
 
-    /**
-     * Get a list of all declared RSPs
-     * @return
-     */
-    public IRsp[] getRSPs();
+	public void stateUpdated(RspImpl rspServer);
 
-    /**
-     * Find the rsp with a specific id
-     * @param id
-     * @return
-     */
-    public IRsp findRsp(String id);
-    /**
-     * Find an RSP type by the given id
-     * @param id
-     * @return
-     */
-    public IRspType findRspType(String id);
+	/**
+	 * Some element in the tree has been updated. May be null. If null, update the
+	 * root element
+	 * 
+	 * @param o
+	 */
+	public void modelUpdated(Object o);
 
-    /**
-     * Get a list of servers defined inside a given rsp
-     * @param rsp
-     * @return
-     */
-    public ServerState[] getServersInRsp(IRsp rsp);
+	/**
+	 * Add a listener to respond to model changes
+	 * 
+	 * @param listener
+	 */
+	public void addChangeListener(IRspCoreChangeListener listener);
 
-    /**
-     * Find a specific server in the given rsp or null
-     * @param rsp
-     * @param serverId
-     * @return
-     */
-    public ServerState findServerInRsp(IRsp rsp, String serverId);
-    /**
-     * Get all currently-running jobs for the given RSP
-     * @param rsp
-     * @return
-     */
-    public JobProgress[] getJobs(IRsp rsp);
+	/**
+	 * Remove a listener to respond to model changes
+	 * 
+	 * @param listener
+	 */
+	public void removeChangeListener(IRspCoreChangeListener listener);
 
-    /**
-     * Get a client for the remote RSP which can make requests
-     * @param rsp
-     * @return
-     */
-    public RspClientLauncher getClient(IRsp rsp);
+	/**
+	 * Get a list of all declared RSPs
+	 * 
+	 * @return
+	 */
+	public IRsp[] getRSPs();
+
+	/**
+	 * Find the rsp with a specific id
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public IRsp findRsp(String id);
+
+	/**
+	 * Find an RSP type by the given id
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public IRspType findRspType(String id);
+
+	/**
+	 * Get a list of servers defined inside a given rsp
+	 * 
+	 * @param rsp
+	 * @return
+	 */
+	public ServerState[] getServersInRsp(IRsp rsp);
+
+	/**
+	 * Find a specific server in the given rsp or null
+	 * 
+	 * @param rsp
+	 * @param serverId
+	 * @return
+	 */
+	public ServerState findServerInRsp(IRsp rsp, String serverId);
+
+	/**
+	 * Get all currently-running jobs for the given RSP
+	 * 
+	 * @param rsp
+	 * @return
+	 */
+	public JobProgress[] getJobs(IRsp rsp);
+
+	/**
+	 * Get a client for the remote RSP which can make requests
+	 * 
+	 * @param rsp
+	 * @return
+	 */
+	public RspClientLauncher getClient(IRsp rsp);
 }

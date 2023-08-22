@@ -10,82 +10,83 @@
  ******************************************************************************/
 package org.jboss.tools.as.rsp.ui.client;
 
-import org.jboss.tools.as.rsp.ui.model.IRsp;
-import org.jboss.tools.rsp.api.RSPServer;
-import org.jboss.tools.rsp.api.SocketLauncher;
-
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import org.jboss.tools.as.rsp.ui.model.IRsp;
+import org.jboss.tools.rsp.api.RSPServer;
+import org.jboss.tools.rsp.api.SocketLauncher;
+
 /**
- * Launch a connection to a remote rsp instance and control
- * access to the remote API via the client
+ * Launch a connection to a remote rsp instance and control access to the remote
+ * API via the client
  */
 public class RspClientLauncher {
-    private ServerManagementClientImpl myClient;
-    private SocketLauncher<RSPServer> launcher;
-    private Socket socket;
-    private String host;
-    private int port;
-    private boolean connectionOpen = false;
-    private IClientConnectionClosedListener listener;
-    private IRsp rsp;
-    public RspClientLauncher(IRsp rsp, String host, int port) {
-        this.host = host;
-        this.port = port;
-        this.rsp = rsp;
-    }
+	private ServerManagementClientImpl myClient;
+	private SocketLauncher<RSPServer> launcher;
+	private Socket socket;
+	private String host;
+	private int port;
+	private boolean connectionOpen = false;
+	private IClientConnectionClosedListener listener;
+	private IRsp rsp;
 
-    public void launch() throws UnknownHostException, IOException {
-        // create the chat client
-        ServerManagementClientImpl client = new ServerManagementClientImpl(rsp);
-        // connect to the server
-        this.socket = new Socket(host, port);
-        // open a JSON-RPC connection for the opened socket
-        this.launcher = new SocketLauncher<>(client, RSPServer.class, socket);
-        //
-        // Start listening for incoming message.
-        // When the JSON-RPC connection is closed,
-        // e.g. the server is died,
-        // the client process should exit.
-        launcher.startListening().thenRun(() -> clientClosed());
-        // start the chat session with a remote chat server proxy
-        client.initialize(launcher.getRemoteProxy());
-        myClient = client;
-        connectionOpen = true;
-    }
+	public RspClientLauncher(IRsp rsp, String host, int port) {
+		this.host = host;
+		this.port = port;
+		this.rsp = rsp;
+	}
 
-    private void clientClosed() {
-        this.myClient = null;
-        connectionOpen = false;
-        if( listener != null )
-            listener.connectionClosed();
-    }
+	public void launch() throws UnknownHostException, IOException {
+		// create the chat client
+		ServerManagementClientImpl client = new ServerManagementClientImpl(rsp);
+		// connect to the server
+		this.socket = new Socket(host, port);
+		// open a JSON-RPC connection for the opened socket
+		this.launcher = new SocketLauncher<>(client, RSPServer.class, socket);
+		//
+		// Start listening for incoming message.
+		// When the JSON-RPC connection is closed,
+		// e.g. the server is died,
+		// the client process should exit.
+		launcher.startListening().thenRun(() -> clientClosed());
+		// start the chat session with a remote chat server proxy
+		client.initialize(launcher.getRemoteProxy());
+		myClient = client;
+		connectionOpen = true;
+	}
 
-    public void closeConnection() {
-        if( launcher != null ) {
-            launcher.close();
-        }
-    }
+	private void clientClosed() {
+		this.myClient = null;
+		connectionOpen = false;
+		if (listener != null)
+			listener.connectionClosed();
+	}
 
-    public ServerManagementClientImpl getClient() {
-        return this.myClient;
-    }
+	public void closeConnection() {
+		if (launcher != null) {
+			launcher.close();
+		}
+	}
 
-    public boolean isConnectionActive() {
-        return connectionOpen;
-    }
+	public ServerManagementClientImpl getClient() {
+		return this.myClient;
+	}
 
-    public RSPServer getServerProxy() {
-        if( myClient != null ) {
-            return myClient.getProxy();
-        }
-        return null;
-    }
+	public boolean isConnectionActive() {
+		return connectionOpen;
+	}
 
-    public void setListener(IClientConnectionClosedListener listener) {
-        this.listener = listener;
-    }
+	public RSPServer getServerProxy() {
+		if (myClient != null) {
+			return myClient.getProxy();
+		}
+		return null;
+	}
+
+	public void setListener(IClientConnectionClosedListener listener) {
+		this.listener = listener;
+	}
 
 }

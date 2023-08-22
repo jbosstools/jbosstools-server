@@ -13,21 +13,22 @@ package org.jboss.tools.as.rsp.ui.actions;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.jboss.tools.as.rsp.ui.client.RspClientLauncher;
 import org.jboss.tools.as.rsp.ui.internal.views.navigator.RSPContentProvider.ServerStateWrapper;
-import org.jboss.tools.as.rsp.ui.telemetry.TelemetryService;
 
 public class RestartServerDebugAction extends RestartServerAction {
 
 	public RestartServerDebugAction(ISelectionProvider provider) {
 		super(provider, "Restart Server (Debug)");
 	}
-    protected void startServer(ServerStateWrapper sel, RspClientLauncher client) {
-        StartServerDebugAction.startServerDebugModeInternal(sel, client);
-    }
-    protected void telemActionCalled(ServerStateWrapper sel) {
+
+	protected void startServer(ServerStateWrapper sel, RspClientLauncher client) {
+		StartServerDebugAction.startServerDebugModeInternal(sel, client);
+	}
+
+	protected void telemActionCalled(ServerStateWrapper sel) {
 //        String typeId = sel.getServerState().getServer().getType().getId();
 //        String[] keys = new String[]{"mode"};
 //        String[] vals = new String[]{"debug"};
 //        TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_SERVER_RESTART, typeId, null, null, keys, vals);
-    }
+	}
 
 }

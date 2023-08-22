@@ -10,106 +10,116 @@
  ******************************************************************************/
 package org.jboss.tools.as.rsp.ui.client;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.jboss.tools.as.rsp.ui.model.IRsp;
 import org.jboss.tools.rsp.api.RSPClient;
 import org.jboss.tools.rsp.api.RSPServer;
-import org.jboss.tools.rsp.api.dao.*;
-
-import java.util.concurrent.CompletableFuture;
+import org.jboss.tools.rsp.api.dao.DiscoveryPath;
+import org.jboss.tools.rsp.api.dao.JobHandle;
+import org.jboss.tools.rsp.api.dao.JobProgress;
+import org.jboss.tools.rsp.api.dao.JobRemoved;
+import org.jboss.tools.rsp.api.dao.MessageBoxNotification;
+import org.jboss.tools.rsp.api.dao.ServerHandle;
+import org.jboss.tools.rsp.api.dao.ServerProcess;
+import org.jboss.tools.rsp.api.dao.ServerProcessOutput;
+import org.jboss.tools.rsp.api.dao.ServerState;
+import org.jboss.tools.rsp.api.dao.StringPrompt;
 
 /**
  * Make requests to, and receive events from, the remote rsp
  */
 public class ServerManagementClientImpl implements RSPClient {
-    private final IRsp uiRspServer;
-    private RSPServer server;
-    public ServerManagementClientImpl(IRsp rspUi) {
-        this.uiRspServer = rspUi;
-    }
+	private final IRsp uiRspServer;
+	private RSPServer server;
 
-    public void initialize(RSPServer server) {
-        this.server = server;
-    }
+	public ServerManagementClientImpl(IRsp rspUi) {
+		this.uiRspServer = rspUi;
+	}
 
-    public RSPServer getProxy() {
-        return server;
-    }
+	public void initialize(RSPServer server) {
+		this.server = server;
+	}
 
-    private static interface MyRunnable {
-        public void run();
-    }
+	public RSPServer getProxy() {
+		return server;
+	}
 
-    @Override
-    public CompletableFuture<String> promptString(StringPrompt stringPrompt) {
-        return uiRspServer.getModel().promptString(uiRspServer, stringPrompt);
-    }
+	private static interface MyRunnable {
+		public void run();
+	}
 
-    private void async(MyRunnable run) {
-        new Thread(() -> run.run()).start();
-    }
+	@Override
+	public CompletableFuture<String> promptString(StringPrompt stringPrompt) {
+		return uiRspServer.getModel().promptString(uiRspServer, stringPrompt);
+	}
 
-    @Override
-    public void jobAdded(JobHandle jobHandle) {
-        async(()->uiRspServer.getModel().jobAdded(uiRspServer, jobHandle));
-    }
+	private void async(MyRunnable run) {
+		new Thread(() -> run.run()).start();
+	}
 
-    @Override
-    public void jobRemoved(JobRemoved jobRemoved) {
-        async(()->uiRspServer.getModel().jobRemoved(uiRspServer, jobRemoved));
-    }
+	@Override
+	public void jobAdded(JobHandle jobHandle) {
+		async(() -> uiRspServer.getModel().jobAdded(uiRspServer, jobHandle));
+	}
 
-    @Override
-    public void jobChanged(JobProgress jobProgress) {
-        async(()->uiRspServer.getModel().jobChanged(uiRspServer, jobProgress));
-    }
+	@Override
+	public void jobRemoved(JobRemoved jobRemoved) {
+		async(() -> uiRspServer.getModel().jobRemoved(uiRspServer, jobRemoved));
+	}
 
-    @Override
-    public void messageBox(MessageBoxNotification messageBoxNotification) {
-        async(()->uiRspServer.getModel().messageBox(uiRspServer, messageBoxNotification));
-    }
+	@Override
+	public void jobChanged(JobProgress jobProgress) {
+		async(() -> uiRspServer.getModel().jobChanged(uiRspServer, jobProgress));
+	}
 
-    @Override
-    public void discoveryPathAdded(DiscoveryPath discoveryPath) {
-        // Ignore, not worth showing / displaying
-    }
+	@Override
+	public void messageBox(MessageBoxNotification messageBoxNotification) {
+		async(() -> uiRspServer.getModel().messageBox(uiRspServer, messageBoxNotification));
+	}
 
-    @Override
-    public void discoveryPathRemoved(DiscoveryPath discoveryPath) {
-        // Ignore, not worth showing / displaying
-    }
+	@Override
+	public void discoveryPathAdded(DiscoveryPath discoveryPath) {
+		// Ignore, not worth showing / displaying
+	}
 
-    @Override
-    public void serverAdded(ServerHandle serverHandle) {
-        async(()->uiRspServer.getModel().serverAdded(uiRspServer, serverHandle));
-    }
+	@Override
+	public void discoveryPathRemoved(DiscoveryPath discoveryPath) {
+		// Ignore, not worth showing / displaying
+	}
 
-    @Override
-    public void serverRemoved(ServerHandle serverHandle) {
-        async(()->uiRspServer.getModel().serverRemoved(uiRspServer, serverHandle));
-    }
+	@Override
+	public void serverAdded(ServerHandle serverHandle) {
+		async(() -> uiRspServer.getModel().serverAdded(uiRspServer, serverHandle));
+	}
 
-    @Override
-    public void serverAttributesChanged(ServerHandle serverHandle) {
-        async(()->uiRspServer.getModel().serverAttributesChanged(uiRspServer, serverHandle));
-    }
+	@Override
+	public void serverRemoved(ServerHandle serverHandle) {
+		async(() -> uiRspServer.getModel().serverRemoved(uiRspServer, serverHandle));
+	}
 
-    @Override
-    public void serverStateChanged(ServerState serverState) {
-        async(()->uiRspServer.getModel().serverStateChanged(uiRspServer, serverState));
-    }
+	@Override
+	public void serverAttributesChanged(ServerHandle serverHandle) {
+		async(() -> uiRspServer.getModel().serverAttributesChanged(uiRspServer, serverHandle));
+	}
 
-    @Override
-    public void serverProcessCreated(ServerProcess serverProcess) {
-        async(()->uiRspServer.getModel().serverProcessCreated(uiRspServer, serverProcess));
-    }
+	@Override
+	public void serverStateChanged(ServerState serverState) {
+		async(() -> uiRspServer.getModel().serverStateChanged(uiRspServer, serverState));
+	}
 
-    @Override
-    public void serverProcessTerminated(ServerProcess serverProcess) {
-        uiRspServer.getModel().serverProcessTerminated(uiRspServer, serverProcess);
-    }
+	@Override
+	public void serverProcessCreated(ServerProcess serverProcess) {
+		async(() -> uiRspServer.getModel().serverProcessCreated(uiRspServer, serverProcess));
+	}
 
-    @Override
-    public void serverProcessOutputAppended(ServerProcessOutput serverProcessOutput) {
-        async(()->uiRspServer.getModel().serverProcessOutputAppended(uiRspServer, serverProcessOutput));
-    }
+	@Override
+	public void serverProcessTerminated(ServerProcess serverProcess) {
+		uiRspServer.getModel().serverProcessTerminated(uiRspServer, serverProcess);
+	}
+
+	@Override
+	public void serverProcessOutputAppended(ServerProcessOutput serverProcessOutput) {
+		async(() -> uiRspServer.getModel().serverProcessOutputAppended(uiRspServer, serverProcessOutput));
+	}
 }

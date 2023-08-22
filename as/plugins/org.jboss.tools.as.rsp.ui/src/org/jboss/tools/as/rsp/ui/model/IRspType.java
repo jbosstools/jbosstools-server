@@ -13,14 +13,21 @@ package org.jboss.tools.as.rsp.ui.model;
 import org.eclipse.swt.graphics.Image;
 
 /**
- * Provides basic information for each RSP type and allows an instance of the RSP to be created
+ * Provides basic information for each RSP type and allows an instance of the
+ * RSP to be created
  */
 public interface IRspType {
-    String getId();
-    String getName();
-    IRsp createRsp();
-    IRsp createRsp(String version, String url);
-    Image getIcon();
-    Image getIcon(String serverTypeId);
-    String getServerHome();
+	String getId();
+
+	String getName();
+
+	IRsp createRsp();
+
+	IRsp createRsp(String version, String url);
+
+	Image getIcon();
+
+	Image getIcon(String serverTypeId);
+
+	String getServerHome();
 }

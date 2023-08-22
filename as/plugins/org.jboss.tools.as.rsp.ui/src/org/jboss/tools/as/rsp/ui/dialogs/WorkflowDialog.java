@@ -31,6 +31,7 @@ public class WorkflowDialog extends TitleAreaDialog implements IWorkflowItemList
 
 	private String titleString;
 	private String msgString;
+
 	public WorkflowDialog(String title, String msg, WorkflowResponseItem[] items) {
 		super(Display.getDefault().getActiveShell());
 		this.items = items;
@@ -56,32 +57,30 @@ public class WorkflowDialog extends TitleAreaDialog implements IWorkflowItemList
 		setMessage(msgString);
 		return c;
 	}
-	
+
 	private void createUI(Composite main) {
-		WorkflowItemsPanel itemsPanel = new WorkflowItemsPanel(
-				main, SWT.NONE,
-				items, null, attributeValues, this);
+		WorkflowItemsPanel itemsPanel = new WorkflowItemsPanel(main, SWT.NONE, items, null, attributeValues, this);
 	}
 
-    public Map<String, Object> getAttributes() {
-        return attributeValues;
-    }
+	public Map<String, Object> getAttributes() {
+		return attributeValues;
+	}
 
-    private boolean isComplete() {
-        for( int i = 0; i < items.length; i++ ) {
-            if( items[i].getPrompt() == null ) {
-                continue;
-            }
-            String type = items[i].getPrompt().getResponseType();
-            if( type.equals(ServerManagementAPIConstants.ATTR_TYPE_NONE))
-                continue;
-            String id = items[i].getId();
-            if( attributeValues.get(id) == null )
-                return false;
-            // API does not state which fields are required or optional. Ugh
-        }
-        return true;
-    }
+	private boolean isComplete() {
+		for (int i = 0; i < items.length; i++) {
+			if (items[i].getPrompt() == null) {
+				continue;
+			}
+			String type = items[i].getPrompt().getResponseType();
+			if (type.equals(ServerManagementAPIConstants.ATTR_TYPE_NONE))
+				continue;
+			String id = items[i].getId();
+			if (attributeValues.get(id) == null)
+				return false;
+			// API does not state which fields are required or optional. Ugh
+		}
+		return true;
+	}
 
 	@Override
 	public void panelChanged() {

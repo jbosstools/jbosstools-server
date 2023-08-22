@@ -30,7 +30,7 @@ import org.jboss.tools.foundation.core.plugin.log.StatusFactory;
  * Utilities related to opening editors
  */
 public class EditorUtil {
-    public static IEditorPart openFileInEditor(File f) {
+	public static IEditorPart openFileInEditor(File f) {
 		IFileStore fileStore = EFS.getLocalFileSystem().getStore(new Path(f.getAbsoluteFile().getParent()));
 		fileStore = fileStore.getChild(f.getName());
 		IFileInfo fetchInfo = fileStore.fetchInfo();
@@ -39,27 +39,29 @@ public class EditorUtil {
 			try {
 				final IEditorPart part = IDE.openEditorOnFileStore(page, fileStore);
 				return part;
-			} catch( PartInitException pie) {
-				RspUiActivator.log(StatusFactory.errorStatus(RspUiActivator.PLUGIN_ID, "Unable to open file in editor: " + f.getAbsolutePath(), pie));
+			} catch (PartInitException pie) {
+				RspUiActivator.log(StatusFactory.errorStatus(RspUiActivator.PLUGIN_ID,
+						"Unable to open file in editor: " + f.getAbsolutePath(), pie));
 			}
 		}
 		return null;
-    }
+	}
 
-    public static IEditorPart createAndOpenVirtualFile(String name, String content) {
-        try {
-            File vf = createTempFile(name, content);
-            if( vf != null ) {
-                vf.deleteOnExit();
-                return openFileInEditor(vf);
-            }
-        } catch (IOException e) {
-        	RspUiActivator.log(StatusFactory.errorStatus(RspUiActivator.PLUGIN_ID, "Unable to open virtual file in editor", e));
-        }
-        return null;
-    }
+	public static IEditorPart createAndOpenVirtualFile(String name, String content) {
+		try {
+			File vf = createTempFile(name, content);
+			if (vf != null) {
+				vf.deleteOnExit();
+				return openFileInEditor(vf);
+			}
+		} catch (IOException e) {
+			RspUiActivator.log(
+					StatusFactory.errorStatus(RspUiActivator.PLUGIN_ID, "Unable to open virtual file in editor", e));
+		}
+		return null;
+	}
 
-    public static File createTempFile(String name, String content) throws IOException {
+	public static File createTempFile(String name, String content) throws IOException {
 		File file = new File(System.getProperty("java.io.tmpdir"), name);
 		if (file.exists()) {
 			file.delete();

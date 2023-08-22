@@ -40,9 +40,11 @@ public class DeleteServerAction extends AbstractTreeAction {
 	protected boolean isEnabled(Object[] o) {
 		return safeMultiItemClass(o, ServerStateWrapper.class);
 	}
-    public void run() {
-    	actionPerformed(getSelectionArray(getSelection()));
-    }
+
+	public void run() {
+		actionPerformed(getSelectionArray(getSelection()));
+	}
+
 	protected void actionPerformed(Object[] selected) {
 		ArrayList<ServerStateWrapper> arr = new ArrayList<>();
 		for (int i = 0; i < selected.length; i++) {
@@ -75,7 +77,8 @@ public class DeleteServerAction extends AbstractTreeAction {
 									fails.add(stat);
 								}
 							} catch (InterruptedException | ExecutionException ex) {
-								//TelemetryService.instance().send(TelemetryService.TELEMETRY_SERVER_REMOVE, ex);
+								// TelemetryService.instance().send(TelemetryService.TELEMETRY_SERVER_REMOVE,
+								// ex);
 								apiError(ex, arr.size() > 1 ? ERROR_DELETING_SERVERS : ERROR_DELETING_SERVER);
 							}
 						}

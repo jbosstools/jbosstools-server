@@ -116,7 +116,7 @@ public class StartServerDebugAction extends AbstractTreeAction {
 			launchJavaDebugger(handle, port);
 		}
 	}
-	
+
 	private static void launchJavaDebugger(ServerHandle handle, String port) {
 		new Job("Launching Remote Debug for server " + handle.getId()) {
 			@Override
@@ -125,7 +125,8 @@ public class StartServerDebugAction extends AbstractTreeAction {
 					String name = "Remote Debug for server " + handle.getId();
 					ILaunchConfigurationType launchConfigurationType = DebugPlugin.getDefault().getLaunchManager()
 							.getLaunchConfigurationType(ID_REMOTE_JAVA_APPLICATION);
-					ILaunchConfigurationWorkingCopy launchConfiguration = launchConfigurationType.newInstance(null, name);
+					ILaunchConfigurationWorkingCopy launchConfiguration = launchConfigurationType.newInstance(null,
+							name);
 					launchConfiguration.setAttribute(IJavaLaunchConfigurationConstants.ATTR_ALLOW_TERMINATE, false);
 					launchConfiguration.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_CONNECTOR,
 							IJavaLaunchConfigurationConstants.ID_SOCKET_ATTACH_VM_CONNECTOR);

@@ -40,7 +40,7 @@ public class AttributePanel extends Composite {
 	private Button button;
 
 	public AttributePanel(Composite parent, int style, String key, Attribute oneAttribute, Map<String, Object> values) {
-		super(parent, style );
+		super(parent, style);
 		this.attr = oneAttribute;
 		this.key = key;
 		this.values = values;
@@ -111,14 +111,13 @@ public class AttributePanel extends Composite {
 				}
 			});
 		}
-		
 
 		FormData nameData = new FormData();
-		nameData.top = new FormAttachment(0,7);
-		nameData.left = new FormAttachment(0,5);
+		nameData.top = new FormAttachment(0, 7);
+		nameData.left = new FormAttachment(0, 5);
 		name.setLayoutData(nameData);
 
-		if( button != null ) {
+		if (button != null) {
 			FormData browseData = new FormData();
 			browseData.top = new FormAttachment(0, 5);
 			browseData.right = new FormAttachment(100, -5);
@@ -128,42 +127,14 @@ public class AttributePanel extends Composite {
 		FormData textData = new FormData();
 		textData.top = new FormAttachment(0, 5);
 		textData.left = new FormAttachment(name, 5);
-		if( button != null ) {
+		if (button != null) {
 			textData.right = new FormAttachment(button, -5);
 		} else {
 			textData.right = new FormAttachment(100, -5);
 		}
 		field.setLayoutData(textData);
 	}
-
-//
-//    public AttributePanel(String key, Attribute oneAttribute, Map<String, Object> values) {
-//        this.attr = oneAttribute;
-//        this.key = key;
-//        this.values = values;
-
-//
-//
-//        field.getDocument().addDocumentListener(this);
-//    }
-//
-//
-//
-//    @Override
-//    public void insertUpdate(DocumentEvent e) {
-//        values.put(key,asObject(field.getText()));
-//    }
-//
-//    @Override
-//    public void removeUpdate(DocumentEvent e) {
-//        values.put(key,asObject(field.getText()));
-//    }
-//
-//    @Override
-//    public void changedUpdate(DocumentEvent e) {
-//        values.put(key,asObject(field.getText()));
-//    }
-
+	
 	private String asString(String type, Object value) {
 		if (ServerManagementAPIConstants.ATTR_TYPE_BOOL.equals(type)) {
 			return value == null ? "false" : Boolean.toString("true".equalsIgnoreCase(value.toString()));
@@ -172,7 +143,7 @@ public class AttributePanel extends Composite {
 			if (value instanceof Number) {
 				return Integer.toString(((Number) value).intValue());
 			} else {
-				return Integer.toString(new Double(Double.parseDouble(value.toString())).intValue());
+				return Integer.toString(Double.valueOf(Double.parseDouble(value.toString())).intValue());
 			}
 		}
 		return value.toString();

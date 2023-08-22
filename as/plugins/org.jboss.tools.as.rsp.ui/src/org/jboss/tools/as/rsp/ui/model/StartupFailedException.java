@@ -11,7 +11,7 @@
 package org.jboss.tools.as.rsp.ui.model;
 
 public class StartupFailedException extends Exception {
-    public StartupFailedException(String s) {
-        super(s);
-    }
+	public StartupFailedException(String s) {
+		super(s);
+	}
 }

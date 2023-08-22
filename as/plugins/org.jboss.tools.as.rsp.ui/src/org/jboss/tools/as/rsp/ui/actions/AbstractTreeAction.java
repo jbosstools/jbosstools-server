@@ -23,91 +23,94 @@ public abstract class AbstractTreeAction extends SelectionProviderAction {
 	private static final String INVALID_RESPONSE = "Invalid Response from RSP";
 	protected boolean shouldEnable = false;
 	protected boolean shouldShow = true;
-	
-    protected AbstractTreeAction(ISelectionProvider provider, String text) {
+
+	protected AbstractTreeAction(ISelectionProvider provider, String text) {
 		super(provider, text);
 	}
-    
-    public static void showError(String msg, String title) {
-    	RspUiActivator.getDefault().pluginLog().logError(title + ": " + msg);
-    }
 
-    public static void apiError(Exception exception, String title) {
-        showError(exception == null ? "Unknown Error" : exception.getMessage(), title);
-    }
+	public static void showError(String msg, String title) {
+		RspUiActivator.getDefault().pluginLog().logError(title + ": " + msg);
+	}
 
-    public static void statusError(Status stat, String title) {
-        showError(stat == null ? INVALID_RESPONSE : stat.getMessage(), title);
-    }
-    
-    @Override
+	public static void apiError(Exception exception, String title) {
+		showError(exception == null ? "Unknown Error" : exception.getMessage(), title);
+	}
+
+	public static void statusError(Status stat, String title) {
+		showError(stat == null ? INVALID_RESPONSE : stat.getMessage(), title);
+	}
+
+	@Override
 	public void selectionChanged(IStructuredSelection selection) {
-    	Object[] o2 = new Object[0];
-    	if( selection instanceof TreeSelection ) {
-    		o2 = ((TreeSelection)selection).toArray();
-    	} else {
-    		o2 = new Object[] {selection.getFirstElement()};
-    	}
+		Object[] o2 = new Object[0];
+		if (selection instanceof TreeSelection) {
+			o2 = ((TreeSelection) selection).toArray();
+		} else {
+			o2 = new Object[] { selection.getFirstElement() };
+		}
 		this.shouldEnable = isEnabled(o2);
 		this.shouldShow = isVisible(o2);
 		setEnabled(this.shouldEnable);
 	}
-	
+
 	public boolean getShouldEnable() {
 		return this.isEnabled(getSelectionArray(getSelection()));
 	}
+
 	public boolean getShouldShow() {
 		return this.isVisible(getSelectionArray(getSelection()));
 	}
-	
-    public void run() {
-    	singleSelectionActionPerformed(getSingleSelection(getSelection()));
-    }
-    
-    protected Object getSingleSelection(ISelection sel) {
-    	if( sel instanceof IStructuredSelection) {
-    		return ((IStructuredSelection)sel).getFirstElement();
-    	}
-    	return null;
-    }
+
+	public void run() {
+		singleSelectionActionPerformed(getSingleSelection(getSelection()));
+	}
+
+	protected Object getSingleSelection(ISelection sel) {
+		if (sel instanceof IStructuredSelection) {
+			return ((IStructuredSelection) sel).getFirstElement();
+		}
+		return null;
+	}
 
 	protected Object[] getSelectionArray(ISelection sel) {
-    	if( sel instanceof TreeSelection) {
-    		return ((TreeSelection)sel).toArray();
-    	}
-    	if( sel instanceof IStructuredSelection) {
-    		Object o = ((IStructuredSelection)sel).getFirstElement();
-    		if( o == null )
-    			return new Object[0];
-    		return new Object[] {o};
-    	}
-    	return new Object[0];
-		
+		if (sel instanceof TreeSelection) {
+			return ((TreeSelection) sel).toArray();
+		}
+		if (sel instanceof IStructuredSelection) {
+			Object o = ((IStructuredSelection) sel).getFirstElement();
+			if (o == null)
+				return new Object[0];
+			return new Object[] { o };
+		}
+		return new Object[0];
+
 	}
-    protected boolean safeSingleItemClass( Object[] arr, Class c) {
-        return arr != null && arr.length == 1 && c.isInstance(arr[0]);
-    }
-    protected boolean safeMultiItemClass( Object[] arr, Class c) {
-        if( arr != null ) {
-            for( int i = 0; i < arr.length; i++ ) {
-                if( !c.isInstance(arr[i])) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
+
+	protected boolean safeSingleItemClass(Object[] arr, Class c) {
+		return arr != null && arr.length == 1 && c.isInstance(arr[0]);
+	}
+
+	protected boolean safeMultiItemClass(Object[] arr, Class c) {
+		if (arr != null) {
+			for (int i = 0; i < arr.length; i++) {
+				if (!c.isInstance(arr[i])) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 
 	protected boolean isEnabled(Object[] o2) {
 		return false;
 	}
-	
+
 	protected boolean isVisible(Object[] o) {
 		return false;
 	}
-	
+
 	protected void singleSelectionActionPerformed(Object selected) {
-		
+
 	}
 
 }

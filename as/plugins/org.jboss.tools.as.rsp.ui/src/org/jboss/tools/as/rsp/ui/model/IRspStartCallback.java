@@ -11,9 +11,11 @@
 package org.jboss.tools.as.rsp.ui.model;
 
 /**
- * Allow an IRspStateController to update its caller with state changes for the given rsp
+ * Allow an IRspStateController to update its caller with state changes for the
+ * given rsp
  */
 public interface IRspStartCallback {
-    public void updateRspState(IRspCore.IJServerState state);
-    public void updateRspState(IRspCore.IJServerState state, boolean launched);
+	public void updateRspState(IRspCore.IJServerState state);
+
+	public void updateRspState(IRspCore.IJServerState state, boolean launched);
 }

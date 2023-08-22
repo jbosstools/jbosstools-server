@@ -14,18 +14,19 @@ package org.jboss.tools.as.rsp.ui.model;
  * Simple host/port pair
  */
 public class ServerConnectionInfo {
-    private final String host;
-    private final int port;
+	private final String host;
+	private final int port;
 
-    public ServerConnectionInfo(String host, int port) {
-        this.host = host;
-        this.port = port;
-    }
+	public ServerConnectionInfo(String host, int port) {
+		this.host = host;
+		this.port = port;
+	}
 
-    public String getHost() {
-        return host;
-    }
-    public int getPort() {
-        return port;
-    }
+	public String getHost() {
+		return host;
+	}
+
+	public int getPort() {
+		return port;
+	}
 }

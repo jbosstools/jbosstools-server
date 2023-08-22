@@ -16,6 +16,7 @@ import org.eclipse.swt.graphics.Image;
  * Provide icons for a given RSP or the server types declared within
  */
 public interface IServerIconProvider {
-    public Image getIcon();
-    public Image getIcon(String serverType);
+	public Image getIcon();
+
+	public Image getIcon(String serverType);
 }

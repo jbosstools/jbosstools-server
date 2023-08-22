@@ -15,91 +15,93 @@ package org.jboss.tools.as.rsp.ui.util;
  */
 public class VersionComparatorUtil {
 
-    public static boolean isGreaterThanOrEqualTo(String actual, String test) {
-        return isGreaterThan(actual, test, true);
-    }
+	public static boolean isGreaterThanOrEqualTo(String actual, String test) {
+		return isGreaterThan(actual, test, true);
+	}
 
-    public static boolean isGreaterThan(String actual, String test) {
-        return isGreaterThan(actual, test, false);
-    }
+	public static boolean isGreaterThan(String actual, String test) {
+		return isGreaterThan(actual, test, false);
+	}
 
+	public static boolean isLessThanOrEqualTo(String actual, String test) {
+		return isLessThan(actual, test, true);
+	}
 
-    public static boolean isLessThanOrEqualTo(String actual, String test) {
-        return isLessThan(actual, test, true);
-    }
+	public static boolean isLessThan(String actual, String test) {
+		return isLessThan(actual, test, false);
+	}
 
-    public static boolean isLessThan(String actual, String test) {
-        return isLessThan(actual, test, false);
-    }
+	private static boolean isGreaterThan(String actual, String test, boolean ifEqual) {
+		if (test == null)
+			return false;
+		if (actual == null)
+			return true;
 
+		String[] splitActual = actual.split("[-\\.]");
+		String[] splitTest = test.split("[-\\.]");
 
-    private static boolean isGreaterThan(String actual, String test, boolean ifEqual) {
-        if( test == null )
-            return false;
-        if( actual == null )
-            return true;
+		// Find the number of segments actually available for comparison
+		int comparableSegments = splitActual.length;
+		if (splitTest.length < splitActual.length)
+			comparableSegments = splitTest.length;
 
-        String[] splitActual = actual.split("[-\\.]");
-        String[] splitTest = test.split("[-\\.]");
+		for (int i = 0; i < comparableSegments; i++) {
+			int actualSegment = -1;
+			int testSegment = -1;
+			try {
+				actualSegment = Integer.parseInt(splitActual[i]);
+			} catch (NumberFormatException nfe) {
+			}
+			try {
+				testSegment = Integer.parseInt(splitTest[i]);
+			} catch (NumberFormatException nfe) {
+			}
 
-        // Find the number of segments actually available for comparison
-        int comparableSegments = splitActual.length;
-        if( splitTest.length < splitActual.length)
-            comparableSegments = splitTest.length;
+			if (actualSegment == -1 || testSegment == -1) {
+				// one of them is not integers, so we cant compare these segments.
+				return ifEqual;
+			}
+			if (actualSegment != testSegment) {
+				return actualSegment > testSegment;
+			} // else if equal, continue
+		}
+		return ifEqual;
+	}
 
-        for( int i = 0; i < comparableSegments; i++ ) {
-            int actualSegment = -1;
-            int testSegment = -1;
-            try {
-                actualSegment = Integer.parseInt(splitActual[i]);
-            } catch(NumberFormatException nfe) {}
-            try {
-                testSegment = Integer.parseInt(splitTest[i]);
-            } catch(NumberFormatException nfe) {}
+	private static boolean isLessThan(String actual, String test, boolean ifEqual) {
+		if (test == null)
+			return false;
+		if (actual == null)
+			return true;
 
-            if( actualSegment == -1 || testSegment == -1 ) {
-                // one of them is not integers, so we cant compare these segments.
-                return ifEqual;
-            }
-            if( actualSegment != testSegment ) {
-                return actualSegment > testSegment;
-            } // else if equal, continue
-        }
-        return ifEqual;
-    }
+		String[] splitActual = actual.split("\\.");
+		String[] splitTest = test.split("\\.");
 
-    private static boolean isLessThan(String actual, String test, boolean ifEqual) {
-        if( test == null )
-            return false;
-        if( actual == null )
-            return true;
+		// Find the number of segments actually available for comparison
+		int comparableSegments = splitActual.length;
+		if (splitTest.length < splitActual.length)
+			comparableSegments = splitActual.length;
 
-        String[] splitActual = actual.split("\\.");
-        String[] splitTest = test.split("\\.");
+		for (int i = 0; i < comparableSegments; i++) {
+			int actualSegment = -1;
+			int testSegment = -1;
+			try {
+				actualSegment = Integer.parseInt(splitActual[i]);
+			} catch (NumberFormatException nfe) {
+			}
+			try {
+				testSegment = Integer.parseInt(splitTest[i]);
+			} catch (NumberFormatException nfe) {
+			}
 
-        // Find the number of segments actually available for comparison
-        int comparableSegments = splitActual.length;
-        if( splitTest.length < splitActual.length)
-            comparableSegments = splitActual.length;
-
-        for( int i = 0; i < comparableSegments; i++ ) {
-            int actualSegment = -1;
-            int testSegment = -1;
-            try {
-                actualSegment = Integer.parseInt(splitActual[i]);
-            } catch(NumberFormatException nfe) {}
-            try {
-                testSegment = Integer.parseInt(splitTest[i]);
-            } catch(NumberFormatException nfe) {}
-
-            if( actualSegment == -1 || testSegment == -1 ) {
-                // one of them is not integers, so we cant compare these segments.
-                return ifEqual;
-            }
-            if( actualSegment != testSegment ) {
-                return actualSegment < testSegment;
-            } // else if equal, continue
-        }
-        return ifEqual;
-    }
+			if (actualSegment == -1 || testSegment == -1) {
+				// one of them is not integers, so we cant compare these segments.
+				return ifEqual;
+			}
+			if (actualSegment != testSegment) {
+				return actualSegment < testSegment;
+			} // else if equal, continue
+		}
+		return ifEqual;
+	}
 }

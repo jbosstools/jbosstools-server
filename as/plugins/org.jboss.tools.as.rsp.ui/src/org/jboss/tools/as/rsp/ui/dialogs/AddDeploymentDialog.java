@@ -71,7 +71,7 @@ public class AddDeploymentDialog extends TitleAreaDialog {
 
 	private void createUI(Composite main) {
 		this.locationPanel = new LocationPanel(main, SWT.NONE);
-		if( attributes.getAttributes().size() > 0)
+		if (attributes.getAttributes().size() > 0)
 			this.attributesPanel = new AttributesPanel(main, SWT.NONE, attributes, "Attributes", attributeValues);
 	}
 
@@ -93,7 +93,7 @@ public class AddDeploymentDialog extends TitleAreaDialog {
 			super(parent, style);
 			setLayout(new FormLayout());
 			setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-			
+
 			Label name = new Label(this, SWT.NONE);
 			name.setText("Deployment Path");
 
@@ -115,7 +115,7 @@ public class AddDeploymentDialog extends TitleAreaDialog {
 					widgetSelected(e);
 				}
 			});
-			
+
 			browseFolder = new Button(this, SWT.PUSH);
 			browseFolder.setText("Folder...");
 			browseFolder.addSelectionListener(new SelectionListener() {
@@ -131,10 +131,10 @@ public class AddDeploymentDialog extends TitleAreaDialog {
 					widgetSelected(e);
 				}
 			});
-			
+
 			FormData nameData = new FormData();
-			nameData.top = new FormAttachment(0,7);
-			nameData.left = new FormAttachment(0,5);
+			nameData.top = new FormAttachment(0, 7);
+			nameData.left = new FormAttachment(0, 5);
 			name.setLayoutData(nameData);
 
 			FormData browseFolderData = new FormData();
