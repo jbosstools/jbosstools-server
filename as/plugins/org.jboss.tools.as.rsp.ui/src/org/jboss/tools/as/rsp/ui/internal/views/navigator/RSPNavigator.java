@@ -35,9 +35,6 @@ public class RSPNavigator extends CommonNavigator implements IRspCoreChangeListe
 	}
 
 	public void fillActionBars() {
-//	    getViewSite().getActionBars().getToolBarManager().add(new NewConnectionAction());
-//	    getViewSite().getActionBars().getToolBarManager().add(new Separator());
-//	    getViewSite().getActionBars().updateActionBars();
 	}
 
 	public String getContributorId() {
@@ -47,7 +44,6 @@ public class RSPNavigator extends CommonNavigator implements IRspCoreChangeListe
 	@Override
 	public void modelChanged(Object item) {
 		Display.getDefault().asyncExec(() -> {
-			// System.out.println("Refreshing " + item);
 			getCommonViewer().refresh(item);
 		});
 	}

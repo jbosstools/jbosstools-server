@@ -86,7 +86,8 @@ public class RspImpl implements IRsp, IRspStartCallback {
 		try {
 			return new String(Files.readAllBytes(filePath));
 		} catch (IOException e) {
-			// TODO log error
+			RspUiActivator.getDefault().getLog().log(
+					StatusFactory.errorStatus(RspUiActivator.PLUGIN_ID, "Error reading file " + filePath, e));
 			return null;
 		}
 	}

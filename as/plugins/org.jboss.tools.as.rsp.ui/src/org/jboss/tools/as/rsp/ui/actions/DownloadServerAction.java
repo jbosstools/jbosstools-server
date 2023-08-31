@@ -17,6 +17,7 @@ import java.util.concurrent.ExecutionException;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
+import org.jboss.tools.as.rsp.ui.Messages;
 import org.jboss.tools.as.rsp.ui.client.RspClientLauncher;
 import org.jboss.tools.as.rsp.ui.dialogs.SelectDownloadRuntimeDialog;
 import org.jboss.tools.as.rsp.ui.model.IRsp;

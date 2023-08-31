@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.Text;
 import org.jboss.tools.rsp.api.ServerManagementAPIConstants;
 import org.jboss.tools.rsp.api.dao.Attribute;
 
-public class AttributePanel extends Composite {
+public class AttributePanel {
 	private static final int TEXTFIELD_MAX_SIZE = 10;
 	private Attribute attr;
 	private String key;
@@ -40,14 +40,13 @@ public class AttributePanel extends Composite {
 	private Button button;
 
 	public AttributePanel(Composite parent, int style, String key, Attribute oneAttribute, Map<String, Object> values) {
-		super(parent, style);
+		Composite wrapped = new Composite(parent, style);
 		this.attr = oneAttribute;
 		this.key = key;
 		this.values = values;
-
-		setLayout(new FormLayout());
-		setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		Label name = new Label(this, style);
+		wrapped.setLayout(new FormLayout());
+		wrapped.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		Label name = new Label(wrapped, style);
 		name.setText(key);
 		name.setToolTipText(attr.getDescription());
 
@@ -55,10 +54,10 @@ public class AttributePanel extends Composite {
 		String valueStr = (valueObj == null ? "" : valueObj.toString());
 
 		if (oneAttribute.getType().equals(ServerManagementAPIConstants.ATTR_TYPE_LOCAL_FILE)) {
-			field = new Text(this, SWT.BORDER);
+			field = new Text(wrapped, SWT.BORDER);
 			if (valueStr != null)
 				field.setText(valueStr);
-			button = new Button(this, SWT.PUSH);
+			button = new Button(wrapped, SWT.PUSH);
 			button.setText("Browse...");
 			button.addSelectionListener(new SelectionListener() {
 				@Override
@@ -76,10 +75,10 @@ public class AttributePanel extends Composite {
 				}
 			});
 		} else if (oneAttribute.getType().equals(ServerManagementAPIConstants.ATTR_TYPE_LOCAL_FOLDER)) {
-			field = new Text(this, SWT.BORDER);
+			field = new Text(wrapped, SWT.BORDER);
 			if (valueStr != null)
 				field.setText(valueStr);
-			button = new Button(this, SWT.PUSH);
+			button = new Button(wrapped, SWT.PUSH);
 			button.setText("Browse...");
 			button.addSelectionListener(new SelectionListener() {
 				public void widgetSelected(SelectionEvent e) {
@@ -96,7 +95,7 @@ public class AttributePanel extends Composite {
 				}
 			});
 		} else {
-			field = oneAttribute.isSecret() ? new Text(this, SWT.BORDER | SWT.PASSWORD) : new Text(this, SWT.BORDER);
+			field = oneAttribute.isSecret() ? new Text(wrapped, SWT.BORDER | SWT.PASSWORD) : new Text(wrapped, SWT.BORDER);
 			if (values.get(key) != null) {
 				field.setText(asString(oneAttribute.getType(), values.get(key)));
 			} else if (attr.getDefaultVal() != null) {

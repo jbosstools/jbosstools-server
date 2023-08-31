@@ -60,10 +60,7 @@ public class SelectDownloadRuntimeDialog extends TitleAreaDialog {
 		main.setLayoutData(new GridData(GridData.FILL_BOTH));
 		main.setLayout(new FormLayout());
 		createUI(main);
-//		setMessage(info.description != null ? info.description
-//				: Messages.EditorCPD_DefaultDescription);
-//		getShell().setText(info.shellTitle != null ? info.shellTitle
-//				: Messages.EditorCPD_DefaultShellTitle);
+		getShell().setText("Download Server Runtime");
 		return c;
 	}
 

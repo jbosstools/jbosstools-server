@@ -20,27 +20,27 @@ import org.eclipse.swt.widgets.Group;
 import org.jboss.tools.rsp.api.dao.Attribute;
 import org.jboss.tools.rsp.api.dao.Attributes;
 
-public class AttributesPanel extends Composite {
+public class AttributesPanel {
 	private Attributes attr;
 	private String title;
 	private Map<String, Object> values;
 
 	public AttributesPanel(Composite parent, int style, Attributes attributes, String title,
 			Map<String, Object> values) {
-		super(parent, style);
+		Composite wrapped = new Composite(parent, style);
 		this.attr = attributes;
 		this.title = title;
 		this.values = values;
-		setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		setLayout(new GridLayout(1, false));
-		Group g = new Group(this, style);
+		wrapped.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		wrapped.setLayout(new GridLayout(1, false));
+		Group g = new Group(wrapped, style);
 		g.setText(title);
 		g.setLayout(new GridLayout(1, false));
 		g.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		Map<String, Attribute> map = attributes.getAttributes();
 		for (String key : map.keySet()) {
 			Attribute oneAttribute = map.get(key);
-			Composite c = new AttributePanel(g, SWT.NONE, key, oneAttribute, values);
+			new AttributePanel(g, SWT.NONE, key, oneAttribute, values);
 		}
 	}
 }

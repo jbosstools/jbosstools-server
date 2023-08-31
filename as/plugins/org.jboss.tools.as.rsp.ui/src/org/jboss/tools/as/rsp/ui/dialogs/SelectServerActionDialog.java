@@ -66,7 +66,6 @@ public class SelectServerActionDialog extends TitleAreaDialog {
 	}
 
 	private void createUI(Composite main) {
-		// TODO Auto-generated method stub
 		table = new Table(main, SWT.BORDER);
 		FormData fd = new FormData();
 		fd.top = new FormAttachment(0, 0);

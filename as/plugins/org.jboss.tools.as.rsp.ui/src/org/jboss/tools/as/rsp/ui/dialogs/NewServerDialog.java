@@ -19,6 +19,7 @@ import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -63,6 +64,7 @@ public class NewServerDialog extends TitleAreaDialog implements ModifyListener {
 		Control c = super.createContents(parent);
 		this.getButton(IDialogConstants.OK_ID).setEnabled(false);
 		setTitle("Create Server: " + this.serverType.getVisibleName());
+		getShell().setText("Create Server: " + this.serverType.getVisibleName());
 		setMessage("Fill in optional and required attributes to interact with this server.");
 		return c;
 	}
