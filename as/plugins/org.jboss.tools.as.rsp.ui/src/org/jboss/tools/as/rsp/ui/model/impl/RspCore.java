@@ -231,7 +231,7 @@ public class RspCore implements IRspCore {
 	}
 
 	private String jobHandleToUniqueId(IRsp rsp, JobHandle handle) {
-		return rsp.getRspType().getId() + ":" + handle.getId();
+		return rsp.getRspType().getId() + ":" + handle.getId(); //$NON-NLS-1$
 	}
 
 	@Override

@@ -53,25 +53,25 @@ public class ReferenceRspControllerImpl implements IRspStateController {
 		String rspHome = serverType.getServerHome();
 		File rspHomeFile = new File(rspHome);
 		if (!rspHomeFile.exists() || !rspHomeFile.isDirectory())
-			throw new StartupFailedException("RSP does not appear to be installed.");
+			throw new StartupFailedException(Messages.ReferenceRspControllerImpl_0);
 
-		File felixFile = new File(new File(rspHomeFile, "bin"), "felix.jar");
+		File felixFile = new File(new File(rspHomeFile, "bin"), "felix.jar"); //$NON-NLS-1$ //$NON-NLS-2$
 		if (!felixFile.exists() || !felixFile.isFile())
 			throw new StartupFailedException(
-					"RSP does not appear to be installed or is broken. Please use the Download / Update RSP action.");
+					Messages.ReferenceRspControllerImpl_3);
 
 		int port = new PortFinder().nextFreePort(portMin, portMax);
 		if (port == -1)
-			throw new StartupFailedException("No free port within the defined range found.");
+			throw new StartupFailedException(Messages.ReferenceRspControllerImpl_4);
 
 		File java = JavaUtils.findJavaExecutable();
 		if (java == null || !java.exists())
-			throw new StartupFailedException("A java executable could not be located on this system.");
+			throw new StartupFailedException(Messages.ReferenceRspControllerImpl_5);
 
 		String portInUse = getLockedWorkspacePort();
 		if (portInUse != null) {
 			callback.updateRspState(IRspCore.IJServerState.STARTED, false);
-			return new ServerConnectionInfo("localhost", Integer.parseInt(portInUse));
+			return new ServerConnectionInfo(Messages.ReferenceRspControllerImpl_6, Integer.parseInt(portInUse));
 		}
 		Process p = startRSP(rspHome, port, java, callback);
 		if (p != null) {
@@ -79,10 +79,10 @@ public class ReferenceRspControllerImpl implements IRspStateController {
 			boolean started = waitForPortInUse(port);
 			if (started) {
 				callback.updateRspState(IRspCore.IJServerState.STARTED, true);
-				return new ServerConnectionInfo("localhost", port);
+				return new ServerConnectionInfo(Messages.ReferenceRspControllerImpl_7, port);
 			} else {
 				terminate(callback);
-				throw new StartupFailedException("Unable to connect to RSP after startup.");
+				throw new StartupFailedException(Messages.ReferenceRspControllerImpl_8);
 			}
 		}
 		return null;
@@ -113,13 +113,13 @@ public class ReferenceRspControllerImpl implements IRspStateController {
 	private Process startRSP(String rspHome, int port, File java, IRspStartCallback callback) {
 		callback.updateRspState(IRspCore.IJServerState.STARTING);
 		File workingDir = new File(rspHome);
-		File felix = new File(new File(workingDir, "bin"), "felix.jar");
+		File felix = new File(new File(workingDir, "bin"), "felix.jar"); //$NON-NLS-1$ //$NON-NLS-2$
 
 		String cmd = java.getAbsolutePath();
-		String portFlag = "-Drsp.server.port=" + port;
-		String id = "-Dorg.jboss.tools.rsp.id=" + serverType.getId();
-		String logbackFlag = "-Dlogback.configurationFile=./conf/logback.xml";
-		String jar = "-jar";
+		String portFlag = "-Drsp.server.port=" + port; //$NON-NLS-1$
+		String id = "-Dorg.jboss.tools.rsp.id=" + serverType.getId(); //$NON-NLS-1$
+		String logbackFlag = "-Dlogback.configurationFile=./conf/logback.xml"; //$NON-NLS-1$
+		String jar = "-jar"; //$NON-NLS-1$
 
 		String[] cmdArr = new String[] { cmd, portFlag, id, logbackFlag, jar, felix.getAbsolutePath() };
 		try {
@@ -196,7 +196,7 @@ public class ReferenceRspControllerImpl implements IRspStateController {
 
 	private File getLockFile() {
 		String userHome = JavaUtils.getUserHome();
-		return new File(userHome).toPath().resolve(".rsp").resolve(serverType.getId()).resolve(".lock").toFile();
+		return new File(userHome).toPath().resolve(".rsp").resolve(serverType.getId()).resolve(".lock").toFile(); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 }

@@ -51,8 +51,8 @@ public class SelectServerActionDialog extends TitleAreaDialog {
 	@Override
 	protected Control createContents(Composite parent) {
 		Control c = super.createContents(parent);
-		setTitle("Server Actions");
-		setMessage("Please select a server action to run.");
+		setTitle(Messages.SelectServerActionDialog_0);
+		setMessage(Messages.SelectServerActionDialog_1);
 		return c;
 	}
 

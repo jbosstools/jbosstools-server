@@ -23,6 +23,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
+import org.jboss.tools.as.rsp.ui.Messages;
 import org.jboss.tools.as.rsp.ui.RspUiActivator;
 import org.jboss.tools.foundation.core.plugin.log.StatusFactory;
 
@@ -41,7 +42,7 @@ public class EditorUtil {
 				return part;
 			} catch (PartInitException pie) {
 				RspUiActivator.log(StatusFactory.errorStatus(RspUiActivator.PLUGIN_ID,
-						"Unable to open file in editor: " + f.getAbsolutePath(), pie));
+						Messages.EditorUtil_0 + f.getAbsolutePath(), pie));
 			}
 		}
 		return null;
@@ -56,13 +57,13 @@ public class EditorUtil {
 			}
 		} catch (IOException e) {
 			RspUiActivator.log(
-					StatusFactory.errorStatus(RspUiActivator.PLUGIN_ID, "Unable to open virtual file in editor", e));
+					StatusFactory.errorStatus(RspUiActivator.PLUGIN_ID, Messages.EditorUtil_1, e));
 		}
 		return null;
 	}
 
 	public static File createTempFile(String name, String content) throws IOException {
-		File file = new File(System.getProperty("java.io.tmpdir"), name);
+		File file = new File(System.getProperty("java.io.tmpdir"), name); //$NON-NLS-1$
 		if (file.exists()) {
 			file.delete();
 		}

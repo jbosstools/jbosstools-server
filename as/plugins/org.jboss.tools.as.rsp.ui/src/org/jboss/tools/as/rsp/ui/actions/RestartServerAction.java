@@ -24,10 +24,10 @@ import org.jboss.tools.rsp.api.dao.Status;
 import org.jboss.tools.rsp.api.dao.StopServerAttributes;
 
 public class RestartServerAction extends AbstractTreeAction {
-	private static final String ERROR_STOPPING_SERVER = "Error stopping server";
+	private static final String ERROR_STOPPING_SERVER = Messages.RestartServerAction_0;
 
 	public RestartServerAction(ISelectionProvider provider) {
-		this(provider, "Restart Server (run)");
+		this(provider, Messages.RestartServerAction_1);
 	}
 
 	public RestartServerAction(ISelectionProvider provider, String name) {
@@ -55,7 +55,7 @@ public class RestartServerAction extends AbstractTreeAction {
 			RspClientLauncher client = RspCore.getDefault().getClient(sel.getRsp());
 			telemActionCalled(sel);
 
-			new Thread("Stop Server: " + sel.getServerState().getServer().getId()) {
+			new Thread(Messages.RestartServerAction_2 + sel.getServerState().getServer().getId()) {
 				public void run() {
 					actionInternal(sel, client);
 				}
@@ -65,8 +65,8 @@ public class RestartServerAction extends AbstractTreeAction {
 
 	protected void telemActionCalled(ServerStateWrapper sel) {
 		String typeId = sel.getServerState().getServer().getType().getId();
-		String[] keys = new String[] { "mode" };
-		String[] vals = new String[] { "run" };
+		String[] keys = new String[] { Messages.RestartServerAction_3 };
+		String[] vals = new String[] { Messages.RestartServerAction_4 };
 		// TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_SERVER_RESTART,
 		// typeId, null, null, keys, vals);
 	}
@@ -81,7 +81,7 @@ public class RestartServerAction extends AbstractTreeAction {
 					if (state != null) {
 						if (state.getState() == ServerManagementAPIConstants.STATE_STOPPED) {
 							final IRspCoreChangeListener l2 = this;
-							new Thread("Restart server") {
+							new Thread(Messages.RestartServerAction_5) {
 								public void run() {
 									RspCore.getDefault().removeChangeListener(l2);
 									startServer(sel, client);

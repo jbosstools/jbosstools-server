@@ -29,11 +29,11 @@ import org.jboss.tools.rsp.api.dao.WorkflowResponse;
 
 public class ServerActionAction extends AbstractTreeAction {
 
-	private static final String ERROR_LISTING_ACTIONS = "Error listing server actions";
-	private static final String ERROR_EXECUTE_ACTIONS = "Error executing server action";
+	private static final String ERROR_LISTING_ACTIONS = Messages.ServerActionAction_0;
+	private static final String ERROR_EXECUTE_ACTIONS = Messages.ServerActionAction_1;
 
 	public ServerActionAction(ISelectionProvider provider) {
-		super(provider, "Server Actions...");
+		super(provider, Messages.ServerActionAction_2);
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class ServerActionAction extends AbstractTreeAction {
 
 	@Override
 	protected void singleSelectionActionPerformed(Object selected) {
-		new Thread("Server Actions") {
+		new Thread(Messages.ServerActionAction_3) {
 			public void run() {
 				runInBackground(selected);
 			}
@@ -79,7 +79,7 @@ public class ServerActionAction extends AbstractTreeAction {
 //                            state.getServerState().getServer().getType().getId(), null, null,
 //                            new String[]{"actionId"}, new String[]{chosen.getActionId()});
 					if (chosen != null && ret == Window.OK) {
-						new Thread("Server Action Workflow: " + chosen.getActionLabel()) {
+						new Thread(Messages.ServerActionAction_4 + chosen.getActionLabel()) {
 							public void run() {
 								initiateActionWorkflow(state, client, chosen);
 							}
@@ -95,8 +95,8 @@ public class ServerActionAction extends AbstractTreeAction {
 		WorkflowResponse resp = chosen.getActionWorkflow();
 		boolean done = false;
 		while (!done) {
-			String title = state.getServerState().getServer().getId() + " Action: " + chosen.getActionLabel();
-			Map<String, Object> toSend = WorkflowUiUtility.displayPromptsSeekWorkflowInput(title, "", resp);
+			String title = state.getServerState().getServer().getId() + Messages.ServerActionAction_5 + chosen.getActionLabel();
+			Map<String, Object> toSend = WorkflowUiUtility.displayPromptsSeekWorkflowInput(title, "", resp); //$NON-NLS-1$
 			if (toSend == null) {
 				return; // Give up. User canceled.
 			}

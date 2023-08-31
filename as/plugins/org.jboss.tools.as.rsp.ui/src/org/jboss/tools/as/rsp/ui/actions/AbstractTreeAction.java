@@ -20,7 +20,7 @@ import org.jboss.tools.rsp.api.dao.Status;
 
 public abstract class AbstractTreeAction extends SelectionProviderAction {
 
-	private static final String INVALID_RESPONSE = "Invalid Response from RSP";
+	private static final String INVALID_RESPONSE = Messages.AbstractTreeAction_0;
 	protected boolean shouldEnable = false;
 	protected boolean shouldShow = true;
 
@@ -29,11 +29,11 @@ public abstract class AbstractTreeAction extends SelectionProviderAction {
 	}
 
 	public static void showError(String msg, String title) {
-		RspUiActivator.getDefault().pluginLog().logError(title + ": " + msg);
+		RspUiActivator.getDefault().pluginLog().logError(title + ": " + msg); //$NON-NLS-1$
 	}
 
 	public static void apiError(Exception exception, String title) {
-		showError(exception == null ? "Unknown Error" : exception.getMessage(), title);
+		showError(exception == null ? Messages.AbstractTreeAction_2 : exception.getMessage(), title);
 	}
 
 	public static void statusError(Status stat, String title) {

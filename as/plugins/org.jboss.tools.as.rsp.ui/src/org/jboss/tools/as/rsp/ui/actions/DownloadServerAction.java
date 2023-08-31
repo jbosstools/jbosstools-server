@@ -17,7 +17,6 @@ import java.util.concurrent.ExecutionException;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
-import org.jboss.tools.as.rsp.ui.Messages;
 import org.jboss.tools.as.rsp.ui.client.RspClientLauncher;
 import org.jboss.tools.as.rsp.ui.dialogs.SelectDownloadRuntimeDialog;
 import org.jboss.tools.as.rsp.ui.model.IRsp;
@@ -30,11 +29,11 @@ import org.jboss.tools.rsp.api.dao.ListDownloadRuntimeResponse;
 import org.jboss.tools.rsp.api.dao.WorkflowResponse;
 
 public class DownloadServerAction extends AbstractTreeAction {
-	private static final String ERROR_FETCHING_DOWNLOADABLE_RUNTIMES = "Error loading list of downloadable runtimes";
-	private static final String ERROR_DOWNLOADING_RUNTIME = "Error downloading runtime";
+	private static final String ERROR_FETCHING_DOWNLOADABLE_RUNTIMES = org.jboss.tools.as.rsp.ui.actions.Messages.DownloadServerAction_0;
+	private static final String ERROR_DOWNLOADING_RUNTIME = org.jboss.tools.as.rsp.ui.actions.Messages.DownloadServerAction_1;
 
 	public DownloadServerAction(ISelectionProvider provider) {
-		super(provider, "Download Server");
+		super(provider, org.jboss.tools.as.rsp.ui.actions.Messages.DownloadServerAction_2);
 	}
 
 	@Override
@@ -59,7 +58,7 @@ public class DownloadServerAction extends AbstractTreeAction {
 					int ret = td.open();
 					DownloadRuntimeDescription chosen = td.getSelected();
 					if (chosen != null && ret == Window.OK) {
-						new Thread("Download Runtime Workflow: " + server.getRspType().getName()) {
+						new Thread(org.jboss.tools.as.rsp.ui.actions.Messages.DownloadServerAction_3 + server.getRspType().getName()) {
 							public void run() {
 								// TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_DOWNLOAD_RUNTIME,
 								// chosen.getId());
@@ -68,7 +67,7 @@ public class DownloadServerAction extends AbstractTreeAction {
 						}.start();
 					}
 				});
-				new Thread("Load downloadable runtimes...") {
+				new Thread(org.jboss.tools.as.rsp.ui.actions.Messages.DownloadServerAction_4) {
 					public void run() {
 						ListDownloadRuntimeResponse runtimeResponse = null;
 						try {
@@ -106,7 +105,7 @@ public class DownloadServerAction extends AbstractTreeAction {
 			final WorkflowResponse resp2 = resp;
 			Display.getDefault().syncExec(() -> {
 				Map<String, Object> tmp = WorkflowUiUtility.displayPromptsSeekWorkflowInput(
-						"Downloading " + chosen.getName(), "This is a workflow for downloading the selected runtime",
+						org.jboss.tools.as.rsp.ui.actions.Messages.DownloadServerAction_5 + chosen.getName(), org.jboss.tools.as.rsp.ui.actions.Messages.DownloadServerAction_6,
 						resp2);
 				if (tmp != null)
 					toSend.putAll(tmp);

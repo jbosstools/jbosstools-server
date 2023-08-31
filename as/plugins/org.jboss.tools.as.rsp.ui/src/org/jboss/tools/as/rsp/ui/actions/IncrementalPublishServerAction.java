@@ -22,14 +22,14 @@ import org.jboss.tools.rsp.api.dao.Status;
 
 public class IncrementalPublishServerAction extends AbstractTreeAction {
 
-	private static final String ERROR_PUBLISHING = "Error publishing to server";
+	private static final String ERROR_PUBLISHING = Messages.IncrementalPublishServerAction_0;
 
 	public IncrementalPublishServerAction(ISelectionProvider provider, String text) {
 		super(provider, text);
 	}
 
 	public IncrementalPublishServerAction(ISelectionProvider provider) {
-		this(provider, "Publish Server (Incremental)");
+		this(provider, Messages.IncrementalPublishServerAction_1);
 	}
 
 	@Override

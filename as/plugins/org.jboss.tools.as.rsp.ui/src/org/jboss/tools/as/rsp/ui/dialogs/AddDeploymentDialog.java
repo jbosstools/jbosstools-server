@@ -51,8 +51,8 @@ public class AddDeploymentDialog extends TitleAreaDialog {
 	protected Control createContents(Composite parent) {
 		Control c = super.createContents(parent);
 		this.getButton(IDialogConstants.OK_ID).setEnabled(false);
-		setTitle("Add a deployment");
-		setMessage("Add a deployment to the server");
+		setTitle(Messages.AddDeploymentDialog_0);
+		setMessage(Messages.AddDeploymentDialog_1);
 		return c;
 	}
 
@@ -72,7 +72,7 @@ public class AddDeploymentDialog extends TitleAreaDialog {
 	private void createUI(Composite main) {
 		this.locationPanel = new LocationPanel(main, SWT.NONE);
 		if (attributes.getAttributes().size() > 0)
-			this.attributesPanel = new AttributesPanel(main, SWT.NONE, attributes, "Attributes", attributeValues);
+			this.attributesPanel = new AttributesPanel(main, SWT.NONE, attributes, Messages.AddDeploymentDialog_2, attributeValues);
 	}
 
 	public String getLabel() {
@@ -95,13 +95,13 @@ public class AddDeploymentDialog extends TitleAreaDialog {
 			setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 			Label name = new Label(this, SWT.NONE);
-			name.setText("Deployment Path");
+			name.setText(Messages.AddDeploymentDialog_3);
 
 			field = new Text(this, SWT.BORDER);
 			field.addModifyListener(this);
 
 			browseFile = new Button(this, SWT.PUSH);
-			browseFile.setText("File...");
+			browseFile.setText(Messages.AddDeploymentDialog_4);
 			browseFile.addSelectionListener(new SelectionListener() {
 				public void widgetSelected(SelectionEvent e) {
 					FileDialog fd = new FileDialog(Display.getDefault().getActiveShell());
@@ -117,7 +117,7 @@ public class AddDeploymentDialog extends TitleAreaDialog {
 			});
 
 			browseFolder = new Button(this, SWT.PUSH);
-			browseFolder.setText("Folder...");
+			browseFolder.setText(Messages.AddDeploymentDialog_5);
 			browseFolder.addSelectionListener(new SelectionListener() {
 				public void widgetSelected(SelectionEvent e) {
 					DirectoryDialog fd = new DirectoryDialog(Display.getDefault().getActiveShell());

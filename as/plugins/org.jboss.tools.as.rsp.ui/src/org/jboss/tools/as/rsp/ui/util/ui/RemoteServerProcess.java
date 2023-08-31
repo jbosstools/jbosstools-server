@@ -23,6 +23,7 @@ import org.eclipse.debug.core.model.IFlushableStreamMonitor;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.model.IStreamsProxy;
+import org.jboss.tools.as.rsp.ui.Messages;
 import org.jboss.tools.as.rsp.ui.actions.TerminateServerAction;
 import org.jboss.tools.as.rsp.ui.model.IRsp;
 import org.jboss.tools.as.rsp.ui.model.impl.RspCore;
@@ -33,7 +34,7 @@ import org.jboss.tools.rsp.api.dao.ServerState;
 
 public class RemoteServerProcess implements IProcess {
 	private static String getDefaultLaunchLabel(ServerProcess sp, String launchMode) {
-		return sp.getProcessId() + " in mode " + launchMode;
+		return sp.getProcessId() + Messages.RemoteServerProcess_0 + launchMode;
 	}
 
 	protected ILaunch launch;

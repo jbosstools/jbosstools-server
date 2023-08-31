@@ -87,7 +87,7 @@ public class RspImpl implements IRsp, IRspStartCallback {
 			return new String(Files.readAllBytes(filePath));
 		} catch (IOException e) {
 			RspUiActivator.getDefault().getLog().log(
-					StatusFactory.errorStatus(RspUiActivator.PLUGIN_ID, "Error reading file " + filePath, e));
+					StatusFactory.errorStatus(RspUiActivator.PLUGIN_ID, Messages.RspImpl_0 + filePath, e));
 			return null;
 		}
 	}
@@ -98,7 +98,7 @@ public class RspImpl implements IRsp, IRspStartCallback {
 			return getController().start(this);
 		} catch (StartupFailedException sfe) {
 			UIHelper.executeInUI(() -> {
-				RspUiActivator.log(StatusFactory.errorStatus(RspUiActivator.PLUGIN_ID, "Unable to start RSP", sfe));
+				RspUiActivator.log(StatusFactory.errorStatus(RspUiActivator.PLUGIN_ID, Messages.RspImpl_1, sfe));
 			});
 			return null;
 		}
@@ -144,7 +144,7 @@ public class RspImpl implements IRsp, IRspStartCallback {
 		boolean b = exists();
 		if (!b && latestVersion != null && downloadUrl != null) {
 			final String serverHome = this.type.getServerHome();
-			String name = "Downloading " + getRspType().getName();
+			String name = Messages.RspImpl_2 + getRspType().getName();
 			new Job(name) {
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
@@ -182,7 +182,7 @@ public class RspImpl implements IRsp, IRspStartCallback {
 		File root = new File(home, RspTypeImpl.DATA_LOCATION_DEFAULT);
 		File installs = new File(root, RspTypeImpl.INSTALLATIONS);
 		File downloads = new File(installs, RspTypeImpl.DOWNLOADS);
-		File dlFile = new File(downloads, getRspType().getId() + "-" + getLatestVersion() + ".zip");
+		File dlFile = new File(downloads, getRspType().getId() + "-" + getLatestVersion() + ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
 		return dlFile;
 	}
 

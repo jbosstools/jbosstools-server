@@ -37,8 +37,8 @@ public class VersionComparatorUtil {
 		if (actual == null)
 			return true;
 
-		String[] splitActual = actual.split("[-\\.]");
-		String[] splitTest = test.split("[-\\.]");
+		String[] splitActual = actual.split("[-\\.]"); //$NON-NLS-1$
+		String[] splitTest = test.split("[-\\.]"); //$NON-NLS-1$
 
 		// Find the number of segments actually available for comparison
 		int comparableSegments = splitActual.length;
@@ -74,8 +74,8 @@ public class VersionComparatorUtil {
 		if (actual == null)
 			return true;
 
-		String[] splitActual = actual.split("\\.");
-		String[] splitTest = test.split("\\.");
+		String[] splitActual = actual.split("\\."); //$NON-NLS-1$
+		String[] splitTest = test.split("\\."); //$NON-NLS-1$
 
 		// Find the number of segments actually available for comparison
 		int comparableSegments = splitActual.length;

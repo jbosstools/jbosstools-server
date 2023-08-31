@@ -18,7 +18,7 @@ import org.jboss.tools.as.rsp.ui.model.impl.RspCore;
 public class StartRspAction extends AbstractTreeAction {
 
 	public StartRspAction(ISelectionProvider provider) {
-		super(provider, "Start RSP");
+		super(provider, Messages.StartRspAction_0);
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class StartRspAction extends AbstractTreeAction {
 	protected void singleSelectionActionPerformed(Object selected) {
 		if (selected instanceof IRsp) {
 			IRsp server = (IRsp) selected;
-			new Thread("Start RSP Server: " + server.getRspType().getId()) {
+			new Thread(Messages.StartRspAction_1 + server.getRspType().getId()) {
 				public void run() {
 					RspCore.getDefault().startServer(server);
 				}

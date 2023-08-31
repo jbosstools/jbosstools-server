@@ -26,13 +26,13 @@ import org.jboss.tools.as.rsp.ui.model.IServerIconProvider;
  */
 public class RspTypeImpl implements IRspType {
 
-	public static final String SYSPROP_USER_HOME = "user.home";
-	public static final String DATA_LOCATION_DEFAULT = ".rsp";
-	public static final String INSTALLATIONS = ".rspInstalls";
-	public static final String EXPANDED = "expanded";
-	public static final String DOWNLOADS = "downloads";
+	public static final String SYSPROP_USER_HOME = "user.home"; //$NON-NLS-1$
+	public static final String DATA_LOCATION_DEFAULT = ".rsp"; //$NON-NLS-1$
+	public static final String INSTALLATIONS = ".rspInstalls"; //$NON-NLS-1$
+	public static final String EXPANDED = "expanded"; //$NON-NLS-1$
+	public static final String DOWNLOADS = "downloads"; //$NON-NLS-1$
 
-	public static final String FILE_DOT_VERSION = ".distribution.version";
+	public static final String FILE_DOT_VERSION = ".distribution.version"; //$NON-NLS-1$
 
 	private final IServerIconProvider iconProvider;
 	private final String name;
@@ -68,7 +68,7 @@ public class RspTypeImpl implements IRspType {
 	public Image getIcon(String serverTypeId) {
 		Image rspIcon = iconProvider.getIcon(serverTypeId);
 		if (rspIcon == null) {
-			return RspUiActivator.getDefault().getSharedImages().image("server-dark-24x24.png");
+			return RspUiActivator.getDefault().getSharedImages().image("server-dark-24x24.png"); //$NON-NLS-1$
 		}
 		return rspIcon;
 	}

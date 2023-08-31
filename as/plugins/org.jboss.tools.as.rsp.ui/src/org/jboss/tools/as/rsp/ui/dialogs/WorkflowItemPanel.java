@@ -33,10 +33,10 @@ import org.jboss.tools.rsp.api.dao.WorkflowPromptDetails;
 import org.jboss.tools.rsp.api.dao.WorkflowResponseItem;
 
 public class WorkflowItemPanel extends Composite implements ModifyListener {
-	public static final String WORKFLOW_ITEM_STRING_PROPERTY_LINK_URL = "workflow.item.string.property.link.url";
+	public static final String WORKFLOW_ITEM_STRING_PROPERTY_LINK_URL = "workflow.item.string.property.link.url"; //$NON-NLS-1$
 
-	private static final String COMBO_TRUE = "Yes (true)";
-	private static final String COMBO_FALSE = "No (false)";
+	private static final String COMBO_TRUE = Messages.WorkflowItemPanel_1;
+	private static final String COMBO_FALSE = Messages.WorkflowItemPanel_2;
 
 	private final WorkflowResponseItem item;
 	private IWorkflowItemListener listener;
@@ -52,11 +52,11 @@ public class WorkflowItemPanel extends Composite implements ModifyListener {
 		this.listener = listener;
 		String type = item.getItemType();
 		String content = item.getContent();
-		String msg = item.getLabel() + (content == null || content.isEmpty() ? "" : "\n" + content);
+		String msg = item.getLabel() + (content == null || content.isEmpty() ? "" : "\n" + content); //$NON-NLS-1$ //$NON-NLS-2$
 
-		if (type == null || "workflow.prompt.small".equals(type)) {
+		if (type == null || "workflow.prompt.small".equals(type)) { //$NON-NLS-1$
 			handleSmall(item, msg);
-		} else if ("workflow.prompt.large".equals(type)) {
+		} else if ("workflow.prompt.large".equals(type)) { //$NON-NLS-1$
 			handleLarge(item, msg);
 		}
 
@@ -131,7 +131,7 @@ public class WorkflowItemPanel extends Composite implements ModifyListener {
 				field = new Text(this, SWT.NONE);
 				field.addModifyListener(this);
 				Button button = new Button(this, SWT.PUSH);
-				button.setText("Browse...");
+				button.setText(Messages.AttributePanel_1);
 				button.addSelectionListener(new SelectionListener() {
 					public void widgetSelected(SelectionEvent e) {
 						FileDialog fd = new FileDialog(Display.getDefault().getActiveShell());
@@ -149,7 +149,7 @@ public class WorkflowItemPanel extends Composite implements ModifyListener {
 				field = new Text(this, SWT.NONE);
 				field.addModifyListener(this);
 				Button button = new Button(this, SWT.PUSH);
-				button.setText("Browse...");
+				button.setText(Messages.AttributePanel_1);
 				button.addSelectionListener(new SelectionListener() {
 					public void widgetSelected(SelectionEvent e) {
 						DirectoryDialog fd = new DirectoryDialog(Display.getDefault().getActiveShell());
@@ -169,7 +169,7 @@ public class WorkflowItemPanel extends Composite implements ModifyListener {
 
 	private String asString(String type, Object value) {
 		if (ServerManagementAPIConstants.ATTR_TYPE_BOOL.equals(type)) {
-			return value == null ? "false" : Boolean.toString("true".equalsIgnoreCase(value.toString()));
+			return value == null ? "false" : Boolean.toString("true".equalsIgnoreCase(value.toString())); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		if (ServerManagementAPIConstants.ATTR_TYPE_INT.equals(type)) {
 			if (value instanceof Number) {

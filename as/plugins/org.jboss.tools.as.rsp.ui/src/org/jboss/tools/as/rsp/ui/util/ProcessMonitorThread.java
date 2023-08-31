@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.jboss.tools.as.rsp.ui.util;
 
+import org.jboss.tools.as.rsp.ui.Messages;
+
 /**
  * Monitors a system process, waiting for it to terminate, and then notifies the
  * associated runtime process.
@@ -47,7 +49,7 @@ public class ProcessMonitorThread extends Thread {
 	 * @param process process to monitor for termination
 	 */
 	public ProcessMonitorThread(Process process, IProcessMonitorCallback callback) {
-		super("Process monitor");
+		super(Messages.ProcessMonitorThread_0);
 		setDaemon(true);
 		this.terminatedCallback = callback;
 		this.fOSProcess = process;

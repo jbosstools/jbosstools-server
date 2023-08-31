@@ -23,10 +23,10 @@ import org.jboss.tools.rsp.api.dao.ServerHandle;
 import org.jboss.tools.rsp.api.dao.Status;
 
 public class RemoveDeploymentAction extends AbstractTreeAction {
-	private static final String ERROR_REMOVING_DEPLOYMENT = "Error removing deployment";
+	private static final String ERROR_REMOVING_DEPLOYMENT = Messages.RemoveDeploymentAction_0;
 
 	public RemoveDeploymentAction(ISelectionProvider provider) {
-		super(provider, "Remove Deployment");
+		super(provider, Messages.RemoveDeploymentAction_1);
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class RemoveDeploymentAction extends AbstractTreeAction {
 			ServerDeployableReference sdr = getServerDeployableReference(wrap);
 			IRsp rsp = wrap.getServerState().getRsp();
 			RSPServer rspServer = RspCore.getDefault().getClient(rsp).getServerProxy();
-			new Thread("Remove Deployment") {
+			new Thread(Messages.RemoveDeploymentAction_2) {
 				public void run() {
 					actionPerformedThread(rspServer, sdr);
 				}

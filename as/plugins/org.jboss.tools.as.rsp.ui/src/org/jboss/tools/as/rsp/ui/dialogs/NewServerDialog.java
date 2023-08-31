@@ -37,7 +37,7 @@ import org.jboss.tools.rsp.api.dao.ServerAttributes;
 import org.jboss.tools.rsp.api.dao.ServerType;
 
 public class NewServerDialog extends TitleAreaDialog implements ModifyListener {
-	private static final String ERROR_CREATING_SERVER = "Error creating server";
+	private static final String ERROR_CREATING_SERVER = Messages.NewServerDialog_0;
 
 	private RspClientLauncher client;
 	private ServerType serverType;
@@ -63,9 +63,9 @@ public class NewServerDialog extends TitleAreaDialog implements ModifyListener {
 	protected Control createContents(Composite parent) {
 		Control c = super.createContents(parent);
 		this.getButton(IDialogConstants.OK_ID).setEnabled(false);
-		setTitle("Create Server: " + this.serverType.getVisibleName());
-		getShell().setText("Create Server: " + this.serverType.getVisibleName());
-		setMessage("Fill in optional and required attributes to interact with this server.");
+		setTitle(Messages.NewServerDialog_1 + this.serverType.getVisibleName());
+		getShell().setText(Messages.NewServerDialog_7 + this.serverType.getVisibleName());
+		setMessage(Messages.NewServerDialog_3);
 		return c;
 	}
 
@@ -87,21 +87,21 @@ public class NewServerDialog extends TitleAreaDialog implements ModifyListener {
 		nameComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		nameComposite.setLayout(new GridLayout(2, false));
 		Label nameLabel = new Label(nameComposite, SWT.NONE);
-		nameLabel.setText("Server Name: ");
+		nameLabel.setText(Messages.NewServerDialog_4);
 		this.nameField = new Text(nameComposite, SWT.BORDER);
 		nameField.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		this.nameField.addModifyListener(this);
 		if (required != null && required.getAttributes().size() > 0)
-			this.requiredPanel = new AttributesPanel(main, SWT.NONE, required, "Required", attributeValues);
+			this.requiredPanel = new AttributesPanel(main, SWT.NONE, required, Messages.NewServerDialog_5, attributeValues);
 		if (optional != null && optional.getAttributes().size() > 0)
-			this.optionalPanel = new AttributesPanel(main, SWT.NONE, optional, "Optional", attributeValues);
+			this.optionalPanel = new AttributesPanel(main, SWT.NONE, optional, Messages.NewServerDialog_6, attributeValues);
 	}
 
 	protected void okPressed() {
 		if (getOkButton().isEnabled()) {
 			getOkButton().setEnabled(false);
 		}
-		new Thread("Create Server") {
+		new Thread(Messages.NewServerDialog_7) {
 			public void run() {
 				ServerAttributes csa = new ServerAttributes(serverType.getId(), fName, attributeValues);
 				try {

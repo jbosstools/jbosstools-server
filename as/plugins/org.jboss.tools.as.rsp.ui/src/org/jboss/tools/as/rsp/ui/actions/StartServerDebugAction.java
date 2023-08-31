@@ -41,14 +41,14 @@ import org.jboss.tools.rsp.api.dao.Status;
 
 public class StartServerDebugAction extends AbstractTreeAction {
 
-	private static final String ERROR_STARTING_SERVER = "Error starting server";
+	private static final String ERROR_STARTING_SERVER = Messages.StartServerDebugAction_0;
 	public static final String DEBUG_DETAILS_HOST = "debug.details.host";
 	public static final String DEBUG_DETAILS_PORT = "debug.details.port";
 	public static final String DEBUG_DETAILS_TYPE = "debug.details.type";
 	public static final String DEBUG_DETAILS_TYPE_JAVA = "java";
 
 	public StartServerDebugAction(ISelectionProvider provider) {
-		super(provider, "Start Server (debug)");
+		super(provider, Messages.StartServerDebugAction_5);
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class StartServerDebugAction extends AbstractTreeAction {
 		if (selected instanceof ServerStateWrapper) {
 			final ServerStateWrapper sel = (ServerStateWrapper) selected;
 			final RspClientLauncher client = RspCore.getDefault().getClient(sel.getRsp());
-			new Thread("Debugging server: " + sel.getServerState().getServer().getId()) {
+			new Thread(Messages.StartServerDebugAction_6 + sel.getServerState().getServer().getId()) {
 				public void run() {
 					startServerDebugModeInternal(sel, client);
 				}
@@ -80,7 +80,7 @@ public class StartServerDebugAction extends AbstractTreeAction {
 	}
 
 	public static void startServerDebugModeInternal(ServerStateWrapper sel, RspClientLauncher client) {
-		String mode = "debug";
+		String mode = Messages.StartServerDebugAction_7;
 		ServerHandle handle = sel.getServerState().getServer();
 		ServerAttributes sa = new ServerAttributes(handle.getType().getId(), sel.getServerState().getServer().getId(),
 				new HashMap<String, Object>());
@@ -118,11 +118,11 @@ public class StartServerDebugAction extends AbstractTreeAction {
 	}
 
 	private static void launchJavaDebugger(ServerHandle handle, String port) {
-		new Job("Launching Remote Debug for server " + handle.getId()) {
+		new Job(Messages.StartServerDebugAction_8 + handle.getId()) {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
-					String name = "Remote Debug for server " + handle.getId();
+					String name = Messages.StartServerDebugAction_9 + handle.getId();
 					ILaunchConfigurationType launchConfigurationType = DebugPlugin.getDefault().getLaunchManager()
 							.getLaunchConfigurationType(ID_REMOTE_JAVA_APPLICATION);
 					ILaunchConfigurationWorkingCopy launchConfiguration = launchConfigurationType.newInstance(null,
@@ -134,7 +134,7 @@ public class StartServerDebugAction extends AbstractTreeAction {
 					connectMap.put("port", String.valueOf(port)); //$NON-NLS-1$
 					connectMap.put("hostname", "localhost"); //$NON-NLS-1$ //$NON-NLS-2$
 					launchConfiguration.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CONNECT_MAP, connectMap);
-					launchConfiguration.launch("debug", monitor);
+					launchConfiguration.launch("debug", monitor); //$NON-NLS-1$
 				} catch (CoreException e) {
 					return StatusFactory.throwableToStatus(IStatus.ERROR, RspUiActivator.PLUGIN_ID, e);
 				}

@@ -27,7 +27,7 @@ import org.jboss.tools.rsp.api.dao.StringPrompt;
 public class StringPromptDialog extends TitleAreaDialog {
 	private IRsp rsp;
 	private StringPrompt stringPrompt;
-	private String fieldVal = "";
+	private String fieldVal = ""; //$NON-NLS-1$
 
 	public StringPromptDialog(IRsp rsp, StringPrompt stringPrompt) {
 		super(Display.getDefault().getActiveShell());
@@ -41,7 +41,7 @@ public class StringPromptDialog extends TitleAreaDialog {
 		main.setLayoutData(new GridData(GridData.FILL_BOTH));
 		main.setLayout(new GridLayout(1, true));
 		createUI(main);
-		setTitle("Prompt from " + rsp.getRspType().getName());
+		setTitle(Messages.StringPromptDialog_1 + rsp.getRspType().getName());
 		return c;
 	}
 

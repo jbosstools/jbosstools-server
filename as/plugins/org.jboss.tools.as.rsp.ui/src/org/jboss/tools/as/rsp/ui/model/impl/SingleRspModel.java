@@ -149,7 +149,7 @@ public class SingleRspModel {
 
 	private String internalIdForProcess(ServerProcess p) {
 		ServerHandle sh = p.getServer();
-		String id = sh.getType().getId() + ":" + sh.getId() + ":" + p.getProcessId();
+		String id = sh.getType().getId() + ":" + sh.getId() + ":" + p.getProcessId(); //$NON-NLS-1$ //$NON-NLS-2$
 		return id;
 	}
 
@@ -165,9 +165,9 @@ public class SingleRspModel {
 		String id = internalIdForProcess(serverProcess);
 		ILaunch l = this.launchForServer.get(serverProcess.getServer().getId());
 		if (l == null) {
-			l = new Launch(null, "run", null);
+			l = new Launch(null, "run", null); //$NON-NLS-1$
 			l.setAttribute(DebugPlugin.ATTR_LAUNCH_TIMESTAMP, Long.toString(System.currentTimeMillis()));
-			l.setAttribute(DebugPlugin.ATTR_CAPTURE_OUTPUT, "true");
+			l.setAttribute(DebugPlugin.ATTR_CAPTURE_OUTPUT, "true"); //$NON-NLS-1$
 			this.launchForServer.put(serverProcess.getServer().getId(), l);
 			getLaunchManager().addLaunch(l);
 		}

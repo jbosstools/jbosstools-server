@@ -16,7 +16,7 @@ import org.jboss.tools.rsp.api.ServerManagementAPIConstants;
 public class FullPublishServerAction extends IncrementalPublishServerAction {
 
 	public FullPublishServerAction(ISelectionProvider provider) {
-		super(provider, "Publish Server (Full)");
+		super(provider, Messages.FullPublishServerAction_0);
 	}
 
 	protected void singleSelectionActionPerformed(Object selected) {

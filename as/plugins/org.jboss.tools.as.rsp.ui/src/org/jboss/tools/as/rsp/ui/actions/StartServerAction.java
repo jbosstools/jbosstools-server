@@ -24,10 +24,10 @@ import org.jboss.tools.rsp.api.dao.StartServerResponse;
 import org.jboss.tools.rsp.api.dao.Status;
 
 public class StartServerAction extends AbstractTreeAction {
-	public static final String ERROR_STARTING_SERVER = "Error starting server";
+	public static final String ERROR_STARTING_SERVER = Messages.StartServerAction_0;
 
 	public StartServerAction(ISelectionProvider provider) {
-		super(provider, "Start Server (run)");
+		super(provider, Messages.StartServerAction_1);
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class StartServerAction extends AbstractTreeAction {
 		if (selected instanceof ServerStateWrapper) {
 			final ServerStateWrapper sel = (ServerStateWrapper) selected;
 			final RspClientLauncher client = RspCore.getDefault().getClient(sel.getRsp());
-			new Thread("Starting server: " + sel.getServerState().getServer().getId()) {
+			new Thread(Messages.StartServerAction_2 + sel.getServerState().getServer().getId()) {
 				public void run() {
 					startServerRunModeInternal(sel, client);
 				}
@@ -59,7 +59,7 @@ public class StartServerAction extends AbstractTreeAction {
 	}
 
 	public static void startServerRunModeInternal(ServerStateWrapper sel, RspClientLauncher client) {
-		String mode = "run";
+		String mode = Messages.StartServerAction_3;
 		ServerAttributes sa = new ServerAttributes(sel.getServerState().getServer().getType().getId(),
 				sel.getServerState().getServer().getId(), new HashMap<String, Object>());
 		LaunchParameters params = new LaunchParameters(sa, mode);

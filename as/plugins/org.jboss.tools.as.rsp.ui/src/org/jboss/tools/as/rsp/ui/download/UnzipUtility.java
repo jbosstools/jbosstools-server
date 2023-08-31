@@ -21,11 +21,14 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
+import org.eclipse.osgi.util.NLS;
+import org.jboss.tools.as.rsp.ui.Messages;
+
 /**
  * Utility to unzip a downloaded archive
  */
 public class UnzipUtility {
-	private static final String EXTRACTING = "Extracting ..."; //$NON-NLS-1$
+	private static final String EXTRACTING = Messages.UnzipUtility_0;
 	private static final String SEPARATOR = "/"; //$NON-NLS-1$
 
 	private File file;
@@ -77,10 +80,9 @@ public class UnzipUtility {
 				// ignore
 			}
 
-			String msg = "Error opening zip file " + file.getAbsolutePath();
-			if (!isZipped) {
-				msg += ";  file may not be a properly formated zip file.";
-			}
+			String msg = isZipped ?
+					NLS.bind(Messages.UnzipUtility_1, file.getAbsolutePath()) :
+					NLS.bind(Messages.UnzipUtility_2, file.getAbsolutePath());
 			throw new IOException(msg, e);
 		}
 		discoveredRoot = possibleRoot;

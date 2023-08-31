@@ -39,7 +39,7 @@ public class RSPLabelProvider extends AbstractLabelProvider {
 	@Override
 	public String getText(Object element) {
 		if (element instanceof IRsp) {
-			return ((IRsp) element).getRspType().getName() + " [" + getRspState((IRsp) element) + "]";
+			return ((IRsp) element).getRspType().getName() + " [" + getRspState((IRsp) element) + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		if (element instanceof ServerStateWrapper) {
 			return getServerStateString((ServerStateWrapper) element);
@@ -52,42 +52,42 @@ public class RSPLabelProvider extends AbstractLabelProvider {
 
 	private static String getDeploymentStateString(DeployableStateWrapper element) {
 
-		return element.getDeployableState().getReference().getLabel() + "   ["
-				+ getRunStateString(element.getDeployableState().getState()) + ", "
-				+ getPublishStateString(element.getDeployableState().getPublishState()) + "]";
+		return element.getDeployableState().getReference().getLabel() + "   [" //$NON-NLS-1$
+				+ getRunStateString(element.getDeployableState().getState()) + ", " //$NON-NLS-1$
+				+ getPublishStateString(element.getDeployableState().getPublishState()) + "]"; //$NON-NLS-1$
 	}
 
 	private static String getServerStateString(ServerStateWrapper element) {
-		return element.getServerState().getServer().getId() + "   ["
-				+ getRunStateString(element.getServerState().getState()) + ", "
-				+ getPublishStateString(element.getServerState().getPublishState()) + "]";
+		return element.getServerState().getServer().getId() + "   [" //$NON-NLS-1$
+				+ getRunStateString(element.getServerState().getState()) + ", " //$NON-NLS-1$
+				+ getPublishStateString(element.getServerState().getPublishState()) + "]"; //$NON-NLS-1$
 	}
 
 	public static String getRspState(IRsp rsp) {
 		IRspCore.IJServerState state = rsp.getState();
 		if (state == IRspCore.IJServerState.STARTED && !rsp.wasLaunched()) {
-			return "Connected";
+			return Messages.RSPLabelProvider_8;
 		}
 		return rsp.getState().toString().toUpperCase();
 	}
 
 	public static String getRunStateString(int state) {
-		String stateString = "unknown";
+		String stateString = Messages.RSPLabelProvider_9;
 		switch (state) {
 		case ServerManagementAPIConstants.STATE_UNKNOWN:
-			stateString = "unknown";
+			stateString = Messages.RSPLabelProvider_10;
 			break;
 		case ServerManagementAPIConstants.STATE_STARTED:
-			stateString = "started";
+			stateString = Messages.RSPLabelProvider_11;
 			break;
 		case ServerManagementAPIConstants.STATE_STARTING:
-			stateString = "starting";
+			stateString = Messages.RSPLabelProvider_12;
 			break;
 		case ServerManagementAPIConstants.STATE_STOPPED:
-			stateString = "stopped";
+			stateString = Messages.RSPLabelProvider_13;
 			break;
 		case ServerManagementAPIConstants.STATE_STOPPING:
-			stateString = "stopping";
+			stateString = Messages.RSPLabelProvider_14;
 			break;
 
 		}
@@ -95,44 +95,44 @@ public class RSPLabelProvider extends AbstractLabelProvider {
 	}
 
 	public static String getPublishTypeString(int type) {
-		String stateString = "unknown";
+		String stateString = Messages.RSPLabelProvider_15;
 		switch (type) {
 		case ServerManagementAPIConstants.PUBLISH_AUTO:
-			stateString = "auto";
+			stateString = Messages.RSPLabelProvider_16;
 			break;
 		case ServerManagementAPIConstants.PUBLISH_FULL:
-			stateString = "full";
+			stateString = Messages.RSPLabelProvider_17;
 			break;
 		case ServerManagementAPIConstants.PUBLISH_INCREMENTAL:
-			stateString = "incremental";
+			stateString = Messages.RSPLabelProvider_18;
 			break;
 		case ServerManagementAPIConstants.PUBLISH_CLEAN:
-			stateString = "clean";
+			stateString = Messages.RSPLabelProvider_19;
 			break;
 		}
 		return stateString.toUpperCase();
 	}
 
 	public static String getPublishStateString(int state) {
-		String stateString = "unknown";
+		String stateString = Messages.RSPLabelProvider_20;
 		switch (state) {
 		case ServerManagementAPIConstants.PUBLISH_STATE_ADD:
-			stateString = "add";
+			stateString = Messages.RSPLabelProvider_21;
 			break;
 		case ServerManagementAPIConstants.PUBLISH_STATE_FULL:
-			stateString = "publish required (full)";
+			stateString = Messages.RSPLabelProvider_22;
 			break;
 		case ServerManagementAPIConstants.PUBLISH_STATE_INCREMENTAL:
-			stateString = "publish required (incremental)";
+			stateString = Messages.RSPLabelProvider_23;
 			break;
 		case ServerManagementAPIConstants.PUBLISH_STATE_NONE:
-			stateString = "synchronized";
+			stateString = Messages.RSPLabelProvider_24;
 			break;
 		case ServerManagementAPIConstants.PUBLISH_STATE_REMOVE:
-			stateString = "remove";
+			stateString = Messages.RSPLabelProvider_25;
 			break;
 		case ServerManagementAPIConstants.PUBLISH_STATE_UNKNOWN:
-			stateString = "unknown";
+			stateString = Messages.RSPLabelProvider_26;
 			break;
 
 		}

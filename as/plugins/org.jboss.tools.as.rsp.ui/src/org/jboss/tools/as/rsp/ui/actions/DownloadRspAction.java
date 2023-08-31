@@ -21,7 +21,7 @@ import org.jboss.tools.as.rsp.ui.util.VersionComparatorUtil;
 public class DownloadRspAction extends AbstractTreeAction {
 
 	public DownloadRspAction(ISelectionProvider provider) {
-		super(provider, "Download / Update RSP");
+		super(provider, Messages.DownloadRspAction_0);
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class DownloadRspAction extends AbstractTreeAction {
 			if (!server.exists() || installed == null
 					|| VersionComparatorUtil.isGreaterThan(latest, installed.trim())) {
 				String home = server.getRspType().getServerHome();
-				new Thread("Updating RSP " + server.getRspType().getName()) {
+				new Thread(Messages.DownloadRspAction_1 + server.getRspType().getName()) {
 					public void run() {
 						deleteDirectory(RspTypeImpl.getServerTypeInstallLocation(server.getRspType()));
 //                        TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_DOWNLOAD_RSP,

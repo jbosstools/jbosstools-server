@@ -30,11 +30,11 @@ import org.jboss.tools.rsp.api.dao.ServerHandle;
 import org.jboss.tools.rsp.api.dao.Status;
 
 public class AddDeploymentAction extends AbstractTreeAction {
-	private static final String ERROR_LISTING = "Error listing deployment options";
-	private static final String ERROR_ADDING = "Error adding deployment";
+	private static final String ERROR_LISTING = Messages.AddDeploymentAction_errorListingDeploymentOptions;
+	private static final String ERROR_ADDING = Messages.AddDeploymentAction_errorAddingDeployment;
 
 	public AddDeploymentAction(ISelectionProvider provider) {
-		super(provider, "Add Deployment");
+		super(provider, Messages.AddDeploymentAction_addDeployment);
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class AddDeploymentAction extends AbstractTreeAction {
 			IRsp rsp = wrap.getRsp();
 			ServerHandle sh = wrap.getServerState().getServer();
 			RSPServer rspServer = RspCore.getDefault().getClient(rsp).getServerProxy();
-			new Thread("Adding Deployment") {
+			new Thread(Messages.AddDeploymentAction_addingDeployment) {
 				public void run() {
 					actionPerformedInternal(rspServer, sh);
 				}
@@ -90,7 +90,7 @@ public class AddDeploymentAction extends AbstractTreeAction {
 			String label = dialog.getLabel();
 			String path = dialog.getPath();
 			if (ret == Window.OK) {
-				new Thread("Adding Deployment") {
+				new Thread(Messages.AddDeploymentAction_addingDeployment) { //$NON-NLS-1$
 					public void run() {
 						try {
 							Status stat = rspServer.addDeployable(asReference(sh, label, path, opts)).get();

@@ -17,7 +17,7 @@ import org.jboss.tools.as.rsp.ui.internal.views.navigator.RSPContentProvider.Ser
 public class RestartServerDebugAction extends RestartServerAction {
 
 	public RestartServerDebugAction(ISelectionProvider provider) {
-		super(provider, "Restart Server (Debug)");
+		super(provider, Messages.RestartServerDebugAction_0);
 	}
 
 	protected void startServer(ServerStateWrapper sel, RspClientLauncher client) {

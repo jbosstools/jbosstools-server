@@ -51,14 +51,14 @@ public class AttributePanel {
 		name.setToolTipText(attr.getDescription());
 
 		Object valueObj = values.get(key);
-		String valueStr = (valueObj == null ? "" : valueObj.toString());
+		String valueStr = (valueObj == null ? "" : valueObj.toString()); //$NON-NLS-1$
 
 		if (oneAttribute.getType().equals(ServerManagementAPIConstants.ATTR_TYPE_LOCAL_FILE)) {
 			field = new Text(wrapped, SWT.BORDER);
 			if (valueStr != null)
 				field.setText(valueStr);
 			button = new Button(wrapped, SWT.PUSH);
-			button.setText("Browse...");
+			button.setText(Messages.AttributePanel_1);
 			button.addSelectionListener(new SelectionListener() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
@@ -79,7 +79,7 @@ public class AttributePanel {
 			if (valueStr != null)
 				field.setText(valueStr);
 			button = new Button(wrapped, SWT.PUSH);
-			button.setText("Browse...");
+			button.setText(Messages.AttributePanel_1);
 			button.addSelectionListener(new SelectionListener() {
 				public void widgetSelected(SelectionEvent e) {
 					String s = new DirectoryDialog(Display.getDefault().getActiveShell()).open();
@@ -136,7 +136,7 @@ public class AttributePanel {
 	
 	private String asString(String type, Object value) {
 		if (ServerManagementAPIConstants.ATTR_TYPE_BOOL.equals(type)) {
-			return value == null ? "false" : Boolean.toString("true".equalsIgnoreCase(value.toString()));
+			return value == null ? "false" : Boolean.toString("true".equalsIgnoreCase(value.toString())); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		if (ServerManagementAPIConstants.ATTR_TYPE_INT.equals(type)) {
 			if (value instanceof Number) {

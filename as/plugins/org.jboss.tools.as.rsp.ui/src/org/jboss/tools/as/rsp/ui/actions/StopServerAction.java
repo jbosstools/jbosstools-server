@@ -21,10 +21,10 @@ import org.jboss.tools.rsp.api.dao.Status;
 import org.jboss.tools.rsp.api.dao.StopServerAttributes;
 
 public class StopServerAction extends AbstractTreeAction {
-	private static final String ERROR_STOPPING_SERVER = "Error stopping server";
+	private static final String ERROR_STOPPING_SERVER = Messages.StopServerAction_0;
 
 	public StopServerAction(ISelectionProvider provider) {
-		super(provider, "Stop Server");
+		super(provider, Messages.StopServerAction_1);
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class StopServerAction extends AbstractTreeAction {
 		if (selected instanceof ServerStateWrapper) {
 			ServerStateWrapper sel = (ServerStateWrapper) selected;
 			RspClientLauncher client = RspCore.getDefault().getClient(sel.getRsp());
-			new Thread("Stop Server: " + sel.getServerState().getServer().getId()) {
+			new Thread(Messages.StopServerAction_2 + sel.getServerState().getServer().getId()) {
 				public void run() {
 					actionInternal(sel, client);
 				}

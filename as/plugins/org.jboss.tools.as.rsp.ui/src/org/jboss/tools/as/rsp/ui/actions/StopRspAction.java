@@ -17,7 +17,7 @@ import org.jboss.tools.as.rsp.ui.model.impl.RspCore;
 
 public class StopRspAction extends AbstractTreeAction {
 	public StopRspAction(ISelectionProvider provider) {
-		super(provider, "Stop RSP");
+		super(provider, Messages.StopRspAction_0);
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class StopRspAction extends AbstractTreeAction {
 	protected void singleSelectionActionPerformed(Object selected) {
 		if (selected instanceof IRsp) {
 			IRsp server = (IRsp) selected;
-			new Thread("Stop RSP Server: " + server.getRspType().getId()) {
+			new Thread(Messages.StopRspAction_1 + server.getRspType().getId()) {
 				public void run() {
 					RspCore.getDefault().stopServer(server);
 				}

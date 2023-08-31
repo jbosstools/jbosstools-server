@@ -50,7 +50,7 @@ public class SelectDownloadRuntimeDialog extends TitleAreaDialog {
 	@Override
 	protected Control createContents(Composite parent) {
 		Control c = super.createContents(parent);
-		setTitle("Download Server Runtime (Loading...)");
+		setTitle(Messages.SelectDownloadRuntimeDialog_0);
 		return c;
 	}
 
@@ -60,7 +60,7 @@ public class SelectDownloadRuntimeDialog extends TitleAreaDialog {
 		main.setLayoutData(new GridData(GridData.FILL_BOTH));
 		main.setLayout(new FormLayout());
 		createUI(main);
-		getShell().setText("Download Server Runtime");
+		getShell().setText(Messages.SelectDownloadRuntimeDialog_1);
 		return c;
 	}
 
@@ -101,7 +101,7 @@ public class SelectDownloadRuntimeDialog extends TitleAreaDialog {
 			dataMap.put(descriptor.getName(), descriptor);
 		}
 		Display.getDefault().asyncExec(() -> {
-			setTitle("Download Server Runtime...");
+			setTitle(Messages.SelectDownloadRuntimeDialog_2);
 			updateTable(getDownloadRuntimeList());
 		});
 	}
@@ -134,7 +134,7 @@ public class SelectDownloadRuntimeDialog extends TitleAreaDialog {
 
 	protected Image getIconForValue(DownloadRuntimeDescription value) {
 		if (value instanceof DownloadRuntimeDescription) {
-			String serverType = ((DownloadRuntimeDescription) value).getProperties().get("wtp-runtime-type");
+			String serverType = ((DownloadRuntimeDescription) value).getProperties().get("wtp-runtime-type"); //$NON-NLS-1$
 			return serverType == null ? null : rsp.getRspType().getIcon(serverType);
 		}
 		return null;

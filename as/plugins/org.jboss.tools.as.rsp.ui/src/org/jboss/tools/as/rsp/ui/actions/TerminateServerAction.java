@@ -23,10 +23,10 @@ import org.jboss.tools.rsp.api.dao.Status;
 import org.jboss.tools.rsp.api.dao.StopServerAttributes;
 
 public class TerminateServerAction extends AbstractTreeAction {
-	private static final String ERROR_TERMINATE_SERVER = "Error terminating server";
+	private static final String ERROR_TERMINATE_SERVER = Messages.TerminateServerAction_0;
 
 	public TerminateServerAction(ISelectionProvider provider) {
-		super(provider, "Terminate Server");
+		super(provider, Messages.TerminateServerAction_1);
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class TerminateServerAction extends AbstractTreeAction {
 	}
 
 	public static void terminateServer(IRsp rsp, String id) throws DebugException {
-		new Thread("Terminating RSP Server: " + id) {
+		new Thread(Messages.TerminateServerAction_2 + id) {
 			public void run() {
 				RspClientLauncher client = RspCore.getDefault().getClient(rsp);
 				StopServerAttributes ssa = new StopServerAttributes(id, true);

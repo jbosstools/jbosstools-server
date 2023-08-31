@@ -24,11 +24,11 @@ import org.jboss.tools.as.rsp.ui.model.impl.RspCore;
 import org.jboss.tools.rsp.api.dao.Status;
 
 public class DeleteServerAction extends AbstractTreeAction {
-	private static final String ERROR_DELETING_SERVER = "Error deleting server";
-	private static final String ERROR_DELETING_SERVERS = "Error deleting servers";
+	private static final String ERROR_DELETING_SERVER = Messages.DeleteServerAction_0;
+	private static final String ERROR_DELETING_SERVERS = Messages.DeleteServerAction_1;
 
 	public DeleteServerAction(ISelectionProvider provider) {
-		super(provider, "Delete Server");
+		super(provider, Messages.DeleteServerAction_2);
 	}
 
 	@Override
@@ -56,12 +56,12 @@ public class DeleteServerAction extends AbstractTreeAction {
 			MessageBox messageBox = new MessageBox(Display.getDefault().getActiveShell(),
 					SWT.ICON_WARNING | SWT.YES | SWT.NO);
 
-			messageBox.setText("Delete these servers?");
-			messageBox.setMessage("Are you sure you want to delete the " + arr.size() + " selected server"
-					+ (arr.size() != 1 ? "s" : ""));
+			messageBox.setText(Messages.DeleteServerAction_3);
+			String m = arr.size() == 1 ? Messages.DeleteServerAction_4 : Messages.DeleteServerAction_5;
+			messageBox.setMessage(m);
 			int buttonID = messageBox.open();
 			if (buttonID == SWT.YES) {
-				new Thread("Deleting RSP Servers") {
+				new Thread(Messages.DeleteServerAction_6) {
 					public void run() {
 						ArrayList<Status> fails = new ArrayList<>();
 						for (int i = 0; i < arr.size(); i++) {
@@ -83,7 +83,7 @@ public class DeleteServerAction extends AbstractTreeAction {
 							}
 						}
 						if (fails.size() > 0) {
-							String result = fails.stream().map(Status::getMessage).collect(Collectors.joining(","));
+							String result = fails.stream().map(Status::getMessage).collect(Collectors.joining(",")); //$NON-NLS-1$
 							showError(result, arr.size() > 1 ? ERROR_DELETING_SERVERS : ERROR_DELETING_SERVER);
 						}
 					}

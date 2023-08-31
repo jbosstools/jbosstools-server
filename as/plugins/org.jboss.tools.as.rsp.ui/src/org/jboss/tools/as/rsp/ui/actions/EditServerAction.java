@@ -32,7 +32,6 @@ import org.eclipse.ui.IWorkbenchPartConstants;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
-import org.eclipse.ui.internal.ide.IDEWorkbenchMessages;
 import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.jboss.tools.as.rsp.ui.client.RspClientLauncher;
@@ -47,7 +46,7 @@ import org.jboss.tools.rsp.api.dao.UpdateServerResponse;
 public class EditServerAction extends AbstractTreeAction {
 
 	public EditServerAction(ISelectionProvider provider) {
-		super(provider, "Edit Server");
+		super(provider, org.jboss.tools.as.rsp.ui.actions.Messages.EditServerAction_0);
 	}
 
 	@Override
@@ -72,7 +71,7 @@ public class EditServerAction extends AbstractTreeAction {
 				// TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_SERVER_EDIT,
 				// typeId, response.getStatus());
 				if (response.getStatus() != null && !response.getStatus().isOK()) {
-					showError(response.getStatus().getMessage(), "Error loading server descriptor content.");
+					showError(response.getStatus().getMessage(), org.jboss.tools.as.rsp.ui.actions.Messages.EditServerAction_1);
 				} else {
 					// OK assumed
 					String fName = server.getServerState().getServer().getId() + ".json";
@@ -82,7 +81,7 @@ public class EditServerAction extends AbstractTreeAction {
 			} catch (InterruptedException | ExecutionException | IOException e) {
 				// TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_SERVER_EDIT,
 				// typeId, interruptedException);
-				showError("Error displaying server descriptor content: " + e.getMessage(), "Error");
+				showError(org.jboss.tools.as.rsp.ui.actions.Messages.EditServerAction_3 + e.getMessage(), org.jboss.tools.as.rsp.ui.actions.Messages.EditServerAction_4);
 			}
 		}
 	}
@@ -133,11 +132,11 @@ public class EditServerAction extends AbstractTreeAction {
 					});
 				}
 			} catch (PartInitException e) {
-				String msg = NLS.bind(IDEWorkbenchMessages.OpenLocalFileAction_message_errorOnOpen,
+				String msg = NLS.bind("", //$NON-NLS-1$
 						fileStore.getName());
 				IDEWorkbenchPlugin.log(msg, e.getStatus());
 				MessageDialog.open(MessageDialog.ERROR, PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-						IDEWorkbenchMessages.OpenLocalFileAction_title, msg, SWT.SHEET);
+						"", msg, SWT.SHEET); //$NON-NLS-1$
 			}
 		}
 	}
@@ -145,7 +144,7 @@ public class EditServerAction extends AbstractTreeAction {
 	private void persistChanges(ServerStateWrapper server, IEditorPart part, String contents) {
 		RspClientLauncher client = RspCore.getDefault().getClient(server.getRsp());
 		if (client != null) {
-			new Thread("Update Server " + server.getServerState().getServer().getId()) {
+			new Thread(org.jboss.tools.as.rsp.ui.actions.Messages.EditServerAction_5 + server.getServerState().getServer().getId()) {
 				public void run() {
 					persistChanges(client, server, part, contents);
 				}
@@ -164,7 +163,7 @@ public class EditServerAction extends AbstractTreeAction {
 			// TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_SERVER_EDIT,
 			// typeId, response.getStatus());
 			if (response.getStatus() != null && !response.getStatus().isOK()) {
-				showError(response.getStatus().getMessage(), "Error saving server descriptor content.");
+				showError(response.getStatus().getMessage(), org.jboss.tools.as.rsp.ui.actions.Messages.EditServerAction_6);
 			} else {
 //                // OK assumed
 //                String fName = server.getServerState().getServer().getId() + ".json";
@@ -174,7 +173,7 @@ public class EditServerAction extends AbstractTreeAction {
 		} catch (InterruptedException | ExecutionException e) {
 			// TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_SERVER_EDIT,
 			// typeId, interruptedException);
-			showError("Error saving server descriptor content: " + e.getMessage(), "Error");
+			showError(org.jboss.tools.as.rsp.ui.actions.Messages.EditServerAction_7 + e.getMessage(), org.jboss.tools.as.rsp.ui.actions.Messages.EditServerAction_4);
 		}
 	}
 }

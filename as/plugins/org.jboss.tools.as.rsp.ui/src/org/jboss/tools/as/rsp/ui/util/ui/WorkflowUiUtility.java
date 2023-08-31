@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.tm.terminal.view.core.TerminalServiceFactory;
 import org.eclipse.tm.terminal.view.core.interfaces.ITerminalService;
 import org.eclipse.tm.terminal.view.core.interfaces.constants.ITerminalsConnectorConstants;
+import org.jboss.tools.as.rsp.ui.Messages;
 import org.jboss.tools.as.rsp.ui.RspUiActivator;
 import org.jboss.tools.as.rsp.ui.dialogs.WorkflowDialog;
 import org.jboss.tools.as.rsp.ui.util.CommandLineUtils;
@@ -51,47 +52,47 @@ public class WorkflowUiUtility {
 		for (WorkflowResponseItem i : items) {
 			String type = i.getItemType();
 			if (type == null)
-				type = "workflow.prompt.small";
-			if (type.equals("workflow.browser.open")) {
+				type = "workflow.prompt.small"; //$NON-NLS-1$
+			if (type.equals("workflow.browser.open")) { //$NON-NLS-1$
 				String urlString = i.getContent();
 				UIHelper.executeInUI(() -> {
 					openBrowser(urlString);
 				});
-			} else if (type.equals("workflow.editor.open")) {
+			} else if (type.equals("workflow.editor.open")) { //$NON-NLS-1$
 				UIHelper.executeInUI(() -> {
-					if (i.getProperties().get("workflow.editor.file.path") != null) {
-						EditorUtil.openFileInEditor(new File(i.getProperties().get("workflow.editor.file.path")));
-					} else if (i.getProperties().get("workflow.editor.file.content") != null) {
+					if (i.getProperties().get("workflow.editor.file.path") != null) { //$NON-NLS-1$
+						EditorUtil.openFileInEditor(new File(i.getProperties().get("workflow.editor.file.path"))); //$NON-NLS-1$
+					} else if (i.getProperties().get("workflow.editor.file.content") != null) { //$NON-NLS-1$
 						EditorUtil.createAndOpenVirtualFile(i.getId(),
-								i.getProperties().get("workflow.editor.file.content"));
+								i.getProperties().get("workflow.editor.file.content")); //$NON-NLS-1$
 					}
 				});
-			} else if (type.equals("workflow.terminal.open")) {
+			} else if (type.equals("workflow.terminal.open")) { //$NON-NLS-1$
 				UIHelper.executeInUI(() -> {
 					try {
-						String cmd = i.getProperties().get("workflow.terminal.cmd");
+						String cmd = i.getProperties().get("workflow.terminal.cmd"); //$NON-NLS-1$
 						String[] asArr = CommandLineUtils.translateCommandline(cmd);
-						File wd = new File(System.getProperty("user.home"));
+						File wd = new File(System.getProperty("user.home")); //$NON-NLS-1$
 
 						final Map<String, Object> props = new HashMap<>();
 						props.put(ITerminalsConnectorConstants.PROP_PROCESS_WORKING_DIR, wd);
 						props.put(ITerminalsConnectorConstants.PROP_TERMINAL_CONNECTOR_ID,
 								"org.eclipse.tm.terminal.connector.local.LocalConnector"); //$NON-NLS-1$
-						props.put(ITerminalsConnectorConstants.PROP_IP_HOST, "localhost");
+						props.put(ITerminalsConnectorConstants.PROP_IP_HOST, "localhost"); //$NON-NLS-1$
 						props.put(ITerminalsConnectorConstants.PROP_TIMEOUT, Integer.valueOf(0));
 						props.put(ITerminalsConnectorConstants.PROP_SSH_KEEP_ALIVE, Integer.valueOf(300));
 						props.put(ITerminalsConnectorConstants.PROP_ENCODING, null);
 						props.put(ITerminalsConnectorConstants.PROP_DELEGATE_ID,
-								"org.eclipse.tm.terminal.connector.local.launcher.local");
+								"org.eclipse.tm.terminal.connector.local.launcher.local"); //$NON-NLS-1$
 						props.put(ITerminalsConnectorConstants.PROP_TITLE, cmd);
 						ITerminalService service = TerminalServiceFactory.getService();
 						service.openConsole(props, null);
 					} catch (/* IOException | */ CommandLineUtils.CommandLineException e) {
 						RspUiActivator.getDefault().log(StatusFactory.errorStatus(RspUiActivator.PLUGIN_ID,
-								"Error running command in terminal", e));
+								Messages.WorkflowUiUtility_12, e));
 					}
 				});
-			} else if (type.equals("workflow.prompt.small") || type.equals("workflow.prompt.large")) {
+			} else if (type.equals("workflow.prompt.small") || type.equals("workflow.prompt.large")) { //$NON-NLS-1$ //$NON-NLS-2$
 				prompts.add(i);
 			}
 		}
@@ -136,7 +137,7 @@ public class WorkflowUiUtility {
 			browser.displayURL(url);
 		} catch (Exception e) {
 			RspUiActivator.getDefault()
-					.log(StatusFactory.errorStatus(RspUiActivator.PLUGIN_ID, "Error opening browser url " + url, e));
+					.log(StatusFactory.errorStatus(RspUiActivator.PLUGIN_ID, Messages.WorkflowUiUtility_15 + url, e));
 		}
 	}
 }
