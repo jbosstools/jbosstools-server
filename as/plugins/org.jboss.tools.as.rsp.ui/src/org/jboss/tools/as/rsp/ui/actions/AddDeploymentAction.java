@@ -16,10 +16,12 @@ import java.util.concurrent.ExecutionException;
 
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.window.Window;
+import org.jboss.tools.as.rsp.ui.RspUiActivator;
 import org.jboss.tools.as.rsp.ui.dialogs.AddDeploymentDialog;
 import org.jboss.tools.as.rsp.ui.internal.views.navigator.RSPContentProvider.ServerStateWrapper;
 import org.jboss.tools.as.rsp.ui.model.IRsp;
 import org.jboss.tools.as.rsp.ui.model.impl.RspCore;
+import org.jboss.tools.as.rsp.ui.telemetry.TelemetryService;
 import org.jboss.tools.as.rsp.ui.util.ui.UIHelper;
 import org.jboss.tools.rsp.api.RSPServer;
 import org.jboss.tools.rsp.api.dao.Attributes;
@@ -28,6 +30,8 @@ import org.jboss.tools.rsp.api.dao.ListDeploymentOptionsResponse;
 import org.jboss.tools.rsp.api.dao.ServerDeployableReference;
 import org.jboss.tools.rsp.api.dao.ServerHandle;
 import org.jboss.tools.rsp.api.dao.Status;
+import org.jboss.tools.usage.event.UsageEventType;
+import org.jboss.tools.usage.event.UsageReporter;
 
 public class AddDeploymentAction extends AbstractTreeAction {
 	private static final String ERROR_LISTING = Messages.AddDeploymentAction_errorListingDeploymentOptions;
@@ -67,8 +71,7 @@ public class AddDeploymentAction extends AbstractTreeAction {
 		try {
 			options = rspServer.listDeploymentOptions(sh).get();
 		} catch (InterruptedException | ExecutionException interruptedException) {
-			// TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_DEPLOYMENT_ADD,
-			// sh.getType().getId(), interruptedException);
+			TelemetryService.logEvent(TelemetryService.TELEMETRY_DEPLOYMENT_ADD, sh.getType().getId());
 			apiError(interruptedException, ERROR_LISTING);
 			return;
 		}
@@ -94,18 +97,15 @@ public class AddDeploymentAction extends AbstractTreeAction {
 					public void run() {
 						try {
 							Status stat = rspServer.addDeployable(asReference(sh, label, path, opts)).get();
-							// TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_DEPLOYMENT_ADD,
-							// sh.getType().getId(), stat);
+							TelemetryService.logEvent(TelemetryService.TELEMETRY_DEPLOYMENT_ADD, sh.getType().getId(), stat.isOK() ? 0 : 1);
 							if (!stat.isOK()) {
 								statusError(stat, ERROR_ADDING);
 							}
 						} catch (InterruptedException e) {
-							// TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_DEPLOYMENT_ADD,
-							// sh.getType().getId(), e);
+							TelemetryService.logEvent(TelemetryService.TELEMETRY_DEPLOYMENT_ADD, sh.getType().getId(), 1);
 							apiError(e, ERROR_ADDING);
 						} catch (ExecutionException e) {
-							// TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_DEPLOYMENT_ADD,
-							// sh.getType().getId(), e);
+							TelemetryService.logEvent(TelemetryService.TELEMETRY_DEPLOYMENT_ADD, sh.getType().getId(), 1);
 							apiError(e, ERROR_ADDING);
 						}
 					}

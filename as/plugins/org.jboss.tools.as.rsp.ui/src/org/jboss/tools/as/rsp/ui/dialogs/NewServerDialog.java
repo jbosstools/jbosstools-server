@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.jboss.tools.as.rsp.ui.actions.AbstractTreeAction;
 import org.jboss.tools.as.rsp.ui.client.RspClientLauncher;
+import org.jboss.tools.as.rsp.ui.telemetry.TelemetryService;
 import org.jboss.tools.as.rsp.ui.util.ui.UIHelper;
 import org.jboss.tools.rsp.api.dao.Attributes;
 import org.jboss.tools.rsp.api.dao.CreateServerResponse;
@@ -118,13 +119,12 @@ public class NewServerDialog extends TitleAreaDialog implements ModifyListener {
 							close();
 						});
 					}
-
-					// TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_SERVER_CREATE,
-					// typeId, result.getStatus());
+					TelemetryService.logEvent(TelemetryService.TELEMETRY_SERVER_CREATE, 
+							serverType.getId(), result.getStatus().isOK() ? 0 : 1);
 				} catch (InterruptedException | ExecutionException e) {
+					TelemetryService.logEvent(TelemetryService.TELEMETRY_SERVER_CREATE, 
+							serverType.getId(), 1);
 					AbstractTreeAction.apiError(e, ERROR_CREATING_SERVER);
-					// TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_SERVER_CREATE,
-					// typeId, e);
 				}
 			}
 		}.start();

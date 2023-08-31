@@ -16,6 +16,7 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.jboss.tools.as.rsp.ui.model.IRsp;
 import org.jboss.tools.as.rsp.ui.model.IRspCore;
 import org.jboss.tools.as.rsp.ui.model.impl.RspTypeImpl;
+import org.jboss.tools.as.rsp.ui.telemetry.TelemetryService;
 import org.jboss.tools.as.rsp.ui.util.VersionComparatorUtil;
 
 public class DownloadRspAction extends AbstractTreeAction {
@@ -64,8 +65,7 @@ public class DownloadRspAction extends AbstractTreeAction {
 				new Thread(Messages.DownloadRspAction_1 + server.getRspType().getName()) {
 					public void run() {
 						deleteDirectory(RspTypeImpl.getServerTypeInstallLocation(server.getRspType()));
-//                        TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_DOWNLOAD_RSP,
-//                                server.getRspType().getId(), (Status)null, null, new String[]{"version"}, new String[]{latest});
+						TelemetryService.logEvent(TelemetryService.TELEMETRY_DOWNLOAD_RSP, server.getRspType().getId(), 0);
 						server.download();
 					}
 				}.start();

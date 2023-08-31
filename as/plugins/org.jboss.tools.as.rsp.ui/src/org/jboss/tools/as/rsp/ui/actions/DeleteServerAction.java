@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.jboss.tools.as.rsp.ui.client.RspClientLauncher;
 import org.jboss.tools.as.rsp.ui.internal.views.navigator.RSPContentProvider.ServerStateWrapper;
 import org.jboss.tools.as.rsp.ui.model.impl.RspCore;
+import org.jboss.tools.as.rsp.ui.telemetry.TelemetryService;
 import org.jboss.tools.rsp.api.dao.Status;
 
 public class DeleteServerAction extends AbstractTreeAction {
@@ -67,18 +68,16 @@ public class DeleteServerAction extends AbstractTreeAction {
 						for (int i = 0; i < arr.size(); i++) {
 							ServerStateWrapper sel = arr.get(i);
 							RspClientLauncher client = RspCore.getDefault().getClient(sel.getRsp());
+							String serverType = sel.getServerState().getServer().getType().getId();
 							try {
 								Status stat = client.getServerProxy().deleteServer(sel.getServerState().getServer())
 										.get();
-								String serverType = sel.getServerState().getServer().getType().getId();
-//								TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_SERVER_REMOVE,
-//										serverType, stat);
+								TelemetryService.logEvent(TelemetryService.TELEMETRY_SERVER_REMOVE, serverType, stat.isOK() ? 0 : 1);
 								if (!stat.isOK()) {
 									fails.add(stat);
 								}
 							} catch (InterruptedException | ExecutionException ex) {
-								// TelemetryService.instance().send(TelemetryService.TELEMETRY_SERVER_REMOVE,
-								// ex);
+								TelemetryService.logEvent(TelemetryService.TELEMETRY_SERVER_REMOVE, serverType, 1);
 								apiError(ex, arr.size() > 1 ? ERROR_DELETING_SERVERS : ERROR_DELETING_SERVER);
 							}
 						}

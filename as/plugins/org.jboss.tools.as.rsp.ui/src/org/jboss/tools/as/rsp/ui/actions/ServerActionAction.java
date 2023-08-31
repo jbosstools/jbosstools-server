@@ -20,6 +20,7 @@ import org.jboss.tools.as.rsp.ui.dialogs.SelectServerActionDialog;
 import org.jboss.tools.as.rsp.ui.internal.views.navigator.RSPContentProvider.ServerStateWrapper;
 import org.jboss.tools.as.rsp.ui.model.IRspCore;
 import org.jboss.tools.as.rsp.ui.model.impl.RspCore;
+import org.jboss.tools.as.rsp.ui.telemetry.TelemetryService;
 import org.jboss.tools.as.rsp.ui.util.ui.UIHelper;
 import org.jboss.tools.as.rsp.ui.util.ui.WorkflowUiUtility;
 import org.jboss.tools.rsp.api.dao.ListServerActionResponse;
@@ -75,9 +76,9 @@ public class ServerActionAction extends AbstractTreeAction {
 					SelectServerActionDialog td = new SelectServerActionDialog(state, response2);
 					int ret = td.open();
 					ServerActionWorkflow chosen = td.getSelected();
-//                    TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_SERVER_ACTION,
-//                            state.getServerState().getServer().getType().getId(), null, null,
-//                            new String[]{"actionId"}, new String[]{chosen.getActionId()});
+					String typeId = state.getServerState().getServer().getType().getId(); 
+					TelemetryService.logEvent(TelemetryService.TELEMETRY_SERVER_ACTION, 
+							typeId + ":" + chosen.getActionId(), 0);
 					if (chosen != null && ret == Window.OK) {
 						new Thread(Messages.ServerActionAction_4 + chosen.getActionLabel()) {
 							public void run() {

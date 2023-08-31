@@ -37,6 +37,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import org.jboss.tools.as.rsp.ui.client.RspClientLauncher;
 import org.jboss.tools.as.rsp.ui.internal.views.navigator.RSPContentProvider.ServerStateWrapper;
 import org.jboss.tools.as.rsp.ui.model.impl.RspCore;
+import org.jboss.tools.as.rsp.ui.telemetry.TelemetryService;
 import org.jboss.tools.as.rsp.ui.util.ui.EditorUtil;
 import org.jboss.tools.rsp.api.dao.CreateServerResponse;
 import org.jboss.tools.rsp.api.dao.GetServerJsonResponse;
@@ -68,8 +69,8 @@ public class EditServerAction extends AbstractTreeAction {
 			try {
 				GetServerJsonResponse response = client.getServerProxy()
 						.getServerAsJson(server.getServerState().getServer()).get();
-				// TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_SERVER_EDIT,
-				// typeId, response.getStatus());
+				boolean isOk = response.getStatus() != null && !response.getStatus().isOK();
+				TelemetryService.logEvent(TelemetryService.TELEMETRY_SERVER_EDIT, typeId, isOk ? 0 : 1);
 				if (response.getStatus() != null && !response.getStatus().isOK()) {
 					showError(response.getStatus().getMessage(), org.jboss.tools.as.rsp.ui.actions.Messages.EditServerAction_1);
 				} else {
@@ -79,8 +80,7 @@ public class EditServerAction extends AbstractTreeAction {
 					openEditor(server, vf);
 				}
 			} catch (InterruptedException | ExecutionException | IOException e) {
-				// TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_SERVER_EDIT,
-				// typeId, interruptedException);
+				TelemetryService.logEvent(TelemetryService.TELEMETRY_SERVER_EDIT, typeId, 1);
 				showError(org.jboss.tools.as.rsp.ui.actions.Messages.EditServerAction_3 + e.getMessage(), org.jboss.tools.as.rsp.ui.actions.Messages.EditServerAction_4);
 			}
 		}
@@ -160,8 +160,9 @@ public class EditServerAction extends AbstractTreeAction {
 			req.setServerJson(contents);
 			UpdateServerResponse resp = client.getServerProxy().updateServer(req).get();
 			CreateServerResponse response = resp.getValidation();
-			// TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_SERVER_EDIT,
-			// typeId, response.getStatus());
+			
+			boolean isOk = response.getStatus() != null && !response.getStatus().isOK();
+			TelemetryService.logEvent(TelemetryService.TELEMETRY_SERVER_EDIT, server.getServerState().getServer().getType().getId(), isOk ? 0 : 1);
 			if (response.getStatus() != null && !response.getStatus().isOK()) {
 				showError(response.getStatus().getMessage(), org.jboss.tools.as.rsp.ui.actions.Messages.EditServerAction_6);
 			} else {
@@ -171,8 +172,7 @@ public class EditServerAction extends AbstractTreeAction {
 //                openEditor(server, vf);                    
 			}
 		} catch (InterruptedException | ExecutionException e) {
-			// TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_SERVER_EDIT,
-			// typeId, interruptedException);
+			TelemetryService.logEvent(TelemetryService.TELEMETRY_SERVER_EDIT, server.getServerState().getServer().getType().getId(), 1);
 			showError(org.jboss.tools.as.rsp.ui.actions.Messages.EditServerAction_7 + e.getMessage(), org.jboss.tools.as.rsp.ui.actions.Messages.EditServerAction_4);
 		}
 	}

@@ -22,6 +22,7 @@ import org.jboss.tools.as.rsp.ui.dialogs.SelectDownloadRuntimeDialog;
 import org.jboss.tools.as.rsp.ui.model.IRsp;
 import org.jboss.tools.as.rsp.ui.model.IRspCore;
 import org.jboss.tools.as.rsp.ui.model.impl.RspCore;
+import org.jboss.tools.as.rsp.ui.telemetry.TelemetryService;
 import org.jboss.tools.as.rsp.ui.util.ui.WorkflowUiUtility;
 import org.jboss.tools.rsp.api.dao.DownloadRuntimeDescription;
 import org.jboss.tools.rsp.api.dao.DownloadSingleRuntimeRequest;
@@ -60,8 +61,7 @@ public class DownloadServerAction extends AbstractTreeAction {
 					if (chosen != null && ret == Window.OK) {
 						new Thread(org.jboss.tools.as.rsp.ui.actions.Messages.DownloadServerAction_3 + server.getRspType().getName()) {
 							public void run() {
-								// TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_DOWNLOAD_RUNTIME,
-								// chosen.getId());
+								TelemetryService.logEvent(TelemetryService.TELEMETRY_DOWNLOAD_RUNTIME, chosen.getId(), 0);
 								initiateDownloadRuntimeWorkflow(server, client, chosen);
 							}
 						}.start();

@@ -106,16 +106,11 @@ public class RspCore implements IRspCore {
 				if (srm != null) {
 					srm.setClient(launcher);
 				}
-//                telemetry().sendWithType(TelemetryService.TELEMETRY_START_RSP, server.getRspType().getId());
-			} catch (IOException e) {
-				// telemetry().sendWithType(TelemetryService.TELEMETRY_START_RSP,
-				// server.getRspType().getId(), e);
-			} catch (InterruptedException ie) {
-				// telemetry().sendWithType(TelemetryService.TELEMETRY_START_RSP,
-				// server.getRspType().getId(), ie);
-			} catch (ExecutionException ee) {
-				// telemetry().sendWithType(TelemetryService.TELEMETRY_START_RSP,
-				// server.getRspType().getId(), ee);
+				TelemetryService.logEvent(TelemetryService.TELEMETRY_START_RSP, 
+						server.getRspType().getId(), 0);
+			} catch (IOException | InterruptedException | ExecutionException e) {
+				TelemetryService.logEvent(TelemetryService.TELEMETRY_START_RSP, 
+						server.getRspType().getId(), 1);
 			}
 		}
 	}

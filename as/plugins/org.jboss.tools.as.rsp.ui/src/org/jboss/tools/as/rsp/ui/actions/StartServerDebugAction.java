@@ -29,6 +29,7 @@ import org.jboss.tools.as.rsp.ui.RspUiActivator;
 import org.jboss.tools.as.rsp.ui.client.RspClientLauncher;
 import org.jboss.tools.as.rsp.ui.internal.views.navigator.RSPContentProvider.ServerStateWrapper;
 import org.jboss.tools.as.rsp.ui.model.impl.RspCore;
+import org.jboss.tools.as.rsp.ui.telemetry.TelemetryService;
 import org.jboss.tools.as.rsp.ui.util.PortFinder;
 import org.jboss.tools.as.rsp.ui.util.ui.UIHelper;
 import org.jboss.tools.foundation.core.plugin.log.StatusFactory;
@@ -86,13 +87,15 @@ public class StartServerDebugAction extends AbstractTreeAction {
 				new HashMap<String, Object>());
 		LaunchParameters params = new LaunchParameters(sa, mode);
 		final StartServerResponse response;
+		String serverType = sel.getServerState().getServer().getType().getId();
 		try {
 			response = client.getServerProxy().startServerAsync(params).get();
-			String serverType = sel.getServerState().getServer().getType().getId();
 			Status stat = response == null ? null : response.getStatus();
-//            TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_SERVER_START, stat, serverType,
-//                    new String[]{"debug"}, new String[]{Boolean.toString(true)});
+			TelemetryService.logEvent(TelemetryService.TELEMETRY_SERVER_START, 
+					serverType, stat.isOK() ? 0 : 1);
 		} catch (InterruptedException | ExecutionException ex) {
+			TelemetryService.logEvent(TelemetryService.TELEMETRY_SERVER_START, 
+					serverType, 1);
 			UIHelper.executeInUI(() -> apiError(ex, ERROR_STARTING_SERVER));
 			return;
 		}

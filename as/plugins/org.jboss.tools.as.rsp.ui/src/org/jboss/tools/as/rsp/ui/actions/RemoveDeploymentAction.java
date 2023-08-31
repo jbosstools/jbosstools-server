@@ -16,6 +16,7 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.jboss.tools.as.rsp.ui.internal.views.navigator.RSPContentProvider.DeployableStateWrapper;
 import org.jboss.tools.as.rsp.ui.model.IRsp;
 import org.jboss.tools.as.rsp.ui.model.impl.RspCore;
+import org.jboss.tools.as.rsp.ui.telemetry.TelemetryService;
 import org.jboss.tools.rsp.api.RSPServer;
 import org.jboss.tools.rsp.api.dao.DeployableState;
 import org.jboss.tools.rsp.api.dao.ServerDeployableReference;
@@ -57,14 +58,14 @@ public class RemoveDeploymentAction extends AbstractTreeAction {
 	protected void actionPerformedThread(RSPServer rspServer, ServerDeployableReference sdr) {
 		try {
 			Status stat = rspServer.removeDeployable(sdr).get();
-			// TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_DEPLOYMENT_REMOVE,
-			// sdr.getServer().getType().getId(), stat);
+			TelemetryService.logEvent(TelemetryService.TELEMETRY_DEPLOYMENT_REMOVE, 
+					sdr.getServer().getType().getId(), stat.isOK() ? 0 : 1);
 			if (stat == null || !stat.isOK()) {
 				statusError(stat, ERROR_REMOVING_DEPLOYMENT);
 			}
 		} catch (InterruptedException | ExecutionException ex) {
-			// TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_DEPLOYMENT_REMOVE,
-			// sdr.getServer().getType().getId(), ex);
+			TelemetryService.logEvent(TelemetryService.TELEMETRY_DEPLOYMENT_REMOVE, 
+					sdr.getServer().getType().getId(), 1);
 			apiError(ex, ERROR_REMOVING_DEPLOYMENT);
 		}
 	}

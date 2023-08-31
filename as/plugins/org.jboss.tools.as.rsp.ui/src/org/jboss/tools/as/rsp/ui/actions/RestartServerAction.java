@@ -18,6 +18,7 @@ import org.jboss.tools.as.rsp.ui.internal.views.navigator.RSPContentProvider.Ser
 import org.jboss.tools.as.rsp.ui.model.IRsp;
 import org.jboss.tools.as.rsp.ui.model.IRspCoreChangeListener;
 import org.jboss.tools.as.rsp.ui.model.impl.RspCore;
+import org.jboss.tools.as.rsp.ui.telemetry.TelemetryService;
 import org.jboss.tools.rsp.api.ServerManagementAPIConstants;
 import org.jboss.tools.rsp.api.dao.ServerState;
 import org.jboss.tools.rsp.api.dao.Status;
@@ -65,10 +66,8 @@ public class RestartServerAction extends AbstractTreeAction {
 
 	protected void telemActionCalled(ServerStateWrapper sel) {
 		String typeId = sel.getServerState().getServer().getType().getId();
-		String[] keys = new String[] { Messages.RestartServerAction_3 };
-		String[] vals = new String[] { Messages.RestartServerAction_4 };
-		// TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_SERVER_RESTART,
-		// typeId, null, null, keys, vals);
+		TelemetryService.logEvent(TelemetryService.TELEMETRY_SERVER_RESTART, 
+				typeId);
 	}
 
 	private void actionInternal(ServerStateWrapper sel, RspClientLauncher client) {

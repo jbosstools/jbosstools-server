@@ -16,6 +16,7 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.jboss.tools.as.rsp.ui.client.RspClientLauncher;
 import org.jboss.tools.as.rsp.ui.internal.views.navigator.RSPContentProvider.ServerStateWrapper;
 import org.jboss.tools.as.rsp.ui.model.impl.RspCore;
+import org.jboss.tools.as.rsp.ui.telemetry.TelemetryService;
 import org.jboss.tools.rsp.api.ServerManagementAPIConstants;
 import org.jboss.tools.rsp.api.dao.Status;
 import org.jboss.tools.rsp.api.dao.StopServerAttributes;
@@ -56,17 +57,17 @@ public class StopServerAction extends AbstractTreeAction {
 
 	private void actionInternal(ServerStateWrapper sel, RspClientLauncher client) {
 		StopServerAttributes ssa = new StopServerAttributes(sel.getServerState().getServer().getId(), false);
+		String serverType = sel.getServerState().getServer().getType().getId();
 		try {
 			Status stat = client.getServerProxy().stopServerAsync(ssa).get();
-//            TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_SERVER_STOP, stat, serverType,
-//                    new String[]{"force"}, new String[]{Boolean.toString(false)});
+			TelemetryService.logEvent(TelemetryService.TELEMETRY_SERVER_STOP, 
+					serverType, stat.isOK() ? 0 : 1);
 			if (!stat.isOK()) {
 				statusError(stat, ERROR_STOPPING_SERVER);
 			}
 		} catch (InterruptedException | ExecutionException ex) {
-//            TelemetryService.instance().sendWithType(TelemetryService.TELEMETRY_SERVER_STOP, serverType, null, ex,
-//                    new String[]{"force"}, new String[]{Boolean.toString(false)});
-
+			TelemetryService.logEvent(TelemetryService.TELEMETRY_SERVER_STOP, 
+					serverType, 1);
 			apiError(ex, ERROR_STOPPING_SERVER);
 		}
 	}

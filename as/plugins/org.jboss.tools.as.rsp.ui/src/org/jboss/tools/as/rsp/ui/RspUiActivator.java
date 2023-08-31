@@ -12,11 +12,13 @@ package org.jboss.tools.as.rsp.ui;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.jboss.tools.as.rsp.ui.telemetry.TelemetryService;
 import org.jboss.tools.foundation.core.plugin.log.IPluginLog;
 import org.jboss.tools.foundation.core.plugin.log.StatusFactory;
 import org.jboss.tools.foundation.ui.plugin.BaseUIPlugin;
 import org.jboss.tools.foundation.ui.plugin.BaseUISharedImages;
 import org.jboss.tools.usage.event.UsageEventType;
+import org.jboss.tools.usage.event.UsageReporter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
@@ -26,13 +28,12 @@ public class RspUiActivator extends BaseUIPlugin {
 	public static final String PLUGIN_ID = "org.jboss.tools.rsp.ui"; //$NON-NLS-1$
 
 	// Usage detection
-	public static final String USAGE_COMPONENT_NAME = "server"; //$NON-NLS-1$
+	public static final String USAGE_COMPONENT_NAME = "rsp.server"; //$NON-NLS-1$
 
 	// The shared instance
 	private static RspUiActivator plugin;
 
-	private UsageEventType newServerEventType;
-	private UsageEventType newRemoteServerEventType;
+	private UsageEventType rspUiStarted;
 
 	/**
 	 * The constructor
@@ -49,11 +50,7 @@ public class RspUiActivator extends BaseUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-
-//		newServerEventType = new UsageEventType(USAGE_COMPONENT_NAME, UsageEventType.getVersion(ASWTPToolsPlugin.this), 
-//				null, UsageEventType.NEW_ACTION, Messages.UsageEventTypeServerIDLabelDescription, 
-//				Messages.UsageEventTypeServerIDLabelDescription);
-//		UsageReporter.getInstance().registerEvent(newServerEventType);
+		TelemetryService.logEvent(TelemetryService.TELEMETRY_PLUGIN_START, "started");
 	}
 
 	/*

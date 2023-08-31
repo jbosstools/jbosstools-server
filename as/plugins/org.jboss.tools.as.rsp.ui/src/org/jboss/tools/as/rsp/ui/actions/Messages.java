@@ -43,8 +43,6 @@ public class Messages extends NLS {
 	public static String RestartServerAction_0;
 	public static String RestartServerAction_1;
 	public static String RestartServerAction_2;
-	public static String RestartServerAction_3;
-	public static String RestartServerAction_4;
 	public static String RestartServerAction_5;
 	public static String RestartServerDebugAction_0;
 	public static String ServerActionAction_0;
