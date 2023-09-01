@@ -54,13 +54,17 @@ public class TelemetryService {
     
     
     public static final void logEvent(UsageEventType type, String label) {
-    	logEvent(type, label, 0);
+    	if( type.getValueDescription() == null ) {
+    		UsageReporter.getInstance().trackEvent(type.event(label));
+    	} else {
+    		logEvent(type, label, 0);
+    	}
     }
     public static final void logEvent(UsageEventType type, String label, int value) {
 		UsageReporter.getInstance().trackEvent(type.event(label, value));
     }
     
-    public static final void logEvent(String actionName, String label, String desc) {
+    public static final void registerEvent(String actionName, String label, String desc) {
     	UsageEventType e = new UsageEventType(RspUiActivator.USAGE_COMPONENT_NAME, 
     			UsageEventType.getVersion(RspUiActivator.getDefault()), 
 				null, actionName, label, desc);
