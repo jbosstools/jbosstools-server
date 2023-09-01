@@ -46,13 +46,14 @@ public class StringPromptDialog extends TitleAreaDialog {
 	}
 
 	private void createUI(Composite main) {
-		Label l = new Label(main, SWT.NONE);
+		Label l = new Label(main, SWT.WRAP);
 		l.setText(stringPrompt.getPrompt());
 		int textType = SWT.BORDER;
 		if (stringPrompt.isSecret()) {
 			textType = textType | SWT.PASSWORD;
 		}
 		Text t = new Text(main, textType);
+		t.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		t.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				fieldVal = t.getText();
