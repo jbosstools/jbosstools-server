@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature 
+   id="org.jboss.tools.as.rsp.feature" 
+   label="%featureName" 
+   version="3.10.3.qualifier" 
+   license-feature="org.jboss.tools.foundation.license.feature"
+   license-feature-version="0.0.0"
+   provider-name="%providerName">
+
+
+   <description url="http://www.jboss.org/tools">
+       %description
+   </description>
+   <copyright>
+       %copyright
+   </copyright>
+   <license url="%licenseURL">
+       %license
+   </license>
+
+
+
+	<requires>
+                <import plugin="org.eclipse.core.resources" version="3.7.100" match="greaterOrEqual"/>
+                <import plugin="org.eclipse.core.filesystem" version="1.9.500" match="greaterOrEqual"/>
+                <import plugin="org.eclipse.ui" version="3.7.0" match="greaterOrEqual"/>
+                <import plugin="org.eclipse.ui.navigator" version="3.11.0" match="greaterOrEqual"/>
+                <import plugin="org.eclipse.ui.ide" version="3.20.100" match="greaterOrEqual"/>
+                <import plugin="org.eclipse.ui.workbench.texteditor" version="3.16.700" match="greaterOrEqual"/>
+                <import plugin="org.eclipse.jdt.launching" version="3.19.900" match="greaterOrEqual"/>
+                <import plugin="org.eclipse.debug.core" version="3.20.100" match="greaterOrEqual"/>
+                <import plugin="org.eclipse.jdt.core" version="3.7.0" match="greaterOrEqual"/>
+                <import plugin="org.eclipse.jdt.ui" version="3.7.0" match="greaterOrEqual"/>
+                <import plugin="org.eclipse.help.base" version="4.3.1000" match="greaterOrEqual"/>
+                <import plugin="org.eclipse.text" version="3.12.300" match="greaterOrEqual"/>
+                <import plugin="org.eclipse.tm.terminal.view.core" version="4.9.100" match="greaterOrEqual"/>
+                <import plugin="org.jboss.tools.foundation.core" version="1.6.1700" match="greaterOrEqual"/>
+                <import plugin="org.jboss.tools.foundation.ui" version="1.1.0" match="greaterOrEqual"/>
+                <import plugin="org.jboss.tools.usage" version="2.2.500" match="greaterOrEqual"/>
+	</requires>
+
+	<plugin id="org.jboss.tools.as.rsp.ui" download-size="0" install-size="0" version="0.0.0" unpack="false" />
+
+</feature>

@@ -17,6 +17,7 @@
 		<module>org.jboss.ide.eclipse.as.server.rse.integration.feature</module>
 
 		<module>org.jboss.ide.eclipse.as.feature</module>
+		<module>org.jboss.tools.as.rsp.feature</module>
 		<module>org.jboss.ide.eclipse.as.test.feature</module>
 	</modules>
 	<build>
