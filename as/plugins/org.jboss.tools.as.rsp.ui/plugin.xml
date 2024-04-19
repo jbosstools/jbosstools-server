@@ -96,4 +96,13 @@
          </enablement>
       </actionProvider>
    </extension>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            id="org.jboss.tools.as.rsp.ui.launchConfigurationType1"
+            modes="run,debug"
+            name="Server"
+            public="false">
+      </launchConfigurationType>
+   </extension>
 </plugin>

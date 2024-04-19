@@ -15,8 +15,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
+import org.eclipse.debug.core.ILaunchConfigurationType;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.Launch;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.internal.core.LaunchManager;
@@ -156,7 +159,7 @@ public class SingleRspModel {
 	public IProcess addServerProcess(IRsp rsp, ServerProcess serverProcess) {
 		ILaunch launch = findOrCreateLaunchForServer(rsp, serverProcess);
 		IProcess sp = new RemoteServerProcess(launch, rsp, serverProcess);
-		;
+		sp.setAttribute(DebugPlugin.ATTR_LAUNCH_TIMESTAMP, "" + System.currentTimeMillis());
 		launch.addProcess(sp);
 		return sp;
 	}
@@ -165,7 +168,14 @@ public class SingleRspModel {
 		String id = internalIdForProcess(serverProcess);
 		ILaunch l = this.launchForServer.get(serverProcess.getServer().getId());
 		if (l == null) {
-			l = new Launch(null, "run", null); //$NON-NLS-1$
+			ILaunchConfigurationType type = getLaunchManager().getLaunchConfigurationType("org.jboss.tools.as.rsp.ui.launchConfigurationType1");
+			try {
+				ILaunchConfigurationWorkingCopy wc = type.newInstance(null, serverProcess.getServer().getId());
+				l = new Launch(wc, "run", null); //$NON-NLS-1$
+			} catch (CoreException e) {
+				l = new Launch(null, "run", null); //$NON-NLS-1$
+				e.printStackTrace();
+			}
 			l.setAttribute(DebugPlugin.ATTR_LAUNCH_TIMESTAMP, Long.toString(System.currentTimeMillis()));
 			l.setAttribute(DebugPlugin.ATTR_CAPTURE_OUTPUT, "true"); //$NON-NLS-1$
 			this.launchForServer.put(serverProcess.getServer().getId(), l);
@@ -188,6 +198,7 @@ public class SingleRspModel {
 					RemoteServerProcess rs = ((RemoteServerProcess) all[i]);
 					if (serverProcess.getProcessId().equals(rs.getServerProcessId())) {
 						rs.setComplete(true);
+						rs.setAttribute(DebugPlugin.ATTR_TERMINATE_TIMESTAMP, Long.toString(System.currentTimeMillis()));
 					}
 				}
 				allComplete &= all[i].isTerminated();
