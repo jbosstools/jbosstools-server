@@ -35,7 +35,7 @@ jobs:
         java-version: '8'
         java-package: jre
         architecture: x64
-	distribution: 'temurin'
+        distribution: 'temurin'
 
     # Java JDK used for maven build
     - name: Setup Java ${{ matrix.java }}
