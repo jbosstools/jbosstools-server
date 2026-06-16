@@ -101,7 +101,10 @@ public class JavaMainTabClone extends SharedJavaMainTab {
 		fConsiderInheritedMainButton = SWTFactory.createCheckButton(parent, LauncherMessages.JavaMainTab_22, null, false, 2);
 		fConsiderInheritedMainButton.addSelectionListener(getDefaultListener());
 		
-		fStopInMainCheckButton = SWTFactory.createCheckButton(parent, LauncherMessages.JavaMainTab_St_op_in_main_1, null, false, 1);
+		// Eclipse 2026.6 (4.40) removed the JDT-internal NLS field
+		// LauncherMessages.JavaMainTab_St_op_in_main_1, which threw NoSuchFieldError
+		// here and killed the server launch-config editor. Inline the label instead.
+		fStopInMainCheckButton = SWTFactory.createCheckButton(parent, "St&op in main", null, false, 1);
 		fStopInMainCheckButton.addSelectionListener(getDefaultListener());
 	}
 
